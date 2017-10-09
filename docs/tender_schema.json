@@ -1,0 +1,436 @@
+{
+  "title": "Tender",
+  "description": "Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners.",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "id": {
+      "title": "Tender ID",
+      "description": "An identifier for this tender process. This may be the same as the ocid, or may be drawn from an internally held identifier for this tender.",
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "title": {
+      "title": "Tender Title",
+      "description": "Tender title",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "title": "Tender description",
+      "description": "Tender description",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "title": "Tender status",
+      "description": "The current status of the tender based on the [tenderStatus codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#tender-status)",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "planned",
+        "active",
+        "cancelled",
+        "unsuccessful",
+        "complete",
+        null
+      ],
+      "codelist": "tenderStatus.csv",
+      "openCodelist": false
+    },
+    "items": {
+      "title": "Items to be procured",
+      "description": "The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Item"
+      },
+      "uniqueItems": true
+    },
+    "minValue": {
+      "title": "Minimum value",
+      "description": "The minimum estimated value of the procurement. A negative value indicates that the contracting process may involve payments from the supplier to the buyer (commonly used in concession contracts).",
+      "$ref": "#/definitions/Value"
+    },
+    "value": {
+      "title": "Value",
+      "description": "The total upper estimated value of the procurement. A negative value indicates that the contracting process may involve payments from the supplier to the buyer (commonly used in concession contracts).",
+      "$ref": "#/definitions/Value"
+    },
+    "procurementMethod": {
+      "title": "Procurement method",
+      "description": "Specify tendering method against the [method codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#method) as per [GPA definitions](http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm) of Open, Selective, Limited",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "open",
+        "selective",
+        "limited",
+        null
+      ],
+      "codelist": "method.csv",
+      "openCodelist": false
+    },
+    "procurementMethodDetails": {
+      "title": "Procurement method details",
+      "description": "Additional detail on the procurement method used. This field may be used to provide the local name of the particular procurement method used.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "procurementMethodRationale": {
+      "title": "Procurement method rationale",
+      "description": "Rationale of procurement method, especially in the case of Limited tendering.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "procurementCategory": {
+      "title": "Procurement category",
+      "description": "The primary category describing the object of this contracting process from the [procurementCategory](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#procurement-category) codelist (e.g. supplies, works, services, consultingServices or mixed).",
+      "type": [
+        "string",
+        "null"
+      ],
+      "codelist": "procurementCategory.csv",
+      "openCodelist": false
+    },
+    "awardCriteria": {
+      "title": "Award criteria",
+      "description": "Specify the award criteria for the procurement, using the [award criteria codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#award-criteria)",
+      "type": [
+        "string",
+        "null"
+      ],
+      "codelist": "awardCriteria.csv",
+      "openCodelist": true
+    },
+    "awardCriteriaDetails": {
+      "title": "Award criteria details",
+      "description": "Any detailed or further information on the award or selection criteria.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "submissionMethod": {
+      "title": "Submission method",
+      "description": "Specify the method by which bids must be submitted, in person, written, or electronic auction. Using the [submission method codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#submission-method)",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "codelist": "submissionMethod.csv",
+      "openCodelist": true
+    },
+    "submissionMethodDetails": {
+      "title": "Submission method details",
+      "description": "Any detailed or further information on the submission method. This may include the address, e-mail address or online service to which bids should be submitted, and any special requirements to be followed for submissions.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tenderPeriod": {
+      "title": "Tender period",
+      "description": "The period when the tender is open for submissions. The end date is the closing date for tender submissions.",
+      "$ref": "#/definitions/Period"
+    },
+    "enquiryPeriod": {
+      "title": "Enquiry period",
+      "description": "The period during which potential bidders may submit questions and requests for clarification to the entity managing procurement. Details of how to submit enquiries should be provided in attached notices, or in submissionMethodDetails. Structured dates for when responses to questions will be made can be provided using tender milestones.",
+      "$ref": "#/definitions/Period"
+    },
+    "hasEnquiries": {
+      "title": "Has enquiries?",
+      "description": "A true/false field to indicate whether any enquiries were received during the tender process. Structured information on enquiries that were received, and responses to them, can be provided using the enquiries extension.",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "eligibilityCriteria": {
+      "title": "Eligibility criteria",
+      "description": "A description of any eligibility criteria for potential suppliers.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "awardPeriod": {
+      "title": "Evaluation and award period",
+      "description": "The period for adjudication and selection of the contract award. The end date should be the date on which an award is due to be finalised. The start date may be used to indicate the start of an evaluation period.",
+      "$ref": "#/definitions/Period"
+    },
+    "contractPeriod": {
+      "description": "The period over which the contract is estimated or required to be active. If the tender does not specify explicit dates, the duration field may be used.",
+      "title": "Contract period",
+      "$ref": "#/definitions/Period"
+    },
+    "numberOfTenderers": {
+      "title": "Number of tenderers",
+      "description": "The number of entities who submit a tender.",
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "tenderers": {
+      "title": "Tenderers",
+      "description": "All entities who submit a bid on a tender. More detailed information on bids and the bidding organisation can be provided using the optional bid extension.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/OrganizationReference"
+      },
+      "uniqueItems": true
+    },
+    "procuringEntity": {
+      "title": "Procuring entity",
+      "description": "The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.",
+      "$ref": "#/definitions/OrganizationReference"
+    },
+    "documents": {
+      "title": "Documents",
+      "description": "All documents and attachments related to the tender, including any notices. See the [documentType codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#document-type) for details of potential documents to include.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Document"
+      }
+    },
+    "milestones": {
+      "title": "Milestones",
+      "description": "A list of milestones associated with the tender.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Milestone"
+      }
+    },
+    "amendments": {
+      "description": "A tender amendment is a formal change to the tender, and generally involves the publication of a new tender notice/release. The rationale and a description of the changes made can be provided here.",
+      "type": "array",
+      "title": "Amendments",
+      "items": {
+        "$ref": "#/definitions/Amendment"
+      }
+    },
+    "amendment": {
+      "title": "Amendment",
+      "description": "The use of individual amendment objects has been deprecated. From OCDS 1.1 information should be provided in the ammendments array.",
+      "$ref": "#/definitions/Amendment",
+      "deprecated": {
+        "description": "The single amendment object has been deprecated in favour of including amendments in an ammendments (plural) array.",
+        "deprecatedVersion": "1.1"
+      }
+    },
+    "lots": {
+      "title": "Lots",
+      "description": "A tender process may be divided into lots, where bidders can bid on one or more lots. Details of each lot can be provided here. Items, documents and other features can then reference the lot they are related to using relatedLot. Where no relatedLot identifier is given, the values should be interpreted as applicable to the whole tender. Properties of tender can be overridden for a given Lot through their inclusion in the Lot object.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Lot"
+      }
+    },
+    "lotDetails": {
+      "$ref": "#/definitions/LotDetails"
+    },
+    "lotGroups": {
+      "title": "Lot groups",
+      "description": "ere the buyer reserves the right to combine lots, or wishes to specify the total value for a group of lots, a lot group is used to capture this information.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/LotGroup"
+      }
+    },
+    "participationFees": {
+      "title": "Participation fees",
+      "description": "Any fees applicable to bidders wishing to participate in the tender process. Fees may apply for access to bidding documents, for the submission of bids or there may be a win fee payable by the successful bidder.",
+      "type": "array",
+      "mergeStrategy": "ocdsVersion",
+      "items": {
+        "$ref": "#/definitions/ParticipationFee"
+      },
+      "uniqueItems": true
+    },
+    "criteria": {
+      "description": "A list of criteria on which either bidders or items will be judged, evaluated or assessed.",
+      "type": "array",
+      "mergeStrategy": "arrayMergeById",
+      "mergeOptions": {
+        "idRef": "id"
+      },
+      "items": {
+        "$ref": "#/definitions/Criterion"
+      }
+    },
+    "acceleratedProcedure": {
+      "title": "Accelerated Procedure",
+      "description": "Details about whether an accelerated procurement is being used and the justification for doing so.",
+      "$ref": "#/definitions/AcceleratedProcedure"
+    },
+    "classification": {
+      "title": "Classification",
+      "description": "The primary classification for the tender. Required by the EU. Uses CPV Codelist See the [itemClassificationScheme](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#item-classification-scheme).",
+      "$ref": "#/definitions/Classification"
+    },
+    "designContest": {
+      "title": "Tender design contest",
+      "description": "The tender takes the form of a design contest. Fields that relate specifically to the design contest are modelled here. Required by the EU",
+      "$ref": "#/definitions/DesignContest"
+    },
+    "electronicWorkflows": {
+      "title": "Tender economic workflows",
+      "description": "Details about economic workflows: ordering, invoicing and payments and whether they will be used and/or accepted. Required by the EU",
+      "$ref": "#/definitions/electronicWorkflows"
+    },
+    "jointProcurement": {
+      "title": "Joint Procurement details",
+      "description": "Details about a joint procurement. Required by the EU",
+      "$ref": "#/definitions/JointProcurement"
+    },
+    "legalBasis": {
+      "title": "Tender legal basis",
+      "description": "The legal basis of the tender based on the [legalBasis codelist](http://standard.open-contracting.org/......",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "DIRECTIVE_2014_23_EU",
+        "DIRECTIVE_2014_24_EU",
+        "DIRECTIVE_2014_25_EU",
+        "DIRECTIVE_2009_81_EC",
+        "REGULATION_966_2012",
+        "NATIONAL_PROCUREMENT_LAW",
+        "NULL"
+      ]
+    },
+    "Objectives": {
+      "title": "Tender objectives",
+      "description": "Details about the tender's objectives: environmental, social and/or for innovation. Required by the EU",
+      "$ref": "#/definitions/Objectives"
+    },
+    "procedureOutsourcing": {
+      "title": "Procedure Outsourcing",
+      "description": "Whether the procurement procedure has been outsourced. If it has then a record of the organisation that is running the procedure on behalf of the buyer",
+      "$ref": "#/definitions/ProcedureOutsourcing"
+    },
+    "procurementMethodAdditionalInfo": {
+      "title": "Procurement method additional information",
+      "description": "Additional information about the procurement method.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reviewParties": {
+      "title": "Organizations involved in the review procedure of the tender",
+      "description": "The organizations involved in the review procedure for the procurement procedure. Required by the EU and UNCITRAL",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/OrganizationReference"
+      },
+      "uniqueItems": true
+    },
+    "reviewPeriod": {
+      "title": "Review period",
+      "description": "The period during which the decision of the procuring entity to award a contract can be challenged.",
+      "$ref": "#/definitions/Period"
+    },
+    "standstillPeriod": {
+      "title": "Standstill period",
+      "description": "The duration of the applicable standstill period following a challenge or appeal of decisions or actions taken by the procuring entity that are allegedly not in compliance with the provisions of the Law",
+      "$ref": "#/definitions/Period"
+    },
+    "submissionLanguages": {
+      "title": "Submission Languages",
+      "description": "Language(s) in which tenderers may submit, drawn from the [submissionLanguages codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/#submission-languages)",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "enum": [
+        "bg",
+        "es",
+        "cs",
+        "da",
+        "de",
+        "et",
+        "el",
+        "en",
+        "fr",
+        "ga",
+        "hr",
+        "it",
+        "lv",
+        "lt",
+        "hu",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "sk",
+        "sl",
+        "fi",
+        "sv",
+        null
+      ],
+      "codelist": "submissionLanguages.csv",
+      "openCodelist": false
+    },
+    "submissionMethodRationale": {
+      "title": "Submisson Method Rationale",
+      "description": "A value from the [submissionValueRationale codelist](http://standard.open-contracting.org/1.1-dev/en/schema/codelists/submission-method-rationale) that identifies the rationale where electronic submission method is not to be allowed. Required by EU.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
+          "IPR_ISSUES",
+          "REQUIRES_SPECIALISED_EQUIPMENT",
+          "PHYSICAL_MODEL",
+          "SENSITIVE_INFORMATION",
+          null
+        ]
+      }
+    },
+    "dynamicPurchasingSystem": {
+      "title": "Dynamic Purchasing System",
+      "description": "Existence of a dynamic purchasing system and whether it may be used by buyers outside the notice. Required by EU.",
+      "$ref": "#/definitions/DynamicPurchasingSystem"
+    },
+    "framework": {
+      "title": "Framework",
+      "description": "The details of any framework agreement established as part of this procurement. Required by EU.",
+      "$ref": "#/definitions/Framework"
+    },
+    "requiresElectronicCatalogue": {
+      "title": "Requires Electronic Catalogue",
+      "description": "Tenders must include an electronic catalogue. Required by the EU",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    }
+  }
+}
