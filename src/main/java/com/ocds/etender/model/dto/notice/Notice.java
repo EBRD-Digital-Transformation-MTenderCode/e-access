@@ -1,6 +1,6 @@
 package com.ocds.etender.model.dto.notice;
 
-public class TenderNotice {//todo added from file doc
+public class Notice {//todo added from file doc
     public Boolean electronicAuctionWillBeUsed;
     public String electronicAuctionDate;
     public String additionalInformationAboutElectronicAuction;

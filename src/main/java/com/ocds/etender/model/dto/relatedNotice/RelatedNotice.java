@@ -1,4 +1,4 @@
-package com.ocds.etender.model.dto.related;
+package com.ocds.etender.model.dto.relatedNotice;
 
 public class RelatedNotice {
     public String id;

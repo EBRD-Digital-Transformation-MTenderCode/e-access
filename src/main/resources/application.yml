@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: e-tender
+
+  data:
+    cassandra:
+      port: 9042
+      username: cassandra
+      password: cassandra
+      keyspace-name: ocds

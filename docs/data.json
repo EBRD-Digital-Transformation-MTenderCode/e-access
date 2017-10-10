@@ -1,0 +1,643 @@
+{
+  "ocid": "str",
+  "date": 1507646788833,
+  "tender": {
+    "id": "str",
+    "title": "str",
+    "description": "str",
+    "procurementCategory": "str",
+    "procurementMethod": "str",
+    "procurementMethodDetails": "str",
+    "procurmentMethodAdditionalInfo": "str",
+    "procurementMethodRationale": "str",
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": true,
+      "acceleratedProcedureJustification": "str"
+    },
+    "framework": {
+      "isAFramework": true,
+      "typeOfFramework": "str",
+      "maxSuppliers": 0,
+      "exceptionalDurationRationale": "str",
+      "additionalBuyerCategories": [
+        "str"
+      ],
+      "description": "str"
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": true,
+      "hasOutsideBuyerAccess": true,
+      "noFurtherContracts": true
+    },
+    "jointProcurement": {
+      "isJointProcurement": true,
+      "country": "str"
+    },
+    "status": "str",
+    "classification": {
+      "scheme": "str",
+      "id": "str",
+      "description": "str",
+      "uri": "str"
+    },
+    "hasEnquiries": true,
+    "enquiryPeriod": {
+      "startDate": "str",
+      "endDate": "str",
+      "maxExtentDate": "str",
+      "durationInDays": 0
+    },
+    "value": {
+      "amount": 0,
+      "currency": "str"
+    },
+    "legalBasis": "str",
+    "procedureOutsourcing": {
+      "procedureOutsourced": true,
+      "outsourcedTo": {
+        "name": "str",
+        "id": "str",
+        "identifier": {
+          "scheme": "str",
+          "id": "str",
+          "legalName": "str",
+          "uri": "str"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "str",
+            "id": "str",
+            "legalName": "str",
+            "uri": "str"
+          }
+        ],
+        "address": {
+          "streetAddress": "str",
+          "locality": "str",
+          "region": "str",
+          "postalCode": "str",
+          "countryName": "str"
+        },
+        "contactPoint": {
+          "name": "str",
+          "email": "str",
+          "telephone": "str",
+          "faxNumber": "str",
+          "url": "str",
+          "languages": [
+            "str"
+          ]
+        },
+        "roles": [
+          "str"
+        ],
+        "details": {
+          "typeOfBuyer": "str",
+          "mainGeneralActivity": "str",
+          "mainSectoralActivity": "str",
+          "isACentralPurchasingBody": true,
+          "NUTSCode": "str"
+        },
+        "buyerProfile": "str"
+      }
+    },
+    "objectives": {
+      "types": [
+        "str"
+      ],
+      "additionalInformation": "str"
+    },
+    "designContest": {
+      "hasPrizes": true,
+      "prizes": [
+        {
+          "id": "str",
+          "description": "str",
+          "classification": {
+            "scheme": "str",
+            "id": "str",
+            "description": "str",
+            "uri": "str"
+          },
+          "additionalClassifications": [
+            {
+              "scheme": "str",
+              "id": "str",
+              "description": "str",
+              "uri": "str"
+            }
+          ],
+          "quantity": 0,
+          "unit": {
+            "name": "str",
+            "value": {
+              "amount": 0,
+              "currency": "str"
+            }
+          }
+        }
+      ],
+      "paymentsToParticipants": "str",
+      "serviceContractAward": true,
+      "juryDecisionBinding": true,
+      "juryMembers": [
+        {
+          "name": "str",
+          "id": 0,
+          "identifier": {
+            "scheme": "str",
+            "id": "str",
+            "legalName": "str",
+            "uri": "str"
+          },
+          "address": {
+            "streetAddress": "str",
+            "locality": "str",
+            "region": "str",
+            "postalCode": "str",
+            "countryName": "str"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "str",
+              "id": "str",
+              "legalName": "str",
+              "uri": "str"
+            }
+          ],
+          "contactPoint": {
+            "name": "str",
+            "email": "str",
+            "telephone": "str",
+            "faxNumber": "str",
+            "url": "str",
+            "languages": [
+              "str"
+            ]
+          }
+        }
+      ],
+      "participants": [
+        {
+          "name": "str",
+          "id": 0,
+          "identifier": {
+            "scheme": "str",
+            "id": "str",
+            "legalName": "str",
+            "uri": "str"
+          },
+          "address": {
+            "streetAddress": "str",
+            "locality": "str",
+            "region": "str",
+            "postalCode": "str",
+            "countryName": "str"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "str",
+              "id": "str",
+              "legalName": "str",
+              "uri": "str"
+            }
+          ],
+          "contactPoint": {
+            "name": "str",
+            "email": "str",
+            "telephone": "str",
+            "faxNumber": "str",
+            "url": "str",
+            "languages": [
+              "str"
+            ]
+          }
+        }
+      ]
+    },
+    "lotDetails": {
+      "maximumLotsBidPerSupplier": 0,
+      "maximumLotsAwardedPerSupplier": 0
+    },
+    "lots": [
+      {
+        "id": "str",
+        "title": "str",
+        "description": "str",
+        "status": "str",
+        "value": {
+          "amount": 0,
+          "currency": "str"
+        },
+        "options": [
+          {
+            "hasOptions": true,
+            "optionDetails": "str"
+          }
+        ],
+        "recurrentProcurement": {
+          "isRecurrent": true,
+          "dates": [
+            {
+              "startDate": "str",
+              "endDate": "str",
+              "maxExtentDate": "str",
+              "durationInDays": 0
+            }
+          ],
+          "description": "str"
+        },
+        "renewals": [
+          {
+            "hasRenewals": true,
+            "maxNumber": 0,
+            "renewalConditions": "str"
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": true,
+            "variantDetails": "str"
+          }
+        ]
+      }
+    ],
+    "lotGroups": [
+      {
+        "id": "str",
+        "relatedLots": [
+          "str"
+        ],
+        "optionToCombine": true,
+        "maximumValue": {
+          "amount": 0,
+          "currency": "str"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "str",
+        "description": "str",
+        "classification": {
+          "scheme": "str",
+          "id": "str",
+          "description": "str",
+          "uri": "str"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "str",
+            "id": "str",
+            "description": "str",
+            "uri": "str"
+          }
+        ],
+        "quantity": 0,
+        "unit": {
+          "name": "str",
+          "value": {
+            "amount": 0,
+            "currency": "str"
+          }
+        }
+      }
+    ],
+    "awardCriteria": "str",
+    "awardCriteriaDetails": "str",
+    "awardPeriod": {
+      "startDate": "str",
+      "endDate": "str",
+      "maxExtentDate": "str",
+      "durationInDays": 0
+    },
+    "criteria": {
+      "id": "str",
+      "title": "str",
+      "description": "str",
+      "source": "str",
+      "relatesTo": "str",
+      "relatedItem": "str",
+      "requirementGroups": [
+        {
+          "id": "str",
+          "description": "str",
+          "requirements": [
+            {
+              "id": "str",
+              "title": "str",
+              "description": "str",
+              "dataType": "str",
+              "pattern": "str",
+              "expectedValue": "Object",
+              "minValue": "Object",
+              "maxValue": "Object",
+              "period": {
+                "startDate": "str",
+                "endDate": "str",
+                "maxExtentDate": "str",
+                "durationInDays": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "numberOfTenderers": 0,
+    "submissionMethod": [
+      "str"
+    ],
+    "submissionMethodDetails": "str",
+    "submissionMethodRationale": [
+      "str"
+    ],
+    "submissionLanguages": [
+      "str"
+    ],
+    "tenderPeriod": {
+      "startDate": "str",
+      "endDate": "str",
+      "maxExtentDate": "str",
+      "durationInDays": 0
+    },
+    "eligibilityCriteria": "str",
+    "electronicWorkflows": {
+      "useOrdering": true,
+      "usePayment": true,
+      "acceptInvoicing": true
+    },
+    "documents": [
+      {
+        "id": "str",
+        "documentType": "str",
+        "title": "str",
+        "description": "str",
+        "url": "str",
+        "datePublished": "str",
+        "dateModified": "str",
+        "format": "str",
+        "language": "str",
+        "relatedLots": [
+          "str"
+        ]
+      }
+    ],
+    "procuringEntity": {
+      "name": "str",
+      "id": 0,
+      "identifier": {
+        "scheme": "str",
+        "id": "str",
+        "legalName": "str",
+        "uri": "str"
+      },
+      "address": {
+        "streetAddress": "str",
+        "locality": "str",
+        "region": "str",
+        "postalCode": "str",
+        "countryName": "str"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "str",
+          "id": "str",
+          "legalName": "str",
+          "uri": "str"
+        }
+      ],
+      "contactPoint": {
+        "name": "str",
+        "email": "str",
+        "telephone": "str",
+        "faxNumber": "str",
+        "url": "str",
+        "languages": [
+          "str"
+        ]
+      }
+    },
+    "contractPeriod": {
+      "startDate": "str",
+      "endDate": "str",
+      "maxExtentDate": "str",
+      "durationInDays": 0
+    },
+    "reviewPeriod": {
+      "startDate": "str",
+      "endDate": "str",
+      "maxExtentDate": "str",
+      "durationInDays": 0
+    },
+    "standstillPeriod": {
+      "startDate": "str",
+      "endDate": "str",
+      "maxExtentDate": "str",
+      "durationInDays": 0
+    },
+    "minValue": {
+      "amount": 0,
+      "currency": "str"
+    },
+    "tenderers": [
+      {
+        "name": "str",
+        "id": 0,
+        "identifier": {
+          "scheme": "str",
+          "id": "str",
+          "legalName": "str",
+          "uri": "str"
+        },
+        "address": {
+          "streetAddress": "str",
+          "locality": "str",
+          "region": "str",
+          "postalCode": "str",
+          "countryName": "str"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "str",
+            "id": "str",
+            "legalName": "str",
+            "uri": "str"
+          }
+        ],
+        "contactPoint": {
+          "name": "str",
+          "email": "str",
+          "telephone": "str",
+          "faxNumber": "str",
+          "url": "str",
+          "languages": [
+            "str"
+          ]
+        }
+      }
+    ],
+    "milestones": [
+      {
+        "id": "str",
+        "title": "str",
+        "type": "str",
+        "description": "str",
+        "code": "str",
+        "dueDate": "str",
+        "dateMet": "str",
+        "dateModified": "str",
+        "status": "str",
+        "documents": [
+          {
+            "id": "str",
+            "documentType": "str",
+            "title": "str",
+            "description": "str",
+            "url": "str",
+            "datePublished": "str",
+            "dateModified": "str",
+            "format": "str",
+            "language": "str",
+            "relatedLots": [
+              "str"
+            ]
+          }
+        ],
+        "relatedLots": [
+          "str"
+        ],
+        "relatedParties": [
+          {
+            "name": "str",
+            "id": 0,
+            "identifier": {
+              "scheme": "str",
+              "id": "str",
+              "legalName": "str",
+              "uri": "str"
+            },
+            "address": {
+              "streetAddress": "str",
+              "locality": "str",
+              "region": "str",
+              "postalCode": "str",
+              "countryName": "str"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "str",
+                "id": "str",
+                "legalName": "str",
+                "uri": "str"
+              }
+            ],
+            "contactPoint": {
+              "name": "str",
+              "email": "str",
+              "telephone": "str",
+              "faxNumber": "str",
+              "url": "str",
+              "languages": [
+                "str"
+              ]
+            }
+          }
+        ],
+        "additionalInformation": "str"
+      }
+    ],
+    "participationFees": [
+      {
+        "type": [
+          "str"
+        ],
+        "value": {
+          "amount": 0,
+          "currency": "str"
+        },
+        "description": "str",
+        "methodOfPayment": [
+          "str"
+        ]
+      }
+    ],
+    "reviewParties": [
+      {
+        "name": "str",
+        "id": 0,
+        "identifier": {
+          "scheme": "str",
+          "id": "str",
+          "legalName": "str",
+          "uri": "str"
+        },
+        "address": {
+          "streetAddress": "str",
+          "locality": "str",
+          "region": "str",
+          "postalCode": "str",
+          "countryName": "str"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "str",
+            "id": "str",
+            "legalName": "str",
+            "uri": "str"
+          }
+        ],
+        "contactPoint": {
+          "name": "str",
+          "email": "str",
+          "telephone": "str",
+          "faxNumber": "str",
+          "url": "str",
+          "languages": [
+            "str"
+          ]
+        }
+      }
+    ],
+    "procurementMethodAdditionalInfo": "str",
+    "amendments": [
+      {
+        "date": "str",
+        "rationale": "str",
+        "id": "str",
+        "description": "str",
+        "amendsReleaseID": "str",
+        "releaseID": "str",
+        "changes": [
+          {
+            "property": "str",
+            "former_value": "Object"
+          }
+        ]
+      }
+    ]
+  },
+  "budget": {
+    "id": "str",
+    "description": "str",
+    "amount": {
+      "amount": 0,
+      "currency": "str"
+    },
+    "project": "str",
+    "projectID": "str",
+    "uri": "str",
+    "source": "str",
+    "europeanUnionFunding": {
+      "projectIdentifier": "str",
+      "projectName": "str",
+      "uri": "str"
+    }
+  },
+  "relatedNotice": {
+    "id": "str",
+    "scheme": "str",
+    "relationship": "str",
+    "objectOfProcurementInPIN": "str",
+    "uri": "str"
+  }
+}
