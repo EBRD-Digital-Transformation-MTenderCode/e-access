@@ -1,7 +1,10 @@
 package com.ocds.etender.model.dto.tender;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class Lot {
     public String id;
     public String title;
@@ -12,5 +15,4 @@ public class Lot {
     public RecurrentProcurement recurrentProcurement;
     public List<Renewals> renewals;
     public List<Variants> variants;
-
 }

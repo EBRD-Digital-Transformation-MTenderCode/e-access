@@ -1,5 +1,8 @@
 package com.ocds.etender.model.dto.tender;
 
+import lombok.Data;
+
+@Data
 public class Requirement {
     public String id;
     public String title;

@@ -1,11 +1,9 @@
 package com.ocds.etender.model.dto.budget;
 
 import com.ocds.etender.model.dto.tender.Value;
+import lombok.Data;
 
-/**
- * Author: user
- * Created by: ModelGenerator on 10/5/17
- */
+@Data
 public class Budget {
     public String id;
     public String description;
@@ -15,6 +13,5 @@ public class Budget {
     public String uri;
     public String source;
     public EuropeanUnionFunding europeanUnionFunding;
-
 }
 

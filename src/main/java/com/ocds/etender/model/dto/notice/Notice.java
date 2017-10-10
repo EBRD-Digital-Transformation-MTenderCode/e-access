@@ -1,5 +1,8 @@
 package com.ocds.etender.model.dto.notice;
 
+import lombok.Data;
+
+@Data
 public class Notice {//todo added from file doc
     public Boolean electronicAuctionWillBeUsed;
     public String electronicAuctionDate;
@@ -7,7 +10,7 @@ public class Notice {//todo added from file doc
     public Integer numberOfContractingAuthorities;
     public Boolean contractIsDividedIntoLots;
     public Integer quantityOfLots;
-    public String contractingAuthorityReservesTheRightToAwardContracts ;
+    public String contractingAuthorityReservesTheRightToAwardContracts;
     public Integer numberOfTenderers;
     public Integer minNumberOfCandidatesToBeInvited;
     public Integer maxNumberOfCandidatesToBeInvited;
@@ -18,7 +21,7 @@ public class Notice {//todo added from file doc
     public String additionalInformationCanBeObtainedFrom;
     public String linkToTheCommunicationPage;
     public Boolean procurementIsCoveredByTheGovernmentProcurementAgreement;
-    public String timeLimitoForReceiptOfTendersOrRequests;
+    public String timeLimitForReceiptOfTendersOrRequests;
     public String languagesInWhichTendersOrRequestsToParticipateMayBeSubmitted;
     public String estimatedDateOfDispatchOfInvitationsToTenderOrToParticipateToSelectedCandidates;
     public Boolean recourseToStagedProcedureToGraduallyReduceTheNumberOfSolutionsToBeDiscussedOrTendersToBeNegotiated;
@@ -26,12 +29,10 @@ public class Notice {//todo added from file doc
     public String minimumTimeFrameDuringWhichTheTendererMustMaintainTheTender;
     public String tenderMustBeValidUntil;
     public Integer durationInMonths;
-
     public String conditionForTendersDate;
     public String conditionForTendersLocalTime;
     public String conditionForTendersPlace;
     public String conditionForTendersInformation;
-
     public Boolean economicAndFinancialStanding;
     public Boolean technicalAndProfessionalAbility;
     public Boolean contractIsReservedToShelteredWorkshopsAndEconomicOperators;
@@ -39,9 +40,7 @@ public class Notice {//todo added from file doc
     public String executionOfTheServiceIsReservedToAParticularProfession;
     public String contractPerformanceConditions;
     public Boolean obligationToIndicateTheNamesAndProfessionalQualificationsOfTheStaff;
-
     public String additionalInformation;
-
     public String reviewBodyLegalName;
     public String reviewBodyCountryName;
     public String reviewBodyLocality;
@@ -51,7 +50,6 @@ public class Notice {//todo added from file doc
     public String reviewBodyFax;
     public String reviewBodyEmail;
     public String reviewBodyURL;
-
     public String bodyResponsibleLegalName;
     public String bodyResponsibleCountryName;
     public String bodyResponsibleLocality;
@@ -61,9 +59,7 @@ public class Notice {//todo added from file doc
     public String bodyResponsibleFax;
     public String bodyResponsibleEmail;
     public String bodyResponsibleURL;
-
     public String preciseInformationOnDeadline;
-
     public String serviceLegalName;
     public String serviceCountryName;
     public String serviceLocality;
@@ -73,12 +69,8 @@ public class Notice {//todo added from file doc
     public String serviceFax;
     public String serviceEmail;
     public String serviceURL;
-
-
     public String typeOfTheContractingAuthority;
     public String mainGeneralActivity;
-    public Boolean buyerIsACentralPurchasingody;
-    public String NUTScode;
-
-
+    public Boolean buyerIsACentralPurchasing;
+    public String NUTSCode;
 }

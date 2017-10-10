@@ -1,7 +1,10 @@
 package com.ocds.etender.model.dto.tender;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class DesignContest {
     public Boolean hasPrizes;
     public List<Item> prizes;

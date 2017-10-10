@@ -1,11 +1,10 @@
 package com.ocds.etender.model.dto.tender;
 
+import lombok.Data;
+
 import java.util.List;
 
-/**
- * Author: user
- * Created by: ModelGenerator on 10/5/17
- */
+@Data
 public class OrganizationReference {
     public String name;
     public Integer id;

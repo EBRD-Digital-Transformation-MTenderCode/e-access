@@ -1,7 +1,10 @@
 package com.ocds.etender.model.dto.tender;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class Criterion {
     public String id;
     public String title;
