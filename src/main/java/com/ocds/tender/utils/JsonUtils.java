@@ -16,10 +16,8 @@ public class JsonUtils {
             String updatedFieldName = fieldNames.next();
             JsonNode valueToBeUpdated = mainNode.get(updatedFieldName);
             JsonNode updatedValue = updateNode.get(updatedFieldName);
-
             // If the node is an @ArrayNode
-            if (valueToBeUpdated != null && valueToBeUpdated.isArray() &&
-                updatedValue.isArray()) {
+            if (valueToBeUpdated != null && valueToBeUpdated.isArray() && updatedValue.isArray()) {
                 // running a loop for all elements of the updated ArrayNode
                 for (int i = 0; i < updatedValue.size(); i++) {
                     JsonNode updatedChildNode = updatedValue.get(i);
