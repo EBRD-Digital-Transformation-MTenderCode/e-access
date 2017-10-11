@@ -32,10 +32,10 @@ CREATE TABLE IF NOT EXISTS  ocds.related_notice (
     primary key(oc_id, added_date)
 )WITH CLUSTERING ORDER BY (added_date DESC);
 
-CREATE TABLE IF NOT EXISTS  ocds.event (
+CREATE TABLE IF NOT EXISTS  ocds.event_log (
     oc_id text,
     added_date timestamp,
-    type text,
+    event_type text,
     id UUID,
     primary key(oc_id, added_date)
 )WITH CLUSTERING ORDER BY (added_date DESC);

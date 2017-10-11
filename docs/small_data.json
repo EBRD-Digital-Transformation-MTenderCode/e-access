@@ -1,0 +1,9 @@
+{
+  "ocid": "ocds-213czf-000-00001",
+  "tender": {
+    "id": "str",
+    "title": "str",
+    "description": "str",
+    "status": "str"
+  }
+}
