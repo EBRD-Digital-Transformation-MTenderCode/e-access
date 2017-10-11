@@ -8,5 +8,7 @@ import java.util.Date;
 @Service
 public interface RelatedNoticeService {
 
+    void insertData(String ocId, Date addedDate, RelatedNotice data);
+
     void updateData(String ocId, Date addedDate, RelatedNotice data);
 }

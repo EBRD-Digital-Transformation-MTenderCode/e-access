@@ -1,0 +1,8 @@
+{
+  "tender": {
+    "id": "1",
+    "title": "str",
+    "description": "str",
+    "status": "planing"
+  }
+}

@@ -8,6 +8,7 @@ import java.util.Date;
 @Service
 public interface BudgetService {
 
-    void updateData(String ocId, Date addedDate,  Budget data);
+    void insertData(String ocId, Date addedDate, Budget data);
 
+    void updateData(String ocId, Date addedDate, Budget data);
 }

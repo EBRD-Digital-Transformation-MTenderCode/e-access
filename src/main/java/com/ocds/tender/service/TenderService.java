@@ -8,5 +8,8 @@ import java.util.Date;
 @Service
 public interface TenderService {
 
+    void insertData(String ocId, Date addedDate, Tender data);
+
     void updateData(String ocId, Date addedDate, Tender data);
+
 }

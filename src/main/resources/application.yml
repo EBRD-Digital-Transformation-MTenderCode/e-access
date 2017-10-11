@@ -11,8 +11,3 @@ spring:
       username: cassandra
       password: cassandra
       keyspace-name: ocds
-
-
-#  jackson:
-#   default-property-inclusion: non_null
-#   serialization-inclusion: false
