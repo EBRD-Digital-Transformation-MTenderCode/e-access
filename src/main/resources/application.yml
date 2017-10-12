@@ -4,6 +4,13 @@ server:
 spring:
   application:
     name: e-tender
+  data:
+    cassandra:
+      contact-points: 127.0.0.1
+      keyspace-name: ocds
+      port: 9042
+      username: cassandra
+      password: cassandra
 
 #cassandra:
 #  contact-points: 127.0.0.1
@@ -11,5 +18,7 @@ spring:
 #  keyspace-name: ocds
 #  username: cassandra
 #  password: cassandra
+
+
 
 ocds.prefix: ocds-t1s2t3
