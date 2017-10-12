@@ -27,11 +27,10 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     @Bean
     public CassandraClusterFactoryBean cluster() {
         CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
-        String username = properties.getUsername();
-        cluster.setUsername("cassandra");
-        cluster.setPassword("cassandra");
-        cluster.setContactPoints("localhost");
-        cluster.setPort(9042);
+        cluster.setUsername(properties.getUsername());
+        cluster.setPassword(properties.getPassword());
+        cluster.setContactPoints(properties.getContactPoints());
+        cluster.setPort(properties.getPort());
         return cluster;
     }
 }

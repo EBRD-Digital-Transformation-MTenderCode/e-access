@@ -12,13 +12,4 @@ spring:
       username: cassandra
       password: cassandra
 
-#cassandra:
-#  contact-points: 127.0.0.1
-#  port: 9042
-#  keyspace-name: ocds
-#  username: cassandra
-#  password: cassandra
-
-
-
 ocds.prefix: ocds-t1s2t3
