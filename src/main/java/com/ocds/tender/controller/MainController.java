@@ -20,7 +20,13 @@ public class MainController {
     }
 
     @RequestMapping(value = "/data", method = RequestMethod.POST)
-    public ResponseEntity<String> addTender(@RequestBody DataDto data) {
+    public ResponseEntity<String> insertTender(@RequestBody DataDto data) {
+        tenderService.insertData(data);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/data", method = RequestMethod.PATCH)
+    public ResponseEntity<String> updateTender(@RequestBody DataDto data) {
         tenderService.updateData(data);
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }

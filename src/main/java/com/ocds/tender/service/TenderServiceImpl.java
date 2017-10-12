@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocds.tender.model.dto.tender.Tender;
+import com.ocds.tender.model.entity.EventType;
 import com.ocds.tender.model.entity.TenderEntity;
 import com.ocds.tender.repository.TenderRepository;
 import com.ocds.tender.utils.JsonUtils;
@@ -90,6 +91,7 @@ public class TenderServiceImpl implements TenderService {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
+            tenderEntity.setEventType(EventType.TENDER.getText());
         }
         return tenderEntity;
     }
@@ -97,7 +99,7 @@ public class TenderServiceImpl implements TenderService {
     public void saveEntity(String ocId, Date addedDate, TenderEntity tenderEntity) {
         if (Objects.nonNull(tenderEntity.getJsonData())) {
             tenderRepository.save(tenderEntity);
-            eventLogService.updateData(ocId, addedDate, "tender", tenderEntity.getId());
+            eventLogService.updateData(ocId, addedDate, tenderEntity.getEventType(), tenderEntity.getId());
         }
     }
 }

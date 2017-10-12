@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocds.tender.model.dto.budget.Budget;
 import com.ocds.tender.model.entity.BudgetEntity;
+import com.ocds.tender.model.entity.EventType;
 import com.ocds.tender.repository.BudgetRepository;
 import com.ocds.tender.utils.JsonUtils;
 import org.springframework.stereotype.Service;
@@ -86,6 +87,7 @@ public class BudgetServiceImpl implements BudgetService {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
+            budgetEntity.setEventType(EventType.BUDGET.getText());
         }
         return budgetEntity;
     }

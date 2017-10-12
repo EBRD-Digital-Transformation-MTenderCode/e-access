@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocds.tender.model.dto.relatedNotice.RelatedNotice;
+import com.ocds.tender.model.entity.EventType;
 import com.ocds.tender.model.entity.RelatedNoticeEntity;
 import com.ocds.tender.repository.RelatedNoticeRepository;
 import com.ocds.tender.utils.JsonUtils;
@@ -88,6 +89,7 @@ public class RelatedNoticeServiceImpl implements RelatedNoticeService {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
+            relatedNoticeEntity.setEventType(EventType.RELATED_NOTICE.getText());
         }
         return relatedNoticeEntity;
     }
