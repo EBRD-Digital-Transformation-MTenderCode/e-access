@@ -7,7 +7,7 @@ import com.ocds.tender.model.dto.tender.Tender;
 import com.ocds.tender.model.entity.EventType;
 import com.ocds.tender.model.entity.TenderEntity;
 import com.ocds.tender.repository.TenderRepository;
-import com.ocds.tender.utils.JsonUtils;
+import com.ocds.tender.utils.JsonUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class TenderServiceImpl implements TenderService {
         }
         JsonNode mergedJson = null;
         if (Objects.nonNull(sourceJson) && Objects.nonNull(updateJson)) {
-            mergedJson = JsonUtils.merge(sourceJson, updateJson);
+            mergedJson = JsonUtil.merge(sourceJson, updateJson);
         }
         Tender tender = null;
         if (Objects.nonNull(mergedJson)) {

@@ -1,0 +1,13 @@
+{
+  "ocid": "ocds-213czf-000-00010",
+  "budget": {
+    "id": "1",
+    "description": "str"
+  }
+}
+
+{
+  "ocid": "ocds-213czf-000-00010",
+  "budget": {}
+}
+

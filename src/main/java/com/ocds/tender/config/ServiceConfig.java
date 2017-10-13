@@ -3,6 +3,7 @@ package com.ocds.tender.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocds.tender.config.properties.OCDSProperties;
+import com.ocds.tender.utils.JsonUtil;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,5 +20,10 @@ public class ServiceConfig {
         ObjectMapper jackson2ObjectMapper = new ObjectMapper();
         jackson2ObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return jackson2ObjectMapper;
+    }
+
+    @Bean
+    public JsonUtil jsonUtil(ObjectMapper objectMapper){
+        return new JsonUtil(objectMapper);
     }
 }
