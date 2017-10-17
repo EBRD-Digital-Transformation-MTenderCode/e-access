@@ -2,6 +2,7 @@ package com.ocds.tender.service;
 
 import com.ocds.tender.config.properties.OCDSProperties;
 import com.ocds.tender.model.dto.DataDto;
+import com.ocds.tender.model.entity.EventType;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;

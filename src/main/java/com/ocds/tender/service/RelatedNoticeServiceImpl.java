@@ -1,8 +1,5 @@
 package com.ocds.tender.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocds.tender.model.dto.relatedNotice.RelatedNotice;
 import com.ocds.tender.model.entity.EventType;
 import com.ocds.tender.model.entity.RelatedNoticeEntity;
@@ -10,93 +7,64 @@ import com.ocds.tender.repository.RelatedNoticeRepository;
 import com.ocds.tender.utils.JsonUtil;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class RelatedNoticeServiceImpl implements RelatedNoticeService {
 
     private RelatedNoticeRepository relatedNoticeRepository;
 
-    private ObjectMapper objectMapper;
+    private JsonUtil jsonUtil;
 
     public RelatedNoticeServiceImpl(RelatedNoticeRepository relatedNoticeRepository,
-                                    ObjectMapper objectMapper) {
+                                    JsonUtil jsonUtil) {
         this.relatedNoticeRepository = relatedNoticeRepository;
-        this.objectMapper = objectMapper;
+        this.jsonUtil = jsonUtil;
     }
 
     @Override
     public void insertData(String ocId, Date addedDate, RelatedNotice relatedNoticeDto) {
-        if (Objects.nonNull(relatedNoticeDto)) {
-            RelatedNoticeEntity relatedNoticeEntity = convertDtoToEntity(ocId, addedDate, relatedNoticeDto);
-            saveEntity(relatedNoticeEntity);
-        }
+        Objects.requireNonNull(ocId);
+        Objects.requireNonNull(addedDate);
+        Objects.requireNonNull(relatedNoticeDto);
+        convertDtoToEntity(ocId, addedDate, relatedNoticeDto)
+            .ifPresent(relatedNoticeRepository::save);
     }
 
     @Override
     public void updateData(String ocId, Date addedDate, RelatedNotice relatedNoticeDto) {
-        if (Objects.nonNull(relatedNoticeDto)) {
-            RelatedNoticeEntity sourceRelatedNoticeEntity = relatedNoticeRepository.getLastByOcId(ocId);
-            if (Objects.nonNull(sourceRelatedNoticeEntity)) {
-                RelatedNotice newRelatedNoticeDto = mergeData(sourceRelatedNoticeEntity.getJsonData(),
-                    relatedNoticeDto);
-                if (Objects.nonNull(newRelatedNoticeDto)) {
-                    RelatedNoticeEntity newRelatedNoticeEntity = convertDtoToEntity(ocId, addedDate,
-                        newRelatedNoticeDto);
-                    saveEntity(newRelatedNoticeEntity);
-                }
-            } else {
-                RelatedNoticeEntity relatedNoticeEntity = convertDtoToEntity(ocId, addedDate, relatedNoticeDto);
-                saveEntity(relatedNoticeEntity);
-            }
-        }
+        Objects.requireNonNull(ocId);
+        Objects.requireNonNull(addedDate);
+        Objects.requireNonNull(relatedNoticeDto);
+        RelatedNoticeEntity sourceRelatedNoticeEntity = relatedNoticeRepository.getLastByOcId(ocId);
+        RelatedNotice mergedRelatedNotice = mergeJson(sourceRelatedNoticeEntity, relatedNoticeDto);
+        convertDtoToEntity(ocId, addedDate, mergedRelatedNotice)
+            .ifPresent(relatedNoticeRepository::save);
     }
 
-    public RelatedNotice mergeData(String sourceJsonData, RelatedNotice relatedNoticeDto) {
-        JsonNode updateJson = objectMapper.valueToTree(relatedNoticeDto);
-        JsonNode sourceJson = null;
-        try {
-            sourceJson = objectMapper.readTree(sourceJsonData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JsonNode mergedJson = null;
-        if (Objects.nonNull(sourceJson) && Objects.nonNull(updateJson)) {
-            mergedJson = jsonUtil.merge(sourceJson, updateJson);
-        }
-        RelatedNotice relatedNotice = null;
-        if (Objects.nonNull(mergedJson)) {
-            try {
-                relatedNotice = objectMapper.treeToValue(mergedJson, RelatedNotice.class);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-        return relatedNotice;
+    public RelatedNotice mergeJson(RelatedNoticeEntity relatedNoticeEntity, RelatedNotice relatedNoticeDto) {
+        Objects.requireNonNull(relatedNoticeEntity);
+        Objects.requireNonNull(relatedNoticeDto);
+        String sourceJson = relatedNoticeEntity.getJsonData();
+        String updateJson = jsonUtil.toJson(relatedNoticeDto);
+        String mergedJson = jsonUtil.merge(sourceJson, updateJson);
+        return jsonUtil.toObject(RelatedNotice.class, mergedJson);
     }
 
-    public RelatedNoticeEntity convertDtoToEntity(String ocId, Date addedDate, RelatedNotice relatedNoticeDto) {
-        RelatedNoticeEntity relatedNoticeEntity = null;
-        if (Objects.nonNull(relatedNoticeDto)) {
-            relatedNoticeEntity = new RelatedNoticeEntity();
+    public Optional<RelatedNoticeEntity> convertDtoToEntity(String ocId, Date addedDate,
+                                                            RelatedNotice relatedNoticeDto) {
+        String relatedNoticeJson = jsonUtil.toJson(relatedNoticeDto);
+        if (!relatedNoticeJson.equals("{}")) {
+            RelatedNoticeEntity relatedNoticeEntity = new RelatedNoticeEntity();
             relatedNoticeEntity.setOcId(ocId);
             relatedNoticeEntity.setAddedDate(addedDate);
-            try {
-                String relatedNoticeJson = objectMapper.writeValueAsString(relatedNoticeDto);
-                relatedNoticeEntity.setJsonData(relatedNoticeJson);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
             relatedNoticeEntity.setEventType(EventType.RELATED_NOTICE.getText());
-        }
-        return relatedNoticeEntity;
-    }
-
-    public void saveEntity(RelatedNoticeEntity relatedNoticeEntity) {
-        if (Objects.nonNull(relatedNoticeEntity.getJsonData())) {
-            relatedNoticeRepository.save(relatedNoticeEntity);
+            relatedNoticeEntity.setJsonData(relatedNoticeJson);
+            return Optional.of(relatedNoticeEntity);
+        } else {
+            return Optional.empty();
         }
     }
 }

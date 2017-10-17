@@ -60,7 +60,7 @@ public class BudgetServiceImpl implements BudgetService {
             budgetEntity.setOcId(ocId);
             budgetEntity.setAddedDate(addedDate);
             budgetEntity.setEventType(EventType.BUDGET.getText());
-            budgetEntity.setJsonData(jsonUtil.toJson(budgetDto));
+            budgetEntity.setJsonData(budgetJson);
             return Optional.of(budgetEntity);
         } else {
             return Optional.empty();

@@ -5,6 +5,7 @@ import com.ocds.tender.repository.EventLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -18,6 +19,10 @@ public class EventLogServiceImpl implements EventLogService {
 
     @Override
     public void updateData(String ocId, Date addedDate, String eventType, UUID id) {
+        Objects.requireNonNull(ocId);
+        Objects.requireNonNull(addedDate);
+        Objects.requireNonNull(eventType);
+        Objects.requireNonNull(id);
         EventLogEntity eventEntity = new EventLogEntity();
         eventEntity.setOcId(ocId);
         eventEntity.setAddedDate(addedDate);

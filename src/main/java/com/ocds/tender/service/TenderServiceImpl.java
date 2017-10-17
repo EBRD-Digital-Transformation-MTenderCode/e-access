@@ -1,8 +1,5 @@
 package com.ocds.tender.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocds.tender.model.dto.tender.Tender;
 import com.ocds.tender.model.entity.EventType;
 import com.ocds.tender.model.entity.TenderEntity;
@@ -10,9 +7,9 @@ import com.ocds.tender.repository.TenderRepository;
 import com.ocds.tender.utils.JsonUtil;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class TenderServiceImpl implements TenderService {
@@ -21,85 +18,62 @@ public class TenderServiceImpl implements TenderService {
 
     private EventLogService eventLogService;
 
-    private ObjectMapper objectMapper;
+    private JsonUtil jsonUtil;
 
     public TenderServiceImpl(TenderRepository tenderRepository,
                              EventLogService eventLogService,
-                             ObjectMapper objectMapper) {
+                             JsonUtil jsonUtil) {
         this.tenderRepository = tenderRepository;
         this.eventLogService = eventLogService;
-        this.objectMapper = objectMapper;
+        this.jsonUtil = jsonUtil;
     }
 
     @Override
     public void insertData(String ocId, Date addedDate, Tender tenderDto) {
-        if (Objects.nonNull(tenderDto)) {
-            TenderEntity tenderEntity = convertDtoToEntity(ocId, addedDate, tenderDto);
-            saveEntity(ocId, addedDate, tenderEntity);
-        }
+        Objects.requireNonNull(ocId);
+        Objects.requireNonNull(addedDate);
+        Objects.requireNonNull(tenderDto);
+        convertDtoToEntity(ocId, addedDate, tenderDto)
+            .ifPresent(tender -> {
+                tenderRepository.save(tender);
+                eventLogService.updateData(ocId, addedDate, tender.getEventType(), tender.getId());
+            });
     }
 
     @Override
     public void updateData(String ocId, Date addedDate, Tender tenderDto) {
-        if (Objects.nonNull(tenderDto)) {
-            TenderEntity sourceTenderEntity = tenderRepository.getLastByOcId(ocId);
-            if (Objects.nonNull(sourceTenderEntity)) {
-                Tender newTenderDto = mergeData(sourceTenderEntity.getJsonData(), tenderDto);
-                if (Objects.nonNull(newTenderDto)) {
-                    TenderEntity newTenderEntity = convertDtoToEntity(ocId, addedDate, newTenderDto);
-                    saveEntity(ocId, addedDate, newTenderEntity);
-                }
-            }else{
-                TenderEntity tenderEntity = convertDtoToEntity(ocId, addedDate, tenderDto);
-                saveEntity(ocId, addedDate, tenderEntity);
-            }
-        }
+        Objects.requireNonNull(ocId);
+        Objects.requireNonNull(addedDate);
+        Objects.requireNonNull(tenderDto);
+        TenderEntity sourceTenderEntity = tenderRepository.getLastByOcId(ocId);
+        Tender mergedTender = mergeJson(sourceTenderEntity, tenderDto);
+        convertDtoToEntity(ocId, addedDate, mergedTender)
+            .ifPresent(tender -> {
+                tenderRepository.save(tender);
+                eventLogService.updateData(ocId, addedDate, tender.getEventType(), tender.getId());
+            });
     }
 
-    public Tender mergeData(String sourceJsonData, Tender tenderDto) {
-        JsonNode updateJson = objectMapper.valueToTree(tenderDto);
-        JsonNode sourceJson = null;
-        try {
-            sourceJson = objectMapper.readTree(sourceJsonData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JsonNode mergedJson = null;
-        if (Objects.nonNull(sourceJson) && Objects.nonNull(updateJson)) {
-            mergedJson = JsonUtil.merge(sourceJson, updateJson);
-        }
-        Tender tender = null;
-        if (Objects.nonNull(mergedJson)) {
-            try {
-                tender = objectMapper.treeToValue(mergedJson, Tender.class);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-        return tender;
+    public Tender mergeJson(TenderEntity tenderEntity, Tender tenderDto) {
+        Objects.requireNonNull(tenderEntity);
+        Objects.requireNonNull(tenderDto);
+        String sourceJson = tenderEntity.getJsonData();
+        String updateJson = jsonUtil.toJson(tenderDto);
+        String mergedJson = jsonUtil.merge(sourceJson, updateJson);
+        return jsonUtil.toObject(Tender.class, mergedJson);
     }
 
-    public TenderEntity convertDtoToEntity(String ocId, Date addedDate, Tender tenderDto) {
-        TenderEntity tenderEntity = null;
-        if (Objects.nonNull(tenderDto)) {
-            tenderEntity = new TenderEntity();
+    public Optional<TenderEntity> convertDtoToEntity(String ocId, Date addedDate, Tender tenderDto) {
+        String tenderJson = jsonUtil.toJson(tenderDto);
+        if (!tenderJson.equals("{}")) {
+            TenderEntity tenderEntity = new TenderEntity();
             tenderEntity.setOcId(ocId);
             tenderEntity.setAddedDate(addedDate);
-            try {
-                String tenderJson = objectMapper.writeValueAsString(tenderDto);
-                tenderEntity.setJsonData(tenderJson);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
             tenderEntity.setEventType(EventType.TENDER.getText());
-        }
-        return tenderEntity;
-    }
-
-    public void saveEntity(String ocId, Date addedDate, TenderEntity tenderEntity) {
-        if (Objects.nonNull(tenderEntity.getJsonData())) {
-            tenderRepository.save(tenderEntity);
-            eventLogService.updateData(ocId, addedDate, tenderEntity.getEventType(), tenderEntity.getId());
+            tenderEntity.setJsonData(tenderJson);
+            return Optional.of(tenderEntity);
+        } else {
+            return Optional.empty();
         }
     }
 }
