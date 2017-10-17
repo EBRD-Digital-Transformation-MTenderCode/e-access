@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: e-tender
+    name: e-access
   data:
     cassandra:
       contact-points: 127.0.0.1

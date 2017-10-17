@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ocds.tender</groupId>
-    <artifactId>e-tender</artifactId>
+    <artifactId>e-access</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>e-tender</name>
-    <description>E-Tender unit for procurement platform</description>
+    <name>e-access</name>
+    <description>E-Access unit for procurement platform</description>
 
     <!--<parent>-->
     <!--<groupId>org.springframework.boot</groupId>-->
