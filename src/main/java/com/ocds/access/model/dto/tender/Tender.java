@@ -34,6 +34,7 @@ public class Tender {
     public List<Document> documents;
     public List<Milestone> milestones;//todo not find in file doc
     public List<Amendment> amendments;//todo not find in file doc
+    public Amendment amendment;//todo not find in file doc
     public List<Lot> lots;
     public LotDetails lotDetails;
     public List<LotGroup> lotGroups;
