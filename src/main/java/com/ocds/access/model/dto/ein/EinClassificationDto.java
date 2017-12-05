@@ -15,15 +15,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
+    "id",
     "scheme",
-    "id"
+    "description"
 })
-public class ClassificationDto {
+public class EinClassificationDto {
     @JsonProperty("id")
     @JsonPropertyDescription("The classification code drawn from the selected scheme.")
     @NotNull
     private final String id;
-
 
     @JsonProperty("scheme")
     @JsonPropertyDescription("An classification should be drawn from an existing scheme or list of codes. This field " +
@@ -33,18 +33,25 @@ public class ClassificationDto {
     @NotNull
     private final Scheme scheme;
 
+    @JsonProperty("description")
+    @JsonPropertyDescription("A summary description of the classification.")
+    @NotNull
+    private final String description;
 
     @JsonCreator
-    public ClassificationDto(@JsonProperty("scheme") final Scheme scheme,
-                             @JsonProperty("id") final String id) {
+    public EinClassificationDto(@JsonProperty("id") final String id,
+                                @JsonProperty("scheme") final Scheme scheme,
+                                @JsonProperty("description") final String description) {
         this.id = id;
         this.scheme = scheme;
+        this.description = description;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(scheme)
-                                    .append(id)
+        return new HashCodeBuilder().append(id)
+                                    .append(scheme)
+                                    .append(description)
                                     .toHashCode();
     }
 
@@ -53,12 +60,13 @@ public class ClassificationDto {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof ClassificationDto)) {
+        if (!(other instanceof EinClassificationDto)) {
             return false;
         }
-        final ClassificationDto rhs = (ClassificationDto) other;
-        return new EqualsBuilder().append(scheme, rhs.scheme)
-                                  .append(id, rhs.id)
+        final EinClassificationDto rhs = (EinClassificationDto) other;
+        return new EqualsBuilder().append(id, rhs.id)
+                                  .append(scheme, rhs.scheme)
+                                  .append(description, rhs.description)
                                   .isEquals();
     }
 

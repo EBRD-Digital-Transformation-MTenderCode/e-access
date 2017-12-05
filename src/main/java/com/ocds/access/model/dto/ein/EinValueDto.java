@@ -18,7 +18,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
     "amount",
     "currency"
 })
-public class ValueDto {
+public class EinValueDto {
     @JsonProperty("amount")
     @JsonPropertyDescription("Amount as a number.")
     @NotNull
@@ -31,8 +31,8 @@ public class ValueDto {
     private final Currency currency;
 
     @JsonCreator
-    public ValueDto(@JsonProperty("amount") final Double amount,
-                    @JsonProperty("currency") final Currency currency) {
+    public EinValueDto(@JsonProperty("amount") final Double amount,
+                       @JsonProperty("currency") final Currency currency) {
         this.amount = amount;
         this.currency = currency;
     }
@@ -49,10 +49,10 @@ public class ValueDto {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof ValueDto)) {
+        if (!(other instanceof EinValueDto)) {
             return false;
         }
-        final ValueDto rhs = (ValueDto) other;
+        final EinValueDto rhs = (EinValueDto) other;
         return new EqualsBuilder().append(amount, rhs.amount)
                                   .append(currency, rhs.currency)
                                   .isEquals();

@@ -19,7 +19,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
     "startDate",
     "endDate"
 })
-public class PeriodDto {
+public class EinPeriodDto {
     @JsonProperty("startDate")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonPropertyDescription("The start date for the period. When known, a precise start date must always be provided.")
@@ -31,8 +31,8 @@ public class PeriodDto {
     private final LocalDateTime endDate;
 
     @JsonCreator
-    public PeriodDto(@JsonProperty("startDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime startDate,
-                     @JsonProperty("endDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime endDate) {
+    public EinPeriodDto(@JsonProperty("startDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime startDate,
+                        @JsonProperty("endDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -49,10 +49,10 @@ public class PeriodDto {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof PeriodDto)) {
+        if (!(other instanceof EinPeriodDto)) {
             return false;
         }
-        final PeriodDto rhs = (PeriodDto) other;
+        final EinPeriodDto rhs = (EinPeriodDto) other;
         return new EqualsBuilder().append(startDate, rhs.startDate)
                                   .append(endDate, rhs.endDate)
                                   .isEquals();

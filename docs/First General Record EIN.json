@@ -1,0 +1,62 @@
+{
+  "ocid": "",
+  "id": "",
+  "date": "",
+  "tag": "",
+  "initiationType": "",
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "id": "",
+      "period": {  /* Period */
+        "startDate": "",
+        "endDate": ""
+      },
+      "amount": { /* Value */
+        "amount": 0,
+        "currency": ""
+      }
+    }
+  },
+  "tender": {
+    "id": "",
+    "title": "",
+    "description": "",
+    "classification": {
+      "id": "",
+      "scheme": "",
+      "description": ""
+    }
+  },
+  "parties": [/* List of Organization */
+    {
+      "id": "",
+      "name": "",
+      "identifier": "",
+      "additionalidentifiers": "",
+      "address": "",
+      "contactpoint": "",
+      "roles": "",
+      "details": "",
+      "buyerprofile": ""
+    }
+  ],
+  "buyer": { /* OrganizationReference */
+    "id": "",
+    "name": "",
+    "identifier": "",
+    "additionalidentifiers": "",
+    "address": "",
+    "contactpoint": ""
+  },
+  "language": "",
+  "relatedProcesses": [ /* List of RelatedProcess */
+    {
+      "ocid": "",
+      "title": "",
+      "relationship": "",
+      "scheme": "",
+      "uri": ""
+    }
+  ]
+}

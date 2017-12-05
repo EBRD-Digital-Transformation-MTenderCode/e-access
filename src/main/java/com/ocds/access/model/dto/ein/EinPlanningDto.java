@@ -16,7 +16,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
     "budget",
     "rationale"
 })
-public class PlanningDto {
+public class EinPlanningDto {
     @JsonProperty("rationale")
     @JsonPropertyDescription("The rationale for the procurement provided in free text. More detail can be provided in" +
         " an attached document.")
@@ -32,34 +32,13 @@ public class PlanningDto {
         "budget and project information.")
     @Valid
     @NotNull
-    private final BudgetDto budget;
+    private final EinBudgetDto budget;
 
 
     @JsonCreator
-    public PlanningDto(@JsonProperty("budget") final BudgetDto budget,
-                       @JsonProperty("rationale") final String rationale) {
+    public EinPlanningDto(@JsonProperty("budget") final EinBudgetDto budget,
+                          @JsonProperty("rationale") final String rationale) {
         this.budget = budget;
         this.rationale = rationale;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(budget)
-                                    .append(rationale)
-                                    .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof PlanningDto)) {
-            return false;
-        }
-        final PlanningDto rhs = (PlanningDto) other;
-        return new EqualsBuilder().append(rationale, rhs.rationale)
-                                  .append(budget, rhs.budget)
-                                  .isEquals();
     }
 }

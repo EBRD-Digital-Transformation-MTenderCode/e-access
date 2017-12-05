@@ -23,6 +23,5 @@ public class EinController {
             throw new ValidationException(bindingResult);
         }
         return dataDto;
-
     }
 }

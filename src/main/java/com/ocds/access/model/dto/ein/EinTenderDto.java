@@ -7,18 +7,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
+    "id",
     "title",
     "description",
     "classification"
 })
-public class TenderDto {
+public class EinTenderDto {
+
+    @NotNull
+    @JsonProperty("id")
+    @JsonPropertyDescription("An identifier for the tender.")
+    private final String id;
 
     @JsonProperty("title")
     @JsonPropertyDescription("A title for this tender. This will often be used by applications as a headline to " +
@@ -35,12 +40,14 @@ public class TenderDto {
     @JsonProperty("classification")
     @Valid
     @NotNull
-    private final ClassificationDto classification;
+    private final EinClassificationDto classification;
 
     @JsonCreator
-    public TenderDto(@JsonProperty("title") final String title,
-                     @JsonProperty("description") final String description,
-                     @JsonProperty("classification") final ClassificationDto classification) {
+    public EinTenderDto(@JsonProperty("id") final String id,
+                        @JsonProperty("title") final String title,
+                        @JsonProperty("description") final String description,
+                        @JsonProperty("classification") final EinClassificationDto classification) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.classification = classification;
@@ -48,7 +55,8 @@ public class TenderDto {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(title)
+        return new HashCodeBuilder().append(id)
+                                    .append(title)
                                     .append(description)
                                     .append(classification)
                                     .toHashCode();
@@ -59,11 +67,12 @@ public class TenderDto {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof TenderDto)) {
+        if (!(other instanceof EinTenderDto)) {
             return false;
         }
-        final TenderDto rhs = (TenderDto) other;
-        return new EqualsBuilder().append(title, rhs.title)
+        final EinTenderDto rhs = (EinTenderDto) other;
+        return new EqualsBuilder().append(id, rhs.id)
+                                  .append(title, rhs.title)
                                   .append(description, rhs.description)
                                   .append(classification, rhs.classification)
                                   .isEquals();

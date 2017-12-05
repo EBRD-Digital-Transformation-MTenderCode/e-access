@@ -1,0 +1,122 @@
+{
+  "ocid": "string",
+  "id": "string",
+  "date": "2017-12-05T16:04:25.106Z",
+  "tag": "string",
+  "initiationType": "string",
+  "planning": {
+    "budget": {
+      "id": "string",
+      "period": {
+        "startDate": "2017-12-05T16:04:25.107Z",
+        "endDate": "2017-12-05T16:04:25.107Z"
+      },
+      "amount": {
+        "amount": 0,
+        "currency": "AED"
+      }
+    },
+    "rationale": "string"
+  },
+  "tender": {
+    "id": "string",
+    "title": "string",
+    "description": "string",
+    "classification": {
+      "id": "string",
+      "scheme": "CPV",
+      "description": "string"
+    }
+  },
+  "parties": [
+    {
+      "name": "string",
+      "id": "string",
+      "identifier": {
+        "scheme": "string",
+        "id": "string",
+        "legalName": "string",
+        "uri": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "string",
+          "legalName": "string",
+          "uri": "string"
+        }
+      ],
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "string"
+      },
+      "roles": [
+        "buyer"
+      ],
+      "details": {
+        "typeOfBuyer": "BODY_PUBLIC",
+        "mainGeneralActivity": "DEFENCE",
+        "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+        "isACentralPurchasingBody": true,
+        "NUTSCode": "string",
+        "scale": "micro"
+      },
+      "buyerProfile": "string"
+    }
+  ],
+  "buyer": {
+    "name": "string",
+    "id": "string",
+    "identifier": {
+      "scheme": "string",
+      "id": "string",
+      "legalName": "string",
+      "uri": "string"
+    },
+    "address": {
+      "streetAddress": "string",
+      "locality": "string",
+      "region": "string",
+      "postalCode": "string",
+      "countryName": "string"
+    },
+    "additionalIdentifiers": [
+      {
+        "scheme": "string",
+        "id": "string",
+        "legalName": "string",
+        "uri": "string"
+      }
+    ],
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "faxNumber": "string",
+      "url": "string"
+    }
+  },
+  "language": "string",
+  "relatedProcesses": [
+    {
+      "id": "string",
+      "relationship": [
+        "framework"
+      ],
+      "title": "string",
+      "scheme": "ocid",
+      "identifier": "string",
+      "uri": "string"
+    }
+  ]
+}
