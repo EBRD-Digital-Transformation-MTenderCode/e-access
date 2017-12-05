@@ -103,6 +103,17 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!--Apache lib-->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <!--<version>5.1.3.Final</version>-->
+        </dependency>
     </dependencies>
 
     <profiles>

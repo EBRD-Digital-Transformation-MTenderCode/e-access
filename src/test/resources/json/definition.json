@@ -1,0 +1,2852 @@
+{
+  "Planning": {
+    "budget": {
+      "id": "ID",
+      "description": "string",
+      "amount": {
+        "amount": 10.9,
+        "currency": "UAH"
+      },
+      "project": "string",
+      "projectID": "string",
+      "uri": "http://example.com",
+      "source": "http://example.com",
+      "europeanUnionFunding": {
+        "projectIdentifier": "string",
+        "projectName": "string",
+        "uri": "http://example.com"
+      },
+      "isEuropeanUnionFunded": true
+    },
+    "rationale": "string",
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "milestones": [
+      {
+        "id": "ID",
+        "title": "string",
+        "type": "financing",
+        "description": "string",
+        "code": "string",
+        "dueDate": "2017-10-25T15:00:01.000123Z",
+        "dateMet": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "status": "scheduled",
+        "documents": [
+          {
+            "id": "ID",
+            "documentType": "tenderNotice",
+            "title": "string",
+            "description": "string",
+            "url": "http://example.com",
+            "datePublished": "2017-10-25T15:00:01.000123Z",
+            "dateModified": "2017-10-25T15:00:01.000123Z",
+            "format": "string",
+            "language": "string",
+            "relatedLots": [
+              "string"
+            ]
+          }
+        ],
+        "relatedLots": [
+          "string"
+        ],
+        "relatedParties": [
+          {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          }
+        ],
+        "additionalInformation": "string"
+      }
+    ]
+  },
+  "Tender": {
+    "id": "ID",
+    "title": "string",
+    "description": "string",
+    "status": "complete",
+    "items": [
+      {
+        "id": "ID",
+        "description": "string",
+        "classification": {
+          "scheme": "CPV",
+          "id": "ID",
+          "description": "string",
+          "uri": "http://example.com"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPV",
+            "id": "ID",
+            "description": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "quantity": 10.9,
+        "unit": {
+          "name": "string",
+          "value": {
+            "amount": 10.9,
+            "currency": "UAH"
+          },
+          "scheme": "UNCEFACT",
+          "id": "ID",
+          "uri": "http://example.com"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "minValue": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "string",
+    "procurementMethodRationale": "string",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "goods",
+      "works",
+      "services",
+      "consultingServices"
+    ],
+    "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "string",
+    "submissionMethod": [
+      "electronicSubmission",
+      "electronicAuction",
+      "written",
+      "inPerson"
+    ],
+    "submissionMethodDetails": "string",
+    "tenderPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "enquiryPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "hasEnquiries": true,
+    "enquiries": [
+      {
+        "id": "ID",
+        "date": "2017-10-25T15:00:01.000123Z",
+        "author": {
+          "id": "ID",
+          "name": "string"
+        },
+        "title": "string",
+        "description": "string",
+        "answer": "string",
+        "dateAnswered": "2017-10-25T15:00:01.000123Z",
+        "relatedItem": "string",
+        "relatedLot": "string",
+        "threadID": "string"
+      }
+    ],
+    "eligibilityCriteria": "string",
+    "awardPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "contractPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "numberOfTenderers": 20,
+    "tenderers": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ],
+    "procuringEntity": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      }
+    },
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "milestones": [
+      {
+        "id": "ID",
+        "title": "string",
+        "type": "financing",
+        "description": "string",
+        "code": "string",
+        "dueDate": "2017-10-25T15:00:01.000123Z",
+        "dateMet": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "status": "scheduled",
+        "documents": [
+          {
+            "id": "ID",
+            "documentType": "tenderNotice",
+            "title": "string",
+            "description": "string",
+            "url": "http://example.com",
+            "datePublished": "2017-10-25T15:00:01.000123Z",
+            "dateModified": "2017-10-25T15:00:01.000123Z",
+            "format": "string",
+            "language": "string",
+            "relatedLots": [
+              "string"
+            ]
+          }
+        ],
+        "relatedLots": [
+          "string"
+        ],
+        "relatedParties": [
+          {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          }
+        ],
+        "additionalInformation": "string"
+      }
+    ],
+    "amendments": [
+      {
+        "date": "2017-10-25T15:00:01.000123Z",
+        "rationale": "string",
+        "id": "ID",
+        "description": "string",
+        "amendsReleaseID": "string",
+        "releaseID": "string",
+        "changes": [
+          {
+            "property": "string",
+            "former_value": "object"
+          }
+        ]
+      }
+    ],
+    "amendment": {
+      "date": "2017-10-25T15:00:01.000123Z",
+      "rationale": "string",
+      "id": "ID",
+      "description": "string",
+      "amendsReleaseID": "string",
+      "releaseID": "string",
+      "changes": [
+        {
+          "property": "string",
+          "former_value": "object"
+        }
+      ]
+    },
+    "lots": [
+      {
+        "id": "ID",
+        "title": "string",
+        "description": "string",
+        "status": "planning",
+        "value": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "options": [
+          {
+            "hasOptions": true,
+            "optionDetails": "string"
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": true,
+            "dates": [
+              {
+                "startDate": "2017-10-25T15:00:01.000123Z",
+                "endDate": "2017-10-25T15:00:01.000123Z",
+                "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+                "durationInDays": 10
+              }
+            ],
+            "description": "string"
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": true,
+            "maxNumber": 20,
+            "renewalConditions": "string"
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": true,
+            "variantDetails": "string"
+          }
+        ]
+      }
+    ],
+    "lotDetails": {
+      "maximumLotsBidPerSupplier": 20,
+      "maximumLotsAwardedPerSupplier": 20
+    },
+    "lotGroups": [
+      {
+        "id": "ID",
+        "relatedLots": [
+          "string"
+        ],
+        "optionToCombine": true,
+        "maximumValue": {
+          "amount": 10.9,
+          "currency": "UAH"
+        }
+      }
+    ],
+    "participationFees": [
+      {
+        "type": [
+          "document"
+        ],
+        "value": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "description": "string",
+        "methodOfPayment": [
+          "string"
+        ]
+      }
+    ],
+    "criteria": [
+      {
+        "id": "ID",
+        "title": "string",
+        "description": "string",
+        "source": "procuringEntity",
+        "relatesTo": "tenderer",
+        "relatedItem": "string",
+        "requirementGroups": [
+          {
+            "id": "ID",
+            "description": "string",
+            "requirements": [
+              {
+                "id": "ID",
+                "title": "string",
+                "description": "string",
+                "dataType": "string",
+                "pattern": "string",
+                "expectedValue": 10.9,
+                "minValue": 10.9,
+                "maxValue": 10.9,
+                "period": {
+                  "startDate": "2017-10-25T15:00:01.000123Z",
+                  "endDate": "2017-10-25T15:00:01.000123Z",
+                  "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+                  "durationInDays": 10
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": true,
+      "acceleratedProcedureJustification": "string"
+    },
+    "classification": {
+      "scheme": "CPV",
+      "id": "ID",
+      "description": "string",
+      "uri": "http://example.com"
+    },
+    "designContest": {
+      "hasPrizes": true,
+      "prizes": [
+        {
+          "id": "ID",
+          "description": "string",
+          "classification": {
+            "scheme": "CPV",
+            "id": "ID",
+            "description": "string",
+            "uri": "http://example.com"
+          },
+          "additionalClassifications": [
+            {
+              "scheme": "CPV",
+              "id": "ID",
+              "description": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "quantity": 10.9,
+          "unit": {
+            "name": "string",
+            "value": {
+              "amount": 10.9,
+              "currency": "UAH"
+            },
+            "scheme": "UNCEFACT",
+            "id": "ID",
+            "uri": "http://example.com"
+          },
+          "relatedLot": "string"
+        }
+      ],
+      "paymentsToParticipants": "string",
+      "serviceContractAward": true,
+      "juryDecisionBinding": true,
+      "juryMembers": [
+        {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        }
+      ],
+      "participants": [
+        {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        }
+      ]
+    },
+    "electronicWorkflows": {
+      "useOrdering": true,
+      "usePayment": true,
+      "acceptInvoicing": true
+    },
+    "jointProcurement": {
+      "isJointProcurement": true,
+      "country": "string"
+    },
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "objectives": {
+      "types": [
+        "environmental"
+      ],
+      "additionalInformation": "string"
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": true,
+      "outsourcedTo": {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        },
+        "roles": [
+          "buyer"
+        ],
+        "details": {
+          "typeOfBuyer": "BODY_PUBLIC",
+          "mainGeneralActivity": "DEFENCE",
+          "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+          "isACentralPurchasingBody": true,
+          "NUTSCode": "string",
+          "scale": "micro"
+        },
+        "buyerProfile": "http://example.com"
+      }
+    },
+    "procurementMethodAdditionalInfo": "string",
+    "reviewParties": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ],
+    "reviewPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "standstillPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "submissionLanguages": [
+      "bg",
+      "es",
+      "cs",
+      "da",
+      "de",
+      "et",
+      "el",
+      "en",
+      "fr",
+      "ga",
+      "hr",
+      "it",
+      "lv",
+      "lt",
+      "hu",
+      "mt",
+      "nl",
+      "pl",
+      "pt",
+      "ro",
+      "sk",
+      "sl",
+      "fi",
+      "sv"
+    ],
+    "submissionMethodRationale": [
+      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
+      "IPR_ISSUES",
+      "REQUIRES_SPECIALISED_EQUIPMENT",
+      "PHYSICAL_MODEL",
+      "SENSITIVE_INFORMATION"
+    ],
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": true,
+      "hasOutsideBuyerAccess": true,
+      "noFurtherContracts": true
+    },
+    "framework": {
+      "isAFramework": true,
+      "typeOfFramework": "WITH_REOPENING_OF_COMPETITION",
+      "maxSuppliers": 10.9,
+      "exceptionalDurationRationale": "string",
+      "additionalBuyerCategories": [
+        "string"
+      ]
+    },
+    "requiresElectronicCatalogue": true
+  },
+  "Award": {
+    "id": "ID",
+    "title": "string",
+    "description": "string",
+    "status": "unsuccessful",
+    "date": "2017-10-25T15:00:01.000123Z",
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "suppliers": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "ID",
+        "description": "string",
+        "classification": {
+          "scheme": "CPV",
+          "id": "ID",
+          "description": "string",
+          "uri": "http://example.com"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPV",
+            "id": "ID",
+            "description": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "quantity": 10.9,
+        "unit": {
+          "name": "string",
+          "value": {
+            "amount": 10.9,
+            "currency": "UAH"
+          },
+          "scheme": "UNCEFACT",
+          "id": "ID",
+          "uri": "http://example.com"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "contractPeriod": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "amendments": [
+      {
+        "date": "2017-10-25T15:00:01.000123Z",
+        "rationale": "string",
+        "id": "ID",
+        "description": "string",
+        "amendsReleaseID": "string",
+        "releaseID": "string",
+        "changes": [
+          {
+            "property": "string",
+            "former_value": "object"
+          }
+        ]
+      }
+    ],
+    "amendment": {
+      "date": "2017-10-25T15:00:01.000123Z",
+      "rationale": "string",
+      "id": "ID",
+      "description": "string",
+      "amendsReleaseID": "string",
+      "releaseID": "string",
+      "changes": [
+        {
+          "property": "string",
+          "former_value": "object"
+        }
+      ]
+    },
+    "relatedLots": [
+      "string"
+    ],
+    "requirementResponses": [
+      {
+        "id": "ID",
+        "title": "string",
+        "description": "string",
+        "value": "string",
+        "period": {
+          "startDate": "2017-10-25T15:00:01.000123Z",
+          "endDate": "2017-10-25T15:00:01.000123Z",
+          "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+          "durationInDays": 10
+        },
+        "requirement": {
+          "id": "ID",
+          "title": "string"
+        },
+        "relatedTenderer": {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        }
+      }
+    ],
+    "reviewProceedings": {
+      "buyerProcedureReview": true,
+      "reviewBodyChallenge": true,
+      "legalProcedures": [
+        {
+          "id": "ID",
+          "title": "string",
+          "uri": "http://example.com"
+        }
+      ]
+    },
+    "statusDetails": "string"
+  },
+  "Contract": {
+    "id": "ID",
+    "awardID": "string",
+    "extendsContractID": "string",
+    "title": "string",
+    "description": "string",
+    "status": "terminated",
+    "period": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "items": [
+      {
+        "id": "ID",
+        "description": "string",
+        "classification": {
+          "scheme": "CPV",
+          "id": "ID",
+          "description": "string",
+          "uri": "http://example.com"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPV",
+            "id": "ID",
+            "description": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "quantity": 10.9,
+        "unit": {
+          "name": "string",
+          "value": {
+            "amount": 10.9,
+            "currency": "UAH"
+          },
+          "scheme": "UNCEFACT",
+          "id": "ID",
+          "uri": "http://example.com"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "dateSigned": "2017-10-25T15:00:01.000123Z",
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "implementation": {
+      "transactions": [
+        {
+          "id": "ID",
+          "source": "http://example.com",
+          "date": "2017-10-25T15:00:01.000123Z",
+          "value": {
+            "amount": 10.9,
+            "currency": "UAH"
+          },
+          "payer": {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          },
+          "payee": {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          },
+          "uri": "http://example.com",
+          "amount": {
+            "amount": 10.9,
+            "currency": "UAH"
+          },
+          "providerOrganization": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "receiverOrganization": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        }
+      ],
+      "milestones": [
+        {
+          "id": "ID",
+          "title": "string",
+          "type": "financing",
+          "description": "string",
+          "code": "string",
+          "dueDate": "2017-10-25T15:00:01.000123Z",
+          "dateMet": "2017-10-25T15:00:01.000123Z",
+          "dateModified": "2017-10-25T15:00:01.000123Z",
+          "status": "scheduled",
+          "documents": [
+            {
+              "id": "ID",
+              "documentType": "tenderNotice",
+              "title": "string",
+              "description": "string",
+              "url": "http://example.com",
+              "datePublished": "2017-10-25T15:00:01.000123Z",
+              "dateModified": "2017-10-25T15:00:01.000123Z",
+              "format": "string",
+              "language": "string",
+              "relatedLots": [
+                "string"
+              ]
+            }
+          ],
+          "relatedLots": [
+            "string"
+          ],
+          "relatedParties": [
+            {
+              "name": "string",
+              "id": "ID",
+              "identifier": {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              },
+              "address": {
+                "streetAddress": "string",
+                "locality": "string",
+                "region": "string",
+                "postalCode": "string",
+                "countryName": "string"
+              },
+              "additionalIdentifiers": [
+                {
+                  "scheme": "string",
+                  "id": "ID",
+                  "legalName": "string",
+                  "uri": "http://example.com"
+                }
+              ],
+              "contactPoint": {
+                "name": "string",
+                "email": "string",
+                "telephone": "string",
+                "faxNumber": "string",
+                "url": "http://example.com"
+              }
+            }
+          ],
+          "additionalInformation": "string"
+        }
+      ],
+      "documents": [
+        {
+          "id": "ID",
+          "documentType": "tenderNotice",
+          "title": "string",
+          "description": "string",
+          "url": "http://example.com",
+          "datePublished": "2017-10-25T15:00:01.000123Z",
+          "dateModified": "2017-10-25T15:00:01.000123Z",
+          "format": "string",
+          "language": "string",
+          "relatedLots": [
+            "string"
+          ]
+        }
+      ]
+    },
+    "relatedProcesses": [
+      {
+        "id": "ID",
+        "relationship": [
+          "framework"
+        ],
+        "title": "string",
+        "scheme": "ocid",
+        "identifier": "string",
+        "uri": "http://example.com"
+      }
+    ],
+    "milestones": [
+      {
+        "id": "ID",
+        "title": "string",
+        "type": "financing",
+        "description": "string",
+        "code": "string",
+        "dueDate": "2017-10-25T15:00:01.000123Z",
+        "dateMet": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "status": "scheduled",
+        "documents": [
+          {
+            "id": "ID",
+            "documentType": "tenderNotice",
+            "title": "string",
+            "description": "string",
+            "url": "http://example.com",
+            "datePublished": "2017-10-25T15:00:01.000123Z",
+            "dateModified": "2017-10-25T15:00:01.000123Z",
+            "format": "string",
+            "language": "string",
+            "relatedLots": [
+              "string"
+            ]
+          }
+        ],
+        "relatedLots": [
+          "string"
+        ],
+        "relatedParties": [
+          {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          }
+        ],
+        "additionalInformation": "string"
+      }
+    ],
+    "amendments": [
+      {
+        "date": "2017-10-25T15:00:01.000123Z",
+        "rationale": "string",
+        "id": "ID",
+        "description": "string",
+        "amendsReleaseID": "string",
+        "releaseID": "string",
+        "changes": [
+          {
+            "property": "string",
+            "former_value": "object"
+          }
+        ]
+      }
+    ],
+    "amendment": {
+      "date": "2017-10-25T15:00:01.000123Z",
+      "rationale": "string",
+      "id": "ID",
+      "description": "string",
+      "amendsReleaseID": "string",
+      "releaseID": "string",
+      "changes": [
+        {
+          "property": "string",
+          "former_value": "object"
+        }
+      ]
+    },
+    "requirementResponses": [
+      {
+        "id": "ID",
+        "title": "string",
+        "description": "string",
+        "value": "string",
+        "period": {
+          "startDate": "2017-10-25T15:00:01.000123Z",
+          "endDate": "2017-10-25T15:00:01.000123Z",
+          "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+          "durationInDays": 10
+        },
+        "requirement": {
+          "id": "ID",
+          "title": "string"
+        },
+        "relatedTenderer": {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        }
+      }
+    ],
+    "countryOfOrigin": "string",
+    "lotVariant": [
+      "string"
+    ],
+    "valueBreakdown": [
+      {
+        "id": "ID",
+        "type": [
+          "userFees",
+          "publicAgencyFees"
+        ],
+        "description": "string",
+        "amount": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "estimationMethod": {
+          "amount": 10.9,
+          "currency": "UAH"
+        }
+      }
+    ],
+    "isFrameworkOrDynamic": true
+  },
+  "Implementation": {
+    "transactions": [
+      {
+        "id": "ID",
+        "source": "http://example.com",
+        "date": "2017-10-25T15:00:01.000123Z",
+        "value": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "payer": {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        },
+        "payee": {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        },
+        "uri": "http://example.com",
+        "amount": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "providerOrganization": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "receiverOrganization": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      }
+    ],
+    "milestones": [
+      {
+        "id": "ID",
+        "title": "string",
+        "type": "financing",
+        "description": "string",
+        "code": "string",
+        "dueDate": "2017-10-25T15:00:01.000123Z",
+        "dateMet": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "status": "scheduled",
+        "documents": [
+          {
+            "id": "ID",
+            "documentType": "tenderNotice",
+            "title": "string",
+            "description": "string",
+            "url": "http://example.com",
+            "datePublished": "2017-10-25T15:00:01.000123Z",
+            "dateModified": "2017-10-25T15:00:01.000123Z",
+            "format": "string",
+            "language": "string",
+            "relatedLots": [
+              "string"
+            ]
+          }
+        ],
+        "relatedLots": [
+          "string"
+        ],
+        "relatedParties": [
+          {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          }
+        ],
+        "additionalInformation": "string"
+      }
+    ],
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ]
+  },
+  "Milestone": {
+    "id": "ID",
+    "title": "string",
+    "type": "financing",
+    "description": "string",
+    "code": "string",
+    "dueDate": "2017-10-25T15:00:01.000123Z",
+    "dateMet": "2017-10-25T15:00:01.000123Z",
+    "dateModified": "2017-10-25T15:00:01.000123Z",
+    "status": "scheduled",
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "relatedLots": [
+      "string"
+    ],
+    "relatedParties": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ],
+    "additionalInformation": "string"
+  },
+  "Document": {
+    "id": "ID",
+    "documentType": "tenderNotice",
+    "title": "string",
+    "description": "string",
+    "url": "http://example.com",
+    "datePublished": "2017-10-25T15:00:01.000123Z",
+    "dateModified": "2017-10-25T15:00:01.000123Z",
+    "format": "string",
+    "language": "string",
+    "relatedLots": [
+      "string"
+    ]
+  },
+  "Budget": {
+    "id": "ID",
+    "description": "string",
+    "amount": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "project": "string",
+    "projectID": "string",
+    "uri": "http://example.com",
+    "source": "http://example.com",
+    "europeanUnionFunding": {
+      "projectIdentifier": "string",
+      "projectName": "string",
+      "uri": "http://example.com"
+    },
+    "isEuropeanUnionFunded": true,
+    "budgetBreakdown": [
+      {
+        "id": "ID",
+        "description": "string",
+        "amount": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "uri": "http://example.com",
+        "period": {
+          "startDate": "2017-10-25T15:00:01.000123Z",
+          "endDate": "2017-10-25T15:00:01.000123Z",
+          "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+          "durationInDays": 10
+        },
+        "sourceParty": {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        }
+      }
+    ],
+    "sourceEntity": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      }
+    },
+    "period": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    }
+  },
+  "BudgetBreakdown": {
+    "id": "ID",
+    "description": "string",
+    "amount": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "uri": "http://example.com",
+    "period": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "sourceParty": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      }
+    }
+  },
+  "Transaction": {
+    "id": "ID",
+    "source": "http://example.com",
+    "date": "2017-10-25T15:00:01.000123Z",
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "payer": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      }
+    },
+    "payee": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      }
+    },
+    "uri": "http://example.com",
+    "amount": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "providerOrganization": {
+      "scheme": "string",
+      "id": "ID",
+      "legalName": "string",
+      "uri": "http://example.com"
+    },
+    "receiverOrganization": {
+      "scheme": "string",
+      "id": "ID",
+      "legalName": "string",
+      "uri": "http://example.com"
+    }
+  },
+  "OrganizationReference": {
+    "name": "string",
+    "id": "ID",
+    "identifier": {
+      "scheme": "string",
+      "id": "ID",
+      "legalName": "string",
+      "uri": "http://example.com"
+    },
+    "address": {
+      "streetAddress": "string",
+      "locality": "string",
+      "region": "string",
+      "postalCode": "string",
+      "countryName": "string"
+    },
+    "additionalIdentifiers": [
+      {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      }
+    ],
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "faxNumber": "string",
+      "url": "http://example.com"
+    }
+  },
+  "Organization": {
+    "name": "string",
+    "id": "ID",
+    "identifier": {
+      "scheme": "string",
+      "id": "ID",
+      "legalName": "string",
+      "uri": "http://example.com"
+    },
+    "additionalIdentifiers": [
+      {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      }
+    ],
+    "address": {
+      "streetAddress": "string",
+      "locality": "string",
+      "region": "string",
+      "postalCode": "string",
+      "countryName": "string"
+    },
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "faxNumber": "string",
+      "url": "http://example.com"
+    },
+    "roles": [
+      "buyer"
+    ],
+    "details": {
+      "typeOfBuyer": "BODY_PUBLIC",
+      "mainGeneralActivity": "DEFENCE",
+      "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+      "isACentralPurchasingBody": true,
+      "NUTSCode": "string",
+      "scale": "micro"
+    },
+    "buyerProfile": "http://example.com"
+  },
+  "Item": {
+    "id": "ID",
+    "description": "string",
+    "classification": {
+      "scheme": "CPV",
+      "id": "ID",
+      "description": "string",
+      "uri": "http://example.com"
+    },
+    "additionalClassifications": [
+      {
+        "scheme": "CPV",
+        "id": "ID",
+        "description": "string",
+        "uri": "http://example.com"
+      }
+    ],
+    "quantity": 10.9,
+    "unit": {
+      "name": "string",
+      "value": {
+        "amount": 10.9,
+        "currency": "UAH"
+      },
+      "scheme": "UNCEFACT",
+      "id": "ID",
+      "uri": "http://example.com"
+    },
+    "relatedLot": "string"
+  },
+  "Amendment": {
+    "date": "2017-10-25T15:00:01.000123Z",
+    "rationale": "string",
+    "id": "ID",
+    "description": "string",
+    "amendsReleaseID": "string",
+    "releaseID": "string",
+    "changes": [
+      {
+        "property": "string",
+        "former_value": "object"
+      }
+    ]
+  },
+  "Classification": {
+    "scheme": "CPV",
+    "id": "ID",
+    "description": "string",
+    "uri": "http://example.com"
+  },
+  "Identifier": {
+    "scheme": "string",
+    "id": "ID",
+    "legalName": "string",
+    "uri": "http://example.com"
+  },
+  "Address": {
+    "streetAddress": "string",
+    "locality": "string",
+    "region": "string",
+    "postalCode": "string",
+    "countryName": "string"
+  },
+  "ContactPoint": {
+    "name": "string",
+    "email": "string",
+    "telephone": "string",
+    "faxNumber": "string",
+    "url": "http://example.com"
+  },
+  "Value": {
+    "amount": 10.9,
+    "currency": "UAH"
+  },
+  "Period": {
+    "startDate": "2017-10-25T15:00:01.000123Z",
+    "endDate": "2017-10-25T15:00:01.000123Z",
+    "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+    "durationInDays": 10
+  },
+  "RelatedProcess": {
+    "id": "ID",
+    "relationship": [
+      "framework"
+    ],
+    "title": "string",
+    "scheme": "ocid",
+    "identifier": "string",
+    "uri": "http://example.com"
+  },
+  "BidsStatistic": {
+    "id": "ID",
+    "measure": "bidders",
+    "date": "2017-10-25T15:00:01.000123Z",
+    "value": 10.9,
+    "notes": "string",
+    "relatedLot": "string"
+  },
+  "Bids": {
+    "statistics": [
+      {
+        "id": "ID",
+        "measure": "bidders",
+        "date": "2017-10-25T15:00:01.000123Z",
+        "value": 10.9,
+        "notes": "string",
+        "relatedLot": "string"
+      }
+    ],
+    "details": [
+      {
+        "id": "ID",
+        "date": "2017-10-25T15:00:01.000123Z",
+        "status": "invited",
+        "tenderers": [
+          {
+            "name": "string",
+            "id": "ID",
+            "identifier": {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            },
+            "address": {
+              "streetAddress": "string",
+              "locality": "string",
+              "region": "string",
+              "postalCode": "string",
+              "countryName": "string"
+            },
+            "additionalIdentifiers": [
+              {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              }
+            ],
+            "contactPoint": {
+              "name": "string",
+              "email": "string",
+              "telephone": "string",
+              "faxNumber": "string",
+              "url": "http://example.com"
+            }
+          }
+        ],
+        "value": {
+          "amount": 10.9,
+          "currency": "UAH"
+        },
+        "documents": [
+          {
+            "id": "ID",
+            "documentType": "tenderNotice",
+            "title": "string",
+            "description": "string",
+            "url": "http://example.com",
+            "datePublished": "2017-10-25T15:00:01.000123Z",
+            "dateModified": "2017-10-25T15:00:01.000123Z",
+            "format": "string",
+            "language": "string",
+            "relatedLots": [
+              "string"
+            ]
+          }
+        ],
+        "relatedLots": [
+          "string"
+        ],
+        "requirementResponses": [
+          {
+            "id": "ID",
+            "title": "string",
+            "description": "string",
+            "value": "string",
+            "period": {
+              "startDate": "2017-10-25T15:00:01.000123Z",
+              "endDate": "2017-10-25T15:00:01.000123Z",
+              "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+              "durationInDays": 10
+            },
+            "requirement": {
+              "id": "ID",
+              "title": "string"
+            },
+            "relatedTenderer": {
+              "name": "string",
+              "id": "ID",
+              "identifier": {
+                "scheme": "string",
+                "id": "ID",
+                "legalName": "string",
+                "uri": "http://example.com"
+              },
+              "address": {
+                "streetAddress": "string",
+                "locality": "string",
+                "region": "string",
+                "postalCode": "string",
+                "countryName": "string"
+              },
+              "additionalIdentifiers": [
+                {
+                  "scheme": "string",
+                  "id": "ID",
+                  "legalName": "string",
+                  "uri": "http://example.com"
+                }
+              ],
+              "contactPoint": {
+                "name": "string",
+                "email": "string",
+                "telephone": "string",
+                "faxNumber": "string",
+                "url": "http://example.com"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Bid": {
+    "id": "ID",
+    "date": "2017-10-25T15:00:01.000123Z",
+    "status": "invited",
+    "tenderers": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ],
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "documents": [
+      {
+        "id": "ID",
+        "documentType": "tenderNotice",
+        "title": "string",
+        "description": "string",
+        "url": "http://example.com",
+        "datePublished": "2017-10-25T15:00:01.000123Z",
+        "dateModified": "2017-10-25T15:00:01.000123Z",
+        "format": "string",
+        "language": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "relatedLots": [
+      "string"
+    ],
+    "requirementResponses": [
+      {
+        "id": "ID",
+        "title": "string",
+        "description": "string",
+        "value": "string",
+        "period": {
+          "startDate": "2017-10-25T15:00:01.000123Z",
+          "endDate": "2017-10-25T15:00:01.000123Z",
+          "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+          "durationInDays": 10
+        },
+        "requirement": {
+          "id": "ID",
+          "title": "string"
+        },
+        "relatedTenderer": {
+          "name": "string",
+          "id": "ID",
+          "identifier": {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          },
+          "address": {
+            "streetAddress": "string",
+            "locality": "string",
+            "region": "string",
+            "postalCode": "string",
+            "countryName": "string"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "string",
+              "id": "ID",
+              "legalName": "string",
+              "uri": "http://example.com"
+            }
+          ],
+          "contactPoint": {
+            "name": "string",
+            "email": "string",
+            "telephone": "string",
+            "faxNumber": "string",
+            "url": "http://example.com"
+          }
+        }
+      }
+    ]
+  },
+  "Lot": {
+    "id": "ID",
+    "title": "string",
+    "description": "string",
+    "status": "planning",
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "options": [
+      {
+        "hasOptions": true,
+        "optionDetails": "string"
+      }
+    ],
+    "recurrentProcurement": [
+      {
+        "isRecurrent": true,
+        "dates": [
+          {
+            "startDate": "2017-10-25T15:00:01.000123Z",
+            "endDate": "2017-10-25T15:00:01.000123Z",
+            "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+            "durationInDays": 10
+          }
+        ],
+        "description": "string"
+      }
+    ],
+    "renewals": [
+      {
+        "hasRenewals": true,
+        "maxNumber": 20,
+        "renewalConditions": "string"
+      }
+    ],
+    "variants": [
+      {
+        "hasVariants": true,
+        "variantDetails": "string"
+      }
+    ],
+    "placeOfPerformance": {
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "description": "string",
+      "NUTScode": "string"
+    }
+  },
+  "LotDetails": {
+    "maximumLotsBidPerSupplier": 20,
+    "maximumLotsAwardedPerSupplier": 20
+  },
+  "LotGroup": {
+    "id": "ID",
+    "relatedLots": [
+      "string"
+    ],
+    "optionToCombine": true,
+    "maximumValue": {
+      "amount": 10.9,
+      "currency": "UAH"
+    }
+  },
+  "ParticipationFee": {
+    "type": [
+      "document"
+    ],
+    "value": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "description": "string",
+    "methodOfPayment": [
+      "string"
+    ]
+  },
+  "Criterion": {
+    "id": "ID",
+    "title": "string",
+    "description": "string",
+    "source": "procuringEntity",
+    "relatesTo": "tenderer",
+    "relatedItem": "string",
+    "requirementGroups": [
+      {
+        "id": "ID",
+        "description": "string",
+        "requirements": [
+          {
+            "id": "ID",
+            "title": "string",
+            "description": "string",
+            "dataType": "string",
+            "pattern": "string",
+            "expectedValue": 10.9,
+            "minValue": 10.9,
+            "maxValue": 10.9,
+            "period": {
+              "startDate": "2017-10-25T15:00:01.000123Z",
+              "endDate": "2017-10-25T15:00:01.000123Z",
+              "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+              "durationInDays": 10
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "RequirementGroup": {
+    "id": "ID",
+    "description": "string",
+    "requirements": [
+      {
+        "id": "ID",
+        "title": "string",
+        "description": "string",
+        "dataType": "string",
+        "pattern": "string",
+        "expectedValue": 10.9,
+        "minValue": 10.9,
+        "maxValue": 10.9,
+        "period": {
+          "startDate": "2017-10-25T15:00:01.000123Z",
+          "endDate": "2017-10-25T15:00:01.000123Z",
+          "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+          "durationInDays": 10
+        }
+      }
+    ]
+  },
+  "Requirement": {
+    "id": "ID",
+    "title": "string",
+    "description": "string",
+    "dataType": "string",
+    "pattern": "string",
+    "expectedValue": 10.9,
+    "minValue": 10.9,
+    "maxValue": 10.9,
+    "period": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    }
+  },
+  "RequirementResponse": {
+    "id": "ID",
+    "title": "string",
+    "description": "string",
+    "value": "string",
+    "period": {
+      "startDate": "2017-10-25T15:00:01.000123Z",
+      "endDate": "2017-10-25T15:00:01.000123Z",
+      "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+      "durationInDays": 10
+    },
+    "requirement": {
+      "id": "ID",
+      "title": "string"
+    },
+    "relatedTenderer": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      }
+    }
+  },
+  "RequirementReference": {
+    "id": "ID",
+    "title": "string"
+  },
+  "ReviewProceedings": {
+    "buyerProcedureReview": true,
+    "reviewBodyChallenge": true,
+    "legalProcedures": [
+      {
+        "id": "ID",
+        "title": "string",
+        "uri": "http://example.com"
+      }
+    ]
+  },
+  "LegalProceedings": {
+    "id": "ID",
+    "title": "string",
+    "uri": "http://example.com"
+  },
+  "EuropeanUnionFunding": {
+    "projectIdentifier": "string",
+    "projectName": "string",
+    "uri": "http://example.com"
+  },
+  "ValueBreakdown": {
+    "id": "ID",
+    "type": [
+      "userFees",
+      "publicAgencyFees"
+    ],
+    "description": "string",
+    "amount": {
+      "amount": 10.9,
+      "currency": "UAH"
+    },
+    "estimationMethod": {
+      "amount": 10.9,
+      "currency": "UAH"
+    }
+  },
+  "Options": {
+    "hasOptions": true,
+    "optionDetails": "string"
+  },
+  "RecurrentProcurement": {
+    "isRecurrent": true,
+    "dates": [
+      {
+        "startDate": "2017-10-25T15:00:01.000123Z",
+        "endDate": "2017-10-25T15:00:01.000123Z",
+        "maxExtentDate": "2017-10-25T15:00:01.000123Z",
+        "durationInDays": 10
+      }
+    ],
+    "description": "string"
+  },
+  "Renewals": {
+    "hasRenewals": true,
+    "maxNumber": 20,
+    "renewalConditions": "string"
+  },
+  "Variants": {
+    "hasVariants": true,
+    "variantDetails": "string"
+  },
+  "PurposeOfNotice": {
+    "reducesTimeLimits": true,
+    "isACallForCompetition": true,
+    "socialOrOtherSpecificServices": true
+  },
+  "RelatedNotice": {
+    "scheme": "TED",
+    "id": "ID",
+    "relationship": "previousNotice",
+    "objectOfProcurementInPIN": "string",
+    "uri": "http://example.com"
+  },
+  "AcceleratedProcedure": {
+    "isAcceleratedProcedure": true,
+    "acceleratedProcedureJustification": "string"
+  },
+  "DesignContest": {
+    "hasPrizes": true,
+    "prizes": [
+      {
+        "id": "ID",
+        "description": "string",
+        "classification": {
+          "scheme": "CPV",
+          "id": "ID",
+          "description": "string",
+          "uri": "http://example.com"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPV",
+            "id": "ID",
+            "description": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "quantity": 10.9,
+        "unit": {
+          "name": "string",
+          "value": {
+            "amount": 10.9,
+            "currency": "UAH"
+          },
+          "scheme": "UNCEFACT",
+          "id": "ID",
+          "uri": "http://example.com"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "paymentsToParticipants": "string",
+    "serviceContractAward": true,
+    "juryDecisionBinding": true,
+    "juryMembers": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ],
+    "participants": [
+      {
+        "name": "string",
+        "id": "ID",
+        "identifier": {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        },
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "string",
+            "id": "ID",
+            "legalName": "string",
+            "uri": "http://example.com"
+          }
+        ],
+        "contactPoint": {
+          "name": "string",
+          "email": "string",
+          "telephone": "string",
+          "faxNumber": "string",
+          "url": "http://example.com"
+        }
+      }
+    ]
+  },
+  "ElectronicWorkflows": {
+    "useOrdering": true,
+    "usePayment": true,
+    "acceptInvoicing": true
+  },
+  "JointProcurement": {
+    "isJointProcurement": true,
+    "country": "UA"
+  },
+  "Objectives": {
+    "types": [
+      "environmental"
+    ],
+    "additionalInformation": "string"
+  },
+  "ProcedureOutsourcing": {
+    "procedureOutsourced": true,
+    "outsourcedTo": {
+      "name": "string",
+      "id": "ID",
+      "identifier": {
+        "scheme": "string",
+        "id": "ID",
+        "legalName": "string",
+        "uri": "http://example.com"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "string",
+          "id": "ID",
+          "legalName": "string",
+          "uri": "http://example.com"
+        }
+      ],
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": "http://example.com"
+      },
+      "roles": [
+        "buyer"
+      ],
+      "details": {
+        "typeOfBuyer": "BODY_PUBLIC",
+        "mainGeneralActivity": "DEFENCE",
+        "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+        "isACentralPurchasingBody": true,
+        "NUTSCode": "string",
+        "scale": "micro"
+      },
+      "buyerProfile": "http://example.com"
+    }
+  },
+  "DynamicPurchasingSystem": {
+    "hasDynamicPurchasingSystem": true,
+    "hasOutsideBuyerAccess": true,
+    "noFurtherContracts": true
+  },
+  "Framework": {
+    "isAFramework": true,
+    "typeOfFramework": "WITH_REOPENING_OF_COMPETITION",
+    "maxSuppliers": 20,
+    "exceptionalDurationRationale": "string",
+    "additionalBuyerCategories": [
+      "string"
+    ]
+  },
+  "PlaceOfPerformance": {
+    "address": {
+      "streetAddress": "string",
+      "locality": "string",
+      "region": "string",
+      "postalCode": "string",
+      "countryName": "string"
+    },
+    "description": "string",
+    "NUTScode": "string"
+  },
+  "Lots": {
+    "placeOfPerformance": {
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "description": "string",
+      "NUTScode": "string"
+    }
+  },
+  "Enquiry": {
+    "id": "ID",
+    "date": "2017-10-25T15:00:01.000123Z",
+    "author": {
+      "id": "ID",
+      "name": "string"
+    },
+    "title": "string",
+    "description": "string",
+    "answer": "string",
+    "dateAnswered": "2017-10-25T15:00:01.000123Z",
+    "relatedItem": "string",
+    "relatedLot": "string",
+    "threadID": "string"
+  },
+  "Author": {
+    "id": "ID",
+    "name": "string"
+  },
+  "AdditionalTED": {
+    "electronicAuction": {
+      "willElectronicAuction": true,
+      "dateElectronicAuction": "2017-10-25T15:00:01.000123Z",
+      "additionalInfoElectronicAuction": "string"
+    },
+    "contractDividedIntoLots": 1,
+    "awardCriteria": "Criteria below",
+    "tenderers": {
+      "numberOfTenderersTypeLimitation": "envisagedNumber",
+      "minNumberCandidates": 7,
+      "maxNumberCandidates": 10,
+      "envisagedNumberCandidates": 20,
+      "objectiveCriteriaForLimitedCandidates": "string"
+    },
+    "contract": {
+      "isACentralPurchasingBody": true,
+      "documentationURL": "http://example.com",
+      "additionalInfoObtainedFrom": "above mentioned"
+    },
+    "electronicCommunicationRequires": "http://example.com",
+    "coveredByGovernmentProcurementAgreement": true,
+    "recourseToStagedProcedure": true,
+    "caAwardOnInitialTender": true,
+    "economicSelectionCriteriaAsStated": false,
+    "technicalSelectionCriteriaAsStated": false,
+    "contractReservedForDisablePersons": true,
+    "contractRestrictedToEmploymentProgrammes": true,
+    "dataOfStaff": true,
+    "isBuyerCentralPurchasingBody": true
+  },
+  "ElectronicAuction": {
+    "willElectronicAuction": true,
+    "dateElectronicAuction": "2017-10-25T15:00:01.000123Z",
+    "additionalInfoElectronicAuction": "string"
+  }
+}

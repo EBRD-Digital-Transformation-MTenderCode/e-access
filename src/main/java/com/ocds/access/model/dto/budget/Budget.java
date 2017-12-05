@@ -13,5 +13,6 @@ public class Budget {
     public String uri;
     public String source;
     public EuropeanUnionFunding europeanUnionFunding;
+    public Boolean isEuropeanUnionFunded;
 }
 
