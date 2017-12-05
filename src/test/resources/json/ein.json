@@ -1,0 +1,33 @@
+{
+  "planning": {
+    "budget": {
+      "id": "ID",
+      "description": "string",
+      "amount": {
+        "amount": 10.9,
+        "currency": "UAH"
+      },
+      "project": "string",
+      "projectID": "string",
+      "uri": "http://example.com",
+      "isEuropeanUnionFunded": true,
+      "sourceEntity": {
+        "name": "string",
+        "id": "ID"
+      },
+      "period": {
+        "startDate": "2017-10-25T15:00:01.000123Z",
+        "endDate": "2017-10-25T15:00:01.000123Z"
+      }
+    },
+    "rationale":"rationale"
+  },
+  "tender": {
+    "title": "Tender",
+    "description": "Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners.",
+    "classification": {
+      "scheme": "CPV",
+      "id": "ID"
+    }
+  }
+}
