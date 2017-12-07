@@ -1,0 +1,58 @@
+{
+  "ocid": "",
+  "id": "",
+  "date": "",
+  "tag": "",
+  "initiationType": "",
+  "planning": {
+    "budget": {
+      "id": "",
+      "description": "",
+      "period": {
+        "startDate": "",
+        "endDate": ""
+      },
+      "amount": {
+        "value": {
+          "amount": 0,
+          "currency": ""
+        }
+      },
+      "sourceEntity": {
+        "organizationReference": {
+          "name": "",
+          "id": ""
+        }
+      },
+      "isEuropeanUnionFunded": false,
+      "project": "",
+      "projectID": "",
+      "uri": "",
+      "verified": false,
+      "verificationDetails": ""
+    }
+  },
+  "parties": {
+    "organization": {
+      "name": "",
+      "id": "",
+      "identifier": "",
+      "additionalIdentifiers": "",
+      "address": "",
+      "contactPoint": "",
+      "roles": "",
+      "details": "",
+      "buyerProfile": ""
+    }
+  },
+  "language": "",
+  "relatedProcesses": [
+    {
+      "ocid": "",
+      "title": "",
+      "relationship": "",
+      "scheme": "",
+      "uri": ""
+    }
+  ]
+}
