@@ -2,6 +2,7 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
+import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.entity.EinEntity;
@@ -82,8 +83,7 @@ public class EinServiceImpl implements EinService {
         final Map<String, String> data = new HashMap<>();
         data.put("ocid", einDto.getOcid());
         data.put("ein", jsonUtil.toJson(einDto));
-        final ResponseDto.ResponseDetailsDto details = new ResponseDto.ResponseDetailsDto(HttpStatus.OK.toString(),
-                                                                                          "ok");
+        final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
         return new ResponseDto(true, Collections.singletonList(details), data);
     }
 }

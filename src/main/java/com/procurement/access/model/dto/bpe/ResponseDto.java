@@ -26,18 +26,4 @@ public class ResponseDto<T> {
         this.details = details;
         this.data = data;
     }
-
-    @Getter
-    public static class ResponseDetailsDto {
-        @JsonProperty("code")
-        private String code;
-        @JsonProperty("message")
-        private String message;
-
-        public ResponseDetailsDto(@JsonProperty("code") final String code,
-                                  @JsonProperty("message") final String message) {
-            this.code = code;
-            this.message = message;
-        }
-    }
 }
