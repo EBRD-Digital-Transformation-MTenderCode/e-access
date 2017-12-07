@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.cn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -52,16 +51,25 @@ public class CnFrameworkDto {
         PARTLY_WITH_PARTLY_WITHOUT_REOPENING_OF_COMPETITION("PARTLY_WITH_PARTLY_WITHOUT_REOPENING_OF_COMPETITION");
         private static final Map<String, TypeOfFramework> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final CnFrameworkDto.TypeOfFramework c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         TypeOfFramework(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static TypeOfFramework fromValue(final String value) {
+            final TypeOfFramework constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -72,15 +80,6 @@ public class CnFrameworkDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static TypeOfFramework fromValue(final String value) {
-            final TypeOfFramework constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
 
     }

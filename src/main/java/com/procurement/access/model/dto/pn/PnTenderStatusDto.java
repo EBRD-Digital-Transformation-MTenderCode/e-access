@@ -16,16 +16,25 @@ public enum PnTenderStatusDto {
 
     private static final Map<String, PnTenderStatusDto> CONSTANTS = new HashMap<>();
 
-    private final String value;
-
     static {
         for (final PnTenderStatusDto c : values()) {
             CONSTANTS.put(c.value, c);
         }
     }
 
+    private final String value;
+
     PnTenderStatusDto(final String value) {
         this.value = value;
+    }
+
+    @JsonCreator
+    public static PnTenderStatusDto fromValue(final String value) {
+        final PnTenderStatusDto constant = CONSTANTS.get(value);
+        if (constant == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return constant;
     }
 
     @Override
@@ -36,14 +45,5 @@ public enum PnTenderStatusDto {
     @JsonValue
     public String value() {
         return this.value;
-    }
-
-    @JsonCreator
-    public static PnTenderStatusDto fromValue(final String value) {
-        final PnTenderStatusDto constant = CONSTANTS.get(value);
-        if (constant == null) {
-            throw new IllegalArgumentException(value);
-        }
-        return constant;
     }
 }

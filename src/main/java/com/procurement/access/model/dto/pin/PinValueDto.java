@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.pin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -231,16 +230,25 @@ public class PinValueDto {
 
         private static final Map<String, Currency> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final Currency c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         Currency(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static Currency fromValue(final String value) {
+            final Currency constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -251,15 +259,6 @@ public class PinValueDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static Currency fromValue(final String value) {
-            final Currency constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

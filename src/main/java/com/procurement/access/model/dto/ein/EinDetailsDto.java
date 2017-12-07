@@ -113,8 +113,8 @@ public class EinDetailsDto {
         PUBLIC_ORDER_AND_SAFETY("PUBLIC_ORDER_AND_SAFETY"),
         RECREATION_CULTURE_AND_RELIGION("RECREATION_CULTURE_AND_RELIGION"),
         SOCIAL_PROTECTION("SOCIAL_PROTECTION");
-        private final String value;
-        private final static Map<String, MainGeneralActivity> CONSTANTS = new HashMap<>();
+
+        static final Map<String, MainGeneralActivity> CONSTANTS = new HashMap<>();
 
         static {
             for (final MainGeneralActivity c : values()) {
@@ -122,8 +122,19 @@ public class EinDetailsDto {
             }
         }
 
-        private MainGeneralActivity(final String value) {
+        private final String value;
+
+        MainGeneralActivity(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static MainGeneralActivity fromValue(final String value) {
+            final MainGeneralActivity constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -134,15 +145,6 @@ public class EinDetailsDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static MainGeneralActivity fromValue(final String value) {
-            final MainGeneralActivity constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
 
     }
@@ -158,8 +160,8 @@ public class EinDetailsDto {
         RAILWAY_SERVICES("RAILWAY_SERVICES"),
         URBAN_RAILWAY_TRAMWAY_TROLLEYBUS_BUS_SERVICES("URBAN_RAILWAY_TRAMWAY_TROLLEYBUS_BUS_SERVICES"),
         WATER("WATER");
-        private final String value;
-        private final static Map<String, MainSectoralActivity> CONSTANTS = new HashMap<>();
+
+        static final Map<String, MainSectoralActivity> CONSTANTS = new HashMap<>();
 
         static {
             for (final MainSectoralActivity c : values()) {
@@ -167,18 +169,10 @@ public class EinDetailsDto {
             }
         }
 
-        private MainSectoralActivity(final String value) {
+        private final String value;
+
+        MainSectoralActivity(final String value) {
             this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        @JsonValue
-        public String value() {
-            return this.value;
         }
 
         @JsonCreator
@@ -189,25 +183,6 @@ public class EinDetailsDto {
             }
             return constant;
         }
-    }
-
-    public enum Scale {
-        MICRO("micro"),
-        SME("sme"),
-        LARGE("large"),
-        EMPTY("");
-        private final String value;
-        private final static Map<String, Scale> CONSTANTS = new HashMap<>();
-
-        static {
-            for (final EinDetailsDto.Scale c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private Scale(final String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {
@@ -217,6 +192,27 @@ public class EinDetailsDto {
         @JsonValue
         public String value() {
             return this.value;
+        }
+    }
+
+    public enum Scale {
+        MICRO("micro"),
+        SME("sme"),
+        LARGE("large"),
+        EMPTY("");
+
+        static final Map<String, Scale> CONSTANTS = new HashMap<>();
+
+        static {
+            for (final EinDetailsDto.Scale c : values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private final String value;
+
+        Scale(final String value) {
+            this.value = value;
         }
 
         @JsonCreator
@@ -227,27 +223,6 @@ public class EinDetailsDto {
             }
             return constant;
         }
-    }
-
-    public enum TypeOfBuyer {
-        BODY_PUBLIC("BODY_PUBLIC"),
-        EU_INSTITUTION("EU_INSTITUTION"),
-        MINISTRY("MINISTRY"),
-        NATIONAL_AGENCY("NATIONAL_AGENCY"),
-        REGIONAL_AGENCY("REGIONAL_AGENCY"),
-        REGIONAL_AUTHORITY("REGIONAL_AUTHORITY");
-        private final String value;
-        private final static Map<String, TypeOfBuyer> CONSTANTS = new HashMap<>();
-
-        static {
-            for (final EinDetailsDto.TypeOfBuyer c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private TypeOfBuyer(final String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {
@@ -258,6 +233,29 @@ public class EinDetailsDto {
         public String value() {
             return this.value;
         }
+    }
+
+    public enum TypeOfBuyer {
+        BODY_PUBLIC("BODY_PUBLIC"),
+        EU_INSTITUTION("EU_INSTITUTION"),
+        MINISTRY("MINISTRY"),
+        NATIONAL_AGENCY("NATIONAL_AGENCY"),
+        REGIONAL_AGENCY("REGIONAL_AGENCY"),
+        REGIONAL_AUTHORITY("REGIONAL_AUTHORITY");
+
+        static final Map<String, TypeOfBuyer> CONSTANTS = new HashMap<>();
+
+        static {
+            for (final EinDetailsDto.TypeOfBuyer c : values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private final String value;
+
+        TypeOfBuyer(final String value) {
+            this.value = value;
+        }
 
         @JsonCreator
         public static TypeOfBuyer fromValue(final String value) {
@@ -266,6 +264,16 @@ public class EinDetailsDto {
                 throw new IllegalArgumentException(value);
             }
             return constant;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.value;
         }
 
     }

@@ -33,63 +33,53 @@ import lombok.Setter;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class EinDto {
 
-    @JsonProperty("ocid")
-    private String ocid;
-
-    @JsonProperty("id")
-    private String id;
-
-    @JsonProperty("date")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
-
-    @JsonProperty("tag")
-    private List<String> tag;
-
-    @JsonProperty("initiationType")
-    private String initiationType;
-
+    @JsonProperty("relatedProcesses")
+    private final List<EinRelatedProcessDto> relatedProcesses;
     @JsonProperty("planning")
     @NotNull
     @Valid
     private final EinPlanningDto planning;
-
     @JsonProperty("tender")
     @NotNull
     @Valid
     private final EinTenderDto tender;
-
     @JsonProperty("parties")
     @NotNull
     @Valid
     private final List<EinOrganizationDto> parties;
-
     @JsonProperty("buyer")
     @NotNull
     @Valid
     private final EinOrganizationReferenceDto buyer;
-
     @NotNull
     @Valid
     @JsonProperty("language")
     private final String language;
-
-    @JsonProperty("relatedProcesses")
-    public final List<EinRelatedProcessDto> relatedProcesses;
+    @JsonProperty("ocid")
+    private String ocid;
+    @JsonProperty("id")
+    private String id;
+    @JsonProperty("date")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime date;
+    @JsonProperty("tag")
+    private List<String> tag;
+    @JsonProperty("initiationType")
+    private String initiationType;
 
     @JsonCreator
-    public EinDto(@JsonProperty("ocid") String ocid,
-                  @JsonProperty("id") String id,
-                  @JsonProperty("date") LocalDateTime date,
-                  @JsonProperty("tag") List<String> tag,
-                  @JsonProperty("initiationType") String initiationType,
-                  @JsonProperty("planning") EinPlanningDto planning,
-                  @JsonProperty("tender") EinTenderDto tender,
-                  @JsonProperty("parties") List<EinOrganizationDto> parties,
-                  @JsonProperty("buyer") EinOrganizationReferenceDto buyer,
-                  @JsonProperty("language") String language,
-                  @JsonProperty("relatedProcesses") List<EinRelatedProcessDto> relatedProcesses) {
+    public EinDto(@JsonProperty("ocid") final String ocid,
+                  @JsonProperty("id") final String id,
+                  @JsonProperty("date") final LocalDateTime date,
+                  @JsonProperty("tag") final List<String> tag,
+                  @JsonProperty("initiationType") final String initiationType,
+                  @JsonProperty("planning") final EinPlanningDto planning,
+                  @JsonProperty("tender") final EinTenderDto tender,
+                  @JsonProperty("parties") final List<EinOrganizationDto> parties,
+                  @JsonProperty("buyer") final EinOrganizationReferenceDto buyer,
+                  @JsonProperty("language") final String language,
+                  @JsonProperty("relatedProcesses") final List<EinRelatedProcessDto> relatedProcesses) {
         this.ocid = ocid;
         this.id = id;
         this.date = date;

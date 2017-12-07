@@ -66,7 +66,7 @@ public class EinOrganizationReferenceDto {
                                        @JsonProperty("identifier") final EinIdentifierDto identifier,
                                        @JsonProperty("address") final EinAddressDto address,
                                        @JsonProperty("additionalIdentifiers") final LinkedHashSet<EinIdentifierDto>
-                                     additionalIdentifiers,
+                                           additionalIdentifiers,
                                        @JsonProperty("contactPoint") final EinContactPointDto contactPoint) {
         this.id = id;
         this.name = name;

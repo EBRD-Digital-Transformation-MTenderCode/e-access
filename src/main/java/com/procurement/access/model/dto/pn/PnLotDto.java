@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.pn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;

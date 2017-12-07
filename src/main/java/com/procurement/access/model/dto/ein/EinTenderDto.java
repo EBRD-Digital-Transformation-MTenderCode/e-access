@@ -76,6 +76,4 @@ public class EinTenderDto {
                                   .append(classification, rhs.classification)
                                   .isEquals();
     }
-
-
 }

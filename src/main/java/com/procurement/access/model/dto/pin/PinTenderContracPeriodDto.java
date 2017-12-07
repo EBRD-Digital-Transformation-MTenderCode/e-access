@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.pin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -42,11 +41,11 @@ public class PinTenderContracPeriodDto {
 
     @JsonCreator
     public PinTenderContracPeriodDto(@JsonProperty("startDate")
-                                     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-                                     final LocalDateTime startDate,
+                                     @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
+                                             startDate,
                                      @JsonProperty("endDate")
-                                     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-                                     final LocalDateTime endDate,
+                                     @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
+                                         endDate,
                                      @JsonProperty("durationInDays") final Integer durationInDays) {
         this.startDate = startDate;
         this.endDate = endDate;

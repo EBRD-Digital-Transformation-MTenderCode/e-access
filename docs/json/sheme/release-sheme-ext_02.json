@@ -564,7 +564,6 @@
           "enum": [
             "DIRECTIVE_2014_23_EU",
             "DIRECTIVE_2014_24_EU",
-
             "DIRECTIVE_2014_25_EU",
             "DIRECTIVE_2009_81_EC",
             "REGULATION_966_2012",
@@ -1474,7 +1473,7 @@
           "description": "A True or False field to indicate whether this procurement is related to a project and/or programme financed by European Union funds.",
           "type": "boolean"
         },
-		"budgetBreakdown": {
+        "budgetBreakdown": {
           "type": "array",
           "title": "Budget breakdown",
           "description": "A detailed breakdown of the budget by period and/or participating funders.",

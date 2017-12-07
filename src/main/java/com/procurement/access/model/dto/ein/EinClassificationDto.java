@@ -78,8 +78,7 @@ public class EinClassificationDto {
         OKDP("OKDP"),
         OKPD("OKPD");
 
-        private final String value;
-        private final static Map<String, Scheme> CONSTANTS = new HashMap<>();
+        static final Map<String, Scheme> CONSTANTS = new HashMap<>();
 
         static {
             for (final Scheme c : values()) {
@@ -87,8 +86,19 @@ public class EinClassificationDto {
             }
         }
 
-        private Scheme(final String value) {
+        private final String value;
+
+        Scheme(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static Scheme fromValue(final String value) {
+            final Scheme constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -99,15 +109,6 @@ public class EinClassificationDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static Scheme fromValue(final String value) {
-            final Scheme constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

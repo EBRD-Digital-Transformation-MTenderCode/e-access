@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.cn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -19,8 +18,8 @@ public class CnDynamicPurchasingSystemDto {
     private final Boolean hasDynamicPurchasingSystem;
 
     @JsonCreator
-    public CnDynamicPurchasingSystemDto(@JsonProperty("hasDynamicPurchasingSystem")
-                                            final Boolean hasDynamicPurchasingSystem) {
+    public CnDynamicPurchasingSystemDto(@JsonProperty("hasDynamicPurchasingSystem") final Boolean
+                                                hasDynamicPurchasingSystem) {
         this.hasDynamicPurchasingSystem = hasDynamicPurchasingSystem;
     }
 

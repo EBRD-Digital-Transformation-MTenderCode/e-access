@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.pn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -211,16 +210,25 @@ public class PnTenderDto {
 
         private static final Map<String, ProcurementMethod> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final ProcurementMethod c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         ProcurementMethod(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static ProcurementMethod fromValue(final String value) {
+            final ProcurementMethod constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -231,15 +239,6 @@ public class PnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static ProcurementMethod fromValue(final String value) {
-            final ProcurementMethod constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 
@@ -254,16 +253,25 @@ public class PnTenderDto {
 
         private static final Map<String, LegalBasis> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final LegalBasis c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         LegalBasis(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static LegalBasis fromValue(final String value) {
+            final LegalBasis constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -274,15 +282,6 @@ public class PnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static LegalBasis fromValue(final String value) {
-            final LegalBasis constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

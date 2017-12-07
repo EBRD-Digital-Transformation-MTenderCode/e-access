@@ -35,10 +35,10 @@ public class EinServiceImpl implements EinService {
     }
 
     @Override
-    public ResponseDto createEin(EinDto einDto) {
-        LocalDateTime addedDate = LocalDateTime.now();
-        List<String> tag = Arrays.asList("budget");
-        String initiationType = "budget";
+    public ResponseDto createEin(final EinDto einDto) {
+        final LocalDateTime addedDate = LocalDateTime.now();
+        final String initiationType = "budget";
+        final List<String> tag = Arrays.asList(initiationType);
         einDto.setDate(addedDate);
         einDto.setTag(tag);
         einDto.setInitiationType(initiationType);
@@ -47,7 +47,7 @@ public class EinServiceImpl implements EinService {
     }
 
     private EinEntity getEntity(final EinDto einDto) {
-        EinEntity einEntity = new EinEntity();
+        final EinEntity einEntity = new EinEntity();
         einEntity.setOcId(getOcId(einDto));
         einEntity.setEinId(getUuid(einDto));
         einEntity.setJsonData(jsonUtil.toJson(einDto));
@@ -55,7 +55,7 @@ public class EinServiceImpl implements EinService {
     }
 
     private UUID getUuid(final EinDto einDto) {
-        UUID einId;
+        final UUID einId;
         if (Objects.isNull(einDto.getId())) {
             einId = UUIDs.timeBased();
             einDto.setId(einId.toString());
@@ -64,10 +64,13 @@ public class EinServiceImpl implements EinService {
         }
         return einId;
     }
+
     private String getOcId(final EinDto einDto) {
-        String osId;
+        final String osId;
         if (Objects.isNull(einDto.getOcid())) {
-            osId = ocdsProperties.getPrefix() + "-" + einDto.getDate().toInstant(ZoneOffset.UTC).toEpochMilli();
+            osId = ocdsProperties.getPrefix() + "-" + einDto.getDate()
+                                                            .toInstant(ZoneOffset.UTC)
+                                                            .toEpochMilli();
             einDto.setOcid(osId);
         } else {
             osId = einDto.getOcid();
@@ -75,12 +78,12 @@ public class EinServiceImpl implements EinService {
         return osId;
     }
 
-    private ResponseDto getResponseDto(final EinDto einDto){
-        Map<String, String> data = new HashMap<>();
+    private ResponseDto getResponseDto(final EinDto einDto) {
+        final Map<String, String> data = new HashMap<>();
         data.put("ocid", einDto.getOcid());
         data.put("ein", jsonUtil.toJson(einDto));
-        ResponseDto.ResponseDetailsDto details = new ResponseDto.ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
-        ResponseDto responseDto = new ResponseDto(true, Collections.singletonList(details), data);
-        return responseDto;
+        final ResponseDto.ResponseDetailsDto details = new ResponseDto.ResponseDetailsDto(HttpStatus.OK.toString(),
+                                                                                          "ok");
+        return new ResponseDto(true, Collections.singletonList(details), data);
     }
 }

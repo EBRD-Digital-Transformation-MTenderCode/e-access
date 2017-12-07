@@ -32,8 +32,10 @@ public class EinPeriodDto {
     private final LocalDateTime endDate;
 
     @JsonCreator
-    public EinPeriodDto(@JsonProperty("startDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime startDate,
-                        @JsonProperty("endDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime endDate) {
+    public EinPeriodDto(@JsonProperty("startDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
+                        LocalDateTime startDate,
+                        @JsonProperty("endDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
+                        LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

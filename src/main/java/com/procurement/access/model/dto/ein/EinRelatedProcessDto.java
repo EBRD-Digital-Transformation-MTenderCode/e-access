@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +110,7 @@ public class EinRelatedProcessDto {
         REPLACEMENT_PROCESS("replacementProcess"),
         RENEWAL_PROCESS("renewalProcess");
 
-        private final String value;
-        private final static Map<String, RelatedProcessType> CONSTANTS = new HashMap<>();
+        static final Map<String, RelatedProcessType> CONSTANTS = new HashMap<>();
 
         static {
             for (final RelatedProcessType c : values()) {
@@ -120,18 +118,10 @@ public class EinRelatedProcessDto {
             }
         }
 
-        private RelatedProcessType(final String value) {
+        private final String value;
+
+        RelatedProcessType(final String value) {
             this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        @JsonValue
-        public String value() {
-            return this.value;
         }
 
         @JsonCreator
@@ -142,23 +132,6 @@ public class EinRelatedProcessDto {
             }
             return constant;
         }
-    }
-
-    public enum RelatedProcessScheme {
-        OCID("ocid");
-
-        private final String value;
-        private final static Map<String, RelatedProcessScheme> CONSTANTS = new HashMap<>();
-
-        static {
-            for (final RelatedProcessScheme c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private RelatedProcessScheme(final String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {
@@ -169,6 +142,24 @@ public class EinRelatedProcessDto {
         public String value() {
             return this.value;
         }
+    }
+
+    public enum RelatedProcessScheme {
+        OCID("ocid");
+
+        static final Map<String, RelatedProcessScheme> CONSTANTS = new HashMap<>();
+
+        static {
+            for (final RelatedProcessScheme c : values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private final String value;
+
+        RelatedProcessScheme(final String value) {
+            this.value = value;
+        }
 
         @JsonCreator
         public static RelatedProcessScheme fromValue(final String value) {
@@ -177,6 +168,16 @@ public class EinRelatedProcessDto {
                 throw new IllegalArgumentException(value);
             }
             return constant;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.value;
         }
     }
 }

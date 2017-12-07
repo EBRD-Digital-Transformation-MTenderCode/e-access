@@ -8,11 +8,13 @@
     "rationale": "",
     "budget": {
       "id": "",
-      "period": {  /* Period */
+      "period": {
+        /* Period */
         "startDate": "",
         "endDate": ""
       },
-      "amount": { /* Value */
+      "amount": {
+        /* Value */
         "amount": 0,
         "currency": ""
       }
@@ -28,7 +30,8 @@
       "description": ""
     }
   },
-  "parties": [/* List of Organization */
+  "parties": [
+    /* List of Organization */
     {
       "id": "",
       "name": "",
@@ -41,7 +44,8 @@
       "buyerprofile": ""
     }
   ],
-  "buyer": { /* OrganizationReference */
+  "buyer": {
+    /* OrganizationReference */
     "id": "",
     "name": "",
     "identifier": "",
@@ -50,7 +54,8 @@
     "contactpoint": ""
   },
   "language": "",
-  "relatedProcesses": [ /* List of RelatedProcess */
+  "relatedProcesses": [
+    /* List of RelatedProcess */
     {
       "ocid": "",
       "title": "",

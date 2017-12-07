@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.cn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -35,11 +34,11 @@ public class CnBudgetBreakdownPeriodDto {
 
     @JsonCreator
     public CnBudgetBreakdownPeriodDto(@JsonProperty("startDate")
-                                      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-                                      final LocalDateTime startDate,
+                                      @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
+                                              startDate,
                                       @JsonProperty("endDate")
-                                      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-                                      final LocalDateTime endDate) {
+                                      @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
+                                          endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

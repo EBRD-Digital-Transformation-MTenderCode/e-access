@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.cn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -257,8 +256,8 @@ public class CnTenderDto {
                        @JsonProperty("procurementMethod") final ProcurementMethod procurementMethod,
                        @JsonProperty("procurementMethodDetails") final String procurementMethodDetails,
                        @JsonProperty("procurementMethodRationale") final String procurementMethodRationale,
-                       @JsonProperty("mainProcurementCategory")
-                           final MainProcurementCategoryTender mainProcurementCategory,
+                       @JsonProperty("mainProcurementCategory") final MainProcurementCategoryTender
+                               mainProcurementCategory,
                        @JsonProperty("additionalProcurementCategories") final List<ExtendedProcurementCategoryTender>
                            additionalProcurementCategories,
                        @JsonProperty("awardCriteria") final AwardCriteria awardCriteria,
@@ -394,16 +393,25 @@ public class CnTenderDto {
 
         private static final Map<String, ProcurementMethod> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final ProcurementMethod c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         ProcurementMethod(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static ProcurementMethod fromValue(final String value) {
+            final ProcurementMethod constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -414,15 +422,6 @@ public class CnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static ProcurementMethod fromValue(final String value) {
-            final ProcurementMethod constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 
@@ -438,16 +437,25 @@ public class CnTenderDto {
 
         private static final Map<String, AwardCriteria> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final AwardCriteria c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         AwardCriteria(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static AwardCriteria fromValue(final String value) {
+            final AwardCriteria constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -458,15 +466,6 @@ public class CnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static AwardCriteria fromValue(final String value) {
-            final AwardCriteria constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 
@@ -478,16 +477,25 @@ public class CnTenderDto {
 
         private static final Map<String, SubmissionMethod> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final SubmissionMethod c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         SubmissionMethod(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static SubmissionMethod fromValue(final String value) {
+            final SubmissionMethod constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -498,15 +506,6 @@ public class CnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static SubmissionMethod fromValue(final String value) {
-            final SubmissionMethod constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 
@@ -521,16 +520,25 @@ public class CnTenderDto {
 
         private static final Map<String, LegalBasis> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final LegalBasis c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         LegalBasis(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static LegalBasis fromValue(final String value) {
+            final LegalBasis constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -541,15 +549,6 @@ public class CnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static LegalBasis fromValue(final String value) {
-            final LegalBasis constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 
@@ -581,16 +580,25 @@ public class CnTenderDto {
 
         private static final Map<String, SubmissionLanguage> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final SubmissionLanguage c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         SubmissionLanguage(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static SubmissionLanguage fromValue(final String value) {
+            final SubmissionLanguage constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -601,15 +609,6 @@ public class CnTenderDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static SubmissionLanguage fromValue(final String value) {
-            final SubmissionLanguage constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

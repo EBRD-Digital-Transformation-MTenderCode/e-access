@@ -16,16 +16,25 @@ public enum PinTenderStatusDto {
 
     private static final Map<String, PinTenderStatusDto> CONSTANTS = new HashMap<>();
 
-    private final String value;
-
     static {
         for (final PinTenderStatusDto c : values()) {
             CONSTANTS.put(c.value, c);
         }
     }
 
+    private final String value;
+
     PinTenderStatusDto(final String value) {
         this.value = value;
+    }
+
+    @JsonCreator
+    public static PinTenderStatusDto fromValue(final String value) {
+        final PinTenderStatusDto constant = CONSTANTS.get(value);
+        if (constant == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return constant;
     }
 
     @Override
@@ -36,14 +45,5 @@ public enum PinTenderStatusDto {
     @JsonValue
     public String value() {
         return this.value;
-    }
-
-    @JsonCreator
-    public static PinTenderStatusDto fromValue(final String value) {
-        final PinTenderStatusDto constant = CONSTANTS.get(value);
-        if (constant == null) {
-            throw new IllegalArgumentException(value);
-        }
-        return constant;
     }
 }

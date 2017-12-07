@@ -3,7 +3,10 @@
   "ocid": "ocds-213czf-000-00001",
   "id": "ocds-213czf-000-00001-01-planning",
   "date": "2009-03-15T14:45:00Z",
-  "tag": ["planning","tender"],
+  "tag": [
+    "planning",
+    "tender"
+  ],
   "initiationType": "tender",
   "buyer": {
     "identifier": {
@@ -12,12 +15,13 @@
       "legalName": "London Borough of Barnet",
       "uri": "http://www.barnet.gov.uk/"
     },
-    "additionalIdentifiers":[{
-      "scheme": "schemeA",
-      "id": "XXXXX",
-      "legalName": "London Borough of Barnet",
-      "uri": "http://www.barnet.gov.uk/"
-    },
+    "additionalIdentifiers": [
+      {
+        "scheme": "schemeA",
+        "id": "XXXXX",
+        "legalName": "London Borough of Barnet",
+        "uri": "http://www.barnet.gov.uk/"
+      },
       {
         "scheme": "schemeB",
         "id": "YYYY",
@@ -142,7 +146,10 @@
     "eligibilityCriteria": "Bidders must be registered as xxxx in order to participate in the tender",
     "awardCriteria": "bestProposal",
     "awardCriteriaDetails": "The best proposal, subject to value for money requirements, will be accepted.",
-    "submissionMethod": ["electronicSubmission","written"],
+    "submissionMethod": [
+      "electronicSubmission",
+      "written"
+    ],
     "submissionMethodDetails": "Bidders may submit their details via either hard or soft copy to the main contact point",
     "enquiryPeriod": {
       "startDate": "2010-03-01T09:00:00Z",

@@ -12,16 +12,25 @@ public enum MainProcurementCategoryTender {
 
     private static final Map<String, MainProcurementCategoryTender> CONSTANTS = new HashMap<>();
 
-    private final String value;
-
     static {
         for (final MainProcurementCategoryTender c : values()) {
             CONSTANTS.put(c.value, c);
         }
     }
 
+    private final String value;
+
     MainProcurementCategoryTender(final String value) {
         this.value = value;
+    }
+
+    @JsonCreator
+    public static MainProcurementCategoryTender fromValue(final String value) {
+        final MainProcurementCategoryTender constant = CONSTANTS.get(value);
+        if (constant == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return constant;
     }
 
     @Override
@@ -32,15 +41,6 @@ public enum MainProcurementCategoryTender {
     @JsonValue
     public String value() {
         return this.value;
-    }
-
-    @JsonCreator
-    public static MainProcurementCategoryTender fromValue(final String value) {
-        final MainProcurementCategoryTender constant = CONSTANTS.get(value);
-        if (constant == null) {
-            throw new IllegalArgumentException(value);
-        }
-        return constant;
     }
 }
 

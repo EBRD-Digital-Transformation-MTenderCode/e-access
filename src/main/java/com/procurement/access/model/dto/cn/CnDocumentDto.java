@@ -105,16 +105,25 @@ public class CnDocumentDto {
 
         private static final Map<String, DocumentType> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final DocumentType c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         DocumentType(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static DocumentType fromValue(final String value) {
+            final DocumentType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -125,15 +134,6 @@ public class CnDocumentDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static DocumentType fromValue(final String value) {
-            final DocumentType constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

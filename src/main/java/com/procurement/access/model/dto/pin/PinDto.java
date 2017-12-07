@@ -25,7 +25,7 @@ public class PinDto {
     private final PinTenderDto tenderDto;
 
     @JsonCreator
-    public PinDto(@JsonProperty("planning")final PinPlanningDto planningDto,
+    public PinDto(@JsonProperty("planning") final PinPlanningDto planningDto,
                   @JsonProperty("budget") final PinTenderDto tenderDto) {
         this.planningDto = planningDto;
         this.tenderDto = tenderDto;

@@ -34,7 +34,8 @@ public class ResponseDto<T> {
         @JsonProperty("message")
         private String message;
 
-        public ResponseDetailsDto(@JsonProperty("code")final String code, @JsonProperty("message")final String message) {
+        public ResponseDetailsDto(@JsonProperty("code") final String code,
+                                  @JsonProperty("message") final String message) {
             this.code = code;
             this.message = message;
         }

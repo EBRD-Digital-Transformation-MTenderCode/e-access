@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.pin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -60,7 +59,7 @@ public class PinItemDto {
     public PinItemDto(@JsonProperty("description") final String description,
                       @JsonProperty("classification") final PinClassificationDto classification,
                       @JsonProperty("additionalClassifications") final LinkedHashSet<PinClassificationDto>
-                    additionalClassifications,
+                          additionalClassifications,
                       @JsonProperty("quantity") final Double quantity,
                       @JsonProperty("unit") final PinUnitDto unit) {
         this.description = description;

@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.pin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -71,16 +70,25 @@ public class PinClassificationDto {
 
         private static final Map<String, Scheme> CONSTANTS = new HashMap<>();
 
-        private final String value;
-
         static {
             for (final Scheme c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
+        private final String value;
+
         Scheme(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static Scheme fromValue(final String value) {
+            final Scheme constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -91,15 +99,6 @@ public class PinClassificationDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static Scheme fromValue(final String value) {
-            final Scheme constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @JsonPropertyOrder({
-   "planning",
+    "planning",
     "tender"
 })
 public class CnDto {
@@ -25,7 +25,7 @@ public class CnDto {
     private final CnTenderDto tenderDto;
 
     @JsonCreator
-    public CnDto(@JsonProperty("planning")final CnPlanningDto planningDto,
+    public CnDto(@JsonProperty("planning") final CnPlanningDto planningDto,
                  @JsonProperty("budget") final CnTenderDto tenderDto) {
         this.planningDto = planningDto;
         this.tenderDto = tenderDto;
