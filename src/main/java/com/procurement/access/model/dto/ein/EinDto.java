@@ -1,5 +1,7 @@
 package com.procurement.access.model.dto.ein;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -28,6 +30,7 @@ import lombok.Setter;
     "language",
     "relatedProcesses"
 })
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class EinDto {
 
     @JsonProperty("ocid")
@@ -75,6 +78,7 @@ public class EinDto {
     @JsonProperty("relatedProcesses")
     public final List<EinRelatedProcessDto> relatedProcesses;
 
+    @JsonCreator
     public EinDto(@JsonProperty("ocid") String ocid,
                   @JsonProperty("id") String id,
                   @JsonProperty("date") LocalDateTime date,
