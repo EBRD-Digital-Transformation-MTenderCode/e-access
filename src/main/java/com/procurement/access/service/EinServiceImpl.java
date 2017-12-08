@@ -80,9 +80,9 @@ public class EinServiceImpl implements EinService {
     }
 
     private ResponseDto getResponseDto(final EinDto einDto) {
-        final Map<String, String> data = new HashMap<>();
+        final Map<String, Object> data = new HashMap<>();
         data.put("ocid", einDto.getOcid());
-        data.put("ein", jsonUtil.toJson(einDto));
+        data.put("ein", einDto);
         final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
         return new ResponseDto(true, Collections.singletonList(details), data);
     }

@@ -9,12 +9,10 @@
     "budget": {
       "id": "",
       "period": {
-        /* Period */
-        "startDate": "",
+         "startDate": "",
         "endDate": ""
       },
       "amount": {
-        /* Value */
         "amount": 0,
         "currency": ""
       }
@@ -31,7 +29,6 @@
     }
   },
   "parties": [
-    /* List of Organization */
     {
       "id": "",
       "name": "",
@@ -45,7 +42,6 @@
     }
   ],
   "buyer": {
-    /* OrganizationReference */
     "id": "",
     "name": "",
     "identifier": "",
@@ -55,7 +51,6 @@
   },
   "language": "",
   "relatedProcesses": [
-    /* List of RelatedProcess */
     {
       "ocid": "",
       "title": "",
