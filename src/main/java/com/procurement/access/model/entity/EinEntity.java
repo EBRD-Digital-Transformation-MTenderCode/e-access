@@ -13,8 +13,8 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @Table("access_ein")
 public class EinEntity {
 
-    @PrimaryKeyColumn(name = "cp_id", type = PrimaryKeyType.PARTITIONED)
-    private String cpId;
+    @PrimaryKeyColumn(name = "oc_id", type = PrimaryKeyType.PARTITIONED)
+    private String ocId;
 
     @PrimaryKeyColumn(name = "date", type = PrimaryKeyType.CLUSTERED)
     private LocalDateTime date;

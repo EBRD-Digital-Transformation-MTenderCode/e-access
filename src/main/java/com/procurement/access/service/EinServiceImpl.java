@@ -41,28 +41,25 @@ public class EinServiceImpl implements EinService {
     private EinEntity getEntity(final EinDto einDto, final LocalDateTime addedDate) {
         final EinEntity einEntity = new EinEntity();
         einEntity.setDate(addedDate);
-        einEntity.setCpId(getCpId(einDto, addedDate));
+        einEntity.setOcId(getOcId(einDto, addedDate));
         einEntity.setJsonData(jsonUtil.toJson(einDto));
         return einEntity;
     }
 
-    private String getCpId(final EinDto einDto, final LocalDateTime addedDate) {
-        final String cpId;
-        if (Objects.isNull(einDto.getCpId())) {
-            cpId = ocdsProperties.getPrefix() + addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
-            einDto.setCpId(cpId);
-            einDto.getTender().setId(cpId);
+    private String getOcId(final EinDto einDto, final LocalDateTime addedDate) {
+        final String ocId;
+        if (Objects.isNull(einDto.getOcId())) {
+            ocId = ocdsProperties.getPrefix() + addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+            einDto.setOcId(ocId);
+            einDto.getTender().setId(ocId);
         } else {
-            cpId = einDto.getCpId();
+            ocId = einDto.getOcId();
         }
-        return cpId;
+        return ocId;
     }
 
     private ResponseDto getResponseDto(final EinDto einDto) {
-        final Map<String, Object> data = new HashMap<>();
-        data.put("cpid", einDto.getCpId());
-        data.put("ein", einDto);
         final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
-        return new ResponseDto(true, Collections.singletonList(details), data);
+        return new ResponseDto(true, Collections.singletonList(details), einDto);
     }
 }

@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({
-    "cpid",
+    "ocid",
     "planning",
     "tender",
     "parties",
@@ -41,18 +41,18 @@ public class EinDto {
     @Valid
     private final EinOrganizationReferenceDto buyer;
 
-    @JsonProperty("cpid")
-    private String cpId;
+    @JsonProperty("ocid")
+    private String ocId;
 
     @JsonCreator
     public EinDto(
-        @JsonProperty("cpid") final String cpId,
+        @JsonProperty("ocid") final String ocId,
         @JsonProperty("planning") final EinPlanningDto planning,
         @JsonProperty("tender") final EinTenderDto tender,
         @JsonProperty("parties") final List<EinOrganizationDto> parties,
         @JsonProperty("buyer") final EinOrganizationReferenceDto buyer,
         @JsonProperty("relatedProcesses") final List<EinRelatedProcessDto> relatedProcesses) {
-        this.cpId = cpId;
+        this.ocId = ocId;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;
