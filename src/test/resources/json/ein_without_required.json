@@ -21,7 +21,9 @@
       "id": "string",
       "scheme": "CPV",
       "description": "string"
-    }
+    },
+    "status":"planning",
+    "statusDetails":"planning"
   },
   "parties": [
     {
@@ -101,7 +103,6 @@
       "url": "string"
     }
   },
-  "language": "string",
   "relatedProcesses": [
     {
       "id": "string",
