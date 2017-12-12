@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.ein;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -52,7 +51,7 @@ public class EinTenderDto {
                         @JsonProperty("description") final String description,
                         @JsonProperty("classification") final EinClassificationDto classification,
                         @JsonProperty("status") final EinTenderStatusDto status,
-                        @JsonProperty("statusDetails") final EinTenderStatusDetailsDto statusDetails ) {
+                        @JsonProperty("statusDetails") final EinTenderStatusDetailsDto statusDetails) {
         this.id = id;
         this.title = title;
         this.description = description;

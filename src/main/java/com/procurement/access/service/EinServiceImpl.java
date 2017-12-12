@@ -10,8 +10,6 @@ import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,9 +47,11 @@ public class EinServiceImpl implements EinService {
     private String getOcId(final EinDto einDto, final LocalDateTime addedDate) {
         final String ocId;
         if (Objects.isNull(einDto.getOcId())) {
-            ocId = ocdsProperties.getPrefix() + addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+            ocId = ocdsProperties.getPrefix() + addedDate.toInstant(ZoneOffset.UTC)
+                                                         .toEpochMilli();
             einDto.setOcId(ocId);
-            einDto.getTender().setId(ocId);
+            einDto.getTender()
+                  .setId(ocId);
         } else {
             ocId = einDto.getOcId();
         }

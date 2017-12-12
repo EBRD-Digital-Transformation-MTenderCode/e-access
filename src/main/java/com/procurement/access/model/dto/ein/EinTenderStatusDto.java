@@ -14,8 +14,9 @@ public enum EinTenderStatusDto {
     COMPLETE("complete"),
     WITHDRAWN("withdrawn");
 
+    private static final Map<String, EinTenderStatusDto> CONSTANTS = new HashMap<>();
+
     private final String value;
-    private final static Map<String, EinTenderStatusDto> CONSTANTS = new HashMap<>();
 
     static {
         for (final EinTenderStatusDto c : values()) {
@@ -23,7 +24,7 @@ public enum EinTenderStatusDto {
         }
     }
 
-    private EinTenderStatusDto(final String value) {
+    EinTenderStatusDto(final String value) {
         this.value = value;
     }
 
