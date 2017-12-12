@@ -170,7 +170,7 @@ public class CnTenderDto {
 
     @JsonProperty("lots")
     @JsonPropertyDescription("A tender process may be divided into lots, where bidders can bid on one or more lots. " +
-        "Details of each lot can be provided here. Items, documents and other features can then reference the lot " +
+        "FsDetailsDto of each lot can be provided here. Items, documents and other features can then reference the lot " +
         "they are related to using relatedLot. Where no relatedLot identifier is given, the values should be " +
         "interpreted as applicable to the whole tender. Properties of tender can be overridden for a given CnLotDto " +
         "through their inclusion in the CnLotDto object.")

@@ -45,26 +45,26 @@ public class CnLotDto {
     private final CnValueDto value;
 
     @JsonProperty("options")
-    @JsonPropertyDescription("Details about lot options: if they will be accepted and what they can consist of. " +
+    @JsonPropertyDescription("FsDetailsDto about lot options: if they will be accepted and what they can consist of. " +
         "Required by the EU")
     @Valid
     @NotNull
     private final List<CnOptionDto> options;
 
     @JsonProperty("recurrentProcurement")
-    @JsonPropertyDescription("Details of possible recurrent procurements and their subsequent calls for competition.")
+    @JsonPropertyDescription("FsDetailsDto of possible recurrent procurements and their subsequent calls for competition.")
     @Valid
     @NotNull
     private final List<CnRecurrentProcurementDto> recurrentProcurement;
 
     @JsonProperty("renewals")
-    @JsonPropertyDescription("Details of allowable contract renewals")
+    @JsonPropertyDescription("FsDetailsDto of allowable contract renewals")
     @Valid
     @NotNull
     private final List<CnRenewalDto> renewals;
 
     @JsonProperty("variants")
-    @JsonPropertyDescription("Details about lot variants: if they will be accepted and what they can consist of. " +
+    @JsonPropertyDescription("FsDetailsDto about lot variants: if they will be accepted and what they can consist of. " +
         "Required by the EU")
     @Valid
     @NotNull
