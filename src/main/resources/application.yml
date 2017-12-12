@@ -12,4 +12,4 @@ spring:
       username: cassandra
       password: cassandra
 
-ocds.prefix: ocds-t1s2t3-UA
+ocds.prefix: ocds-t1s2t3-UA-

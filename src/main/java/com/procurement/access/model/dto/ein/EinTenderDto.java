@@ -7,32 +7,31 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
+@Setter
 @JsonPropertyOrder({
     "id",
     "title",
     "description",
-    "classification"
+    "classification",
+    "status",
+    "statusDetails"
 })
 public class EinTenderDto {
 
     @NotNull
     @JsonProperty("id")
-    @JsonPropertyDescription("An identifier for the tender.")
-    private final String id;
+    private String id;
 
     @JsonProperty("title")
-    @JsonPropertyDescription("A title for this tender. This will often be used by applications as a headline to " +
-        "attract interest, and to help analysts understand the nature of this procurement.")
     @NotNull
     private final String title;
 
     @JsonProperty("description")
-    @JsonPropertyDescription("A summary description of the tender. This should complement structured information " +
-        "provided using the items array. Descriptions should be short and easy to read. Avoid using ALL CAPS. ")
     @NotNull
     private final String description;
 
@@ -41,15 +40,25 @@ public class EinTenderDto {
     @NotNull
     private final EinClassificationDto classification;
 
+    @JsonProperty("status")
+    private final EinTenderStatusDto status;
+
+    @JsonProperty("statusDetails")
+    private final EinTenderStatusDetailsDto statusDetails;
+
     @JsonCreator
     public EinTenderDto(@JsonProperty("id") final String id,
                         @JsonProperty("title") final String title,
                         @JsonProperty("description") final String description,
-                        @JsonProperty("classification") final EinClassificationDto classification) {
+                        @JsonProperty("classification") final EinClassificationDto classification,
+                        @JsonProperty("status") final EinTenderStatusDto status,
+                        @JsonProperty("statusDetails") final EinTenderStatusDetailsDto statusDetails ) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.classification = classification;
+        this.status = status;
+        this.statusDetails = statusDetails;
     }
 
     @Override
@@ -58,6 +67,8 @@ public class EinTenderDto {
                                     .append(title)
                                     .append(description)
                                     .append(classification)
+                                    .append(status)
+                                    .append(statusDetails)
                                     .toHashCode();
     }
 
@@ -74,6 +85,8 @@ public class EinTenderDto {
                                   .append(title, rhs.title)
                                   .append(description, rhs.description)
                                   .append(classification, rhs.classification)
+                                  .append(status, rhs.status)
+                                  .append(statusDetails, rhs.statusDetails)
                                   .isEquals();
     }
 }

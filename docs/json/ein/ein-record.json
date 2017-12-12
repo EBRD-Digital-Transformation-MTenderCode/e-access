@@ -1,11 +1,4 @@
 {
-  "ocid": "string",
-  "id": "string",
-  "date": "2017-12-05T16:04:25.000000106Z",
-  "tag": [
-    "string"
-  ],
-  "initiationType": "string",
   "planning": {
     "budget": {
       "id": "string",
@@ -28,7 +21,9 @@
       "id": "string",
       "scheme": "CPV",
       "description": "string"
-    }
+    },
+    "status":"planning",
+    "statusDetails":"planning"
   },
   "parties": [
     {
@@ -108,7 +103,6 @@
       "url": "string"
     }
   },
-  "language": "string",
   "relatedProcesses": [
     {
       "id": "string",

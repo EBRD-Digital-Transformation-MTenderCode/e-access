@@ -1,6 +1,5 @@
 package com.procurement.access.service;
 
-import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
@@ -10,13 +9,10 @@ import com.procurement.access.repository.EinRepository;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -38,50 +34,33 @@ public class EinServiceImpl implements EinService {
     @Override
     public ResponseDto createEin(final EinDto einDto) {
         final LocalDateTime addedDate = LocalDateTime.now();
-        final String initiationType = "budget";
-        final List<String> tag = Arrays.asList(initiationType);
-        einDto.setDate(addedDate);
-        einDto.setTag(tag);
-        einDto.setInitiationType(initiationType);
-        einRepository.save(getEntity(einDto));
+        einRepository.save(getEntity(einDto, addedDate));
         return getResponseDto(einDto);
     }
 
-    private EinEntity getEntity(final EinDto einDto) {
+    private EinEntity getEntity(final EinDto einDto, final LocalDateTime addedDate) {
         final EinEntity einEntity = new EinEntity();
-        einEntity.setOcId(getOcId(einDto));
-        einEntity.setEinId(getUuid(einDto));
+        einEntity.setDate(addedDate);
+        einEntity.setCpId(getCpId(einDto, addedDate));
         einEntity.setJsonData(jsonUtil.toJson(einDto));
         return einEntity;
     }
 
-    private UUID getUuid(final EinDto einDto) {
-        final UUID einId;
-        if (Objects.isNull(einDto.getId())) {
-            einId = UUIDs.timeBased();
-            einDto.setId(einId.toString());
+    private String getCpId(final EinDto einDto, final LocalDateTime addedDate) {
+        final String cpId;
+        if (Objects.isNull(einDto.getCpId())) {
+            cpId = ocdsProperties.getPrefix() + addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+            einDto.setCpId(cpId);
+            einDto.getTender().setId(cpId);
         } else {
-            einId = UUID.fromString(einDto.getId());
+            cpId = einDto.getCpId();
         }
-        return einId;
-    }
-
-    private String getOcId(final EinDto einDto) {
-        final String osId;
-        if (Objects.isNull(einDto.getOcid())) {
-            osId = ocdsProperties.getPrefix() + "-" + einDto.getDate()
-                                                            .toInstant(ZoneOffset.UTC)
-                                                            .toEpochMilli();
-            einDto.setOcid(osId);
-        } else {
-            osId = einDto.getOcid();
-        }
-        return osId;
+        return cpId;
     }
 
     private ResponseDto getResponseDto(final EinDto einDto) {
         final Map<String, Object> data = new HashMap<>();
-        data.put("ocid", einDto.getOcid());
+        data.put("cpid", einDto.getCpId());
         data.put("ein", einDto);
         final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
         return new ResponseDto(true, Collections.singletonList(details), data);
