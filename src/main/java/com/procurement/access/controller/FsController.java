@@ -2,6 +2,7 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
+import com.procurement.access.model.dto.fs.FsDto;
 import com.procurement.access.service.EinService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,18 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping("/ein")
-public class EinController {
+@RequestMapping("/fs")
+public class FsController {
 
     private final EinService einService;
 
-    public EinController(final EinService einService) {
+    public FsController(final EinService einService) {
         this.einService = einService;
     }
 
     @PostMapping(value = "/save")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto save(@Valid @RequestBody final EinDto einDto) {
-        return einService.createEin(einDto);
+    public ResponseDto save(@Valid @RequestBody final FsDto fsDto) {
+        return null;
     }
 }

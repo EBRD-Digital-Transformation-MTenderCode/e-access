@@ -1,0 +1,157 @@
+{
+  "ocid": "string",
+  "id": "string",
+  "date": "2017-12-12T08:31:41.367Z",
+  "tag": "string",
+  "initiationType": "string",
+  "planning": {
+    "budget": {
+      "id": "string",
+      "description": "string",
+      "amount": {
+        "amount": 0,
+        "currency": "AED"
+      },
+      "project": "string",
+      "projectID": "string",
+      "uri": {
+        "absolute": true,
+        "authority": "string",
+        "fragment": "string",
+        "host": "string",
+        "opaque": true,
+        "path": "string",
+        "port": 0,
+        "query": "string",
+        "rawAuthority": "string",
+        "rawFragment": "string",
+        "rawPath": "string",
+        "rawQuery": "string",
+        "rawSchemeSpecificPart": "string",
+        "rawUserInfo": "string",
+        "scheme": "string",
+        "schemeSpecificPart": "string",
+        "userInfo": "string"
+      },
+      "isEuropeanUnionFunded": true,
+      "sourceEntity": {
+        "name": "string",
+        "id": "string"
+      },
+      "period": {
+        "startDate": "2017-12-12T08:31:41.368Z",
+        "endDate": "2017-12-12T08:31:41.368Z"
+      },
+      "verified": true,
+      "verificationDetails": "string"
+    },
+    "rationale": "string"
+  },
+  "parties": {
+    "id": "string",
+    "name": "string",
+    "identifier": {
+      "scheme": "string",
+      "id": "string",
+      "legalName": "string",
+      "uri": {
+        "absolute": true,
+        "authority": "string",
+        "fragment": "string",
+        "host": "string",
+        "opaque": true,
+        "path": "string",
+        "port": 0,
+        "query": "string",
+        "rawAuthority": "string",
+        "rawFragment": "string",
+        "rawPath": "string",
+        "rawQuery": "string",
+        "rawSchemeSpecificPart": "string",
+        "rawUserInfo": "string",
+        "scheme": "string",
+        "schemeSpecificPart": "string",
+        "userInfo": "string"
+      }
+    },
+    "additionalIdentifiers": [
+      {
+        "scheme": "string",
+        "id": "string",
+        "legalName": "string",
+        "uri": {
+          "absolute": true,
+          "authority": "string",
+          "fragment": "string",
+          "host": "string",
+          "opaque": true,
+          "path": "string",
+          "port": 0,
+          "query": "string",
+          "rawAuthority": "string",
+          "rawFragment": "string",
+          "rawPath": "string",
+          "rawQuery": "string",
+          "rawSchemeSpecificPart": "string",
+          "rawUserInfo": "string",
+          "scheme": "string",
+          "schemeSpecificPart": "string",
+          "userInfo": "string"
+        }
+      }
+    ],
+    "address": {
+      "streetAddress": "string",
+      "locality": "string",
+      "region": "string",
+      "postalCode": "string",
+      "countryName": "string"
+    },
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "faxNumber": "string",
+      "url": {
+        "absolute": true,
+        "authority": "string",
+        "fragment": "string",
+        "host": "string",
+        "opaque": true,
+        "path": "string",
+        "port": 0,
+        "query": "string",
+        "rawAuthority": "string",
+        "rawFragment": "string",
+        "rawPath": "string",
+        "rawQuery": "string",
+        "rawSchemeSpecificPart": "string",
+        "rawUserInfo": "string",
+        "scheme": "string",
+        "schemeSpecificPart": "string",
+        "userInfo": "string"
+      }
+    },
+    "roles": "buyer",
+    "details": {
+      "typeOfBuyer": "BODY_PUBLIC",
+      "mainGeneralActivity": "DEFENCE",
+      "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+      "isACentralPurchasingBody": true,
+      "NUTSCode": "string",
+      "scale": "micro"
+    },
+    "buyerProfile": "string"
+  },
+  "language": "string",
+  "relatedProcesses": [
+    {
+      "ocid": "string",
+      "relationship": "framework",
+      "title": "string",
+      "scheme": "ocid",
+      "identifier": "string",
+      "uri": "string"
+    }
+  ]
+}
