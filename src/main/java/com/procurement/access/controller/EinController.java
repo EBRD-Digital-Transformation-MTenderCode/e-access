@@ -1,6 +1,7 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.service.EinService;
 import javax.validation.Valid;
@@ -23,9 +24,21 @@ public class EinController {
         this.einService = einService;
     }
 
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto save(@Valid @RequestBody final EinDto einDto) {
+    public ResponseDto create(@Valid @RequestBody final EinDto einDto) {
         return einService.createEin(einDto);
+    }
+
+    @PostMapping(value = "/update")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto update(@Valid @RequestBody final EinDto einDto) {
+        return einService.updateEin(einDto);
+    }
+
+    @PostMapping(value = "/updateFs")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto updateFs(@Valid @RequestBody final UpdateFsDto updateFsDto) {
+        return einService.updateFs(updateFsDto);
     }
 }

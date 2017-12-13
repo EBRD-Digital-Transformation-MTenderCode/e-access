@@ -1,59 +1,79 @@
 {
-  "ocid": "",
-  "id": "",
-  "date": "",
-  "tag": "",
-  "initiationType": "",
   "planning": {
-    "rationale": "",
     "budget": {
-      "id": "",
-      "description": "",
-      "period": {
-        "startDate": "",
-        "endDate": ""
-      },
+      "id": "string",
+      "description": "string",
       "amount": {
-        "value": {
-          "amount": 0,
-          "currency": ""
-        }
+        "amount": 0,
+        "currency": "AED"
       },
+      "project": "string",
+      "projectID": "string",
+      "uri": "string",
+      "isEuropeanUnionFunded": true,
       "sourceEntity": {
-        "organizationReference": {
-          "name": "",
-          "id": ""
-        }
+        "name": "string",
+        "id": "string"
       },
-      "isEuropeanUnionFunded": false,
-      "project": "",
-      "projectID": "",
-      "uri": "",
-      "verified": false,
-      "verificationDetails": ""
-    }
+      "period": {
+        "startDate": "2017-12-13T13:15:31.547Z",
+        "endDate": "2017-12-13T13:15:31.547Z"
+      },
+      "verified": true,
+      "verificationDetails": "string"
+    },
+    "rationale": "string"
   },
   "parties": {
-    "organization": {
-      "name": "",
-      "id": "",
-      "identifier": "",
-      "additionalIdentifiers": "",
-      "address": "",
-      "contactPoint": "",
-      "roles": "",
-      "details": "",
-      "buyerProfile": ""
-    }
+    "id": "string",
+    "name": "string",
+    "identifier": {
+      "scheme": "string",
+      "id": "string",
+      "legalName": "string",
+      "uri": "string"
+    },
+    "additionalIdentifiers": [
+      {
+        "scheme": "string",
+        "id": "string",
+        "legalName": "string",
+        "uri": "string"
+      }
+    ],
+    "address": {
+      "streetAddress": "string",
+      "locality": "string",
+      "region": "string",
+      "postalCode": "string",
+      "countryName": "string"
+    },
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "faxNumber": "string",
+      "url": "string"
+    },
+    "roles": "buyer",
+    "details": {
+      "typeOfBuyer": "BODY_PUBLIC",
+      "mainGeneralActivity": "DEFENCE",
+      "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+      "isACentralPurchasingBody": true,
+      "NUTSCode": "string",
+      "scale": "micro"
+    },
+    "buyerProfile": "string"
   },
-  "language": "",
   "relatedProcesses": [
     {
-      "ocid": "",
-      "title": "",
-      "relationship": "",
-      "scheme": "",
-      "uri": ""
+      "ocid": "ocds-t1s2t3-UA-1513171559981",
+      "relationship": "framework",
+      "title": "string",
+      "scheme": "ocid",
+      "identifier": "string",
+      "uri": "string"
     }
   ]
 }

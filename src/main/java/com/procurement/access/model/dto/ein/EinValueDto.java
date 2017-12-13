@@ -9,10 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
+@Setter
 @JsonPropertyOrder({
     "amount",
     "currency"
@@ -21,7 +23,7 @@ public class EinValueDto {
     @JsonProperty("amount")
     @JsonPropertyDescription("Amount as a number.")
     @NotNull
-    private final Double amount;
+    private Double amount;
 
     @JsonProperty("currency")
     @JsonPropertyDescription("The currency for each amount should always be specified using the uppercase 3-letter " +

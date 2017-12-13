@@ -47,14 +47,14 @@ public class FsContactPointDto {
     @JsonProperty("url")
     @JsonPropertyDescription("A web address for the contact point/person.")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private final URI url;
+    private final String url;
 
     @JsonCreator
     public FsContactPointDto(@JsonProperty("name") final String name,
                              @JsonProperty("email") final String email,
                              @JsonProperty("telephone") final String telephone,
                              @JsonProperty("faxNumber") final String faxNumber,
-                             @JsonProperty("url") final URI url) {
+                             @JsonProperty("url") final String url) {
         this.name = name;
         this.email = email;
         this.telephone = telephone;

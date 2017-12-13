@@ -43,13 +43,13 @@ public class FsIdentifierDto {
         "(http://www.opencorporates.com) or some other relevant URI provider. This is not for listing the website of " +
         "the organization: that can be done through the URL field of the Organization contact point.")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private final URI uri;
+    private final String uri;
 
     @JsonCreator
     public FsIdentifierDto(@JsonProperty("scheme") final String scheme,
                            @JsonProperty("id") final String id,
                            @JsonProperty("legalName") final String legalName,
-                           @JsonProperty("uri") final URI uri) {
+                           @JsonProperty("uri") final String uri) {
         this.id = id;
         this.scheme = scheme;
         this.legalName = legalName;

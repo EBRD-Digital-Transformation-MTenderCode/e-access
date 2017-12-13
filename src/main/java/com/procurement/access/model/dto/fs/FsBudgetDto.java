@@ -86,7 +86,7 @@ public class FsBudgetDto {
         "using IATI, the Open Fiscal Data Standard or any other standard which provides structured data on budget " +
         "sources. Human readable documents can be included using the planning.documents block.")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private final URI uri;
+    private final String uri;
 
     @JsonProperty("verified")
     @NotNull
@@ -102,7 +102,7 @@ public class FsBudgetDto {
                        @JsonProperty("amount") final FsValueDto amount,
                        @JsonProperty("project") final String project,
                        @JsonProperty("projectID") final String projectID,
-                       @JsonProperty("uri") final URI uri,
+                       @JsonProperty("uri") final String uri,
                        @JsonProperty("isEuropeanUnionFunded") final Boolean isEuropeanUnionFunded,
                        @JsonProperty("sourceEntity") final FsOrganizationReferenceDto sourceEntity,
                        @JsonProperty("period") final FsPeriodDto period,

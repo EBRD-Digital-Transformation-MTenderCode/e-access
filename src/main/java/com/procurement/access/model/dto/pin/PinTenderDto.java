@@ -48,7 +48,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class PinTenderDto {
     @JsonProperty("id")
-    @JsonPropertyDescription("An identifier for this tender process. This may be the same as the ocid, or may be " +
+    @JsonPropertyDescription("An identifier for this tender process. This may be the same as the ocId, or may be " +
         "drawn from an internally held identifier for this tender.")
     @Size(min = 1)
     @NotNull

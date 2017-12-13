@@ -1,9 +1,8 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.fs.FsDto;
-import com.procurement.access.service.EinService;
+import com.procurement.access.service.FsService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -18,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/fs")
 public class FsController {
 
-    private final EinService einService;
+    private final FsService fsService;
 
-    public FsController(final EinService einService) {
-        this.einService = einService;
+    public FsController(final FsService fsService) {
+        this.fsService = fsService;
     }
 
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto save(@Valid @RequestBody final FsDto fsDto) {
-        return null;
+    public ResponseDto create(@Valid @RequestBody final FsDto fsDto) {
+        return fsService.createFs(fsDto);
     }
 }

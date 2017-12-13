@@ -26,7 +26,7 @@ public class FsRelatedProcessDto {
     @JsonProperty("ocid")
     @JsonPropertyDescription("A local identifier for this relationship, unique within this array.")
     @NotNull
-    private final String ocid;
+    private final String ocId;
 
     @JsonProperty("relationship")
     @JsonPropertyDescription("Specify the type of relationship using the [related process codelist](http://standard" +
@@ -41,7 +41,7 @@ public class FsRelatedProcessDto {
     @JsonProperty("scheme")
     @JsonPropertyDescription("The identification scheme used by this cross-reference from the [related process scheme" +
         " codelist](http://standard.open-contracting.org/latest/en/schema/codelists/#related-process-scheme) codelist" +
-        ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocid) should be used.")
+        ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocId) should be used.")
     private final RelatedProcessScheme scheme;
 
     @JsonProperty("uri")
@@ -50,13 +50,13 @@ public class FsRelatedProcessDto {
     private final String uri;
 
     @JsonCreator
-    public FsRelatedProcessDto(@JsonProperty("ocid") final String ocid,
+    public FsRelatedProcessDto(@JsonProperty("ocid") final String ocId,
                                @JsonProperty("relationship") final RelatedProcessType relationship,
                                @JsonProperty("title") final String title,
                                @JsonProperty("scheme") final RelatedProcessScheme scheme,
                                @JsonProperty("identifier") final String identifier,
                                @JsonProperty("uri") final String uri) {
-        this.ocid = ocid;
+        this.ocId = ocId;
         this.relationship = relationship;
         this.title = title;
         this.scheme = scheme;
@@ -65,7 +65,7 @@ public class FsRelatedProcessDto {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(ocid)
+        return new HashCodeBuilder().append(ocId)
                                     .append(relationship)
                                     .append(title)
                                     .append(scheme)
@@ -82,7 +82,7 @@ public class FsRelatedProcessDto {
             return false;
         }
         final FsRelatedProcessDto rhs = (FsRelatedProcessDto) other;
-        return new EqualsBuilder().append(ocid, rhs.ocid)
+        return new EqualsBuilder().append(ocId, rhs.ocId)
                                   .append(relationship, rhs.relationship)
                                   .append(title, rhs.title)
                                   .append(scheme, rhs.scheme)

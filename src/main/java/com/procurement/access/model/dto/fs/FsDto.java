@@ -23,34 +23,33 @@ import lombok.Setter;
     "date",
     "tag",
     "initiationType",
+    "language",
     "planning",
     "parties",
-    "language",
     "relatedProcesses"
 })
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class FsDto {
 
     @JsonProperty("ocid")
-    @NotNull
-    private String ocid;
+    private String ocId;
 
     @JsonProperty("id")
-    @NotNull
     private String id;
 
     @JsonProperty("date")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @NotNull
     private LocalDateTime date;
 
     @JsonProperty("tag")
-    @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private String tag;
+    private List<String> tag;
 
     @JsonProperty("initiationType")
-    @NotNull
     private String initiationType;
+
+    @JsonProperty("language")
+    private String language;
 
     @JsonProperty("planning")
     @NotNull
@@ -62,10 +61,6 @@ public class FsDto {
     @Valid
     private final FsOrganizationDto parties;
 
-    @JsonProperty("language")
-    @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private final String language;
-
     @JsonProperty("relatedProcesses")
     @NotNull
     @Valid
@@ -74,23 +69,23 @@ public class FsDto {
 
 
     @JsonCreator
-    public FsDto(@JsonProperty("ocid") final String ocid,
+    public FsDto(@JsonProperty("ocid") final String ocId,
                   @JsonProperty("id") final String id,
                   @JsonProperty("date") final LocalDateTime date,
-                  @JsonProperty("tag") final String tag,
+                  @JsonProperty("tag") final List<String> tag,
                   @JsonProperty("initiationType") final String initiationType,
+                  @JsonProperty("language") final String language,
                   @JsonProperty("planning") final FsPlanningDto planning,
                   @JsonProperty("parties") final FsOrganizationDto parties,
-                  @JsonProperty("language") final String language,
                   @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
-        this.ocid = ocid;
+        this.ocId = ocId;
         this.id = id;
         this.date = date;
         this.tag = tag;
         this.initiationType = initiationType;
+        this.language = language;
         this.planning = planning;
         this.parties = parties;
-        this.language = language;
         this.relatedProcesses = relatedProcesses;
     }
 }

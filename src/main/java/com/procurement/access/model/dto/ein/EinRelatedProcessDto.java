@@ -43,12 +43,12 @@ public class EinRelatedProcessDto {
     @JsonProperty("scheme")
     @JsonPropertyDescription("The identification scheme used by this cross-reference from the [related process scheme" +
         " codelist](http://standard.open-contracting.org/latest/en/schema/codelists/#related-process-scheme) codelist" +
-        ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocid) should be used.")
+        ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocId) should be used.")
     private final RelatedProcessScheme scheme;
 
     @JsonProperty("identifier")
     @JsonPropertyDescription("The identifier of the related process. When cross-referencing information also " +
-        "published using OCDS, this should be the Open Contracting ID (ocid).")
+        "published using OCDS, this should be the Open Contracting ID (ocId).")
     private final String identifier;
 
     @JsonProperty("uri")

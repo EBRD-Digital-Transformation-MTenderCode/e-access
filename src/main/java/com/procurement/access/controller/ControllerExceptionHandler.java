@@ -1,7 +1,9 @@
 package com.procurement.access.controller;
 
+import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolationException;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -30,6 +33,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseDto handle(final ConstraintViolationException e) {
         return new ResponseDto(false, getErrors(e), null);
+    }
+
+    @ResponseBody
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(ErrorException.class)
+    public ResponseDto handleErrorInsertException(final ErrorException e) {
+        return new ResponseDto(false, getErrors(e.getMessage()), null);
     }
 
     private List<ResponseDetailsDto> getErrors(final BindingResult result) {
@@ -49,5 +59,9 @@ public class ControllerExceptionHandler {
                      .toString(),
                     f.getMessage() + " " + f.getMessageTemplate()))
                 .collect(toList());
+    }
+
+    private List<ResponseDetailsDto> getErrors(final String error) {
+        return Arrays.asList(new ResponseDetailsDto(HttpStatus.BAD_REQUEST.toString(), error));
     }
 }
