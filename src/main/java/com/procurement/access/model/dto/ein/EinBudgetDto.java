@@ -7,10 +7,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
+@Setter
 @JsonPropertyOrder({
     "id",
     "period",
@@ -21,7 +23,7 @@ public class EinBudgetDto {
     @JsonProperty("id")
     @JsonPropertyDescription("An identifier for the budget line item which provides funds for this contracting " +
         "process. This identifier should be possible to cross-reference against the provided data source.")
-    private final String id;
+    private String id;
 
     @JsonProperty("period")
     @JsonPropertyDescription("The period covered by this budget entry.")

@@ -1,5 +1,6 @@
 package com.procurement.access.service;
 
+import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
@@ -9,6 +10,7 @@ import com.procurement.access.repository.EinRepository;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,10 @@ public class EinServiceImpl implements EinService {
     @Override
     public ResponseDto createEin(final EinDto einDto) {
         final LocalDateTime addedDate = LocalDateTime.now();
+        einDto.setDate(addedDate);
+        einDto.setTag(Arrays.asList("compiled"));
+        einDto.setInitiationType("tender");
+        einDto.setLanguage("en");
         einRepository.save(getEntity(einDto, addedDate));
         return getResponseDto(einDto);
     }
@@ -47,11 +53,12 @@ public class EinServiceImpl implements EinService {
     private String getOcId(final EinDto einDto, final LocalDateTime addedDate) {
         final String ocId;
         if (Objects.isNull(einDto.getOcId())) {
-            ocId = ocdsProperties.getPrefix() + addedDate.toInstant(ZoneOffset.UTC)
-                                                         .toEpochMilli();
+            long timeStamp = addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+            ocId = ocdsProperties.getPrefix() + timeStamp;
             einDto.setOcId(ocId);
-            einDto.getTender()
-                  .setId(ocId);
+            einDto.getTender().setId(ocId);
+            einDto.setId(ocId+"-"+timeStamp);
+            einDto.getPlanning().getBudget().setId(UUIDs.timeBased().toString());
         } else {
             ocId = einDto.getOcId();
         }
