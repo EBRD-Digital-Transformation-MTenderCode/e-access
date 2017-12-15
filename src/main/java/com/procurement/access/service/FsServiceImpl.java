@@ -49,7 +49,7 @@ public class FsServiceImpl implements FsService {
         final List<FsRelatedProcessDto> relatedProcesses = fsDto.getRelatedProcesses();
         if (!relatedProcesses.isEmpty()) {
             return relatedProcesses.get(0)
-                                   .getOcId();
+                                   .getIdentifier();
         } else {
             throw new ErrorException("ocid in related processes is empty.");
         }

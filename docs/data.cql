@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS  ocds.access_fs (
     json_data text,
     amount double,
     primary key(cp_id, oc_id, date)
-)WITH CLUSTERING ORDER BY (oc_id DESC, date DESC);
+)WITH CLUSTERING ORDER BY (oc_id DESC);
 
 SELECT * FROM ocds.access_fs;
 

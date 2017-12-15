@@ -63,8 +63,8 @@ public class EinServiceImpl implements EinService {
         final LocalDateTime addedDate = LocalDateTime.now();
         final long timeStamp = addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
         einDto.setId(einDto.getOcId()+"-EIN-"+timeStamp);
-        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
-        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
+//        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
+//        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
         return getResponseDto(einDto);
     }
 

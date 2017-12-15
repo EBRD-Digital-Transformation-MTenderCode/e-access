@@ -19,12 +19,12 @@ public class FsEntity {
     @PrimaryKeyColumn(name = "oc_id", type = PrimaryKeyType.CLUSTERED)
     private String ocId;
 
-    @PrimaryKeyColumn(name = "date", type = PrimaryKeyType.CLUSTERED)
+    @Column(value = "amount")
+    private Double amount;
+
+    @Column(value = "date")
     private LocalDateTime date;
 
     @Column(value = "json_data")
     private String jsonData;
-
-    @Column(value = "amount")
-    private Double amount;
 }

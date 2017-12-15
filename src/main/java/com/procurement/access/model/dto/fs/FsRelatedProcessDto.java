@@ -16,17 +16,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "ocid",
+    "id",
     "title",
     "relationship",
     "scheme",
+    "identifier",
     "uri"
 })
 public class FsRelatedProcessDto {
-    @JsonProperty("ocid")
+    @JsonProperty("id")
     @JsonPropertyDescription("A local identifier for this relationship, unique within this array.")
     @NotNull
-    private final String ocId;
+    private final String id;
 
     @JsonProperty("relationship")
     @JsonPropertyDescription("Specify the type of relationship using the [related process codelist](http://standard" +
@@ -44,31 +45,38 @@ public class FsRelatedProcessDto {
         ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocId) should be used.")
     private final RelatedProcessScheme scheme;
 
+    @JsonProperty("identifier")
+    @JsonPropertyDescription("The identifier of the related process. When cross-referencing information also " +
+        "published using OCDS, this should be the Open Contracting ID (ocId).")
+    private final String identifier;
+
     @JsonProperty("uri")
     @JsonPropertyDescription("A URI pointing to a machine-readable document, release or record package containing the" +
         " identified related process.")
     private final String uri;
 
     @JsonCreator
-    public FsRelatedProcessDto(@JsonProperty("ocid") final String ocId,
+    public FsRelatedProcessDto(@JsonProperty("id") final String id,
                                @JsonProperty("relationship") final RelatedProcessType relationship,
                                @JsonProperty("title") final String title,
                                @JsonProperty("scheme") final RelatedProcessScheme scheme,
                                @JsonProperty("identifier") final String identifier,
                                @JsonProperty("uri") final String uri) {
-        this.ocId = ocId;
+        this.id = id;
         this.relationship = relationship;
         this.title = title;
         this.scheme = scheme;
+        this.identifier = identifier;
         this.uri = uri;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(ocId)
+        return new HashCodeBuilder().append(id)
                                     .append(relationship)
                                     .append(title)
                                     .append(scheme)
+                                    .append(identifier)
                                     .append(uri)
                                     .toHashCode();
     }
@@ -82,10 +90,11 @@ public class FsRelatedProcessDto {
             return false;
         }
         final FsRelatedProcessDto rhs = (FsRelatedProcessDto) other;
-        return new EqualsBuilder().append(ocId, rhs.ocId)
+        return new EqualsBuilder().append(id, rhs.id)
                                   .append(relationship, rhs.relationship)
                                   .append(title, rhs.title)
                                   .append(scheme, rhs.scheme)
+                                  .append(identifier, rhs.identifier)
                                   .append(uri, rhs.uri)
                                   .isEquals();
     }
