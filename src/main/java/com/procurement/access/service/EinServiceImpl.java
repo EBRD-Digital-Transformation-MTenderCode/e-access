@@ -75,8 +75,8 @@ public class EinServiceImpl implements EinService {
         final long timeStamp = dateUtil.getMilliUTC(addedDate);
         einDto.setDate(addedDate);
         einDto.setId(getId(einDto, timeStamp));
-//        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
-//        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
+        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
+        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
         einRepository.save(getEntity(einDto, addedDate));
         return getResponseDto(einDto);
     }
