@@ -1,8 +1,8 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.model.dto.ein.EinDto;
+import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.service.EinService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,9 +36,9 @@ public class EinController {
         return einService.updateEin(einDto);
     }
 
-    @PostMapping(value = "/updateFs")
+    @PostMapping(value = "/addRelatedProcess")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto updateFs(@Valid @RequestBody final UpdateFsDto updateFsDto) {
-        return einService.updateFs(updateFsDto);
+    public ResponseDto addRelatedProcess(@Valid @RequestBody final UpdateFsDto updateFsDto) {
+        return einService.addRelatedProcess(updateFsDto);
     }
 }

@@ -74,7 +74,7 @@ public class EinDto {
     private final EinOrganizationReferenceDto buyer;
 
     @JsonProperty("relatedProcesses")
-    public final List<EinRelatedProcessDto> relatedProcesses;
+    public List<EinRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
     public EinDto(@JsonProperty("ocid") final String ocId,

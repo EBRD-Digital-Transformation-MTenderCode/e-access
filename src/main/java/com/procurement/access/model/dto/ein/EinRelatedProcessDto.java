@@ -11,10 +11,14 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",
@@ -28,33 +32,33 @@ public class EinRelatedProcessDto {
     @JsonProperty("id")
     @JsonPropertyDescription("A local identifier for this relationship, unique within this array.")
     @NotNull
-    private final String id;
+    private String id;
 
     @JsonProperty("relationship")
     @JsonPropertyDescription("Specify the type of relationship using the [related process codelist](http://standard" +
         ".open-contracting.org/latest/en/schema/codelists/#related-process).")
-    private final List<RelatedProcessType> relationship;
+    private List<RelatedProcessType> relationship;
 
     @JsonProperty("title")
     @JsonPropertyDescription("The title of the related process, where referencing an open contracting process, this " +
         "field should match the tender/title field in the related process.")
-    private final String title;
+    private String title;
 
     @JsonProperty("scheme")
     @JsonPropertyDescription("The identification scheme used by this cross-reference from the [related process scheme" +
         " codelist](http://standard.open-contracting.org/latest/en/schema/codelists/#related-process-scheme) codelist" +
         ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocId) should be used.")
-    private final RelatedProcessScheme scheme;
+    private RelatedProcessScheme scheme;
 
     @JsonProperty("identifier")
     @JsonPropertyDescription("The identifier of the related process. When cross-referencing information also " +
         "published using OCDS, this should be the Open Contracting ID (ocId).")
-    private final String identifier;
+    private String identifier;
 
     @JsonProperty("uri")
     @JsonPropertyDescription("A URI pointing to a machine-readable document, release or record package containing the" +
         " identified related process.")
-    private final String uri;
+    private String uri;
 
     @JsonCreator
     public EinRelatedProcessDto(@JsonProperty("id") final String id,

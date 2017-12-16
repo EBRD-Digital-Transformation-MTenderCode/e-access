@@ -9,7 +9,5 @@ public interface FsService {
 
     ResponseDto createFs(FsDto fsDto);
 
-
     Double getTotalAmountFs(String cpId);
-
 }

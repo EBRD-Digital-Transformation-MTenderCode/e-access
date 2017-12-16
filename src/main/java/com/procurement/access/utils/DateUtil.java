@@ -1,5 +1,6 @@
 package com.procurement.access.utils;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.springframework.stereotype.Component;
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Component;
 public class DateUtil {
 
     public LocalDateTime getNowUTC() {
-        return LocalDateTime.now(ZoneOffset.UTC);
+        return LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
     }
 
-    public long getMilliUTC(LocalDateTime localDateTime) {
+    public long getMilliUTC(final LocalDateTime localDateTime) {
         return localDateTime.toInstant(ZoneOffset.UTC)
                             .toEpochMilli();
     }
