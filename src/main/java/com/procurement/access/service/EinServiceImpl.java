@@ -10,11 +10,14 @@ import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.fs.FsDto;
 import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.repository.EinRepository;
+import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,22 +27,25 @@ public class EinServiceImpl implements EinService {
 
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
+    private final DateUtil dateUtil;
     private final EinRepository einRepository;
     private final FsService fsService;
 
     public EinServiceImpl(final OCDSProperties ocdsProperties,
                           final JsonUtil jsonUtil,
+                          final DateUtil dateUtil,
                           final EinRepository einRepository,
                           final FsService fsService) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
+        this.dateUtil = dateUtil;
         this.einRepository = einRepository;
         this.fsService = fsService;
     }
 
     @Override
     public ResponseDto createEin(final EinDto einDto) {
-        final LocalDateTime addedDate = LocalDateTime.now();
+        final LocalDateTime addedDate = dateUtil.getNowUTC();
         einDto.setDate(addedDate);
         einDto.setTag(Arrays.asList("compiled"));
         einDto.setInitiationType("tender");
@@ -60,8 +66,8 @@ public class EinServiceImpl implements EinService {
         final String updateJson = jsonUtil.toJson(updateFsDto);
         final String resultJson = jsonUtil.merge(mainJson, updateJson);
         final EinDto einDto = jsonUtil.toObject(EinDto.class, resultJson);
-        final LocalDateTime addedDate = LocalDateTime.now();
-        final long timeStamp = addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+        final LocalDateTime addedDate = dateUtil.getNowUTC();
+        final long timeStamp = dateUtil.getMilliUTC(addedDate);
         einDto.setId(einDto.getOcId()+"-EIN-"+timeStamp);
 //        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
 //        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
@@ -79,7 +85,7 @@ public class EinServiceImpl implements EinService {
     private String getOcId(final EinDto einDto, final LocalDateTime addedDate) {
         final String ocId;
         if (Objects.isNull(einDto.getOcId())) {
-            long timeStamp = addedDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+            long timeStamp = dateUtil.getMilliUTC(addedDate);
             ocId = ocdsProperties.getPrefix() + timeStamp;
             einDto.setOcId(ocId);
             einDto.getTender().setId(ocId);
