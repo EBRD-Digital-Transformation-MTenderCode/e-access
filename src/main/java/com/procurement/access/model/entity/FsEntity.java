@@ -1,6 +1,5 @@
 package com.procurement.access.model.entity;
 
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
@@ -21,9 +20,6 @@ public class FsEntity {
 
     @Column(value = "amount")
     private Double amount;
-
-    @Column(value = "date")
-    private LocalDateTime date;
 
     @Column(value = "json_data")
     private String jsonData;

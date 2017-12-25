@@ -91,7 +91,6 @@ public class FsServiceImpl implements FsService {
         final FsEntity fsEntity = new FsEntity();
         fsEntity.setCpId(cpId);
         fsEntity.setOcId(fsDto.getOcId());
-        fsEntity.setDate(addedDate);
         fsEntity.setJsonData(jsonUtil.toJson(fsDto));
         fsEntity.setAmount(getAmount(fsDto));
         return fsEntity;

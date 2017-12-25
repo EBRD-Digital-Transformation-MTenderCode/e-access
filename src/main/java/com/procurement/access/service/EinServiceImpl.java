@@ -12,13 +12,14 @@ import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.repository.EinRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EinServiceImpl implements EinService {
@@ -45,19 +46,14 @@ public class EinServiceImpl implements EinService {
     public ResponseDto createEin(final EinDto einDto) {
         final LocalDateTime addedDate = dateUtil.getNowUTC();
         final long timeStamp = dateUtil.getMilliUTC(addedDate);
-        einDto.setDate(addedDate);
-        einDto.setTag(Arrays.asList("compiled"));
-        einDto.setInitiationType("tender");
-        einDto.setLanguage("en");
         final String ocId = getOcId(einDto, timeStamp);
         einDto.getTender()
-              .setId(ocId);
-        einDto.setId(getId(einDto, timeStamp));
+                .setId(ocId);
         einDto.getPlanning()
-              .getBudget()
-              .setId(UUIDs.timeBased()
-                          .toString());
-        einRepository.save(getEntity(einDto, addedDate));
+                .getBudget()
+                .setId(UUIDs.timeBased()
+                        .toString());
+        einRepository.save(getEntity(einDto));
         return getResponseDto(einDto);
     }
 
@@ -71,18 +67,10 @@ public class EinServiceImpl implements EinService {
         final EinEntity einEntity = einRepository.getLastByOcId(updateFsDto.getCpId());
         final EinDto einDto = jsonUtil.toObject(EinDto.class, einEntity.getJsonData());
         addFsRelatedProcessToEin(einDto, updateFsDto.getOcId());
-        final LocalDateTime addedDate = dateUtil.getNowUTC();
-        final long timeStamp = dateUtil.getMilliUTC(addedDate);
-        einDto.setDate(addedDate);
-        einDto.setId(getId(einDto, timeStamp));
-        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
-        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
-        einRepository.save(getEntity(einDto, addedDate));
+//        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
+//        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
+        einRepository.save(getEntity(einDto));
         return getResponseDto(einDto);
-    }
-
-    private String getId(final EinDto einDto, final long timeStamp) {
-        return einDto.getOcId() + "-EIN-" + timeStamp;
     }
 
     private String getOcId(final EinDto einDto, final long timeStamp) {
@@ -96,9 +84,8 @@ public class EinServiceImpl implements EinService {
         return ocId;
     }
 
-    private EinEntity getEntity(final EinDto einDto, final LocalDateTime addedDate) {
+    private EinEntity getEntity(final EinDto einDto) {
         final EinEntity einEntity = new EinEntity();
-        einEntity.setDate(addedDate);
         einEntity.setOcId(einDto.getOcId());
         einEntity.setJsonData(jsonUtil.toJson(einDto));
         return einEntity;
@@ -107,7 +94,7 @@ public class EinServiceImpl implements EinService {
     private void addFsRelatedProcessToEin(final EinDto einDto, final String ocId) {
         final EinRelatedProcessDto relatedProcessDto = new EinRelatedProcessDto();
         relatedProcessDto.setId(UUIDs.timeBased()
-                                     .toString());
+                .toString());
         relatedProcessDto.setRelationship(Arrays.asList(EinRelatedProcessDto.RelatedProcessType.FRAMEWORK));
         relatedProcessDto.setScheme(EinRelatedProcessDto.RelatedProcessScheme.OCID);
         relatedProcessDto.setIdentifier(ocId);
@@ -120,8 +107,6 @@ public class EinServiceImpl implements EinService {
         final EinResponseDto einResponseDto = new EinResponseDto();
         einResponseDto.setCpId(einDto.getOcId());
         einResponseDto.setOcId(einDto.getOcId());
-        einResponseDto.setReleaseDate(einDto.getDate());
-        einResponseDto.setReleaseId(einDto.getId());
         einResponseDto.setJsonData(einDto);
         final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
         return new ResponseDto(true, Collections.singletonList(details), einResponseDto);

@@ -15,13 +15,6 @@ public class EinResponseDto {
     @JsonProperty(value = "ocid")
     private String ocId;
 
-    @JsonProperty(value = "releaseId")
-    private String releaseId;
-
-    @JsonProperty(value = "releaseDate")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime releaseDate;
-
     @JsonProperty(value = "jsonData")
     private EinDto jsonData;
 }

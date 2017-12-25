@@ -1,6 +1,5 @@
 package com.procurement.access.model.entity;
 
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
@@ -15,9 +14,6 @@ public class EinEntity {
 
     @PrimaryKeyColumn(name = "oc_id", type = PrimaryKeyType.PARTITIONED)
     private String ocId;
-
-    @PrimaryKeyColumn(name = "date", type = PrimaryKeyType.CLUSTERED)
-    private LocalDateTime date;
 
     @Column(value = "json_data")
     private String jsonData;
