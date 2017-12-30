@@ -17,17 +17,17 @@ public class CnDto {
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private final CnPlanningDto planningDto;
+    private final CnPlanningDto planning;
 
     @JsonProperty("tender")
     @NotNull
     @Valid
-    private final CnTenderDto tenderDto;
+    private final CnTenderDto tender;
 
     @JsonCreator
-    public CnDto(@JsonProperty("planning") final CnPlanningDto planningDto,
-                 @JsonProperty("budget") final CnTenderDto tenderDto) {
-        this.planningDto = planningDto;
-        this.tenderDto = tenderDto;
+    public CnDto(@JsonProperty("planning") final CnPlanningDto planning,
+                 @JsonProperty("budget") final CnTenderDto tender) {
+        this.planning = planning;
+        this.tender = tender;
     }
 }
