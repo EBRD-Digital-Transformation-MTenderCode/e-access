@@ -11,13 +11,11 @@ import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "startDate",
-    "endDate"
+        "startDate",
+        "endDate"
 })
 public class CnBudgetBreakdownPeriodDto {
     @JsonProperty("startDate")
@@ -38,29 +36,8 @@ public class CnBudgetBreakdownPeriodDto {
                                               startDate,
                                       @JsonProperty("endDate")
                                       @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
-                                          endDate) {
+                                              endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(startDate)
-                                    .append(endDate)
-                                    .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof CnBudgetBreakdownPeriodDto)) {
-            return false;
-        }
-        final CnBudgetBreakdownPeriodDto rhs = (CnBudgetBreakdownPeriodDto) other;
-        return new EqualsBuilder().append(startDate, rhs.startDate)
-                                  .append(endDate, rhs.endDate)
-                                  .isEquals();
     }
 }

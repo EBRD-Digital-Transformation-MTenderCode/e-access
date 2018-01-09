@@ -70,7 +70,7 @@ public class FsServiceImpl implements FsService {
                                                   .findFirst()
                                                   .orElse(null);
         if (Objects.isNull(relatedProcess)) {
-            throw new ErrorException("Identifier(ocid) in related processes not found.");
+            throw new ErrorException("CnIdentifierDto(ocid) in related processes not found.");
         } else {
             return relatedProcess.getIdentifier();
         }

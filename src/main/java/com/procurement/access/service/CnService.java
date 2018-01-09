@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CnService {
 
-    ResponseDto createCn(CnDto cnDto);
+    ResponseDto createCn(String country, String pmd, String stage, String owner, CnDto cnDto);
 }

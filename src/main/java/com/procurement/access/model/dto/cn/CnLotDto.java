@@ -8,26 +8,27 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import lombok.Setter;
 
 @Getter
+@Setter
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "value",
-    "options",
-    "recurrentProcurement",
-    "renewals",
-    "variants"
+        "id",
+        "title",
+        "description",
+        "value",
+        "options",
+        "variants",
+        "renewals",
+        "recurrentProcurement",
+        "contractPeriod",
+        "placeOfPerformance"
 })
 public class CnLotDto {
     @JsonProperty("id")
     @JsonPropertyDescription("A local identifier for this lot, such as a lot number. This is used in relatedLot " +
-        "references at the item, document and award level.")
-    @NotNull
-    private final String id;
+            "references at the item, document and award level.")
+    private String id;
 
     @JsonProperty("title")
     @JsonPropertyDescription("A title for this lot.")
@@ -46,13 +47,14 @@ public class CnLotDto {
 
     @JsonProperty("options")
     @JsonPropertyDescription("FsDetailsDto about lot options: if they will be accepted and what they can consist of. " +
-        "Required by the EU")
+            "Required by the EU")
     @Valid
     @NotNull
     private final List<CnOptionDto> options;
 
     @JsonProperty("recurrentProcurement")
-    @JsonPropertyDescription("FsDetailsDto of possible recurrent procurements and their subsequent calls for competition.")
+    @JsonPropertyDescription("FsDetailsDto of possible recurrent procurements and their subsequent calls for " +
+            "competition.")
     @Valid
     @NotNull
     private final List<CnRecurrentProcurementDto> recurrentProcurement;
@@ -64,11 +66,20 @@ public class CnLotDto {
     private final List<CnRenewalDto> renewals;
 
     @JsonProperty("variants")
-    @JsonPropertyDescription("FsDetailsDto about lot variants: if they will be accepted and what they can consist of. " +
-        "Required by the EU")
+    @JsonPropertyDescription("FsDetailsDto about lot variants: if they will be accepted and what they can consist of." +
+            " " +
+            "Required by the EU")
     @Valid
     @NotNull
     private final List<CnVariantDto> variants;
+
+    @JsonProperty("contractPeriod")
+    @Valid
+    private final CnPeriodDto contractPeriod;
+
+    @JsonProperty("placeOfPerformance")
+    @Valid
+    private final CnPlaceOfPerformanceDto placeOfPerformance;
 
     @JsonCreator
     public CnLotDto(@JsonProperty("id") final String id,
@@ -78,7 +89,9 @@ public class CnLotDto {
                     @JsonProperty("options") final List<CnOptionDto> options,
                     @JsonProperty("recurrentProcurement") final List<CnRecurrentProcurementDto> recurrentProcurement,
                     @JsonProperty("renewals") final List<CnRenewalDto> renewals,
-                    @JsonProperty("variants") final List<CnVariantDto> variants) {
+                    @JsonProperty("variants") final List<CnVariantDto> variants,
+                    @JsonProperty("contractPeriod") final CnPeriodDto contractPeriod,
+                    @JsonProperty("placeOfPerformance") final CnPlaceOfPerformanceDto placeOfPerformance) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -87,38 +100,7 @@ public class CnLotDto {
         this.recurrentProcurement = recurrentProcurement;
         this.renewals = renewals;
         this.variants = variants;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .append(description)
-                                    .append(value)
-                                    .append(options)
-                                    .append(recurrentProcurement)
-                                    .append(renewals)
-                                    .append(variants)
-                                    .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof CnLotDto)) {
-            return false;
-        }
-        final CnLotDto rhs = (CnLotDto) other;
-        return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(value, rhs.value)
-                                  .append(options, rhs.options)
-                                  .append(recurrentProcurement, rhs.recurrentProcurement)
-                                  .append(renewals, rhs.renewals)
-                                  .append(variants, rhs.variants)
-                                  .isEquals();
+        this.contractPeriod = contractPeriod;
+        this.placeOfPerformance = placeOfPerformance;
     }
 }

@@ -1,19 +1,14 @@
 {
-  "ocid": "",
-  "id": "",
-  "date": "",
-  "tag": "",
-  "initiationType": "",
   "planning": {
     "rationale": "",
     "budget": {
       "description": "",
       "amount": {
         "amount": 0,
-        "currency": ""
+        "currency": "AED"
       },
-      "isEuropenUnionFunded": false,
-      "europenUnionFunding": {
+      "isEuropeanUnionFunded": false,
+      "europeanUnionFunding": {
         "projectIdentifier": "",
         "projectName": ""
       },
@@ -23,7 +18,7 @@
           "description": "",
           "amount": {
             "amount": 0,
-            "currency": ""
+            "currency": "AED"
           },
           "period": {
             "startDate": "",
@@ -38,32 +33,57 @@
     }
   },
   "tender": {
-    "id": "",
     "title": "",
-    "status": "",
-    "statusDetails": "",
-    "hasEnquiries": true,
-    "enquiryPeriod": {
-      "startDate": "",
-      "endDate": ""
+    "description": "",
+    "classification": {
+      "scheme": "",
+      "description": "",
+      "id": ""
     },
-    "enquiries": [
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "ElectronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "JointProcurement": {
+      "isJointProcurement": false
+    },
+    "ProcedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "Framework": {
+      "isAFramework": false
+    },
+    "DynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "",
+    "procurementMethod": "",
+    "procurementMethodDetails": "",
+    "procurementMethodRationale": "",
+    "procurementMethodAdditionalInfo": "",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": "",
+    "eligibilityCriteria": "",
+    "submissionLanguages": [
       {
-        "id": "",
-        "date": "",
-        "title": "",
-        "description": "",
-        "answer": "",
-        "dateAnswered": "",
-        "relatedLot": "",
-        "relatedItem": "",
-        "threadID": "",
-        "author": {
-          "id": "",
-          "name": ""
-        }
+        "items": ""
       }
     ],
+    "tenderPeriod": {
+      "endDate": ""
+    },
+    "contractPeriod": {
+      "startDate": "",
+      "endDate": "",
+      "durationInDays": ""
+    },
     "value": {
       "amount": 0,
       "currency": ""
@@ -78,7 +98,6 @@
         "id": "",
         "title": "",
         "description": "",
-        "status": "",
         "value": {
           "amount": 0,
           "currency": ""
@@ -95,6 +114,11 @@
         "recurrentProcurement": {
           "isRecurrent": false
         },
+        "contractPeriod": {
+          "startDate": "",
+          "endDate": "",
+          "durationInDays": ""
+        },
         "placeOfPerformance": {
           "address": {
             "streetAddress": "",
@@ -109,19 +133,16 @@
     ],
     "items": [
       {
-        "id": "",
         "classification": {
-          "scheme": "",
+          "scheme": "CPV",
           "description": "",
           "id": ""
         },
         "additionalClassifications": [
           {
-            "items": {
-              "scheme": "",
-              "description": "",
-              "id": ""
-            }
+            "scheme": "",
+            "description": "",
+            "id": ""
           }
         ],
         "quantity": 0,
@@ -135,9 +156,9 @@
     ],
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
-    "submissionMethod": {
-      "items": "electronicSubmission"
-    },
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
     "submissionMethodRationale": "",
     "submissionMethodDetails": "",
     "procuringEntity": {
@@ -172,79 +193,19 @@
         "url": ""
       }
     },
-    "tenderPeriod": {
-      "startDate": "",
-      "endDate": ""
-    },
-    "standStillPeriod": {
-      "startDate": "",
-      "endDate": ""
-    },
-    "amendments": [
-      {
-        "date": "",
-        "rationale": "",
-        "id": "",
-        "description": "",
-        "amendsReleaseID": "",
-        "releaseID": ""
-      }
-    ],
-    "contractPeriod": {
-      "startDate": "",
-      "endDate": "",
-      "durationInDays": ""
-    },
-    "tenderers": [
-      {
-        "name": "",
-        "id": "",
-        "identifier": {
-          "scheme": "",
-          "id": "",
-          "legalName": "",
-          "uri": ""
-        },
-        "additionalIdentifiers": [
-          {
-            "scheme": "",
-            "id": "",
-            "legalName": "",
-            "uri": ""
-          }
-        ],
-        "address": {
-          "streetAddress": "",
-          "locality": "",
-          "region": "",
-          "postalCode": "",
-          "countryName": ""
-        },
-        "contactPoint": {
-          "name": "",
-          "email": "",
-          "telephone": "",
-          "faxNumber": "",
-          "url": ""
-        }
-      }
-    ],
     "documents": [
       {
-        "items": {
-          "documentType": "",
-          "datePublished": "",
-          "id": "",
-          "url": "",
-          "title": "",
-          "description": "",
-          "language": "",
-          "relatedLot": ""
-        }
+        "documentType": "",
+        "datePublished": "",
+        "id": "",
+        "url": "",
+        "title": "",
+        "description": "",
+        "language": "",
+        "relatedLot": ""
       }
     ]
   },
-  "language": "",
   "parties": [
     {
       "name": "",
@@ -322,67 +283,14 @@
       "url": ""
     }
   },
-  "awards": [
-    {
-      "id": "",
-      "date": "",
-      "status": "",
-      "statusDetails": "",
-      "relatedLots": [
-        ""
-      ],
-      "relatedBid": "",
-      "amendments": [
-        {
-          "date": "",
-          "rationale": "",
-          "id": "",
-          "description": "",
-          "amendsReleaseID": "",
-          "releaseID": ""
-        }
-      ],
-      "suppliers": [
-        {
-          "id": "",
-          "name": ""
-        }
-      ],
-      "documents": [
-        {
-          "id": "",
-          "title": "",
-          "url": "",
-          "documentType": ""
-        }
-      ]
-    }
-  ],
-  "bids": [
-    {
-      "id": "",
-      "relatedLots": [
-        ""
-      ],
-      "date": "",
-      "status": "",
-      "statusDetails": "",
-      "tenderers": [
-        {
-          "id": "",
-          "name": ""
-        }
-      ]
-    }
-  ],
   "relatedProcesses": [
     {
-      "id": "",
+      "relationship": [
+        ""
+      ],
       "title": "",
-      "relationship": "",
-      "scheme": "",
-      "identifier": "string",
-      "uri": ""
+      "identifier": "",
+      "scheme": "ocid"
     }
   ]
 }

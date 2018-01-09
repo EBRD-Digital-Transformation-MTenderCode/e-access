@@ -11,14 +11,12 @@ import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "startDate",
-    "endDate",
-    "durationInDays"
+        "startDate",
+        "endDate",
+        "durationInDays"
 })
 public class CnPeriodDto {
     @JsonProperty("startDate")
@@ -35,11 +33,14 @@ public class CnPeriodDto {
 
     @JsonProperty("durationInDays")
     @JsonPropertyDescription("The maximum duration of this period in days. A user interface may wish to collect or " +
-        "display this data in months or years as appropriate, but should convert it into days when completing this " +
-        "field. This field can be used when exact dates are not known.  Where a startDate and endDate are given, this" +
-        " field is optional, and should reflect the difference between those two days. Where a startDate and " +
-        "maxExtentDate are given, this field is optional, and should reflect the difference between startDate and " +
-        "maxExtentDate.")
+            "display this data in months or years as appropriate, but should convert it into days when completing " +
+            "this " +
+            "field. This field can be used when exact dates are not known.  Where a startDate and endDate are given, " +
+            "this" +
+            " field is optional, and should reflect the difference between those two days. Where a startDate and " +
+            "maxExtentDate are given, this field is optional, and should reflect the difference between startDate and" +
+            " " +
+            "maxExtentDate.")
     @NotNull
     private final Integer durationInDays;
 
@@ -51,30 +52,6 @@ public class CnPeriodDto {
                        @JsonProperty("durationInDays") final Integer durationInDays) {
         this.startDate = startDate;
         this.endDate = endDate;
-
         this.durationInDays = durationInDays;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(startDate)
-                                    .append(endDate)
-                                    .append(durationInDays)
-                                    .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof CnPeriodDto)) {
-            return false;
-        }
-        final CnPeriodDto rhs = (CnPeriodDto) other;
-        return new EqualsBuilder().append(startDate, rhs.startDate)
-                                  .append(endDate, rhs.endDate)
-                                  .append(durationInDays, rhs.durationInDays)
-                                  .isEquals();
     }
 }

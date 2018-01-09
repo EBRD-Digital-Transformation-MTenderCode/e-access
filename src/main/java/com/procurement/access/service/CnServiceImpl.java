@@ -1,19 +1,20 @@
 package com.procurement.access.service;
 
+import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
+import com.procurement.access.model.dto.bpe.CnResponseDto;
 import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.CnTenderStatusDto;
 import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.repository.CnRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CnServiceImpl implements CnService {
@@ -33,38 +34,72 @@ public class CnServiceImpl implements CnService {
         this.cnRepository = cnRepository;
     }
 
-
     @Override
-    public ResponseDto createCn(CnDto cnDto) {
-        final LocalDateTime addedDate = dateUtil.getNowUTC();
-        final long timeStamp = dateUtil.getMilliUTC(addedDate);
-        final String ocId = getOcId(cnDto, timeStamp);
-        cnDto.getTender().setId(ocId);
-        cnRepository.save(getEntity(cnDto));
-        return getResponseDto(cnDto);
+    public ResponseDto createCn(final String country,
+                                final String pmd,
+                                final String stage,
+                                final String owner,
+                                final CnDto cnDto) {
+        final long timeStamp = dateUtil.getMilliNowUTC();
+        setTenderId(cnDto, timeStamp);
+        setItemsId(cnDto);
+        setLotsIdAndItemsRelatedLots(cnDto);
+        setTenderStatus(cnDto);
+        final CnEntity entity = cnRepository.save(getEntity(cnDto, owner));
+        return getResponseDto(cnDto, entity);
     }
 
-    private String getOcId(final CnDto cnDto, final long timeStamp) {
-        final String ocId;
+    private void setTenderId(final CnDto cnDto, final long timeStamp) {
         if (Objects.isNull(cnDto.getTender().getId())) {
-            ocId = ocdsProperties.getPrefix() + timeStamp;
-            cnDto.getTender().setId(ocId);
-        } else {
-            ocId = cnDto.getTender().getId();
+            cnDto.getTender().setId(ocdsProperties.getPrefix() + timeStamp);
         }
-        return ocId;
     }
 
-    private CnEntity getEntity(final CnDto cnDto) {
-        final CnEntity cnEntity = new CnEntity();
-        cnEntity.setOcId(cnDto.getTender().getId());
-        cnEntity.setJsonData(jsonUtil.toJson(cnDto.getTender()));
-        return cnEntity;
+    private void setTenderStatus(final CnDto cnDto) {
+        cnDto.getTender().setStatus(CnTenderStatusDto.ACTIVE);
     }
 
-    private ResponseDto getResponseDto(final CnDto cnDto) {
-        final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.OK.toString(), "ok");
-        return new ResponseDto(true, Collections.singletonList(details), cnDto);
+    private void setItemsId(final CnDto cnDto) {
+        cnDto.getTender().getItems().forEach(i -> {
+            i.setId(UUIDs.timeBased().toString());
+        });
+    }
+
+    private void setLotsIdAndItemsRelatedLots(final CnDto cnDto) {
+        cnDto.getTender().getLots().forEach(l -> {
+            final String id = UUIDs.timeBased().toString();
+            cnDto.getTender().getItems()
+                    .stream()
+                    .filter(i -> i.getRelatedLot().equals(l.getId()))
+                    .findFirst()
+                    .get()
+                    .setRelatedLot(id);
+
+            l.setId(id);
+        });
+    }
+
+    private CnEntity getEntity(final CnDto cnDto, final String owner) {
+        final CnEntity entity = new CnEntity();
+        entity.setCpId(cnDto.getTender().getId());
+        entity.setTokenEntity(UUIDs.timeBased().toString());
+        entity.setOwner(owner);
+        entity.setJsonData(jsonUtil.toJson(cnDto));
+        return entity;
+    }
+
+    private ResponseDto getResponseDto(final CnDto cnDto, final CnEntity entity) {
+        final CnResponseDto responseDto = new CnResponseDto(
+                entity.getCpId(),
+                entity.getTokenEntity(),
+                cnDto.getPlanning(),
+                cnDto.getTender(),
+                cnDto.getParties(),
+                cnDto.getBuyer(),
+                cnDto.getRelatedProcesses()
+        );
+        final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.CREATED.toString(), "ok");
+        return new ResponseDto(true, Collections.singletonList(details), responseDto);
     }
 
 }

@@ -12,6 +12,11 @@ public class DateUtil {
         return LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
     }
 
+    public long getMilliNowUTC() {
+        return getNowUTC().toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+    }
+
     public long getMilliUTC(final LocalDateTime localDateTime) {
         return localDateTime.toInstant(ZoneOffset.UTC)
                             .toEpochMilli();

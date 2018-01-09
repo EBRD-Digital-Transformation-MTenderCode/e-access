@@ -6,12 +6,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder("name")
 public class CnUnitDto {
+
+    @JsonProperty("id")
+    @JsonPropertyDescription("The identifier from the codelist referenced in the scheme property. Check the codelist " +
+            "for details of how to find and use identifiers from the scheme in use.")
+    private final String id;
 
     @JsonProperty("name")
     @JsonPropertyDescription("Name of the unit.")
@@ -19,26 +22,9 @@ public class CnUnitDto {
     private final String name;
 
     @JsonCreator
-    public CnUnitDto(@JsonProperty("name") final String name) {
+    public CnUnitDto(@JsonProperty("id") final String id,
+                     @JsonProperty("name") final String name) {
+        this.id = id;
         this.name = name;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(name)
-                                    .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof CnUnitDto)) {
-            return false;
-        }
-        final CnUnitDto rhs = (CnUnitDto) other;
-        return new EqualsBuilder().append(name, rhs.name)
-                                  .isEquals();
     }
 }

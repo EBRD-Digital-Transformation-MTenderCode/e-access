@@ -1,62 +1,44 @@
 package com.procurement.access.model.dto.cn;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.Getter;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "scheme",
-    "id"
+        "scheme",
+        "description",
+        "id"
 })
-public class CnClassificationdto {
+public class CnClassificationDto {
     @JsonProperty("id")
     @JsonPropertyDescription("The classification code drawn from the selected scheme.")
     @NotNull
     private final String id;
 
+    @JsonProperty("description")
+    @JsonPropertyDescription("A textual description or title for the code.")
+    private final String description;
+
     @JsonProperty("scheme")
     @JsonPropertyDescription("An classification should be drawn from an existing scheme or list of codes. This field " +
-        "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
-        "classifications, this value should represent an known [CnItemDto CnClassificationdto Scheme](http://standard" +
-        ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
+            "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
+            "classifications, this value should represent an known [CnItemDto CnClassificationDto Scheme]" +
+            "(http://standard" +
+            ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
     @NotNull
     private final Scheme scheme;
 
     @JsonCreator
-    public CnClassificationdto(@JsonProperty("scheme") final Scheme scheme,
+    public CnClassificationDto(@JsonProperty("scheme") final Scheme scheme,
+                               @JsonProperty("description") final String description,
                                @JsonProperty("id") final String id) {
         this.id = id;
+        this.description = description;
         this.scheme = scheme;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(scheme)
-                                    .append(id)
-                                    .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof CnClassificationdto)) {
-            return false;
-        }
-        final CnClassificationdto rhs = (CnClassificationdto) other;
-        return new EqualsBuilder().append(scheme, rhs.scheme)
-                                  .append(id, rhs.id)
-                                  .isEquals();
     }
 
     public enum Scheme {
