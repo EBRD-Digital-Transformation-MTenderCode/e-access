@@ -26,7 +26,7 @@
     </parent>
 
     <properties>
-        <project.service.port>8900</project.service.port>
+        <project.service.port>8083</project.service.port>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
