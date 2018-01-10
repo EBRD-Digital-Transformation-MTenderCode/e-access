@@ -32,7 +32,7 @@ public class CnBudgetBreakdownDto {
     @JsonProperty("period")
     @Valid
     @NotNull
-    private final CnBudgetBreakdownPeriodDto period;
+    private final CnPeriodDto period;
 
     @JsonProperty("sourceParty")
     @JsonPropertyDescription("The id and name of the party being referenced. Used to cross-reference to the parties " +
@@ -45,7 +45,7 @@ public class CnBudgetBreakdownDto {
     public CnBudgetBreakdownDto(@JsonProperty("id") final String id,
                                 @JsonProperty("description") final String description,
                                 @JsonProperty("amount") final CnValueDto amount,
-                                @JsonProperty("period") final CnBudgetBreakdownPeriodDto period,
+                                @JsonProperty("period") final CnPeriodDto period,
                                 @JsonProperty("sourceParty") final CnOrganizationReferenceDto sourceParty) {
         this.id = id;
         this.description = description;
