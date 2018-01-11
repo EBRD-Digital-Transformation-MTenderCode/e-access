@@ -7,7 +7,6 @@ import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.ein.EinResponseDto;
 import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.repository.EinRepository;
-import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import org.springframework.stereotype.Service;
@@ -19,18 +18,15 @@ public class EinServiceImpl implements EinService {
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
     private final EinRepository einRepository;
-    private final FsRepository fsRepository;
 
     public EinServiceImpl(final OCDSProperties ocdsProperties,
                           final JsonUtil jsonUtil,
                           final DateUtil dateUtil,
-                          final EinRepository einRepository,
-                          final FsRepository fsRepository) {
+                          final EinRepository einRepository) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
         this.einRepository = einRepository;
-        this.fsRepository = fsRepository;
     }
 
     @Override
@@ -51,16 +47,6 @@ public class EinServiceImpl implements EinService {
     @Override
     public ResponseDto updateEin(final EinDto ein) {
         return null;
-    }
-
-    @Override
-    public ResponseDto updateAmountByFs(final String cpid) {
-        final EinEntity entity = einRepository.getLastByCpId(cpid);
-        final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
-        final Double totalAmount = fsRepository.getTotalAmountByCpId(cpid);
-        ein.getPlanning().getBudget().getAmount().setAmount(totalAmount);
-        final EinEntity newEntity = einRepository.save(getEntity(ein, entity.getOwner(), entity.getToken()));
-        return getResponseDto(ein, newEntity);
     }
 
     private void setTenderId(final EinDto ein, final String cpId) {
@@ -97,28 +83,4 @@ public class EinServiceImpl implements EinService {
         );
         return new ResponseDto(true, null, responseDto);
     }
-
-
-//    @Override
-//    public void addRelatedProcess(final UpdateFsDto updateFsDto) {
-//        final EinEntity einEntity = einRepository.getLastByOcId(updateFsDto.getCpId());
-//        final EinDto einDto = jsonUtil.toObject(EinDto.class, einEntity.getJsonData());
-//        addFsRelatedProcessToEin(einDto, updateFsDto.getOcId());
-////        final Double totalAmount = fsService.getTotalAmountFs(updateFsDto.getCpId());
-////        einDto.getPlanning().getBudget().getAmount().setAmount(totalAmount);
-//        einRepository.save(getEntity(einDto));
-////        return getResponseDto(einDto);
-//    }
-
-//    private void addFsRelatedProcessToEin(final EinDto ein, final String ocId) {
-//        final EinRelatedProcessDto relatedProcess = new EinRelatedProcessDto();
-//        relatedProcess.setId(UUIDs.timeBased()
-//                .toString());
-//        relatedProcess.setRelationship(Arrays.asList(EinRelatedProcessDto.RelatedProcessType.FRAMEWORK));
-//        relatedProcess.setScheme(EinRelatedProcessDto.RelatedProcessScheme.OCID);
-//        relatedProcess.setIdentifier(ocId);
-//        final List<EinRelatedProcessDto> relatedProcesses = ein.getRelatedProcesses();
-//        relatedProcesses.add(relatedProcess);
-//        ein.setRelatedProcesses(relatedProcesses);
-//    }
 }

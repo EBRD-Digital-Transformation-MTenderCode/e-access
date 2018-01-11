@@ -27,6 +27,9 @@ public class FsEntity {
     @Column(value = "amount")
     private Double amount;
 
+    @Column(value = "amount_reserved")
+    private Double amountReserved;
+
     @Column(value = "json_data")
     private String jsonData;
 }

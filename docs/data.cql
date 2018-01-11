@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS  ocds.access_fs (
     token_entity text,
     owner text,
     amount double,
+    amount_reserved double,
     json_data text,
     primary key(cp_id, oc_id, token_entity)
 );

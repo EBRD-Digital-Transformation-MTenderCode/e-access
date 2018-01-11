@@ -38,10 +38,4 @@ public class EinController {
                                               @Valid @RequestBody final EinDto einDto) {
         return new ResponseEntity<>(einService.updateEin(einDto), HttpStatus.OK);
     }
-
-    @PostMapping(value = "/updateAmountByFs")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ResponseDto> updateByFs(@RequestParam("cpid") final String cpid) {
-        return new ResponseEntity<>(einService.updateAmountByFs(cpid), HttpStatus.OK);
-    }
 }

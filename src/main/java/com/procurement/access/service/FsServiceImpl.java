@@ -64,7 +64,6 @@ public class FsServiceImpl implements FsService {
         }
     }
 
-
     private String getOcId(final String cpId, final String stage) {
         return cpId + SEPARATOR + stage + SEPARATOR + dateUtil.getMilliNowUTC();
     }
