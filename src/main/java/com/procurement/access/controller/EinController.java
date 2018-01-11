@@ -2,6 +2,7 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
+import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.service.EinService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,11 @@ public class EinController {
                                               @RequestParam("owner") final String owner,
                                               @Valid @RequestBody final EinDto einDto) {
         return new ResponseEntity<>(einService.updateEin(einDto), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/updateAmountByFs")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ResponseDto> updateByFs(@Valid @RequestBody final UpdateFsDto updateFsDto) {
+        return einService.updateAmountByFs(updateFsDto);
     }
 }

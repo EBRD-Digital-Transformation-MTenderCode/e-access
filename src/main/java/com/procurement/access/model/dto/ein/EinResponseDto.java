@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.bpe;
+package com.procurement.access.model.dto.ein;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -8,11 +8,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
+import com.procurement.access.model.dto.ein.*;
 import com.procurement.access.model.dto.enums.InitiationType;
 import com.procurement.access.model.dto.enums.Tag;
-import com.procurement.access.model.dto.fs.FsOrganizationDto;
-import com.procurement.access.model.dto.fs.FsPlanningDto;
-import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -29,17 +27,23 @@ import lombok.Setter;
         "initiationType",
         "language",
         "planning",
+        "tender",
         "parties",
+        "buyer",
         "relatedProcesses"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class FsResponseDto {
+public class EinResponseDto {
     @JsonProperty("token")
     private final String token;
     @JsonProperty("planning")
-    private final FsPlanningDto planning;
+    private final EinPlanningDto planning;
+    @JsonProperty("tender")
+    private final EinTenderDto tender;
     @JsonProperty("parties")
-    private final List<FsOrganizationDto> parties;
+    private final List<EinOrganizationDto> parties;
+    @JsonProperty("buyer")
+    private final EinOrganizationReferenceDto buyer;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -55,19 +59,21 @@ public class FsResponseDto {
     @JsonProperty("language")
     private String language;
     @JsonProperty("relatedProcesses")
-    private List<FsRelatedProcessDto> relatedProcesses;
+    private List<EinRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
-    public FsResponseDto(@JsonProperty("token") final String token,
-                         @JsonProperty("ocid") final String ocId,
-                         @JsonProperty("id") final String id,
-                         @JsonProperty("date") final LocalDateTime date,
-                         @JsonProperty("tag") final List<Tag> tag,
-                         @JsonProperty("initiationType") final InitiationType initiationType,
-                         @JsonProperty("language") final String language,
-                         @JsonProperty("planning") final FsPlanningDto planning,
-                         @JsonProperty("parties") final List<FsOrganizationDto> parties,
-                         @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
+    public EinResponseDto(@JsonProperty("token") final String token,
+                          @JsonProperty("ocid") final String ocId,
+                          @JsonProperty("id") final String id,
+                          @JsonProperty("date") final LocalDateTime date,
+                          @JsonProperty("tag") final List<Tag> tag,
+                          @JsonProperty("initiationType") final InitiationType initiationType,
+                          @JsonProperty("language") final String language,
+                          @JsonProperty("planning") final EinPlanningDto planning,
+                          @JsonProperty("tender") final EinTenderDto tender,
+                          @JsonProperty("parties") final List<EinOrganizationDto> parties,
+                          @JsonProperty("buyer") final EinOrganizationReferenceDto buyer,
+                          @JsonProperty("relatedProcesses") final List<EinRelatedProcessDto> relatedProcesses) {
         this.token = token;
         this.ocId = ocId;
         this.id = id;
@@ -76,7 +82,9 @@ public class FsResponseDto {
         this.initiationType = initiationType;
         this.language = language;
         this.planning = planning;
+        this.tender = tender;
         this.parties = parties;
+        this.buyer = buyer;
         this.relatedProcesses = relatedProcesses;
     }
 }

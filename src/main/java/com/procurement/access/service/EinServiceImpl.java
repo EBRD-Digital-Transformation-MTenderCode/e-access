@@ -2,38 +2,36 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
-import com.procurement.access.model.dto.bpe.EinResponseDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
-import com.procurement.access.model.dto.enums.InitiationType;
-import com.procurement.access.model.dto.enums.Tag;
+import com.procurement.access.model.dto.ein.EinResponseDto;
+import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.repository.EinRepository;
+import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
-import java.util.Arrays;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EinServiceImpl implements EinService {
 
-    private static final String SEPARATOR = "-";
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
     private final EinRepository einRepository;
-    private final FsService fsService;
+    private final FsRepository fsRepository;
 
     public EinServiceImpl(final OCDSProperties ocdsProperties,
                           final JsonUtil jsonUtil,
                           final DateUtil dateUtil,
                           final EinRepository einRepository,
-                          final FsService fsService) {
+                          final FsRepository fsRepository) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
         this.einRepository = einRepository;
-        this.fsService = fsService;
+        this.fsRepository = fsRepository;
     }
 
     @Override
@@ -45,13 +43,25 @@ public class EinServiceImpl implements EinService {
 
         final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
         ein.setOcId(cpId);
-        ein.setId(getReleaseId(cpId));
-        ein.setTag(Arrays.asList(Tag.COMPILED));
-        ein.setInitiationType(InitiationType.TENDER);
         setTenderId(ein, cpId);
         setBudgetId(ein);
-        final EinEntity entity = einRepository.save(getEntity(ein, owner));
+        final EinEntity entity = einRepository.save(getEntity(ein, owner, UUIDs.timeBased().toString()));
         return getResponseDto(ein, entity);
+    }
+
+    @Override
+    public ResponseDto updateEin(final EinDto ein) {
+        return null;
+    }
+
+    @Override
+    public ResponseDto updateAmountByFs(final UpdateFsDto updateFs) {
+        final EinEntity entity = einRepository.getLastByOcId(updateFs.getCpId());
+        final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
+        final Double totalAmount = fsRepository.getTotalAmountByCpId(updateFs.getCpId());
+        ein.getPlanning().getBudget().getAmount().setAmount(totalAmount);
+        final EinEntity newEntity = einRepository.save(getEntity(ein, entity.getOwner(), entity.getToken()));
+        return getResponseDto(ein, newEntity);
     }
 
     private void setTenderId(final EinDto ein, final String cpId) {
@@ -62,19 +72,10 @@ public class EinServiceImpl implements EinService {
         ein.getPlanning().getBudget().setId(UUIDs.timeBased().toString());
     }
 
-    private String getReleaseId(final String ocId) {
-        return ocId + SEPARATOR + dateUtil.getMilliNowUTC();
-    }
-
-    @Override
-    public ResponseDto updateEin(final EinDto ein) {
-        return null;
-    }
-
-    private EinEntity getEntity(final EinDto ein, final String owner) {
+    private EinEntity getEntity(final EinDto ein, final String owner, final String token) {
         final EinEntity einEntity = new EinEntity();
         einEntity.setCpId(ein.getOcId());
-        einEntity.setToken(UUIDs.timeBased().toString());
+        einEntity.setToken(token);
         einEntity.setOwner(owner);
         einEntity.setJsonData(jsonUtil.toJson(ein));
         return einEntity;

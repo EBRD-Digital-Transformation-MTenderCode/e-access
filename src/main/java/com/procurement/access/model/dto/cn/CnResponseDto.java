@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.bpe;
+package com.procurement.access.model.dto.cn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -1,13 +1,13 @@
 package com.procurement.access.model.dto.cn;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder("isAcceleratedProcedure")
 public class CnAcceleratedProcedureDto {
     @JsonProperty("isAcceleratedProcedure")

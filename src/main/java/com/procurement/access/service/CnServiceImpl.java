@@ -2,9 +2,9 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
-import com.procurement.access.model.dto.bpe.CnResponseDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.CnResponseDto;
 import com.procurement.access.model.dto.cn.CnTenderStatusDto;
 import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.repository.CnRepository;
@@ -37,7 +37,6 @@ public class CnServiceImpl implements CnService {
                                 final String stage,
                                 final String owner,
                                 final CnDto cn) {
-        final long timeStamp = dateUtil.getMilliNowUTC();
         setTenderId(cn);
         setItemsId(cn);
         setLotsIdAndItemsRelatedLots(cn);

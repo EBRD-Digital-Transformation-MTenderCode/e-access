@@ -2,18 +2,15 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.exception.ErrorException;
-import com.procurement.access.model.dto.bpe.FsResponseDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.enums.InitiationType;
-import com.procurement.access.model.dto.enums.Tag;
 import com.procurement.access.model.dto.fs.FsDto;
 import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
+import com.procurement.access.model.dto.fs.FsResponseDto;
 import com.procurement.access.model.entity.FsEntity;
 import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +40,7 @@ public class FsServiceImpl implements FsService {
         final String cpId = getIdentifier(fs);
         final String ocId = getOcId(cpId, "fs");
         fs.setOcId(ocId);
-        fs.setId(getReleaseId(ocId));
         fs.setDate(addedDate);
-        fs.setTag(Arrays.asList(Tag.COMPILED));
-        fs.setInitiationType(InitiationType.TENDER);
         setBudgetId(fs);
         final FsEntity entity = fsRepository.save(getEntity(cpId, fs));
         return getResponseDto(fs, entity);
@@ -73,10 +67,6 @@ public class FsServiceImpl implements FsService {
 
     private String getOcId(final String cpId, final String stage) {
         return cpId + SEPARATOR + stage + SEPARATOR + dateUtil.getMilliNowUTC();
-    }
-
-    private String getReleaseId(final String ocId) {
-        return ocId + SEPARATOR + dateUtil.getMilliNowUTC();
     }
 
     private String getId() {
@@ -118,9 +108,4 @@ public class FsServiceImpl implements FsService {
     public ResponseDto updateFs(final FsDto fs) {
         return null;
     }
-
-    public Double getTotalAmountFs(final String cpId) {
-        return fsRepository.getTotalAmountByCpId(cpId);
-    }
-
 }
