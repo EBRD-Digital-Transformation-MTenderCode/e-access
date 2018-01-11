@@ -5,7 +5,6 @@ import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.ein.EinResponseDto;
-import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.repository.EinRepository;
 import com.procurement.access.repository.FsRepository;
@@ -55,10 +54,10 @@ public class EinServiceImpl implements EinService {
     }
 
     @Override
-    public ResponseDto updateAmountByFs(final UpdateFsDto updateFs) {
-        final EinEntity entity = einRepository.getLastByOcId(updateFs.getCpId());
+    public ResponseDto updateAmountByFs(final String cpid) {
+        final EinEntity entity = einRepository.getLastByCpId(cpid);
         final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
-        final Double totalAmount = fsRepository.getTotalAmountByCpId(updateFs.getCpId());
+        final Double totalAmount = fsRepository.getTotalAmountByCpId(cpid);
         ein.getPlanning().getBudget().getAmount().setAmount(totalAmount);
         final EinEntity newEntity = einRepository.save(getEntity(ein, entity.getOwner(), entity.getToken()));
         return getResponseDto(ein, newEntity);

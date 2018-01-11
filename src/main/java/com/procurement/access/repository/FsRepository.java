@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FsRepository extends CassandraRepository<FsEntity, String> {
 
-    @Query(value = "select sum(amount) from access_fs where cpid=?0")
+    @Query(value = "select sum(amount) from access_fs where cp_id=?0")
     Double getTotalAmountByCpId(String cpId);
 }

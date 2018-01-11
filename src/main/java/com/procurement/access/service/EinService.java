@@ -16,5 +16,5 @@ public interface EinService {
 
     ResponseDto updateEin(EinDto einDto);
 
-    ResponseDto updateAmountByFs(UpdateFsDto updateFsDto);
+    ResponseDto updateAmountByFs(String cpid);
 }

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EinRepository extends CassandraRepository<EinEntity, String> {
 
-    @Query(value = "select * from access_ein where oc_id=?0 LIMIT 1")
-    EinEntity getLastByOcId(String ocId);
+    @Query(value = "select * from access_ein where cp_id=?0 LIMIT 1")
+    EinEntity getLastByCpId(String cpId);
 }
