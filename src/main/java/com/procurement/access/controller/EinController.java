@@ -42,6 +42,6 @@ public class EinController {
     @PostMapping(value = "/updateAmountByFs")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ResponseDto> updateByFs(@Valid @RequestBody final UpdateFsDto updateFsDto) {
-        return einService.updateAmountByFs(updateFsDto);
+        return new ResponseEntity<>(einService.updateAmountByFs(updateFsDto), HttpStatus.OK);
     }
 }
