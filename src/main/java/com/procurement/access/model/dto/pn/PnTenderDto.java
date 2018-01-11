@@ -1,19 +1,10 @@
 package com.procurement.access.model.dto.pn;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.procurement.access.model.dto.enums.ExtendedProcurementCategoryTender;
 import com.procurement.access.model.dto.enums.MainProcurementCategoryTender;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -23,51 +14,51 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "status",
-    "items",
-    "minValue",
-    "value",
-    "procurementMethod",
-    "procurementMethodDetails",
-    "mainProcurementCategory",
-    "additionalProcurementCategories",
-    "lots",
-    "classification",
-    "legalBasis"
+        "id",
+        "title",
+        "description",
+        "status",
+        "items",
+        "minValue",
+        "value",
+        "procurementMethod",
+        "procurementMethodDetails",
+        "mainProcurementCategory",
+        "additionalProcurementCategories",
+        "lots",
+        "classification",
+        "legalBasis"
 })
 public class PnTenderDto {
     @JsonProperty("id")
     @JsonPropertyDescription("An identifier for this tender process. This may be the same as the ocId, or may be " +
-        "drawn from an internally held identifier for this tender.")
+            "drawn from an internally held identifier for this tender.")
     @Size(min = 1)
     @NotNull
     private final String id;
 
     @JsonProperty("title")
     @JsonPropertyDescription("A title for this tender. This will often be used by applications as a headline to " +
-        "attract interest, and to help analysts understand the nature of this procurement.")
+            "attract interest, and to help analysts understand the nature of this procurement.")
     @NotNull
     private final String title;
 
     @JsonProperty("description")
     @JsonPropertyDescription("A summary description of the tender. This should complement structured information " +
-        "provided using the items array. Descriptions should be short and easy to read. Avoid using ALL CAPS. ")
+            "provided using the items array. Descriptions should be short and easy to read. Avoid using ALL CAPS. ")
     @NotNull
     private final String description;
 
     @JsonProperty("status")
     @JsonPropertyDescription("The current status of the tender based on the [tenderStatus codelist](http://standard" +
-        ".open-contracting.org/latest/en/schema/codelists/#tender-status)")
+            ".open-contracting.org/latest/en/schema/codelists/#tender-status)")
     @NotNull
     private final PnTenderStatusDto status;
 
     @JsonProperty("items")
     @JsonDeserialize(as = LinkedHashSet.class)
     @JsonPropertyDescription("The goods and services to be purchased, broken into line items wherever possible. Items" +
-        " should not be duplicated, but a quantity of 2 specified instead.")
+            " should not be duplicated, but a quantity of 2 specified instead.")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @Valid
     private final Set<PnItemDto> items;
@@ -79,40 +70,45 @@ public class PnTenderDto {
 
     @JsonProperty("procurementMethod")
     @JsonPropertyDescription("Specify tendering method using the [method codelist](http://standard.open-contracting" +
-        ".org/latest/en/schema/codelists/#method). This is a closed codelist. Local method types should be mapped to " +
-        "this list.")
+            ".org/latest/en/schema/codelists/#method). This is a closed codelist. Local method types should be mapped" +
+            " to " +
+            "this list.")
     @Valid
     @NotNull
     private final ProcurementMethod procurementMethod;
 
     @JsonProperty("procurementMethodDetails")
     @JsonPropertyDescription("Additional detail on the procurement method used. This field may be used to provide the" +
-        " local name of the particular procurement method used.")
+            " local name of the particular procurement method used.")
     @NotNull
     private final String procurementMethodDetails;
 
     @JsonProperty("mainProcurementCategory")
     @JsonPropertyDescription("The primary category describing the main object of this contracting process from the " +
-        "[procurementCategory](http://standard.open-contracting.org/latest/en/schema/codelists/#procurement-category)" +
-        " codelist. This is a closed codelist. Local classifications should be mapped to this list.")
+            "[procurementCategory](http://standard.open-contracting" +
+            ".org/latest/en/schema/codelists/#procurement-category)" +
+            " codelist. This is a closed codelist. Local classifications should be mapped to this list.")
     @Valid
     @NotNull
     private final MainProcurementCategoryTender mainProcurementCategory;
 
     @JsonProperty("additionalProcurementCategories")
     @JsonPropertyDescription("Any additional categories which describe the objects of this contracting process, from " +
-        "the [extendedProcurementCategory](http://standard.open-contracting" +
-        ".org/latest/en/schema/codelists/#extended-procurement-category) codelist. This is an open codelist. Local " +
-        "categories can be included in this list.")
+            "the [extendedProcurementCategory](http://standard.open-contracting" +
+            ".org/latest/en/schema/codelists/#extended-procurement-category) codelist. This is an open codelist. " +
+            "Local " +
+            "categories can be included in this list.")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private final List<ExtendedProcurementCategoryTender> additionalProcurementCategories;
 
     @JsonProperty("lots")
     @JsonPropertyDescription("A tender process may be divided into lots, where bidders can bid on one or more lots. " +
-        "FsDetailsDto of each lot can be provided here. Items, documents and other features can then reference the lot " +
-        "they are related to using relatedLot. Where no relatedLot identifier is given, the values should be " +
-        "interpreted as applicable to the whole tender. Properties of tender can be overridden for a given CnLotDto " +
-        "through their inclusion in the CnLotDto object.")
+            "FsDetailsDto of each lot can be provided here. Items, documents and other features can then reference " +
+            "the lot " +
+            "they are related to using relatedLot. Where no relatedLot identifier is given, the values should be " +
+            "interpreted as applicable to the whole tender. Properties of tender can be overridden for a given " +
+            "CnLotDto " +
+            "through their inclusion in the CnLotDto object.")
     @Valid
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private final List<PnLotDto> lots;
@@ -124,7 +120,7 @@ public class PnTenderDto {
 
     @JsonProperty("legalBasis")
     @JsonPropertyDescription("The legal basis of the tender based on the [legalBasis codelist](http://standard" +
-        ".open-contracting.org/......")
+            ".open-contracting.org/......")
     @NotNull
     private final LegalBasis legalBasis;
 
@@ -138,9 +134,9 @@ public class PnTenderDto {
                        @JsonProperty("procurementMethod") final ProcurementMethod procurementMethod,
                        @JsonProperty("procurementMethodDetails") final String procurementMethodDetails,
                        @JsonProperty("mainProcurementCategory") final MainProcurementCategoryTender
-                           mainProcurementCategory,
+                               mainProcurementCategory,
                        @JsonProperty("additionalProcurementCategories") final List<ExtendedProcurementCategoryTender>
-                           additionalProcurementCategories,
+                               additionalProcurementCategories,
                        @JsonProperty("lots") final List<PnLotDto> lots,
                        @JsonProperty("classification") final PnClassificationDto classification,
                        @JsonProperty("legalBasis") final LegalBasis legalBasis) {
@@ -162,19 +158,19 @@ public class PnTenderDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .append(description)
-                                    .append(status)
-                                    .append(items)
-                                    .append(value)
-                                    .append(procurementMethod)
-                                    .append(procurementMethodDetails)
-                                    .append(mainProcurementCategory)
-                                    .append(additionalProcurementCategories)
-                                    .append(lots)
-                                    .append(classification)
-                                    .append(legalBasis)
-                                    .toHashCode();
+                .append(title)
+                .append(description)
+                .append(status)
+                .append(items)
+                .append(value)
+                .append(procurementMethod)
+                .append(procurementMethodDetails)
+                .append(mainProcurementCategory)
+                .append(additionalProcurementCategories)
+                .append(lots)
+                .append(classification)
+                .append(legalBasis)
+                .toHashCode();
     }
 
     @Override
@@ -187,19 +183,19 @@ public class PnTenderDto {
         }
         final PnTenderDto rhs = (PnTenderDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(status, rhs.status)
-                                  .append(items, rhs.items)
-                                  .append(value, rhs.value)
-                                  .append(procurementMethod, rhs.procurementMethod)
-                                  .append(procurementMethodDetails, rhs.procurementMethodDetails)
-                                  .append(mainProcurementCategory, rhs.mainProcurementCategory)
-                                  .append(additionalProcurementCategories, rhs.additionalProcurementCategories)
-                                  .append(lots, rhs.lots)
-                                  .append(classification, rhs.classification)
-                                  .append(legalBasis, rhs.legalBasis)
-                                  .isEquals();
+                .append(title, rhs.title)
+                .append(description, rhs.description)
+                .append(status, rhs.status)
+                .append(items, rhs.items)
+                .append(value, rhs.value)
+                .append(procurementMethod, rhs.procurementMethod)
+                .append(procurementMethodDetails, rhs.procurementMethodDetails)
+                .append(mainProcurementCategory, rhs.mainProcurementCategory)
+                .append(additionalProcurementCategories, rhs.additionalProcurementCategories)
+                .append(lots, rhs.lots)
+                .append(classification, rhs.classification)
+                .append(legalBasis, rhs.legalBasis)
+                .isEquals();
     }
 
     public enum ProcurementMethod {

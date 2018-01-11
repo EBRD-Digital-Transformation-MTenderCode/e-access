@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.ein;
+package com.procurement.access.model.dto.bpe;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,16 +10,18 @@ import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import com.procurement.access.model.dto.enums.InitiationType;
 import com.procurement.access.model.dto.enums.Tag;
+import com.procurement.access.model.dto.fs.FsOrganizationDto;
+import com.procurement.access.model.dto.fs.FsPlanningDto;
+import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @JsonPropertyOrder({
+        "token",
         "ocid",
         "id",
         "date",
@@ -27,31 +29,17 @@ import lombok.Setter;
         "initiationType",
         "language",
         "planning",
-        "tender",
         "parties",
-        "buyer",
         "relatedProcesses"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class EinDto {
+public class FsResponseDto {
+    @JsonProperty("token")
+    private final String token;
     @JsonProperty("planning")
-    @NotNull
-    @Valid
-    private final EinPlanningDto planning;
-    @JsonProperty("tender")
-    @NotNull
-    @Valid
-    private final EinTenderDto tender;
+    private final FsPlanningDto planning;
     @JsonProperty("parties")
-    @NotNull
-    @Valid
-    private final List<EinOrganizationDto> parties;
-    @JsonProperty("buyer")
-    @NotNull
-    @Valid
-    private final EinOrganizationReferenceDto buyer;
-    @JsonProperty("relatedProcesses")
-    private List<EinRelatedProcessDto> relatedProcesses;
+    private final List<FsOrganizationDto> parties;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -66,19 +54,21 @@ public class EinDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
+    @JsonProperty("relatedProcesses")
+    private List<FsRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
-    public EinDto(@JsonProperty("ocid") final String ocId,
-                  @JsonProperty("id") final String id,
-                  @JsonProperty("date") final LocalDateTime date,
-                  @JsonProperty("tag") final List<Tag> tag,
-                  @JsonProperty("initiationType") final InitiationType initiationType,
-                  @JsonProperty("language") final String language,
-                  @JsonProperty("planning") final EinPlanningDto planning,
-                  @JsonProperty("tender") final EinTenderDto tender,
-                  @JsonProperty("parties") final List<EinOrganizationDto> parties,
-                  @JsonProperty("buyer") final EinOrganizationReferenceDto buyer,
-                  @JsonProperty("relatedProcesses") final List<EinRelatedProcessDto> relatedProcesses) {
+    public FsResponseDto(@JsonProperty("token") final String token,
+                         @JsonProperty("ocid") final String ocId,
+                         @JsonProperty("id") final String id,
+                         @JsonProperty("date") final LocalDateTime date,
+                         @JsonProperty("tag") final List<Tag> tag,
+                         @JsonProperty("initiationType") final InitiationType initiationType,
+                         @JsonProperty("language") final String language,
+                         @JsonProperty("planning") final FsPlanningDto planning,
+                         @JsonProperty("parties") final List<FsOrganizationDto> parties,
+                         @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
+        this.token = token;
         this.ocId = ocId;
         this.id = id;
         this.date = date;
@@ -86,9 +76,7 @@ public class EinDto {
         this.initiationType = initiationType;
         this.language = language;
         this.planning = planning;
-        this.tender = tender;
         this.parties = parties;
-        this.buyer = buyer;
         this.relatedProcesses = relatedProcesses;
     }
 }

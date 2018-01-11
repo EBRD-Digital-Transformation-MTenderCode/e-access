@@ -11,9 +11,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "useOrdering",
-    "usePayment",
-    "acceptInvoicing"
+        "useOrdering",
+        "usePayment",
+        "acceptInvoicing"
 })
 public class PinElectronicWorkflowsDto {
     @JsonProperty("useOrdering")
@@ -28,7 +28,7 @@ public class PinElectronicWorkflowsDto {
 
     @JsonProperty("acceptInvoicing")
     @JsonPropertyDescription("A True/False field to indicate if electronic invoicing will be accepted. Required by " +
-        "the EU")
+            "the EU")
     @NotNull
     private final Boolean acceptInvoicing;
 
@@ -44,9 +44,9 @@ public class PinElectronicWorkflowsDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(useOrdering)
-                                    .append(usePayment)
-                                    .append(acceptInvoicing)
-                                    .toHashCode();
+                .append(usePayment)
+                .append(acceptInvoicing)
+                .toHashCode();
     }
 
     @Override
@@ -59,8 +59,8 @@ public class PinElectronicWorkflowsDto {
         }
         final PinElectronicWorkflowsDto rhs = (PinElectronicWorkflowsDto) other;
         return new EqualsBuilder().append(useOrdering, rhs.useOrdering)
-                                  .append(usePayment, rhs.usePayment)
-                                  .append(acceptInvoicing, rhs.acceptInvoicing)
-                                  .isEquals();
+                .append(usePayment, rhs.usePayment)
+                .append(acceptInvoicing, rhs.acceptInvoicing)
+                .isEquals();
     }
 }

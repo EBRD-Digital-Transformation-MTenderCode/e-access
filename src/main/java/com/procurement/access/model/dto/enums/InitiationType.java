@@ -1,36 +1,30 @@
-package com.procurement.access.model.dto.ein;
+package com.procurement.access.model.dto.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum EinTenderStatusDto {
-    PLANNING("planning"),
-    PLANNED("planned"),
-    ACTIVE("active"),
-    CANCELLED("cancelled"),
-    UNSUCCESSFUL("unsuccessful"),
-    COMPLETE("complete"),
-    WITHDRAWN("withdrawn");
+public enum InitiationType {
+    TENDER("tender");
 
-    private static final Map<String, EinTenderStatusDto> CONSTANTS = new HashMap<>();
+    private static final Map<String, InitiationType> CONSTANTS = new HashMap<>();
 
     static {
-        for (final EinTenderStatusDto c : values()) {
+        for (final InitiationType c : values()) {
             CONSTANTS.put(c.value, c);
         }
     }
 
     private final String value;
 
-    EinTenderStatusDto(final String value) {
+    InitiationType(final String value) {
         this.value = value;
     }
 
     @JsonCreator
-    public static EinTenderStatusDto fromValue(final String value) {
-        final EinTenderStatusDto constant = CONSTANTS.get(value);
+    public static InitiationType fromValue(final String value) {
+        final InitiationType constant = CONSTANTS.get(value);
         if (constant == null) {
             throw new IllegalArgumentException(value);
         }

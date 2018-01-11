@@ -22,8 +22,8 @@
       "scheme": "CPV",
       "description": "string"
     },
-    "status":"planning",
-    "statusDetails":"planning"
+    "status": "planning",
+    "statusDetails": "planning"
   },
   "parties": [
     {

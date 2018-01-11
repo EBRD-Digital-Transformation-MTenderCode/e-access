@@ -1,9 +1,4 @@
 {
-  "ocid": "string",
-  "id": "string",
-  "date": "2017-12-12T08:31:41.367Z",
-  "tag": "string",
-  "initiationType": "string",
   "planning": {
     "budget": {
       "id": "string",
@@ -14,143 +9,73 @@
       },
       "project": "string",
       "projectID": "string",
-      "uri": {
-        "absolute": true,
-        "authority": "string",
-        "fragment": "string",
-        "host": "string",
-        "opaque": true,
-        "path": "string",
-        "port": 0,
-        "query": "string",
-        "rawAuthority": "string",
-        "rawFragment": "string",
-        "rawPath": "string",
-        "rawQuery": "string",
-        "rawSchemeSpecificPart": "string",
-        "rawUserInfo": "string",
-        "scheme": "string",
-        "schemeSpecificPart": "string",
-        "userInfo": "string"
-      },
+      "uri": "",
       "isEuropeanUnionFunded": true,
       "sourceEntity": {
         "name": "string",
         "id": "string"
       },
       "period": {
-        "startDate": "2017-12-12T08:31:41.368Z",
-        "endDate": "2017-12-12T08:31:41.368Z"
+        "startDate": "2018-01-12T08:31:41.368Z",
+        "endDate": "2018-01-22T08:31:41.368Z"
       },
       "verified": true,
       "verificationDetails": "string"
     },
     "rationale": "string"
   },
-  "parties": {
-    "id": "string",
-    "name": "string",
-    "identifier": {
-      "scheme": "string",
+  "parties": [
+    {
       "id": "string",
-      "legalName": "string",
-      "uri": {
-        "absolute": true,
-        "authority": "string",
-        "fragment": "string",
-        "host": "string",
-        "opaque": true,
-        "path": "string",
-        "port": 0,
-        "query": "string",
-        "rawAuthority": "string",
-        "rawFragment": "string",
-        "rawPath": "string",
-        "rawQuery": "string",
-        "rawSchemeSpecificPart": "string",
-        "rawUserInfo": "string",
-        "scheme": "string",
-        "schemeSpecificPart": "string",
-        "userInfo": "string"
-      }
-    },
-    "additionalIdentifiers": [
-      {
+      "name": "string",
+      "identifier": {
         "scheme": "string",
         "id": "string",
         "legalName": "string",
-        "uri": {
-          "absolute": true,
-          "authority": "string",
-          "fragment": "string",
-          "host": "string",
-          "opaque": true,
-          "path": "string",
-          "port": 0,
-          "query": "string",
-          "rawAuthority": "string",
-          "rawFragment": "string",
-          "rawPath": "string",
-          "rawQuery": "string",
-          "rawSchemeSpecificPart": "string",
-          "rawUserInfo": "string",
+        "uri": ""
+      },
+      "additionalIdentifiers": [
+        {
           "scheme": "string",
-          "schemeSpecificPart": "string",
-          "userInfo": "string"
+          "id": "string",
+          "legalName": "string",
+          "uri": ""
         }
-      }
-    ],
-    "address": {
-      "streetAddress": "string",
-      "locality": "string",
-      "region": "string",
-      "postalCode": "string",
-      "countryName": "string"
-    },
-    "contactPoint": {
-      "name": "string",
-      "email": "string",
-      "telephone": "string",
-      "faxNumber": "string",
-      "url": {
-        "absolute": true,
-        "authority": "string",
-        "fragment": "string",
-        "host": "string",
-        "opaque": true,
-        "path": "string",
-        "port": 0,
-        "query": "string",
-        "rawAuthority": "string",
-        "rawFragment": "string",
-        "rawPath": "string",
-        "rawQuery": "string",
-        "rawSchemeSpecificPart": "string",
-        "rawUserInfo": "string",
-        "scheme": "string",
-        "schemeSpecificPart": "string",
-        "userInfo": "string"
-      }
-    },
-    "roles": "buyer",
-    "details": {
-      "typeOfBuyer": "BODY_PUBLIC",
-      "mainGeneralActivity": "DEFENCE",
-      "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
-      "isACentralPurchasingBody": true,
-      "NUTSCode": "string",
-      "scale": "micro"
-    },
-    "buyerProfile": "string"
-  },
+      ],
+      "address": {
+        "streetAddress": "string",
+        "locality": "string",
+        "region": "string",
+        "postalCode": "string",
+        "countryName": "string"
+      },
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string",
+        "faxNumber": "string",
+        "url": ""
+      },
+      "roles": "buyer",
+      "details": {
+        "typeOfBuyer": "BODY_PUBLIC",
+        "mainGeneralActivity": "DEFENCE",
+        "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES",
+        "isACentralPurchasingBody": true,
+        "NUTSCode": "string",
+        "scale": "micro"
+      },
+      "buyerProfile": "string"
+    }
+  ],
   "language": "string",
   "relatedProcesses": [
     {
-      "ocid": "string",
-      "relationship": "framework",
+      "id": "",
+      "relationship": "parent",
       "title": "string",
       "scheme": "ocid",
-      "identifier": "string",
+      "identifier": "ocds-t1s2t3-UA-1515677458732",
       "uri": "string"
     }
   ]

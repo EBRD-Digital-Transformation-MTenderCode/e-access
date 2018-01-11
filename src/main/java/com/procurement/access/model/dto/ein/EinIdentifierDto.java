@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.ein;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -12,10 +8,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "scheme",
-    "legalName",
-    "uri"
+        "id",
+        "scheme",
+        "legalName",
+        "uri"
 })
 public class EinIdentifierDto {
     @JsonProperty("id")
@@ -24,9 +20,10 @@ public class EinIdentifierDto {
 
     @JsonProperty("scheme")
     @JsonPropertyDescription("Organization identifiers should be drawn from an existing organization identifier list." +
-        " The scheme field is used to indicate the list or register from which the identifier is drawn. This value " +
-        "should be drawn from the [Organization FsIdentifierDto Scheme](http://standard.open-contracting" +
-        ".org/latest/en/schema/codelists/#organization-identifier-scheme) codelist.")
+            " The scheme field is used to indicate the list or register from which the identifier is drawn. This " +
+            "value " +
+            "should be drawn from the [Organization FsIdentifierDto Scheme](http://standard.open-contracting" +
+            ".org/latest/en/schema/codelists/#organization-identifier-scheme) codelist.")
     private final String scheme;
 
     @JsonProperty("legalName")
@@ -39,8 +36,9 @@ public class EinIdentifierDto {
 
     @JsonProperty("uri")
     @JsonPropertyDescription("A URI to identify the organization, such as those provided by [Open Corporates]" +
-        "(http://www.opencorporates.com) or some other relevant URI provider. This is not for listing the website of " +
-        "the organization: that can be done through the URL field of the Organization contact point.")
+            "(http://www.opencorporates.com) or some other relevant URI provider. This is not for listing the website" +
+            " of " +
+            "the organization: that can be done through the URL field of the Organization contact point.")
     private final String uri;
 
     @JsonCreator
@@ -57,10 +55,10 @@ public class EinIdentifierDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(scheme)
-                                    .append(legalName)
-                                    .append(uri)
-                                    .toHashCode();
+                .append(scheme)
+                .append(legalName)
+                .append(uri)
+                .toHashCode();
     }
 
     @Override
@@ -73,9 +71,9 @@ public class EinIdentifierDto {
         }
         final EinIdentifierDto rhs = (EinIdentifierDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(scheme, rhs.scheme)
-                                  .append(legalName, rhs.legalName)
-                                  .append(uri, rhs.uri)
-                                  .isEquals();
+                .append(scheme, rhs.scheme)
+                .append(legalName, rhs.legalName)
+                .append(uri, rhs.uri)
+                .isEquals();
     }
 }

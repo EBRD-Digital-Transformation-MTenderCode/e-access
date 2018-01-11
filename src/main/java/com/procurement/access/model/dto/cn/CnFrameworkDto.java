@@ -1,8 +1,9 @@
 package com.procurement.access.model.dto.cn;
 
-import com.fasterxml.jackson.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 

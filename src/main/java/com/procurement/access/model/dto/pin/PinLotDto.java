@@ -13,18 +13,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "value",
-    "options",
-    "renewals",
-    "variants"
+        "id",
+        "title",
+        "description",
+        "value",
+        "options",
+        "renewals",
+        "variants"
 })
 public class PinLotDto {
     @JsonProperty("id")
     @JsonPropertyDescription("A local identifier for this lot, such as a lot number. This is used in relatedLot " +
-        "references at the item, document and award level.")
+            "references at the item, document and award level.")
     @NotNull
     private final String id;
 
@@ -45,7 +45,7 @@ public class PinLotDto {
 
     @JsonProperty("options")
     @JsonPropertyDescription("FsDetailsDto about lot options: if they will be accepted and what they can consist of. " +
-        "Required by the EU")
+            "Required by the EU")
     @Valid
     @NotNull
     private final List<PinOptionDto> options;
@@ -57,8 +57,9 @@ public class PinLotDto {
     private final List<PinRenewalDto> renewals;
 
     @JsonProperty("variants")
-    @JsonPropertyDescription("FsDetailsDto about lot variants: if they will be accepted and what they can consist of. " +
-        "Required by the EU")
+    @JsonPropertyDescription("FsDetailsDto about lot variants: if they will be accepted and what they can consist of." +
+            " " +
+            "Required by the EU")
     @Valid
     @NotNull
     private final List<PinVariantDto> variants;
@@ -83,13 +84,13 @@ public class PinLotDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .append(description)
-                                    .append(value)
-                                    .append(options)
-                                    .append(renewals)
-                                    .append(variants)
-                                    .toHashCode();
+                .append(title)
+                .append(description)
+                .append(value)
+                .append(options)
+                .append(renewals)
+                .append(variants)
+                .toHashCode();
     }
 
     @Override
@@ -102,12 +103,12 @@ public class PinLotDto {
         }
         final PinLotDto rhs = (PinLotDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(value, rhs.value)
-                                  .append(options, rhs.options)
-                                  .append(renewals, rhs.renewals)
-                                  .append(variants, rhs.variants)
-                                  .isEquals();
+                .append(title, rhs.title)
+                .append(description, rhs.description)
+                .append(value, rhs.value)
+                .append(options, rhs.options)
+                .append(renewals, rhs.renewals)
+                .append(variants, rhs.variants)
+                .isEquals();
     }
 }

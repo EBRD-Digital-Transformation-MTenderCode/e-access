@@ -3,8 +3,8 @@
     "budget": {
       "id": "string",
       "period": {
-        "startDate": "2017-12-05T16:04:25.000000107Z",
-        "endDate": "2017-12-05T16:04:25.000000107Z"
+        "startDate": "2018-01-05T16:04:25.107Z",
+        "endDate": "2018-01-15T16:04:25.107Z"
       },
       "amount": {
         "amount": 0,
@@ -22,8 +22,8 @@
       "scheme": "CPV",
       "description": "string"
     },
-    "status":"planning",
-    "statusDetails":"planning"
+    "status": "planning",
+    "statusDetails": "planning"
   },
   "parties": [
     {
@@ -102,17 +102,5 @@
       "faxNumber": "string",
       "url": "string"
     }
-  },
-  "relatedProcesses": [
-    {
-      "id": "string",
-      "relationship": [
-        "framework"
-      ],
-      "title": "string",
-      "scheme": "ocid",
-      "identifier": "string",
-      "uri": "string"
-    }
-  ]
+  }
 }

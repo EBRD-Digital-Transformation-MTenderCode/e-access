@@ -56,12 +56,12 @@ public class CnOrganizationReferenceDto {
 
     @JsonCreator
     public CnOrganizationReferenceDto(@JsonProperty("name") final String name,
-                                 @JsonProperty("id") final String id,
-                                 @JsonProperty("identifier") final CnIdentifierDto identifier,
-                                 @JsonProperty("address") final CnAddressDto address,
-                                 @JsonProperty("additionalIdentifiers") final LinkedHashSet<CnIdentifierDto>
-                                         additionalIdentifiers,
-                                 @JsonProperty("contactPoint") final CnContactPointDto contactPoint) {
+                                      @JsonProperty("id") final String id,
+                                      @JsonProperty("identifier") final CnIdentifierDto identifier,
+                                      @JsonProperty("address") final CnAddressDto address,
+                                      @JsonProperty("additionalIdentifiers") final LinkedHashSet<CnIdentifierDto>
+                                              additionalIdentifiers,
+                                      @JsonProperty("contactPoint") final CnContactPointDto contactPoint) {
         this.id = id;
         this.name = name;
         this.identifier = identifier;

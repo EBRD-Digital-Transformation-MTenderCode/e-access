@@ -25,7 +25,7 @@ public class PnUnitDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -38,6 +38,6 @@ public class PnUnitDto {
         }
         final PnUnitDto rhs = (PnUnitDto) other;
         return new EqualsBuilder().append(name, rhs.name)
-                                  .isEquals();
+                .isEquals();
     }
 }

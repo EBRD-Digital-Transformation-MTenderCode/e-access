@@ -5,14 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
@@ -37,8 +33,10 @@ public class CnDocumentDto {
 
     @JsonProperty("documentType")
     @JsonPropertyDescription("A classification of the document described taken from the [documentType codelist]" +
-            "(http://standard.open-contracting.org/latest/en/schema/codelists/#document-type). Values from the provided " +
-            "codelist should be used wherever possible, though extended values can be provided if the codelist does not " +
+            "(http://standard.open-contracting.org/latest/en/schema/codelists/#document-type). Values from the " +
+            "provided " +
+            "codelist should be used wherever possible, though extended values can be provided if the codelist does " +
+            "not " +
             "have a relevant code.")
     private final DocumentType documentType;
 
@@ -70,8 +68,10 @@ public class CnDocumentDto {
 
     @JsonProperty("format")
     @JsonPropertyDescription("The format of the document taken from the [IANA Media Types codelist](http://www.iana" +
-            ".org/assignments/media-types/), with the addition of one extra value for 'offline/print', used when this " +
-            "document entry is being used to describe the offline publication of a document. Use values from the template" +
+            ".org/assignments/media-types/), with the addition of one extra value for 'offline/print', used when this" +
+            " " +
+            "document entry is being used to describe the offline publication of a document. Use values from the " +
+            "template" +
             " column. Links to web pages should be tagged 'text/html'.")
     private final String format;
 
@@ -79,7 +79,8 @@ public class CnDocumentDto {
     @JsonPropertyDescription("Specifies the language of the linked document using either two-letter [ISO639-1]" +
             "(https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), or extended [BCP47 language tags](http://www" +
             ".w3.org/International/articles/language-tags/). The use of lowercase two-letter codes from [ISO639-1]" +
-            "(https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) is strongly recommended unless there is a clear user" +
+            "(https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) is strongly recommended unless there is a clear " +
+            "user" +
             " need for distinguishing the language subtype.")
     private final String language;
 
@@ -90,17 +91,17 @@ public class CnDocumentDto {
 
     @JsonCreator
     public CnDocumentDto(@JsonProperty("id") final String id,
-                    @JsonProperty("documentType") final DocumentType documentType,
-                    @JsonProperty("title") final String title,
-                    @JsonProperty("description") final String description,
-                    @JsonProperty("url") final String url,
-                    @JsonProperty("datePublished") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
-                    LocalDateTime datePublished,
-                    @JsonProperty("dateModified") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
-                    LocalDateTime dateModified,
-                    @JsonProperty("format") final String format,
-                    @JsonProperty("language") final String language,
-                    @JsonProperty("relatedLots") final List<String> relatedLots) {
+                         @JsonProperty("documentType") final DocumentType documentType,
+                         @JsonProperty("title") final String title,
+                         @JsonProperty("description") final String description,
+                         @JsonProperty("url") final String url,
+                         @JsonProperty("datePublished") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
+                         LocalDateTime datePublished,
+                         @JsonProperty("dateModified") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
+                         LocalDateTime dateModified,
+                         @JsonProperty("format") final String format,
+                         @JsonProperty("language") final String language,
+                         @JsonProperty("relatedLots") final List<String> relatedLots) {
         this.id = id;
         this.documentType = documentType;
         this.title = title;

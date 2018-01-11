@@ -19,7 +19,7 @@ public class PinDynamicPurchasingSystemDto {
 
     @JsonCreator
     public PinDynamicPurchasingSystemDto(
-        @JsonProperty("hasDynamicPurchasingSystem") final Boolean hasDynamicPurchasingSystem
+            @JsonProperty("hasDynamicPurchasingSystem") final Boolean hasDynamicPurchasingSystem
     ) {
         this.hasDynamicPurchasingSystem = hasDynamicPurchasingSystem;
     }
@@ -27,7 +27,7 @@ public class PinDynamicPurchasingSystemDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(hasDynamicPurchasingSystem)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -40,6 +40,6 @@ public class PinDynamicPurchasingSystemDto {
         }
         final PinDynamicPurchasingSystemDto rhs = (PinDynamicPurchasingSystemDto) other;
         return new EqualsBuilder().append(hasDynamicPurchasingSystem, rhs.hasDynamicPurchasingSystem)
-                                  .isEquals();
+                .isEquals();
     }
 }

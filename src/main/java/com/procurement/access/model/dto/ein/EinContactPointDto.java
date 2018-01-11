@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.ein;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -12,16 +8,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name",
-    "email",
-    "telephone",
-    "faxNumber",
-    "url"
+        "name",
+        "email",
+        "telephone",
+        "faxNumber",
+        "url"
 })
 public class EinContactPointDto {
     @JsonProperty("name")
     @JsonPropertyDescription("The name of the contact person, department, or contact point, for correspondence " +
-        "relating to this contracting process.")
+            "relating to this contracting process.")
 //    @Pattern(regexp = "^(name_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-" +
 //        "([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]" +
 //        "(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)))$")
@@ -33,12 +29,12 @@ public class EinContactPointDto {
 
     @JsonProperty("telephone")
     @JsonPropertyDescription("The telephone number of the contact point/person. This should include the international" +
-        " dialing code.")
+            " dialing code.")
     private final String telephone;
 
     @JsonProperty("faxNumber")
     @JsonPropertyDescription("The fax number of the contact point/person. This should include the international " +
-        "dialing code.")
+            "dialing code.")
     private final String faxNumber;
 
     @JsonProperty("url")
@@ -61,11 +57,11 @@ public class EinContactPointDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                                    .append(email)
-                                    .append(telephone)
-                                    .append(faxNumber)
-                                    .append(url)
-                                    .toHashCode();
+                .append(email)
+                .append(telephone)
+                .append(faxNumber)
+                .append(url)
+                .toHashCode();
     }
 
     @Override
@@ -78,10 +74,10 @@ public class EinContactPointDto {
         }
         final EinContactPointDto rhs = (EinContactPointDto) other;
         return new EqualsBuilder().append(name, rhs.name)
-                                  .append(email, rhs.email)
-                                  .append(telephone, rhs.telephone)
-                                  .append(faxNumber, rhs.faxNumber)
-                                  .append(url, rhs.url)
-                                  .isEquals();
+                .append(email, rhs.email)
+                .append(telephone, rhs.telephone)
+                .append(faxNumber, rhs.faxNumber)
+                .append(url, rhs.url)
+                .isEquals();
     }
 }

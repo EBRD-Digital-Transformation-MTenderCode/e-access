@@ -23,7 +23,7 @@ public class PinJointProcurementDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(isJointProcurement)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -36,6 +36,6 @@ public class PinJointProcurementDto {
         }
         final PinJointProcurementDto rhs = (PinJointProcurementDto) other;
         return new EqualsBuilder().append(isJointProcurement, rhs.isJointProcurement)
-                                  .isEquals();
+                .isEquals();
     }
 }

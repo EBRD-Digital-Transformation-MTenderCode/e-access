@@ -12,15 +12,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "value"
+        "id",
+        "title",
+        "description",
+        "value"
 })
 public class PnLotDto {
     @JsonProperty("id")
     @JsonPropertyDescription("A local identifier for this lot, such as a lot number. This is used in relatedLot " +
-        "references at the item, document and award level.")
+            "references at the item, document and award level.")
     @NotNull
     private final String id;
 
@@ -53,10 +53,10 @@ public class PnLotDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .append(description)
-                                    .append(value)
-                                    .toHashCode();
+                .append(title)
+                .append(description)
+                .append(value)
+                .toHashCode();
     }
 
     @Override
@@ -69,9 +69,9 @@ public class PnLotDto {
         }
         final PnLotDto rhs = (PnLotDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(value, rhs.value)
-                                  .isEquals();
+                .append(title, rhs.title)
+                .append(description, rhs.description)
+                .append(value, rhs.value)
+                .isEquals();
     }
 }

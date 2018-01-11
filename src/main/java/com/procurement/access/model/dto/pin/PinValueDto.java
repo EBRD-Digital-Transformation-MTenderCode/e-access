@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.pin;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -14,8 +10,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "amount",
-    "currency"
+        "amount",
+        "currency"
 })
 public class PinValueDto {
     @JsonProperty("amount")
@@ -25,7 +21,7 @@ public class PinValueDto {
 
     @JsonProperty("currency")
     @JsonPropertyDescription("The currency for each amount should always be specified using the uppercase 3-letter " +
-        "currency code from ISO4217.")
+            "currency code from ISO4217.")
     @NotNull
     private final Currency currency;
 
@@ -39,8 +35,8 @@ public class PinValueDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(amount)
-                                    .append(currency)
-                                    .toHashCode();
+                .append(currency)
+                .toHashCode();
     }
 
     @Override
@@ -53,8 +49,8 @@ public class PinValueDto {
         }
         final PinValueDto rhs = (PinValueDto) other;
         return new EqualsBuilder().append(amount, rhs.amount)
-                                  .append(currency, rhs.currency)
-                                  .isEquals();
+                .append(currency, rhs.currency)
+                .isEquals();
     }
 
     public enum Currency {

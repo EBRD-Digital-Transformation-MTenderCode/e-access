@@ -15,8 +15,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "startDate",
-    "endDate"
+        "startDate",
+        "endDate"
 })
 public class EinPeriodDto {
     @JsonProperty("startDate")
@@ -43,8 +43,8 @@ public class EinPeriodDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(startDate)
-                                    .append(endDate)
-                                    .toHashCode();
+                .append(endDate)
+                .toHashCode();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class EinPeriodDto {
         }
         final EinPeriodDto rhs = (EinPeriodDto) other;
         return new EqualsBuilder().append(startDate, rhs.startDate)
-                                  .append(endDate, rhs.endDate)
-                                  .isEquals();
+                .append(endDate, rhs.endDate)
+                .isEquals();
     }
 }

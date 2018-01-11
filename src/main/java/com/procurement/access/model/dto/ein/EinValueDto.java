@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.ein;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -16,20 +12,19 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @Setter
 @JsonPropertyOrder({
-    "amount",
-    "currency"
+        "amount",
+        "currency"
 })
 public class EinValueDto {
+    @JsonProperty("currency")
+    @JsonPropertyDescription("The currency for each amount should always be specified using the uppercase 3-letter " +
+            "currency code from ISO4217.")
+    @NotNull
+    private final Currency currency;
     @JsonProperty("amount")
     @JsonPropertyDescription("Amount as a number.")
     @NotNull
     private Double amount;
-
-    @JsonProperty("currency")
-    @JsonPropertyDescription("The currency for each amount should always be specified using the uppercase 3-letter " +
-        "currency code from ISO4217.")
-    @NotNull
-    private final Currency currency;
 
     @JsonCreator
     public EinValueDto(@JsonProperty("amount") final Double amount,
@@ -41,8 +36,8 @@ public class EinValueDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(amount)
-                                    .append(currency)
-                                    .toHashCode();
+                .append(currency)
+                .toHashCode();
     }
 
     @Override
@@ -55,8 +50,8 @@ public class EinValueDto {
         }
         final EinValueDto rhs = (EinValueDto) other;
         return new EqualsBuilder().append(amount, rhs.amount)
-                                  .append(currency, rhs.currency)
-                                  .isEquals();
+                .append(currency, rhs.currency)
+                .isEquals();
     }
 
     public enum Currency {

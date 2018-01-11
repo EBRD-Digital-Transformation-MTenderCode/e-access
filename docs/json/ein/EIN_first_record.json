@@ -9,7 +9,7 @@
     "budget": {
       "id": "",
       "period": {
-         "startDate": "",
+        "startDate": "",
         "endDate": ""
       },
       "amount": {

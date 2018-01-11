@@ -1,7 +1,6 @@
 package com.procurement.access.repository;
 
 import com.procurement.access.model.entity.CnEntity;
-import com.procurement.access.model.entity.EinEntity;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
 import org.springframework.stereotype.Repository;

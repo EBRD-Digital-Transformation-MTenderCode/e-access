@@ -1,11 +1,6 @@
 package com.procurement.access.model.dto.ein;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -15,32 +10,35 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "typeOfBuyer",
-    "mainGeneralActivity",
-    "mainSectoralActivity",
-    "isACentralPurchasingBody",
-    "NUTSCode",
-    "scale"
+        "typeOfBuyer",
+        "mainGeneralActivity",
+        "mainSectoralActivity",
+        "isACentralPurchasingBody",
+        "NUTSCode",
+        "scale"
 })
 public class EinDetailsDto {
     @JsonProperty("typeOfBuyer")
     @JsonPropertyDescription("A value from the [typeOfBuyer codelist](http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#type-of-buyer). The type of buyer taken from the EU's specified list in " +
-        "its TED forms.")
+            ".org/1.1-dev/en/schema/codelists/#type-of-buyer). The type of buyer taken from the EU's specified list " +
+            "in " +
+            "its TED forms.")
     private final TypeOfBuyer typeOfBuyer;
 
     @JsonProperty("mainGeneralActivity")
     @JsonPropertyDescription("A value from the [mainGeneralActivity codelist](http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#main-general-activity). The main general activity of the buyer taken from " +
-        "the EU's specified list in its TED forms which is taken from the United Nations Classification of the " +
-        "Functions of Government (COFOG) codelist.")
+            ".org/1.1-dev/en/schema/codelists/#main-general-activity). The main general activity of the buyer taken " +
+            "from " +
+            "the EU's specified list in its TED forms which is taken from the United Nations Classification of the " +
+            "Functions of Government (COFOG) codelist.")
     private final MainGeneralActivity mainGeneralActivity;
 
     @JsonProperty("mainSectoralActivity")
     @JsonPropertyDescription("A value from the [mainSectoralActivity codelist](http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#main-sectoral-activity) The main sectoral activity of the buyer taken from" +
-        " the EU's specified list in its TED forms which is taken from the United Nations Classification of the " +
-        "Functions of Government (COFOG) codelist.")
+            ".org/1.1-dev/en/schema/codelists/#main-sectoral-activity) The main sectoral activity of the buyer taken " +
+            "from" +
+            " the EU's specified list in its TED forms which is taken from the United Nations Classification of the " +
+            "Functions of Government (COFOG) codelist.")
     private final MainSectoralActivity mainSectoralActivity;
 
     @JsonProperty("isACentralPurchasingBody")
@@ -49,13 +47,14 @@ public class EinDetailsDto {
 
     @JsonProperty("NUTSCode")
     @JsonPropertyDescription("The most detailed level of NUTS codes, NUTS 3 should be used and it should be taken " +
-        "from the EU codelist linked from http://ec.europa.eu/eurostat/ramon/index.cfm?TargetUrl=DSP_PUB_WELC.")
+            "from the EU codelist linked from http://ec.europa.eu/eurostat/ramon/index.cfm?TargetUrl=DSP_PUB_WELC.")
     private final String nutsCode;
 
     @JsonProperty("scale")
     @JsonPropertyDescription("For commercial organization's, is this a micro (micro), Small or Medium Enterprise " +
-        "(sme) or large (large) entity according to the definitions used by the procuring entity or buyer. This field" +
-        " can be left blank if no such concepts apply.")
+            "(sme) or large (large) entity according to the definitions used by the procuring entity or buyer. This " +
+            "field" +
+            " can be left blank if no such concepts apply.")
     private final Scale scale;
 
     @JsonCreator
@@ -76,12 +75,12 @@ public class EinDetailsDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(typeOfBuyer)
-                                    .append(mainGeneralActivity)
-                                    .append(mainSectoralActivity)
-                                    .append(isACentralPurchasingBody)
-                                    .append(nutsCode)
-                                    .append(scale)
-                                    .toHashCode();
+                .append(mainGeneralActivity)
+                .append(mainSectoralActivity)
+                .append(isACentralPurchasingBody)
+                .append(nutsCode)
+                .append(scale)
+                .toHashCode();
     }
 
     @Override
@@ -94,12 +93,12 @@ public class EinDetailsDto {
         }
         final EinDetailsDto rhs = (EinDetailsDto) other;
         return new EqualsBuilder().append(typeOfBuyer, rhs.typeOfBuyer)
-                                  .append(mainGeneralActivity, rhs.mainGeneralActivity)
-                                  .append(mainSectoralActivity, rhs.mainSectoralActivity)
-                                  .append(isACentralPurchasingBody, rhs.isACentralPurchasingBody)
-                                  .append(nutsCode, rhs.nutsCode)
-                                  .append(scale, rhs.scale)
-                                  .isEquals();
+                .append(mainGeneralActivity, rhs.mainGeneralActivity)
+                .append(mainSectoralActivity, rhs.mainSectoralActivity)
+                .append(isACentralPurchasingBody, rhs.isACentralPurchasingBody)
+                .append(nutsCode, rhs.nutsCode)
+                .append(scale, rhs.scale)
+                .isEquals();
     }
 
     public enum MainGeneralActivity {

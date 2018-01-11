@@ -25,7 +25,7 @@ public class PinRenewalDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(hasRenewals)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -38,6 +38,6 @@ public class PinRenewalDto {
         }
         final PinRenewalDto rhs = (PinRenewalDto) other;
         return new EqualsBuilder().append(hasRenewals, rhs.hasRenewals)
-                                  .isEquals();
+                .isEquals();
     }
 }

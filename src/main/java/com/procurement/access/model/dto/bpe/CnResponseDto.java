@@ -13,8 +13,8 @@ import lombok.Getter;
 
 @Getter
 @JsonPropertyOrder({
-        "ocid",
         "token",
+        "ocid",
         "planning",
         "tender",
         "parties",
@@ -46,8 +46,8 @@ public class CnResponseDto {
     private final List<CnRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
-    public CnResponseDto(@JsonProperty("ocid") final String ocid,
-                         @JsonProperty("token") final String token,
+    public CnResponseDto(@JsonProperty("token") final String token,
+                         @JsonProperty("ocid") final String ocid,
                          @JsonProperty("planning") final CnPlanningDto planning,
                          @JsonProperty("tender") final CnTenderDto tender,
                          @JsonProperty("parties") final List<CnOrganizationDto> parties,

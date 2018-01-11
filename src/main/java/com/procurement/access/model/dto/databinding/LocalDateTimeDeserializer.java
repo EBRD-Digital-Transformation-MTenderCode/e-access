@@ -11,12 +11,12 @@ import java.time.format.DateTimeFormatterBuilder;
 public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
     private static final DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder()
-        .parseCaseInsensitive()
-        .append(DateTimeFormatter.ISO_LOCAL_DATE)
-        .appendLiteral('T')
-        .append(DateTimeFormatter.ISO_LOCAL_TIME)
-        .appendLiteral('Z')
-        .toFormatter();
+            .parseCaseInsensitive()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE)
+            .appendLiteral('T')
+            .append(DateTimeFormatter.ISO_LOCAL_TIME)
+            .appendLiteral('Z')
+            .toFormatter();
 
     protected LocalDateTimeDeserializer() {
         super(LocalDateTime.class);

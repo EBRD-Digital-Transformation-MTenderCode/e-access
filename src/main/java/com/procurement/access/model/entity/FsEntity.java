@@ -18,6 +18,12 @@ public class FsEntity {
     @PrimaryKeyColumn(name = "oc_id", type = PrimaryKeyType.CLUSTERED)
     private String ocId;
 
+    @PrimaryKeyColumn(name = "token_entity", type = PrimaryKeyType.CLUSTERED)
+    private String token;
+
+    @Column(value = "owner")
+    private String owner;
+
     @Column(value = "amount")
     private Double amount;
 

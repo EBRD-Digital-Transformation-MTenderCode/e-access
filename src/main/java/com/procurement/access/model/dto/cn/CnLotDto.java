@@ -25,46 +25,35 @@ import lombok.Setter;
         "placeOfPerformance"
 })
 public class CnLotDto {
-    @JsonProperty("id")
-    @JsonPropertyDescription("A local identifier for this lot, such as a lot number. This is used in relatedLot " +
-            "references at the item, document and award level.")
-    private String id;
-
     @JsonProperty("title")
     @JsonPropertyDescription("A title for this lot.")
     @NotNull
     private final String title;
-
     @JsonProperty("description")
     @JsonPropertyDescription("A description of this lot.")
     @NotNull
     private final String description;
-
     @JsonProperty("value")
     @Valid
     @NotNull
     private final CnValueDto value;
-
     @JsonProperty("options")
     @JsonPropertyDescription("FsDetailsDto about lot options: if they will be accepted and what they can consist of. " +
             "Required by the EU")
     @Valid
     @NotNull
     private final List<CnOptionDto> options;
-
     @JsonProperty("recurrentProcurement")
     @JsonPropertyDescription("FsDetailsDto of possible recurrent procurements and their subsequent calls for " +
             "competition.")
     @Valid
     @NotNull
     private final List<CnRecurrentProcurementDto> recurrentProcurement;
-
     @JsonProperty("renewals")
     @JsonPropertyDescription("FsDetailsDto of allowable contract renewals")
     @Valid
     @NotNull
     private final List<CnRenewalDto> renewals;
-
     @JsonProperty("variants")
     @JsonPropertyDescription("FsDetailsDto about lot variants: if they will be accepted and what they can consist of." +
             " " +
@@ -72,14 +61,16 @@ public class CnLotDto {
     @Valid
     @NotNull
     private final List<CnVariantDto> variants;
-
     @JsonProperty("contractPeriod")
     @Valid
     private final CnPeriodDto contractPeriod;
-
     @JsonProperty("placeOfPerformance")
     @Valid
     private final CnPlaceOfPerformanceDto placeOfPerformance;
+    @JsonProperty("id")
+    @JsonPropertyDescription("A local identifier for this lot, such as a lot number. This is used in relatedLot " +
+            "references at the item, document and award level.")
+    private String id;
 
     @JsonCreator
     public CnLotDto(@JsonProperty("id") final String id,

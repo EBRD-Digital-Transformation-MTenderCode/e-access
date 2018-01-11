@@ -9,8 +9,8 @@ import lombok.Getter;
 
 @Getter
 @JsonPropertyOrder({
-    "planning",
-    "tender"
+        "planning",
+        "tender"
 })
 public class PnDto {
 

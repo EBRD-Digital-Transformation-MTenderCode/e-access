@@ -14,12 +14,12 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
     private static final DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder()
-        .parseCaseInsensitive()
-        .append(ISO_LOCAL_DATE)
-        .appendLiteral('T')
-        .append(ISO_LOCAL_TIME)
-        .appendLiteral('Z')
-        .toFormatter();
+            .parseCaseInsensitive()
+            .append(ISO_LOCAL_DATE)
+            .appendLiteral('T')
+            .append(ISO_LOCAL_TIME)
+            .appendLiteral('Z')
+            .toFormatter();
 
     public LocalDateTimeSerializer() {
         super(LocalDateTime.class);

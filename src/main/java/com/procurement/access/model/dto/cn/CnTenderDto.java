@@ -56,10 +56,6 @@ public class CnTenderDto {
     @JsonPropertyDescription("A summary description of the tender. This should complement structured information " +
             "provided using the items array. Descriptions should be short and easy to read. Avoid using ALL CAPS. ")
     private final String description;
-    @JsonProperty("status")
-    @JsonPropertyDescription("The current status of the tender based on the [tenderStatus codelist](http://standard" +
-            ".open-contracting.org/latest/en/schema/codelists/#tender-status)")
-    private CnTenderStatusDto status;
     @JsonProperty("classification")
     @Valid
     private final CnClassificationDto classification;
@@ -199,6 +195,10 @@ public class CnTenderDto {
             "replies to queries.")
     @Valid
     private final List<CnDocumentDto> documents;
+    @JsonProperty("status")
+    @JsonPropertyDescription("The current status of the tender based on the [tenderStatus codelist](http://standard" +
+            ".open-contracting.org/latest/en/schema/codelists/#tender-status)")
+    private CnTenderStatusDto status;
     @JsonProperty("id")
     @JsonPropertyDescription("An identifier for this tender process. This may be the same as the ocid, or may be " +
             "drawn from an internally held identifier for this tender.")

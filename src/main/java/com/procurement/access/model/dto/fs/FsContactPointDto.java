@@ -1,12 +1,6 @@
-
 package com.procurement.access.model.dto.fs;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.net.URI;
+import com.fasterxml.jackson.annotation.*;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -14,16 +8,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "name",
-    "email",
-    "telephone",
-    "faxNumber",
-    "url"
+        "name",
+        "email",
+        "telephone",
+        "faxNumber",
+        "url"
 })
 public class FsContactPointDto {
     @JsonProperty("name")
     @JsonPropertyDescription("The name of the contact person, department, or contact point, for correspondence " +
-        "relating to this contracting process.")
+            "relating to this contracting process.")
     @NotNull
     private final String name;
 
@@ -34,13 +28,13 @@ public class FsContactPointDto {
 
     @JsonProperty("telephone")
     @JsonPropertyDescription("The telephone number of the contact point/person. This should include the international" +
-        " dialing code.")
+            " dialing code.")
     @NotNull
     private final String telephone;
 
     @JsonProperty("faxNumber")
     @JsonPropertyDescription("The fax number of the contact point/person. This should include the international " +
-        "dialing code.")
+            "dialing code.")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private final String faxNumber;
 
@@ -65,11 +59,11 @@ public class FsContactPointDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                                    .append(email)
-                                    .append(telephone)
-                                    .append(faxNumber)
-                                    .append(url)
-                                    .toHashCode();
+                .append(email)
+                .append(telephone)
+                .append(faxNumber)
+                .append(url)
+                .toHashCode();
     }
 
     @Override
@@ -82,10 +76,10 @@ public class FsContactPointDto {
         }
         final FsContactPointDto rhs = (FsContactPointDto) other;
         return new EqualsBuilder().append(name, rhs.name)
-                                  .append(email, rhs.email)
-                                  .append(telephone, rhs.telephone)
-                                  .append(faxNumber, rhs.faxNumber)
-                                  .append(url, rhs.url)
-                                  .isEquals();
+                .append(email, rhs.email)
+                .append(telephone, rhs.telephone)
+                .append(faxNumber, rhs.faxNumber)
+                .append(url, rhs.url)
+                .isEquals();
     }
 }

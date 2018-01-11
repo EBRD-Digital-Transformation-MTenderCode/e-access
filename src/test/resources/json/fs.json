@@ -60,7 +60,7 @@
       "faxNumber": "string",
       "url": "http://example.com"
     },
-    "roles":"tenderer",
+    "roles": "tenderer",
     "details": {
       "typeOfBuyer": "BODY_PUBLIC",
       "mainGeneralActivity": "DEFENCE",

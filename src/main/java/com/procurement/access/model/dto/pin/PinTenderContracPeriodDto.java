@@ -15,9 +15,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "startDate",
-    "endDate",
-    "durationInDays"
+        "startDate",
+        "endDate",
+        "durationInDays"
 })
 public class PinTenderContracPeriodDto {
     @JsonProperty("startDate")
@@ -32,11 +32,14 @@ public class PinTenderContracPeriodDto {
 
     @JsonProperty("durationInDays")
     @JsonPropertyDescription("The maximum duration of this period in days. A user interface may wish to collect or " +
-        "display this data in months or years as appropriate, but should convert it into days when completing this " +
-        "field. This field can be used when exact dates are not known.  Where a startDate and endDate are given, this" +
-        " field is optional, and should reflect the difference between those two days. Where a startDate and " +
-        "maxExtentDate are given, this field is optional, and should reflect the difference between startDate and " +
-        "maxExtentDate.")
+            "display this data in months or years as appropriate, but should convert it into days when completing " +
+            "this " +
+            "field. This field can be used when exact dates are not known.  Where a startDate and endDate are given, " +
+            "this" +
+            " field is optional, and should reflect the difference between those two days. Where a startDate and " +
+            "maxExtentDate are given, this field is optional, and should reflect the difference between startDate and" +
+            " " +
+            "maxExtentDate.")
     private final Integer durationInDays;
 
     @JsonCreator
@@ -45,7 +48,7 @@ public class PinTenderContracPeriodDto {
                                              startDate,
                                      @JsonProperty("endDate")
                                      @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
-                                         endDate,
+                                             endDate,
                                      @JsonProperty("durationInDays") final Integer durationInDays) {
         this.startDate = startDate;
         this.endDate = endDate;
@@ -55,9 +58,9 @@ public class PinTenderContracPeriodDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(startDate)
-                                    .append(endDate)
-                                    .append(durationInDays)
-                                    .toHashCode();
+                .append(endDate)
+                .append(durationInDays)
+                .toHashCode();
     }
 
     @Override
@@ -70,8 +73,8 @@ public class PinTenderContracPeriodDto {
         }
         final PinTenderContracPeriodDto rhs = (PinTenderContracPeriodDto) other;
         return new EqualsBuilder().append(startDate, rhs.startDate)
-                                  .append(endDate, rhs.endDate)
-                                  .append(durationInDays, rhs.durationInDays)
-                                  .isEquals();
+                .append(endDate, rhs.endDate)
+                .append(durationInDays, rhs.durationInDays)
+                .isEquals();
     }
 }

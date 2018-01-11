@@ -8,8 +8,8 @@ import lombok.Getter;
 
 @Getter
 @JsonPropertyOrder({
-    "cpid",
-    "ocid"
+        "cpid",
+        "ocid"
 })
 public class UpdateFsDto {
 

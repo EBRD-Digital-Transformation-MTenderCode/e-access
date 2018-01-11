@@ -44,20 +44,20 @@ public class ControllerExceptionHandler {
 
     private List<ResponseDetailsDto> getErrors(final BindingResult result) {
         return result.getFieldErrors()
-                     .stream()
-                     .map(f -> new ResponseDetailsDto(
-                         f.getField(),
-                         f.getCode() + " : " + f.getDefaultMessage()))
-                     .collect(Collectors.toList());
+                .stream()
+                .map(f -> new ResponseDetailsDto(
+                        f.getField(),
+                        f.getCode() + " : " + f.getDefaultMessage()))
+                .collect(Collectors.toList());
     }
 
     private List<ResponseDetailsDto> getErrors(final ConstraintViolationException e) {
         return e.getConstraintViolations()
                 .stream()
                 .map(f -> new ResponseDetailsDto(
-                    f.getPropertyPath()
-                     .toString(),
-                    f.getMessage() + " " + f.getMessageTemplate()))
+                        f.getPropertyPath()
+                                .toString(),
+                        f.getMessage() + " " + f.getMessageTemplate()))
                 .collect(toList());
     }
 

@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.pin;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -16,11 +12,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "description",
-    "classification",
-    "additionalClassifications",
-    "quantity",
-    "unit"
+        "description",
+        "classification",
+        "additionalClassifications",
+        "quantity",
+        "unit"
 })
 public class PinItemDto {
 
@@ -37,8 +33,10 @@ public class PinItemDto {
     @JsonProperty("additionalClassifications")
     @JsonDeserialize(as = LinkedHashSet.class)
     @JsonPropertyDescription("An array of additional classifications for the item. See the [itemClassificationScheme]" +
-        "(http://standard.open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) codelist for " +
-        "common options to use in OCDS. This may also be used to present codes from an internal classification scheme.")
+            "(http://standard.open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) codelist " +
+            "for " +
+            "common options to use in OCDS. This may also be used to present codes from an internal classification " +
+            "scheme.")
     @Valid
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private final Set<PinClassificationDto> additionalClassifications;
@@ -50,7 +48,7 @@ public class PinItemDto {
 
     @JsonProperty("unit")
     @JsonPropertyDescription("A description of the unit in which the supplies, services or works are provided (e.g. " +
-        "hours, kilograms) and the unit-price. For comparability, an established list of units can be used.  ")
+            "hours, kilograms) and the unit-price. For comparability, an established list of units can be used.  ")
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @Valid
     private final PinUnitDto unit;
@@ -59,7 +57,7 @@ public class PinItemDto {
     public PinItemDto(@JsonProperty("description") final String description,
                       @JsonProperty("classification") final PinClassificationDto classification,
                       @JsonProperty("additionalClassifications") final LinkedHashSet<PinClassificationDto>
-                          additionalClassifications,
+                              additionalClassifications,
                       @JsonProperty("quantity") final Double quantity,
                       @JsonProperty("unit") final PinUnitDto unit) {
         this.description = description;
@@ -72,11 +70,11 @@ public class PinItemDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(description)
-                                    .append(classification)
-                                    .append(additionalClassifications)
-                                    .append(quantity)
-                                    .append(unit)
-                                    .toHashCode();
+                .append(classification)
+                .append(additionalClassifications)
+                .append(quantity)
+                .append(unit)
+                .toHashCode();
     }
 
     @Override
@@ -89,10 +87,10 @@ public class PinItemDto {
         }
         final PinItemDto rhs = (PinItemDto) other;
         return new EqualsBuilder().append(description, rhs.description)
-                                  .append(classification, rhs.classification)
-                                  .append(additionalClassifications, rhs.additionalClassifications)
-                                  .append(quantity, rhs.quantity)
-                                  .append(unit, rhs.unit)
-                                  .isEquals();
+                .append(classification, rhs.classification)
+                .append(additionalClassifications, rhs.additionalClassifications)
+                .append(quantity, rhs.quantity)
+                .append(unit, rhs.unit)
+                .isEquals();
     }
 }

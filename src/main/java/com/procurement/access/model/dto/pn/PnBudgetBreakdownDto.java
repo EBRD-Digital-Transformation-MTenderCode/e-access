@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.pn;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -13,11 +9,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "id",
-    "description",
-    "amount",
-    "period",
-    "sourceParty"
+        "id",
+        "description",
+        "amount",
+        "period",
+        "sourceParty"
 })
 public class PnBudgetBreakdownDto {
     @JsonProperty("id")
@@ -42,7 +38,7 @@ public class PnBudgetBreakdownDto {
 
     @JsonProperty("sourceParty")
     @JsonPropertyDescription("The id and name of the party being referenced. Used to cross-reference to the parties " +
-        "section")
+            "section")
     @Valid
     @NotNull
     private final PnOrganizationReferenceDto sourceParty;
@@ -63,11 +59,11 @@ public class PnBudgetBreakdownDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(description)
-                                    .append(amount)
-                                    .append(period)
-                                    .append(sourceParty)
-                                    .toHashCode();
+                .append(description)
+                .append(amount)
+                .append(period)
+                .append(sourceParty)
+                .toHashCode();
     }
 
     @Override
@@ -80,10 +76,10 @@ public class PnBudgetBreakdownDto {
         }
         final PnBudgetBreakdownDto rhs = (PnBudgetBreakdownDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(description, rhs.description)
-                                  .append(amount, rhs.amount)
-                                  .append(period, rhs.period)
-                                  .append(sourceParty, rhs.sourceParty)
-                                  .isEquals();
+                .append(description, rhs.description)
+                .append(amount, rhs.amount)
+                .append(period, rhs.period)
+                .append(sourceParty, rhs.sourceParty)
+                .isEquals();
     }
 }

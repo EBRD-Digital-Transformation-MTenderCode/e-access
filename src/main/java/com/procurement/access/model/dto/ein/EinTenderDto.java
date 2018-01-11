@@ -13,37 +13,32 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @Setter
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "classification",
-    "status",
-    "statusDetails"
+        "id",
+        "title",
+        "description",
+        "classification",
+        "status",
+        "statusDetails"
 })
 public class EinTenderDto {
-
-    @NotNull
-    @JsonProperty("id")
-    private String id;
 
     @JsonProperty("title")
     @NotNull
     private final String title;
-
     @JsonProperty("description")
     @NotNull
     private final String description;
-
     @JsonProperty("classification")
     @Valid
     @NotNull
     private final EinClassificationDto classification;
-
     @JsonProperty("status")
     private final EinTenderStatusDto status;
-
     @JsonProperty("statusDetails")
     private final EinTenderStatusDetailsDto statusDetails;
+    @NotNull
+    @JsonProperty("id")
+    private String id;
 
     @JsonCreator
     public EinTenderDto(@JsonProperty("id") final String id,
@@ -63,12 +58,12 @@ public class EinTenderDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .append(description)
-                                    .append(classification)
-                                    .append(status)
-                                    .append(statusDetails)
-                                    .toHashCode();
+                .append(title)
+                .append(description)
+                .append(classification)
+                .append(status)
+                .append(statusDetails)
+                .toHashCode();
     }
 
     @Override
@@ -81,11 +76,11 @@ public class EinTenderDto {
         }
         final EinTenderDto rhs = (EinTenderDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(classification, rhs.classification)
-                                  .append(status, rhs.status)
-                                  .append(statusDetails, rhs.statusDetails)
-                                  .isEquals();
+                .append(title, rhs.title)
+                .append(description, rhs.description)
+                .append(classification, rhs.classification)
+                .append(status, rhs.status)
+                .append(statusDetails, rhs.statusDetails)
+                .isEquals();
     }
 }

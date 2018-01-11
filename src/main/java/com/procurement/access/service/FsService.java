@@ -7,7 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface FsService {
 
-    ResponseDto createFs(FsDto fsDto);
+    ResponseDto createFs(String country,
+                         String pmd,
+                         String stage,
+                         String owner,
+                         FsDto fsDto);
 
-    Double getTotalAmountFs(String cpId);
+    ResponseDto updateFs(FsDto fsDto);
 }

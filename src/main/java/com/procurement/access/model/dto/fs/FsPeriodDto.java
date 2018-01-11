@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.fs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -16,8 +15,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "startDate",
-    "endDate"
+        "startDate",
+        "endDate"
 })
 public class FsPeriodDto {
     @JsonProperty("startDate")
@@ -31,8 +30,10 @@ public class FsPeriodDto {
     private final LocalDateTime endDate;
 
     @JsonCreator
-    public FsPeriodDto(@JsonProperty("startDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime startDate,
-                       @JsonProperty("endDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime endDate) {
+    public FsPeriodDto(@JsonProperty("startDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
+                       LocalDateTime startDate,
+                       @JsonProperty("endDate") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final
+                       LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -40,8 +41,8 @@ public class FsPeriodDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(startDate)
-                                    .append(endDate)
-                                    .toHashCode();
+                .append(endDate)
+                .toHashCode();
     }
 
     @Override
@@ -54,7 +55,7 @@ public class FsPeriodDto {
         }
         final FsPeriodDto rhs = (FsPeriodDto) other;
         return new EqualsBuilder().append(startDate, rhs.startDate)
-                                  .append(endDate, rhs.endDate)
-                                  .isEquals();
+                .append(endDate, rhs.endDate)
+                .isEquals();
     }
 }

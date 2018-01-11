@@ -1,11 +1,6 @@
 package com.procurement.access.model.dto.fs;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -16,12 +11,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "relationship",
-    "scheme",
-    "identifier",
-    "uri"
+        "id",
+        "title",
+        "relationship",
+        "scheme",
+        "identifier",
+        "uri"
 })
 public class FsRelatedProcessDto {
     @JsonProperty("id")
@@ -31,28 +26,30 @@ public class FsRelatedProcessDto {
 
     @JsonProperty("relationship")
     @JsonPropertyDescription("Specify the type of relationship using the [related process codelist](http://standard" +
-        ".open-contracting.org/latest/en/schema/codelists/#related-process).")
+            ".open-contracting.org/latest/en/schema/codelists/#related-process).")
     private final RelatedProcessType relationship;
 
     @JsonProperty("title")
     @JsonPropertyDescription("The title of the related process, where referencing an open contracting process, this " +
-        "field should match the tender/title field in the related process.")
+            "field should match the tender/title field in the related process.")
     private final String title;
 
     @JsonProperty("scheme")
     @JsonPropertyDescription("The identification scheme used by this cross-reference from the [related process scheme" +
-        " codelist](http://standard.open-contracting.org/latest/en/schema/codelists/#related-process-scheme) codelist" +
-        ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocId) should be used.")
+            " codelist](http://standard.open-contracting.org/latest/en/schema/codelists/#related-process-scheme) " +
+            "codelist" +
+            ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocId) should be " +
+            "used.")
     private final RelatedProcessScheme scheme;
 
     @JsonProperty("identifier")
     @JsonPropertyDescription("The identifier of the related process. When cross-referencing information also " +
-        "published using OCDS, this should be the Open Contracting ID (ocId).")
+            "published using OCDS, this should be the Open Contracting ID (ocId).")
     private final String identifier;
 
     @JsonProperty("uri")
     @JsonPropertyDescription("A URI pointing to a machine-readable document, release or record package containing the" +
-        " identified related process.")
+            " identified related process.")
     private final String uri;
 
     @JsonCreator
@@ -73,12 +70,12 @@ public class FsRelatedProcessDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(relationship)
-                                    .append(title)
-                                    .append(scheme)
-                                    .append(identifier)
-                                    .append(uri)
-                                    .toHashCode();
+                .append(relationship)
+                .append(title)
+                .append(scheme)
+                .append(identifier)
+                .append(uri)
+                .toHashCode();
     }
 
     @Override
@@ -91,12 +88,12 @@ public class FsRelatedProcessDto {
         }
         final FsRelatedProcessDto rhs = (FsRelatedProcessDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(relationship, rhs.relationship)
-                                  .append(title, rhs.title)
-                                  .append(scheme, rhs.scheme)
-                                  .append(identifier, rhs.identifier)
-                                  .append(uri, rhs.uri)
-                                  .isEquals();
+                .append(relationship, rhs.relationship)
+                .append(title, rhs.title)
+                .append(scheme, rhs.scheme)
+                .append(identifier, rhs.identifier)
+                .append(uri, rhs.uri)
+                .isEquals();
     }
 
     public enum RelatedProcessType {
@@ -105,9 +102,15 @@ public class FsRelatedProcessDto {
         PARENT("parent"),
         PRIOR("prior"),
         UNSUCCESSFUL_PROCESS("unsuccessfulProcess"),
-        SUB_CONTRACT("subContract"),
         REPLACEMENT_PROCESS("replacementProcess"),
-        RENEWAL_PROCESS("renewalProcess");
+        RENEWAL_PROCESS("renewalProcess"),
+        SUB_CONTRACT("subContract"),
+        X_EXPENDITURE_ITEM("x_expenditureItem"),
+        X_FINANCE_SOURCE("x_financeSource"),
+        X_PRESELECTION("x_preselection"),
+        X_EXECUTION("x_execution"),
+        X_PLANNED("x_planned"),
+        X_BUDGET("x_budget");
 
         static final Map<String, RelatedProcessType> CONSTANTS = new HashMap<>();
 

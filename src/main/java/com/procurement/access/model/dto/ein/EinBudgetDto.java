@@ -14,27 +14,25 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @Setter
 @JsonPropertyOrder({
-    "id",
-    "period",
-    "amount"
+        "id",
+        "period",
+        "amount"
 })
 public class EinBudgetDto {
-    @NotNull
-    @JsonProperty("id")
-    @JsonPropertyDescription("An identifier for the budget line item which provides funds for this contracting " +
-        "process. This identifier should be possible to cross-reference against the provided data source.")
-    private String id;
-
     @JsonProperty("period")
     @JsonPropertyDescription("The period covered by this budget entry.")
     @Valid
     @NotNull
     private final EinPeriodDto period;
-
     @JsonProperty("amount")
     @Valid
     @NotNull
     private final EinValueDto amount;
+    @NotNull
+    @JsonProperty("id")
+    @JsonPropertyDescription("An identifier for the budget line item which provides funds for this contracting " +
+            "process. This identifier should be possible to cross-reference against the provided data source.")
+    private String id;
 
     @JsonCreator
     public EinBudgetDto(@JsonProperty("id") final String id,
@@ -49,9 +47,9 @@ public class EinBudgetDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(amount)
-                                    .append(period)
-                                    .toHashCode();
+                .append(amount)
+                .append(period)
+                .toHashCode();
     }
 
     @Override
@@ -64,8 +62,8 @@ public class EinBudgetDto {
         }
         final EinBudgetDto rhs = (EinBudgetDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(amount, rhs.amount)
-                                  .append(period, rhs.period)
-                                  .isEquals();
+                .append(amount, rhs.amount)
+                .append(period, rhs.period)
+                .isEquals();
     }
 }

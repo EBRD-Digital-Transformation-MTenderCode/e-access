@@ -27,7 +27,7 @@ public class PinLotGroupDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(optionToCombine)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -40,6 +40,6 @@ public class PinLotGroupDto {
         }
         final PinLotGroupDto rhs = (PinLotGroupDto) other;
         return new EqualsBuilder().append(optionToCombine, rhs.optionToCombine)
-                                  .isEquals();
+                .isEquals();
     }
 }

@@ -2,16 +2,12 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
-import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.service.EinService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -25,20 +21,20 @@ public class EinController {
     }
 
     @PostMapping(value = "/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto create(@Valid @RequestBody final EinDto einDto) {
-        return einService.createEin(einDto);
+    public ResponseEntity<ResponseDto> create(@RequestParam("country") final String country,
+                                              @RequestParam("pmd") final String pmd,
+                                              @RequestParam("stage") final String stage,
+                                              @RequestParam("owner") final String owner,
+                                              @Valid @RequestBody final EinDto einDto) {
+        return new ResponseEntity<>(einService.createEin(country, pmd, stage, owner, einDto), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseDto update(@Valid @RequestBody final EinDto einDto) {
-        return einService.updateEin(einDto);
-    }
-
-    @PostMapping(value = "/addRelatedProcess")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseDto addRelatedProcess(@Valid @RequestBody final UpdateFsDto updateFsDto) {
-        return einService.addRelatedProcess(updateFsDto);
+    public ResponseEntity<ResponseDto> update(@RequestParam("country") final String country,
+                                              @RequestParam("pmd") final String pmd,
+                                              @RequestParam("stage") final String stage,
+                                              @RequestParam("owner") final String owner,
+                                              @Valid @RequestBody final EinDto einDto) {
+        return new ResponseEntity<>(einService.updateEin(einDto), HttpStatus.OK);
     }
 }

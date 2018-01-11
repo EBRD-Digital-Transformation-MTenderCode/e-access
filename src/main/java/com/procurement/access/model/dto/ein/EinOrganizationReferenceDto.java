@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.ein;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -18,23 +14,23 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "name",
-    "identifier",
-    "address",
-    "additionalIdentifiers",
-    "contactPoint"
+        "id",
+        "name",
+        "identifier",
+        "address",
+        "additionalIdentifiers",
+        "contactPoint"
 })
 public class EinOrganizationReferenceDto {
     @JsonProperty("id")
     @JsonPropertyDescription("The id of the party being referenced. This must match the id of an entry in the parties" +
-        " section.")
+            " section.")
     @NotNull
     private final String id;
 
     @JsonProperty("name")
     @JsonPropertyDescription("The name of the party being referenced. This must match the name of an entry in the " +
-        "parties section.")
+            "parties section.")
     @Size(min = 1)
     @NotNull
     private final String name;
@@ -50,9 +46,9 @@ public class EinOrganizationReferenceDto {
     @JsonProperty("additionalIdentifiers")
     @JsonDeserialize(as = LinkedHashSet.class)
     @JsonPropertyDescription("(Deprecated outside the parties section) A list of additional / supplemental " +
-        "identifiers for the organization, using the [organization identifier guidance](http://standard" +
-        ".open-contracting.org/latest/en/schema/identifiers/). This could be used to provide an internally used " +
-        "identifier for this organization in addition to the primary legal entity identifier.")
+            "identifiers for the organization, using the [organization identifier guidance](http://standard" +
+            ".open-contracting.org/latest/en/schema/identifiers/). This could be used to provide an internally used " +
+            "identifier for this organization in addition to the primary legal entity identifier.")
     @Valid
     private final Set<EinIdentifierDto> additionalIdentifiers;
 
@@ -66,7 +62,7 @@ public class EinOrganizationReferenceDto {
                                        @JsonProperty("identifier") final EinIdentifierDto identifier,
                                        @JsonProperty("address") final EinAddressDto address,
                                        @JsonProperty("additionalIdentifiers") final LinkedHashSet<EinIdentifierDto>
-                                           additionalIdentifiers,
+                                               additionalIdentifiers,
                                        @JsonProperty("contactPoint") final EinContactPointDto contactPoint) {
         this.id = id;
         this.name = name;
@@ -79,12 +75,12 @@ public class EinOrganizationReferenceDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                                    .append(id)
-                                    .append(identifier)
-                                    .append(address)
-                                    .append(additionalIdentifiers)
-                                    .append(contactPoint)
-                                    .toHashCode();
+                .append(id)
+                .append(identifier)
+                .append(address)
+                .append(additionalIdentifiers)
+                .append(contactPoint)
+                .toHashCode();
     }
 
     @Override
@@ -97,11 +93,11 @@ public class EinOrganizationReferenceDto {
         }
         final EinOrganizationReferenceDto rhs = (EinOrganizationReferenceDto) other;
         return new EqualsBuilder().append(name, rhs.name)
-                                  .append(id, rhs.id)
-                                  .append(identifier, rhs.identifier)
-                                  .append(address, rhs.address)
-                                  .append(additionalIdentifiers, rhs.additionalIdentifiers)
-                                  .append(contactPoint, rhs.contactPoint)
-                                  .isEquals();
+                .append(id, rhs.id)
+                .append(identifier, rhs.identifier)
+                .append(address, rhs.address)
+                .append(additionalIdentifiers, rhs.additionalIdentifiers)
+                .append(contactPoint, rhs.contactPoint)
+                .isEquals();
     }
 }

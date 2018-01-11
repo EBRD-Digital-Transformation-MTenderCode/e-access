@@ -12,8 +12,14 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @Table("access_ein")
 public class EinEntity {
 
-    @PrimaryKeyColumn(name = "oc_id", type = PrimaryKeyType.PARTITIONED)
-    private String ocId;
+    @PrimaryKeyColumn(name = "cp_id", type = PrimaryKeyType.PARTITIONED)
+    private String cpId;
+
+    @PrimaryKeyColumn(name = "token_entity", type = PrimaryKeyType.CLUSTERED)
+    private String token;
+
+    @Column(value = "owner")
+    private String owner;
 
     @Column(value = "json_data")
     private String jsonData;

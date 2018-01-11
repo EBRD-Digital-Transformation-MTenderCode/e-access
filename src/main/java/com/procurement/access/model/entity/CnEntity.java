@@ -16,7 +16,7 @@ public class CnEntity {
     private String cpId;
 
     @PrimaryKeyColumn(name = "token_entity", type = PrimaryKeyType.CLUSTERED)
-    private String tokenEntity;
+    private String token;
 
     @Column(value = "owner")
     private String owner;

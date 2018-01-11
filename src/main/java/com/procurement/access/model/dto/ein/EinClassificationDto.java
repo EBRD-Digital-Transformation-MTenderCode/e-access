@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.ein;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -14,9 +10,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "id",
-    "scheme",
-    "description"
+        "id",
+        "scheme",
+        "description"
 })
 public class EinClassificationDto {
     @JsonProperty("id")
@@ -26,9 +22,9 @@ public class EinClassificationDto {
 
     @JsonProperty("scheme")
     @JsonPropertyDescription("An classification should be drawn from an existing scheme or list of codes. This field " +
-        "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
-        "classifications, this value should represent an known [ItemDto Classificationdto Scheme](http://standard" +
-        ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
+            "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
+            "classifications, this value should represent an known [ItemDto Classificationdto Scheme](http://standard" +
+            ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
     @NotNull
     private final Scheme scheme;
 
@@ -49,9 +45,9 @@ public class EinClassificationDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(scheme)
-                                    .append(description)
-                                    .toHashCode();
+                .append(scheme)
+                .append(description)
+                .toHashCode();
     }
 
     @Override
@@ -64,9 +60,9 @@ public class EinClassificationDto {
         }
         final EinClassificationDto rhs = (EinClassificationDto) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(scheme, rhs.scheme)
-                                  .append(description, rhs.description)
-                                  .isEquals();
+                .append(scheme, rhs.scheme)
+                .append(description, rhs.description)
+                .isEquals();
     }
 
     public enum Scheme {

@@ -31,7 +31,6 @@
       "id": "ID",
       "legalName": "string"
     },
-
     "address": {
       "streetAddress": "string",
       "locality": "string",
@@ -43,7 +42,7 @@
       "email": "string",
       "telephone": "string"
     },
-    "roles":"tenderer",
+    "roles": "tenderer",
     "details": {
       "typeOfBuyer": "BODY_PUBLIC",
       "mainGeneralActivity": "DEFENCE",

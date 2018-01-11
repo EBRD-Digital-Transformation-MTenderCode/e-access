@@ -13,7 +13,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class PinFrameworkDto {
     @JsonProperty("isAFramework")
     @JsonPropertyDescription("A True/False field to indicate whether a framework agreement has been established as " +
-        "part of this procurement")
+            "part of this procurement")
     private final Boolean isAFramework;
 
     @JsonCreator
@@ -24,7 +24,7 @@ public class PinFrameworkDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(isAFramework)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -37,6 +37,6 @@ public class PinFrameworkDto {
         }
         final PinFrameworkDto rhs = (PinFrameworkDto) other;
         return new EqualsBuilder().append(isAFramework, rhs.isAFramework)
-                                  .isEquals();
+                .isEquals();
     }
 }

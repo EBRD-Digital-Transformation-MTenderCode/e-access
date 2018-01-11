@@ -26,7 +26,7 @@ public class PinVariantDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(hasVariants)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -39,6 +39,6 @@ public class PinVariantDto {
         }
         final PinVariantDto rhs = (PinVariantDto) other;
         return new EqualsBuilder().append(hasVariants, rhs.hasVariants)
-                                  .isEquals();
+                .isEquals();
     }
 }

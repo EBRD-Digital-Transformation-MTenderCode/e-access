@@ -23,7 +23,7 @@ public class PinUnitDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -36,6 +36,6 @@ public class PinUnitDto {
         }
         final PinUnitDto rhs = (PinUnitDto) other;
         return new EqualsBuilder().append(name, rhs.name)
-                                  .isEquals();
+                .isEquals();
     }
 }

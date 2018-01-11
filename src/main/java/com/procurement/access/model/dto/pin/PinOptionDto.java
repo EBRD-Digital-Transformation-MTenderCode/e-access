@@ -25,7 +25,7 @@ public class PinOptionDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(hasOptions)
-                                    .toHashCode();
+                .toHashCode();
     }
 
     @Override
@@ -38,6 +38,6 @@ public class PinOptionDto {
         }
         final PinOptionDto rhs = (PinOptionDto) other;
         return new EqualsBuilder().append(hasOptions, rhs.hasOptions)
-                                  .isEquals();
+                .isEquals();
     }
 }

@@ -3,7 +3,6 @@ package com.procurement.access.service;
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.model.dto.bpe.CnResponseDto;
-import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.cn.CnTenderStatusDto;
@@ -11,9 +10,7 @@ import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.repository.CnRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
-import java.util.Collections;
 import java.util.Objects;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,24 +36,24 @@ public class CnServiceImpl implements CnService {
                                 final String pmd,
                                 final String stage,
                                 final String owner,
-                                final CnDto cnDto) {
+                                final CnDto cn) {
         final long timeStamp = dateUtil.getMilliNowUTC();
-        setTenderId(cnDto, timeStamp);
-        setItemsId(cnDto);
-        setLotsIdAndItemsRelatedLots(cnDto);
-        setTenderStatus(cnDto);
-        final CnEntity entity = cnRepository.save(getEntity(cnDto, owner));
-        return getResponseDto(cnDto, entity);
+        setTenderId(cn);
+        setItemsId(cn);
+        setLotsIdAndItemsRelatedLots(cn);
+        setTenderStatus(cn);
+        final CnEntity entity = cnRepository.save(getEntity(cn, owner));
+        return getResponseDto(cn, entity);
     }
 
-    private void setTenderId(final CnDto cnDto, final long timeStamp) {
-        if (Objects.isNull(cnDto.getTender().getId())) {
-            cnDto.getTender().setId(ocdsProperties.getPrefix() + timeStamp);
+    private void setTenderId(final CnDto cn) {
+        if (Objects.isNull(cn.getTender().getId())) {
+            cn.getTender().setId(ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC());
         }
     }
 
-    private void setTenderStatus(final CnDto cnDto) {
-        cnDto.getTender().setStatus(CnTenderStatusDto.ACTIVE);
+    private void setTenderStatus(final CnDto cn) {
+        cn.getTender().setStatus(CnTenderStatusDto.ACTIVE);
     }
 
     private void setItemsId(final CnDto cnDto) {
@@ -65,10 +62,10 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-    private void setLotsIdAndItemsRelatedLots(final CnDto cnDto) {
-        cnDto.getTender().getLots().forEach(l -> {
+    private void setLotsIdAndItemsRelatedLots(final CnDto cn) {
+        cn.getTender().getLots().forEach(l -> {
             final String id = UUIDs.timeBased().toString();
-            cnDto.getTender().getItems()
+            cn.getTender().getItems()
                     .stream()
                     .filter(i -> i.getRelatedLot().equals(l.getId()))
                     .findFirst()
@@ -79,27 +76,26 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-    private CnEntity getEntity(final CnDto cnDto, final String owner) {
+    private CnEntity getEntity(final CnDto cn, final String owner) {
         final CnEntity entity = new CnEntity();
-        entity.setCpId(cnDto.getTender().getId());
-        entity.setTokenEntity(UUIDs.timeBased().toString());
+        entity.setCpId(cn.getTender().getId());
+        entity.setToken(UUIDs.timeBased().toString());
         entity.setOwner(owner);
-        entity.setJsonData(jsonUtil.toJson(cnDto));
+        entity.setJsonData(jsonUtil.toJson(cn));
         return entity;
     }
 
-    private ResponseDto getResponseDto(final CnDto cnDto, final CnEntity entity) {
+    private ResponseDto getResponseDto(final CnDto cn, final CnEntity entity) {
         final CnResponseDto responseDto = new CnResponseDto(
+                entity.getToken(),
                 entity.getCpId(),
-                entity.getTokenEntity(),
-                cnDto.getPlanning(),
-                cnDto.getTender(),
-                cnDto.getParties(),
-                cnDto.getBuyer(),
-                cnDto.getRelatedProcesses()
+                cn.getPlanning(),
+                cn.getTender(),
+                cn.getParties(),
+                cn.getBuyer(),
+                cn.getRelatedProcesses()
         );
-        final ResponseDetailsDto details = new ResponseDetailsDto(HttpStatus.CREATED.toString(), "ok");
-        return new ResponseDto(true, Collections.singletonList(details), responseDto);
+        return new ResponseDto(true, null, responseDto);
     }
 
 }

@@ -1,11 +1,6 @@
-
 package com.procurement.access.model.dto.fs;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -14,8 +9,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "amount",
-    "currency"
+        "amount",
+        "currency"
 })
 public class FsValueDto {
     @JsonProperty("amount")
@@ -24,7 +19,7 @@ public class FsValueDto {
 
     @JsonProperty("currency")
     @JsonPropertyDescription("The currency for each amount should always be specified using the uppercase 3-letter " +
-        "currency code from ISO4217.")
+            "currency code from ISO4217.")
     private final Currency currency;
 
     @JsonCreator
@@ -37,8 +32,8 @@ public class FsValueDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(amount)
-                                    .append(currency)
-                                    .toHashCode();
+                .append(currency)
+                .toHashCode();
     }
 
     @Override
@@ -51,8 +46,8 @@ public class FsValueDto {
         }
         final FsValueDto rhs = (FsValueDto) other;
         return new EqualsBuilder().append(amount, rhs.amount)
-                                  .append(currency, rhs.currency)
-                                  .isEquals();
+                .append(currency, rhs.currency)
+                .isEquals();
     }
 
     public enum Currency {
@@ -225,7 +220,6 @@ public class FsValueDto {
         ZAR("ZAR"),
         ZMK("ZMK"),
         ZWL("ZWL");
-        private final String value;
         private final static Map<String, Currency> CONSTANTS = new HashMap<>();
 
         static {
@@ -234,8 +228,19 @@ public class FsValueDto {
             }
         }
 
+        private final String value;
+
         private Currency(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static Currency fromValue(final String value) {
+            final Currency constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -246,15 +251,6 @@ public class FsValueDto {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static Currency fromValue(final String value) {
-            final Currency constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

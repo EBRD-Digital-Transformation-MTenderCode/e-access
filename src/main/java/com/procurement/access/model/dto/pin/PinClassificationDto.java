@@ -1,10 +1,6 @@
 package com.procurement.access.model.dto.pin;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -14,8 +10,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "scheme",
-    "id"
+        "scheme",
+        "id"
 })
 public class PinClassificationDto {
     @JsonProperty("id")
@@ -25,9 +21,10 @@ public class PinClassificationDto {
 
     @JsonProperty("scheme")
     @JsonPropertyDescription("An classification should be drawn from an existing scheme or list of codes. This field " +
-        "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
-        "classifications, this value should represent an known [CnItemDto CnClassificationDto Scheme](http://standard" +
-        ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
+            "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
+            "classifications, this value should represent an known [CnItemDto CnClassificationDto Scheme]" +
+            "(http://standard" +
+            ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
     @NotNull
     private final Scheme scheme;
 
@@ -41,8 +38,8 @@ public class PinClassificationDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(scheme)
-                                    .append(id)
-                                    .toHashCode();
+                .append(id)
+                .toHashCode();
     }
 
     @Override
@@ -55,8 +52,8 @@ public class PinClassificationDto {
         }
         final PinClassificationDto rhs = (PinClassificationDto) other;
         return new EqualsBuilder().append(scheme, rhs.scheme)
-                                  .append(id, rhs.id)
-                                  .isEquals();
+                .append(id, rhs.id)
+                .isEquals();
     }
 
     public enum Scheme {

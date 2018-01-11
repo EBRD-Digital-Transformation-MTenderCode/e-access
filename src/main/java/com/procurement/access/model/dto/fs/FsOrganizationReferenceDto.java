@@ -12,22 +12,23 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonPropertyOrder({
-    "name",
-    "id"
+        "name",
+        "id"
 })
 public class FsOrganizationReferenceDto {
     @JsonProperty("id")
     @JsonPropertyDescription("The id of the party being referenced. This must match the id of an entry in the parties" +
-        " section.")
+            " section.")
     @NotNull
     private final String id;
 
     @JsonProperty("name")
     @JsonPropertyDescription("The name of the party being referenced. This must match the name of an entry in the " +
-        "parties section.")
+            "parties section.")
     @Size(min = 1)
     @NotNull
     private final String name;
+
     @JsonCreator
     public FsOrganizationReferenceDto(@JsonProperty("name") final String name,
                                       @JsonProperty("id") final String id) {
@@ -38,8 +39,8 @@ public class FsOrganizationReferenceDto {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-                                    .append(id)
-                                    .toHashCode();
+                .append(id)
+                .toHashCode();
     }
 
     @Override
@@ -52,7 +53,7 @@ public class FsOrganizationReferenceDto {
         }
         final FsOrganizationReferenceDto rhs = (FsOrganizationReferenceDto) other;
         return new EqualsBuilder().append(name, rhs.name)
-                                  .append(id, rhs.id)
-                                  .isEquals();
+                .append(id, rhs.id)
+                .isEquals();
     }
 }
