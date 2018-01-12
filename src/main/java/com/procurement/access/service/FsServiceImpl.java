@@ -86,7 +86,6 @@ public class FsServiceImpl implements FsService {
         return fsEntity;
     }
 
-
     private ResponseDto getResponseDto(final FsDto fs, final FsEntity entity) {
         final FsResponseDto responseDto = new FsResponseDto(
                 entity.getToken(),
@@ -107,4 +106,5 @@ public class FsServiceImpl implements FsService {
     public ResponseDto updateFs(final FsDto fs) {
         return null;
     }
+
 }

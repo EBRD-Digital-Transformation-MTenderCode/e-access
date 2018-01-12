@@ -10,4 +10,7 @@ public interface FsRepository extends CassandraRepository<FsEntity, String> {
 
     @Query(value = "select sum(amount) from access_fs where cp_id=?0")
     Double getTotalAmountByCpId(String cpId);
+
+    @Query(value = "select sum(amount) from access_fs where cp_id=?0")
+    Double geByOcId(String cpId);
 }
