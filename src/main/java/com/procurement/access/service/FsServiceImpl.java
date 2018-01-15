@@ -44,7 +44,7 @@ public class FsServiceImpl implements FsService {
         fs.setDate(addedDate);
         setBudgetId(fs);
         final FsEntity entity = fsRepository.save(getEntity(cpId, fs, owner));
-        return getResponseDto(fs, entity);
+        return getResponseDto(cpId, fs, entity);
     }
 
     private void setBudgetId(final FsDto fs) {
@@ -88,8 +88,9 @@ public class FsServiceImpl implements FsService {
         return fsEntity;
     }
 
-    private ResponseDto getResponseDto(final FsDto fs, final FsEntity entity) {
+    private ResponseDto getResponseDto(final String cpId, final FsDto fs, final FsEntity entity) {
         final FsResponseDto responseDto = new FsResponseDto(
+                cpId,
                 entity.getToken(),
                 entity.getOcId(),
                 fs.getId(),

@@ -21,6 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({
+        "cpid",
         "token",
         "ocid",
         "id",
@@ -36,10 +37,8 @@ import lombok.Setter;
 public class FsResponseDto {
     @JsonProperty("token")
     private final String token;
-    @JsonProperty("planning")
-    private final FsPlanningDto planning;
-    @JsonProperty("parties")
-    private final List<FsOrganizationDto> parties;
+    @JsonProperty("cpid")
+    private String cpId;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -54,11 +53,16 @@ public class FsResponseDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
+    @JsonProperty("planning")
+    private final FsPlanningDto planning;
+    @JsonProperty("parties")
+    private final List<FsOrganizationDto> parties;
     @JsonProperty("relatedProcesses")
     private List<FsRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
-    public FsResponseDto(@JsonProperty("token") final String token,
+    public FsResponseDto(@JsonProperty("cpid") final String cpId,
+                         @JsonProperty("token") final String token,
                          @JsonProperty("ocid") final String ocId,
                          @JsonProperty("id") final String id,
                          @JsonProperty("date") final LocalDateTime date,
@@ -68,6 +72,7 @@ public class FsResponseDto {
                          @JsonProperty("planning") final FsPlanningDto planning,
                          @JsonProperty("parties") final List<FsOrganizationDto> parties,
                          @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
+        this.cpId = cpId;
         this.token = token;
         this.ocId = ocId;
         this.id = id;
