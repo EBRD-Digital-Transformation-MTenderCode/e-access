@@ -2,6 +2,7 @@ package com.procurement.access.model.dto.fs;
 
 import com.fasterxml.jackson.annotation.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class FsRelatedProcessDto {
     @JsonProperty("relationship")
     @JsonPropertyDescription("Specify the type of relationship using the [related process codelist](http://standard" +
             ".open-contracting.org/latest/en/schema/codelists/#related-process).")
-    private final RelatedProcessType relationship;
+    private final List<RelatedProcessType> relationship;
 
     @JsonProperty("title")
     @JsonPropertyDescription("The title of the related process, where referencing an open contracting process, this " +
@@ -54,7 +55,7 @@ public class FsRelatedProcessDto {
 
     @JsonCreator
     public FsRelatedProcessDto(@JsonProperty("id") final String id,
-                               @JsonProperty("relationship") final RelatedProcessType relationship,
+                               @JsonProperty("relationship") final List<RelatedProcessType> relationship,
                                @JsonProperty("title") final String title,
                                @JsonProperty("scheme") final RelatedProcessScheme scheme,
                                @JsonProperty("identifier") final String identifier,

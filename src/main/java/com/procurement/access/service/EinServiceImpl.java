@@ -40,7 +40,7 @@ public class EinServiceImpl implements EinService {
         ein.setOcId(cpId);
         setTenderId(ein, cpId);
         setBudgetId(ein);
-        final EinEntity entity = einRepository.save(getEntity(ein, owner, UUIDs.timeBased().toString()));
+        final EinEntity entity = einRepository.save(getEntity(ein, owner));
         return getResponseDto(ein, entity);
     }
 
@@ -57,10 +57,10 @@ public class EinServiceImpl implements EinService {
         ein.getPlanning().getBudget().setId(UUIDs.timeBased().toString());
     }
 
-    private EinEntity getEntity(final EinDto ein, final String owner, final String token) {
+    private EinEntity getEntity(final EinDto ein, final String owner) {
         final EinEntity einEntity = new EinEntity();
         einEntity.setCpId(ein.getOcId());
-        einEntity.setToken(token);
+        einEntity.setToken(UUIDs.timeBased().toString());
         einEntity.setOwner(owner);
         einEntity.setJsonData(jsonUtil.toJson(ein));
         return einEntity;

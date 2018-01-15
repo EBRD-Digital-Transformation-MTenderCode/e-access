@@ -32,19 +32,6 @@ import lombok.Setter;
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class FsDto {
-
-    @JsonProperty("planning")
-    @NotNull
-    @Valid
-    private final FsPlanningDto planning;
-    @JsonProperty("parties")
-    @NotNull
-    @Valid
-    private final List<FsOrganizationDto> parties;
-    @JsonProperty("relatedProcesses")
-    @NotNull
-    @Valid
-    private final List<FsRelatedProcessDto> relatedProcesses;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -59,6 +46,18 @@ public class FsDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
+    @JsonProperty("planning")
+    @NotNull
+    @Valid
+    private final FsPlanningDto planning;
+    @JsonProperty("parties")
+    @NotNull
+    @Valid
+    private final List<FsOrganizationDto> parties;
+    @JsonProperty("relatedProcesses")
+    @NotNull
+    @Valid
+    private final List<FsRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
     public FsDto(@JsonProperty("ocid") final String ocId,

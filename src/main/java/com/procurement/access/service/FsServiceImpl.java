@@ -10,9 +10,10 @@ import com.procurement.access.model.entity.FsEntity;
 import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
-import org.springframework.stereotype.Service;
 
 @Service
 public class FsServiceImpl implements FsService {
@@ -42,7 +43,7 @@ public class FsServiceImpl implements FsService {
         fs.setOcId(ocId);
         fs.setDate(addedDate);
         setBudgetId(fs);
-        final FsEntity entity = fsRepository.save(getEntity(cpId, fs));
+        final FsEntity entity = fsRepository.save(getEntity(cpId, fs, owner));
         return getResponseDto(fs, entity);
     }
 
@@ -53,7 +54,7 @@ public class FsServiceImpl implements FsService {
     private String getIdentifier(final FsDto fs) {
         final FsRelatedProcessDto relatedProcess = fs.getRelatedProcesses()
                 .stream()
-                .filter(rp -> rp.getRelationship().equals(FsRelatedProcessDto.RelatedProcessType.PARENT))
+                .filter(rp -> rp.getRelationship().contains(FsRelatedProcessDto.RelatedProcessType.PARENT))
                 .filter(rp -> !rp.getIdentifier().isEmpty())
                 .findFirst()
                 .orElse(null);
@@ -76,11 +77,12 @@ public class FsServiceImpl implements FsService {
         return fs.getPlanning().getBudget().getAmount().getAmount();
     }
 
-    private FsEntity getEntity(final String cpId, final FsDto fs) {
+    private FsEntity getEntity(final String cpId, final FsDto fs, final String owner) {
         final FsEntity fsEntity = new FsEntity();
         fsEntity.setCpId(cpId);
         fsEntity.setOcId(fs.getOcId());
         fsEntity.setToken(UUIDs.timeBased().toString());
+        fsEntity.setOwner(owner);
         fsEntity.setJsonData(jsonUtil.toJson(fs));
         fsEntity.setAmount(getAmount(fs));
         return fsEntity;

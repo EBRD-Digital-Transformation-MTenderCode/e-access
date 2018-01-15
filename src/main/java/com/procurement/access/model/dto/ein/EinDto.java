@@ -34,6 +34,20 @@ import lombok.Setter;
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class EinDto {
+    @JsonProperty("ocid")
+    private String ocId;
+    @JsonProperty("id")
+    private String id;
+    @JsonProperty("date")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime date;
+    @JsonProperty("tag")
+    private List<Tag> tag;
+    @JsonProperty("initiationType")
+    private InitiationType initiationType;
+    @JsonProperty("language")
+    private String language;
     @JsonProperty("planning")
     @NotNull
     @Valid
@@ -52,20 +66,6 @@ public class EinDto {
     private final EinOrganizationReferenceDto buyer;
     @JsonProperty("relatedProcesses")
     private List<EinRelatedProcessDto> relatedProcesses;
-    @JsonProperty("ocid")
-    private String ocId;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("date")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
-    @JsonProperty("tag")
-    private List<Tag> tag;
-    @JsonProperty("initiationType")
-    private InitiationType initiationType;
-    @JsonProperty("language")
-    private String language;
 
     @JsonCreator
     public EinDto(@JsonProperty("ocid") final String ocId,

@@ -1,10 +1,7 @@
 package com.procurement.access.model.dto.fs;
 
 import com.fasterxml.jackson.annotation.*;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -91,7 +88,7 @@ public class FsOrganizationDto {
             "codelist does not have a relevant code.")
     @NotNull
     @Valid
-    private final PartyRole roles;
+    private final List<PartyRole> roles;
 
     @JsonProperty("details")
     @JsonPropertyDescription("Additional classification information about parties can be provided using partyDetail " +
@@ -114,7 +111,7 @@ public class FsOrganizationDto {
                                      additionalIdentifiers,
                              @JsonProperty("address") final FsAddressDto address,
                              @JsonProperty("contactPoint") final FsContactPointDto contactPoint,
-                             @JsonProperty("roles") final PartyRole roles,
+                             @JsonProperty("roles") final List<PartyRole> roles,
                              @JsonProperty("details") final FsDetailsDto details,
                              @JsonProperty("buyerProfile") final String buyerProfile) {
         this.id = id;
