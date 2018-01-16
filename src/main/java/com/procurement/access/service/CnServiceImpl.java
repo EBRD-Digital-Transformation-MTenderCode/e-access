@@ -2,14 +2,13 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
+import com.procurement.access.dao.CnDao;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.cn.CnRelatedProcessDto;
 import com.procurement.access.model.dto.cn.CnResponseDto;
 import com.procurement.access.model.dto.cn.CnTenderStatusDto;
 import com.procurement.access.model.entity.CnEntity;
-import com.procurement.access.repository.CnRepository;
-import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Objects;
@@ -21,19 +20,16 @@ public class CnServiceImpl implements CnService {
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
-    private final CnRepository cnRepository;
-    private final FsRepository fsRepository;
+    private final CnDao cnDao;
 
     public CnServiceImpl(final OCDSProperties ocdsProperties,
                          final JsonUtil jsonUtil,
                          final DateUtil dateUtil,
-                         final CnRepository cnRepository,
-                         final FsRepository fsRepository) {
+                         final CnDao cnDao) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
-        this.cnRepository = cnRepository;
-        this.fsRepository = fsRepository;
+        this.cnDao = cnDao;
     }
 
     @Override
@@ -47,7 +43,8 @@ public class CnServiceImpl implements CnService {
         setLotsIdAndItemsRelatedLots(cn);
         setTenderStatus(cn);
         checkAmount(cn);
-        final CnEntity entity = cnRepository.save(getEntity(cn, owner));
+        final CnEntity entity = getEntity(cn, owner);
+        cnDao.save(entity);
         return getResponseDto(entity.getCpId(), entity.getToken(), cn);
     }
 

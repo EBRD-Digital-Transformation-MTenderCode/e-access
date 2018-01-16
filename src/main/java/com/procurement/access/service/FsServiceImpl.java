@@ -1,13 +1,13 @@
 package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
+import com.procurement.access.dao.FsDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.fs.FsDto;
 import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
 import com.procurement.access.model.dto.fs.FsResponseDto;
 import com.procurement.access.model.entity.FsEntity;
-import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
@@ -20,14 +20,14 @@ public class FsServiceImpl implements FsService {
     private static final String SEPARATOR = "-";
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
-    private final FsRepository fsRepository;
+    private final FsDao fsDao;
 
     public FsServiceImpl(final JsonUtil jsonUtil,
                          final DateUtil dateUtil,
-                         final FsRepository fsRepository) {
+                         final FsDao fsDao) {
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
-        this.fsRepository = fsRepository;
+        this.fsDao = fsDao;
     }
 
     @Override
@@ -42,7 +42,8 @@ public class FsServiceImpl implements FsService {
         fs.setOcId(ocId);
         fs.setDate(addedDate);
         setBudgetId(fs);
-        final FsEntity entity = fsRepository.save(getEntity(cpId, fs, owner));
+        final FsEntity entity = getEntity(cpId, fs, owner);
+        fsDao.save(entity);
         return getResponseDto(cpId, entity.getToken(), fs);
     }
 

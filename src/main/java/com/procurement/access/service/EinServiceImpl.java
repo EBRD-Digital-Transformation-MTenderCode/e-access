@@ -2,11 +2,11 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
+import com.procurement.access.dao.EinDao;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.ein.EinResponseDto;
 import com.procurement.access.model.entity.EinEntity;
-import com.procurement.access.repository.EinRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import org.springframework.stereotype.Service;
@@ -17,16 +17,16 @@ public class EinServiceImpl implements EinService {
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
-    private final EinRepository einRepository;
+    private final EinDao einDao;
 
     public EinServiceImpl(final OCDSProperties ocdsProperties,
                           final JsonUtil jsonUtil,
                           final DateUtil dateUtil,
-                          final EinRepository einRepository) {
+                          final EinDao einDao) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
-        this.einRepository = einRepository;
+        this.einDao = einDao;
     }
 
     @Override
@@ -40,7 +40,8 @@ public class EinServiceImpl implements EinService {
         ein.setOcId(cpId);
         setTenderId(ein, cpId);
         setBudgetId(ein);
-        final EinEntity entity = einRepository.save(getEntity(ein, owner));
+        final EinEntity entity = getEntity(ein, owner);
+        einDao.save(entity);
         return getResponseDto(cpId, entity.getToken(), ein);
     }
 

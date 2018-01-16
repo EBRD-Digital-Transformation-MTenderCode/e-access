@@ -4,12 +4,13 @@ server:
 spring:
   application:
     name: e-access
-  data:
-    cassandra:
-      contact-points: 127.0.0.1
-      keyspace-name: ocds
-      port: 9042
-      username: cassandra
-      password: cassandra
+
+cassandra:
+  contact-points: 127.0.0.1,10.0.10.104,10.0.10.105,10.0.10.106
+  keyspace-name: ocds
+  port: 9042
+  username: caclient
+  password: brT4Kn27RQs
+
 
 ocds.prefix: ocds-t1s2t3-UA-
