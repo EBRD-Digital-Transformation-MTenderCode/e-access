@@ -41,7 +41,7 @@ public class EinServiceImpl implements EinService {
         setTenderId(ein, cpId);
         setBudgetId(ein);
         final EinEntity entity = einRepository.save(getEntity(ein, owner));
-        return getResponseDto(ein, entity);
+        return getResponseDto(cpId, entity.getToken(), ein);
     }
 
     @Override
@@ -66,10 +66,10 @@ public class EinServiceImpl implements EinService {
         return einEntity;
     }
 
-    private ResponseDto getResponseDto(final EinDto ein, final EinEntity entity) {
+    private ResponseDto getResponseDto(final String cpId, final String token, final EinDto ein) {
         final EinResponseDto responseDto = new EinResponseDto(
-                entity.getToken(),
-                entity.getCpId(),
+                token,
+                cpId,
                 ein.getId(),
                 ein.getDate(),
                 ein.getTag(),

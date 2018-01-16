@@ -10,9 +10,6 @@ import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import com.procurement.access.model.dto.enums.InitiationType;
 import com.procurement.access.model.dto.enums.Tag;
-import com.procurement.access.model.dto.fs.FsOrganizationDto;
-import com.procurement.access.model.dto.fs.FsPlanningDto;
-import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -21,8 +18,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({
-        "cpid",
         "token",
+        "cpid",
         "ocid",
         "id",
         "date",
@@ -61,8 +58,8 @@ public class FsResponseDto {
     private List<FsRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
-    public FsResponseDto(@JsonProperty("cpid") final String cpId,
-                         @JsonProperty("token") final String token,
+    public FsResponseDto(@JsonProperty("token") final String token,
+                         @JsonProperty("cpid") final String cpId,
                          @JsonProperty("ocid") final String ocId,
                          @JsonProperty("id") final String id,
                          @JsonProperty("date") final LocalDateTime date,
@@ -72,8 +69,8 @@ public class FsResponseDto {
                          @JsonProperty("planning") final FsPlanningDto planning,
                          @JsonProperty("parties") final List<FsOrganizationDto> parties,
                          @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
-        this.cpId = cpId;
         this.token = token;
+        this.cpId = cpId;
         this.ocId = ocId;
         this.id = id;
         this.date = date;

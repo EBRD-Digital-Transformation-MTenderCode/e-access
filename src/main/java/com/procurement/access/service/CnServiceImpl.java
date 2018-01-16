@@ -2,14 +2,11 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
-import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.cn.CnRelatedProcessDto;
 import com.procurement.access.model.dto.cn.CnResponseDto;
 import com.procurement.access.model.dto.cn.CnTenderStatusDto;
-import com.procurement.access.model.dto.fs.FsDto;
-import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
 import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.repository.CnRepository;
 import com.procurement.access.repository.FsRepository;
@@ -51,7 +48,7 @@ public class CnServiceImpl implements CnService {
         setTenderStatus(cn);
         checkAmount(cn);
         final CnEntity entity = cnRepository.save(getEntity(cn, owner));
-        return getResponseDto(cn, entity);
+        return getResponseDto(entity.getCpId(), entity.getToken(), cn);
     }
 
     private void setTenderId(final CnDto cn) {
@@ -70,11 +67,11 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-    private void checkAmount(final CnDto cn){
-        final CnRelatedProcessDto relatedProcess = getFsRelatedProcess(cn);
-        if (Objects.nonNull(relatedProcess)) {
-        final String fsOcid = relatedProcess.getIdentifier();
-        }
+    private void checkAmount(final CnDto cn) {
+//        final CnRelatedProcessDto relatedProcess = getFsRelatedProcess(cn);
+//        if (Objects.nonNull(relatedProcess)) {
+//            final String fsOcid = relatedProcess.getIdentifier();
+//        }
     }
 
     private void setLotsIdAndItemsRelatedLots(final CnDto cn) {
@@ -94,7 +91,7 @@ public class CnServiceImpl implements CnService {
     private CnRelatedProcessDto getFsRelatedProcess(final CnDto cn) {
         return cn.getRelatedProcesses()
                 .stream()
-                .filter(rp -> rp.getRelationship().equals(CnRelatedProcessDto.RelatedProcessType.X_BUDGET))
+                .filter(rp -> rp.getRelationship().contains(CnRelatedProcessDto.RelatedProcessType.X_BUDGET))
                 .filter(rp -> rp.getScheme().equals(CnRelatedProcessDto.RelatedProcessScheme.OCID))
                 .filter(rp -> !rp.getIdentifier().isEmpty())
                 .findFirst().orElse(null);
@@ -109,10 +106,10 @@ public class CnServiceImpl implements CnService {
         return entity;
     }
 
-    private ResponseDto getResponseDto(final CnDto cn, final CnEntity entity) {
+    private ResponseDto getResponseDto(final String cpId, final String token, final CnDto cn) {
         final CnResponseDto responseDto = new CnResponseDto(
-                entity.getToken(),
-                entity.getCpId(),
+                token,
+                cpId,
                 cn.getPlanning(),
                 cn.getTender(),
                 cn.getParties(),

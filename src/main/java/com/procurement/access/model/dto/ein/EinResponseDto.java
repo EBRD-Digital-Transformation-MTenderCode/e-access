@@ -36,14 +36,6 @@ import lombok.Setter;
 public class EinResponseDto {
     @JsonProperty("token")
     private final String token;
-    @JsonProperty("planning")
-    private final EinPlanningDto planning;
-    @JsonProperty("tender")
-    private final EinTenderDto tender;
-    @JsonProperty("parties")
-    private final List<EinOrganizationDto> parties;
-    @JsonProperty("buyer")
-    private final EinOrganizationReferenceDto buyer;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -58,6 +50,14 @@ public class EinResponseDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
+    @JsonProperty("planning")
+    private final EinPlanningDto planning;
+    @JsonProperty("tender")
+    private final EinTenderDto tender;
+    @JsonProperty("parties")
+    private final List<EinOrganizationDto> parties;
+    @JsonProperty("buyer")
+    private final EinOrganizationReferenceDto buyer;
     @JsonProperty("relatedProcesses")
     private List<EinRelatedProcessDto> relatedProcesses;
 

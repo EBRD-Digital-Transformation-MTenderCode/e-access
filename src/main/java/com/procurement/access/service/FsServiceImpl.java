@@ -10,10 +10,9 @@ import com.procurement.access.model.entity.FsEntity;
 import com.procurement.access.repository.FsRepository;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
+import org.springframework.stereotype.Service;
 
 @Service
 public class FsServiceImpl implements FsService {
@@ -44,7 +43,7 @@ public class FsServiceImpl implements FsService {
         fs.setDate(addedDate);
         setBudgetId(fs);
         final FsEntity entity = fsRepository.save(getEntity(cpId, fs, owner));
-        return getResponseDto(cpId, fs, entity);
+        return getResponseDto(cpId, entity.getToken(), fs);
     }
 
     private void setBudgetId(final FsDto fs) {
@@ -88,11 +87,11 @@ public class FsServiceImpl implements FsService {
         return fsEntity;
     }
 
-    private ResponseDto getResponseDto(final String cpId, final FsDto fs, final FsEntity entity) {
+    private ResponseDto getResponseDto(final String cpId, final String token, final FsDto fs) {
         final FsResponseDto responseDto = new FsResponseDto(
+                token,
                 cpId,
-                entity.getToken(),
-                entity.getOcId(),
+                fs.getOcId(),
                 fs.getId(),
                 fs.getDate(),
                 fs.getTag(),
