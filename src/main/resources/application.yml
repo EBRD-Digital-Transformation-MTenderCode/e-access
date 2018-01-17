@@ -6,7 +6,8 @@ spring:
     name: e-access
 
 cassandra:
-  contact-points: 127.0.0.1,10.0.10.104,10.0.10.105,10.0.10.106
+#  contact-points: ac-node1.eprocurement.systems,ac-node2.eprocurement.systems,ac-node3.eprocurement.systems
+  contact-points: 10.0.10.104,10.0.10.105,10.0.10.106
   keyspace-name: ocds
   port: 9042
   username: caclient
