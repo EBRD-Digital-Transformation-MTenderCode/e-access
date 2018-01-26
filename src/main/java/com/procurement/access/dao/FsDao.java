@@ -7,5 +7,7 @@ import org.springframework.stereotype.Service;
 public interface FsDao {
 
     void save(FsEntity entity);
+
+    FsEntity getByCpIdAndToken(String cpId, String token);
 }
 

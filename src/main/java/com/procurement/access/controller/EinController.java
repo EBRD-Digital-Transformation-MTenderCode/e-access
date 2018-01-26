@@ -2,7 +2,6 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
-import com.procurement.access.model.dto.ein.UpdateFsDto;
 import com.procurement.access.service.EinService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,21 +20,17 @@ public class EinController {
         this.einService = einService;
     }
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<ResponseDto> create(@RequestParam("country") final String country,
-                                              @RequestParam("pmd") final String pmd,
-                                              @RequestParam("stage") final String stage,
-                                              @RequestParam("owner") final String owner,
+    @PostMapping
+    public ResponseEntity<ResponseDto> create(@RequestParam("owner") final String owner,
                                               @Valid @RequestBody final EinDto einDto) {
-        return new ResponseEntity<>(einService.createEin(country, pmd, stage, owner, einDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(einService.createEin(owner, einDto), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/update")
-    public ResponseEntity<ResponseDto> update(@RequestParam("country") final String country,
-                                              @RequestParam("pmd") final String pmd,
-                                              @RequestParam("stage") final String stage,
-                                              @RequestParam("owner") final String owner,
+    @PutMapping
+    public ResponseEntity<ResponseDto> update(@RequestParam("owner") final String owner,
+                                              @RequestParam("identifier") final String identifier,
+                                              @RequestParam("token") final String token,
                                               @Valid @RequestBody final EinDto einDto) {
-        return new ResponseEntity<>(einService.updateEin(einDto), HttpStatus.OK);
+        return new ResponseEntity<>(einService.updateEin(owner, identifier, token, einDto), HttpStatus.OK);
     }
 }

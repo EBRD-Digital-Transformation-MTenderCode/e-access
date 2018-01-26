@@ -33,10 +33,7 @@ public class CnServiceImpl implements CnService {
     }
 
     @Override
-    public ResponseDto createCn(final String country,
-                                final String pmd,
-                                final String stage,
-                                final String owner,
+    public ResponseDto createCn(final String owner,
                                 final CnDto cn) {
         setTenderId(cn);
         setItemsId(cn);
@@ -65,10 +62,6 @@ public class CnServiceImpl implements CnService {
     }
 
     private void checkAmount(final CnDto cn) {
-//        final CnRelatedProcessDto relatedProcess = getFsRelatedProcess(cn);
-//        if (Objects.nonNull(relatedProcess)) {
-//            final String fsOcid = relatedProcess.getIdentifier();
-//        }
     }
 
     private void setLotsIdAndItemsRelatedLots(final CnDto cn) {

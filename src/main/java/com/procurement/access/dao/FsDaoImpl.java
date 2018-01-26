@@ -1,11 +1,13 @@
 package com.procurement.access.dao;
 
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.procurement.access.model.entity.FsEntity;
 import org.springframework.stereotype.Service;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.insertInto;
+import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
 
 @Service
 public class FsDaoImpl implements FsDao {
@@ -36,5 +38,23 @@ public class FsDaoImpl implements FsDao {
                 .value(AMOUNT_RESERVED, entity.getAmountReserved())
                 .value(JSON_DATA, entity.getJsonData());
         session.execute(insert);
+    }
+
+    @Override
+    public FsEntity getByCpIdAndToken(final String cpId, final String token) {
+        final Statement query = select()
+                .all()
+                .from(FS_TABLE)
+                .where(eq(CP_ID, cpId))
+                .and(eq(TOKEN, token)).limit(1);
+        final Row row = session.execute(query).one();
+        return new FsEntity(
+                row.getString(CP_ID),
+                row.getString(OC_ID),
+                row.getString(TOKEN),
+                row.getString(OWNER),
+                row.getDouble(AMOUNT),
+                row.getDouble(AMOUNT_RESERVED),
+                row.getString(JSON_DATA));
     }
 }

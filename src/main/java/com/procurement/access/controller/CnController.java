@@ -21,14 +21,10 @@ public class CnController {
         this.cnService = cnService;
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ResponseDto> create(@RequestParam("country") final String country,
-                                              @RequestParam("pmd") final String pmd,
-                                              @RequestParam("stage") final String stage,
-                                              @RequestParam("owner") final String owner,
+    @PostMapping
+    public ResponseEntity<ResponseDto> create(@RequestParam("owner") final String owner,
                                               @Valid @RequestBody final CnDto cnDto) {
-        return new ResponseEntity<>(cnService.createCn(country, pmd, stage, owner, cnDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(cnService.createCn(owner, cnDto), HttpStatus.CREATED);
     }
 
 }

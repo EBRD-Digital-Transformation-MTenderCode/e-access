@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
+import com.procurement.access.model.dto.ein.EinTenderDto;
 import com.procurement.access.model.dto.enums.InitiationType;
 import com.procurement.access.model.dto.enums.Tag;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ import lombok.Setter;
         "tag",
         "initiationType",
         "language",
+        "tender",
         "parties",
         "planning",
         "relatedProcesses"
@@ -46,18 +48,21 @@ public class FsDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
+    @JsonProperty("tender")
+    @Valid
+    private FsTenderDto tender;
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private final FsPlanningDto planning;
+    private FsPlanningDto planning;
     @JsonProperty("parties")
     @NotNull
     @Valid
-    private final List<FsOrganizationDto> parties;
+    private List<FsOrganizationDto> parties;
     @JsonProperty("relatedProcesses")
     @NotNull
     @Valid
-    private final List<FsRelatedProcessDto> relatedProcesses;
+    private List<FsRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
     public FsDto(@JsonProperty("ocid") final String ocId,
@@ -66,6 +71,7 @@ public class FsDto {
                  @JsonProperty("tag") final List<Tag> tag,
                  @JsonProperty("initiationType") final InitiationType initiationType,
                  @JsonProperty("language") final String language,
+                 @JsonProperty("tender") final FsTenderDto tender,
                  @JsonProperty("planning") final FsPlanningDto planning,
                  @JsonProperty("parties") final List<FsOrganizationDto> parties,
                  @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
@@ -75,6 +81,7 @@ public class FsDto {
         this.tag = tag;
         this.initiationType = initiationType;
         this.language = language == null ? "en" : language;
+        this.tender = tender;
         this.planning = planning;
         this.parties = parties;
         this.relatedProcesses = relatedProcesses;

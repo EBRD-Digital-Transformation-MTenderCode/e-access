@@ -20,22 +20,18 @@ public class FsController {
         this.fsService = fsService;
     }
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<ResponseDto> create(@RequestParam("country") final String country,
-                                              @RequestParam("pmd") final String pmd,
-                                              @RequestParam("stage") final String stage,
-                                              @RequestParam("owner") final String owner,
+    @PostMapping
+    public ResponseEntity<ResponseDto> create(@RequestParam("owner") final String owner,
                                               @Valid @RequestBody final FsDto fsDto) {
-        return new ResponseEntity<>(fsService.createFs(country, pmd, stage, owner, fsDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(fsService.createFs(owner, fsDto), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/update")
-    public ResponseEntity<ResponseDto> update(@RequestParam("country") final String country,
-                                              @RequestParam("pmd") final String pmd,
-                                              @RequestParam("stage") final String stage,
-                                              @RequestParam("owner") final String owner,
+    @PutMapping
+    public ResponseEntity<ResponseDto> update(@RequestParam("owner") final String owner,
+                                              @RequestParam("identifier") final String identifier,
+                                              @RequestParam("token") final String token,
                                               @Valid @RequestBody final FsDto fsDto) {
-        return new ResponseEntity<>(fsService.updateFs(fsDto), HttpStatus.OK);
+        return new ResponseEntity<>(fsService.updateFs(owner, identifier, token, fsDto), HttpStatus.OK);
     }
 
 }

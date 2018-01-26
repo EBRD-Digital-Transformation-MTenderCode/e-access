@@ -33,7 +33,7 @@ public class EinTenderDto {
     @NotNull
     private final EinClassificationDto classification;
     @JsonProperty("status")
-    private final EinTenderStatusDto status;
+    private EinTenderStatusDto status;
     @JsonProperty("statusDetails")
     private final EinTenderStatusDetailsDto statusDetails;
     @NotNull

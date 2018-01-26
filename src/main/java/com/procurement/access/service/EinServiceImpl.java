@@ -3,12 +3,15 @@ package com.procurement.access.service;
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.EinDao;
+import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.ein.EinResponseDto;
+import com.procurement.access.model.dto.ein.EinTenderStatusDto;
 import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,15 +33,11 @@ public class EinServiceImpl implements EinService {
     }
 
     @Override
-    public ResponseDto createEin(final String country,
-                                 final String pmd,
-                                 final String stage,
-                                 final String owner,
-                                 final EinDto ein) {
-
+    public ResponseDto createEin(final String owner, final EinDto ein) {
         final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
         ein.setOcId(cpId);
         setTenderId(ein, cpId);
+        setTenderStatus(ein);
         setBudgetId(ein);
         final EinEntity entity = getEntity(ein, owner);
         einDao.save(entity);
@@ -46,12 +45,27 @@ public class EinServiceImpl implements EinService {
     }
 
     @Override
-    public ResponseDto updateEin(final EinDto ein) {
-        return null;
+    public ResponseDto updateEin(final String owner,
+                                 final String identifier,
+                                 final String token,
+                                 final EinDto einDto) {
+
+        final EinEntity entity = Optional.ofNullable(einDao.getByCpIdAndToken(identifier, token))
+                .orElseThrow(() -> new ErrorException("Data not found."));
+        final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
+        ein.setPlanning(einDto.getPlanning());
+        ein.setTender(einDto.getTender());
+        entity.setJsonData(jsonUtil.toJson(ein));
+        einDao.save(entity);
+        return getResponseDto(identifier, entity.getToken(), ein);
     }
 
     private void setTenderId(final EinDto ein, final String cpId) {
         ein.getTender().setId(cpId);
+    }
+
+    private void setTenderStatus(final EinDto ein) {
+        ein.getTender().setStatus(EinTenderStatusDto.PLANNING);
     }
 
     private void setBudgetId(final EinDto ein) {

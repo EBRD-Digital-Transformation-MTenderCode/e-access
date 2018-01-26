@@ -1,16 +1,13 @@
 package com.procurement.access.dao;
 
-import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.procurement.access.model.entity.EinEntity;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.insertInto;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.select;
+import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
 
 @Service
 public class EinDaoImpl implements EinDao {
@@ -38,16 +35,17 @@ public class EinDaoImpl implements EinDao {
     }
 
     @Override
-    public Optional<EinEntity> getByCpId(final String cpId) {
-        final Statement query = select().all().from(EIN_TABLE).where(eq(CP_ID, cpId)).limit(1);
-        final ResultSet rows = session.execute(query);
-        return Optional.ofNullable(rows.one())
-                .map(row -> {
-                    final String cpid = row.getString(CP_ID);
-                    final String token = row.getString(TOKEN);
-                    final String owner = row.getString(OWNER);
-                    final String jsonData = row.getString(JSON_DATA);
-                    return new EinEntity(cpid, token, owner, jsonData);
-                });
+    public EinEntity getByCpIdAndToken(final String cpId, final String token) {
+        final Statement query = select()
+                .all()
+                .from(EIN_TABLE)
+                .where(eq(CP_ID, cpId))
+                .and(eq(TOKEN, token)).limit(1);
+        final Row row = session.execute(query).one();
+        return new EinEntity(
+                row.getString(CP_ID),
+                row.getString(TOKEN),
+                row.getString(OWNER),
+                row.getString(JSON_DATA));
     }
 }

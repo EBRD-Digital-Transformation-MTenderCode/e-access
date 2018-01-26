@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface FsService {
 
-    ResponseDto createFs(String country,
-                         String pmd,
-                         String stage,
-                         String owner,
+    ResponseDto createFs(String owner,
                          FsDto fsDto);
 
-    ResponseDto updateFs(FsDto fsDto);
+    ResponseDto updateFs(String owner,
+                         String identifier,
+                         String token,
+                         FsDto fsDto);
 }

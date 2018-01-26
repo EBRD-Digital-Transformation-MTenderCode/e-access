@@ -12,6 +12,7 @@ import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,10 +32,7 @@ public class FsServiceImpl implements FsService {
     }
 
     @Override
-    public ResponseDto createFs(final String country,
-                                final String pmd,
-                                final String stage,
-                                final String owner,
+    public ResponseDto createFs(final String owner,
                                 final FsDto fs) {
         final LocalDateTime addedDate = dateUtil.getNowUTC();
         final String cpId = getIdentifier(fs);
@@ -45,6 +43,23 @@ public class FsServiceImpl implements FsService {
         final FsEntity entity = getEntity(cpId, fs, owner);
         fsDao.save(entity);
         return getResponseDto(cpId, entity.getToken(), fs);
+    }
+
+
+    @Override
+    public ResponseDto updateFs(final String owner,
+                                 final String identifier,
+                                 final String token,
+                                 final FsDto fsDto) {
+
+        final FsEntity entity = Optional.ofNullable(fsDao.getByCpIdAndToken(identifier, token))
+                .orElseThrow(() -> new ErrorException("Data not found."));
+        final FsDto fs = jsonUtil.toObject(FsDto.class, entity.getJsonData());
+        fs.setPlanning(fsDto.getPlanning());
+        fs.setTender(fsDto.getTender());
+        entity.setJsonData(jsonUtil.toJson(fs));
+        fsDao.save(entity);
+        return getResponseDto(identifier, entity.getToken(), fs);
     }
 
     private void setBudgetId(final FsDto fs) {
@@ -103,11 +118,6 @@ public class FsServiceImpl implements FsService {
                 fs.getRelatedProcesses()
         );
         return new ResponseDto(true, null, responseDto);
-    }
-
-    @Override
-    public ResponseDto updateFs(final FsDto fs) {
-        return null;
     }
 
 }

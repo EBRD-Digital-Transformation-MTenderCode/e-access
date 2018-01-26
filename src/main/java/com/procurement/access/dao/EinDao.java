@@ -9,6 +9,6 @@ public interface EinDao {
 
     void save(EinEntity entity);
 
-    Optional<EinEntity> getByCpId(String cpId);
+    EinEntity getByCpIdAndToken(String cpId, String token);
 }
 

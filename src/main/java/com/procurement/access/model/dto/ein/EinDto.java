@@ -51,19 +51,19 @@ public class EinDto {
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private final EinPlanningDto planning;
+    private EinPlanningDto planning;
     @JsonProperty("tender")
     @NotNull
     @Valid
-    private final EinTenderDto tender;
+    private EinTenderDto tender;
     @JsonProperty("parties")
     @NotNull
     @Valid
-    private final List<EinOrganizationDto> parties;
+    private List<EinOrganizationDto> parties;
     @JsonProperty("buyer")
     @NotNull
     @Valid
-    private final EinOrganizationReferenceDto buyer;
+    private EinOrganizationReferenceDto buyer;
     @JsonProperty("relatedProcesses")
     private List<EinRelatedProcessDto> relatedProcesses;
 
