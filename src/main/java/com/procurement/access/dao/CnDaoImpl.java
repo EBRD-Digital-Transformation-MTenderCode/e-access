@@ -1,11 +1,13 @@
 package com.procurement.access.dao;
 
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.procurement.access.model.entity.CnEntity;
 import org.springframework.stereotype.Service;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.insertInto;
+import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
 
 @Service
 public class CnDaoImpl implements CnDao {
@@ -30,5 +32,20 @@ public class CnDaoImpl implements CnDao {
                 .value(OWNER, entity.getOwner())
                 .value(JSON_DATA, entity.getJsonData());
         session.execute(insert);
+    }
+
+    @Override
+    public CnEntity getByCpIdAndToken(final String cpId, final String token) {
+        final Statement query = select()
+                .all()
+                .from(CN_TABLE)
+                .where(eq(CP_ID, cpId))
+                .and(eq(TOKEN, token)).limit(1);
+        final Row row = session.execute(query).one();
+        return new CnEntity(
+                row.getString(CP_ID),
+                row.getString(TOKEN),
+                row.getString(OWNER),
+                row.getString(JSON_DATA));
     }
 }

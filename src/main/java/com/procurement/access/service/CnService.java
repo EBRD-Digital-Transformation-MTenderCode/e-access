@@ -8,4 +8,9 @@ import org.springframework.stereotype.Service;
 public interface CnService {
 
     ResponseDto createCn(String owner, CnDto cnDto);
+
+    ResponseDto updateCn(String owner,
+                         String identifier,
+                         String token,
+                         CnDto cnDto);
 }

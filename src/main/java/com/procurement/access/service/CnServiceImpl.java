@@ -3,6 +3,7 @@ package com.procurement.access.service;
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.CnDao;
+import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.cn.CnRelatedProcessDto;
@@ -12,6 +13,7 @@ import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,6 +46,21 @@ public class CnServiceImpl implements CnService {
         cnDao.save(entity);
         return getResponseDto(entity.getCpId(), entity.getToken(), cn);
     }
+
+    @Override
+    public ResponseDto updateCn(final String owner,
+                                final String identifier,
+                                final String token,
+                                final CnDto cnDto) {
+        final CnEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(identifier, token))
+                .orElseThrow(() -> new ErrorException("Data not found."));
+        final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        cn.setTender(cnDto.getTender());
+        entity.setJsonData(jsonUtil.toJson(cn));
+        cnDao.save(entity);
+        return getResponseDto(identifier, entity.getToken(), cn);
+    }
+
 
     private void setTenderId(final CnDto cn) {
         if (Objects.isNull(cn.getTender().getId())) {

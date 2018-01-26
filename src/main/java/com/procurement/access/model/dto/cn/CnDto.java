@@ -8,8 +8,10 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @JsonPropertyOrder({
         "planning",
         "tender",
@@ -23,27 +25,27 @@ public class CnDto {
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private final CnPlanningDto planning;
+    private CnPlanningDto planning;
 
     @JsonProperty("tender")
     @NotNull
     @Valid
-    private final CnTenderDto tender;
+    private CnTenderDto tender;
 
     @JsonProperty("parties")
     @NotNull
     @Valid
-    private final List<CnOrganizationDto> parties;
+    private List<CnOrganizationDto> parties;
 
     @JsonProperty("buyer")
     @NotNull
     @Valid
-    private final CnOrganizationDto buyer;
+    private CnOrganizationDto buyer;
 
     @JsonProperty("relatedProcesses")
     @NotNull
     @Valid
-    private final List<CnRelatedProcessDto> relatedProcesses;
+    private List<CnRelatedProcessDto> relatedProcesses;
 
     @JsonCreator
     public CnDto(@JsonProperty("planning") final CnPlanningDto planning,
