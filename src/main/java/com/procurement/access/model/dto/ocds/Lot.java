@@ -34,9 +34,9 @@ public class Lot {
     @JsonProperty("description")
     private final String description;
     @JsonProperty("status")
-    private final TenderStatus status;
+    private TenderStatus status;
     @JsonProperty("statusDetails")
-    private final TenderStatusDetails statusDetails;
+    private TenderStatusDetails statusDetails;
     @JsonProperty("value")
     @Valid
     private final Value value;

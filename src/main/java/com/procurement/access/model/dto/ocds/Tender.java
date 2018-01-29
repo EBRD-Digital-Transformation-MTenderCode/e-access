@@ -246,7 +246,7 @@ public class Tender {
             "interpreted as applicable to the whole tender. Properties of tender can be overridden for a given Lot " +
             "through their inclusion in the Lot object.")
     @Valid
-    private final List<Lot> lots;
+    private List<Lot> lots;
 
     @JsonProperty("lotDetails")
     @JsonPropertyDescription("If this tender is divided into lots, details can be provided here of any criteria that " +

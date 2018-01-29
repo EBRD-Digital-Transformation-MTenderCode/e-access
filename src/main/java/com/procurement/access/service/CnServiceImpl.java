@@ -50,16 +50,16 @@ public class CnServiceImpl implements CnService {
 
     @Override
     public ResponseDto updateCn(final String owner,
-                                final String identifier,
+                                final String cpId,
                                 final String token,
                                 final CnDto cnDto) {
-        final CnEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(identifier, token))
+        final CnEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.setTender(cnDto.getTender());
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
-        return getResponseDto(identifier, entity.getToken(), cn);
+        return getResponseDto(cpId, entity.getToken(), cn);
     }
 
 

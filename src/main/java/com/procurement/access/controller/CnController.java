@@ -2,6 +2,7 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.lots.LotsRequestDto;
 import com.procurement.access.service.CnService;
 import com.procurement.access.service.LotsService;
 import javax.validation.Valid;
@@ -32,15 +33,30 @@ public class CnController {
 
     @PutMapping
     public ResponseEntity<ResponseDto> update(@RequestParam("owner") final String owner,
-                                              @RequestParam("identifier") final String identifier,
+                                              @RequestParam("cpId") final String cpId,
                                               @RequestParam("token") final String token,
                                               @Valid @RequestBody final CnDto cnDto) {
-        return new ResponseEntity<>(cnService.updateCn(owner, identifier, token, cnDto), HttpStatus.OK);
+        return new ResponseEntity<>(cnService.updateCn(owner, cpId, token, cnDto), HttpStatus.OK);
     }
 
     @GetMapping("/lots")
     public ResponseEntity<ResponseDto> getLots(@RequestParam("cpId") final String cpId,
-                                               @RequestParam("token") final String status) {
+                                               @RequestParam("status") final String status) {
         return new ResponseEntity<>(lotsService.getLots(cpId, status), HttpStatus.OK);
     }
+
+    @PutMapping("/lots/updateStatus")
+    public ResponseEntity<ResponseDto> updateLotsStatus(@RequestParam("cpId") final String cpId,
+                                                        @RequestParam("status") final String status,
+                                                        @Valid @RequestBody final LotsRequestDto lotsDto) {
+        return new ResponseEntity<>(lotsService.updateLotsStatus(cpId, status, lotsDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/lots/updateStatusDetails")
+    public ResponseEntity<ResponseDto> updateLotsStatusDetails(@RequestParam("cpId") final String cpId,
+                                                               @RequestParam("statusDetails") final String statusDetails,
+                                                               @Valid @RequestBody final LotsRequestDto lotsDto) {
+        return new ResponseEntity<>(lotsService.updateLotsStatusDetails(cpId, statusDetails, lotsDto), HttpStatus.OK);
+    }
+
 }

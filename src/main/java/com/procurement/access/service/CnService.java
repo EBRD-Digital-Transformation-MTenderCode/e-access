@@ -10,7 +10,7 @@ public interface CnService {
     ResponseDto createCn(String owner, CnDto cnDto);
 
     ResponseDto updateCn(String owner,
-                         String identifier,
+                         String cpId,
                          String token,
                          CnDto cnDto);
 }
