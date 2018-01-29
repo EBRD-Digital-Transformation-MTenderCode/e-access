@@ -10,7 +10,7 @@ public interface LotsService {
 
     ResponseDto getLots(String cpId, String status);
 
-    ResponseDto updateLotsStatus(String cpId, String status, LotsRequestDto lotsDto);
+    ResponseDto updateStatus(String cpId, String status, LotsRequestDto lotsDto);
 
-    ResponseDto updateLotsStatusDetails(String cpId, String statusDetails, LotsRequestDto lotsDto);
+    ResponseDto updateStatusDetails(String cpId, String statusDetails, LotsRequestDto lotsDto);
 }

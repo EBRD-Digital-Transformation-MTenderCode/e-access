@@ -47,7 +47,7 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto updateLotsStatus(String cpId, String status, LotsRequestDto lotsDto) {
+    public ResponseDto updateStatus(String cpId, String status, LotsRequestDto lotsDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
@@ -66,7 +66,7 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto updateLotsStatusDetails(String cpId, String statusDetails, LotsRequestDto lotsDto) {
+    public ResponseDto updateStatusDetails(String cpId, String statusDetails, LotsRequestDto lotsDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
