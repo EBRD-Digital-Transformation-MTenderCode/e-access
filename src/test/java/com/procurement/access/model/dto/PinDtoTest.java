@@ -1,8 +1,6 @@
 package com.procurement.access.model.dto;
 
 import com.procurement.access.AbstractDomainObjectTest;
-import com.procurement.access.model.dto.pin.PinDto;
-import org.junit.jupiter.api.Test;
 
 public class PinDtoTest extends AbstractDomainObjectTest {
 //    @Test
