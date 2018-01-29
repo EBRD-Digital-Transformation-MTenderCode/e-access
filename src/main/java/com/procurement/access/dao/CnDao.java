@@ -8,6 +8,8 @@ public interface CnDao {
 
     void save(CnEntity entity);
 
+    CnEntity getByCpId(String cpId);
+
     CnEntity getByCpIdAndToken(String cpId, String token);
 
 }

@@ -35,6 +35,20 @@ public class CnDaoImpl implements CnDao {
     }
 
     @Override
+    public CnEntity getByCpId(final String cpId) {
+        final Statement query = select()
+                .all()
+                .from(CN_TABLE)
+                .where(eq(CP_ID, cpId)).limit(1);
+        final Row row = session.execute(query).one();
+        return new CnEntity(
+                row.getString(CP_ID),
+                row.getString(TOKEN),
+                row.getString(OWNER),
+                row.getString(JSON_DATA));
+    }
+
+    @Override
     public CnEntity getByCpIdAndToken(final String cpId, final String token) {
         final Statement query = select()
                 .all()

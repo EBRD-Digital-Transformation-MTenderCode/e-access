@@ -20,7 +20,6 @@ public class JointProcurement {
     private final Boolean isJointProcurement;
 
     @JsonProperty("country")
-    @Size(min = 2, max = 3)
     private final String country;
 
     @JsonCreator
