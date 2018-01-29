@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.procurement.access.model.dto.ocds.Organization;
+import com.procurement.access.model.dto.ocds.Planning;
+import com.procurement.access.model.dto.ocds.RelatedProcess;
+import com.procurement.access.model.dto.ocds.Tender;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -25,34 +29,34 @@ public class CnDto {
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private CnPlanningDto planning;
+    private Planning planning;
 
     @JsonProperty("tender")
     @NotNull
     @Valid
-    private CnTenderDto tender;
+    private Tender tender;
 
     @JsonProperty("parties")
     @NotNull
     @Valid
-    private List<CnOrganizationDto> parties;
+    private List<Organization> parties;
 
     @JsonProperty("buyer")
     @NotNull
     @Valid
-    private CnOrganizationDto buyer;
+    private Organization buyer;
 
     @JsonProperty("relatedProcesses")
     @NotNull
     @Valid
-    private List<CnRelatedProcessDto> relatedProcesses;
+    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
-    public CnDto(@JsonProperty("planning") final CnPlanningDto planning,
-                 @JsonProperty("tender") final CnTenderDto tender,
-                 @JsonProperty("parties") final List<CnOrganizationDto> parties,
-                 @JsonProperty("buyer") final CnOrganizationDto buyer,
-                 @JsonProperty("relatedProcesses") final List<CnRelatedProcessDto> relatedProcesses) {
+    public CnDto(@JsonProperty("planning") final Planning planning,
+                 @JsonProperty("tender") final Tender tender,
+                 @JsonProperty("parties") final List<Organization> parties,
+                 @JsonProperty("buyer") final Organization buyer,
+                 @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;

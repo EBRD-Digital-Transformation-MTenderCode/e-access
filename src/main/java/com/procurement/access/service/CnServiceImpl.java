@@ -6,15 +6,15 @@ import com.procurement.access.dao.CnDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
-import com.procurement.access.model.dto.cn.CnRelatedProcessDto;
-import com.procurement.access.model.dto.cn.CnResponseDto;
-import com.procurement.access.model.dto.cn.CnTenderStatusDto;
+import com.procurement.access.model.dto.ocds.RelatedProcess;
 import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+
+import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
 
 @Service
 public class CnServiceImpl implements CnService {
@@ -69,7 +69,7 @@ public class CnServiceImpl implements CnService {
     }
 
     private void setTenderStatus(final CnDto cn) {
-        cn.getTender().setStatus(CnTenderStatusDto.ACTIVE);
+        cn.getTender().setStatus(ACTIVE);
     }
 
     private void setItemsId(final CnDto cnDto) {
@@ -95,11 +95,11 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-    private CnRelatedProcessDto getFsRelatedProcess(final CnDto cn) {
+    private RelatedProcess getFsRelatedProcess(final CnDto cn) {
         return cn.getRelatedProcesses()
                 .stream()
-                .filter(rp -> rp.getRelationship().contains(CnRelatedProcessDto.RelatedProcessType.X_BUDGET))
-                .filter(rp -> rp.getScheme().equals(CnRelatedProcessDto.RelatedProcessScheme.OCID))
+                .filter(rp -> rp.getRelationship().contains(RelatedProcess.RelatedProcessType.X_BUDGET))
+                .filter(rp -> rp.getScheme().equals(RelatedProcess.RelatedProcessScheme.OCID))
                 .filter(rp -> !rp.getIdentifier().isEmpty())
                 .findFirst().orElse(null);
     }

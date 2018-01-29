@@ -33,4 +33,12 @@ public class CnController {
                                               @Valid @RequestBody final CnDto cnDto) {
         return new ResponseEntity<>(cnService.updateCn(owner, identifier, token, cnDto), HttpStatus.OK);
     }
+
+    @GetMapping("/lots")
+    public ResponseEntity<ResponseDto> getLots(@RequestParam("owner") final String owner,
+                                              @RequestParam("identifier") final String identifier,
+                                              @RequestParam("token") final String token,
+                                              @Valid @RequestBody final CnDto cnDto) {
+        return new ResponseEntity<>(cnService.updateCn(owner, identifier, token, cnDto), HttpStatus.OK);
+    }
 }

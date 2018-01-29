@@ -22,7 +22,7 @@ public class PnClassificationDto {
     @JsonProperty("scheme")
     @JsonPropertyDescription("An classification should be drawn from an existing scheme or list of codes. This field " +
             "is used to indicate the scheme/codelist from which the classification is drawn. For line item " +
-            "classifications, this value should represent an known [CnItemDto CnClassificationDto Scheme]" +
+            "classifications, this value should represent an known [CnItemDto ClassificationDto Scheme]" +
             "(http://standard" +
             ".open-contracting.org/latest/en/schema/codelists/#item-classification-scheme) wherever possible.")
     @NotNull

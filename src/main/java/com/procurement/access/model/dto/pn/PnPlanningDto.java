@@ -19,7 +19,7 @@ public class PnPlanningDto {
             "through which this contracting process is funded. It draws upon data model of the [Fiscal Data Package]" +
             "(http://fiscal.dataprotocols.org/), and should" +
             " be used to cross-reference to more detailed information held " +
-            "using a CnBudgetDto Data Package, or, where no linked CnBudgetDto Data Package is available, to provide " +
+            "using a BudgetDto Data Package, or, where no linked BudgetDto Data Package is available, to provide " +
             "enough " +
             "information to allow a user to manually or automatically cross-reference with another published source " +
             "of " +
