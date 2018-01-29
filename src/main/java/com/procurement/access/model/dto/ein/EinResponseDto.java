@@ -8,9 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import com.procurement.access.model.dto.ein.*;
-import com.procurement.access.model.dto.enums.InitiationType;
-import com.procurement.access.model.dto.enums.Tag;
+import com.procurement.access.model.dto.ocds.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -36,6 +34,14 @@ import lombok.Setter;
 public class EinResponseDto {
     @JsonProperty("token")
     private final String token;
+    @JsonProperty("planning")
+    private final Planning planning;
+    @JsonProperty("tender")
+    private final Tender tender;
+    @JsonProperty("parties")
+    private final List<Organization> parties;
+    @JsonProperty("buyer")
+    private final OrganizationReference buyer;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -50,16 +56,8 @@ public class EinResponseDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
-    @JsonProperty("planning")
-    private final EinPlanningDto planning;
-    @JsonProperty("tender")
-    private final EinTenderDto tender;
-    @JsonProperty("parties")
-    private final List<EinOrganizationDto> parties;
-    @JsonProperty("buyer")
-    private final EinOrganizationReferenceDto buyer;
     @JsonProperty("relatedProcesses")
-    private List<EinRelatedProcessDto> relatedProcesses;
+    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
     public EinResponseDto(@JsonProperty("token") final String token,
@@ -69,11 +67,11 @@ public class EinResponseDto {
                           @JsonProperty("tag") final List<Tag> tag,
                           @JsonProperty("initiationType") final InitiationType initiationType,
                           @JsonProperty("language") final String language,
-                          @JsonProperty("planning") final EinPlanningDto planning,
-                          @JsonProperty("tender") final EinTenderDto tender,
-                          @JsonProperty("parties") final List<EinOrganizationDto> parties,
-                          @JsonProperty("buyer") final EinOrganizationReferenceDto buyer,
-                          @JsonProperty("relatedProcesses") final List<EinRelatedProcessDto> relatedProcesses) {
+                          @JsonProperty("planning") final Planning planning,
+                          @JsonProperty("tender") final Tender tender,
+                          @JsonProperty("parties") final List<Organization> parties,
+                          @JsonProperty("buyer") final OrganizationReference buyer,
+                          @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.token = token;
         this.ocId = ocId;
         this.id = id;

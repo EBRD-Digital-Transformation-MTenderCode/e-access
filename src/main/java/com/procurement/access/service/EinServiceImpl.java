@@ -7,7 +7,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ein.EinDto;
 import com.procurement.access.model.dto.ein.EinResponseDto;
-import com.procurement.access.model.dto.ein.EinTenderStatusDto;
+import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.entity.EinEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -65,7 +65,7 @@ public class EinServiceImpl implements EinService {
     }
 
     private void setTenderStatus(final EinDto ein) {
-        ein.getTender().setStatus(EinTenderStatusDto.PLANNING);
+        ein.getTender().setStatus(TenderStatus.PLANNING);
     }
 
     private void setBudgetId(final EinDto ein) {

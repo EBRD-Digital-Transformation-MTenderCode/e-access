@@ -6,6 +6,7 @@ import com.procurement.access.dao.CnDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.CnResponseDto;
 import com.procurement.access.model.dto.ocds.RelatedProcess;
 import com.procurement.access.model.entity.CnEntity;
 import com.procurement.access.utils.DateUtil;

@@ -1,32 +1,30 @@
-package com.procurement.access.model.dto.enums;
+package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum MainProcurementCategoryTender {
-    GOODS("goods"),
-    WORKS("works"),
-    SERVICES("services");
+public enum InitiationType {
+    TENDER("tender");
 
-    private static final Map<String, MainProcurementCategoryTender> CONSTANTS = new HashMap<>();
+    private static final Map<String, InitiationType> CONSTANTS = new HashMap<>();
 
     static {
-        for (final MainProcurementCategoryTender c : values()) {
+        for (final InitiationType c : values()) {
             CONSTANTS.put(c.value, c);
         }
     }
 
     private final String value;
 
-    MainProcurementCategoryTender(final String value) {
+    InitiationType(final String value) {
         this.value = value;
     }
 
     @JsonCreator
-    public static MainProcurementCategoryTender fromValue(final String value) {
-        final MainProcurementCategoryTender constant = CONSTANTS.get(value);
+    public static InitiationType fromValue(final String value) {
+        final InitiationType constant = CONSTANTS.get(value);
         if (constant == null) {
             throw new IllegalArgumentException(value);
         }
@@ -43,4 +41,3 @@ public enum MainProcurementCategoryTender {
         return this.value;
     }
 }
-

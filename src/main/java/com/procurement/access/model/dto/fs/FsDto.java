@@ -8,9 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import com.procurement.access.model.dto.ein.EinTenderDto;
-import com.procurement.access.model.dto.enums.InitiationType;
-import com.procurement.access.model.dto.enums.Tag;
+import com.procurement.access.model.dto.ocds.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
@@ -50,19 +48,19 @@ public class FsDto {
     private String language;
     @JsonProperty("tender")
     @Valid
-    private FsTenderDto tender;
+    private Tender tender;
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private FsPlanningDto planning;
+    private Planning planning;
     @JsonProperty("parties")
     @NotNull
     @Valid
-    private List<FsOrganizationDto> parties;
+    private List<Organization> parties;
     @JsonProperty("relatedProcesses")
     @NotNull
     @Valid
-    private List<FsRelatedProcessDto> relatedProcesses;
+    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
     public FsDto(@JsonProperty("ocid") final String ocId,
@@ -71,10 +69,10 @@ public class FsDto {
                  @JsonProperty("tag") final List<Tag> tag,
                  @JsonProperty("initiationType") final InitiationType initiationType,
                  @JsonProperty("language") final String language,
-                 @JsonProperty("tender") final FsTenderDto tender,
-                 @JsonProperty("planning") final FsPlanningDto planning,
-                 @JsonProperty("parties") final List<FsOrganizationDto> parties,
-                 @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
+                 @JsonProperty("tender") final Tender tender,
+                 @JsonProperty("planning") final Planning planning,
+                 @JsonProperty("parties") final List<Organization> parties,
+                 @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.ocId = ocId;
         this.id = id;
         this.date = date;

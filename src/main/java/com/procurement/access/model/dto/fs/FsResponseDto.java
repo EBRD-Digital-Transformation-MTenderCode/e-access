@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import com.procurement.access.model.dto.enums.InitiationType;
-import com.procurement.access.model.dto.enums.Tag;
+import com.procurement.access.model.dto.ocds.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -34,6 +33,10 @@ import lombok.Setter;
 public class FsResponseDto {
     @JsonProperty("token")
     private final String token;
+    @JsonProperty("planning")
+    private final Planning planning;
+    @JsonProperty("parties")
+    private final List<Organization> parties;
     @JsonProperty("cpid")
     private String cpId;
     @JsonProperty("ocid")
@@ -50,12 +53,8 @@ public class FsResponseDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
-    @JsonProperty("planning")
-    private final FsPlanningDto planning;
-    @JsonProperty("parties")
-    private final List<FsOrganizationDto> parties;
     @JsonProperty("relatedProcesses")
-    private List<FsRelatedProcessDto> relatedProcesses;
+    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
     public FsResponseDto(@JsonProperty("token") final String token,
@@ -66,9 +65,9 @@ public class FsResponseDto {
                          @JsonProperty("tag") final List<Tag> tag,
                          @JsonProperty("initiationType") final InitiationType initiationType,
                          @JsonProperty("language") final String language,
-                         @JsonProperty("planning") final FsPlanningDto planning,
-                         @JsonProperty("parties") final List<FsOrganizationDto> parties,
-                         @JsonProperty("relatedProcesses") final List<FsRelatedProcessDto> relatedProcesses) {
+                         @JsonProperty("planning") final Planning planning,
+                         @JsonProperty("parties") final List<Organization> parties,
+                         @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.token = token;
         this.cpId = cpId;
         this.ocId = ocId;

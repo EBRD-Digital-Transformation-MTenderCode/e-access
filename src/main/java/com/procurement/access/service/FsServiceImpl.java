@@ -5,8 +5,8 @@ import com.procurement.access.dao.FsDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.fs.FsDto;
-import com.procurement.access.model.dto.fs.FsRelatedProcessDto;
 import com.procurement.access.model.dto.fs.FsResponseDto;
+import com.procurement.access.model.dto.ocds.RelatedProcess;
 import com.procurement.access.model.entity.FsEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -67,9 +67,9 @@ public class FsServiceImpl implements FsService {
     }
 
     private String getIdentifier(final FsDto fs) {
-        final FsRelatedProcessDto relatedProcess = fs.getRelatedProcesses()
+        final RelatedProcess relatedProcess = fs.getRelatedProcesses()
                 .stream()
-                .filter(rp -> rp.getRelationship().contains(FsRelatedProcessDto.RelatedProcessType.PARENT))
+                .filter(rp -> rp.getRelationship().contains(RelatedProcess.RelatedProcessType.PARENT))
                 .filter(rp -> !rp.getIdentifier().isEmpty())
                 .findFirst()
                 .orElse(null);

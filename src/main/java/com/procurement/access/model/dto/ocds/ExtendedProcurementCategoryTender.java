@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.enums;
+package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
