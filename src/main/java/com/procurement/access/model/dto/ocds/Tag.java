@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -24,7 +23,6 @@ public enum Tag {
     CONTRACT_TERMINATION("contractTermination"),
     COMPILED("compiled");
 
-    private final String value;
     private final static Map<String, Tag> CONSTANTS = new HashMap<>();
 
     static {
@@ -33,8 +31,19 @@ public enum Tag {
         }
     }
 
+    private final String value;
+
     Tag(final String value) {
         this.value = value;
+    }
+
+    @JsonCreator
+    public static Tag fromValue(final String value) {
+        final Tag constant = CONSTANTS.get(value);
+        if (constant == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return constant;
     }
 
     @Override
@@ -45,14 +54,5 @@ public enum Tag {
     @JsonValue
     public String value() {
         return this.value;
-    }
-
-    @JsonCreator
-    public static Tag fromValue(final String value) {
-        final Tag constant = CONSTANTS.get(value);
-        if (constant == null) {
-            throw new IllegalArgumentException(value);
-        }
-        return constant;
     }
 }

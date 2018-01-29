@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
@@ -14,27 +13,22 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "type",
-    "description",
-    "amount",
-    "estimationMethod"
+        "id",
+        "type",
+        "description",
+        "amount",
+        "estimationMethod"
 })
 public class ValueBreakdown {
     @JsonProperty("id")
-    @JsonPropertyDescription("The identifier of this value breakdown. Unique within this array.")
     @NotNull
     private final String id;
 
     @JsonProperty("type")
-    @JsonPropertyDescription("A value from the [valueType codelist] (http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#value-type) that identifies the nature of the value in the breakdown. " +
-        "Negative values indicate a revenue to the supplier.")
     @Valid
     private final List<ValueBreakdownType> type;
 
     @JsonProperty("description")
-    @JsonPropertyDescription("The description of this value breakdown.")
     private final String description;
 
     @JsonProperty("amount")
@@ -61,11 +55,11 @@ public class ValueBreakdown {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(type)
-                                    .append(description)
-                                    .append(amount)
-                                    .append(estimationMethod)
-                                    .toHashCode();
+                .append(type)
+                .append(description)
+                .append(amount)
+                .append(estimationMethod)
+                .toHashCode();
     }
 
     @Override
@@ -78,17 +72,16 @@ public class ValueBreakdown {
         }
         final ValueBreakdown rhs = (ValueBreakdown) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(type, rhs.type)
-                                  .append(description, rhs.description)
-                                  .append(amount, rhs.amount)
-                                  .append(estimationMethod, rhs.estimationMethod)
-                                  .isEquals();
+                .append(type, rhs.type)
+                .append(description, rhs.description)
+                .append(amount, rhs.amount)
+                .append(estimationMethod, rhs.estimationMethod)
+                .isEquals();
     }
 
     public enum ValueBreakdownType {
         USER_FEES("userFees"),
         PUBLIC_AGENCY_FEES("publicAgencyFees");
-        private final String value;
         private final static Map<String, ValueBreakdownType> CONSTANTS = new HashMap<>();
 
         static {
@@ -97,8 +90,19 @@ public class ValueBreakdown {
             }
         }
 
-        private ValueBreakdownType(final String value) {
+        private final String value;
+
+        ValueBreakdownType(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static ValueBreakdownType fromValue(final String value) {
+            final ValueBreakdownType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -109,15 +113,6 @@ public class ValueBreakdown {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static ValueBreakdownType fromValue(final String value) {
-            final ValueBreakdownType constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
 
     }

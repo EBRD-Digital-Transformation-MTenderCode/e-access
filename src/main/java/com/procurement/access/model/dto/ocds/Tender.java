@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -79,18 +76,11 @@ public class Tender {
     @JsonProperty("title")
     @JsonPropertyDescription("A title for this tender. This will often be used by applications as a headline to " +
             "attract interest, and to help analysts understand the nature of this procurement.")
-    @Pattern(regexp = "^(title_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-" +
-            "([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]" +
-            "(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)))$")
     private final String title;
 
     @JsonProperty("description")
     @JsonPropertyDescription("A summary description of the tender. This should complement structured information " +
             "provided using the items array. Descriptions should be short and easy to read. Avoid using ALL CAPS. ")
-    @Pattern(regexp = "^(description_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5," +
-            "8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-" +
-            "([0-9A-WY-Za-wy-z]" +
-            "(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)))$")
     private final String description;
 
     @JsonProperty("status")
@@ -133,10 +123,6 @@ public class Tender {
     @JsonProperty("procurementMethodRationale")
     @JsonPropertyDescription("Rationale for the chosen procurement method. This is especially important to provide a " +
             "justification in the case of limited tenders or direct awards.")
-    @Pattern(regexp = "^(procurementMethodRationale_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)" +
-            "|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5," +
-            "8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x" +
-            "(-[A-Za-z0-9]{1,8})+)))$")
     private final String procurementMethodRationale;
 
     @JsonProperty("mainProcurementCategory")
@@ -162,10 +148,6 @@ public class Tender {
 
     @JsonProperty("awardCriteriaDetails")
     @JsonPropertyDescription("Any detailed or further information on the award or selection criteria.")
-    @Pattern(regexp = "^(awardCriteriaDetails_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)" +
-            "|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5," +
-            "8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x" +
-            "(-[A-Za-z0-9]{1,8})+)))$")
     private final String awardCriteriaDetails;
 
     @JsonProperty("submissionMethod")
@@ -179,10 +161,6 @@ public class Tender {
             "address, e-mail address or online service to which bids should be submitted, and any special " +
             "requirements to" +
             " be followed for submissions.")
-    @Pattern(regexp = "^(submissionMethodDetails_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)" +
-            "|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5," +
-            "8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x" +
-            "(-[A-Za-z0-9]{1,8})+)))$")
     private final String submissionMethodDetails;
 
     @JsonProperty("tenderPeriod")
@@ -206,10 +184,6 @@ public class Tender {
 
     @JsonProperty("eligibilityCriteria")
     @JsonPropertyDescription("A description of any eligibility criteria for potential suppliers.")
-    @Pattern(regexp = "^(eligibilityCriteria_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)" +
-            "|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5," +
-            "8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x" +
-            "(-[A-Za-z0-9]{1,8})+)))$")
     private final String eligibilityCriteria;
 
     @JsonProperty("awardPeriod")

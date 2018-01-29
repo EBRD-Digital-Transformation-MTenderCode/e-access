@@ -1,6 +1,9 @@
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.Getter;
@@ -26,61 +29,37 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "placeOfPerformance"
 })
 public class Lot {
-    @JsonProperty("id")
-    @JsonPropertyDescription("A local identifier for this lot, such as a lot number. This is used in relatedLot " +
-            "references at the item, document and award level.")
-    private String id;
-
     @JsonProperty("title")
-    @JsonPropertyDescription("A title for this lot.")
     private final String title;
-
     @JsonProperty("description")
-    @JsonPropertyDescription("A description of this lot.")
     private final String description;
-
     @JsonProperty("status")
-    @JsonPropertyDescription("The current status of the process related to this lot based on the [tenderStatus " +
-            "codelist](http://ocds.open-contracting.org/standard/r/1__0__0/en/schema/codelists#tender-status)")
     private final TenderStatus status;
-
     @JsonProperty("statusDetails")
-    @JsonPropertyDescription("Additional details of status.)")
     private final TenderStatusDetails statusDetails;
-
     @JsonProperty("value")
     @Valid
     private final Value value;
-
     @JsonProperty("options")
-    @JsonPropertyDescription("Details about lot options: if they will be accepted and what they can consist of. " +
-            "Required by the EU")
     @Valid
     private final List<Option> options;
-
     @JsonProperty("recurrentProcurement")
-    @JsonPropertyDescription("Details of possible recurrent procurements and their subsequent calls for competition.")
     @Valid
     private final List<RecurrentProcurement> recurrentProcurement;
-
     @JsonProperty("renewals")
-    @JsonPropertyDescription("Details of allowable contract renewals")
     @Valid
     private final List<Renewal> renewals;
-
     @JsonProperty("variants")
-    @JsonPropertyDescription("Details about lot variants: if they will be accepted and what they can consist of. " +
-            "Required by the EU")
     @Valid
     private final List<Variant> variants;
-
     @JsonProperty("contractPeriod")
     @Valid
     private final Period contractPeriod;
-
     @JsonProperty("placeOfPerformance")
     @Valid
     private final PlaceOfPerformance placeOfPerformance;
+    @JsonProperty("id")
+    private String id;
 
     @JsonCreator
     public Lot(@JsonProperty("id") final String id,

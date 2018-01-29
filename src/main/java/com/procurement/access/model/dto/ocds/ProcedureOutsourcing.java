@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.Valid;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -10,16 +12,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "procedureOutsourced",
-    "outsourcedTo"
+        "procedureOutsourced",
+        "outsourcedTo"
 })
 public class ProcedureOutsourcing {
     @JsonProperty("procedureOutsourced")
-    @JsonPropertyDescription("A True/False field to indicate whether the procurement procedure has been outsourced")
     private final Boolean procedureOutsourced;
 
     @JsonProperty("outsourcedTo")
-    @JsonPropertyDescription("An organization.")
     @Valid
     private final Organization outsourcedTo;
 
@@ -33,8 +33,8 @@ public class ProcedureOutsourcing {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(procedureOutsourced)
-                                    .append(outsourcedTo)
-                                    .toHashCode();
+                .append(outsourcedTo)
+                .toHashCode();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ProcedureOutsourcing {
         }
         final ProcedureOutsourcing rhs = (ProcedureOutsourcing) other;
         return new EqualsBuilder().append(procedureOutsourced, rhs.procedureOutsourced)
-                                  .append(outsourcedTo, rhs.outsourcedTo)
-                                  .isEquals();
+                .append(outsourcedTo, rhs.outsourcedTo)
+                .isEquals();
     }
 }

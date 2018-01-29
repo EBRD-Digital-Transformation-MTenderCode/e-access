@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
         "description",
@@ -15,13 +16,10 @@ import lombok.Getter;
 })
 public class BudgetBreakdown {
     @JsonProperty("id")
-    @JsonPropertyDescription("An identifier for this particular budget entry.")
     @NotNull
     private final String id;
 
     @JsonProperty("description")
-    @JsonPropertyDescription("A short free text description of this budget entry.")
-    @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private final String description;
 
     @JsonProperty("amount")

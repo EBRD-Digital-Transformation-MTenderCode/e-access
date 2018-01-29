@@ -1,7 +1,10 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -9,16 +12,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "name"
+        "id",
+        "name"
 })
 public class Author {
     @JsonProperty("id")
-    @JsonPropertyDescription("A unique identifier for the author.")
+    @NotNull
     private final String id;
 
     @JsonProperty("name")
-    @JsonPropertyDescription("The name of the author.")
     private final String name;
 
     @JsonCreator
@@ -31,8 +33,8 @@ public class Author {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(name)
-                                    .toHashCode();
+                .append(name)
+                .toHashCode();
     }
 
     @Override
@@ -45,7 +47,7 @@ public class Author {
         }
         final Author rhs = (Author) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(name, rhs.name)
-                                  .isEquals();
+                .append(name, rhs.name)
+                .isEquals();
     }
 }

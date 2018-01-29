@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.Getter;
@@ -11,23 +13,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "statistics",
-    "details"
+        "statistics",
+        "details"
 })
 public class Bids {
     @JsonProperty("statistics")
-    @JsonPropertyDescription("Summary statistics on the number and nature of bids received. Where information is " +
-        "provided on individual bids, these statistics should match those that can be calculated from the bid details" +
-        " array.")
     private final List<BidsStatistic> statistics;
 
     @JsonProperty("details")
-    @JsonPropertyDescription("An array of bids, providing information on the bidders, and where applicable, bid " +
-        "status, bid values and related documents. The extent to which this information can be disclosed varies from " +
-        "jurisdiction to jurisdiction.")
     @Valid
     private final List<Bid> details;
-
 
 
     @JsonCreator
@@ -40,8 +35,8 @@ public class Bids {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(statistics)
-                                    .append(details)
-                                    .toHashCode();
+                .append(details)
+                .toHashCode();
     }
 
     @Override
@@ -54,7 +49,7 @@ public class Bids {
         }
         final Bids rhs = (Bids) other;
         return new EqualsBuilder().append(statistics, rhs.statistics)
-                                  .append(details, rhs.details)
-                                  .isEquals();
+                .append(details, rhs.details)
+                .isEquals();
     }
 }

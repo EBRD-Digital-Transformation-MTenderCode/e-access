@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -10,16 +12,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "isJointProcurement",
-    "country"
+        "isJointProcurement",
+        "country"
 })
 public class JointProcurement {
     @JsonProperty("isJointProcurement")
-    @JsonPropertyDescription("A True/False field to indicate if this is a joint procurement or not. Required by the EU")
     private final Boolean isJointProcurement;
 
     @JsonProperty("country")
-    @JsonPropertyDescription("ISO Country Code of the country where the law applies. Use ISO Alpha-2 country codes.")
     @Size(min = 2, max = 3)
     private final String country;
 
@@ -33,8 +33,8 @@ public class JointProcurement {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(isJointProcurement)
-                                    .append(country)
-                                    .toHashCode();
+                .append(country)
+                .toHashCode();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class JointProcurement {
         }
         final JointProcurement rhs = (JointProcurement) other;
         return new EqualsBuilder().append(isJointProcurement, rhs.isJointProcurement)
-                                  .append(country, rhs.country)
-                                  .isEquals();
+                .append(country, rhs.country)
+                .isEquals();
     }
 }

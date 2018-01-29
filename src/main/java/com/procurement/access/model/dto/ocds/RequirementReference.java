@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -10,17 +12,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "title"
+        "id",
+        "title"
 })
 public class RequirementReference {
     @JsonProperty("id")
-    @JsonPropertyDescription("The id of the requirement which the response is applicable to")
     @NotNull
     private final String id;
 
     @JsonProperty("title")
-    @JsonPropertyDescription("The title of the requirement which the response is applicable to")
     private final String title;
 
     @JsonCreator
@@ -33,8 +33,8 @@ public class RequirementReference {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .toHashCode();
+                .append(title)
+                .toHashCode();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class RequirementReference {
         }
         final RequirementReference rhs = (RequirementReference) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .isEquals();
+                .append(title, rhs.title)
+                .isEquals();
     }
 }

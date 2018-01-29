@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
@@ -14,44 +13,32 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "relationship",
-    "title",
-    "scheme",
-    "identifier",
-    "uri"
+        "id",
+        "relationship",
+        "title",
+        "scheme",
+        "identifier",
+        "uri"
 })
 public class RelatedProcess {
     @JsonProperty("id")
-    @JsonPropertyDescription("A local identifier for this relationship, unique within this array.")
     @NotNull
     private final String id;
 
     @JsonProperty("relationship")
-    @JsonPropertyDescription("Specify the type of relationship using the [related process codelist](http://standard" +
-        ".open-contracting.org/latest/en/schema/codelists/#related-process).")
     private final List<RelatedProcessType> relationship;
 
     @JsonProperty("title")
-    @JsonPropertyDescription("The title of the related process, where referencing an open contracting process, this " +
-        "field should match the tender/title field in the related process.")
     private final String title;
 
     @JsonProperty("scheme")
-    @JsonPropertyDescription("The identification scheme used by this cross-reference from the [related process scheme" +
-        " codelist](http://standard.open-contracting.org/latest/en/schema/codelists/#related-process-scheme) codelist" +
-        ". When cross-referencing information also published using OCDS, an Open Contracting ID (ocid) should be used.")
     private final RelatedProcessScheme scheme;
 
     @JsonProperty("identifier")
-    @JsonPropertyDescription("The identifier of the related process. When cross-referencing information also " +
-        "published using OCDS, this should be the Open Contracting ID (ocid).")
     private final String identifier;
 
     @JsonProperty("uri")
-    @JsonPropertyDescription("A URI pointing to a machine-readable document, release or record package containing the" +
-        " identified related process.")
-    private final URI uri;
+    private final String uri;
 
     @JsonCreator
     public RelatedProcess(@JsonProperty("id") final String id,
@@ -59,7 +46,7 @@ public class RelatedProcess {
                           @JsonProperty("title") final String title,
                           @JsonProperty("scheme") final RelatedProcessScheme scheme,
                           @JsonProperty("identifier") final String identifier,
-                          @JsonProperty("uri") final URI uri) {
+                          @JsonProperty("uri") final String uri) {
         this.id = id;
         this.relationship = relationship;
         this.title = title;
@@ -71,12 +58,12 @@ public class RelatedProcess {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(relationship)
-                                    .append(title)
-                                    .append(scheme)
-                                    .append(identifier)
-                                    .append(uri)
-                                    .toHashCode();
+                .append(relationship)
+                .append(title)
+                .append(scheme)
+                .append(identifier)
+                .append(uri)
+                .toHashCode();
     }
 
     @Override
@@ -89,12 +76,12 @@ public class RelatedProcess {
         }
         final RelatedProcess rhs = (RelatedProcess) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(relationship, rhs.relationship)
-                                  .append(title, rhs.title)
-                                  .append(scheme, rhs.scheme)
-                                  .append(identifier, rhs.identifier)
-                                  .append(uri, rhs.uri)
-                                  .isEquals();
+                .append(relationship, rhs.relationship)
+                .append(title, rhs.title)
+                .append(scheme, rhs.scheme)
+                .append(identifier, rhs.identifier)
+                .append(uri, rhs.uri)
+                .isEquals();
     }
 
     public enum RelatedProcessType {
@@ -113,7 +100,6 @@ public class RelatedProcess {
         X_PLANNED("x_planned"),
         X_BUDGET("x_budget");
 
-        private final String value;
         private final static Map<String, RelatedProcessType> CONSTANTS = new HashMap<>();
 
         static {
@@ -122,18 +108,10 @@ public class RelatedProcess {
             }
         }
 
-        private RelatedProcessType(final String value) {
+        private final String value;
+
+        RelatedProcessType(final String value) {
             this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        @JsonValue
-        public String value() {
-            return this.value;
         }
 
         @JsonCreator
@@ -144,23 +122,6 @@ public class RelatedProcess {
             }
             return constant;
         }
-    }
-
-    public enum RelatedProcessScheme {
-        OCID("ocid");
-
-        private final String value;
-        private final static Map<String, RelatedProcessScheme> CONSTANTS = new HashMap<>();
-
-        static {
-            for (final RelatedProcessScheme c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private RelatedProcessScheme(final String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {
@@ -171,6 +132,24 @@ public class RelatedProcess {
         public String value() {
             return this.value;
         }
+    }
+
+    public enum RelatedProcessScheme {
+        OCID("ocid");
+
+        private final static Map<String, RelatedProcessScheme> CONSTANTS = new HashMap<>();
+
+        static {
+            for (final RelatedProcessScheme c : values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private final String value;
+
+        RelatedProcessScheme(final String value) {
+            this.value = value;
+        }
 
         @JsonCreator
         public static RelatedProcessScheme fromValue(final String value) {
@@ -179,6 +158,16 @@ public class RelatedProcess {
                 throw new IllegalArgumentException(value);
             }
             return constant;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.value;
         }
     }
 }

@@ -20,8 +20,6 @@ public class Value {
     private final Double amount;
 
     @JsonProperty("currency")
-    @JsonPropertyDescription("The currency for each amount should always be specified using the uppercase 3-letter " +
-        "currency code from ISO4217.")
     private final Currency currency;
 
     @JsonCreator
@@ -231,7 +229,7 @@ public class Value {
             }
         }
 
-        private Currency(final String value) {
+        Currency(final String value) {
             this.value = value;
         }
 

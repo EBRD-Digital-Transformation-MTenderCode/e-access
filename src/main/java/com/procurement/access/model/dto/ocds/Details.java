@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
@@ -11,47 +10,30 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "typeOfBuyer",
-    "mainGeneralActivity",
-    "mainSectoralActivity",
-    "isACentralPurchasingBody",
-    "NUTSCode",
-    "scale"
+        "typeOfBuyer",
+        "mainGeneralActivity",
+        "mainSectoralActivity",
+        "isACentralPurchasingBody",
+        "NUTSCode",
+        "scale"
 })
 public class Details {
     @JsonProperty("typeOfBuyer")
-    @JsonPropertyDescription("A value from the [typeOfBuyer codelist](http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#type-of-buyer). The type of buyer taken from the EU's specified list in " +
-        "its TED forms.")
     private final TypeOfBuyer typeOfBuyer;
 
     @JsonProperty("mainGeneralActivity")
-    @JsonPropertyDescription("A value from the [mainGeneralActivity codelist](http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#main-general-activity). The main general activity of the buyer taken from " +
-        "the EU's specified list in its TED forms which is taken from the United Nations Classification of the " +
-        "Functions of Government (COFOG) codelist.")
     private final MainGeneralActivity mainGeneralActivity;
 
     @JsonProperty("mainSectoralActivity")
-    @JsonPropertyDescription("A value from the [mainSectoralActivity codelist](http://standard.open-contracting" +
-        ".org/1.1-dev/en/schema/codelists/#main-sectoral-activity) The main sectoral activity of the buyer taken from" +
-        " the EU's specified list in its TED forms which is taken from the United Nations Classification of the " +
-        "Functions of Government (COFOG) codelist.")
     private final MainSectoralActivity mainSectoralActivity;
 
     @JsonProperty("isACentralPurchasingBody")
-    @JsonPropertyDescription("A true/false field to indicate whether the organization is a central purchasing body.")
     private final Boolean isACentralPurchasingBody;
 
     @JsonProperty("NUTSCode")
-    @JsonPropertyDescription("The most detailed level of NUTS codes, NUTS 3 should be used and it should be taken " +
-        "from the EU codelist linked from http://ec.europa.eu/eurostat/ramon/index.cfm?TargetUrl=DSP_PUB_WELC.")
     private final String nutsCode;
 
     @JsonProperty("scale")
-    @JsonPropertyDescription("For commercial organization's, is this a micro (micro), Small or Medium Enterprise " +
-        "(sme) or large (large) entity according to the definitions used by the procuring entity or buyer. This field" +
-        " can be left blank if no such concepts apply.")
     private final Scale scale;
 
     @JsonCreator
@@ -72,12 +54,12 @@ public class Details {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(typeOfBuyer)
-                                    .append(mainGeneralActivity)
-                                    .append(mainSectoralActivity)
-                                    .append(isACentralPurchasingBody)
-                                    .append(nutsCode)
-                                    .append(scale)
-                                    .toHashCode();
+                .append(mainGeneralActivity)
+                .append(mainSectoralActivity)
+                .append(isACentralPurchasingBody)
+                .append(nutsCode)
+                .append(scale)
+                .toHashCode();
     }
 
     @Override
@@ -90,12 +72,12 @@ public class Details {
         }
         final Details rhs = (Details) other;
         return new EqualsBuilder().append(typeOfBuyer, rhs.typeOfBuyer)
-                                  .append(mainGeneralActivity, rhs.mainGeneralActivity)
-                                  .append(mainSectoralActivity, rhs.mainSectoralActivity)
-                                  .append(isACentralPurchasingBody, rhs.isACentralPurchasingBody)
-                                  .append(nutsCode, rhs.nutsCode)
-                                  .append(scale, rhs.scale)
-                                  .isEquals();
+                .append(mainGeneralActivity, rhs.mainGeneralActivity)
+                .append(mainSectoralActivity, rhs.mainSectoralActivity)
+                .append(isACentralPurchasingBody, rhs.isACentralPurchasingBody)
+                .append(nutsCode, rhs.nutsCode)
+                .append(scale, rhs.scale)
+                .isEquals();
     }
 
     public enum MainGeneralActivity {
@@ -109,7 +91,6 @@ public class Details {
         PUBLIC_ORDER_AND_SAFETY("PUBLIC_ORDER_AND_SAFETY"),
         RECREATION_CULTURE_AND_RELIGION("RECREATION_CULTURE_AND_RELIGION"),
         SOCIAL_PROTECTION("SOCIAL_PROTECTION");
-        private final String value;
         private final static Map<String, MainGeneralActivity> CONSTANTS = new HashMap<>();
 
         static {
@@ -118,8 +99,19 @@ public class Details {
             }
         }
 
+        private final String value;
+
         private MainGeneralActivity(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static MainGeneralActivity fromValue(final String value) {
+            final MainGeneralActivity constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -130,15 +122,6 @@ public class Details {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static MainGeneralActivity fromValue(final String value) {
-            final MainGeneralActivity constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
 
     }
@@ -154,7 +137,6 @@ public class Details {
         RAILWAY_SERVICES("RAILWAY_SERVICES"),
         URBAN_RAILWAY_TRAMWAY_TROLLEYBUS_BUS_SERVICES("URBAN_RAILWAY_TRAMWAY_TROLLEYBUS_BUS_SERVICES"),
         WATER("WATER");
-        private final String value;
         private final static Map<String, MainSectoralActivity> CONSTANTS = new HashMap<>();
 
         static {
@@ -163,18 +145,10 @@ public class Details {
             }
         }
 
-        private MainSectoralActivity(final String value) {
+        private final String value;
+
+        MainSectoralActivity(final String value) {
             this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        @JsonValue
-        public String value() {
-            return this.value;
         }
 
         @JsonCreator
@@ -185,25 +159,6 @@ public class Details {
             }
             return constant;
         }
-    }
-
-    public enum Scale {
-        MICRO("micro"),
-        SME("sme"),
-        LARGE("large"),
-        EMPTY("");
-        private final String value;
-        private final static Map<String, Scale> CONSTANTS = new HashMap<>();
-
-        static {
-            for (final Details.Scale c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private Scale(final String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {
@@ -213,6 +168,26 @@ public class Details {
         @JsonValue
         public String value() {
             return this.value;
+        }
+    }
+
+    public enum Scale {
+        MICRO("micro"),
+        SME("sme"),
+        LARGE("large"),
+        EMPTY("");
+        private final static Map<String, Scale> CONSTANTS = new HashMap<>();
+
+        static {
+            for (final Details.Scale c : values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private final String value;
+
+        Scale(final String value) {
+            this.value = value;
         }
 
         @JsonCreator
@@ -223,27 +198,6 @@ public class Details {
             }
             return constant;
         }
-    }
-
-    public enum TypeOfBuyer {
-        BODY_PUBLIC("BODY_PUBLIC"),
-        EU_INSTITUTION("EU_INSTITUTION"),
-        MINISTRY("MINISTRY"),
-        NATIONAL_AGENCY("NATIONAL_AGENCY"),
-        REGIONAL_AGENCY("REGIONAL_AGENCY"),
-        REGIONAL_AUTHORITY("REGIONAL_AUTHORITY");
-        private final String value;
-        private final static Map<String, TypeOfBuyer> CONSTANTS = new HashMap<>();
-
-        static {
-            for (final Details.TypeOfBuyer c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private TypeOfBuyer(final String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {
@@ -254,6 +208,28 @@ public class Details {
         public String value() {
             return this.value;
         }
+    }
+
+    public enum TypeOfBuyer {
+        BODY_PUBLIC("BODY_PUBLIC"),
+        EU_INSTITUTION("EU_INSTITUTION"),
+        MINISTRY("MINISTRY"),
+        NATIONAL_AGENCY("NATIONAL_AGENCY"),
+        REGIONAL_AGENCY("REGIONAL_AGENCY"),
+        REGIONAL_AUTHORITY("REGIONAL_AUTHORITY");
+        private final static Map<String, TypeOfBuyer> CONSTANTS = new HashMap<>();
+
+        static {
+            for (final Details.TypeOfBuyer c : values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private final String value;
+
+        TypeOfBuyer(final String value) {
+            this.value = value;
+        }
 
         @JsonCreator
         public static TypeOfBuyer fromValue(final String value) {
@@ -262,6 +238,16 @@ public class Details {
                 throw new IllegalArgumentException(value);
             }
             return constant;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.value;
         }
 
     }

@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -9,22 +11,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "useOrdering",
-    "usePayment",
-    "acceptInvoicing"
+        "useOrdering",
+        "usePayment",
+        "acceptInvoicing"
 })
 public class ElectronicWorkflows {
     @JsonProperty("useOrdering")
-    @JsonPropertyDescription("A True/False field to indicate if electronic ordering will be used. Required by the EU")
     private final Boolean useOrdering;
 
     @JsonProperty("usePayment")
-    @JsonPropertyDescription("A True/False field to indicate if electronic payment will be used. Required by the EU")
     private final Boolean usePayment;
 
     @JsonProperty("acceptInvoicing")
-    @JsonPropertyDescription("A True/False field to indicate if electronic invoicing will be accepted. Required by " +
-        "the EU")
     private final Boolean acceptInvoicing;
 
     @JsonCreator
@@ -39,9 +37,9 @@ public class ElectronicWorkflows {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(useOrdering)
-                                    .append(usePayment)
-                                    .append(acceptInvoicing)
-                                    .toHashCode();
+                .append(usePayment)
+                .append(acceptInvoicing)
+                .toHashCode();
     }
 
     @Override
@@ -54,8 +52,8 @@ public class ElectronicWorkflows {
         }
         final ElectronicWorkflows rhs = (ElectronicWorkflows) other;
         return new EqualsBuilder().append(useOrdering, rhs.useOrdering)
-                                  .append(usePayment, rhs.usePayment)
-                                  .append(acceptInvoicing, rhs.acceptInvoicing)
-                                  .isEquals();
+                .append(usePayment, rhs.usePayment)
+                .append(acceptInvoicing, rhs.acceptInvoicing)
+                .isEquals();
     }
 }

@@ -23,7 +23,7 @@ public enum TenderStatus {
         }
     }
 
-    private TenderStatus(final String value) {
+    TenderStatus(final String value) {
         this.value = value;
     }
 

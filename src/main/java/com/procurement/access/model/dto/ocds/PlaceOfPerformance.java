@@ -1,7 +1,10 @@
 package com.procurement.access.model.dto.ocds;
 
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -16,16 +19,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class PlaceOfPerformance {
 
     @JsonProperty("address")
-    @JsonPropertyDescription("The address, NUTS code and further description of the place where the contract will be " +
-            "performed")
     private final Address address;
 
     @JsonProperty("description")
-    @JsonPropertyDescription("Further description of the place of performance of the contract. Required by EU.")
     private final String description;
 
     @JsonProperty("NUTScode")
-    @JsonPropertyDescription("NUTS code for the place of performance of the contract.")
     private final String NUTScode;
 
     @JsonCreator

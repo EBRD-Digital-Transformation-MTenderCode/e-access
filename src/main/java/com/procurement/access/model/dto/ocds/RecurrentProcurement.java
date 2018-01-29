@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.Getter;
@@ -11,22 +13,19 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "isRecurrent",
-    "dates",
-    "description"
+        "isRecurrent",
+        "dates",
+        "description"
 })
 public class RecurrentProcurement {
     @JsonProperty("isRecurrent")
-    @JsonPropertyDescription("A True/False field to indicate whether this is a recurrent procurement")
     private final Boolean isRecurrent;
 
     @JsonProperty("dates")
-    @JsonPropertyDescription("Estimated date(s) for subsequent call(s) for competition")
     @Valid
     private final List<Period> dates;
 
     @JsonProperty("description")
-    @JsonPropertyDescription("Any further information about subsequent call(s) for competition.")
     private final String description;
 
     @JsonCreator
@@ -41,9 +40,9 @@ public class RecurrentProcurement {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(isRecurrent)
-                                    .append(dates)
-                                    .append(description)
-                                    .toHashCode();
+                .append(dates)
+                .append(description)
+                .toHashCode();
     }
 
     @Override
@@ -56,8 +55,8 @@ public class RecurrentProcurement {
         }
         final RecurrentProcurement rhs = (RecurrentProcurement) other;
         return new EqualsBuilder().append(isRecurrent, rhs.isRecurrent)
-                                  .append(dates, rhs.dates)
-                                  .append(description, rhs.description)
-                                  .isEquals();
+                .append(dates, rhs.dates)
+                .append(description, rhs.description)
+                .isEquals();
     }
 }

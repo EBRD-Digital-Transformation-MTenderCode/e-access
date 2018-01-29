@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
@@ -13,18 +12,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "types",
-    "additionalInformation"
+        "types",
+        "additionalInformation"
 })
 public class Objectives {
     @JsonProperty("types")
-    @JsonPropertyDescription("Contract performance conditions with environmental, social and innovative objectives. " +
-        "Required by the EU.")
     @Valid
     private final List<ObjectivesType> types;
 
     @JsonProperty("additionalInformation")
-    @JsonPropertyDescription("Further details about the objectives of the procurement. Required by the EU")
     private final String additionalInformation;
 
     @JsonCreator
@@ -37,8 +33,8 @@ public class Objectives {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(types)
-                                    .append(additionalInformation)
-                                    .toHashCode();
+                .append(additionalInformation)
+                .toHashCode();
     }
 
     @Override
@@ -51,15 +47,14 @@ public class Objectives {
         }
         final Objectives rhs = (Objectives) other;
         return new EqualsBuilder().append(types, rhs.types)
-                                  .append(additionalInformation, rhs.additionalInformation)
-                                  .isEquals();
+                .append(additionalInformation, rhs.additionalInformation)
+                .isEquals();
     }
 
     public enum ObjectivesType {
         ENVIRONMENTAL("environmental"),
         SOCIAL("social"),
         INNOVATIVE("innovative");
-        private final String value;
         private final static Map<String, ObjectivesType> CONSTANTS = new HashMap<>();
 
         static {
@@ -68,8 +63,19 @@ public class Objectives {
             }
         }
 
-        private ObjectivesType(final String value) {
+        private final String value;
+
+        ObjectivesType(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static ObjectivesType fromValue(final String value) {
+            final ObjectivesType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -80,15 +86,6 @@ public class Objectives {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static ObjectivesType fromValue(final String value) {
-            final ObjectivesType constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
 
     }

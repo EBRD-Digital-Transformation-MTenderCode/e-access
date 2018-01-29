@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.Getter;
@@ -11,23 +13,19 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "relatedLots",
-    "optionToCombine",
-    "maximumValue"
+        "id",
+        "relatedLots",
+        "optionToCombine",
+        "maximumValue"
 })
 public class LotGroup {
     @JsonProperty("id")
-    @JsonPropertyDescription("A local identifier for this group of lots.")
     private final String id;
 
     @JsonProperty("relatedLots")
-    @JsonPropertyDescription("A list of the identifiers of the lots that form this group. Lots may appear in more " +
-        "than one group.")
     private final List<String> relatedLots;
 
     @JsonProperty("optionToCombine")
-    @JsonPropertyDescription("The buyer reserves the right to combine the lots in this group when awarding a contract.")
     private final Boolean optionToCombine;
 
     @JsonProperty("maximumValue")
@@ -48,10 +46,10 @@ public class LotGroup {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(relatedLots)
-                                    .append(optionToCombine)
-                                    .append(maximumValue)
-                                    .toHashCode();
+                .append(relatedLots)
+                .append(optionToCombine)
+                .append(maximumValue)
+                .toHashCode();
     }
 
     @Override
@@ -64,9 +62,9 @@ public class LotGroup {
         }
         final LotGroup rhs = (LotGroup) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(relatedLots, rhs.relatedLots)
-                                  .append(optionToCombine, rhs.optionToCombine)
-                                  .append(maximumValue, rhs.maximumValue)
-                                  .isEquals();
+                .append(relatedLots, rhs.relatedLots)
+                .append(optionToCombine, rhs.optionToCombine)
+                .append(maximumValue, rhs.maximumValue)
+                .isEquals();
     }
 }

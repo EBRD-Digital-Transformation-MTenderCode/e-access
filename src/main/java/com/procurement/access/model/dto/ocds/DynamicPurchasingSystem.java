@@ -1,7 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -9,23 +11,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "hasDynamicPurchasingSystem",
-    "hasOutsideBuyerAccess",
-    "noFurtherContracts"
+        "hasDynamicPurchasingSystem",
+        "hasOutsideBuyerAccess",
+        "noFurtherContracts"
 })
 public class DynamicPurchasingSystem {
     @JsonProperty("hasDynamicPurchasingSystem")
-    @JsonPropertyDescription("A True/False field to indicate whether a Dynamic Purchasing System has been set up.")
     private final Boolean hasDynamicPurchasingSystem;
 
     @JsonProperty("hasOutsideBuyerAccess")
-    @JsonPropertyDescription("A True/False field to indicate whether the Dynamic Purchasing System may be used by " +
-        "buyers outside the notice.")
     private final Boolean hasOutsideBuyerAccess;
 
     @JsonProperty("noFurtherContracts")
-    @JsonPropertyDescription("A True/False field to indicate whether no further contracts will be awarded in this " +
-        "dynamic purchasing system.")
     private final Boolean noFurtherContracts;
 
     @JsonCreator
@@ -40,9 +37,9 @@ public class DynamicPurchasingSystem {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(hasDynamicPurchasingSystem)
-                                    .append(hasOutsideBuyerAccess)
-                                    .append(noFurtherContracts)
-                                    .toHashCode();
+                .append(hasOutsideBuyerAccess)
+                .append(noFurtherContracts)
+                .toHashCode();
     }
 
     @Override
@@ -55,8 +52,8 @@ public class DynamicPurchasingSystem {
         }
         final DynamicPurchasingSystem rhs = (DynamicPurchasingSystem) other;
         return new EqualsBuilder().append(hasDynamicPurchasingSystem, rhs.hasDynamicPurchasingSystem)
-                                  .append(hasOutsideBuyerAccess, rhs.hasOutsideBuyerAccess)
-                                  .append(noFurtherContracts, rhs.noFurtherContracts)
-                                  .isEquals();
+                .append(hasOutsideBuyerAccess, rhs.hasOutsideBuyerAccess)
+                .append(noFurtherContracts, rhs.noFurtherContracts)
+                .isEquals();
     }
 }

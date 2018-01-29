@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -37,38 +36,21 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class Award {
     @JsonProperty("id")
-    @JsonPropertyDescription("The identifier for this award. It must be unique and cannot change within the Open " +
-            "Contracting Process it is part of (defined by a single ocid). See the [identifier guidance]" +
-            "(http://standard" +
-            ".open-contracting.org/latest/en/schema/identifiers/) for further details.")
-    @Size(min = 1)
     @NotNull
     private final String id;
 
     @JsonProperty("title")
-    @JsonPropertyDescription("Award title")
-    @Pattern(regexp = "^(title_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-" +
-            "([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]" +
-            "(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)))$")
     private final String title;
 
     @JsonProperty("description")
-    @JsonPropertyDescription("Award description")
-    @Pattern(regexp = "^(description_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5," +
-            "8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-" +
-            "([0-9A-WY-Za-wy-z]" +
-            "(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)))$")
     private final String description;
 
     @JsonProperty("status")
-    @JsonPropertyDescription("The current status of the award drawn from the [awardStatus codelist](http://standard" +
-            ".open-contracting.org/latest/en/schema/codelists/#award-status)")
     private final Status status;
 
     @JsonProperty("date")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonPropertyDescription("The date of the contract award. This is usually the date on which a decision to award " +
-            "was made.")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private final LocalDateTime date;
 
     @JsonProperty("value")
@@ -77,15 +59,11 @@ public class Award {
 
     @JsonProperty("suppliers")
     @JsonDeserialize(as = LinkedHashSet.class)
-    @JsonPropertyDescription("The suppliers awarded this award. If different suppliers have been awarded different " +
-            "items of values, these should be split into separate award blocks.")
     @Valid
     private final Set<OrganizationReference> suppliers;
 
     @JsonProperty("items")
     @JsonDeserialize(as = LinkedHashSet.class)
-    @JsonPropertyDescription("The goods and services awarded in this award, broken into line items wherever possible." +
-            " Items should not be duplicated, but the quantity specified instead.")
     @Size(min = 1)
     @Valid
     private final Set<Item> items;
@@ -96,26 +74,18 @@ public class Award {
 
     @JsonProperty("documents")
     @JsonDeserialize(as = LinkedHashSet.class)
-    @JsonPropertyDescription("All documents and attachments related to the award, including any notices.")
     @Valid
     private final Set<Document> documents;
 
     @JsonProperty("amendments")
-    @JsonPropertyDescription("An award amendment is a formal change to the details of the award, and generally " +
-            "involves the publication of a new award notice/release. The rationale and a description of the changes " +
-            "made " +
-            "can be provided here.")
     @Valid
     private final List<Amendment> amendments;
 
     @JsonProperty("amendment")
-    @JsonPropertyDescription("Amendment information")
     @Valid
     private final Amendment amendment;
 
     @JsonProperty("relatedLots")
-    @JsonPropertyDescription("If this award relates to one or more specific lots, provide the identifier(s) of the " +
-            "related lot(s) here.")
     private final List<String> relatedLots;
 
     @JsonProperty("requirementResponses")
@@ -127,12 +97,9 @@ public class Award {
     private final ReviewProceedings reviewProceedings;
 
     @JsonProperty("statusDetails")
-    @JsonPropertyDescription("Additional details of an award status.")
     private final String statusDetails;
 
     @JsonProperty("relatedBid")
-    @JsonPropertyDescription("Where bid details are used, a cross reference to the entry in the bids array to which " +
-            "this award relates. Provide the bid identifier here.")
     private final String relatedBid;
 
     @JsonCreator
@@ -140,8 +107,7 @@ public class Award {
                  @JsonProperty("title") final String title,
                  @JsonProperty("description") final String description,
                  @JsonProperty("status") final Status status,
-                 @JsonProperty("date") @JsonDeserialize(using = LocalDateTimeDeserializer.class) final LocalDateTime
-                             date,
+                 @JsonProperty("date") final LocalDateTime date,
                  @JsonProperty("value") final Value value,
                  @JsonProperty("suppliers") final LinkedHashSet<OrganizationReference> suppliers,
                  @JsonProperty("items") final LinkedHashSet<Item> items,

@@ -1,4 +1,3 @@
-
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
@@ -17,33 +16,28 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "date",
-    "status",
-    "tenderers",
-    "value",
-    "documents",
-    "relatedLots",
-    "requirementResponses"
+        "id",
+        "date",
+        "status",
+        "tenderers",
+        "value",
+        "documents",
+        "relatedLots",
+        "requirementResponses"
 })
 public class Bid {
     @JsonProperty("id")
-    @JsonPropertyDescription("A local identifier for this bid")
     @NotNull
     private final String id;
 
     @JsonProperty("date")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonPropertyDescription("The date when this bid was received.")
     private final LocalDateTime date;
 
     @JsonProperty("status")
-    @JsonPropertyDescription("The status of the bid, drawn from the bidStatus codelist")
     private final Status status;
 
     @JsonProperty("tenderers")
-    @JsonPropertyDescription("The party, or parties, responsible for this bid. This should provide a name and " +
-        "identifier, cross-referenced to an entry in the parties array at the top level of the release.")
     private final List<OrganizationReference> tenderers;
 
     @JsonProperty("value")
@@ -52,13 +46,10 @@ public class Bid {
 
     @JsonProperty("documents")
     @JsonDeserialize(as = LinkedHashSet.class)
-    @JsonPropertyDescription("All documents and attachments related to the bid and its evaluation.")
     @Valid
     private final Set<Document> documents;
 
     @JsonProperty("relatedLots")
-    @JsonPropertyDescription("If this bid relates to one or more specific lots, provide the identifier(s) of the " +
-        "related lot(s) here.")
     private final List<String> relatedLots;
 
     @JsonProperty("requirementResponses")
@@ -87,14 +78,14 @@ public class Bid {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(date)
-                                    .append(status)
-                                    .append(tenderers)
-                                    .append(value)
-                                    .append(documents)
-                                    .append(relatedLots)
-                                    .append(requirementResponses)
-                                    .toHashCode();
+                .append(date)
+                .append(status)
+                .append(tenderers)
+                .append(value)
+                .append(documents)
+                .append(relatedLots)
+                .append(requirementResponses)
+                .toHashCode();
     }
 
     @Override
@@ -107,14 +98,14 @@ public class Bid {
         }
         final Bid rhs = (Bid) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(date, rhs.date)
-                                  .append(status, rhs.status)
-                                  .append(tenderers, rhs.tenderers)
-                                  .append(value, rhs.value)
-                                  .append(documents, rhs.documents)
-                                  .append(relatedLots, rhs.relatedLots)
-                                  .append(requirementResponses, rhs.requirementResponses)
-                                  .isEquals();
+                .append(date, rhs.date)
+                .append(status, rhs.status)
+                .append(tenderers, rhs.tenderers)
+                .append(value, rhs.value)
+                .append(documents, rhs.documents)
+                .append(relatedLots, rhs.relatedLots)
+                .append(requirementResponses, rhs.requirementResponses)
+                .isEquals();
     }
 
     public enum Status {
@@ -124,7 +115,6 @@ public class Bid {
         DISQUALIFIED("disqualified"),
         WITHDRAWN("withdrawn");
 
-        private final String value;
         private final static Map<String, Status> CONSTANTS = new HashMap<>();
 
         static {
@@ -133,8 +123,19 @@ public class Bid {
             }
         }
 
-        private Status(final String value) {
+        private final String value;
+
+        Status(final String value) {
             this.value = value;
+        }
+
+        @JsonCreator
+        public static Status fromValue(final String value) {
+            final Status constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            }
+            return constant;
         }
 
         @Override
@@ -145,15 +146,6 @@ public class Bid {
         @JsonValue
         public String value() {
             return this.value;
-        }
-
-        @JsonCreator
-        public static Status fromValue(final String value) {
-            final Status constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            }
-            return constant;
         }
     }
 }

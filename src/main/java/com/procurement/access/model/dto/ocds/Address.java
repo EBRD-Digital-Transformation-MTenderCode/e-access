@@ -1,8 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
-import javax.validation.constraints.Pattern;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -10,34 +11,26 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "streetAddress",
-    "locality",
-    "region",
-    "postalCode",
-    "countryName"
+        "streetAddress",
+        "locality",
+        "region",
+        "postalCode",
+        "countryName"
 })
 public class Address {
     @JsonProperty("streetAddress")
-    @JsonPropertyDescription("The street address. For example, 1600 Amphitheatre Pkwy.")
     private final String streetAddress;
 
     @JsonProperty("locality")
-    @JsonPropertyDescription("The locality. For example, Mountain View.")
     private final String locality;
 
     @JsonProperty("region")
-    @JsonPropertyDescription("The region. For example, CA.")
     private final String region;
 
     @JsonProperty("postalCode")
-    @JsonPropertyDescription("The postal code. For example, 94043.")
     private final String postalCode;
 
     @JsonProperty("countryName")
-    @JsonPropertyDescription("The country name. For example, United States.")
-    @Pattern(regexp = "^(countryName_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5," +
-        "8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]" +
-        "(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)))$")
     private final String countryName;
 
     @JsonCreator
@@ -56,11 +49,11 @@ public class Address {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(streetAddress)
-                                    .append(locality)
-                                    .append(region)
-                                    .append(postalCode)
-                                    .append(countryName)
-                                    .toHashCode();
+                .append(locality)
+                .append(region)
+                .append(postalCode)
+                .append(countryName)
+                .toHashCode();
     }
 
     @Override
@@ -73,10 +66,10 @@ public class Address {
         }
         final Address rhs = (Address) other;
         return new EqualsBuilder().append(streetAddress, rhs.streetAddress)
-                                  .append(locality, rhs.locality)
-                                  .append(region, rhs.region)
-                                  .append(postalCode, rhs.postalCode)
-                                  .append(countryName, rhs.countryName)
-                                  .isEquals();
+                .append(locality, rhs.locality)
+                .append(region, rhs.region)
+                .append(postalCode, rhs.postalCode)
+                .append(countryName, rhs.countryName)
+                .isEquals();
     }
 }
