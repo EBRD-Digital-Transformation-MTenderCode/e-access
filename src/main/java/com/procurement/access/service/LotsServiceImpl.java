@@ -36,14 +36,18 @@ public class LotsServiceImpl implements LotsService {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(), getLotsDtoByStatus(cn, status));
+        LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
+                getLotsDtoByStatus(cn.getTender().getLots(), status));
         return new ResponseDto<>(true, null, lotsResponseDto);
     }
 
-    private List<LotDto> getLotsDtoByStatus(CnDto cn, TenderStatus status) {
-        return cn.getTender().getLots().stream()
+    private List<LotDto> getLotsDtoByStatus(List<Lot> lots, TenderStatus status) {
+        if (lots.isEmpty()) throw new ErrorException("Data not found.");
+        List<LotDto> lotsByStatus = lots.stream()
                 .filter(l -> l.getStatus().equals(status))
                 .map(l -> new LotDto(l.getId())).collect(Collectors.toList());
+        if (lotsByStatus.isEmpty()) throw new ErrorException("Data not found.");
+        return lotsByStatus;
     }
 
     @Override
@@ -59,6 +63,7 @@ public class LotsServiceImpl implements LotsService {
     }
 
     private List<Lot> setLotsStatus(List<Lot> lots, LotsRequestDto lotsDto, TenderStatus status) {
+        if (lots.isEmpty()) throw new ErrorException("Data not found.");
         Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatus(status));
@@ -78,6 +83,7 @@ public class LotsServiceImpl implements LotsService {
     }
 
     private List<Lot> setLotsStatusDetails(List<Lot> lots, LotsRequestDto lotsDto, TenderStatusDetails statusDetails) {
+        if (lots.isEmpty()) throw new ErrorException("Data not found.");
         Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId())
