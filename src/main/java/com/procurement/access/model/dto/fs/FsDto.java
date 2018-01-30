@@ -52,7 +52,7 @@ public class FsDto {
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private Planning planning;
+    private FsPlanningDto planning;
     @JsonProperty("parties")
     @NotNull
     @Valid
@@ -70,7 +70,7 @@ public class FsDto {
                  @JsonProperty("initiationType") final InitiationType initiationType,
                  @JsonProperty("language") final String language,
                  @JsonProperty("tender") final Tender tender,
-                 @JsonProperty("planning") final Planning planning,
+                 @JsonProperty("planning") final FsPlanningDto planning,
                  @JsonProperty("parties") final List<Organization> parties,
                  @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.ocId = ocId;

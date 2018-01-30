@@ -34,7 +34,7 @@ public class FsResponseDto {
     @JsonProperty("token")
     private final String token;
     @JsonProperty("planning")
-    private final Planning planning;
+    private final FsPlanningDto planning;
     @JsonProperty("parties")
     private final List<Organization> parties;
     @JsonProperty("cpid")
@@ -65,7 +65,7 @@ public class FsResponseDto {
                          @JsonProperty("tag") final List<Tag> tag,
                          @JsonProperty("initiationType") final InitiationType initiationType,
                          @JsonProperty("language") final String language,
-                         @JsonProperty("planning") final Planning planning,
+                         @JsonProperty("planning") final FsPlanningDto planning,
                          @JsonProperty("parties") final List<Organization> parties,
                          @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.token = token;

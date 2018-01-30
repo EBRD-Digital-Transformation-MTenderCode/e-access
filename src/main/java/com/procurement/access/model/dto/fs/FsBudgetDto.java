@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.ein;
+package com.procurement.access.model.dto.fs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,7 +30,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "isEuropeanUnionFunded",
         "period"
 })
-public class EinBudgetDto {
+public class FsBudgetDto {
     @JsonProperty("description")
     private final String description;
     @JsonProperty("period")
@@ -57,17 +57,17 @@ public class EinBudgetDto {
     private String id;
 
     @JsonCreator
-    public EinBudgetDto(@JsonProperty("id") final String id,
-                        @JsonProperty("description") final String description,
-                        @JsonProperty("period") final Period period,
-                        @JsonProperty("amount") final Value amount,
-                        @JsonProperty("project") final String project,
-                        @JsonProperty("projectID") final String projectID,
-                        @JsonProperty("uri") final String uri,
-                        @JsonProperty("source") final String source,
-                        @JsonProperty("europeanUnionFunding") final EuropeanUnionFunding europeanUnionFunding,
-                        @JsonProperty("isEuropeanUnionFunded") final Boolean isEuropeanUnionFunded,
-                        @JsonProperty("budgetBreakdown") final List<BudgetBreakdown> budgetBreakdown) {
+    public FsBudgetDto(@JsonProperty("id") final String id,
+                       @JsonProperty("description") final String description,
+                       @JsonProperty("period") final Period period,
+                       @JsonProperty("amount") final Value amount,
+                       @JsonProperty("project") final String project,
+                       @JsonProperty("projectID") final String projectID,
+                       @JsonProperty("uri") final String uri,
+                       @JsonProperty("source") final String source,
+                       @JsonProperty("europeanUnionFunding") final EuropeanUnionFunding europeanUnionFunding,
+                       @JsonProperty("isEuropeanUnionFunded") final Boolean isEuropeanUnionFunded,
+                       @JsonProperty("budgetBreakdown") final List<BudgetBreakdown> budgetBreakdown) {
         this.id = id;
         this.description = description;
         this.period = period;
@@ -101,10 +101,10 @@ public class EinBudgetDto {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof EinBudgetDto)) {
+        if (!(other instanceof FsBudgetDto)) {
             return false;
         }
-        final EinBudgetDto rhs = (EinBudgetDto) other;
+        final FsBudgetDto rhs = (FsBudgetDto) other;
         return new EqualsBuilder().append(id, rhs.id)
                 .append(description, rhs.description)
                 .append(amount, rhs.amount)
