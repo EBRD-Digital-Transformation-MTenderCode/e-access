@@ -24,8 +24,6 @@ import static org.springframework.http.HttpStatus.OK;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    private static final String MESSAGE = "Request data not valid.";
-
     @ResponseBody
     @ResponseStatus(OK)
     @ExceptionHandler(ValidationException.class)
