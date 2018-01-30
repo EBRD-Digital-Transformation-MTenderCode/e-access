@@ -1,10 +1,10 @@
 server:
   port: @project.service.port@
 
-spring:
-  application:
-    name: e-access
-  cloud:
-    config:
-      failFast: true
-      name: e-access
+#spring:
+#  application:
+#    name: e-access
+#  cloud:
+#    config:
+#      failFast: true
+#      name: e-access

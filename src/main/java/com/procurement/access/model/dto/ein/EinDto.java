@@ -50,7 +50,7 @@ public class EinDto {
     @JsonProperty("planning")
     @NotNull
     @Valid
-    private Planning planning;
+    private EinPlanningDto planning;
     @JsonProperty("tender")
     @NotNull
     @Valid
@@ -73,7 +73,7 @@ public class EinDto {
                   @JsonProperty("tag") final List<Tag> tag,
                   @JsonProperty("initiationType") final InitiationType initiationType,
                   @JsonProperty("language") final String language,
-                  @JsonProperty("planning") final Planning planning,
+                  @JsonProperty("planning") final EinPlanningDto planning,
                   @JsonProperty("tender") final Tender tender,
                   @JsonProperty("parties") final List<Organization> parties,
                   @JsonProperty("buyer") final OrganizationReference buyer,

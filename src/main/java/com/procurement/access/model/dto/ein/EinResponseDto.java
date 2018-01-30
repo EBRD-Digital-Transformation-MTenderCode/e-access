@@ -35,7 +35,7 @@ public class EinResponseDto {
     @JsonProperty("token")
     private final String token;
     @JsonProperty("planning")
-    private final Planning planning;
+    private final EinPlanningDto planning;
     @JsonProperty("tender")
     private final Tender tender;
     @JsonProperty("parties")
@@ -67,7 +67,7 @@ public class EinResponseDto {
                           @JsonProperty("tag") final List<Tag> tag,
                           @JsonProperty("initiationType") final InitiationType initiationType,
                           @JsonProperty("language") final String language,
-                          @JsonProperty("planning") final Planning planning,
+                          @JsonProperty("planning") final EinPlanningDto planning,
                           @JsonProperty("tender") final Tender tender,
                           @JsonProperty("parties") final List<Organization> parties,
                           @JsonProperty("buyer") final OrganizationReference buyer,
