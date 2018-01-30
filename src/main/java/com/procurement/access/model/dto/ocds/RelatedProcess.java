@@ -23,7 +23,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class RelatedProcess {
     @JsonProperty("id")
-    @NotNull
     private final String id;
 
     @JsonProperty("relationship")

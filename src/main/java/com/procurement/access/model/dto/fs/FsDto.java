@@ -25,7 +25,6 @@ import lombok.Setter;
         "tag",
         "initiationType",
         "language",
-        "tender",
         "parties",
         "planning",
         "relatedProcesses"
