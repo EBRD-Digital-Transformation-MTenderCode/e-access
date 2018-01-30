@@ -32,7 +32,7 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto getLots(String cpId, String status) {
+    public ResponseDto getLots(String cpId, TenderStatus status) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
@@ -40,14 +40,14 @@ public class LotsServiceImpl implements LotsService {
         return new ResponseDto<>(true, null, lotsResponseDto);
     }
 
-    private List<LotDto> getLotsDtoByStatus(CnDto cn, String status) {
+    private List<LotDto> getLotsDtoByStatus(CnDto cn, TenderStatus status) {
         return cn.getTender().getLots().stream()
-                .filter(l -> l.getStatus().value().equals(status))
+                .filter(l -> l.getStatus().equals(status))
                 .map(l -> new LotDto(l.getId())).collect(Collectors.toList());
     }
 
     @Override
-    public ResponseDto updateStatus(String cpId, String status, LotsRequestDto lotsDto) {
+    public ResponseDto updateStatus(String cpId, TenderStatus status, LotsRequestDto lotsDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
@@ -55,18 +55,18 @@ public class LotsServiceImpl implements LotsService {
         cn.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
-        return new ResponseDto(true, null, updatedLots);
+        return new ResponseDto<>(true, null, updatedLots);
     }
 
-    private List<Lot> setLotsStatus(List<Lot> lots, LotsRequestDto lotsDto, String status) {
+    private List<Lot> setLotsStatus(List<Lot> lots, LotsRequestDto lotsDto, TenderStatus status) {
         Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
-        lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatus(TenderStatus.fromValue(status)));
+        lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatus(status));
         return lotsMap.values().stream().collect(Collectors.toList());
     }
 
     @Override
-    public ResponseDto updateStatusDetails(String cpId, String statusDetails, LotsRequestDto lotsDto) {
+    public ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails, LotsRequestDto lotsDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
@@ -74,14 +74,14 @@ public class LotsServiceImpl implements LotsService {
         cn.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
-        return new ResponseDto(true, null, updatedLots);
+        return new ResponseDto<>(true, null, updatedLots);
     }
 
-    private List<Lot> setLotsStatusDetails(List<Lot> lots, LotsRequestDto lotsDto, String statusDetails) {
+    private List<Lot> setLotsStatusDetails(List<Lot> lots, LotsRequestDto lotsDto, TenderStatusDetails statusDetails) {
         Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId())
-                .setStatusDetails(TenderStatusDetails.fromValue(statusDetails)));
+                .setStatusDetails(statusDetails));
         return lotsMap.values().stream().collect(Collectors.toList());
     }
 }

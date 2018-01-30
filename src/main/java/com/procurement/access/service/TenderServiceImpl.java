@@ -24,22 +24,22 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto updateStatus(String cpId, String status) {
+    public ResponseDto updateStatus(String cpId, TenderStatus status) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        cn.getTender().setStatus(TenderStatus.fromValue(status));
+        cn.getTender().setStatus(status);
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
         return new ResponseDto<>(true, null, cn);
     }
 
     @Override
-    public ResponseDto updateStatusDetails(String cpId, String statusDetails) {
+    public ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        cn.getTender().setStatusDetails(TenderStatusDetails.fromValue(statusDetails));
+        cn.getTender().setStatusDetails(statusDetails);
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
         return new ResponseDto<>(true, null, cn);

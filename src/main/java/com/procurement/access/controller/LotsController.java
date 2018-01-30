@@ -2,6 +2,8 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.lots.LotsRequestDto;
+import com.procurement.access.model.dto.ocds.TenderStatus;
+import com.procurement.access.model.dto.ocds.TenderStatusDetails;
 import com.procurement.access.service.LotsService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,20 +25,24 @@ public class LotsController {
     @GetMapping
     public ResponseEntity<ResponseDto> getLots(@RequestParam("cpId") final String cpId,
                                                @RequestParam("status") final String status) {
-        return new ResponseEntity<>(lotsService.getLots(cpId, status), HttpStatus.OK);
+        return new ResponseEntity<>(lotsService.getLots(cpId, TenderStatus.fromValue(status)), HttpStatus.OK);
     }
 
     @PutMapping("/updateStatus")
     public ResponseEntity<ResponseDto> updateStatus(@RequestParam("cpId") final String cpId,
                                                     @RequestParam("status") final String status,
                                                     @Valid @RequestBody final LotsRequestDto lotsDto) {
-        return new ResponseEntity<>(lotsService.updateStatus(cpId, status, lotsDto), HttpStatus.OK);
+        return new ResponseEntity<>(
+                lotsService.updateStatus(cpId, TenderStatus.fromValue(status), lotsDto),
+                HttpStatus.OK);
     }
 
     @PutMapping("/updateStatusDetails")
     public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam("cpId") final String cpId,
                                                            @RequestParam("statusDetails") final String statusDetails,
                                                            @Valid @RequestBody final LotsRequestDto lotsDto) {
-        return new ResponseEntity<>(lotsService.updateStatusDetails(cpId, statusDetails, lotsDto), HttpStatus.OK);
+        return new ResponseEntity<>(
+                lotsService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails), lotsDto),
+                HttpStatus.OK);
     }
 }
