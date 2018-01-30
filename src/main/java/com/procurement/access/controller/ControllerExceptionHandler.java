@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.validation.ConstraintViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -66,7 +65,6 @@ public class ControllerExceptionHandler {
     public ResponseDto handleJsonMappingExceptionException(final MethodArgumentTypeMismatchException e) {
         return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
     }
-
 
     @ResponseBody
     @ResponseStatus(OK)
