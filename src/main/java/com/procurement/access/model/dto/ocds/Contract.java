@@ -251,7 +251,8 @@ public class Contract {
         public static Status fromValue(final String value) {
             final Status constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

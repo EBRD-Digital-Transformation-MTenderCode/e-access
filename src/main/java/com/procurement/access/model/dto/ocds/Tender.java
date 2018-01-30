@@ -606,7 +606,7 @@ public class Tender {
 
         private final String value;
 
-        private MainProcurementCategory(final String value) {
+        MainProcurementCategory(final String value) {
             this.value = value;
         }
 
@@ -614,7 +614,8 @@ public class Tender {
         public static MainProcurementCategory fromValue(final String value) {
             final MainProcurementCategory constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }
@@ -686,7 +687,7 @@ public class Tender {
 
         private final String value;
 
-        private ExtendedProcurementCategory(final String value) {
+        ExtendedProcurementCategory(final String value) {
             this.value = value;
         }
 
@@ -694,7 +695,8 @@ public class Tender {
         public static ExtendedProcurementCategory fromValue(final String value) {
             final ExtendedProcurementCategory constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }
@@ -770,7 +772,7 @@ public class Tender {
 
         private final String value;
 
-        private SubmissionMethod(final String value) {
+        SubmissionMethod(final String value) {
             this.value = value;
         }
 
@@ -778,7 +780,8 @@ public class Tender {
         public static SubmissionMethod fromValue(final String value) {
             final SubmissionMethod constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }
@@ -873,7 +876,7 @@ public class Tender {
 
         private final String value;
 
-        private SubmissionLanguage(final String value) {
+        SubmissionLanguage(final String value) {
             this.value = value;
         }
 
@@ -881,7 +884,8 @@ public class Tender {
         public static SubmissionLanguage fromValue(final String value) {
             final SubmissionLanguage constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

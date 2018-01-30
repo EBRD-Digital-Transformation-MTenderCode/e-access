@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -121,7 +122,8 @@ public class BidsStatistic {
         public static Measure fromValue(final String value) {
             final Measure constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

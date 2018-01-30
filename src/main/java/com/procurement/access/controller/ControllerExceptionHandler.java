@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.OK;
@@ -49,21 +50,36 @@ public class ControllerExceptionHandler {
     @ResponseStatus(OK)
     @ExceptionHandler(JsonMappingException.class)
     public ResponseDto handleJsonMappingExceptionException(final JsonMappingException e) {
-        return new ResponseDto<>(false, getErrors(e.getMessage()), null);
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
     }
+
+    @ResponseBody
+    @ResponseStatus(OK)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseDto handleJsonMappingExceptionException(final IllegalArgumentException e) {
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
+    }
+
+    @ResponseBody
+    @ResponseStatus(OK)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseDto handleJsonMappingExceptionException(final MethodArgumentTypeMismatchException e) {
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
+    }
+
 
     @ResponseBody
     @ResponseStatus(OK)
     @ExceptionHandler(ErrorException.class)
     public ResponseDto handleErrorInsertException(final ErrorException e) {
-        return new ResponseDto<>(false, getErrors(e.getMessage()), null);
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
     }
 
     @ResponseBody
     @ResponseStatus(OK)
     @ExceptionHandler(ServletException.class)
     public ResponseDto handleErrorInsertException(final ServletException e) {
-        return new ResponseDto<>(false, getErrors(e.getMessage()), null);
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
     }
 
     private List<ResponseDetailsDto> getErrors(final BindingResult result) {
@@ -79,13 +95,12 @@ public class ControllerExceptionHandler {
         return e.getConstraintViolations()
                 .stream()
                 .map(f -> new ResponseDetailsDto(
-                        f.getPropertyPath()
-                                .toString(),
+                        f.getPropertyPath().toString(),
                         f.getMessage() + " " + f.getMessageTemplate()))
                 .collect(toList());
     }
 
-    private List<ResponseDetailsDto> getErrors(final String error) {
-        return Arrays.asList(new ResponseDetailsDto(HttpStatus.BAD_REQUEST.toString(), error));
+    private List<ResponseDetailsDto> getErrors(final String code, final String error) {
+        return Arrays.asList(new ResponseDetailsDto(code, error));
     }
 }

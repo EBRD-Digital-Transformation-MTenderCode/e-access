@@ -2,6 +2,7 @@ package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -94,7 +95,8 @@ public class Classification {
         public static Scheme fromValue(final String value) {
             final Scheme constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

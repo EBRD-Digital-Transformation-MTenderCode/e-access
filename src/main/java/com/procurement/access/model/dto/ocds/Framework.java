@@ -1,6 +1,7 @@
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,8 @@ public class Framework {
         public static TypeOfFramework fromValue(final String value) {
             final TypeOfFramework constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

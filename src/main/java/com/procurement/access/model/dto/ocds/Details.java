@@ -1,6 +1,7 @@
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -101,7 +102,7 @@ public class Details {
 
         private final String value;
 
-        private MainGeneralActivity(final String value) {
+        MainGeneralActivity(final String value) {
             this.value = value;
         }
 
@@ -109,7 +110,8 @@ public class Details {
         public static MainGeneralActivity fromValue(final String value) {
             final MainGeneralActivity constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }
@@ -194,7 +196,8 @@ public class Details {
         public static Scale fromValue(final String value) {
             final Details.Scale constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

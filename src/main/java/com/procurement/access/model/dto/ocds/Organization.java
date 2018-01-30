@@ -138,7 +138,8 @@ public class Organization {
         public static PartyRole fromValue(final String value) {
             final PartyRole constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(value);
+                throw new IllegalArgumentException(
+                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
             }
             return constant;
         }

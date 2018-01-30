@@ -2,6 +2,7 @@ package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,8 @@ public enum TenderStatusDetails {
     public static TenderStatusDetails fromValue(final String value) {
         final TenderStatusDetails constant = CONSTANTS.get(value);
         if (constant == null) {
-            throw new IllegalArgumentException(value);
+            throw new IllegalArgumentException(
+                    "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
         }
         return constant;
     }
