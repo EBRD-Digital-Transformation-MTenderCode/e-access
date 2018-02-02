@@ -23,14 +23,14 @@ public class LotsController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto> getLots(@RequestParam("cpId") final String cpId,
-                                               @RequestParam("status") final String status) {
+    public ResponseEntity<ResponseDto> getLots(final String cpId,
+                                               final String status) {
         return new ResponseEntity<>(lotsService.getLots(cpId, TenderStatus.fromValue(status)), HttpStatus.OK);
     }
 
     @PutMapping("/updateStatus")
-    public ResponseEntity<ResponseDto> updateStatus(@RequestParam("cpId") final String cpId,
-                                                    @RequestParam("status") final String status,
+    public ResponseEntity<ResponseDto> updateStatus(final String cpId,
+                                                    final String status,
                                                     @Valid @RequestBody final LotsRequestDto lotsDto) {
         return new ResponseEntity<>(
                 lotsService.updateStatus(cpId, TenderStatus.fromValue(status), lotsDto),
@@ -38,8 +38,8 @@ public class LotsController {
     }
 
     @PutMapping("/updateStatusDetails")
-    public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam("cpId") final String cpId,
-                                                           @RequestParam("statusDetails") final String statusDetails,
+    public ResponseEntity<ResponseDto> updateStatusDetails(final String cpId,
+                                                           final String statusDetails,
                                                            @Valid @RequestBody final LotsRequestDto lotsDto) {
         return new ResponseEntity<>(
                 lotsService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails), lotsDto),

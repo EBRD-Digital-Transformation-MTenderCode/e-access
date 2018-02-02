@@ -52,6 +52,7 @@ public class EinServiceImpl implements EinService {
 
         final EinEntity entity = Optional.ofNullable(einDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException("Data not found."));
+        if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
         final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
         ein.setPlanning(einDto.getPlanning());
         ein.setTender(einDto.getTender());

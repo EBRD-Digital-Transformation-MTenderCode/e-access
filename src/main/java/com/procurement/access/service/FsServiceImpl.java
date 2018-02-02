@@ -54,6 +54,7 @@ public class FsServiceImpl implements FsService {
         if (Strings.isNullOrEmpty(fsDto.getId())) throw new ErrorException("Invalid fs id.");
         final FsEntity entity = Optional.ofNullable(fsDao.getByCpIdAndIdAndToken(cpId, fsDto.getId(), token))
                 .orElseThrow(() -> new ErrorException("Data not found."));
+        if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
         final FsDto fs = jsonUtil.toObject(FsDto.class, entity.getJsonData());
         fs.setPlanning(fsDto.getPlanning());
         fs.setTender(fsDto.getTender());

@@ -55,6 +55,7 @@ public class CnServiceImpl implements CnService {
                                 final CnDto cnDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException("Data not found."));
+        if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.setTender(cnDto.getTender());
         entity.setJsonData(jsonUtil.toJson(cn));
