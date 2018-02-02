@@ -13,8 +13,6 @@ public class FsEntity {
 
     private String cpId;
 
-    private String fsId;
-
     private String token;
 
     private String owner;

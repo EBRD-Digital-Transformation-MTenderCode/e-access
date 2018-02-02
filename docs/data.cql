@@ -10,13 +10,12 @@ CREATE TABLE IF NOT EXISTS  ocds.access_ein (
 
 CREATE TABLE IF NOT EXISTS  ocds.access_fs (
     cp_id text,
-    fs_id text,
     token_entity text,
     owner text,
     amount double,
     amount_reserved double,
     json_data text,
-    primary key(cp_id, fs_id, token_entity)
+    primary key(cp_id, token_entity)
 );
 
 CREATE TABLE IF NOT EXISTS  ocds.access_cn (

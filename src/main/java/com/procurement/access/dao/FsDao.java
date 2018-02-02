@@ -8,6 +8,6 @@ public interface FsDao {
 
     void save(FsEntity entity);
 
-    FsEntity getByCpIdAndIdAndToken(String cpId, String fsId, String token);
+    FsEntity getByCpIdAndToken(String cpId, String token);
 }
 

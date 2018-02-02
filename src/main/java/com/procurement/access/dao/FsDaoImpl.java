@@ -14,7 +14,6 @@ public class FsDaoImpl implements FsDao {
 
     private static final String FS_TABLE = "access_fs";
     private static final String CP_ID = "cp_id";
-    private static final String FS_ID = "fs_id";
     private static final String TOKEN = "token_entity";
     private static final String OWNER = "owner";
     private static final String AMOUNT = "amount";
@@ -31,7 +30,6 @@ public class FsDaoImpl implements FsDao {
     public void save(final FsEntity entity) {
         final Insert insert = insertInto(FS_TABLE);
         insert.value(CP_ID, entity.getCpId())
-                .value(FS_ID, entity.getFsId())
                 .value(TOKEN, entity.getToken())
                 .value(OWNER, entity.getOwner())
                 .value(AMOUNT, entity.getAmount())
@@ -41,18 +39,16 @@ public class FsDaoImpl implements FsDao {
     }
 
     @Override
-    public FsEntity getByCpIdAndIdAndToken(final String cpId, final String fsId, final String token) {
+    public FsEntity getByCpIdAndToken(final String cpId, final String token) {
         final Statement query = select()
                 .all()
                 .from(FS_TABLE)
                 .where(eq(CP_ID, cpId))
-                .and(eq(FS_ID, fsId))
                 .and(eq(TOKEN, token))
                 .limit(1);
         final Row row = session.execute(query).one();
         return new FsEntity(
                 row.getString(CP_ID),
-                row.getString(FS_ID),
                 row.getString(TOKEN),
                 row.getString(OWNER),
                 row.getDouble(AMOUNT),

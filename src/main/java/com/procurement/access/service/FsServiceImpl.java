@@ -52,10 +52,11 @@ public class FsServiceImpl implements FsService {
                                  final String owner,
                                  final FsDto fsDto) {
         if (Strings.isNullOrEmpty(fsDto.getId())) throw new ErrorException("Invalid fs id.");
-        final FsEntity entity = Optional.ofNullable(fsDao.getByCpIdAndIdAndToken(cpId, fsDto.getId(), token))
+        final FsEntity entity = Optional.ofNullable(fsDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
         final FsDto fs = jsonUtil.toObject(FsDto.class, entity.getJsonData());
+        if (!fs.getId().equals(fsDto.getId())) throw new ErrorException("Different IDs in the database and query.");
         fs.setPlanning(fsDto.getPlanning());
         fs.setTender(fsDto.getTender());
         entity.setJsonData(jsonUtil.toJson(fs));
@@ -93,7 +94,6 @@ public class FsServiceImpl implements FsService {
     private FsEntity getEntity(final String cpId, final String owner, final FsDto fs) {
         final FsEntity fsEntity = new FsEntity();
         fsEntity.setCpId(cpId);
-        fsEntity.setFsId(fs.getId());
         fsEntity.setToken(UUIDs.timeBased().toString());
         fsEntity.setOwner(owner);
         fsEntity.setJsonData(jsonUtil.toJson(fs));
