@@ -21,16 +21,16 @@ public class EinController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> create(@RequestParam("owner") final String owner,
+    public ResponseEntity<ResponseDto> create(final String owner,
                                               @Valid @RequestBody final EinDto einDto) {
         return new ResponseEntity<>(einService.createEin(owner, einDto), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<ResponseDto> update(@RequestParam("owner") final String owner,
-                                              @RequestParam("identifier") final String identifier,
-                                              @RequestParam("token") final String token,
+    public ResponseEntity<ResponseDto> update(final String cpId,
+                                              final String owner,
+                                              final String token,
                                               @Valid @RequestBody final EinDto einDto) {
-        return new ResponseEntity<>(einService.updateEin(owner, identifier, token, einDto), HttpStatus.OK);
+        return new ResponseEntity<>(einService.updateEin(owner, cpId, token, einDto), HttpStatus.OK);
     }
 }

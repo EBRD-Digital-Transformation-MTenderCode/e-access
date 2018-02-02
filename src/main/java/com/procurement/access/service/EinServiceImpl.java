@@ -46,18 +46,18 @@ public class EinServiceImpl implements EinService {
 
     @Override
     public ResponseDto updateEin(final String owner,
-                                 final String identifier,
+                                 final String cpId,
                                  final String token,
                                  final EinDto einDto) {
 
-        final EinEntity entity = Optional.ofNullable(einDao.getByCpIdAndToken(identifier, token))
+        final EinEntity entity = Optional.ofNullable(einDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException("Data not found."));
         final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
         ein.setPlanning(einDto.getPlanning());
         ein.setTender(einDto.getTender());
         entity.setJsonData(jsonUtil.toJson(ein));
         einDao.save(entity);
-        return getResponseDto(identifier, entity.getToken(), ein);
+        return getResponseDto(cpId, entity.getToken(), ein);
     }
 
     private void setTenderId(final EinDto ein, final String cpId) {

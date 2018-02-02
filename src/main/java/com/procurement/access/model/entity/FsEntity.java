@@ -13,7 +13,7 @@ public class FsEntity {
 
     private String cpId;
 
-    private String ocId;
+    private String fsId;
 
     private String token;
 

@@ -21,17 +21,18 @@ public class FsController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> create(@RequestParam("owner") final String owner,
+    public ResponseEntity<ResponseDto> create(final String cpId,
+                                              final String owner,
                                               @Valid @RequestBody final FsDto fsDto) {
-        return new ResponseEntity<>(fsService.createFs(owner, fsDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(fsService.createFs(cpId, owner, fsDto), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<ResponseDto> update(@RequestParam("owner") final String owner,
-                                              @RequestParam("identifier") final String identifier,
-                                              @RequestParam("token") final String token,
+    public ResponseEntity<ResponseDto> update(final String cpId,
+                                              final String token,
+                                              final String owner,
                                               @Valid @RequestBody final FsDto fsDto) {
-        return new ResponseEntity<>(fsService.updateFs(owner, identifier, token, fsDto), HttpStatus.OK);
+        return new ResponseEntity<>(fsService.updateFs(cpId, token, owner, fsDto), HttpStatus.OK);
     }
 
 }

@@ -11,7 +11,7 @@ public interface EinService {
                           EinDto einDto);
 
     ResponseDto updateEin(String owner,
-                          String identifier,
+                          String cpId,
                           String token,
                           EinDto einDto);
 }

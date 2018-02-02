@@ -19,7 +19,6 @@ import lombok.Setter;
 @JsonPropertyOrder({
         "token",
         "cpid",
-        "ocid",
         "id",
         "date",
         "tag",
@@ -39,8 +38,6 @@ public class FsResponseDto {
     private final List<Organization> parties;
     @JsonProperty("cpid")
     private String cpId;
-    @JsonProperty("ocid")
-    private String ocId;
     @JsonProperty("id")
     private String id;
     @JsonProperty("date")
@@ -59,7 +56,6 @@ public class FsResponseDto {
     @JsonCreator
     public FsResponseDto(@JsonProperty("token") final String token,
                          @JsonProperty("cpid") final String cpId,
-                         @JsonProperty("ocid") final String ocId,
                          @JsonProperty("id") final String id,
                          @JsonProperty("date") final LocalDateTime date,
                          @JsonProperty("tag") final List<Tag> tag,
@@ -70,7 +66,6 @@ public class FsResponseDto {
                          @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.token = token;
         this.cpId = cpId;
-        this.ocId = ocId;
         this.id = id;
         this.date = date;
         this.tag = tag;
