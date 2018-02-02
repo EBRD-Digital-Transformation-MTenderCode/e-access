@@ -94,8 +94,7 @@ public class EinServiceImpl implements EinService {
                 ein.getPlanning(),
                 ein.getTender(),
                 ein.getParties(),
-                ein.getBuyer(),
-                ein.getRelatedProcesses()
+                ein.getBuyer()
         );
         return new ResponseDto(true, null, responseDto);
     }

@@ -28,8 +28,7 @@ import lombok.Setter;
         "planning",
         "tender",
         "parties",
-        "buyer",
-        "relatedProcesses"
+        "buyer"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class EinDto {
@@ -63,8 +62,6 @@ public class EinDto {
     @NotNull
     @Valid
     private OrganizationReference buyer;
-    @JsonProperty("relatedProcesses")
-    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
     public EinDto(@JsonProperty("ocid") final String ocId,
@@ -76,8 +73,7 @@ public class EinDto {
                   @JsonProperty("planning") final EinPlanningDto planning,
                   @JsonProperty("tender") final Tender tender,
                   @JsonProperty("parties") final List<Organization> parties,
-                  @JsonProperty("buyer") final OrganizationReference buyer,
-                  @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+                  @JsonProperty("buyer") final OrganizationReference buyer) {
         this.ocId = ocId;
         this.id = id;
         this.date = date;
@@ -88,6 +84,5 @@ public class EinDto {
         this.tender = tender;
         this.parties = parties;
         this.buyer = buyer;
-        this.relatedProcesses = relatedProcesses;
     }
 }

@@ -25,8 +25,7 @@ import lombok.Setter;
         "initiationType",
         "language",
         "planning",
-        "parties",
-        "relatedProcesses"
+        "parties"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class FsResponseDto {
@@ -50,8 +49,6 @@ public class FsResponseDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
-    @JsonProperty("relatedProcesses")
-    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
     public FsResponseDto(@JsonProperty("token") final String token,
@@ -62,8 +59,7 @@ public class FsResponseDto {
                          @JsonProperty("initiationType") final InitiationType initiationType,
                          @JsonProperty("language") final String language,
                          @JsonProperty("planning") final FsPlanningDto planning,
-                         @JsonProperty("parties") final List<Organization> parties,
-                         @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+                         @JsonProperty("parties") final List<Organization> parties) {
         this.token = token;
         this.cpId = cpId;
         this.id = id;
@@ -73,6 +69,5 @@ public class FsResponseDto {
         this.language = language;
         this.planning = planning;
         this.parties = parties;
-        this.relatedProcesses = relatedProcesses;
     }
 }

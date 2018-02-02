@@ -27,8 +27,7 @@ import lombok.Setter;
         "planning",
         "tender",
         "parties",
-        "buyer",
-        "relatedProcesses"
+        "buyer"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class EinResponseDto {
@@ -56,8 +55,6 @@ public class EinResponseDto {
     private InitiationType initiationType;
     @JsonProperty("language")
     private String language;
-    @JsonProperty("relatedProcesses")
-    private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
     public EinResponseDto(@JsonProperty("token") final String token,
@@ -70,8 +67,7 @@ public class EinResponseDto {
                           @JsonProperty("planning") final EinPlanningDto planning,
                           @JsonProperty("tender") final Tender tender,
                           @JsonProperty("parties") final List<Organization> parties,
-                          @JsonProperty("buyer") final OrganizationReference buyer,
-                          @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+                          @JsonProperty("buyer") final OrganizationReference buyer) {
         this.token = token;
         this.ocId = ocId;
         this.id = id;
@@ -83,6 +79,5 @@ public class EinResponseDto {
         this.tender = tender;
         this.parties = parties;
         this.buyer = buyer;
-        this.relatedProcesses = relatedProcesses;
     }
 }

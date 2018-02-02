@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class FsServiceImpl implements FsService {
 
-    private static final String SEPARATOR = "-";
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
     private final FsDao fsDao;
@@ -111,8 +110,7 @@ public class FsServiceImpl implements FsService {
                 fs.getInitiationType(),
                 fs.getLanguage(),
                 fs.getPlanning(),
-                fs.getParties(),
-                fs.getRelatedProcesses()
+                fs.getParties()
         );
         return new ResponseDto<>(true, null, responseDto);
     }
