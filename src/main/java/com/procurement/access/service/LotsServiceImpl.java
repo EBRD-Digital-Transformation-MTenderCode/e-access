@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LotsServiceImpl implements LotsService {
 
+    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
     private final CnDao cnDao;
     private final JsonUtil jsonUtil;
 
@@ -32,59 +33,63 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto getLots(String cpId, TenderStatus status) {
+    public ResponseDto getLots(final String cpId, final TenderStatus status) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException("Data not found."));
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
+        final LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
                 getLotsDtoByStatus(cn.getTender().getLots(), status));
         return new ResponseDto<>(true, null, lotsResponseDto);
     }
 
-    private List<LotDto> getLotsDtoByStatus(List<Lot> lots, TenderStatus status) {
-        if (lots.isEmpty()) throw new ErrorException("Data not found.");
-        List<LotDto> lotsByStatus = lots.stream()
+    private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {
+        if (lots.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        final List<LotDto> lotsByStatus = lots.stream()
                 .filter(l -> l.getStatus().equals(status))
                 .map(l -> new LotDto(l.getId())).collect(Collectors.toList());
-        if (lotsByStatus.isEmpty()) throw new ErrorException("Data not found.");
+        if (lotsByStatus.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
         return lotsByStatus;
     }
 
     @Override
-    public ResponseDto updateStatus(String cpId, TenderStatus status, LotsRequestDto lotsDto) {
+    public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException("Data not found."));
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        List<Lot> updatedLots = setLotsStatus(cn.getTender().getLots(), lotsDto, status);
+        final List<Lot> updatedLots = setLotsStatus(cn.getTender().getLots(), lotsDto, status);
         cn.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
         return new ResponseDto<>(true, null, updatedLots);
     }
 
-    private List<Lot> setLotsStatus(List<Lot> lots, LotsRequestDto lotsDto, TenderStatus status) {
-        if (lots.isEmpty()) throw new ErrorException("Data not found.");
-        Map<String, Lot> lotsMap = new HashMap<>();
+    private List<Lot> setLotsStatus(final List<Lot> lots, final LotsRequestDto lotsDto, final TenderStatus status) {
+        if (lots.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        final Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatus(status));
         return lotsMap.values().stream().collect(Collectors.toList());
     }
 
     @Override
-    public ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails, LotsRequestDto lotsDto) {
+    public ResponseDto updateStatusDetails(final String cpId,
+                                           final TenderStatusDetails statusDetails,
+                                           final LotsRequestDto lotsDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException("Data not found."));
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        List<Lot> updatedLots = setLotsStatusDetails(cn.getTender().getLots(), lotsDto, statusDetails);
+        final List<Lot> updatedLots = setLotsStatusDetails(cn.getTender().getLots(), lotsDto, statusDetails);
         cn.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(cn));
         cnDao.save(entity);
         return new ResponseDto<>(true, null, updatedLots);
     }
 
-    private List<Lot> setLotsStatusDetails(List<Lot> lots, LotsRequestDto lotsDto, TenderStatusDetails statusDetails) {
-        if (lots.isEmpty()) throw new ErrorException("Data not found.");
-        Map<String, Lot> lotsMap = new HashMap<>();
+    private List<Lot> setLotsStatusDetails(final List<Lot> lots,
+                                           final LotsRequestDto lotsDto,
+                                           final TenderStatusDetails statusDetails) {
+        if (lots.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        final Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId())
                 .setStatusDetails(statusDetails));

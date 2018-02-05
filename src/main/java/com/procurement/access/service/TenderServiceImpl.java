@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TenderServiceImpl implements TenderService {
 
+    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
     private final CnDao cnDao;
     private final JsonUtil jsonUtil;
 
@@ -24,9 +25,9 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto updateStatus(String cpId, TenderStatus status) {
+    public ResponseDto updateStatus(final String cpId, final TenderStatus status) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException("Data not found."));
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.getTender().setStatus(status);
         entity.setJsonData(jsonUtil.toJson(cn));
@@ -35,9 +36,9 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails) {
+    public ResponseDto updateStatusDetails(final String cpId, final TenderStatusDetails statusDetails) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException("Data not found."));
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.getTender().setStatusDetails(statusDetails);
         entity.setJsonData(jsonUtil.toJson(cn));

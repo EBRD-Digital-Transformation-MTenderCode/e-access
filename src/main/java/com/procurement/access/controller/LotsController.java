@@ -28,7 +28,7 @@ public class LotsController {
         return new ResponseEntity<>(lotsService.getLots(cpId, TenderStatus.fromValue(status)), HttpStatus.OK);
     }
 
-    @PutMapping("/updateStatus")
+    @PatchMapping("/updateStatus")
     public ResponseEntity<ResponseDto> updateStatus(final String cpId,
                                                     final String status,
                                                     @Valid @RequestBody final LotsRequestDto lotsDto) {
@@ -37,7 +37,7 @@ public class LotsController {
                 HttpStatus.OK);
     }
 
-    @PutMapping("/updateStatusDetails")
+    @PatchMapping("/updateStatusDetails")
     public ResponseEntity<ResponseDto> updateStatusDetails(final String cpId,
                                                            final String statusDetails,
                                                            @Valid @RequestBody final LotsRequestDto lotsDto) {
