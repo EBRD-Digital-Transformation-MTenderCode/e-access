@@ -22,7 +22,8 @@ public enum TenderStatusDetails {
     CANCELLED("cancelled"),
     UNSUCCESSFUL("unsuccessful"),
     COMPLETE("complete"),
-    WITHDRAWN("withdrawn");
+    WITHDRAWN("withdrawn"),
+    SUSPENDED("suspended");
 
     private static final Map<String, TenderStatusDetails> CONSTANTS = new HashMap<>();
 

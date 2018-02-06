@@ -11,4 +11,6 @@ public interface TenderService {
     ResponseDto updateStatus(String cpId, TenderStatus status);
 
     ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails);
+
+    ResponseDto setSuspended(String cpId, Boolean suspended);
 }

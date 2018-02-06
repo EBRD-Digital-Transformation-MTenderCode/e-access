@@ -45,4 +45,19 @@ public class TenderServiceImpl implements TenderService {
         cnDao.save(entity);
         return new ResponseDto<>(true, null, cn);
     }
+
+    @Override
+    public ResponseDto setSuspended(String cpId, Boolean suspended) {
+        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+        final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        if (suspended) {
+            cn.getTender().setStatusDetails(TenderStatusDetails.SUSPENDED);
+        } else {
+            cn.getTender().setStatusDetails(null);
+        }
+        entity.setJsonData(jsonUtil.toJson(cn));
+        cnDao.save(entity);
+        return new ResponseDto<>(true, null, cn);
+    }
 }
