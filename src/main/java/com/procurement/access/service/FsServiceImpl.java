@@ -21,7 +21,6 @@ public class FsServiceImpl implements FsService {
 
     private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
     private static final String INVALID_OWNER_ERROR = "Invalid owner.";
-    private static final String INVALID_ID_ERROR = "Invalid id.";
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
     private final FsDao fsDao;
@@ -38,9 +37,6 @@ public class FsServiceImpl implements FsService {
     public ResponseDto createFs(final String cpId,
                                 final String owner,
                                 final FsDto fs) {
-        final LocalDateTime addedDate = dateUtil.getNowUTC();
-        fs.setDate(addedDate);
-        fs.setId(UUIDs.timeBased().toString());
         setBudgetId(fs);
         final FsEntity entity = getEntity(cpId, owner, fs);
         fsDao.save(entity);
@@ -53,14 +49,12 @@ public class FsServiceImpl implements FsService {
                                  final String token,
                                  final String owner,
                                  final FsDto fsDto) {
-        if (Strings.isNullOrEmpty(fsDto.getId())) throw new ErrorException(INVALID_ID_ERROR);
         final FsEntity entity = Optional.ofNullable(fsDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final FsDto fs = jsonUtil.toObject(FsDto.class, entity.getJsonData());
-        if (!fs.getId().equals(fsDto.getId())) throw new ErrorException(INVALID_ID_ERROR);
         fs.setPlanning(fsDto.getPlanning());
-        fs.setTender(fsDto.getTender());
+        fs.setParties(fsDto.getParties());
         entity.setJsonData(jsonUtil.toJson(fs));
         fsDao.save(entity);
         return getResponseDto(cpId, entity.getToken(), fs);
@@ -107,11 +101,6 @@ public class FsServiceImpl implements FsService {
         final FsResponseDto responseDto = new FsResponseDto(
                 token,
                 cpId,
-                fs.getId(),
-                fs.getDate(),
-                fs.getTag(),
-                fs.getInitiationType(),
-                fs.getLanguage(),
                 fs.getPlanning(),
                 fs.getParties()
         );

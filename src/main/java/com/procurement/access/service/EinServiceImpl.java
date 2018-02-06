@@ -88,11 +88,6 @@ public class EinServiceImpl implements EinService {
         final EinResponseDto responseDto = new EinResponseDto(
                 token,
                 cpId,
-                ein.getId(),
-                ein.getDate(),
-                ein.getTag(),
-                ein.getInitiationType(),
-                ein.getLanguage(),
                 ein.getPlanning(),
                 ein.getTender(),
                 ein.getParties(),

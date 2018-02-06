@@ -19,11 +19,6 @@ import lombok.Setter;
 @JsonPropertyOrder({
         "token",
         "ocid",
-        "id",
-        "date",
-        "tag",
-        "initiationType",
-        "language",
         "planning",
         "tender",
         "parties",
@@ -33,6 +28,8 @@ import lombok.Setter;
 public class EinResponseDto {
     @JsonProperty("token")
     private final String token;
+    @JsonProperty("ocid")
+    private String ocId;
     @JsonProperty("planning")
     private final EinPlanningDto planning;
     @JsonProperty("tender")
@@ -41,40 +38,16 @@ public class EinResponseDto {
     private final List<Organization> parties;
     @JsonProperty("buyer")
     private final OrganizationReference buyer;
-    @JsonProperty("ocid")
-    private String ocId;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("date")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
-    @JsonProperty("tag")
-    private List<Tag> tag;
-    @JsonProperty("initiationType")
-    private InitiationType initiationType;
-    @JsonProperty("language")
-    private String language;
 
     @JsonCreator
     public EinResponseDto(@JsonProperty("token") final String token,
                           @JsonProperty("ocid") final String ocId,
-                          @JsonProperty("id") final String id,
-                          @JsonProperty("date") final LocalDateTime date,
-                          @JsonProperty("tag") final List<Tag> tag,
-                          @JsonProperty("initiationType") final InitiationType initiationType,
-                          @JsonProperty("language") final String language,
                           @JsonProperty("planning") final EinPlanningDto planning,
                           @JsonProperty("tender") final Tender tender,
                           @JsonProperty("parties") final List<Organization> parties,
                           @JsonProperty("buyer") final OrganizationReference buyer) {
         this.token = token;
         this.ocId = ocId;
-        this.id = id;
-        this.date = date;
-        this.tag = tag;
-        this.initiationType = initiationType;
-        this.language = language;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;

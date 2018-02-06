@@ -19,11 +19,6 @@ import lombok.Setter;
 @JsonPropertyOrder({
         "token",
         "cpid",
-        "id",
-        "date",
-        "tag",
-        "initiationType",
-        "language",
         "planning",
         "parties"
 })
@@ -31,42 +26,20 @@ import lombok.Setter;
 public class FsResponseDto {
     @JsonProperty("token")
     private final String token;
+    @JsonProperty("cpid")
+    private String cpId;
     @JsonProperty("planning")
     private final FsPlanningDto planning;
     @JsonProperty("parties")
     private final List<Organization> parties;
-    @JsonProperty("cpid")
-    private String cpId;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("date")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
-    @JsonProperty("tag")
-    private List<Tag> tag;
-    @JsonProperty("initiationType")
-    private InitiationType initiationType;
-    @JsonProperty("language")
-    private String language;
 
     @JsonCreator
     public FsResponseDto(@JsonProperty("token") final String token,
                          @JsonProperty("cpid") final String cpId,
-                         @JsonProperty("id") final String id,
-                         @JsonProperty("date") final LocalDateTime date,
-                         @JsonProperty("tag") final List<Tag> tag,
-                         @JsonProperty("initiationType") final InitiationType initiationType,
-                         @JsonProperty("language") final String language,
                          @JsonProperty("planning") final FsPlanningDto planning,
                          @JsonProperty("parties") final List<Organization> parties) {
         this.token = token;
         this.cpId = cpId;
-        this.id = id;
-        this.date = date;
-        this.tag = tag;
-        this.initiationType = initiationType;
-        this.language = language;
         this.planning = planning;
         this.parties = parties;
     }
