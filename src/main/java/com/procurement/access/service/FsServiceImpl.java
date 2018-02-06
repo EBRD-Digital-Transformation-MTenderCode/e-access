@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class FsServiceImpl implements FsService {
 
+    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
+    private static final String INVALID_OWNER_ERROR = "Invalid owner.";
+    private static final String INVALID_ID_ERROR = "Invalid id.";
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
     private final FsDao fsDao;
@@ -50,12 +53,12 @@ public class FsServiceImpl implements FsService {
                                  final String token,
                                  final String owner,
                                  final FsDto fsDto) {
-        if (Strings.isNullOrEmpty(fsDto.getId())) throw new ErrorException("Invalid fs id.");
+        if (Strings.isNullOrEmpty(fsDto.getId())) throw new ErrorException(INVALID_ID_ERROR);
         final FsEntity entity = Optional.ofNullable(fsDao.getByCpIdAndToken(cpId, token))
-                .orElseThrow(() -> new ErrorException("Data not found."));
-        if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+        if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final FsDto fs = jsonUtil.toObject(FsDto.class, entity.getJsonData());
-        if (!fs.getId().equals(fsDto.getId())) throw new ErrorException("Different IDs in the database and query.");
+        if (!fs.getId().equals(fsDto.getId())) throw new ErrorException(INVALID_ID_ERROR);
         fs.setPlanning(fsDto.getPlanning());
         fs.setTender(fsDto.getTender());
         entity.setJsonData(jsonUtil.toJson(fs));

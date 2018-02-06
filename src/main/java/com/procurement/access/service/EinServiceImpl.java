@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EinServiceImpl implements EinService {
 
+    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
+    private static final String INVALID_OWNER_ERROR = "Invalid owner.";
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
@@ -51,8 +53,8 @@ public class EinServiceImpl implements EinService {
                                  final EinDto einDto) {
 
         final EinEntity entity = Optional.ofNullable(einDao.getByCpIdAndToken(cpId, token))
-                .orElseThrow(() -> new ErrorException("Data not found."));
-        if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+        if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final EinDto ein = jsonUtil.toObject(EinDto.class, entity.getJsonData());
         ein.setPlanning(einDto.getPlanning());
         ein.setTender(einDto.getTender());
@@ -96,6 +98,6 @@ public class EinServiceImpl implements EinService {
                 ein.getParties(),
                 ein.getBuyer()
         );
-        return new ResponseDto(true, null, responseDto);
+        return new ResponseDto<>(true, null, responseDto);
     }
 }

@@ -20,6 +20,8 @@ import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
 @Service
 public class CnServiceImpl implements CnService {
 
+    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
+    private static final String INVALID_OWNER_ERROR = "Invalid owner.";
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
@@ -54,8 +56,8 @@ public class CnServiceImpl implements CnService {
                                 final String token,
                                 final CnDto cnDto) {
         final CnEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(cpId, token))
-                .orElseThrow(() -> new ErrorException("Data not found."));
-        if (!entity.getOwner().equals(owner)) throw new ErrorException("Invalid owner.");
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+        if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.setTender(cnDto.getTender());
         entity.setJsonData(jsonUtil.toJson(cn));
@@ -97,14 +99,14 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-    private RelatedProcess getFsRelatedProcess(final CnDto cn) {
-        return cn.getRelatedProcesses()
-                .stream()
-                .filter(rp -> rp.getRelationship().contains(RelatedProcess.RelatedProcessType.X_BUDGET))
-                .filter(rp -> rp.getScheme().equals(RelatedProcess.RelatedProcessScheme.OCID))
-                .filter(rp -> !rp.getIdentifier().isEmpty())
-                .findFirst().orElse(null);
-    }
+//    private RelatedProcess getFsRelatedProcess(final CnDto cn) {
+//        return cn.getRelatedProcesses()
+//                .stream()
+//                .filter(rp -> rp.getRelationship().contains(RelatedProcess.RelatedProcessType.X_BUDGET))
+//                .filter(rp -> rp.getScheme().equals(RelatedProcess.RelatedProcessScheme.OCID))
+//                .filter(rp -> !rp.getIdentifier().isEmpty())
+//                .findFirst().orElse(null);
+//    }
 
     private CnEntity getEntity(final CnDto cn, final String owner) {
         final CnEntity entity = new CnEntity();
@@ -125,7 +127,7 @@ public class CnServiceImpl implements CnService {
                 cn.getBuyer(),
                 cn.getRelatedProcesses()
         );
-        return new ResponseDto(true, null, responseDto);
+        return new ResponseDto<>(true, null, responseDto);
     }
 
 }
