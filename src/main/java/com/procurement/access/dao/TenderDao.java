@@ -4,7 +4,7 @@ import com.procurement.access.model.entity.TenderEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface CnDao {
+public interface TenderDao {
 
     void save(TenderEntity entity);
 

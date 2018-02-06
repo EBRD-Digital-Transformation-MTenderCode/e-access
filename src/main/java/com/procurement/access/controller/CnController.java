@@ -1,7 +1,7 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.TenderDto;
 import com.procurement.access.service.CnService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,15 +22,15 @@ public class CnController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> create(final String owner,
-                                              @Valid @RequestBody final CnDto cnDto) {
-        return new ResponseEntity<>(cnService.createCn(owner, cnDto), HttpStatus.CREATED);
+                                              @Valid @RequestBody final TenderDto tenderDto) {
+        return new ResponseEntity<>(cnService.createCn(owner, tenderDto), HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<ResponseDto> update(final String cpId,
                                               final String token,
                                               final String owner,
-                                              @Valid @RequestBody final CnDto cnDto) {
-        return new ResponseEntity<>(cnService.updateCn(owner, cpId, token, cnDto), HttpStatus.OK);
+                                              @Valid @RequestBody final TenderDto tenderDto) {
+        return new ResponseEntity<>(cnService.updateCn(owner, cpId, token, tenderDto), HttpStatus.OK);
     }
 }

@@ -22,7 +22,7 @@ import lombok.Getter;
         "relatedProcesses"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class CnResponseDto {
+public class TenderResponseDto {
 
     @JsonProperty("ocid")
     private final String ocid;
@@ -46,13 +46,13 @@ public class CnResponseDto {
     private final List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
-    public CnResponseDto(@JsonProperty("token") final String token,
-                         @JsonProperty("ocid") final String ocid,
-                         @JsonProperty("planning") final Planning planning,
-                         @JsonProperty("tender") final Tender tender,
-                         @JsonProperty("parties") final List<Organization> parties,
-                         @JsonProperty("buyer") final Organization buyer,
-                         @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+    public TenderResponseDto(@JsonProperty("token") final String token,
+                             @JsonProperty("ocid") final String ocid,
+                             @JsonProperty("planning") final Planning planning,
+                             @JsonProperty("tender") final Tender tender,
+                             @JsonProperty("parties") final List<Organization> parties,
+                             @JsonProperty("buyer") final Organization buyer,
+                             @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.ocid = ocid;
         this.token = token;
         this.planning = planning;

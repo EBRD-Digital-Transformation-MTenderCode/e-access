@@ -1,9 +1,9 @@
 package com.procurement.access.service;
 
-import com.procurement.access.dao.CnDao;
+import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.TenderDto;
 import com.procurement.access.model.dto.lots.LotDto;
 import com.procurement.access.model.dto.lots.LotsRequestDto;
 import com.procurement.access.model.dto.lots.LotsResponseDto;
@@ -23,22 +23,22 @@ import org.springframework.stereotype.Service;
 public class LotsServiceImpl implements LotsService {
 
     private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
-    private final CnDao cnDao;
+    private final TenderDao tenderDao;
     private final JsonUtil jsonUtil;
 
-    public LotsServiceImpl(final CnDao cnDao,
+    public LotsServiceImpl(final TenderDao tenderDao,
                            final JsonUtil jsonUtil) {
-        this.cnDao = cnDao;
+        this.tenderDao = tenderDao;
         this.jsonUtil = jsonUtil;
     }
 
     @Override
     public ResponseDto getLots(final String cpId, final TenderStatus status) {
-        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
+        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
         final LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
-                getLotsDtoByStatus(cn.getTender().getLots(), status));
+                getLotsDtoByStatus(tender.getTender().getLots(), status));
         return new ResponseDto<>(true, null, lotsResponseDto);
     }
 
@@ -53,13 +53,13 @@ public class LotsServiceImpl implements LotsService {
 
     @Override
     public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
-        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
+        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        final List<Lot> updatedLots = setLotsStatus(cn.getTender().getLots(), lotsDto, status);
-        cn.getTender().setLots(updatedLots);
-        entity.setJsonData(jsonUtil.toJson(cn));
-        cnDao.save(entity);
+        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        final List<Lot> updatedLots = setLotsStatus(tender.getTender().getLots(), lotsDto, status);
+        tender.getTender().setLots(updatedLots);
+        entity.setJsonData(jsonUtil.toJson(tender));
+        tenderDao.save(entity);
         return new ResponseDto<>(true, null, updatedLots);
     }
 
@@ -75,13 +75,13 @@ public class LotsServiceImpl implements LotsService {
     public ResponseDto updateStatusDetails(final String cpId,
                                            final TenderStatusDetails statusDetails,
                                            final LotsRequestDto lotsDto) {
-        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
+        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        final List<Lot> updatedLots = setLotsStatusDetails(cn.getTender().getLots(), lotsDto, statusDetails);
-        cn.getTender().setLots(updatedLots);
-        entity.setJsonData(jsonUtil.toJson(cn));
-        cnDao.save(entity);
+        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        final List<Lot> updatedLots = setLotsStatusDetails(tender.getTender().getLots(), lotsDto, statusDetails);
+        tender.getTender().setLots(updatedLots);
+        entity.setJsonData(jsonUtil.toJson(tender));
+        tenderDao.save(entity);
         return new ResponseDto<>(true, null, updatedLots);
     }
 

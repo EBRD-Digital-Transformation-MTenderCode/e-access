@@ -1,16 +1,16 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.TenderDto;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface CnService {
 
-    ResponseDto createCn(String owner, CnDto cnDto);
+    ResponseDto createCn(String owner, TenderDto tenderDto);
 
     ResponseDto updateCn(String owner,
                          String cpId,
                          String token,
-                         CnDto cnDto);
+                         TenderDto tenderDto);
 }

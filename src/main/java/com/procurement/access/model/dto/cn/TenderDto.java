@@ -24,7 +24,7 @@ import lombok.Setter;
         "relatedProcesses"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class CnDto {
+public class TenderDto {
 
     @JsonProperty("planning")
     @NotNull
@@ -52,11 +52,11 @@ public class CnDto {
     private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
-    public CnDto(@JsonProperty("planning") final Planning planning,
-                 @JsonProperty("tender") final Tender tender,
-                 @JsonProperty("parties") final List<Organization> parties,
-                 @JsonProperty("buyer") final Organization buyer,
-                 @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+    public TenderDto(@JsonProperty("planning") final Planning planning,
+                     @JsonProperty("tender") final Tender tender,
+                     @JsonProperty("parties") final List<Organization> parties,
+                     @JsonProperty("buyer") final Organization buyer,
+                     @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;

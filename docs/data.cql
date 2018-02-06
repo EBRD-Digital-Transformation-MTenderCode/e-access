@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS  ocds.access_fs (
     primary key(cp_id, token_entity)
 );
 
-CREATE TABLE IF NOT EXISTS  ocds.access_cn (
+CREATE TABLE IF NOT EXISTS  ocds.access_tender (
     cp_id text,
     token_entity text,
     owner text,
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS  ocds.access_cn (
 
 SELECT * FROM ocds.access_ein;
 SELECT * FROM ocds.access_fs;
-SELECT * FROM ocds.access_cn;
+SELECT * FROM ocds.access_tender;
 
 TRUNCATE ocds.access_fs;
 TRUNCATE ocds.access_ein;
-TRUNCATE ocds.access_cn;
+TRUNCATE ocds.access_tender;

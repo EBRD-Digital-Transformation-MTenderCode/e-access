@@ -2,11 +2,11 @@ package com.procurement.access.service;
 
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
-import com.procurement.access.dao.CnDao;
+import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.CnDto;
-import com.procurement.access.model.dto.cn.CnResponseDto;
+import com.procurement.access.model.dto.cn.TenderDto;
+import com.procurement.access.model.dto.cn.TenderResponseDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -24,70 +24,66 @@ public class CnServiceImpl implements CnService {
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
-    private final CnDao cnDao;
+    private final TenderDao tenderDao;
 
     public CnServiceImpl(final OCDSProperties ocdsProperties,
                          final JsonUtil jsonUtil,
                          final DateUtil dateUtil,
-                         final CnDao cnDao) {
+                         final TenderDao tenderDao) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
-        this.cnDao = cnDao;
+        this.tenderDao = tenderDao;
     }
 
     @Override
     public ResponseDto createCn(final String owner,
-                                final CnDto cn) {
-        setTenderId(cn);
-        setItemsId(cn);
-        setLotsIdAndItemsRelatedLots(cn);
-        setTenderStatus(cn);
-        checkAmount(cn);
-        final TenderEntity entity = getEntity(cn, owner);
-        cnDao.save(entity);
-        return getResponseDto(entity.getCpId(), entity.getToken(), cn);
+                                final TenderDto tender) {
+        setTenderId(tender);
+        setItemsId(tender);
+        setLotsIdAndItemsRelatedLots(tender);
+        setTenderStatus(tender);
+        final TenderEntity entity = getEntity(tender, owner);
+        tenderDao.save(entity);
+        return getResponseDto(entity.getCpId(), entity.getToken(), tender);
     }
 
     @Override
     public ResponseDto updateCn(final String owner,
                                 final String cpId,
                                 final String token,
-                                final CnDto cnDto) {
-        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(cpId, token))
+                                final TenderDto tenderDto) {
+        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
-        final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        cn.setTender(cnDto.getTender());
-        entity.setJsonData(jsonUtil.toJson(cn));
-        cnDao.save(entity);
-        return getResponseDto(cpId, entity.getToken(), cn);
+        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        tender.setTender(tenderDto.getTender());
+        entity.setJsonData(jsonUtil.toJson(tender));
+        tenderDao.save(entity);
+        return getResponseDto(cpId, entity.getToken(), tender);
     }
 
 
-    private void setTenderId(final CnDto cn) {
-        if (Objects.isNull(cn.getTender().getId())) {
-            cn.getTender().setId(ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC());
+    private void setTenderId(final TenderDto tender) {
+        if (Objects.isNull(tender.getTender().getId())) {
+            tender.getTender().setId(ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC());
         }
     }
 
-    private void setTenderStatus(final CnDto cn) {
-        cn.getTender().setStatus(ACTIVE);
+    private void setTenderStatus(final TenderDto tender) {
+        tender.getTender().setStatus(ACTIVE);
     }
 
-    private void setItemsId(final CnDto cnDto) {
-        cnDto.getTender().getItems().forEach(i -> {
+    private void setItemsId(final TenderDto tenderDto) {
+        tenderDto.getTender().getItems().forEach(i -> {
             i.setId(UUIDs.timeBased().toString());
         });
     }
 
-    private void checkAmount(final CnDto cn) {
-    }
-
-    private void setLotsIdAndItemsRelatedLots(final CnDto cn) {
-        cn.getTender().getLots().forEach(l -> {
+    private void setLotsIdAndItemsRelatedLots(final TenderDto tender) {
+        tender.getTender().getLots().forEach(l -> {
             final String id = UUIDs.timeBased().toString();
-            cn.getTender().getItems()
+            tender.getTender().getItems()
                     .stream()
                     .filter(i -> i.getRelatedLot().equals(l.getId()))
                     .findFirst()
@@ -98,7 +94,7 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-//    private RelatedProcess getFsRelatedProcess(final CnDto cn) {
+//    private RelatedProcess getFsRelatedProcess(final TenderDto cn) {
 //        return cn.getRelatedProcesses()
 //                .stream()
 //                .filter(rp -> rp.getRelationship().contains(RelatedProcess.RelatedProcessType.X_BUDGET))
@@ -107,24 +103,24 @@ public class CnServiceImpl implements CnService {
 //                .findFirst().orElse(null);
 //    }
 
-    private TenderEntity getEntity(final CnDto cn, final String owner) {
+    private TenderEntity getEntity(final TenderDto tender, final String owner) {
         final TenderEntity entity = new TenderEntity();
-        entity.setCpId(cn.getTender().getId());
+        entity.setCpId(tender.getTender().getId());
         entity.setToken(UUIDs.timeBased().toString());
         entity.setOwner(owner);
-        entity.setJsonData(jsonUtil.toJson(cn));
+        entity.setJsonData(jsonUtil.toJson(tender));
         return entity;
     }
 
-    private ResponseDto getResponseDto(final String cpId, final String token, final CnDto cn) {
-        final CnResponseDto responseDto = new CnResponseDto(
+    private ResponseDto getResponseDto(final String cpId, final String token, final TenderDto tender) {
+        final TenderResponseDto responseDto = new TenderResponseDto(
                 token,
                 cpId,
-                cn.getPlanning(),
-                cn.getTender(),
-                cn.getParties(),
-                cn.getBuyer(),
-                cn.getRelatedProcesses()
+                tender.getPlanning(),
+                tender.getTender(),
+                tender.getParties(),
+                tender.getBuyer(),
+                tender.getRelatedProcesses()
         );
         return new ResponseDto<>(true, null, responseDto);
     }
