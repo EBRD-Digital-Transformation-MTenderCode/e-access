@@ -4,7 +4,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
-import com.procurement.access.model.entity.CnEntity;
+import com.procurement.access.model.entity.TenderEntity;
 import org.springframework.stereotype.Service;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
@@ -25,7 +25,7 @@ public class CnDaoImpl implements CnDao {
     }
 
     @Override
-    public void save(final CnEntity entity) {
+    public void save(final TenderEntity entity) {
         final Insert insert = insertInto(CN_TABLE);
         insert.value(CP_ID, entity.getCpId())
                 .value(TOKEN, entity.getToken())
@@ -35,13 +35,13 @@ public class CnDaoImpl implements CnDao {
     }
 
     @Override
-    public CnEntity getByCpId(final String cpId) {
+    public TenderEntity getByCpId(final String cpId) {
         final Statement query = select()
                 .all()
                 .from(CN_TABLE)
                 .where(eq(CP_ID, cpId)).limit(1);
         final Row row = session.execute(query).one();
-        return new CnEntity(
+        return new TenderEntity(
                 row.getString(CP_ID),
                 row.getString(TOKEN),
                 row.getString(OWNER),
@@ -49,14 +49,14 @@ public class CnDaoImpl implements CnDao {
     }
 
     @Override
-    public CnEntity getByCpIdAndToken(final String cpId, final String token) {
+    public TenderEntity getByCpIdAndToken(final String cpId, final String token) {
         final Statement query = select()
                 .all()
                 .from(CN_TABLE)
                 .where(eq(CP_ID, cpId))
                 .and(eq(TOKEN, token)).limit(1);
         final Row row = session.execute(query).one();
-        return new CnEntity(
+        return new TenderEntity(
                 row.getString(CP_ID),
                 row.getString(TOKEN),
                 row.getString(OWNER),

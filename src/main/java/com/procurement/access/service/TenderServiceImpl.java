@@ -6,7 +6,7 @@ import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.entity.CnEntity;
+import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     public ResponseDto updateStatus(final String cpId, final TenderStatus status) {
-        final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
+        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.getTender().setStatus(status);
@@ -37,7 +37,7 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     public ResponseDto updateStatusDetails(final String cpId, final TenderStatusDetails statusDetails) {
-        final CnEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
+        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         cn.getTender().setStatusDetails(statusDetails);

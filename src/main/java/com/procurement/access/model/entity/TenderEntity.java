@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CnEntity {
+public class TenderEntity {
 
     private String cpId;
 

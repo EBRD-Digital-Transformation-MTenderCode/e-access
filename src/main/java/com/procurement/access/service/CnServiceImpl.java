@@ -7,8 +7,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.cn.CnResponseDto;
-import com.procurement.access.model.dto.ocds.RelatedProcess;
-import com.procurement.access.model.entity.CnEntity;
+import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Objects;
@@ -45,7 +44,7 @@ public class CnServiceImpl implements CnService {
         setLotsIdAndItemsRelatedLots(cn);
         setTenderStatus(cn);
         checkAmount(cn);
-        final CnEntity entity = getEntity(cn, owner);
+        final TenderEntity entity = getEntity(cn, owner);
         cnDao.save(entity);
         return getResponseDto(entity.getCpId(), entity.getToken(), cn);
     }
@@ -55,7 +54,7 @@ public class CnServiceImpl implements CnService {
                                 final String cpId,
                                 final String token,
                                 final CnDto cnDto) {
-        final CnEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(cpId, token))
+        final TenderEntity entity = Optional.ofNullable(cnDao.getByCpIdAndToken(cpId, token))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final CnDto cn = jsonUtil.toObject(CnDto.class, entity.getJsonData());
@@ -108,8 +107,8 @@ public class CnServiceImpl implements CnService {
 //                .findFirst().orElse(null);
 //    }
 
-    private CnEntity getEntity(final CnDto cn, final String owner) {
-        final CnEntity entity = new CnEntity();
+    private TenderEntity getEntity(final CnDto cn, final String owner) {
+        final TenderEntity entity = new TenderEntity();
         entity.setCpId(cn.getTender().getId());
         entity.setToken(UUIDs.timeBased().toString());
         entity.setOwner(owner);
