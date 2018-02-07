@@ -38,6 +38,8 @@ public class FsServiceImpl implements FsService {
                                 final String owner,
                                 final FsDto fs) {
         setBudgetId(fs);
+        fs.setDate(dateUtil.getNowUTC());
+        fs.setId(UUIDs.timeBased().toString());
         final FsEntity entity = getEntity(cpId, owner, fs);
         fsDao.save(entity);
         return getResponseDto(cpId, entity.getToken(), fs);
@@ -101,6 +103,8 @@ public class FsServiceImpl implements FsService {
         final FsResponseDto responseDto = new FsResponseDto(
                 token,
                 cpId,
+                fs.getId(),
+                fs.getDate(),
                 fs.getPlanning(),
                 fs.getParties()
         );

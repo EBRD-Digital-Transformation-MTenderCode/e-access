@@ -4,10 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
+import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import com.procurement.access.model.dto.ocds.Organization;
 import com.procurement.access.model.dto.ocds.Planning;
 import com.procurement.access.model.dto.ocds.RelatedProcess;
 import com.procurement.access.model.dto.ocds.Tender;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -17,6 +22,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({
+        "id",
+        "date",
         "planning",
         "tender",
         "parties",
@@ -25,7 +32,12 @@ import lombok.Setter;
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderDto {
-
+    @JsonProperty("id")
+    private String id;
+    @JsonProperty("date")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime date;
     @JsonProperty("planning")
     @NotNull
     @Valid
@@ -52,11 +64,15 @@ public class TenderDto {
     private List<RelatedProcess> relatedProcesses;
 
     @JsonCreator
-    public TenderDto(@JsonProperty("planning") final Planning planning,
+    public TenderDto(@JsonProperty("id") final String id,
+                     @JsonProperty("date") final LocalDateTime date,
+                     @JsonProperty("planning") final Planning planning,
                      @JsonProperty("tender") final Tender tender,
                      @JsonProperty("parties") final List<Organization> parties,
                      @JsonProperty("buyer") final Organization buyer,
                      @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+        this.id = id;
+        this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;

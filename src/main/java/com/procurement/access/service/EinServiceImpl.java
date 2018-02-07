@@ -38,6 +38,8 @@ public class EinServiceImpl implements EinService {
     public ResponseDto createEin(final String owner, final EinDto ein) {
         final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
         ein.setOcId(cpId);
+        ein.setDate(dateUtil.getNowUTC());
+        ein.setId(UUIDs.timeBased().toString());
         setTenderId(ein, cpId);
         setTenderStatus(ein);
         setBudgetId(ein);
@@ -88,6 +90,8 @@ public class EinServiceImpl implements EinService {
         final EinResponseDto responseDto = new EinResponseDto(
                 token,
                 cpId,
+                ein.getId(),
+                ein.getDate(),
                 ein.getPlanning(),
                 ein.getTender(),
                 ein.getParties(),

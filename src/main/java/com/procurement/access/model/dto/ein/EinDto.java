@@ -20,6 +20,8 @@ import lombok.Setter;
 @Setter
 @JsonPropertyOrder({
         "ocid",
+        "id",
+        "date",
         "planning",
         "tender",
         "parties",
@@ -29,6 +31,12 @@ import lombok.Setter;
 public class EinDto {
     @JsonProperty("ocid")
     private String ocId;
+    @JsonProperty("id")
+    private String id;
+    @JsonProperty("date")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime date;
     @NotNull
     @Valid
     private EinPlanningDto planning;
@@ -47,11 +55,15 @@ public class EinDto {
 
     @JsonCreator
     public EinDto(@JsonProperty("ocid") final String ocId,
+                  @JsonProperty("id") final String id,
+                  @JsonProperty("date") final LocalDateTime date,
                   @JsonProperty("planning") final EinPlanningDto planning,
                   @JsonProperty("tender") final Tender tender,
                   @JsonProperty("parties") final List<Organization> parties,
                   @JsonProperty("buyer") final OrganizationReference buyer) {
         this.ocId = ocId;
+        this.id = id;
+        this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;

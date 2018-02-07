@@ -39,6 +39,8 @@ public class CnServiceImpl implements CnService {
     @Override
     public ResponseDto createCn(final String owner,
                                 final TenderDto tender) {
+        tender.setDate(dateUtil.getNowUTC());
+        tender.setId(UUIDs.timeBased().toString());
         setTenderId(tender);
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
@@ -94,15 +96,6 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-//    private RelatedProcess getFsRelatedProcess(final TenderDto cn) {
-//        return cn.getRelatedProcesses()
-//                .stream()
-//                .filter(rp -> rp.getRelationship().contains(RelatedProcess.RelatedProcessType.X_BUDGET))
-//                .filter(rp -> rp.getScheme().equals(RelatedProcess.RelatedProcessScheme.OCID))
-//                .filter(rp -> !rp.getIdentifier().isEmpty())
-//                .findFirst().orElse(null);
-//    }
-
     private TenderEntity getEntity(final TenderDto tender, final String owner) {
         final TenderEntity entity = new TenderEntity();
         entity.setCpId(tender.getTender().getId());
@@ -116,6 +109,8 @@ public class CnServiceImpl implements CnService {
         final TenderResponseDto responseDto = new TenderResponseDto(
                 token,
                 cpId,
+                tender.getId(),
+                tender.getDate(),
                 tender.getPlanning(),
                 tender.getTender(),
                 tender.getParties(),
