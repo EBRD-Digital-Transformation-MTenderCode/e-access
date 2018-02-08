@@ -8,7 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import com.procurement.access.model.dto.ocds.*;
+import com.procurement.access.model.dto.ocds.Organization;
+import com.procurement.access.model.dto.ocds.Tender;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -36,6 +37,8 @@ public class FsResponseDto {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date;
+    @JsonProperty("tender")
+    private Tender tender;
     @JsonProperty("planning")
     private final FsPlanningDto planning;
     @JsonProperty("parties")
@@ -46,12 +49,14 @@ public class FsResponseDto {
                          @JsonProperty("cpid") final String cpId,
                          @JsonProperty("id") final String id,
                          @JsonProperty("date") final LocalDateTime date,
+                         @JsonProperty("tender") final Tender tender,
                          @JsonProperty("planning") final FsPlanningDto planning,
                          @JsonProperty("parties") final List<Organization> parties) {
         this.token = token;
         this.cpId = cpId;
         this.id = id;
         this.date = date;
+        this.tender = tender;
         this.planning = planning;
         this.parties = parties;
     }

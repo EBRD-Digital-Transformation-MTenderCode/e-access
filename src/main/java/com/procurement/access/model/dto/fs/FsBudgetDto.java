@@ -21,16 +21,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @JsonPropertyOrder({
         "id",
         "description",
+        "period",
         "amount",
         "project",
         "projectID",
         "uri",
         "source",
         "europeanUnionFunding",
-        "isEuropeanUnionFunded",
-        "period"
+        "isEuropeanUnionFunded"
 })
 public class FsBudgetDto {
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("description")
     private final String description;
     @JsonProperty("period")
@@ -53,8 +55,6 @@ public class FsBudgetDto {
     private final Boolean isEuropeanUnionFunded;
     @JsonProperty("budgetBreakdown")
     private final List<BudgetBreakdown> budgetBreakdown;
-    @JsonProperty("id")
-    private String id;
 
     @JsonCreator
     public FsBudgetDto(@JsonProperty("id") final String id,
@@ -79,42 +79,5 @@ public class FsBudgetDto {
         this.europeanUnionFunding = europeanUnionFunding;
         this.isEuropeanUnionFunded = isEuropeanUnionFunded;
         this.budgetBreakdown = budgetBreakdown;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(id)
-                .append(description)
-                .append(amount)
-                .append(project)
-                .append(projectID)
-                .append(uri)
-                .append(source)
-                .append(europeanUnionFunding)
-                .append(isEuropeanUnionFunded)
-                .append(budgetBreakdown)
-                .toHashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof FsBudgetDto)) {
-            return false;
-        }
-        final FsBudgetDto rhs = (FsBudgetDto) other;
-        return new EqualsBuilder().append(id, rhs.id)
-                .append(description, rhs.description)
-                .append(amount, rhs.amount)
-                .append(project, rhs.project)
-                .append(projectID, rhs.projectID)
-                .append(uri, rhs.uri)
-                .append(source, rhs.source)
-                .append(europeanUnionFunding, rhs.europeanUnionFunding)
-                .append(isEuropeanUnionFunded, rhs.isEuropeanUnionFunded)
-                .append(budgetBreakdown, rhs.budgetBreakdown)
-                .isEquals();
     }
 }

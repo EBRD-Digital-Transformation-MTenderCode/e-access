@@ -55,6 +55,7 @@ public class FsServiceImpl implements FsService {
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final FsDto fs = jsonUtil.toObject(FsDto.class, entity.getJsonData());
+        fs.setTender(fsDto.getTender());
         fs.setPlanning(fsDto.getPlanning());
         fs.setParties(fsDto.getParties());
         entity.setJsonData(jsonUtil.toJson(fs));
@@ -105,6 +106,7 @@ public class FsServiceImpl implements FsService {
                 cpId,
                 fs.getId(),
                 fs.getDate(),
+                fs.getTender(),
                 fs.getPlanning(),
                 fs.getParties()
         );
