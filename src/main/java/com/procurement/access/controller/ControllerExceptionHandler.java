@@ -26,6 +26,13 @@ public class ControllerExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(OK)
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseDto handleNullPointerException(final NullPointerException e) {
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
+    }
+
+    @ResponseBody
+    @ResponseStatus(OK)
     @ExceptionHandler(ValidationException.class)
     public ResponseDto handleValidationContractProcessPeriod(final ValidationException e) {
         return new ResponseDto<>(false, getErrors(e.getErrors()), null);
