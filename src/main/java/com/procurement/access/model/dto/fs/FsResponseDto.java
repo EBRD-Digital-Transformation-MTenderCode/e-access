@@ -22,6 +22,7 @@ import lombok.Setter;
         "cpid",
         "id",
         "date",
+        "tender",
         "planning",
         "parties"
 })
