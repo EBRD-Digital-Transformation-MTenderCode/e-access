@@ -1,7 +1,7 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ein.EiDto;
+import com.procurement.access.model.dto.ei.EiDto;
 import org.springframework.stereotype.Service;
 
 @Service

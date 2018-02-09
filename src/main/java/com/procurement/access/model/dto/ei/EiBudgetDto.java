@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.ein;
+package com.procurement.access.model.dto.ei;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;

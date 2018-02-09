@@ -2,10 +2,10 @@ package com.procurement.access.model.dto;
 
 import com.procurement.access.AbstractDomainObjectTest;
 
-public class EinDtoTest extends AbstractDomainObjectTest {
+public class EiDtoTest extends AbstractDomainObjectTest {
 //    @Test
 //    public void testMappingToDocumentDto() {
-//        compare(EiDto.class, "json/ein.json");
+//        compare(EiDto.class, "json/ei.json");
 //    }
 //
 //    @Test

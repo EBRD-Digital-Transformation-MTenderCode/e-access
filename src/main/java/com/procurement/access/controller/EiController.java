@@ -1,7 +1,7 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ein.EiDto;
+import com.procurement.access.model.dto.ei.EiDto;
 import com.procurement.access.service.EiService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
