@@ -18,7 +18,7 @@ import lombok.Setter;
         "period",
         "amount"
 })
-public class EinBudgetDto {
+public class EiBudgetDto {
     @JsonProperty("id")
     private String id;
     @Valid
@@ -29,9 +29,9 @@ public class EinBudgetDto {
     private final Value amount;
 
     @JsonCreator
-    public EinBudgetDto(@JsonProperty("id") final String id,
-                        @JsonProperty("period") final Period period,
-                        @JsonProperty("amount") final Value amount
+    public EiBudgetDto(@JsonProperty("id") final String id,
+                       @JsonProperty("period") final Period period,
+                       @JsonProperty("amount") final Value amount
     ) {
         this.id = id;
         this.period = period;

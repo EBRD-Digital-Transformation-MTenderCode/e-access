@@ -1,8 +1,8 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ein.EinDto;
-import com.procurement.access.service.EinService;
+import com.procurement.access.model.dto.ein.EiDto;
+import com.procurement.access.service.EiService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,25 +12,25 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequestMapping("/ein")
-public class EinController {
+public class EiController {
 
-    private final EinService einService;
+    private final EiService eiService;
 
-    public EinController(final EinService einService) {
-        this.einService = einService;
+    public EiController(final EiService eiService) {
+        this.eiService = eiService;
     }
 
     @PostMapping
     public ResponseEntity<ResponseDto> create(final String owner,
-                                              @Valid @RequestBody final EinDto einDto) {
-        return new ResponseEntity<>(einService.createEin(owner, einDto), HttpStatus.CREATED);
+                                              @Valid @RequestBody final EiDto eiDto) {
+        return new ResponseEntity<>(eiService.createEi(owner, eiDto), HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<ResponseDto> update(final String cpId,
                                               final String owner,
                                               final String token,
-                                              @Valid @RequestBody final EinDto einDto) {
-        return new ResponseEntity<>(einService.updateEin(owner, cpId, token, einDto), HttpStatus.OK);
+                                              @Valid @RequestBody final EiDto eiDto) {
+        return new ResponseEntity<>(eiService.updateEi(owner, cpId, token, eiDto), HttpStatus.OK);
     }
 }

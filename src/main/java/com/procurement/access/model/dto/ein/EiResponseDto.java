@@ -11,14 +11,13 @@ import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import com.procurement.access.model.dto.ocds.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @JsonPropertyOrder({
+        "token",
         "ocid",
         "id",
         "date",
@@ -28,7 +27,9 @@ import lombok.Setter;
         "buyer"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class EinDto {
+public class EiResponseDto {
+    @JsonProperty("token")
+    private final String token;
     @JsonProperty("ocid")
     private String ocId;
     @JsonProperty("id")
@@ -37,30 +38,25 @@ public class EinDto {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date;
-    @NotNull
-    @Valid
-    private EinPlanningDto planning;
+    @JsonProperty("planning")
+    private final EiPlanningDto planning;
     @JsonProperty("tender")
-    @NotNull
-    @Valid
-    private Tender tender;
+    private final Tender tender;
     @JsonProperty("parties")
-    @NotNull
-    @Valid
-    private List<Organization> parties;
+    private final List<Organization> parties;
     @JsonProperty("buyer")
-    @NotNull
-    @Valid
-    private OrganizationReference buyer;
+    private final OrganizationReference buyer;
 
     @JsonCreator
-    public EinDto(@JsonProperty("ocid") final String ocId,
-                  @JsonProperty("id") final String id,
-                  @JsonProperty("date") final LocalDateTime date,
-                  @JsonProperty("planning") final EinPlanningDto planning,
-                  @JsonProperty("tender") final Tender tender,
-                  @JsonProperty("parties") final List<Organization> parties,
-                  @JsonProperty("buyer") final OrganizationReference buyer) {
+    public EiResponseDto(@JsonProperty("token") final String token,
+                         @JsonProperty("ocid") final String ocId,
+                         @JsonProperty("id") final String id,
+                         @JsonProperty("date") final LocalDateTime date,
+                         @JsonProperty("planning") final EiPlanningDto planning,
+                         @JsonProperty("tender") final Tender tender,
+                         @JsonProperty("parties") final List<Organization> parties,
+                         @JsonProperty("buyer") final OrganizationReference buyer) {
+        this.token = token;
         this.ocId = ocId;
         this.id = id;
         this.date = date;

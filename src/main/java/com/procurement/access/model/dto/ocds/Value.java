@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -17,10 +18,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class Value {
     @JsonProperty("amount")
-    @JsonPropertyDescription("Amount as a number.")
+    @NotNull
     private final Double amount;
-
     @JsonProperty("currency")
+    @NotNull
     private final Currency currency;
 
     @JsonCreator

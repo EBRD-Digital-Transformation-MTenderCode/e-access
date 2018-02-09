@@ -13,16 +13,16 @@ import lombok.Getter;
         "budget",
         "rationale"
 })
-public class EinPlanningDto {
+public class EiPlanningDto {
     @JsonProperty("budget")
     @Valid
-    private final EinBudgetDto budget;
+    private final EiBudgetDto budget;
     @JsonProperty("rationale")
     private final String rationale;
 
     @JsonCreator
-    public EinPlanningDto(@JsonProperty("budget") final EinBudgetDto budget,
-                          @JsonProperty("rationale") final String rationale) {
+    public EiPlanningDto(@JsonProperty("budget") final EiBudgetDto budget,
+                         @JsonProperty("rationale") final String rationale) {
         this.budget = budget;
         this.rationale = rationale;
     }

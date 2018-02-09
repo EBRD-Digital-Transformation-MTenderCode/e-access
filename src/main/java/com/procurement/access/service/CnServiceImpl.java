@@ -65,7 +65,6 @@ public class CnServiceImpl implements CnService {
         return getResponseDto(cpId, entity.getToken(), tender);
     }
 
-
     private void setTenderId(final TenderDto tender) {
         if (Objects.isNull(tender.getTender().getId())) {
             tender.getTender().setId(ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC());
