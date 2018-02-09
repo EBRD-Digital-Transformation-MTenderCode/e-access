@@ -1,6 +1,6 @@
 CREATE KEYSPACE IF NOT EXISTS ocds WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
 
-CREATE TABLE IF NOT EXISTS  ocds.access_ein (
+CREATE TABLE IF NOT EXISTS  ocds.access_ei (
     cp_id text,
     token_entity text,
     owner text,

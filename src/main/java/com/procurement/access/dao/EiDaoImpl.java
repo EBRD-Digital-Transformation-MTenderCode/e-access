@@ -12,7 +12,7 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
 @Service
 public class EiDaoImpl implements EiDao {
 
-    private static final String EI_TABLE = "access_ein";
+    private static final String EI_TABLE = "access_ei";
     private static final String CP_ID = "cp_id";
     private static final String TOKEN = "token_entity";
     private static final String OWNER = "owner";
