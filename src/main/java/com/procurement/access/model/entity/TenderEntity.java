@@ -1,5 +1,6 @@
 package com.procurement.access.model.entity;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ public class TenderEntity {
 
     private String cpId;
 
-    private String token;
+    private UUID token;
 
     private String owner;
 

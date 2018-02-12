@@ -43,7 +43,7 @@ public class TenderDaoImpl implements TenderDao {
         final Row row = session.execute(query).one();
         return new TenderEntity(
                 row.getString(CP_ID),
-                row.getString(TOKEN),
+                row.getUUID(TOKEN),
                 row.getString(OWNER),
                 row.getString(JSON_DATA));
     }
@@ -58,7 +58,7 @@ public class TenderDaoImpl implements TenderDao {
         final Row row = session.execute(query).one();
         return new TenderEntity(
                 row.getString(CP_ID),
-                row.getString(TOKEN),
+                row.getUUID(TOKEN),
                 row.getString(OWNER),
                 row.getString(JSON_DATA));
     }

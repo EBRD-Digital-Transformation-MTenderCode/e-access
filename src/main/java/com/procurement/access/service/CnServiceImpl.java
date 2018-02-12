@@ -47,7 +47,7 @@ public class CnServiceImpl implements CnService {
         setTenderStatus(tender);
         final TenderEntity entity = getEntity(tender, owner);
         tenderDao.save(entity);
-        return getResponseDto(entity.getCpId(), entity.getToken(), tender);
+        return getResponseDto(entity.getCpId(), entity.getToken().toString(), tender);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CnServiceImpl implements CnService {
         tender.setTender(tenderDto.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return getResponseDto(cpId, entity.getToken(), tender);
+        return getResponseDto(cpId, entity.getToken().toString(), tender);
     }
 
     private void setTenderId(final TenderDto tender) {
@@ -98,7 +98,7 @@ public class CnServiceImpl implements CnService {
     private TenderEntity getEntity(final TenderDto tender, final String owner) {
         final TenderEntity entity = new TenderEntity();
         entity.setCpId(tender.getTender().getId());
-        entity.setToken(UUIDs.timeBased().toString());
+        entity.setToken(UUIDs.timeBased());
         entity.setOwner(owner);
         entity.setJsonData(jsonUtil.toJson(tender));
         return entity;
