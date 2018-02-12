@@ -12,6 +12,7 @@ import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
@@ -55,7 +56,7 @@ public class CnServiceImpl implements CnService {
                                 final String cpId,
                                 final String token,
                                 final TenderDto tenderDto) {
-        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpIdAndToken(cpId, token))
+        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
