@@ -5,6 +5,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.procurement.access.model.entity.TenderEntity;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.*;
@@ -49,7 +50,7 @@ public class TenderDaoImpl implements TenderDao {
     }
 
     @Override
-    public TenderEntity getByCpIdAndToken(final String cpId, final String token) {
+    public TenderEntity getByCpIdAndToken(final String cpId, final UUID token) {
         final Statement query = select()
                 .all()
                 .from(TENDER_TABLE)
