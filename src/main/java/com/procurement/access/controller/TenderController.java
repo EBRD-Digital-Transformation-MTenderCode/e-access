@@ -7,9 +7,7 @@ import com.procurement.access.service.TenderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -22,24 +20,25 @@ public class TenderController {
         this.tenderService = tenderService;
     }
 
-    @PatchMapping("/updateStatus")
-    public ResponseEntity<ResponseDto> updateStatus(final String cpId,
-                                                    final String status) {
+    @PostMapping("/updateStatus")
+    public ResponseEntity<ResponseDto> updateStatus(@RequestParam final String cpId,
+                                                    @RequestParam final String status) {
         return new ResponseEntity<>(
                 tenderService.updateStatus(cpId, TenderStatus.fromValue(status)),
                 HttpStatus.OK);
     }
 
-    @PatchMapping("/updateStatusDetails")
-    public ResponseEntity<ResponseDto> updateStatusDetails(final String cpId,
-                                                           final String statusDetails) {
+    @PostMapping("/updateStatusDetails")
+    public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam final String cpId,
+                                                           @RequestParam final String statusDetails) {
         return new ResponseEntity<>(
                 tenderService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails)),
                 HttpStatus.OK);
     }
 
-    @PatchMapping("/setSuspended")
-    public ResponseEntity<ResponseDto> setSuspended(final String cpId, final Boolean suspended) {
+    @PostMapping("/setSuspended")
+    public ResponseEntity<ResponseDto> setSuspended(@RequestParam final String cpId,
+                                                    @RequestParam final Boolean suspended) {
         return new ResponseEntity<>(
                 tenderService.setSuspended(cpId, suspended),
                 HttpStatus.OK);

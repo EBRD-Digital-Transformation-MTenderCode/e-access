@@ -19,14 +19,14 @@ import lombok.Getter;
 public class TenderStatusResponseDto {
 
     @JsonProperty("status")
-    private TenderStatus status;
+    private String status;
 
     @JsonProperty("statusDetails")
-    private TenderStatusDetails statusDetails;
+    private String statusDetails;
 
     @JsonCreator
-    public TenderStatusResponseDto(@JsonProperty("status") final TenderStatus status,
-                                   @JsonProperty("statusDetails") final TenderStatusDetails statusDetails) {
+    public TenderStatusResponseDto(@JsonProperty("status") final String status,
+                                   @JsonProperty("statusDetails") final String statusDetails) {
         this.status = status;
         this.statusDetails = statusDetails;
     }

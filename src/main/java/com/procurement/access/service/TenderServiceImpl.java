@@ -3,9 +3,9 @@ package com.procurement.access.service;
 import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
+import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.dto.tender.TenderStatusResponseDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.JsonUtil;
@@ -33,7 +33,8 @@ public class TenderServiceImpl implements TenderService {
         tender.getTender().setStatus(status);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return new ResponseDto<>(true, null, new TenderStatusResponseDto(status, null));
+        return new ResponseDto<>(true, null,
+                new TenderStatusResponseDto(status.value(), tender.getTender().getStatusDetails().value()));
     }
 
     @Override
@@ -44,7 +45,9 @@ public class TenderServiceImpl implements TenderService {
         tender.getTender().setStatusDetails(statusDetails);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return new ResponseDto<>(true, null, new TenderStatusResponseDto(null, statusDetails));
+        return new ResponseDto<>(true, null,
+                new TenderStatusResponseDto(tender.getTender().getStatus().value(),
+                        tender.getTender().getStatusDetails().value()));
     }
 
     @Override
@@ -52,16 +55,15 @@ public class TenderServiceImpl implements TenderService {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
-        final TenderStatusResponseDto response;
         if (suspended) {
             tender.getTender().setStatusDetails(TenderStatusDetails.SUSPENDED);
-            response = new TenderStatusResponseDto(null, TenderStatusDetails.SUSPENDED);
         } else {
-            tender.getTender().setStatusDetails(null);
-            response = new TenderStatusResponseDto(null, null);
+            tender.getTender().setStatusDetails(TenderStatusDetails.EMPTY);
         }
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return new ResponseDto<>(true, null, response);
+        return new ResponseDto<>(true, null,
+                new TenderStatusResponseDto(tender.getTender().getStatus().value(),
+                        tender.getTender().getStatusDetails().value()));
     }
 }

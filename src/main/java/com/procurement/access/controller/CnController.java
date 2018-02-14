@@ -21,15 +21,15 @@ public class CnController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> create(final String owner,
+    public ResponseEntity<ResponseDto> create(@RequestParam final String owner,
                                               @Valid @RequestBody final TenderDto tenderDto) {
         return new ResponseEntity<>(cnService.createCn(owner, tenderDto), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<ResponseDto> update(final String cpId,
-                                              final String token,
-                                              final String owner,
+    public ResponseEntity<ResponseDto> update(@RequestParam final String cpId,
+                                              @RequestParam final String token,
+                                              @RequestParam final String owner,
                                               @Valid @RequestBody final TenderDto tenderDto) {
         return new ResponseEntity<>(cnService.updateCn(owner, cpId, token, tenderDto), HttpStatus.OK);
     }

@@ -23,7 +23,8 @@ public enum TenderStatusDetails {
     UNSUCCESSFUL("unsuccessful"),
     COMPLETE("complete"),
     WITHDRAWN("withdrawn"),
-    SUSPENDED("suspended");
+    SUSPENDED("suspended"),
+    EMPTY("");
 
     private static final Map<String, TenderStatusDetails> CONSTANTS = new HashMap<>();
 
