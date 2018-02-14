@@ -1,7 +1,7 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.TenderDto;
+import com.procurement.access.model.dto.tender.TenderDto;
 import org.springframework.stereotype.Service;
 
 @Service

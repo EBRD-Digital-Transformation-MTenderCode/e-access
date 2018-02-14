@@ -3,7 +3,7 @@ package com.procurement.access.service;
 import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.TenderDto;
+import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.dto.lots.LotDto;
 import com.procurement.access.model.dto.lots.LotsRequestDto;
 import com.procurement.access.model.dto.lots.LotsResponseDto;

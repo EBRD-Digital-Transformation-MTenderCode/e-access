@@ -1,7 +1,7 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.TenderDto;
+import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.service.CnService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
