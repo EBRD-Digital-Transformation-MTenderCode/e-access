@@ -24,7 +24,7 @@ public enum TenderStatusDetails {
     COMPLETE("complete"),
     WITHDRAWN("withdrawn"),
     SUSPENDED("suspended"),
-    EMPTY("");
+    EMPTY("empty");
 
     private static final Map<String, TenderStatusDetails> CONSTANTS = new HashMap<>();
 
