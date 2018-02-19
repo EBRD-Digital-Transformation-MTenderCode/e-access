@@ -3,7 +3,9 @@ package com.procurement.access.controller;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.service.CnService;
+import java.time.LocalDateTime;
 import javax.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,8 +24,10 @@ public class CnController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> create(@RequestParam final String owner,
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                              @RequestParam(required = false) final LocalDateTime startDate,
                                               @Valid @RequestBody final TenderDto tenderDto) {
-        return new ResponseEntity<>(cnService.createCn(owner, tenderDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(cnService.createCn(owner, startDate, tenderDto), HttpStatus.CREATED);
     }
 
     @PutMapping

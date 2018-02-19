@@ -10,6 +10,7 @@ import com.procurement.access.model.dto.tender.TenderResponseDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,10 +40,11 @@ public class CnServiceImpl implements CnService {
 
     @Override
     public ResponseDto createCn(final String owner,
+                                final LocalDateTime startDate,
                                 final TenderDto tender) {
-        final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
+        final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliUTC(startDate);
         tender.setOcId(cpId);
-        tender.setDate(dateUtil.getNowUTC());
+        tender.setDate(startDate);
         setTenderId(tender, cpId);
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
