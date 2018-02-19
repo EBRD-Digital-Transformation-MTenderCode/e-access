@@ -40,9 +40,10 @@ public class CnServiceImpl implements CnService {
     @Override
     public ResponseDto createCn(final String owner,
                                 final TenderDto tender) {
+        final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
+        tender.setOcId(cpId);
         tender.setDate(dateUtil.getNowUTC());
-        tender.setId(UUIDs.timeBased().toString());
-        setTenderId(tender);
+        setTenderId(tender, cpId);
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
         setTenderStatus(tender);
@@ -60,16 +61,15 @@ public class CnServiceImpl implements CnService {
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        tender.setDate(dateUtil.getNowUTC());
         tender.setTender(tenderDto.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
         return getResponseDto(cpId, entity.getToken().toString(), tender);
     }
 
-    private void setTenderId(final TenderDto tender) {
-        if (Objects.isNull(tender.getTender().getId())) {
-            tender.getTender().setId(ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC());
-        }
+    private void setTenderId(final TenderDto tender, final String cpId) {
+        tender.getTender().setId(cpId);
     }
 
     private void setTenderStatus(final TenderDto tender) {
@@ -77,9 +77,7 @@ public class CnServiceImpl implements CnService {
     }
 
     private void setItemsId(final TenderDto tenderDto) {
-        tenderDto.getTender().getItems().forEach(i -> {
-            i.setId(UUIDs.timeBased().toString());
-        });
+        tenderDto.getTender().getItems().forEach(i -> i.setId(UUIDs.timeBased().toString()));
     }
 
     private void setLotsIdAndItemsRelatedLots(final TenderDto tender) {
@@ -91,7 +89,6 @@ public class CnServiceImpl implements CnService {
                     .findFirst()
                     .get()
                     .setRelatedLot(id);
-
             l.setId(id);
         });
     }
@@ -109,13 +106,11 @@ public class CnServiceImpl implements CnService {
         final TenderResponseDto responseDto = new TenderResponseDto(
                 token,
                 cpId,
-                tender.getId(),
                 tender.getDate(),
                 tender.getPlanning(),
                 tender.getTender(),
                 tender.getParties(),
-                tender.getBuyer(),
-                tender.getRelatedProcesses()
+                tender.getBuyer()
         );
         return new ResponseDto<>(true, null, responseDto);
     }

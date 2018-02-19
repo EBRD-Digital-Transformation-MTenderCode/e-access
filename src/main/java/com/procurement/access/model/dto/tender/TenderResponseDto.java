@@ -20,13 +20,11 @@ import lombok.Getter;
 @JsonPropertyOrder({
         "token",
         "ocid",
-        "id",
         "date",
         "planning",
         "tender",
         "parties",
-        "buyer",
-        "relatedProcesses"
+        "buyer"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderResponseDto {
@@ -36,9 +34,6 @@ public class TenderResponseDto {
 
     @JsonProperty("token")
     private final String token;
-
-    @JsonProperty("id")
-    private String id;
 
     @JsonProperty("date")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -57,27 +52,20 @@ public class TenderResponseDto {
     @JsonProperty("buyer")
     private final Organization buyer;
 
-    @JsonProperty("relatedProcesses")
-    private final List<RelatedProcess> relatedProcesses;
-
     @JsonCreator
     public TenderResponseDto(@JsonProperty("token") final String token,
                              @JsonProperty("ocid") final String ocid,
-                             @JsonProperty("id") final String id,
                              @JsonProperty("date") final LocalDateTime date,
                              @JsonProperty("planning") final Planning planning,
                              @JsonProperty("tender") final Tender tender,
                              @JsonProperty("parties") final List<Organization> parties,
-                             @JsonProperty("buyer") final Organization buyer,
-                             @JsonProperty("relatedProcesses") final List<RelatedProcess> relatedProcesses) {
+                             @JsonProperty("buyer") final Organization buyer) {
         this.ocid = ocid;
         this.token = token;
-        this.id = id;
         this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;
         this.buyer = buyer;
-        this.relatedProcesses = relatedProcesses;
     }
 }
