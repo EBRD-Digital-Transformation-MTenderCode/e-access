@@ -27,6 +27,7 @@
         <maven-surefire-plugin.version>2.19</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.19</maven-failsafe-plugin.version>
         <spring-kafka.version>2.1.0.RELEASE</spring-kafka.version>
+        <docker-image-profile></docker-image-profile>
         <docker-maven-plugin.version>0.23.0</docker-maven-plugin.version>
         <docker-registry>docker-registry.eprocurement.systems</docker-registry>
     </properties>
@@ -356,7 +357,7 @@
                     <images>
                         <image>
                             <registry>${docker-registry}</registry>
-                            <name>${docker-registry}/${project.artifactId}:${project.version}</name>
+                            <name>${docker-registry}/${project.artifactId}${docker-image-profile}:${project.version}</name>
                             <build>
                                 <dockerFileDir>${project.basedir}/src/main</dockerFileDir>
                                 <nocache/>
