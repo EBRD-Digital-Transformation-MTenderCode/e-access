@@ -23,17 +23,16 @@ import lombok.Getter;
         "date",
         "planning",
         "tender",
-        "parties",
-        "buyer"
+        "parties"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderResponseDto {
 
-    @JsonProperty("ocid")
-    private final String ocid;
-
     @JsonProperty("token")
     private final String token;
+
+    @JsonProperty("ocid")
+    private final String ocid;
 
     @JsonProperty("date")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -49,23 +48,18 @@ public class TenderResponseDto {
     @JsonProperty("parties")
     private final List<Organization> parties;
 
-    @JsonProperty("buyer")
-    private final Organization buyer;
-
     @JsonCreator
     public TenderResponseDto(@JsonProperty("token") final String token,
                              @JsonProperty("ocid") final String ocid,
                              @JsonProperty("date") final LocalDateTime date,
                              @JsonProperty("planning") final Planning planning,
                              @JsonProperty("tender") final Tender tender,
-                             @JsonProperty("parties") final List<Organization> parties,
-                             @JsonProperty("buyer") final Organization buyer) {
+                             @JsonProperty("parties") final List<Organization> parties) {
         this.ocid = ocid;
         this.token = token;
         this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;
-        this.buyer = buyer;
     }
 }

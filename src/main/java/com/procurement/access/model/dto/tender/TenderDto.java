@@ -26,17 +26,19 @@ import lombok.Setter;
         "date",
         "planning",
         "tender",
-        "parties",
-        "buyer"
+        "parties"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderDto {
+
     @JsonProperty("ocid")
     private String ocId;
+
     @JsonProperty("date")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date;
+
     @JsonProperty("planning")
     @NotNull
     @Valid
@@ -52,23 +54,16 @@ public class TenderDto {
     @Valid
     private List<Organization> parties;
 
-    @JsonProperty("buyer")
-    @NotNull
-    @Valid
-    private Organization buyer;
-
     @JsonCreator
     public TenderDto(@JsonProperty("ocid") final String ocId,
                      @JsonProperty("date") final LocalDateTime date,
                      @JsonProperty("planning") final Planning planning,
                      @JsonProperty("tender") final Tender tender,
-                     @JsonProperty("parties") final List<Organization> parties,
-                     @JsonProperty("buyer") final Organization buyer) {
+                     @JsonProperty("parties") final List<Organization> parties) {
         this.ocId = ocId;
         this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;
-        this.buyer = buyer;
     }
 }
