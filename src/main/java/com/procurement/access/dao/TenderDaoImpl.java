@@ -42,12 +42,12 @@ public class TenderDaoImpl implements TenderDao {
                 .from(TENDER_TABLE)
                 .where(eq(CP_ID, cpId)).limit(1);
         final Row row = session.execute(query).one();
-        if (row!=null)
-        return new TenderEntity(
-                row.getString(CP_ID),
-                row.getUUID(TOKEN),
-                row.getString(OWNER),
-                row.getString(JSON_DATA));
+        if (row != null)
+            return new TenderEntity(
+                    row.getString(CP_ID),
+                    row.getUUID(TOKEN),
+                    row.getString(OWNER),
+                    row.getString(JSON_DATA));
         return null;
     }
 
@@ -59,12 +59,12 @@ public class TenderDaoImpl implements TenderDao {
                 .where(eq(CP_ID, cpId))
                 .and(eq(TOKEN, token)).limit(1);
         final Row row = session.execute(query).one();
-        if (row!=null)
-        return new TenderEntity(
-                row.getString(CP_ID),
-                row.getUUID(TOKEN),
-                row.getString(OWNER),
-                row.getString(JSON_DATA));
+        if (row != null)
+            return new TenderEntity(
+                    row.getString(CP_ID),
+                    row.getUUID(TOKEN),
+                    row.getString(OWNER),
+                    row.getString(JSON_DATA));
         return null;
     }
 }
