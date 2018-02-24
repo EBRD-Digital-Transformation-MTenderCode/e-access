@@ -3,13 +3,14 @@ package com.procurement.access.service;
 import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.dto.lots.LotDto;
 import com.procurement.access.model.dto.lots.LotsRequestDto;
 import com.procurement.access.model.dto.lots.LotsResponseDto;
+import com.procurement.access.model.dto.lots.LotsUpdateResponseDto;
 import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
+import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.JsonUtil;
 import java.util.HashMap;
@@ -52,15 +53,15 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
+    public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto unsuccessfulLots) {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
-        final List<Lot> updatedLots = setLotsStatus(tender.getTender().getLots(), lotsDto, status);
+        final List<Lot> updatedLots = setLotsStatus(tender.getTender().getLots(), unsuccessfulLots, status);
         tender.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return new ResponseDto<>(true, null, updatedLots);
+        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
     }
 
     private List<Lot> setLotsStatus(final List<Lot> lots, final LotsRequestDto lotsDto, final TenderStatus status) {
@@ -82,7 +83,7 @@ public class LotsServiceImpl implements LotsService {
         tender.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return new ResponseDto<>(true, null, updatedLots);
+        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
     }
 
     private List<Lot> setLotsStatusDetails(final List<Lot> lots,
