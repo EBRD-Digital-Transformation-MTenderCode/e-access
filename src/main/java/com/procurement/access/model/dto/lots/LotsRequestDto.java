@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 public class LotsRequestDto {
 
-    @JsonProperty(value = "lots")
+    @JsonProperty(value = "unsuccessfulLots")
     private List<LotDto> lots;
 
-    public LotsRequestDto(@JsonProperty("lots") final List<LotDto> lots) {
+    public LotsRequestDto(@JsonProperty("unsuccessfulLots") final List<LotDto> lots) {
         this.lots = lots;
     }
 

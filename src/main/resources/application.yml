@@ -1,12 +1,13 @@
 server:
-  port: 9031
+  port: 8080
 
 spring:
   application:
     name: e-access
 
 cassandra:
-  contact-points: ac-node1.eprocurement.systems,ac-node2.eprocurement.systems,ac-node3.eprocurement.systems
+# contact-points: ac-node1.eprocurement.systems,ac-node2.eprocurement.systems,ac-node3.eprocurement.systems
+  contact-points: 10.0.10.104,10.0.10.105,10.0.10.106
   keyspace-name: ocds
   port: 9042
   username: caclient
