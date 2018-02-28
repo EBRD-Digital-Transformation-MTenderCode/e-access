@@ -5,6 +5,8 @@ import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.ocds.TenderStatus;
+import com.procurement.access.model.dto.ocds.TenderStatusDetails;
 import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.dto.tender.TenderResponseDto;
 import com.procurement.access.model.entity.TenderEntity;
@@ -49,6 +51,7 @@ public class CnServiceImpl implements CnService {
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
         setTenderStatus(tender);
+        setLotsStatus(tender);
         final TenderEntity entity = getEntity(tender, owner);
         tenderDao.save(entity);
         return getResponseDto(entity.getCpId(), entity.getToken().toString(), tender);
@@ -76,6 +79,10 @@ public class CnServiceImpl implements CnService {
 
     private void setTenderStatus(final TenderDto tender) {
         tender.getTender().setStatus(ACTIVE);
+    }
+
+    private void setLotsStatus(final TenderDto tenderDto) {
+        tenderDto.getTender().getLots().forEach(i -> i.setStatus(TenderStatus.ACTIVE));
     }
 
     private void setItemsId(final TenderDto tenderDto) {
