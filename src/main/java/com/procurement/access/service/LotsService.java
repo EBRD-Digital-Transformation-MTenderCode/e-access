@@ -11,7 +11,7 @@ public interface LotsService {
 
     ResponseDto getLots(String cpId, TenderStatus status);
 
-    ResponseDto updateStatus(String cpId, TenderStatus status, LotsRequestDto unsuccessfulLots);
+    ResponseDto updateStatus(String cpId, TenderStatus status, LotsRequestDto lotsDto);
 
     ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails, LotsRequestDto lotsDto);
 }

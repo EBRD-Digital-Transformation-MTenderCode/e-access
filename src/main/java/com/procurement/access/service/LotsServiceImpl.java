@@ -53,11 +53,11 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto unsuccessfulLots) {
+    public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
-        final List<Lot> updatedLots = setLotsStatus(tender.getTender().getLots(), unsuccessfulLots, status);
+        final List<Lot> updatedLots = setLotsStatus(tender.getTender().getLots(), lotsDto, status);
         tender.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);

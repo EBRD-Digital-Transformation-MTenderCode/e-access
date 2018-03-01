@@ -31,9 +31,9 @@ public class LotsController {
     @PostMapping("/updateStatus")
     public ResponseEntity<ResponseDto> updateStatus(@RequestParam final String cpId,
                                                     @RequestParam final String status,
-                                                    @Valid @RequestBody final LotsRequestDto unsuccessfulLots) {
+                                                    @Valid @RequestBody final LotsRequestDto lotsDto) {
         return new ResponseEntity<>(
-                lotsService.updateStatus(cpId, TenderStatus.fromValue(status), unsuccessfulLots),
+                lotsService.updateStatus(cpId, TenderStatus.fromValue(status), lotsDto),
                 HttpStatus.OK);
     }
 
