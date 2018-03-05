@@ -44,7 +44,7 @@ public class CnServiceImpl implements CnService {
     public ResponseDto createCn(final String owner,
                                 final LocalDateTime startDate,
                                 final TenderDto tender) {
-        final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliUTC(startDate);
+        final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
         tender.setOcId(cpId);
         tender.setDate(startDate);
         setTenderId(tender, cpId);
