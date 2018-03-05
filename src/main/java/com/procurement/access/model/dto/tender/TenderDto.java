@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
 import com.procurement.access.model.dto.ocds.Organization;
+import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Planning;
-import com.procurement.access.model.dto.ocds.RelatedProcess;
 import com.procurement.access.model.dto.ocds.Tender;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +26,8 @@ import lombok.Setter;
         "date",
         "planning",
         "tender",
-        "parties"
+        "parties",
+        "buyer"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderDto {
@@ -54,16 +55,21 @@ public class TenderDto {
     @Valid
     private List<Organization> parties;
 
+    @JsonProperty("buyer")
+    private final OrganizationReference buyer;
+
     @JsonCreator
     public TenderDto(@JsonProperty("ocid") final String ocId,
                      @JsonProperty("date") final LocalDateTime date,
                      @JsonProperty("planning") final Planning planning,
                      @JsonProperty("tender") final Tender tender,
-                     @JsonProperty("parties") final List<Organization> parties) {
+                     @JsonProperty("parties") final List<Organization> parties,
+                     @JsonProperty("buyer") final OrganizationReference buyer) {
         this.ocId = ocId;
         this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;
+        this.buyer = buyer;
     }
 }
