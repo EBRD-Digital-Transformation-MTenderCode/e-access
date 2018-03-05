@@ -8,12 +8,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
 import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import com.procurement.access.model.dto.ocds.Organization;
-import com.procurement.access.model.dto.ocds.Planning;
-import com.procurement.access.model.dto.ocds.RelatedProcess;
-import com.procurement.access.model.dto.ocds.Tender;
+import com.procurement.access.model.dto.ocds.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
@@ -23,7 +21,8 @@ import lombok.Getter;
         "date",
         "planning",
         "tender",
-        "parties"
+        "parties",
+        "buyer"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderResponseDto {
@@ -48,18 +47,23 @@ public class TenderResponseDto {
     @JsonProperty("parties")
     private final List<Organization> parties;
 
+    @JsonProperty("buyer")
+    private final OrganizationReference buyer;
+
     @JsonCreator
     public TenderResponseDto(@JsonProperty("token") final String token,
                              @JsonProperty("ocid") final String ocid,
                              @JsonProperty("date") final LocalDateTime date,
                              @JsonProperty("planning") final Planning planning,
                              @JsonProperty("tender") final Tender tender,
-                             @JsonProperty("parties") final List<Organization> parties) {
+                             @JsonProperty("parties") final List<Organization> parties,
+                             @JsonProperty("buyer") final OrganizationReference buyer) {
         this.ocid = ocid;
         this.token = token;
         this.date = date;
         this.planning = planning;
         this.tender = tender;
         this.parties = parties;
+        this.buyer = buyer;
     }
 }

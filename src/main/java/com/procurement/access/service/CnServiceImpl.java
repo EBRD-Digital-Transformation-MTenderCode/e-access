@@ -124,7 +124,8 @@ public class CnServiceImpl implements CnService {
                 tender.getDate(),
                 tender.getPlanning(),
                 tender.getTender(),
-                tender.getParties()
+                tender.getParties(),
+                tender.getBuyer()
         );
         return new ResponseDto<>(true, null, responseDto);
     }
