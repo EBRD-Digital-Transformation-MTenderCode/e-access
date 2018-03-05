@@ -56,6 +56,7 @@ public class TenderDto {
     private List<Organization> parties;
 
     @JsonProperty("buyer")
+    @NotNull
     private final OrganizationReference buyer;
 
     @JsonCreator
