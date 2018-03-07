@@ -6,20 +6,19 @@ import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.ocds.TenderStatus;
-import com.procurement.access.model.dto.ocds.TenderStatusDetails;
+import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.tender.TenderDto;
 import com.procurement.access.model.dto.tender.TenderResponseDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
+import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 
 @Service
 public class CnServiceImpl implements CnService {
@@ -44,19 +43,20 @@ public class CnServiceImpl implements CnService {
     @Override
     public ResponseDto createCn(final String owner,
                                 final LocalDateTime startDate,
-                                final TenderDto tender) {
+                                final TenderDto tenderDto) {
         final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
-        tender.setOcId(cpId);
-        tender.setDate(startDate);
+        tenderDto.setOcId(cpId);
+        tenderDto.setDate(startDate);
+        final Tender tender = tenderDto.getTender();
         setTenderId(tender, cpId);
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
         setTenderStatus(tender);
         setLotsStatus(tender);
-        processBuyer(tender.getBuyer());
-        final TenderEntity entity = getEntity(tender, owner);
+        processBuyer(tenderDto.getBuyer());
+        final TenderEntity entity = getEntity(tenderDto, owner);
         tenderDao.save(entity);
-        return getResponseDto(entity.getCpId(), entity.getToken().toString(), tender);
+        return getResponseDto(entity.getCpId(), entity.getToken().toString(), tenderDto);
     }
 
     @Override
@@ -75,36 +75,40 @@ public class CnServiceImpl implements CnService {
         return getResponseDto(cpId, entity.getToken().toString(), tender);
     }
 
-    private void setTenderId(final TenderDto tender, final String cpId) {
-        tender.getTender().setId(cpId);
+    private void setTenderId(final Tender tender, final String cpId) {
+        tender.setId(cpId);
     }
 
-    private void setTenderStatus(final TenderDto tender) {
-        tender.getTender().setStatus(ACTIVE);
+    private void setTenderStatus(final Tender tender) {
+        tender.setStatus(ACTIVE);
+        tender.setStatusDetails(EMPTY);
     }
 
-    private void setLotsStatus(final TenderDto tenderDto) {
-        tenderDto.getTender().getLots().forEach(i -> i.setStatus(TenderStatus.ACTIVE));
-    }
-
-    private void setItemsId(final TenderDto tenderDto) {
-        tenderDto.getTender().getItems().forEach(i -> i.setId(UUIDs.timeBased().toString()));
-    }
-
-    private void setLotsIdAndItemsRelatedLots(final TenderDto tender) {
-        tender.getTender().getLots().forEach(l -> {
-            final String id = UUIDs.timeBased().toString();
-            tender.getTender().getItems()
-                    .stream()
-                    .filter(i -> i.getRelatedLot().equals(l.getId()))
-                    .findFirst()
-                    .get()
-                    .setRelatedLot(id);
-            l.setId(id);
+    private void setLotsStatus(final Tender tender) {
+        tender.getLots().forEach(lot -> {
+            lot.setStatus(ACTIVE);
+            lot.setStatusDetails(EMPTY);
         });
     }
 
-    private void processBuyer(final OrganizationReference buyer){
+    private void setItemsId(final Tender tender) {
+        tender.getItems().forEach(item -> item.setId(UUIDs.timeBased().toString()));
+    }
+
+    private void setLotsIdAndItemsRelatedLots(final Tender tender) {
+        tender.getLots().forEach(lot -> {
+            final String id = UUIDs.timeBased().toString();
+            tender.getItems()
+                    .stream()
+                    .filter(item -> item.getRelatedLot().equals(lot.getId()))
+                    .findFirst()
+                    .get()
+                    .setRelatedLot(id);
+            lot.setId(id);
+        });
+    }
+
+    private void processBuyer(final OrganizationReference buyer) {
         buyer.setId(buyer.getIdentifier().getScheme() + "-" + buyer.getIdentifier().getId());
     }
 
