@@ -115,7 +115,7 @@ public class CnServiceImpl implements CnService {
     private TenderEntity getEntity(final TenderDto tender, final String owner) {
         final TenderEntity entity = new TenderEntity();
         entity.setCpId(tender.getTender().getId());
-        entity.setToken(UUIDs.timeBased());
+        entity.setToken(UUIDs.random());
         entity.setOwner(owner);
         entity.setJsonData(jsonUtil.toJson(tender));
         return entity;
