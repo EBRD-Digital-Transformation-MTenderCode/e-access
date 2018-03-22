@@ -23,20 +23,20 @@ public class CnController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> create(@RequestParam final String owner,
-                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                              @RequestParam(required = false) final LocalDateTime startDate,
-                                              @Valid @RequestBody final TenderDto tenderDto) {
+    public ResponseEntity<ResponseDto> createCn(@RequestParam final String owner,
+                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                @RequestParam("date") final LocalDateTime dateTime,
+                                                @Valid @RequestBody final TenderDto tenderDto) {
         return new ResponseEntity<>(
-                cnService.createCn(owner, startDate, tenderDto),
+                cnService.createCn(owner, dateTime, tenderDto),
                 HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<ResponseDto> update(@RequestParam final String cpId,
-                                              @RequestParam final String token,
-                                              @RequestParam final String owner,
-                                              @Valid @RequestBody final TenderDto tenderDto) {
+    public ResponseEntity<ResponseDto> updateCn(@RequestParam final String cpId,
+                                                @RequestParam final String token,
+                                                @RequestParam final String owner,
+                                                @Valid @RequestBody final TenderDto tenderDto) {
         return new ResponseEntity<>(cnService.updateCn(owner, cpId, token, tenderDto), HttpStatus.OK);
     }
 }

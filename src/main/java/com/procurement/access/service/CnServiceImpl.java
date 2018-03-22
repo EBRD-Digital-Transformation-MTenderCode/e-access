@@ -42,11 +42,10 @@ public class CnServiceImpl implements CnService {
 
     @Override
     public ResponseDto createCn(final String owner,
-                                final LocalDateTime startDate,
+                                final LocalDateTime dateTime,
                                 final TenderDto tenderDto) {
         final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
         tenderDto.setOcId(cpId);
-        tenderDto.setDate(startDate);
         final Tender tender = tenderDto.getTender();
         setTenderId(tender, cpId);
         setItemsId(tender);
@@ -54,7 +53,7 @@ public class CnServiceImpl implements CnService {
         setTenderStatus(tender);
         setLotsStatus(tender);
         processBuyer(tenderDto.getBuyer());
-        final TenderEntity entity = getEntity(tenderDto, owner);
+        final TenderEntity entity = getEntity(tenderDto, owner, dateTime);
         tenderDao.save(entity);
         return getResponseDto(entity.getCpId(), entity.getToken().toString(), tenderDto);
     }
@@ -112,11 +111,12 @@ public class CnServiceImpl implements CnService {
         buyer.setId(buyer.getIdentifier().getScheme() + "-" + buyer.getIdentifier().getId());
     }
 
-    private TenderEntity getEntity(final TenderDto tender, final String owner) {
+    private TenderEntity getEntity(final TenderDto tender, final String owner, final LocalDateTime dateTime) {
         final TenderEntity entity = new TenderEntity();
         entity.setCpId(tender.getTender().getId());
         entity.setToken(UUIDs.random());
         entity.setOwner(owner);
+        entity.setCreatedDate(dateUtil.localToDate(dateTime));
         entity.setJsonData(jsonUtil.toJson(tender));
         return entity;
     }

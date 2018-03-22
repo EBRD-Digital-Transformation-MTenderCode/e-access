@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public interface CnService {
 
     ResponseDto createCn(String owner,
-                         LocalDateTime startDate,
+                         LocalDateTime dateTime,
                          TenderDto tenderDto);
 
     ResponseDto updateCn(String owner,

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS  ocds.access_tender (
     cp_id text,
     token_entity uuid,
     owner text,
+    created_date timestamp,
     json_data text,
     primary key(cp_id, token_entity)
 );

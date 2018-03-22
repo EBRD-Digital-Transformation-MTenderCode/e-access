@@ -1,5 +1,6 @@
 package com.procurement.access.model.entity;
 
+import java.util.Date;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class TenderEntity {
     private UUID token;
 
     private String owner;
+
+    private Date createdDate;
 
     private String jsonData;
 }
