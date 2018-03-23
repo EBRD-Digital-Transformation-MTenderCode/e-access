@@ -21,7 +21,6 @@ import lombok.Setter;
 @JsonPropertyOrder({
         "token",
         "ocid",
-        "date",
         "planning",
         "tender"
 })
@@ -33,11 +32,6 @@ public class CnDto {
 
     @JsonProperty("ocid")
     private String ocId;
-
-    @JsonProperty("date")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
 
     @JsonProperty("planning")
     @NotNull
@@ -52,12 +46,10 @@ public class CnDto {
     @JsonCreator
     public CnDto(@JsonProperty("token") final String token,
                  @JsonProperty("ocid") final String ocId,
-                 @JsonProperty("date") final LocalDateTime date,
                  @JsonProperty("planning") final Planning planning,
                  @JsonProperty("tender") final Tender tender) {
         this.token = token;
         this.ocId = ocId;
-        this.date = date;
         this.planning = planning;
         this.tender = tender;
     }
