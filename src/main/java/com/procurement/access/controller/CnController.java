@@ -27,9 +27,7 @@ public class CnController {
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                 @RequestParam("date") final LocalDateTime dateTime,
                                                 @Valid @RequestBody final CnDto dto) {
-        return new ResponseEntity<>(
-                cnService.createCn(owner, dateTime, dto),
-                HttpStatus.CREATED);
+        return new ResponseEntity<>(cnService.createCn(owner, dateTime, dto), HttpStatus.CREATED);
     }
 
     @PutMapping

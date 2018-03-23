@@ -5,6 +5,7 @@ import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.tender.CnDto;
 import com.procurement.access.model.entity.TenderEntity;
@@ -21,6 +22,7 @@ import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 @Service
 public class CnServiceImpl implements CnService {
 
+    private static final String SEPARATOR = "-";
     private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
     private static final String INVALID_OWNER_ERROR = "Invalid owner.";
     private final OCDSProperties ocdsProperties;
@@ -50,6 +52,7 @@ public class CnServiceImpl implements CnService {
         tender.setId(cpId);
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
+        setIdOfOrganizationReference(tender.getProcuringEntity());
         final TenderEntity entity = getEntity(cn, owner, dateTime);
         tenderDao.save(entity);
         cn.setToken(entity.getToken().toString());
@@ -65,12 +68,15 @@ public class CnServiceImpl implements CnService {
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
         final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        tender.setDate(dateUtil.getNowUTC());
         tender.setTender(cn.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
         cn.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, cn);
+    }
+
+    private void setIdOfOrganizationReference(final OrganizationReference or) {
+        or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 
     private void setTenderStatus(final Tender tender) {
