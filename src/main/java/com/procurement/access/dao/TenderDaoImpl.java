@@ -16,6 +16,7 @@ public class TenderDaoImpl implements TenderDao {
     private static final String TENDER_TABLE = "access_tender";
     private static final String CP_ID = "cp_id";
     private static final String TOKEN = "token_entity";
+    private static final String CREATED_DATE = "created_date";
     private static final String OWNER = "owner";
     private static final String JSON_DATA = "json_data";
 
@@ -31,6 +32,7 @@ public class TenderDaoImpl implements TenderDao {
         insert.value(CP_ID, entity.getCpId())
                 .value(TOKEN, entity.getToken())
                 .value(OWNER, entity.getOwner())
+                .value(CREATED_DATE, entity.getCreatedDate())
                 .value(JSON_DATA, entity.getJsonData());
         session.execute(insert);
     }
@@ -47,6 +49,7 @@ public class TenderDaoImpl implements TenderDao {
                     row.getString(CP_ID),
                     row.getUUID(TOKEN),
                     row.getString(OWNER),
+                    row.getTimestamp(CREATED_DATE),
                     row.getString(JSON_DATA));
         return null;
     }
@@ -64,6 +67,7 @@ public class TenderDaoImpl implements TenderDao {
                     row.getString(CP_ID),
                     row.getUUID(TOKEN),
                     row.getString(OWNER),
+                    row.getTimestamp(CREATED_DATE),
                     row.getString(JSON_DATA));
         return null;
     }

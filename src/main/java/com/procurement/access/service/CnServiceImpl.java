@@ -7,8 +7,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
-import com.procurement.access.model.dto.tender.TenderDto;
-import com.procurement.access.model.dto.tender.TenderResponseDto;
+import com.procurement.access.model.dto.tender.CnDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -23,6 +22,7 @@ import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 @Service
 public class CnServiceImpl implements CnService {
 
+    private static final String SEPARATOR = "-";
     private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
     private static final String INVALID_OWNER_ERROR = "Invalid owner.";
     private final OCDSProperties ocdsProperties;
@@ -42,41 +42,41 @@ public class CnServiceImpl implements CnService {
 
     @Override
     public ResponseDto createCn(final String owner,
-                                final LocalDateTime startDate,
-                                final TenderDto tenderDto) {
+                                final LocalDateTime dateTime,
+                                final CnDto cn) {
         final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
-        tenderDto.setOcId(cpId);
-        tenderDto.setDate(startDate);
-        final Tender tender = tenderDto.getTender();
-        setTenderId(tender, cpId);
+        cn.setOcId(cpId);
+        final Tender tender = cn.getTender();
+        setLotsStatus(tender);
+        setTenderStatus(tender);
+        tender.setId(cpId);
         setItemsId(tender);
         setLotsIdAndItemsRelatedLots(tender);
-        setTenderStatus(tender);
-        setLotsStatus(tender);
-        processBuyer(tenderDto.getBuyer());
-        final TenderEntity entity = getEntity(tenderDto, owner);
+        setIdOfOrganizationReference(tender.getProcuringEntity());
+        final TenderEntity entity = getEntity(cn, owner, dateTime);
         tenderDao.save(entity);
-        return getResponseDto(entity.getCpId(), entity.getToken().toString(), tenderDto);
+        cn.setToken(entity.getToken().toString());
+        return new ResponseDto<>(true, null, cn);
     }
 
     @Override
     public ResponseDto updateCn(final String owner,
                                 final String cpId,
                                 final String token,
-                                final TenderDto tenderDto) {
+                                final CnDto cn) {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
-        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
-        tender.setDate(dateUtil.getNowUTC());
-        tender.setTender(tenderDto.getTender());
+        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        tender.setTender(cn.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
-        return getResponseDto(cpId, entity.getToken().toString(), tender);
+        cn.setToken(entity.getToken().toString());
+        return new ResponseDto<>(true, null, cn);
     }
 
-    private void setTenderId(final Tender tender, final String cpId) {
-        tender.setId(cpId);
+    private void setIdOfOrganizationReference(final OrganizationReference or) {
+        or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 
     private void setTenderStatus(final Tender tender) {
@@ -108,30 +108,15 @@ public class CnServiceImpl implements CnService {
         });
     }
 
-    private void processBuyer(final OrganizationReference buyer) {
-        buyer.setId(buyer.getIdentifier().getScheme() + "-" + buyer.getIdentifier().getId());
-    }
-
-    private TenderEntity getEntity(final TenderDto tender, final String owner) {
+    private TenderEntity getEntity(final CnDto tender, final String owner, final LocalDateTime dateTime) {
         final TenderEntity entity = new TenderEntity();
         entity.setCpId(tender.getTender().getId());
         entity.setToken(UUIDs.random());
         entity.setOwner(owner);
+        entity.setCreatedDate(dateUtil.localToDate(dateTime));
         entity.setJsonData(jsonUtil.toJson(tender));
         return entity;
     }
 
-    private ResponseDto getResponseDto(final String cpId, final String token, final TenderDto tender) {
-        final TenderResponseDto responseDto = new TenderResponseDto(
-                token,
-                cpId,
-                tender.getDate(),
-                tender.getPlanning(),
-                tender.getTender(),
-                tender.getParties(),
-                tender.getBuyer()
-        );
-        return new ResponseDto<>(true, null, responseDto);
-    }
 
 }

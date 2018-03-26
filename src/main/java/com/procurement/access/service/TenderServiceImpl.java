@@ -5,7 +5,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.tender.TenderDto;
+import com.procurement.access.model.dto.tender.CnDto;
 import com.procurement.access.model.dto.tender.TenderStatusResponseDto;
 import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.JsonUtil;
@@ -29,7 +29,7 @@ public class TenderServiceImpl implements TenderService {
     public ResponseDto updateStatus(final String cpId, final TenderStatus status) {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         tender.getTender().setStatus(status);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
@@ -41,7 +41,7 @@ public class TenderServiceImpl implements TenderService {
     public ResponseDto updateStatusDetails(final String cpId, final TenderStatusDetails statusDetails) {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         tender.getTender().setStatusDetails(statusDetails);
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderDao.save(entity);
@@ -54,7 +54,7 @@ public class TenderServiceImpl implements TenderService {
     public ResponseDto setSuspended(String cpId, Boolean suspended) {
         final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final TenderDto tender = jsonUtil.toObject(TenderDto.class, entity.getJsonData());
+        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         if (suspended) {
             tender.getTender().setStatusDetails(TenderStatusDetails.SUSPENDED);
         } else {

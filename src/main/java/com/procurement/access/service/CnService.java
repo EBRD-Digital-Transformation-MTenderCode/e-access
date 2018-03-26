@@ -1,7 +1,7 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.tender.TenderDto;
+import com.procurement.access.model.dto.tender.CnDto;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 public interface CnService {
 
     ResponseDto createCn(String owner,
-                         LocalDateTime startDate,
-                         TenderDto tenderDto);
+                         LocalDateTime dateTime,
+                         CnDto dto);
 
     ResponseDto updateCn(String owner,
                          String cpId,
                          String token,
-                         TenderDto tenderDto);
+                         CnDto dto);
 }

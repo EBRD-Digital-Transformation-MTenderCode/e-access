@@ -1,0 +1,334 @@
+{ "planning": {
+    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document.",
+    "budget": {
+      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
+      "amount": {
+        "amount": 2.85,
+        "currency": "LAJ"
+      },
+      "isEuropeanUnionFunded": true,
+      "europeanUnionFunding": {
+        "projectIdentifier": "proj-cn-12346",
+        "projectName": "test proj name",
+        "uri": "https://jwt.io"
+      },
+      "budgetBreakdown": [
+        {
+          "id": "ocds-t1s2t3-UA-1521797966040-FS-1521797969595",
+          "description": "A short free text description of this budget entry.",
+          "amount": {
+            "amount": 2.85,
+            "currency": "LAJ"
+          },
+          "period": {
+            "startDate": "2018-03-23T09:39:25Z",
+            "endDate": "2018-05-06T02:23:40Z"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "title": "Tender title",
+    "description": "Tender description",
+    "classification": {
+      "scheme": "CPV",
+      "description": "33600000-6",
+      "id": "Фармацевтична продукція"
+    },
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Open Procurement",
+    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
+    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "goods"
+    ],
+    "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
+    "submissionLanguages": [
+      "pl",
+      "ro"
+    ],
+    "tenderPeriod": {
+      "endDate": "2018-05-06T02:23:40Z",
+      "startDate": "2018-03-23T10:55:42Z"
+    },
+    "contractPeriod": {
+      "startDate": "2018-09-27T00:00:00Z",
+      "endDate": "2018-11-27T00:00:00Z"
+    },
+    "value": {
+      "amount": 2.85,
+      "currency": "LAJ"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "lots": [
+      {
+        "id": "lot-id-123123",
+        "title": "A title for this lot.",
+        "description": "A description of this lot.",
+        "value": {
+          "amount": 2.85,
+          "currency": "LAJ"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-09-27T00:00:00Z",
+          "endDate": "2018-11-27T00:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "149-159 High Street",
+            "locality": "Birmingham",
+            "region": "Digbeth",
+            "postalCode": "B12 0JU",
+            "countryName": "United Kingdom"
+          },
+          "description": "Further description of the place of performance of the contract. Required by EU."
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "item-id-123123",
+        "classification": {
+          "scheme": "CPV",
+          "description": "Фармацевтична продукція",
+          "id": "33600000-6"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "description": "A textual description or title for the code.",
+            "id": "CPVs-id-12341234"
+          }
+        ],
+        "quantity": 10,
+        "unit": {
+          "id": "0971",
+          "name": "kg"
+        },
+        "description": "A description of the goods, services to be provided.",
+        "relatedLot": "lot-id-123123"
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodRationale": [
+      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
+      "IPR_ISSUES"
+    ],
+    "submissionMethodDetails": "Any detailed or further information on the submission method. This may include the address, e-mail address or online service to which bids should be submitted, and any special requirements to be followed for submissions.",
+    "procuringEntity": {
+      "name": "Новороздільська міська лікарня",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "20764777",
+        "legalName": "Новороздільська міська лікарня",
+        "uri": "http://buyerTestLink.ua"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "123123123",
+          "legalName": "Додатково Новороздільська міська лікарня",
+          "uri": "http://additionalBuyerTestLink.ua"
+        }
+      ],
+      "address": {
+        "streetAddress": "вул. Винниченка, 37",
+        "locality": "місто Новий Розділ",
+        "region": "Львівська область",
+        "postalCode": "7770777",
+        "countryName": "Україна"
+      },
+      "contactPoint": {
+        "name": "Осипових Сергій Олександрович",
+        "email": "test2@test.test",
+        "telephone": "+380222222222",
+        "faxNumber": "+380222222222",
+        "url": "http://test.ua"
+      }
+    }
+  },
+  "budgetBreakdown": [
+    {
+      "id": "ocds-t1s2t3-UA-1521797966040-FS-1521797969595",
+      "amount": {
+        "amount": 2.85,
+        "currency": "LAJ"
+      },
+      "description": "A short free text description of this budget entry.",
+      "period": {
+        "startDate": "2018-03-23T09:39:25Z",
+        "endDate": "2018-05-06T02:23:40Z"
+      },
+      "sourceParty": {
+        "id": "UA-EDR-753-18-5525",
+        "name": "Taylor, Dennis and Munoz"
+      }
+    }
+  ],
+  "ei": [
+    "ocds-t1s2t3-UA-1521797966040"
+  ],
+  "buyer": [
+    {
+      "name": "Taylor, Dennis and Munoz",
+      "id": "UA-EDR-753-18-5525",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "753-18-5525",
+        "legalName": "Taylor, Dennis and Munoz Inc",
+        "uri": "http://zuniga-smith.com/"
+      },
+      "address": {
+        "streetAddress": "2485 Cook Ridge",
+        "locality": "East Janetbury",
+        "region": "California",
+        "postalCode": "88909",
+        "countryName": "Liberia"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "886-69-4916",
+          "legalName": "Taylor, Dennis and Munoz Group",
+          "uri": "https://spencer.com/list/main.htm"
+        }
+      ],
+      "contactPoint": {
+        "name": "David Mcintosh",
+        "email": "alisonmaxwell@hotmail.com",
+        "telephone": "1-869-514-4337",
+        "faxNumber": "04796869785",
+        "url": "https://johnson-cox.net/app/app/list/search/"
+      },
+      "details": {
+        "typeOfBuyer": "NATIONAL_AGENCY",
+        "mainGeneralActivity": "HOUSING_AND_COMMUNITY_AMENITIES",
+        "mainSectoralActivity": "WATER",
+        "isACentralPurchasingBody": true,
+        "scale": "large"
+      }
+    }
+  ],
+  "funder": [
+    {
+      "name": "Taylor, Dennis and Munoz",
+      "id": "UA-EDR-753-18-5525",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "753-18-5525",
+        "legalName": "Taylor, Dennis and Munoz Inc",
+        "uri": "http://zuniga-smith.com/"
+      },
+      "address": {
+        "streetAddress": "2485 Cook Ridge",
+        "locality": "East Janetbury",
+        "region": "California",
+        "postalCode": "88909",
+        "countryName": "Liberia"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "886-69-4916",
+          "legalName": "Taylor, Dennis and Munoz Group",
+          "uri": "https://spencer.com/list/main.htm"
+        }
+      ],
+      "contactPoint": {
+        "name": "David Mcintosh",
+        "email": "alisonmaxwell@hotmail.com",
+        "telephone": "1-869-514-4337",
+        "faxNumber": "04796869785",
+        "url": "https://johnson-cox.net/app/app/list/search/"
+      }
+    }
+  ],
+  "payer": [
+    {
+      "name": "Taylor, Dennis and Munoz",
+      "id": "UA-EDR-753-18-5525",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "753-18-5525",
+        "legalName": "Taylor, Dennis and Munoz Inc",
+        "uri": "http://zuniga-smith.com/"
+      },
+      "address": {
+        "streetAddress": "2485 Cook Ridge",
+        "locality": "East Janetbury",
+        "region": "California",
+        "postalCode": "88909",
+        "countryName": "Liberia"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "886-69-4916",
+          "legalName": "Taylor, Dennis and Munoz Group",
+          "uri": "https://spencer.com/list/main.htm"
+        }
+      ],
+      "contactPoint": {
+        "name": "David Mcintosh",
+        "email": "alisonmaxwell@hotmail.com",
+        "telephone": "1-869-514-4337",
+        "faxNumber": "04796869785",
+        "url": "https://johnson-cox.net/app/app/list/search/"
+      }
+    }
+  ]
+}
