@@ -21,13 +21,11 @@
         <java.version>1.8</java.version>
         <junit-jupiter.version>5.0.0</junit-jupiter.version>
         <junit-platform.version>1.0.0</junit-platform.version>
-        <logstash.logback.encoder.version>4.11</logstash.logback.encoder.version>
         <maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
         <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
         <maven-surefire-plugin.version>2.19</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.19</maven-failsafe-plugin.version>
         <spring-kafka.version>2.1.0.RELEASE</spring-kafka.version>
-        <docker-image-profile></docker-image-profile>
         <docker-maven-plugin.version>0.23.0</docker-maven-plugin.version>
         <docker-registry>docker-registry.eprocurement.systems</docker-registry>
     </properties>
@@ -45,15 +43,11 @@
     </dependencyManagement>
 
     <dependencies>
-        <!--&lt;!&ndash;Spring Cloud&ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-config</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
-        <!--</dependency>-->
+       <!--cloud-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
         <!--web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -77,34 +71,6 @@
             <classifier>linux-x86_64</classifier>
             <scope>runtime</scope>
         </dependency>
-
-        <!--Logging-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-access</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <version>${logstash.logback.encoder.version}</version>
-        </dependency>
-
         <!--Test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -167,6 +133,19 @@
     </dependencies>
 
     <profiles>
+        <profile>
+            <id>deploy</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-config</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <profile>
             <id>checkstyle</id>
             <build>
@@ -357,9 +336,9 @@
                     <images>
                         <image>
                             <registry>${docker-registry}</registry>
-                            <name>${docker-registry}/${project.artifactId}${docker-image-profile}:${project.version}</name>
+                            <name>${docker-registry}/${project.artifactId}:${project.version}</name>
                             <build>
-                                <dockerFileDir>${project.basedir}/src/main</dockerFileDir>
+                                <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
                                 <nocache/>
                                 <assembly>
                                     <descriptorRef>artifact</descriptorRef>
