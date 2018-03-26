@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: e-access
+eureka:
+  client:
+    enabled: false
 
 cassandra:
 # contact-points: ac-node1.eprocurement.systems,ac-node2.eprocurement.systems,ac-node3.eprocurement.systems

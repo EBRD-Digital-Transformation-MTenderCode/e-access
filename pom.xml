@@ -43,11 +43,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!--Spring Cloud-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
+       <!--cloud-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
@@ -137,6 +133,16 @@
     </dependencies>
 
     <profiles>
+        <profile>
+            <id>cloud</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-config</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <profile>
             <id>checkstyle</id>
             <build>
