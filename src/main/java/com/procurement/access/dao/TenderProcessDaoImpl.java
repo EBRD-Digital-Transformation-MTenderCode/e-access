@@ -33,6 +33,7 @@ public class TenderProcessDaoImpl implements TenderProcessDao {
         insert.value(CP_ID, entity.getCpId())
                 .value(TOKEN, entity.getToken())
                 .value(OWNER, entity.getOwner())
+                .value(STAGE, entity.getStage())
                 .value(CREATED_DATE, entity.getCreatedDate())
                 .value(JSON_DATA, entity.getJsonData());
         session.execute(insert);

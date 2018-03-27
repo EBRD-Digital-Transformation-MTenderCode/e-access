@@ -82,6 +82,7 @@ public class StageServiceImpl implements StageService {
     }
 
     private List<Document> filterDocuments(List<Document> documents, List<Lot> lots) {
+        if (Objects.isNull(documents)) return null;
         Set<Document> documentsAfterFilter = new HashSet<>();
         Set<String> lotsID = lots.stream().map(Lot::getId).collect(Collectors.toSet());
         for (Document document : documents) {
