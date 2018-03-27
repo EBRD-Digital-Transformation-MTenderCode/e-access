@@ -4,9 +4,10 @@ CREATE TABLE IF NOT EXISTS  ocds.access_tender (
     cp_id text,
     token_entity uuid,
     owner text,
+    stage text,
     created_date timestamp,
     json_data text,
-    primary key(cp_id, token_entity)
+    primary key((cp_id,stage), token_entity)
 );
 
 SELECT * FROM ocds.access_tender;

@@ -19,6 +19,8 @@ public class TenderEntity {
 
     private String owner;
 
+    private String stage;
+
     private Date createdDate;
 
     private String jsonData;

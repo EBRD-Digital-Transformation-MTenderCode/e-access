@@ -13,5 +13,7 @@ public interface TenderDao {
 
     TenderEntity getByCpIdAndToken(String cpId, UUID token);
 
+    TenderEntity getByCpIdAndTokenAndStage(String cpId,UUID token, String stage);
+
 }
 

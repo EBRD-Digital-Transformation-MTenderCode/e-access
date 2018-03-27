@@ -1,0 +1,227 @@
+{
+  "ocid": "ocds-t1s2t3-MD-1521823082027",
+  "planning": {
+    "budget": {
+      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
+      "amount": {
+        "amount": 2.85,
+        "currency": "LAJ"
+      },
+      "europeanUnionFunding": {
+        "projectIdentifier": "proj-cn-12346",
+        "projectName": "test proj name",
+        "uri": "https://jwt.io"
+      },
+      "isEuropeanUnionFunded": true,
+      "budgetBreakdown": [
+        {
+          "id": "ocds-t1s2t3-UA-1521797966040-FS-1521797969595",
+          "description": "A short free text description of this budget entry.",
+          "amount": {
+            "amount": 2.85,
+            "currency": "LAJ"
+          },
+          "period": {
+            "startDate": "2018-03-23T09:39:25Z",
+            "endDate": "2018-05-06T02:23:40Z"
+          },
+          "sourceParty": {
+            "name": "Taylor, Dennis and Munoz",
+            "id": "UA-EDR-753-18-5525"
+          }
+        }
+      ]
+    },
+    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document."
+  },
+  "tender": {
+    "id": "ocds-t1s2t3-MD-1521823082027",
+    "title": "Tender title",
+    "description": "Tender description",
+    "status": "active",
+    "statusDetails": "empty",
+    "items": [
+      {
+        "id": "8da82fb0-2eb8-11e8-907c-df4915b32957",
+        "description": "A description of the goods, services to be provided.",
+        "classification": {
+          "scheme": "CPV",
+          "id": "15540000-5",
+          "description": "Cheese products"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "id": "CPVs-id-12341234",
+            "description": "A textual description or title for the code."
+          }
+        ],
+        "quantity": 10.0,
+        "unit": {
+          "name": "kg",
+          "id": "0971"
+        },
+        "relatedLot": "8da82fb1-2eb8-11e8-907c-df4915b32957"
+      }
+    ],
+    "value": {
+      "amount": 2.85,
+      "currency": "LAJ"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Open Procurement",
+    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "goods"
+    ],
+    "awardCriteria": "priceOnly",
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodDetails": "Any detailed or further information on the submission method. This may include the address, e-mail address or online service to which bids should be submitted, and any special requirements to be followed for submissions.",
+    "tenderPeriod": {
+      "startDate": "2018-03-23T16:38:01Z",
+      "endDate": "2018-05-06T02:23:40Z"
+    },
+    "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
+    "contractPeriod": {
+      "startDate": "2018-09-27T00:00:00Z",
+      "endDate": "2018-11-27T00:00:00Z"
+    },
+    "procuringEntity": {
+      "name": "Новороздільська міська лікарня",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "20764777",
+        "legalName": "Новороздільська міська лікарня",
+        "uri": "http://buyerTestLink.ua"
+      },
+      "address": {
+        "streetAddress": "вул. Винниченка, 37",
+        "locality": "місто Новий Розділ",
+        "region": "Львівська область",
+        "postalCode": "7770777",
+        "countryName": "Україна"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "123123123",
+          "legalName": "Додатково Новороздільська міська лікарня",
+          "uri": "http://additionalBuyerTestLink.ua"
+        }
+      ],
+      "contactPoint": {
+        "name": "Осипових Сергій Олександрович",
+        "email": "test2@test.test",
+        "telephone": "+380222222222",
+        "faxNumber": "+380222222222",
+        "url": "http://test.ua"
+      }
+    },
+    "documents": [
+      {
+        "id": "e585d8d0-2e91-11e8-ac76-4940f127948b",
+        "documentType": "tenderNotice",
+        "title": "The document title.",
+        "description": "A short description of the document. We recommend descriptions do not exceed 250 words. In the event the document is not accessible online, the description field can be used to describe arrangements for obtaining a copy of the document.",
+        "language": "ro",
+        "relatedLots": [
+          "lot-id-123123"
+        ]
+      }
+    ],
+    "lots": [
+      {
+        "id": "8da82fb1-2eb8-11e8-907c-df4915b32957",
+        "title": "A title for this lot.",
+        "description": "A description of this lot.",
+        "status": "active",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 2.85,
+          "currency": "LAJ"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-09-27T00:00:00Z",
+          "endDate": "2018-11-27T00:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "149-159 High Street",
+            "locality": "Birmingham",
+            "region": "Digbeth",
+            "postalCode": "B12 0JU",
+            "countryName": "United Kingdom"
+          },
+          "description": "Further description of the place of performance of the contract. Required by EU."
+        }
+      }
+    ],
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "classification": {
+      "scheme": "CPV",
+      "id": "15540000-5",
+      "description": "Cheese products"
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
+    "submissionLanguages": [
+      "pl",
+      "ro"
+    ],
+    "submissionMethodRationale": [
+      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
+      "IPR_ISSUES"
+    ],
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "requiresElectronicCatalogue": false
+  }
+}
