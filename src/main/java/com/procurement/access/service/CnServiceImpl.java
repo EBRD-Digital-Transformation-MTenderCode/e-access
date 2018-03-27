@@ -98,22 +98,24 @@ public class CnServiceImpl implements CnService {
     private void setLotsIdAndItemsAndDocumentsRelatedLots(final Tender tender) {
         for (Lot lot : tender.getLots()) {
             final String id = UUIDs.timeBased().toString();
-            tender.getItems()
-                    .stream()
-                    .filter(item -> item.getRelatedLot().equals(lot.getId()))
-                    .forEach(item -> item.setRelatedLot(id));
-
-            tender.getDocuments().forEach(document -> {
-                Set<String> relatedLots = new HashSet<>(document.getRelatedLots());
-                if (relatedLots.contains(lot.getId())) {
-                    relatedLots.remove(lot.getId());
-                    relatedLots.add(id);
-                }
-                document.setRelatedLots(new ArrayList<>(relatedLots));
-            });
+            if (Objects.nonNull(tender.getItems())) {
+                tender.getItems()
+                        .stream()
+                        .filter(item -> item.getRelatedLot().equals(lot.getId()))
+                        .forEach(item -> item.setRelatedLot(id));
+            }
+            if (Objects.nonNull(tender.getDocuments())) {
+                tender.getDocuments().forEach(document -> {
+                    Set<String> relatedLots = new HashSet<>(document.getRelatedLots());
+                    if (relatedLots.contains(lot.getId())) {
+                        relatedLots.remove(lot.getId());
+                        relatedLots.add(id);
+                    }
+                    document.setRelatedLots(new ArrayList<>(relatedLots));
+                });
+            }
             lot.setId(id);
         }
-
     }
 
 
