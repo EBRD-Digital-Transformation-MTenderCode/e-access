@@ -38,36 +38,27 @@ public class StageServiceImpl implements StageService {
         final TenderProcessEntity entity = Optional.ofNullable(
                 tenderProcessDao.getByCpIdAndTokenAndStage(cpId, UUID.fromString(token), previousStage))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-
         if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
-
         final TenderProcessDto processBefore = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
-
         if (processBefore.getTender().getStatus() != TenderStatus.ACTIVE)
             throw new ErrorException(INVALID_STATUS_ERROR);
         if (processBefore.getTender().getStatusDetails() != TenderStatusDetails.EMPTY)
             throw new ErrorException(INVALID_STATUS_DETAILS_ERROR);
         if (!isHaveActiveLots(processBefore.getTender().getLots()))
             throw new ErrorException(INVALID_LOTS);
-
         Tender tender = processBefore.getTender();
         tender.setLots(filterLots(tender.getLots()));
         tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
         tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
-
         final TenderProcessDto tenderAfter = new TenderProcessDto(
                 entity.getToken().toString(),
                 entity.getCpId(),
                 processBefore.getPlanning(),
                 tender);
-
         entity.setStage(newStage);
         entity.setJsonData(jsonUtil.toJson(tenderAfter));
-
         tenderProcessDao.save(entity);
-
         tenderAfter.setToken(entity.getToken().toString());
-
         return new ResponseDto<>(true, null, tenderAfter);
     }
 
