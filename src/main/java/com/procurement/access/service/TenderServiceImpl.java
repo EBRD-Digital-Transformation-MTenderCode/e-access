@@ -1,13 +1,13 @@
 package com.procurement.access.service;
 
-import com.procurement.access.dao.TenderDao;
+import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.tender.CnDto;
+import com.procurement.access.model.dto.tender.TenderProcessDto;
 import com.procurement.access.model.dto.tender.TenderStatusResponseDto;
-import com.procurement.access.model.entity.TenderEntity;
+import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.JsonUtil;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -16,54 +16,54 @@ import org.springframework.stereotype.Service;
 public class TenderServiceImpl implements TenderService {
 
     private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
-    private final TenderDao tenderDao;
+    private final TenderProcessDao tenderProcessDao;
     private final JsonUtil jsonUtil;
 
-    public TenderServiceImpl(final TenderDao tenderDao,
+    public TenderServiceImpl(final TenderProcessDao tenderProcessDao,
                              final JsonUtil jsonUtil) {
-        this.tenderDao = tenderDao;
+        this.tenderProcessDao = tenderProcessDao;
         this.jsonUtil = jsonUtil;
     }
 
     @Override
     public ResponseDto updateStatus(final String cpId, final TenderStatus status) {
-        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        tender.getTender().setStatus(status);
-        entity.setJsonData(jsonUtil.toJson(tender));
-        tenderDao.save(entity);
+        final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        process.getTender().setStatus(status);
+        entity.setJsonData(jsonUtil.toJson(process));
+        tenderProcessDao.save(entity);
         return new ResponseDto<>(true, null,
-                new TenderStatusResponseDto(status.value(), tender.getTender().getStatusDetails().value()));
+                new TenderStatusResponseDto(status.value(), process.getTender().getStatusDetails().value()));
     }
 
     @Override
     public ResponseDto updateStatusDetails(final String cpId, final TenderStatusDetails statusDetails) {
-        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        tender.getTender().setStatusDetails(statusDetails);
-        entity.setJsonData(jsonUtil.toJson(tender));
-        tenderDao.save(entity);
+        final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        process.getTender().setStatusDetails(statusDetails);
+        entity.setJsonData(jsonUtil.toJson(process));
+        tenderProcessDao.save(entity);
         return new ResponseDto<>(true, null,
-                new TenderStatusResponseDto(tender.getTender().getStatus().value(),
-                        tender.getTender().getStatusDetails().value()));
+                new TenderStatusResponseDto(process.getTender().getStatus().value(),
+                        process.getTender().getStatusDetails().value()));
     }
 
     @Override
     public ResponseDto setSuspended(String cpId, Boolean suspended) {
-        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpId(cpId))
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         if (suspended) {
-            tender.getTender().setStatusDetails(TenderStatusDetails.SUSPENDED);
+            process.getTender().setStatusDetails(TenderStatusDetails.SUSPENDED);
         } else {
-            tender.getTender().setStatusDetails(TenderStatusDetails.EMPTY);
+            process.getTender().setStatusDetails(TenderStatusDetails.EMPTY);
         }
-        entity.setJsonData(jsonUtil.toJson(tender));
-        tenderDao.save(entity);
+        entity.setJsonData(jsonUtil.toJson(process));
+        tenderProcessDao.save(entity);
         return new ResponseDto<>(true, null,
-                new TenderStatusResponseDto(tender.getTender().getStatus().value(),
-                        tender.getTender().getStatusDetails().value()));
+                new TenderStatusResponseDto(process.getTender().getStatus().value(),
+                        process.getTender().getStatusDetails().value()));
     }
 }

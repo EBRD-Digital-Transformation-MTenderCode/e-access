@@ -9,6 +9,6 @@ public interface StageService {
     ResponseDto startNewStage(final String cpId,
                               final String token,
                               final String previousStage,
-                              final String stage,
+                              final String newStage,
                               final String owner);
 }

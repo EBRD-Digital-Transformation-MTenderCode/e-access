@@ -1,25 +1,17 @@
 package com.procurement.access.service;
 
-import com.procurement.access.dao.TenderDao;
+import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ocds.Document;
-import com.procurement.access.model.dto.ocds.Item;
-import com.procurement.access.model.dto.ocds.Lot;
-import com.procurement.access.model.dto.ocds.Tender;
-import com.procurement.access.model.dto.ocds.TenderStatus;
-import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.tender.CnDto;
-import com.procurement.access.model.entity.TenderEntity;
-import com.procurement.access.utils.DateUtil;
+import com.procurement.access.model.dto.ocds.*;
+import com.procurement.access.model.dto.tender.TenderProcessDto;
+import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.JsonUtil;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StageServiceImpl implements StageService {
 
     private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
@@ -27,115 +19,88 @@ public class StageServiceImpl implements StageService {
     private static final String INVALID_STATUS_ERROR = "Status now is not Active.";
     private static final String INVALID_STATUS_DETAILS_ERROR = "Status Details now is not Empty.";
     private static final String INVALID_LOTS = "Not have a one valid lot.";
-    private static final String NEW_STAGE = "new stage";
 
     private final JsonUtil jsonUtil;
-    private final DateUtil dateUtil;
-    private final TenderDao tenderDao;
+    private final TenderProcessDao tenderProcessDao;
 
-    public StageServiceImpl(final JsonUtil jsonUtil, final DateUtil dateUtil, final TenderDao tenderDao) {
+    public StageServiceImpl(final JsonUtil jsonUtil, final TenderProcessDao tenderProcessDao) {
         this.jsonUtil = jsonUtil;
-        this.dateUtil = dateUtil;
-        this.tenderDao = tenderDao;
+        this.tenderProcessDao = tenderProcessDao;
     }
 
     @Override
     public ResponseDto startNewStage(final String cpId,
                                      final String token,
                                      final String previousStage,
-                                     final String stage,
+                                     final String newStage,
                                      final String owner) {
 
-        final TenderEntity entity = Optional.ofNullable(tenderDao.getByCpIdAndTokenAndStage(cpId, UUID.fromString
-            (token), null))
-                                            .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        if (!entity.getOwner()
-                   .equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
-        final CnDto tenderBefore = jsonUtil.toObject(CnDto.class, entity.getJsonData());
-        if (tenderBefore.getTender()
-                        .getStatus() != TenderStatus.ACTIVE) throw new ErrorException(INVALID_STATUS_ERROR);
+        final TenderProcessEntity entity = Optional.ofNullable(
+                tenderProcessDao.getByCpIdAndTokenAndStage(cpId, UUID.fromString(token), previousStage))
+                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
 
-        if (tenderBefore.getTender()
-                        .getStatusDetails() != TenderStatusDetails.EMPTY)
+        if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
+
+        final TenderProcessDto processBefore = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+
+        if (processBefore.getTender().getStatus() != TenderStatus.ACTIVE)
+            throw new ErrorException(INVALID_STATUS_ERROR);
+        if (processBefore.getTender().getStatusDetails() != TenderStatusDetails.EMPTY)
             throw new ErrorException(INVALID_STATUS_DETAILS_ERROR);
-        if (!isHaveActiveLots(tenderBefore.getTender()
-                                          .getLots())) throw new ErrorException(INVALID_LOTS);
+        if (!isHaveActiveLots(processBefore.getTender().getLots()))
+            throw new ErrorException(INVALID_LOTS);
 
-        Tender tender = tenderBefore.getTender();
+        Tender tender = processBefore.getTender();
+        tender.setLots(filterLots(tender.getLots()));
+        tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
+        tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
 
-        tender.setLots(filterLots(tenderBefore.getTender()
-                                              .getLots()));
-        tender.setItems(filterItems(tenderBefore.getTender()
-                                                .getItems(), tender.getLots()));
-        tender.setDocuments(filterDocuments(tenderBefore.getTender()
-                                                        .getDocuments(), tender.getLots()));
+        final TenderProcessDto tenderAfter = new TenderProcessDto(
+                entity.getToken().toString(),
+                entity.getCpId(),
+                processBefore.getPlanning(),
+                tender);
 
-        final CnDto tenderAfter = new CnDto(entity.getToken()
-                                                  .toString(), entity.getCpId(), tenderBefore.getPlanning(), tender);
-
+        entity.setStage(newStage);
         entity.setJsonData(jsonUtil.toJson(tenderAfter));
-        entity.setStage(NEW_STAGE);
 
-        tenderDao.save(entity);
-        tenderAfter.setToken(entity.getToken()
-                                   .toString());
+        tenderProcessDao.save(entity);
+
+        tenderAfter.setToken(entity.getToken().toString());
+
         return new ResponseDto<>(true, null, tenderAfter);
     }
 
     private boolean isHaveActiveLots(List<Lot> lots) {
-        for (int i = 0; i < lots.size(); i++) {
-            Lot lot = lots.get(i);
-            if (lot.getStatus() == TenderStatus.ACTIVE && lot.getStatusDetails() == TenderStatusDetails.EMPTY) {
-                return true;
-            }
-        }
-        return false;
+        return lots.stream()
+                .anyMatch(lot ->
+                        (lot.getStatus().equals(TenderStatus.ACTIVE)
+                                && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)));
     }
 
     private List<Lot> filterLots(List<Lot> lots) {
-        List<Lot> lotsAfterFilter = new ArrayList<>();
-        for (int i = 0; i < lots.size(); i++) {
-            Lot lot = lots.get(i);
-            if (lot.getStatus() == TenderStatus.ACTIVE && lot.getStatusDetails() == TenderStatusDetails.EMPTY) {
-                lotsAfterFilter.add(lot);
-            }
-        }
-        return lotsAfterFilter;
+        return lots.stream()
+                .filter(lot -> (lot.getStatus().equals(TenderStatus.ACTIVE)
+                        && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)))
+                .collect(Collectors.toList());
     }
 
     private Set<Item> filterItems(Set<Item> items, List<Lot> lots) {
-        Set<Item> itemsAfterFilter = new HashSet<>();
-        for (Item item : items) {
-            for (int i = 0; i < lots.size(); i++) {
-                if (item.getRelatedLot()
-                        .equals(lots.get(i)
-                                    .getId())) {
-                    itemsAfterFilter.add(item);
-                }
-            }
-        }
-        return itemsAfterFilter;
+        Set<String> lotsID = lots.stream().map(Lot::getId).collect(Collectors.toSet());
+        return items.stream().filter(item -> lotsID.contains(item.getRelatedLot())).collect(Collectors.toSet());
     }
 
     private List<Document> filterDocuments(List<Document> documents, List<Lot> lots) {
-        List<Document> documentsAfterFilter = new ArrayList<>();
+        Set<Document> documentsAfterFilter = new HashSet<>();
+        Set<String> lotsID = lots.stream().map(Lot::getId).collect(Collectors.toSet());
         for (Document document : documents) {
-            if (document.getRelatedLots()
-                        .size() == 0) {
+            if (document.getRelatedLots().size() == 0) {
                 documentsAfterFilter.add(document);
             } else {
-                List<String> relatedLots = document.getRelatedLots();
-                for (int i = 0; i < relatedLots.size(); i++) {
-                    for (int j = 0; j < lots.size(); j++) {
-                        if (relatedLots.get(i)
-                                       .equals(lots.get(j)
-                                                   .getId())) {
-                            documentsAfterFilter.add(document);
-                        }
-                    }
-                }
+                if (document.getRelatedLots().stream().anyMatch(lotsID::contains))
+                    documentsAfterFilter.add(document);
             }
         }
-        return documentsAfterFilter;
+        return new ArrayList<>(documentsAfterFilter);
     }
 }

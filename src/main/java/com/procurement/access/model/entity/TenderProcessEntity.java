@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TenderEntity {
+public class TenderProcessEntity {
 
     private String cpId;
 
