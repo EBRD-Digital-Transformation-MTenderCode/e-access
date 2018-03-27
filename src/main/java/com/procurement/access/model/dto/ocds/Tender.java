@@ -97,7 +97,7 @@ public class Tender {
     @JsonPropertyDescription("The goods and services to be purchased, broken into line items wherever possible. Items" +
             " should not be duplicated, but a quantity of 2 specified instead.")
     @Valid
-    private final Set<Item> items;
+    private Set<Item> items;
 
     @JsonProperty("value")
     @Valid
@@ -219,7 +219,7 @@ public class Tender {
             "technical specifications, evaluation criteria, and, as a tender process progresses, clarifications and " +
             "replies to queries.")
     @Valid
-    private final List<Document> documents;
+    private List<Document> documents;
 
     @JsonProperty("milestones")
     @JsonPropertyDescription("A list of milestones associated with the tender.")

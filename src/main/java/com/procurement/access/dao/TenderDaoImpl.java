@@ -16,6 +16,7 @@ public class TenderDaoImpl implements TenderDao {
     private static final String TENDER_TABLE = "access_tender";
     private static final String CP_ID = "cp_id";
     private static final String TOKEN = "token_entity";
+    private static final String STAGE = "stage";
     private static final String CREATED_DATE = "created_date";
     private static final String OWNER = "owner";
     private static final String JSON_DATA = "json_data";
@@ -49,6 +50,7 @@ public class TenderDaoImpl implements TenderDao {
                     row.getString(CP_ID),
                     row.getUUID(TOKEN),
                     row.getString(OWNER),
+                    row.getString(STAGE),
                     row.getTimestamp(CREATED_DATE),
                     row.getString(JSON_DATA));
         return null;
@@ -67,8 +69,30 @@ public class TenderDaoImpl implements TenderDao {
                     row.getString(CP_ID),
                     row.getUUID(TOKEN),
                     row.getString(OWNER),
+                    row.getString(STAGE),
                     row.getTimestamp(CREATED_DATE),
                     row.getString(JSON_DATA));
         return null;
+    }
+
+    @Override
+    public TenderEntity getByCpIdAndTokenAndStage(String cpId, UUID token, String stage) {
+        final Statement query = select()
+            .all()
+            .from(TENDER_TABLE)
+            .where(eq(CP_ID, cpId))
+            .and(eq(STAGE,stage))
+            .and(eq(TOKEN, token)).limit(1);
+        final Row row = session.execute(query).one();
+        if (row != null)
+            return new TenderEntity(
+                row.getString(CP_ID),
+                row.getUUID(TOKEN),
+                row.getString(OWNER),
+                row.getString(STAGE),
+                row.getTimestamp(CREATED_DATE),
+                row.getString(JSON_DATA));
+        return null;
+
     }
 }
