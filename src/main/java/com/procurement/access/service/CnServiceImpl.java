@@ -12,8 +12,10 @@ import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
@@ -51,7 +53,7 @@ public class CnServiceImpl implements CnService {
         setTenderStatus(tender);
         tender.setId(cpId);
         setItemsId(tender);
-        setLotsIdAndItemsRelatedLots(tender);
+        setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
         final TenderEntity entity = getEntity(cn, owner, dateTime);
         tenderDao.save(entity);
@@ -95,15 +97,18 @@ public class CnServiceImpl implements CnService {
         tender.getItems().forEach(item -> item.setId(UUIDs.timeBased().toString()));
     }
 
-    private void setLotsIdAndItemsRelatedLots(final Tender tender) {
+    private void setLotsIdAndItemsAndDocumentsRelatedLots(final Tender tender) {
         tender.getLots().forEach(lot -> {
             final String id = UUIDs.timeBased().toString();
             tender.getItems()
                     .stream()
                     .filter(item -> item.getRelatedLot().equals(lot.getId()))
-                    .findFirst()
-                    .get()
-                    .setRelatedLot(id);
+                    .forEach(item -> item.setRelatedLot(id));
+            tender.getDocuments()
+                    .stream()
+                    .flatMap(d -> d.getRelatedLots().stream())
+                    .filter(l -> l.equals(lot.getId()))
+                    .forEach(l -> l=id);
             lot.setId(id);
         });
     }
