@@ -5,6 +5,7 @@ import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.TenderDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.tender.CnDto;
@@ -12,10 +13,7 @@ import com.procurement.access.model.entity.TenderEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
@@ -98,20 +96,26 @@ public class CnServiceImpl implements CnService {
     }
 
     private void setLotsIdAndItemsAndDocumentsRelatedLots(final Tender tender) {
-        tender.getLots().forEach(lot -> {
+        for (Lot lot : tender.getLots()) {
             final String id = UUIDs.timeBased().toString();
             tender.getItems()
                     .stream()
                     .filter(item -> item.getRelatedLot().equals(lot.getId()))
                     .forEach(item -> item.setRelatedLot(id));
-            tender.getDocuments()
-                    .stream()
-                    .flatMap(d -> d.getRelatedLots().stream())
-                    .filter(l -> l.equals(lot.getId()))
-                    .forEach(l -> l=id);
+
+            tender.getDocuments().forEach(document -> {
+                Set<String> relatedLots = new HashSet<>(document.getRelatedLots());
+                if (relatedLots.contains(lot.getId())) {
+                    relatedLots.remove(lot.getId());
+                    relatedLots.add(id);
+                }
+                document.setRelatedLots(new ArrayList<>(relatedLots));
+            });
             lot.setId(id);
-        });
+        }
+
     }
+
 
     private TenderEntity getEntity(final CnDto tender, final String owner, final LocalDateTime dateTime) {
         final TenderEntity entity = new TenderEntity();

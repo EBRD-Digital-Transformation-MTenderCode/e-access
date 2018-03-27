@@ -13,10 +13,13 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.springframework.stereotype.Service;
 
 @Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
@@ -62,7 +65,7 @@ public class Document {
     private final String language;
 
     @JsonProperty("relatedLots")
-    private final List<String> relatedLots;
+    private List<String> relatedLots;
 
     @JsonCreator
     public Document(@JsonProperty("id") final String id,
