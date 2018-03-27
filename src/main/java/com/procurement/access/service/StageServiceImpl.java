@@ -6,6 +6,7 @@ import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.*;
 import com.procurement.access.model.dto.tender.TenderProcessDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
+import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,10 +22,12 @@ public class StageServiceImpl implements StageService {
     private static final String INVALID_LOTS = "Not have a one valid lot.";
 
     private final JsonUtil jsonUtil;
+    private final DateUtil dateUtil;
     private final TenderProcessDao tenderProcessDao;
 
-    public StageServiceImpl(final JsonUtil jsonUtil, final TenderProcessDao tenderProcessDao) {
+    public StageServiceImpl(final JsonUtil jsonUtil, final DateUtil dateUtil, final TenderProcessDao tenderProcessDao) {
         this.jsonUtil = jsonUtil;
+        this.dateUtil = dateUtil;
         this.tenderProcessDao = tenderProcessDao;
     }
 
@@ -56,6 +59,7 @@ public class StageServiceImpl implements StageService {
                 processBefore.getPlanning(),
                 tender);
         entity.setStage(newStage);
+        entity.setCreatedDate(dateUtil.localToDate(dateUtil.getNowUTC()));
         entity.setJsonData(jsonUtil.toJson(tenderAfter));
         tenderProcessDao.save(entity);
         tenderAfter.setToken(entity.getToken().toString());
