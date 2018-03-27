@@ -51,7 +51,7 @@ public class StageServiceImpl implements StageService {
         tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
         tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
         final TenderProcessDto tenderAfter = new TenderProcessDto(
-                entity.getToken().toString(),
+                null,
                 entity.getCpId(),
                 processBefore.getPlanning(),
                 tender);
