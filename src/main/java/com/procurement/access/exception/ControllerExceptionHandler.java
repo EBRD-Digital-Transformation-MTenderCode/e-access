@@ -1,8 +1,6 @@
 package com.procurement.access.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.procurement.access.exception.ErrorException;
-import com.procurement.access.exception.ValidationException;
 import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import java.util.Collections;
@@ -31,13 +29,6 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseDto handleNullPointerException(final NullPointerException e) {
         return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
-    }
-
-    @ResponseBody
-    @ResponseStatus(OK)
-    @ExceptionHandler(ValidationException.class)
-    public ResponseDto handleValidationContractProcessPeriod(final ValidationException e) {
-        return new ResponseDto<>(false, getErrors(e.getErrors()), null);
     }
 
     @ResponseBody
