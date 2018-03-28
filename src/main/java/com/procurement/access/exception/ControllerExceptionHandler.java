@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    private static final String ERROR_PREFIX = "400.01.";
+    private static final String ERROR_PREFIX = "400.03.";
 
     @ResponseBody
     @ResponseStatus(OK)
@@ -68,23 +68,27 @@ public class ControllerExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(OK)
+    @ExceptionHandler(ServletException.class)
+    public ResponseDto handleErrorInsertException(final ServletException e) {
+        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
+    }
+
+    @ResponseBody
+    @ResponseStatus(OK)
     @ExceptionHandler(ErrorException.class)
     public ResponseDto handleErrorInsertException(final ErrorException e) {
         return new ResponseDto<>(false, getErrors(e.getCode(), e.getMessage()), null);
     }
 
-    @ResponseBody
-    @ResponseStatus(OK)
-    @ExceptionHandler(ServletException.class)
-    public ResponseDto handleErrorInsertException(final ServletException e) {
-        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
+    private List<ResponseDetailsDto> getErrors(final String code, final String error) {
+        return Collections.singletonList(new ResponseDetailsDto(ERROR_PREFIX + code, error));
     }
 
     private List<ResponseDetailsDto> getErrors(final BindingResult result) {
         return result.getFieldErrors()
                 .stream()
                 .map(f -> new ResponseDetailsDto(
-                        f.getField(),
+                        ERROR_PREFIX + f.getField(),
                         f.getCode() + " : " + f.getDefaultMessage()))
                 .collect(Collectors.toList());
     }
@@ -96,9 +100,5 @@ public class ControllerExceptionHandler {
                         ERROR_PREFIX + f.getPropertyPath().toString(),
                         f.getMessage() + " " + f.getMessageTemplate()))
                 .collect(toList());
-    }
-
-    private List<ResponseDetailsDto> getErrors(final String code, final String error) {
-        return Collections.singletonList(new ResponseDetailsDto(ERROR_PREFIX + code, error));
     }
 }
