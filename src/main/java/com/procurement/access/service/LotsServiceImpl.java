@@ -2,6 +2,7 @@ package com.procurement.access.service;
 
 import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
+import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.lots.LotDto;
 import com.procurement.access.model.dto.lots.LotsRequestDto;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LotsServiceImpl implements LotsService {
 
-    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
     private final TenderProcessDao tenderProcessDao;
     private final JsonUtil jsonUtil;
 
@@ -33,7 +33,7 @@ public class LotsServiceImpl implements LotsService {
     @Override
     public ResponseDto getLots(final String cpId, final TenderStatus status) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         final LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
                 getLotsDtoByStatus(process.getTender().getLots(), status));
@@ -43,7 +43,7 @@ public class LotsServiceImpl implements LotsService {
     @Override
     public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatus(process.getTender().getLots(), lotsDto, status);
         process.getTender().setLots(updatedLots);
@@ -57,7 +57,7 @@ public class LotsServiceImpl implements LotsService {
                                            final TenderStatusDetails statusDetails,
                                            final LotsRequestDto lotsDto) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
-                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatusDetails(process.getTender().getLots(), lotsDto, statusDetails);
         process.getTender().setLots(updatedLots);
@@ -67,16 +67,16 @@ public class LotsServiceImpl implements LotsService {
     }
 
     private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {
-        if (lots.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final List<LotDto> lotsByStatus = lots.stream()
                 .filter(l -> l.getStatus().equals(status))
                 .map(l -> new LotDto(l.getId())).collect(Collectors.toList());
-        if (lotsByStatus.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        if (lotsByStatus.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         return lotsByStatus;
     }
 
     private List<Lot> setLotsStatus(final List<Lot> lots, final LotsRequestDto lotsDto, final TenderStatus status) {
-        if (lots.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatus(status));
@@ -86,7 +86,7 @@ public class LotsServiceImpl implements LotsService {
     private List<Lot> setLotsStatusDetails(final List<Lot> lots,
                                            final LotsRequestDto lotsDto,
                                            final TenderStatusDetails statusDetails) {
-        if (lots.isEmpty()) throw new ErrorException(DATA_NOT_FOUND_ERROR);
+        if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId())

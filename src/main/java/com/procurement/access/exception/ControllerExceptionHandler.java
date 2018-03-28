@@ -1,11 +1,11 @@
-package com.procurement.access.controller;
+package com.procurement.access.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ValidationException;
 import com.procurement.access.model.dto.bpe.ResponseDetailsDto;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.ServletException;
@@ -23,6 +23,8 @@ import static org.springframework.http.HttpStatus.OK;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
+    private static final String ERROR_PREFIX = "400.01.";
 
     @ResponseBody
     @ResponseStatus(OK)
@@ -77,7 +79,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(OK)
     @ExceptionHandler(ErrorException.class)
     public ResponseDto handleErrorInsertException(final ErrorException e) {
-        return new ResponseDto<>(false, getErrors(e.getClass().getName(), e.getMessage()), null);
+        return new ResponseDto<>(false, getErrors(e.getCode(), e.getMessage()), null);
     }
 
     @ResponseBody
@@ -100,12 +102,12 @@ public class ControllerExceptionHandler {
         return e.getConstraintViolations()
                 .stream()
                 .map(f -> new ResponseDetailsDto(
-                        f.getPropertyPath().toString(),
+                        ERROR_PREFIX + f.getPropertyPath().toString(),
                         f.getMessage() + " " + f.getMessageTemplate()))
                 .collect(toList());
     }
 
     private List<ResponseDetailsDto> getErrors(final String code, final String error) {
-        return Arrays.asList(new ResponseDetailsDto(code, error));
+        return Collections.singletonList(new ResponseDetailsDto(ERROR_PREFIX + code, error));
     }
 }

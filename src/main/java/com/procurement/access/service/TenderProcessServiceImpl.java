@@ -4,6 +4,7 @@ import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
+import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
@@ -23,8 +24,6 @@ import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 public class TenderProcessServiceImpl implements TenderProcessService {
 
     private static final String SEPARATOR = "-";
-    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
-    private static final String INVALID_OWNER_ERROR = "Invalid owner.";
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
@@ -65,8 +64,9 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final String token,
                                 final TenderProcessDto cn) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
-                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        if (!entity.getOwner().equals(owner))
+            throw new ErrorException(ErrorType.INVALID_OWNER);
         final TenderProcessDto tender = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         tender.setTender(cn.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));

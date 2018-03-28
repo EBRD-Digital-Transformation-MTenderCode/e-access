@@ -2,6 +2,7 @@ package com.procurement.access.service;
 
 import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
+import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.*;
 import com.procurement.access.model.dto.tender.TenderProcessDto;
@@ -12,14 +13,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class StageServiceImpl implements StageService {
-
-    private static final String DATA_NOT_FOUND_ERROR = "Data not found.";
-    private static final String INVALID_OWNER_ERROR = "Invalid owner.";
-    private static final String INVALID_STATUS_ERROR = "Status now is not Active.";
-    private static final String INVALID_STATUS_DETAILS_ERROR = "Status Details now is not Empty.";
-    private static final String INVALID_LOTS = "Not have a one valid lot.";
 
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
@@ -40,15 +36,16 @@ public class StageServiceImpl implements StageService {
 
         final TenderProcessEntity entity = Optional.ofNullable(
                 tenderProcessDao.getByCpIdAndTokenAndStage(cpId, UUID.fromString(token), previousStage))
-                .orElseThrow(() -> new ErrorException(DATA_NOT_FOUND_ERROR));
-        if (!entity.getOwner().equals(owner)) throw new ErrorException(INVALID_OWNER_ERROR);
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        if (!entity.getOwner().equals(owner))
+            throw new ErrorException(ErrorType.INVALID_OWNER);
         final TenderProcessDto processBefore = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         if (processBefore.getTender().getStatus() != TenderStatus.ACTIVE)
-            throw new ErrorException(INVALID_STATUS_ERROR);
+            throw new ErrorException(ErrorType.NOT_ACTIVE);
         if (processBefore.getTender().getStatusDetails() != TenderStatusDetails.EMPTY)
-            throw new ErrorException(INVALID_STATUS_DETAILS_ERROR);
+            throw new ErrorException(ErrorType.NOT_INTERMEDIATE);
         if (!isHaveActiveLots(processBefore.getTender().getLots()))
-            throw new ErrorException(INVALID_LOTS);
+            throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         Tender tender = processBefore.getTender();
         tender.setLots(filterLots(tender.getLots()));
         tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
