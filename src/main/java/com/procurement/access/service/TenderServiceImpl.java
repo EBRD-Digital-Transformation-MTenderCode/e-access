@@ -51,7 +51,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto setSuspended(String cpId, Boolean suspended) {
+    public ResponseDto setSuspended(final String cpId, final Boolean suspended) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());

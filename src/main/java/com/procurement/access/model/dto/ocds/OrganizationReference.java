@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.validation.Valid;
@@ -27,29 +28,32 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "contactPoint"
 })
 public class OrganizationReference {
+
     @JsonProperty("id")
     private String id;
 
-    @JsonProperty("name")
     @Size(min = 1)
     @NotNull
+    @JsonProperty("name")
     private final String name;
 
-    @JsonProperty("identifier")
     @Valid
+    @NotNull
+    @JsonProperty("identifier")
     private final Identifier identifier;
 
-    @JsonProperty("address")
     @Valid
+    @NotNull
+    @JsonProperty("address")
     private final Address address;
 
-    @JsonProperty("additionalIdentifiers")
-    @JsonDeserialize(as = LinkedHashSet.class)
     @Valid
+    @JsonProperty("additionalIdentifiers")
     private final Set<Identifier> additionalIdentifiers;
 
-    @JsonProperty("contactPoint")
     @Valid
+    @NotNull
+    @JsonProperty("contactPoint")
     private final ContactPoint contactPoint;
 
     @JsonCreator
@@ -57,7 +61,7 @@ public class OrganizationReference {
                                  @JsonProperty("id") final String id,
                                  @JsonProperty("identifier") final Identifier identifier,
                                  @JsonProperty("address") final Address address,
-                                 @JsonProperty("additionalIdentifiers") final LinkedHashSet<Identifier>
+                                 @JsonProperty("additionalIdentifiers") final HashSet<Identifier>
                                          additionalIdentifiers,
                                  @JsonProperty("contactPoint") final ContactPoint contactPoint) {
         this.id = id;

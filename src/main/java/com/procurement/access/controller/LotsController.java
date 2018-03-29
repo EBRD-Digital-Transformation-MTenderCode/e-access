@@ -23,26 +23,28 @@ public class LotsController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto> getLots(@RequestParam final String cpId,
-                                               @RequestParam final String status) {
-        return new ResponseEntity<>(lotsService.getLots(cpId, TenderStatus.fromValue(status)), HttpStatus.OK);
+    public ResponseEntity<ResponseDto> getLots(@RequestParam("identifier") final String cpId,
+                                               @RequestParam("status") final String status) {
+        return new ResponseEntity<>(
+                lotsService.getLots(cpId, TenderStatus.fromValue(status)),
+                HttpStatus.OK);
     }
 
     @PostMapping("/updateStatus")
-    public ResponseEntity<ResponseDto> updateStatus(@RequestParam final String cpId,
-                                                    @RequestParam final String status,
-                                                    @Valid @RequestBody final LotsRequestDto lotsDto) {
+    public ResponseEntity<ResponseDto> updateStatus(@RequestParam("identifier") final String cpId,
+                                                    @RequestParam("status") final String status,
+                                                    @Valid @RequestBody final LotsRequestDto data) {
         return new ResponseEntity<>(
-                lotsService.updateStatus(cpId, TenderStatus.fromValue(status), lotsDto),
+                lotsService.updateStatus(cpId, TenderStatus.fromValue(status), data),
                 HttpStatus.OK);
     }
 
     @PostMapping("/updateStatusDetails")
-    public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam final String cpId,
-                                                           @RequestParam final String statusDetails,
-                                                           @Valid @RequestBody final LotsRequestDto lotsDto) {
+    public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam("identifier") final String cpId,
+                                                           @RequestParam("statusDetails") final String statusDetails,
+                                                           @Valid @RequestBody final LotsRequestDto data) {
         return new ResponseEntity<>(
-                lotsService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails), lotsDto),
+                lotsService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails), data),
                 HttpStatus.OK);
     }
 }

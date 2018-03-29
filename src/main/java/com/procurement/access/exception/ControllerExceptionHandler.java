@@ -75,6 +75,13 @@ public class ControllerExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(OK)
+    @ExceptionHandler(EnumException.class)
+    public ResponseDto handleErrorInsertException(final EnumException e) {
+        return new ResponseDto<>(false, getErrors(e.getCode(), e.getMessage()), null);
+    }
+
+    @ResponseBody
+    @ResponseStatus(OK)
     @ExceptionHandler(ErrorException.class)
     public ResponseDto handleErrorInsertException(final ErrorException e) {
         return new ResponseDto<>(false, getErrors(e.getCode(), e.getMessage()), null);

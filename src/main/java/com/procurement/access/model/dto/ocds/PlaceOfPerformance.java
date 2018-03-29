@@ -1,6 +1,5 @@
 package com.procurement.access.model.dto.ocds;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,8 +12,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "address",
-        "description",
-        "NUTScode"
+        "description"
 })
 public class PlaceOfPerformance {
 
@@ -24,16 +22,11 @@ public class PlaceOfPerformance {
     @JsonProperty("description")
     private final String description;
 
-    @JsonProperty("NUTScode")
-    private final String NUTScode;
-
     @JsonCreator
     public PlaceOfPerformance(@JsonProperty("address") final Address address,
-                              @JsonProperty("description") final String description,
-                              @JsonProperty("NUTScode") final String NUTScode) {
+                              @JsonProperty("description") final String description) {
         this.address = address;
         this.description = description;
-        this.NUTScode = NUTScode;
     }
 
     @Override
@@ -41,7 +34,6 @@ public class PlaceOfPerformance {
         return new HashCodeBuilder()
                 .append(address)
                 .append(description)
-                .append(NUTScode)
                 .toHashCode();
     }
 
@@ -57,7 +49,6 @@ public class PlaceOfPerformance {
         return new EqualsBuilder()
                 .append(address, rhs.address)
                 .append(description, rhs.description)
-                .append(NUTScode, rhs.NUTScode)
                 .isEquals();
     }
 }

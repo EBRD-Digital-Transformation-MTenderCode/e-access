@@ -4,33 +4,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "hasVariants",
-        "variantDetails"
-})
 public class Variant {
+
+    @NotNull
     @JsonProperty("hasVariants")
     private final Boolean hasVariants;
 
-    @JsonProperty("variantDetails")
-    private final String variantDetails;
-
     @JsonCreator
-    public Variant(@JsonProperty("hasVariants") final Boolean hasVariants,
-                   @JsonProperty("variantDetails") final String variantDetails) {
-        super();
+    public Variant(@JsonProperty("hasVariants") final Boolean hasVariants) {
         this.hasVariants = hasVariants;
-        this.variantDetails = variantDetails;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(hasVariants)
-                .append(variantDetails)
+        return new HashCodeBuilder()
+                .append(hasVariants)
                 .toHashCode();
     }
 
@@ -42,9 +34,9 @@ public class Variant {
         if (!(other instanceof Variant)) {
             return false;
         }
-        final Variant rhs = ((Variant) other);
-        return new EqualsBuilder().append(hasVariants, rhs.hasVariants)
-                .append(variantDetails, rhs.variantDetails)
+        final Variant rhs = (Variant) other;
+        return new EqualsBuilder()
+                .append(hasVariants, rhs.hasVariants)
                 .isEquals();
     }
 }

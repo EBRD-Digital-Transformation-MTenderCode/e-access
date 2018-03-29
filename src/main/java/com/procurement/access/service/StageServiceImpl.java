@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class StageServiceImpl implements StageService {
 
@@ -46,7 +45,7 @@ public class StageServiceImpl implements StageService {
             throw new ErrorException(ErrorType.NOT_INTERMEDIATE);
         if (!isHaveActiveLots(processBefore.getTender().getLots()))
             throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
-        Tender tender = processBefore.getTender();
+        final Tender tender = processBefore.getTender();
         tender.setLots(filterLots(tender.getLots()));
         tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
         tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
@@ -56,37 +55,37 @@ public class StageServiceImpl implements StageService {
                 processBefore.getPlanning(),
                 tender);
         entity.setStage(newStage);
-        entity.setCreatedDate(dateUtil.localToDate(dateUtil.getNowUTC()));
+        entity.setCreatedDate(dateUtil.nowDateTime());
         entity.setJsonData(jsonUtil.toJson(tenderAfter));
         tenderProcessDao.save(entity);
         tenderAfter.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, tenderAfter);
     }
 
-    private boolean isHaveActiveLots(List<Lot> lots) {
+    private boolean isHaveActiveLots(final List<Lot> lots) {
         return lots.stream()
                 .anyMatch(lot ->
-                        (lot.getStatus().equals(TenderStatus.ACTIVE)
-                                && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)));
+                        lot.getStatus().equals(TenderStatus.ACTIVE)
+                                && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY));
     }
 
-    private List<Lot> filterLots(List<Lot> lots) {
+    private List<Lot> filterLots(final List<Lot> lots) {
         return lots.stream()
-                .filter(lot -> (lot.getStatus().equals(TenderStatus.ACTIVE)
-                        && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)))
+                .filter(lot -> lot.getStatus().equals(TenderStatus.ACTIVE)
+                        && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY))
                 .collect(Collectors.toList());
     }
 
-    private Set<Item> filterItems(Set<Item> items, List<Lot> lots) {
-        Set<String> lotsID = lots.stream().map(Lot::getId).collect(Collectors.toSet());
+    private Set<Item> filterItems(final Set<Item> items, final List<Lot> lots) {
+        final Set<String> lotsID = getUniqueLots(lots);
         return items.stream().filter(item -> lotsID.contains(item.getRelatedLot())).collect(Collectors.toSet());
     }
 
-    private List<Document> filterDocuments(List<Document> documents, List<Lot> lots) {
+    private List<Document> filterDocuments(final List<Document> documents, final List<Lot> lots) {
         if (Objects.isNull(documents)) return null;
-        Set<Document> documentsAfterFilter = new HashSet<>();
-        Set<String> lotsID = lots.stream().map(Lot::getId).collect(Collectors.toSet());
-        for (Document document : documents) {
+        final Set<Document> documentsAfterFilter = new HashSet<>();
+        final Set<String> lotsID = getUniqueLots(lots);
+        for (final Document document : documents) {
             if (document.getRelatedLots().size() == 0) {
                 documentsAfterFilter.add(document);
             } else {
@@ -95,5 +94,9 @@ public class StageServiceImpl implements StageService {
             }
         }
         return new ArrayList<>(documentsAfterFilter);
+    }
+
+    private Set<String> getUniqueLots(final List<Lot> lots){
+        return lots.stream().map(Lot::getId).collect(Collectors.toSet());
     }
 }

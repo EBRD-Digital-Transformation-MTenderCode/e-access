@@ -1,6 +1,7 @@
 package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
+import com.procurement.access.exception.EnumException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,13 +20,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "uri"
 })
 public class Classification {
-    @JsonProperty("id")
+
     @NotNull
+    @JsonProperty("id")
     private final String id;
 
+    @NotNull
     @JsonProperty("description")
     private final String description;
 
+    @NotNull
     @JsonProperty("scheme")
     private final Scheme scheme;
 
@@ -77,15 +81,14 @@ public class Classification {
         OKDP("OKDP"),
         OKPD("OKPD");
 
-        private final static Map<String, Scheme> CONSTANTS = new HashMap<>();
+        private static final Map<String, Scheme> CONSTANTS = new HashMap<>();
+        private final String value;
 
         static {
             for (final Scheme c : values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
-
-        private final String value;
 
         Scheme(final String value) {
             this.value = value;
@@ -95,8 +98,7 @@ public class Classification {
         public static Scheme fromValue(final String value) {
             final Scheme constant = CONSTANTS.get(value);
             if (constant == null) {
-                throw new IllegalArgumentException(
-                        "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
+                throw new EnumException(Scheme.class.getName(), value, Arrays.toString(values()));
             }
             return constant;
         }

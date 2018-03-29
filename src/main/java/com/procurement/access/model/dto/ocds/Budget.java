@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -28,28 +29,41 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "budgetBreakdown"
 })
 public class Budget {
-    @JsonProperty("description")
-    private final String description;
-    @JsonProperty("amount")
-    @Valid
-    private final Value amount;
-    @JsonProperty("project")
-    private final String project;
-    @JsonProperty("projectID")
-    private final String projectID;
-    @JsonProperty("uri")
-    private final String uri;
-    @JsonProperty("source")
-    private final String source;
-    @JsonProperty("europeanUnionFunding")
-    @Valid
-    private final EuropeanUnionFunding europeanUnionFunding;
-    @JsonProperty("isEuropeanUnionFunded")
-    private final Boolean isEuropeanUnionFunded;
-    @JsonProperty("budgetBreakdown")
-    private final List<BudgetBreakdown> budgetBreakdown;
+
     @JsonProperty("id")
     private String id;
+
+    @JsonProperty("description")
+    private final String description;
+
+    @Valid
+    @NotNull
+    @JsonProperty("amount")
+    private final Value amount;
+
+    @JsonProperty("project")
+    private final String project;
+
+    @JsonProperty("projectID")
+    private final String projectID;
+
+    @JsonProperty("uri")
+    private final String uri;
+
+    @JsonProperty("source")
+    private final String source;
+
+    @Valid
+    @JsonProperty("europeanUnionFunding")
+    private final EuropeanUnionFunding europeanUnionFunding;
+
+    @NotNull
+    @JsonProperty("isEuropeanUnionFunded")
+    private final Boolean isEuropeanUnionFunded;
+
+    @NotEmpty
+    @JsonProperty("budgetBreakdown")
+    private final List<BudgetBreakdown> budgetBreakdown;
 
     @JsonCreator
     public Budget(@JsonProperty("id") final String id,

@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TenderProcessService {
 
-    ResponseDto createCn(String owner,
+    ResponseDto createCn(String stage,
+                         String country,
+                         String owner,
                          LocalDateTime dateTime,
                          TenderProcessDto dto);
 
-    ResponseDto updateCn(String owner,
-                         String cpId,
+
+    ResponseDto updateCn(String cpId,
                          String token,
+                         String owner,
                          TenderProcessDto dto);
 }

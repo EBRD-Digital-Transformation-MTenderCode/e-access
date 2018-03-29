@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -29,37 +31,47 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "placeOfPerformance"
 })
 public class Lot {
+    @NotNull
+    @JsonProperty("id")
+    private String id;
+    @NotNull
     @JsonProperty("title")
     private final String title;
+    @NotNull
     @JsonProperty("description")
     private final String description;
     @JsonProperty("status")
     private TenderStatus status;
     @JsonProperty("statusDetails")
     private TenderStatusDetails statusDetails;
+    @Valid
+    @NotNull
     @JsonProperty("value")
-    @Valid
     private final Value value;
+    @Valid
+    @NotEmpty
     @JsonProperty("options")
-    @Valid
     private final List<Option> options;
-    @JsonProperty("recurrentProcurement")
     @Valid
-    private final List<RecurrentProcurement> recurrentProcurement;
-    @JsonProperty("renewals")
-    @Valid
-    private final List<Renewal> renewals;
+    @NotEmpty
     @JsonProperty("variants")
-    @Valid
     private final List<Variant> variants;
+    @Valid
+    @NotEmpty
+    @JsonProperty("renewals")
+    private final List<Renewal> renewals;
+    @Valid
+    @NotEmpty
+    @JsonProperty("recurrentProcurement")
+    private final List<RecurrentProcurement> recurrentProcurement;
+    @Valid
+    @NotNull
     @JsonProperty("contractPeriod")
-    @Valid
     private final Period contractPeriod;
-    @JsonProperty("placeOfPerformance")
     @Valid
+    @NotNull
+    @JsonProperty("placeOfPerformance")
     private final PlaceOfPerformance placeOfPerformance;
-    @JsonProperty("id")
-    private String id;
 
     @JsonCreator
     public Lot(@JsonProperty("id") final String id,

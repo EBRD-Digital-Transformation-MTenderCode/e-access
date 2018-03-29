@@ -4,24 +4,28 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "useOrdering",
         "usePayment",
         "acceptInvoicing"
 })
 public class ElectronicWorkflows {
+
+    @NotNull
     @JsonProperty("useOrdering")
     private final Boolean useOrdering;
 
+    @NotNull
     @JsonProperty("usePayment")
     private final Boolean usePayment;
 
+    @NotNull
     @JsonProperty("acceptInvoicing")
     private final Boolean acceptInvoicing;
 

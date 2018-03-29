@@ -40,10 +40,12 @@ public class TenderProcessServiceImpl implements TenderProcessService {
     }
 
     @Override
-    public ResponseDto createCn(final String owner,
+    public ResponseDto createCn(final String stage,
+                                final String country,
+                                final String owner,
                                 final LocalDateTime dateTime,
                                 final TenderProcessDto dto) {
-        final String cpId = ocdsProperties.getPrefix() + dateUtil.getMilliNowUTC();
+        final String cpId = getCpId(country);
         dto.setOcId(cpId);
         final Tender tender = dto.getTender();
         setLotsStatus(tender);
@@ -52,16 +54,16 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
-        final TenderProcessEntity entity = getEntity(dto, "CN", dateTime, owner);
+        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
     }
 
     @Override
-    public ResponseDto updateCn(final String owner,
-                                final String cpId,
+    public ResponseDto updateCn(final String cpId,
                                 final String token,
+                                final String owner,
                                 final TenderProcessDto cn) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
@@ -73,6 +75,10 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         tenderProcessDao.save(entity);
         cn.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, cn);
+    }
+
+    private String getCpId(final String country) {
+        return ocdsProperties.getPrefix() + SEPARATOR + country + SEPARATOR + dateUtil.milliNowUTC();
     }
 
     private void setIdOfOrganizationReference(final OrganizationReference or) {
@@ -96,7 +102,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
     }
 
     private void setLotsIdAndItemsAndDocumentsRelatedLots(final Tender tender) {
-        for (Lot lot : tender.getLots()) {
+        for (final Lot lot : tender.getLots()) {
             final String id = UUIDs.timeBased().toString();
             if (Objects.nonNull(tender.getItems())) {
                 tender.getItems()
@@ -106,12 +112,12 @@ public class TenderProcessServiceImpl implements TenderProcessService {
             }
             if (Objects.nonNull(tender.getDocuments())) {
                 tender.getDocuments().forEach(document -> {
-                    Set<String> relatedLots = new HashSet<>(document.getRelatedLots());
+                    final Set<String> relatedLots = document.getRelatedLots();
                     if (relatedLots.contains(lot.getId())) {
                         relatedLots.remove(lot.getId());
                         relatedLots.add(id);
                     }
-                    document.setRelatedLots(new ArrayList<>(relatedLots));
+                    document.setRelatedLots(relatedLots);
                 });
             }
             lot.setId(id);

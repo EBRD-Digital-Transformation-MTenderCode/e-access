@@ -16,4 +16,4 @@ cassandra:
   username: caclient
   password: brT4Kn27RQs
 
-ocds.prefix: ocds-t1s2t3-UA-
+ocds.prefix: ocds-t1s2t3

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface StageService {
 
-    ResponseDto startNewStage(final String cpId,
-                              final String token,
-                              final String previousStage,
-                              final String newStage,
-                              final String owner);
+    ResponseDto startNewStage(String cpId,
+                              String token,
+                              String previousStage,
+                              String newStage,
+                              String owner);
 }

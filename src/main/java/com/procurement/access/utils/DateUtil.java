@@ -9,18 +9,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class DateUtil {
 
-    public LocalDateTime getNowUTC() {
+
+    public Date nowDateTime() {
+        return localToDate(nowUTCLocalDateTime());
+    }
+
+    public LocalDateTime nowUTCLocalDateTime() {
         return LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
     }
 
-    public long getMilliNowUTC() {
-        return getNowUTC().toInstant(ZoneOffset.UTC)
-                .toEpochMilli();
+    public long milliNowUTC() {
+        return nowUTCLocalDateTime().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 
-    public long getMilliUTC(final LocalDateTime localDateTime) {
-        return localDateTime.toInstant(ZoneOffset.UTC)
-                .toEpochMilli();
+    public long milliUTCfromLocalDateTime(final LocalDateTime localDateTime) {
+        return localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 
     public LocalDateTime dateToLocal(final Date date) {

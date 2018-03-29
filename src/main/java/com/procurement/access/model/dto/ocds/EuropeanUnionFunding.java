@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.net.URI;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -17,9 +17,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "uri"
 })
 public class EuropeanUnionFunding {
+
+    @NotNull
     @JsonProperty("projectIdentifier")
     private final String projectIdentifier;
 
+    @NotNull
     @JsonProperty("projectName")
     private final String projectName;
 

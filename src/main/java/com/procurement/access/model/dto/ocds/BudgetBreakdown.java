@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -15,28 +17,27 @@ import lombok.Getter;
         "sourceParty"
 })
 public class BudgetBreakdown {
-    @JsonProperty("id")
+
     @NotNull
+    @JsonProperty("id")
     private final String id;
 
     @JsonProperty("description")
     private final String description;
 
-    @JsonProperty("amount")
     @Valid
     @NotNull
+    @JsonProperty("amount")
     private final Value amount;
 
-    @JsonProperty("period")
     @Valid
     @NotNull
+    @JsonProperty("period")
     private final Period period;
 
-    @JsonProperty("sourceParty")
-    @JsonPropertyDescription("The id and name of the party being referenced. Used to cross-reference to the parties " +
-            "section")
     @Valid
     @NotNull
+    @JsonProperty("sourceParty")
     private final OrganizationReference sourceParty;
 
     @JsonCreator
@@ -51,4 +52,34 @@ public class BudgetBreakdown {
         this.period = period;
         this.sourceParty = sourceParty;
     }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(id)
+                .append(description)
+                .append(amount)
+                .append(period)
+                .append(sourceParty)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof BudgetBreakdown)) {
+            return false;
+        }
+        final BudgetBreakdown rhs = (BudgetBreakdown) other;
+        return new EqualsBuilder()
+                .append(id, rhs.id)
+                .append(description, rhs.description)
+                .append(amount, rhs.amount)
+                .append(period, rhs.period)
+                .append(sourceParty, rhs.sourceParty)
+                .isEquals();
+    }
+
 }

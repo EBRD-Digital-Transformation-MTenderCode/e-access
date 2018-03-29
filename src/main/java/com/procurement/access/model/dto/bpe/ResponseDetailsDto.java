@@ -5,8 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class ResponseDetailsDto {
+
     @JsonProperty("code")
     private String code;
+
     @JsonProperty("message")
     private String message;
 

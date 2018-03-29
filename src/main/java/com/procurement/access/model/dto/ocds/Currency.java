@@ -2,6 +2,7 @@ package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.procurement.access.exception.EnumException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -307,8 +308,9 @@ public enum Currency {
     ZWR("ZWR");
 
 
+    private static final Map<String, Currency> CONSTANTS = new HashMap<>();
+
     private final String value;
-    private final static Map<String, Currency> CONSTANTS = new HashMap<>();
 
     static {
         for (final Currency c : values()) {
@@ -334,8 +336,7 @@ public enum Currency {
     public static Currency fromValue(final String value) {
         final Currency constant = CONSTANTS.get(value);
         if (constant == null) {
-            throw new IllegalArgumentException(
-                    "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
+            throw new EnumException(Currency.class.getName(), value, Arrays.toString(values()));
         }
         return constant;
     }

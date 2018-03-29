@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -26,22 +28,31 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "relatedLot"
 })
 public class Item {
-    @JsonProperty("description")
-    private final String description;
-    @JsonProperty("classification")
-    @Valid
-    private final Classification classification;
-    @JsonProperty("additionalClassifications")
-    @JsonDeserialize(as = LinkedHashSet.class)
-    @Valid
-    private final Set<Classification> additionalClassifications;
-    @JsonProperty("quantity")
-    private final Double quantity;
-    @JsonProperty("unit")
-    @Valid
-    private final Unit unit;
     @JsonProperty("id")
     private String id;
+
+    @JsonProperty("description")
+    private final String description;
+
+    @Valid
+    @NotNull
+    @JsonProperty("classification")
+    private final Classification classification;
+
+    @Valid
+    @JsonProperty("additionalClassifications")
+    private final Set<Classification> additionalClassifications;
+
+    @NotNull
+    @JsonProperty("quantity")
+    private final Double quantity;
+
+    @Valid
+    @NotNull
+    @JsonProperty("unit")
+    private final Unit unit;
+
+    @NotNull
     @JsonProperty("relatedLot")
     private String relatedLot;
 
@@ -49,7 +60,7 @@ public class Item {
     public Item(@JsonProperty("id") final String id,
                 @JsonProperty("description") final String description,
                 @JsonProperty("classification") final Classification classification,
-                @JsonProperty("additionalClassifications") final LinkedHashSet<Classification>
+                @JsonProperty("additionalClassifications") final HashSet<Classification>
                         additionalClassifications,
                 @JsonProperty("quantity") final Double quantity,
                 @JsonProperty("unit") final Unit unit,

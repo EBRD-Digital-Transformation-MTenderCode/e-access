@@ -33,14 +33,14 @@ public class TenderProcessDto {
     @JsonProperty("ocid")
     private String ocId;
 
-    @JsonProperty("planning")
-    @NotNull
     @Valid
+    @NotNull
+    @JsonProperty("planning")
     private Planning planning;
 
-    @JsonProperty("tender")
-    @NotNull
     @Valid
+    @NotNull
+    @JsonProperty("tender")
     private Tender tender;
 
     @JsonCreator

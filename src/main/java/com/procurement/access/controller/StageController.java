@@ -22,11 +22,11 @@ public class StageController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> startNewStage(@RequestParam(value = "cpId") final String cpId,
-                                                     @RequestParam(value = "token") final String token,
-                                                     @RequestParam(value = "previousStage") final String previousStage,
-                                                     @RequestParam(value = "stage") final String newStage,
-                                                     @RequestParam(value = "owner") final String owner) {
+    public ResponseEntity<ResponseDto> startNewStage(@RequestParam("identifier") final String cpId,
+                                                     @RequestParam("token") final String token,
+                                                     @RequestParam("previousStage") final String previousStage,
+                                                     @RequestParam("stage") final String newStage,
+                                                     @RequestParam("owner") final String owner) {
         return new ResponseEntity<>(
                 stageService.startNewStage(cpId, token, previousStage, newStage, owner),
                 HttpStatus.OK);
