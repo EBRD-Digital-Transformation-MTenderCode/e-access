@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "description",
         "status",
         "statusDetails",
+        "classification",
         "acceleratedProcedure",
         "designContest",
         "electronicWorkflows",
@@ -62,13 +63,16 @@ public class Tender {
     @JsonProperty("description")
     private final String description;
 
-    @NotNull
     @JsonProperty("status")
     private TenderStatus status;
 
     @JsonProperty("statusDetails")
-    @JsonPropertyDescription("Additional details of status.)")
     private TenderStatusDetails statusDetails;
+
+    @Valid
+    @NotNull
+    @JsonProperty("classification")
+    private final Classification classification;
 
     @Valid
     @NotNull
@@ -81,6 +85,7 @@ public class Tender {
     private final DesignContest designContest;
 
     @Valid
+    @NotNull
     @JsonProperty("electronicWorkflows")
     private final ElectronicWorkflows electronicWorkflows;
 
@@ -194,6 +199,7 @@ public class Tender {
                   @JsonProperty("description") final String description,
                   @JsonProperty("status") final TenderStatus status,
                   @JsonProperty("statusDetails") final TenderStatusDetails statusDetails,
+                  @JsonProperty("classification") final Classification classification,
                   @JsonProperty("items") final LinkedHashSet<Item> items,
                   @JsonProperty("value") final Value value,
                   @JsonProperty("procurementMethod") final ProcurementMethod procurementMethod,
@@ -230,6 +236,7 @@ public class Tender {
         this.description = description;
         this.status = status;
         this.statusDetails = statusDetails;
+        this.classification = classification;
         this.items = items;
         this.value = value;
         this.procurementMethod = procurementMethod;
@@ -268,6 +275,7 @@ public class Tender {
                 .append(description)
                 .append(status)
                 .append(statusDetails)
+                .append(classification)
                 .append(items)
                 .append(value)
                 .append(procurementMethod)
@@ -313,6 +321,7 @@ public class Tender {
                 .append(description, rhs.description)
                 .append(status, rhs.status)
                 .append(statusDetails, rhs.statusDetails)
+                .append(classification, rhs.classification)
                 .append(items, rhs.items)
                 .append(value, rhs.value)
                 .append(procurementMethod, rhs.procurementMethod)
