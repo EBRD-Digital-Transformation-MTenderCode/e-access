@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: e-access
+  jackson:
+    deserialization:
+       fail-on-unknown-properties: true
+
 eureka:
   client:
     enabled: false
