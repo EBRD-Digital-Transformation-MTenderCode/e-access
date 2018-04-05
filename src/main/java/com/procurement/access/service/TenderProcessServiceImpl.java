@@ -46,7 +46,6 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final LocalDateTime dateTime,
                                 final TenderProcessDto dto) {
         final String cpId = getCpId(country);
-        dto.setOcId(cpId);
         final Tender tender = dto.getTender();
         setLotsStatus(tender);
         setTenderStatus(tender);
@@ -56,6 +55,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         setIdOfOrganizationReference(tender.getProcuringEntity());
         final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
+        dto.setOcId(cpId);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
     }
