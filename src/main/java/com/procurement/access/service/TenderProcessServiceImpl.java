@@ -16,9 +16,10 @@ import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
-import java.util.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
@@ -64,11 +65,6 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         return new ResponseDto<>(true, null, dto);
     }
 
-    private Tender getTenderProcessResponseDto(final TenderRequest tender) {
-
-    }
-
-
     @Override
     public ResponseDto updateCn(final String cpId,
                                 final String token,
@@ -93,6 +89,10 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                  final LocalDateTime dateTime,
                                  final TenderProcessResponseDto dto) {
         return null;
+    }
+
+    private Tender getTenderProcessResponseDto(final TenderRequest tender) {
+
     }
 
     private String getCpId(final String country) {
@@ -131,11 +131,13 @@ public class TenderProcessServiceImpl implements TenderProcessService {
             if (Objects.nonNull(tender.getDocuments())) {
                 tender.getDocuments().forEach(document -> {
                     final Set<String> relatedLots = document.getRelatedLots();
-                    if (relatedLots.contains(lot.getId())) {
-                        relatedLots.remove(lot.getId());
-                        relatedLots.add(id);
+                    if (Objects.nonNull(relatedLots)) {
+                        if (relatedLots.contains(lot.getId())) {
+                            relatedLots.remove(lot.getId());
+                            relatedLots.add(id);
+                        }
+                        document.setRelatedLots(relatedLots);
                     }
-                    document.setRelatedLots(relatedLots);
                 });
             }
             lot.setId(id);

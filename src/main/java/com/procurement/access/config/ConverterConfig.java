@@ -1,8 +1,6 @@
 package com.procurement.access.config;
 
-import com.procurement.submission.converter.BidQualificationDtoToBidResponse;
-import com.procurement.submission.converter.PeriodDataDtoToPeriodEntity;
-import com.procurement.submission.converter.QualificationOfferDtoToBidEntity;
+import com.procurement.access.converter.TenderProcessRequestDtoToTenderProcessResponseDto;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +13,7 @@ public class ConverterConfig {
     @Bean
     public ConversionServiceFactoryBean conversionService() {
         final Set<Converter> converters = new HashSet<>();
-        converters.add(new PeriodDataDtoToPeriodEntity());
-        converters.add(new QualificationOfferDtoToBidEntity());
-        converters.add(new BidQualificationDtoToBidResponse());
+        converters.add(new TenderProcessRequestDtoToTenderProcessResponseDto());
         final ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.setConverters(converters);
         return bean;
