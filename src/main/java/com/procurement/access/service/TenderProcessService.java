@@ -5,7 +5,6 @@ import com.procurement.access.model.dto.tender.TenderProcessDto;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface TenderProcessService {
 
     ResponseDto createCn(String stage,

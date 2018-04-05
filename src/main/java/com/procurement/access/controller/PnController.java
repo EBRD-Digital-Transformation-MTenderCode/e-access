@@ -1,7 +1,7 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.pn.PlanningNoticeDto;
+import com.procurement.access.model.dto.pn.PnDto;
 import com.procurement.access.service.PNService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
@@ -27,7 +27,7 @@ public class PnController {
                                                 @RequestParam("pmd") final String pmd,
                                                 @RequestParam("owner") final String owner,
                                                 @RequestParam("date") final LocalDateTime dateTime,
-                                                @Valid @RequestBody final PlanningNoticeDto data) {
+                                                @Valid @RequestBody final PnDto data) {
         return new ResponseEntity<>(
                 pnService.createPn(stage, country, owner, dateTime, data),
                 HttpStatus.CREATED);

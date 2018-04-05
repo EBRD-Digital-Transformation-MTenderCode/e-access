@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.pn;
+package com.procurement.access.model.dto.pin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,7 +20,7 @@ import lombok.Setter;
         "tender"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class PlanningNoticeDto {
+public class PinDto {
 
     @JsonProperty("token")
     private String token;
@@ -36,13 +36,13 @@ public class PlanningNoticeDto {
     @Valid
     @NotNull
     @JsonProperty("tender")
-    private PnTender tender;
+    private Tender tender;
 
     @JsonCreator
-    public PlanningNoticeDto(@JsonProperty("token") final String token,
-                             @JsonProperty("ocid") final String ocId,
-                             @JsonProperty("planning") final Planning planning,
-                             @JsonProperty("tender") final PnTender tender) {
+    public PinDto(@JsonProperty("token") final String token,
+                  @JsonProperty("ocid") final String ocId,
+                  @JsonProperty("planning") final Planning planning,
+                  @JsonProperty("tender") final Tender tender) {
         this.token = token;
         this.ocId = ocId;
         this.planning = planning;
