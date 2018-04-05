@@ -101,7 +101,6 @@ public class TenderProcessServiceImpl implements TenderProcessService {
             throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
         if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
             throw new ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL);
-
     }
 
     private String getCpId(final String country) {
