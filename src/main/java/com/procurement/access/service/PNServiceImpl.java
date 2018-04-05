@@ -3,10 +3,10 @@ package com.procurement.access.service;
 import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.config.properties.OCDSProperties;
 import com.procurement.access.dao.TenderProcessDao;
+import com.procurement.access.exception.ErrorException;
+import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.pn.PlanningNoticeDto;
 import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnTender;
@@ -19,12 +19,11 @@ import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
-import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
 import static com.procurement.access.model.dto.ocds.TenderStatus.PLANNING;
 import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 
 @Service
-public class PlanningNoticeServiceImpl implements PlanningNoticeService {
+public class PNServiceImpl implements PNService {
 
 
     private static final String SEPARATOR = "-";
@@ -33,9 +32,9 @@ public class PlanningNoticeServiceImpl implements PlanningNoticeService {
     private final DateUtil dateUtil;
     private final TenderProcessDao tenderProcessDao;
 
-    public PlanningNoticeServiceImpl(OCDSProperties ocdsProperties,
-                                     JsonUtil jsonUtil,
-                                     DateUtil dateUtil, TenderProcessDao tenderProcessDao) {
+    public PNServiceImpl(OCDSProperties ocdsProperties,
+                         JsonUtil jsonUtil,
+                         DateUtil dateUtil, TenderProcessDao tenderProcessDao) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
@@ -46,25 +45,36 @@ public class PlanningNoticeServiceImpl implements PlanningNoticeService {
     public ResponseDto createPn(String stage,
                                 String country,
                                 String owner,
+                                LocalDateTime dateTime,
                                 PlanningNoticeDto dto){
-
+        validateFields(dto);
+        final PnTender tender = dto.getTender();
         final String cpId = getCpId(country);
         dto.setOcId(cpId);
-        final PnTender tender = dto.getTender();
         setLotsStatus(tender);
         setTenderStatus(tender);
         tender.setId(cpId);
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
-        final TenderProcessEntity entity = getEntity(dto, stage, owner);
+        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);;
         tenderProcessDao.save(entity);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
-
-        
     }
 
+    private void validateFields(PlanningNoticeDto dto) {
+        if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
+        if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getStatusDetails()))
+            throw new ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL);
+        if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatus())))
+            throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
+        if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
+            throw new ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL);
+    }
 
     private String getCpId(final String country) {
         return ocdsProperties.getPrefix() + SEPARATOR + country + SEPARATOR + dateUtil.milliNowUTC();
@@ -113,15 +123,16 @@ public class PlanningNoticeServiceImpl implements PlanningNoticeService {
         }
     }
 
-
     private TenderProcessEntity getEntity(final PlanningNoticeDto dto,
                                           final String stage,
+                                          final LocalDateTime dateTime,
                                           final String owner) {
         final TenderProcessEntity entity = new TenderProcessEntity();
         entity.setCpId(dto.getTender().getId());
         entity.setToken(UUIDs.random());
         entity.setStage(stage);
         entity.setOwner(owner);
+        entity.setCreatedDate(dateUtil.localToDate(dateTime));
         entity.setCreatedDate(dateUtil.localToDate(LocalDateTime.now()));
         entity.setJsonData(jsonUtil.toJson(dto));
         return entity;

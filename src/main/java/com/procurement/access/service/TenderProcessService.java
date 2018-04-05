@@ -19,11 +19,4 @@ public interface TenderProcessService {
                          String token,
                          String owner,
                          TenderProcessDto dto);
-
-    ResponseDto createPin(String stage,
-                         String country,
-                         String owner,
-                         LocalDateTime dateTime,
-                         TenderProcessDto dto);
-
 }

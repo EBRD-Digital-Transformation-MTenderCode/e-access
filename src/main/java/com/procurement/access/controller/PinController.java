@@ -16,21 +16,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pin")
 public class PinController {
 
-    private final TenderProcessService tenderProcessService;
-
-    public PinController(final TenderProcessService tenderProcessService) {
-        this.tenderProcessService = tenderProcessService;
-    }
-
-    @PostMapping
-    public ResponseEntity<ResponseDto> createPin(@RequestParam("stage") final String stage,
-                                                @RequestParam("country") final String country,
-                                                @RequestParam("owner") final String owner,
-                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                @RequestParam("date") final LocalDateTime dateTime,
-                                                @Valid @RequestBody final TenderProcessDto data) {
-        return new ResponseEntity<>(
-                tenderProcessService.createPin(stage, country, owner, dateTime, data),
-                HttpStatus.CREATED);
-    }
+//    private final TenderProcessService tenderProcessService;
+//
+//    public PinController(final TenderProcessService tenderProcessService) {
+//        this.tenderProcessService = tenderProcessService;
+//    }
+//
+//    @PostMapping
+//    public ResponseEntity<ResponseDto> createPin(@RequestParam("stage") final String stage,
+//                                                @RequestParam("country") final String country,
+//                                                @RequestParam("owner") final String owner,
+//                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                                                @RequestParam("date") final LocalDateTime dateTime,
+//                                                @Valid @RequestBody final TenderProcessDto data) {
+//        return new ResponseEntity<>(
+//                tenderProcessService.createPin(stage, country, owner, dateTime, data),
+//                HttpStatus.CREATED);
+//    }
 }

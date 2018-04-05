@@ -81,20 +81,12 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         return new ResponseDto<>(true, null, cn);
     }
 
-    @Override
-    public ResponseDto createPin(final String stage,
-                                 final String country,
-                                 final String owner,
-                                 final LocalDateTime dateTime,
-                                 final TenderProcessDto dto) {
-        return null;
-    }
-
     private void validateFields(TenderProcessDto dto) {
         if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
         if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getTenderPeriod())) throw new ErrorException(ErrorType.PERIOD_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
             throw new ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL);
         if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatus())))
