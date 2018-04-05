@@ -9,12 +9,16 @@ import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
-import com.procurement.access.model.dto.tender.TenderProcessDto;
+import com.procurement.access.model.dto.tender.TenderProcessRequestDto;
+import com.procurement.access.model.dto.tender.TenderProcessResponseDto;
+import com.procurement.access.model.dto.tender.TenderRequest;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.util.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
@@ -44,37 +48,51 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final String country,
                                 final String owner,
                                 final LocalDateTime dateTime,
-                                final TenderProcessDto dto) {
+                                final TenderProcessRequestDto dto) {
         final String cpId = getCpId(country);
-        dto.setOcId(cpId);
-        final Tender tender = dto.getTender();
+        final Tender tender = getTenderProcessResponseDto(dto);
+        tender.setId(cpId);
         setLotsStatus(tender);
         setTenderStatus(tender);
-        tender.setId(cpId);
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
         final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
+        dto.setOcId(cpId);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
     }
+
+    private Tender getTenderProcessResponseDto(final TenderRequest tender) {
+
+    }
+
 
     @Override
     public ResponseDto updateCn(final String cpId,
                                 final String token,
                                 final String owner,
-                                final TenderProcessDto cn) {
+                                final TenderProcessResponseDto cn) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
-        final TenderProcessDto tender = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        final TenderProcessResponseDto tender = jsonUtil.toObject(TenderProcessResponseDto.class, entity.getJsonData());
         tender.setTender(cn.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderProcessDao.save(entity);
         cn.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, cn);
+    }
+
+    @Override
+    public ResponseDto createPin(final String stage,
+                                 final String country,
+                                 final String owner,
+                                 final LocalDateTime dateTime,
+                                 final TenderProcessResponseDto dto) {
+        return null;
     }
 
     private String getCpId(final String country) {
@@ -124,8 +142,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         }
     }
 
-
-    private TenderProcessEntity getEntity(final TenderProcessDto dto,
+    private TenderProcessEntity getEntity(final TenderProcessResponseDto dto,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {
@@ -138,6 +155,5 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         entity.setJsonData(jsonUtil.toJson(dto));
         return entity;
     }
-
 
 }
