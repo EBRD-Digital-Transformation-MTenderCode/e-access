@@ -14,10 +14,10 @@ public interface TenderProcessService {
                          LocalDateTime dateTime,
                          TenderProcessDto dto);
 
-
-    ResponseDto updateCn(String cpId,
-                         String token,
+    ResponseDto createPn(String stage,
+                         String country,
                          String owner,
+                         LocalDateTime dateTime,
                          TenderProcessDto dto);
 
     ResponseDto createPin(String stage,
@@ -26,4 +26,9 @@ public interface TenderProcessService {
                          LocalDateTime dateTime,
                          TenderProcessDto dto);
 
+
+    ResponseDto updateCn(String cpId,
+                         String token,
+                         String owner,
+                         TenderProcessDto dto);
 }

@@ -6,9 +6,8 @@ import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ocds.Lot;
-import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.ocds.Tender;
+import com.procurement.access.model.dto.ocds.*;
+import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.dto.tender.TenderProcessDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
@@ -49,11 +48,56 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final LocalDateTime dateTime,
                                 final TenderProcessDto dto) {
         validateFields(dto);
+        if (Objects.nonNull(dto.getTender().getTenderPeriod())) throw new ErrorException(ErrorType.PERIOD_NOT_NULL);
         final Tender tender = dto.getTender();
         final String cpId = getCpId(country);
         tender.setId(cpId);
-        setLotsStatus(tender);
-        setTenderStatus(tender);
+        setLotsStatus(tender, TenderStatus.ACTIVE);
+        setTenderStatus(tender, TenderStatus.ACTIVE);
+        setItemsId(tender);
+        setLotsIdAndItemsAndDocumentsRelatedLots(tender);
+        setIdOfOrganizationReference(tender.getProcuringEntity());
+        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
+        tenderProcessDao.save(entity);
+        dto.setOcId(cpId);
+        dto.setToken(entity.getToken().toString());
+        return new ResponseDto<>(true, null, dto);
+    }
+
+    @Override
+    public ResponseDto createPn(final String stage,
+                                final String country,
+                                final String owner,
+                                final LocalDateTime dateTime,
+                                final TenderProcessDto dto) {
+        validateFields(dto);
+        final Tender tender = dto.getTender();
+        final String cpId = getCpId(country);
+        tender.setId(cpId);
+        setLotsStatus(tender, TenderStatus.PLANNING);
+        setTenderStatus(tender, TenderStatus.PLANNING);
+        setItemsId(tender);
+        setLotsIdAndItemsAndDocumentsRelatedLots(tender);
+        setIdOfOrganizationReference(tender.getProcuringEntity());
+        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
+        tenderProcessDao.save(entity);
+        dto.setOcId(cpId);
+        dto.setToken(entity.getToken().toString());
+        return new ResponseDto<>(true, null, dto);
+    }
+
+    @Override
+    public ResponseDto createPin(final String stage,
+                                final String country,
+                                final String owner,
+                                final LocalDateTime dateTime,
+                                final TenderProcessDto dto) {
+        validateFields(dto);
+        final Tender tender = dto.getTender();
+        final String cpId = getCpId(country);
+        tender.setId(cpId);
+        setLotsStatus(tender, TenderStatus.PLANNED);
+        setTenderStatus(tender, TenderStatus.PLANNED);
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
@@ -81,15 +125,6 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         return new ResponseDto<>(true, null, cn);
     }
 
-    @Override
-    public ResponseDto createPin(final String stage,
-                                 final String country,
-                                 final String owner,
-                                 final LocalDateTime dateTime,
-                                 final TenderProcessDto dto) {
-        return null;
-    }
-
     private void validateFields(TenderProcessDto dto) {
         if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
         if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
@@ -111,14 +146,14 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 
-    private void setTenderStatus(final Tender tender) {
-        tender.setStatus(ACTIVE);
+    private void setTenderStatus(final Tender tender, TenderStatus status) {
+        tender.setStatus(status);
         tender.setStatusDetails(EMPTY);
     }
 
-    private void setLotsStatus(final Tender tender) {
+    private void setLotsStatus(final Tender tender, TenderStatus status) {
         tender.getLots().forEach(lot -> {
-            lot.setStatus(ACTIVE);
+            lot.setStatus(status);
             lot.setStatusDetails(EMPTY);
         });
     }

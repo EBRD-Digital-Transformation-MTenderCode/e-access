@@ -22,13 +22,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class Period {
 
-    @NotNull
     @JsonProperty("startDate")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private final LocalDateTime startDate;
 
-    @NotNull
     @JsonProperty("endDate")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

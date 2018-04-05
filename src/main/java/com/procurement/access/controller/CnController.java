@@ -25,6 +25,7 @@ public class CnController {
     @PostMapping
     public ResponseEntity<ResponseDto> createCn(@RequestParam("stage") final String stage,
                                                 @RequestParam("country") final String country,
+                                                @RequestParam("pmd") final String pmd,
                                                 @RequestParam("owner") final String owner,
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                 @RequestParam("date") final LocalDateTime dateTime,
