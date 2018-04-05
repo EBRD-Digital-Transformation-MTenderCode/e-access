@@ -5,7 +5,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.*;
-import com.procurement.access.model.dto.tender.TenderProcessResponseDto;
+import com.procurement.access.model.dto.tender.TenderProcessDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -38,7 +38,7 @@ public class StageServiceImpl implements StageService {
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
-        final TenderProcessResponseDto processBefore = jsonUtil.toObject(TenderProcessResponseDto.class, entity.getJsonData());
+        final TenderProcessDto processBefore = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
         if (processBefore.getTender().getStatus() != TenderStatus.ACTIVE)
             throw new ErrorException(ErrorType.NOT_ACTIVE);
         if (processBefore.getTender().getStatusDetails() != TenderStatusDetails.EMPTY)
@@ -49,7 +49,7 @@ public class StageServiceImpl implements StageService {
         tender.setLots(filterLots(tender.getLots()));
         tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
         tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
-        final TenderProcessResponseDto tenderAfter = new TenderProcessResponseDto(
+        final TenderProcessDto tenderAfter = new TenderProcessDto(
                 null,
                 entity.getCpId(),
                 processBefore.getPlanning(),
