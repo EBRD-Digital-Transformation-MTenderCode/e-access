@@ -28,11 +28,11 @@ public class TenderProcessRequestDto {
     @Valid
     @NotNull
     @JsonProperty("tender")
-    private TenderRequest tender;
+    private Tender tender;
 
     @JsonCreator
     public TenderProcessRequestDto(@JsonProperty("planning") final Planning planning,
-                                   @JsonProperty("tender") final TenderRequest tender) {
+                                   @JsonProperty("tender") final Tender tender) {
         this.planning = planning;
         this.tender = tender;
     }

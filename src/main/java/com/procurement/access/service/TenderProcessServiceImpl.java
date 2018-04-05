@@ -11,7 +11,6 @@ import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.tender.TenderProcessRequestDto;
 import com.procurement.access.model.dto.tender.TenderProcessResponseDto;
-import com.procurement.access.model.dto.tender.TenderRequest;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -50,8 +49,9 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final String owner,
                                 final LocalDateTime dateTime,
                                 final TenderProcessRequestDto dto) {
+        final Tender tender = dto.getTender();
+        if (Objects.nonNull(tender.getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         final String cpId = getCpId(country);
-        final Tender tender = getTenderProcessResponseDto(dto);
         tender.setId(cpId);
         setLotsStatus(tender);
         setTenderStatus(tender);
@@ -60,8 +60,9 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         setIdOfOrganizationReference(tender.getProcuringEntity());
         final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
-        dto.setOcId(cpId);
-        dto.setToken(entity.getToken().toString());
+        final TenderProcessResponseDto processResponseDto = getTenderProcessResponseDto(dto);
+        processResponseDto.setOcId(cpId);
+        processResponseDto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
     }
 
@@ -91,8 +92,8 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         return null;
     }
 
-    private Tender getTenderProcessResponseDto(final TenderRequest tender) {
-
+    private TenderProcessResponseDto getTenderProcessResponseDto(final TenderProcessRequestDto dto) {
+        return new TenderProcessResponseDto(null, null, dto.getPlanning(), dto.getTender());
     }
 
     private String getCpId(final String country) {
@@ -144,7 +145,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         }
     }
 
-    private TenderProcessEntity getEntity(final TenderProcessResponseDto dto,
+    private TenderProcessEntity getEntity(final TenderProcessRequestDto dto,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {
