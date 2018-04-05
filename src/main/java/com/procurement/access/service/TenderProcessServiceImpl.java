@@ -48,8 +48,8 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final String owner,
                                 final LocalDateTime dateTime,
                                 final TenderProcessDto dto) {
+        validateFields(dto);
         final Tender tender = dto.getTender();
-        if (Objects.nonNull(tender.getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         final String cpId = getCpId(country);
         tender.setId(cpId);
         setLotsStatus(tender);
@@ -90,6 +90,19 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         return null;
     }
 
+    private void validateFields(TenderProcessDto dto) {
+        if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
+        if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
+        if (Objects.nonNull(dto.getTender().getStatusDetails()))
+            throw new ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL);
+        if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatus())))
+            throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
+        if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
+            throw new ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL);
+
+    }
 
     private String getCpId(final String country) {
         return ocdsProperties.getPrefix() + SEPARATOR + country + SEPARATOR + dateUtil.milliNowUTC();
