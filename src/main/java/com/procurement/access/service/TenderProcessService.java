@@ -1,8 +1,7 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.tender.TenderProcessRequestDto;
-import com.procurement.access.model.dto.tender.TenderProcessResponseDto;
+import com.procurement.access.model.dto.tender.TenderProcessDto;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
@@ -13,18 +12,18 @@ public interface TenderProcessService {
                          String country,
                          String owner,
                          LocalDateTime dateTime,
-                         TenderProcessRequestDto dto);
+                         TenderProcessDto dto);
 
 
     ResponseDto updateCn(String cpId,
                          String token,
                          String owner,
-                         TenderProcessResponseDto dto);
+                         TenderProcessDto dto);
 
     ResponseDto createPin(String stage,
                          String country,
                          String owner,
                          LocalDateTime dateTime,
-                         TenderProcessResponseDto dto);
+                         TenderProcessDto dto);
 
 }
