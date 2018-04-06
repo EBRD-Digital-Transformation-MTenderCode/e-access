@@ -10,6 +10,8 @@ import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.pin.PinDto;
+import com.procurement.access.model.dto.pin.PinLot;
+import com.procurement.access.model.dto.pin.PinTender;
 import com.procurement.access.model.dto.pn.PnDto;
 import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnTender;
@@ -21,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
+import static com.procurement.access.model.dto.ocds.TenderStatus.PLANNED;
 import static com.procurement.access.model.dto.ocds.TenderStatus.PLANNING;
 import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 
@@ -46,12 +49,12 @@ public class PINServiceImpl implements PINService {
     @Override
     public ResponseDto createPin(String stage, String country, String owner, LocalDateTime dateTime, PinDto dto) {
         validateFields(dto);
-        final Tender tender = dto.getTender();
+        final PinTender tender = dto.getTender();
         final String cpId = getCpId(country);
         dto.setOcId(cpId);
+        tender.setId(cpId);
         setLotsStatus(tender);
         setTenderStatus(tender);
-        tender.setId(cpId);
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
@@ -62,8 +65,8 @@ public class PINServiceImpl implements PINService {
     }
 
     private void validateFields(PinDto dto) {
-        if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
         if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
+        if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
@@ -82,24 +85,24 @@ public class PINServiceImpl implements PINService {
         or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 
-    private void setTenderStatus(final Tender tender) {
-        tender.setStatus(PLANNING);
+    private void setTenderStatus(final PinTender tender) {
+        tender.setStatus(PLANNED);
         tender.setStatusDetails(EMPTY);
     }
 
-    private void setLotsStatus(final Tender tender) {
+    private void setLotsStatus(final PinTender tender) {
         tender.getLots().forEach(lot -> {
-            lot.setStatus(PLANNING);
+            lot.setStatus(PLANNED);
             lot.setStatusDetails(EMPTY);
         });
     }
 
-    private void setItemsId(final Tender tender) {
+    private void setItemsId(final PinTender tender) {
         tender.getItems().forEach(item -> item.setId(UUIDs.timeBased().toString()));
     }
 
-    private void setLotsIdAndItemsAndDocumentsRelatedLots(final Tender tender) {
-        for (final Lot lot : tender.getLots()) {
+    private void setLotsIdAndItemsAndDocumentsRelatedLots(final PinTender tender) {
+        for (final PinLot lot : tender.getLots()) {
             final String id = UUIDs.timeBased().toString();
             if (Objects.nonNull(tender.getItems())) {
                 tender.getItems()

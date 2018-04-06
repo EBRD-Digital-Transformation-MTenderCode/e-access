@@ -36,13 +36,13 @@ public class PinDto {
     @Valid
     @NotNull
     @JsonProperty("tender")
-    private Tender tender;
+    private PinTender tender;
 
     @JsonCreator
     public PinDto(@JsonProperty("token") final String token,
                   @JsonProperty("ocid") final String ocId,
                   @JsonProperty("planning") final Planning planning,
-                  @JsonProperty("tender") final Tender tender) {
+                  @JsonProperty("tender") final PinTender tender) {
         this.token = token;
         this.ocId = ocId;
         this.planning = planning;

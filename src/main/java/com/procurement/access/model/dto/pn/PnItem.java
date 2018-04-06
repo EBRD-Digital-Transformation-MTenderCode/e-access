@@ -28,8 +28,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "relatedLot"
 })
 public class PnItem {
-    @JsonProperty("id")
     @NotNull
+    @JsonProperty("id")
     private String id;
 
     @JsonProperty("description")
