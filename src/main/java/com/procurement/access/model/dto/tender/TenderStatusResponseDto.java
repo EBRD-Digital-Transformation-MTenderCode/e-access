@@ -1,13 +1,9 @@
 package com.procurement.access.model.dto.tender;
 
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.procurement.access.model.dto.databinding.LocalDateTimeDeserializer;
-import com.procurement.access.model.dto.databinding.LocalDateTimeSerializer;
-import com.procurement.access.model.dto.ocds.*;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 @Getter

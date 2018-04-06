@@ -1,18 +1,9 @@
 package com.procurement.access.model.dto.pn;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.procurement.access.exception.EnumException;
 import com.procurement.access.model.dto.ocds.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -25,41 +16,41 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "status",
-    "statusDetails",
-    "classification",
-    "acceleratedProcedure",
-    "designContest",
-    "electronicWorkflows",
-    "jointProcurement",
-    "procedureOutsourcing",
-    "framework",
-    "dynamicPurchasingSystem",
-    "legalBasis",
-    "procurementMethod",
-    "procurementMethodDetails",
-    "procurementMethodRationale",
-    "procurementMethodAdditionalInfo",
-    "mainProcurementCategory",
-    "additionalProcurementCategories",
-    "eligibilityCriteria",
-    "submissionLanguages",
-    "tenderPeriod",
-    "contractPeriod",
-    "procuringEntity",
-    "value",
-    "lotGroups",
-    "lots",
-    "items",
-    "awardCriteria",
-    "requiresElectronicCatalogue",
-    "submissionMethod",
-    "submissionMethodRationale",
-    "submissionMethodDetails",
-    "documents"
+        "id",
+        "title",
+        "description",
+        "status",
+        "statusDetails",
+        "classification",
+        "acceleratedProcedure",
+        "designContest",
+        "electronicWorkflows",
+        "jointProcurement",
+        "procedureOutsourcing",
+        "framework",
+        "dynamicPurchasingSystem",
+        "legalBasis",
+        "procurementMethod",
+        "procurementMethodDetails",
+        "procurementMethodRationale",
+        "procurementMethodAdditionalInfo",
+        "mainProcurementCategory",
+        "additionalProcurementCategories",
+        "eligibilityCriteria",
+        "submissionLanguages",
+        "tenderPeriod",
+        "contractPeriod",
+        "procuringEntity",
+        "value",
+        "lotGroups",
+        "lots",
+        "items",
+        "awardCriteria",
+        "requiresElectronicCatalogue",
+        "submissionMethod",
+        "submissionMethodRationale",
+        "submissionMethodDetails",
+        "documents"
 })
 public class PnTender {
 
@@ -207,7 +198,7 @@ public class PnTender {
                     @JsonProperty("procurementMethodRationale") final String procurementMethodRationale,
                     @JsonProperty("mainProcurementCategory") final MainProcurementCategory mainProcurementCategory,
                     @JsonProperty("additionalProcurementCategories") final List<ExtendedProcurementCategory>
-                        additionalProcurementCategories,
+                            additionalProcurementCategories,
                     @JsonProperty("awardCriteria") final AwardCriteria awardCriteria,
                     @JsonProperty("submissionMethod") final List<SubmissionMethod> submissionMethod,
                     @JsonProperty("submissionMethodDetails") final String submissionMethodDetails,
@@ -227,14 +218,14 @@ public class PnTender {
                     @JsonProperty("procurementMethodAdditionalInfo") final String procurementMethodAdditionalInfo,
                     @JsonProperty("submissionLanguages") final List<SubmissionLanguage> submissionLanguages,
                     @JsonProperty("submissionMethodRationale") final List<SubmissionMethodRationale>
-                        submissionMethodRationale,
+                            submissionMethodRationale,
                     @JsonProperty("dynamicPurchasingSystem") final DynamicPurchasingSystem dynamicPurchasingSystem,
                     @JsonProperty("framework") final Framework framework,
                     @JsonProperty("requiresElectronicCatalogue") final Boolean requiresElectronicCatalogue) {
 
         this.id = id;
-        this.status=status;
-        this.statusDetails=statusDetails;
+        this.status = status;
+        this.statusDetails = statusDetails;
         this.title = title;
         this.description = description;
         this.classification = classification;
@@ -272,40 +263,40 @@ public class PnTender {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(status)
-                                    .append(statusDetails)
-                                    .append(title)
-                                    .append(description)
-                                    .append(classification)
-                                    .append(items)
-                                    .append(value)
-                                    .append(procurementMethod)
-                                    .append(procurementMethodDetails)
-                                    .append(procurementMethodRationale)
-                                    .append(mainProcurementCategory)
-                                    .append(additionalProcurementCategories)
-                                    .append(awardCriteria)
-                                    .append(submissionMethod)
-                                    .append(submissionMethodDetails)
-                                    .append(eligibilityCriteria)
-                                    .append(contractPeriod)
-                                    .append(procuringEntity)
-                                    .append(documents)
-                                    .append(lots)
-                                    .append(lotGroups)
-                                    .append(acceleratedProcedure)
-                                    .append(designContest)
-                                    .append(electronicWorkflows)
-                                    .append(jointProcurement)
-                                    .append(legalBasis)
-                                    .append(procedureOutsourcing)
-                                    .append(procurementMethodAdditionalInfo)
-                                    .append(submissionLanguages)
-                                    .append(submissionMethodRationale)
-                                    .append(dynamicPurchasingSystem)
-                                    .append(framework)
-                                    .append(requiresElectronicCatalogue)
-                                    .toHashCode();
+                .append(status)
+                .append(statusDetails)
+                .append(title)
+                .append(description)
+                .append(classification)
+                .append(items)
+                .append(value)
+                .append(procurementMethod)
+                .append(procurementMethodDetails)
+                .append(procurementMethodRationale)
+                .append(mainProcurementCategory)
+                .append(additionalProcurementCategories)
+                .append(awardCriteria)
+                .append(submissionMethod)
+                .append(submissionMethodDetails)
+                .append(eligibilityCriteria)
+                .append(contractPeriod)
+                .append(procuringEntity)
+                .append(documents)
+                .append(lots)
+                .append(lotGroups)
+                .append(acceleratedProcedure)
+                .append(designContest)
+                .append(electronicWorkflows)
+                .append(jointProcurement)
+                .append(legalBasis)
+                .append(procedureOutsourcing)
+                .append(procurementMethodAdditionalInfo)
+                .append(submissionLanguages)
+                .append(submissionMethodRationale)
+                .append(dynamicPurchasingSystem)
+                .append(framework)
+                .append(requiresElectronicCatalogue)
+                .toHashCode();
     }
 
     @Override
@@ -318,41 +309,41 @@ public class PnTender {
         }
         final PnTender rhs = (PnTender) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(status,rhs.status)
-                                  .append(statusDetails,rhs.statusDetails)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(classification, rhs.classification)
-                                  .append(items, rhs.items)
-                                  .append(value, rhs.value)
-                                  .append(procurementMethod, rhs.procurementMethod)
-                                  .append(procurementMethodDetails, rhs.procurementMethodDetails)
-                                  .append(procurementMethodRationale, rhs.procurementMethodRationale)
-                                  .append(mainProcurementCategory, rhs.mainProcurementCategory)
-                                  .append(additionalProcurementCategories, rhs.additionalProcurementCategories)
-                                  .append(awardCriteria, rhs.awardCriteria)
-                                  .append(submissionMethod, rhs.submissionMethod)
-                                  .append(submissionMethodDetails, rhs.submissionMethodDetails)
-                                  .append(tenderPeriod, rhs.tenderPeriod)
-                                  .append(eligibilityCriteria, rhs.eligibilityCriteria)
-                                  .append(contractPeriod, rhs.contractPeriod)
-                                  .append(procuringEntity, rhs.procuringEntity)
-                                  .append(documents, rhs.documents)
-                                  .append(lots, rhs.lots)
-                                  .append(lotGroups, rhs.lotGroups)
-                                  .append(acceleratedProcedure, rhs.acceleratedProcedure)
-                                  .append(designContest, rhs.designContest)
-                                  .append(electronicWorkflows, rhs.electronicWorkflows)
-                                  .append(jointProcurement, rhs.jointProcurement)
-                                  .append(legalBasis, rhs.legalBasis)
-                                  .append(procedureOutsourcing, rhs.procedureOutsourcing)
-                                  .append(procurementMethodAdditionalInfo, rhs.procurementMethodAdditionalInfo)
-                                  .append(submissionLanguages, rhs.submissionLanguages)
-                                  .append(submissionMethodRationale, rhs.submissionMethodRationale)
-                                  .append(dynamicPurchasingSystem, rhs.dynamicPurchasingSystem)
-                                  .append(framework, rhs.framework)
-                                  .append(requiresElectronicCatalogue, rhs.requiresElectronicCatalogue)
-                                  .isEquals();
+                .append(status, rhs.status)
+                .append(statusDetails, rhs.statusDetails)
+                .append(title, rhs.title)
+                .append(description, rhs.description)
+                .append(classification, rhs.classification)
+                .append(items, rhs.items)
+                .append(value, rhs.value)
+                .append(procurementMethod, rhs.procurementMethod)
+                .append(procurementMethodDetails, rhs.procurementMethodDetails)
+                .append(procurementMethodRationale, rhs.procurementMethodRationale)
+                .append(mainProcurementCategory, rhs.mainProcurementCategory)
+                .append(additionalProcurementCategories, rhs.additionalProcurementCategories)
+                .append(awardCriteria, rhs.awardCriteria)
+                .append(submissionMethod, rhs.submissionMethod)
+                .append(submissionMethodDetails, rhs.submissionMethodDetails)
+                .append(tenderPeriod, rhs.tenderPeriod)
+                .append(eligibilityCriteria, rhs.eligibilityCriteria)
+                .append(contractPeriod, rhs.contractPeriod)
+                .append(procuringEntity, rhs.procuringEntity)
+                .append(documents, rhs.documents)
+                .append(lots, rhs.lots)
+                .append(lotGroups, rhs.lotGroups)
+                .append(acceleratedProcedure, rhs.acceleratedProcedure)
+                .append(designContest, rhs.designContest)
+                .append(electronicWorkflows, rhs.electronicWorkflows)
+                .append(jointProcurement, rhs.jointProcurement)
+                .append(legalBasis, rhs.legalBasis)
+                .append(procedureOutsourcing, rhs.procedureOutsourcing)
+                .append(procurementMethodAdditionalInfo, rhs.procurementMethodAdditionalInfo)
+                .append(submissionLanguages, rhs.submissionLanguages)
+                .append(submissionMethodRationale, rhs.submissionMethodRationale)
+                .append(dynamicPurchasingSystem, rhs.dynamicPurchasingSystem)
+                .append(framework, rhs.framework)
+                .append(requiresElectronicCatalogue, rhs.requiresElectronicCatalogue)
+                .isEquals();
     }
 
     public enum MainProcurementCategory {

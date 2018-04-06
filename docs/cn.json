@@ -1,4 +1,5 @@
-{ "planning": {
+{
+  "planning": {
     "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document.",
     "budget": {
       "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",

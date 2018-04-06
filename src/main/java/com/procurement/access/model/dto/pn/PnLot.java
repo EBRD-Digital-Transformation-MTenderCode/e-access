@@ -17,18 +17,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "title",
-    "description",
-    "status",
-    "statusDetails",
-    "value",
-    "options",
-    "variants",
-    "renewals",
-    "recurrentProcurement",
-    "contractPeriod",
-    "placeOfPerformance",
+        "id",
+        "title",
+        "description",
+        "status",
+        "statusDetails",
+        "value",
+        "options",
+        "variants",
+        "renewals",
+        "recurrentProcurement",
+        "contractPeriod",
+        "placeOfPerformance",
 })
 public class PnLot {
     @NotNull
@@ -105,18 +105,18 @@ public class PnLot {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
-                                    .append(title)
-                                    .append(description)
-                                    .append(status)
-                                    .append(statusDetails)
-                                    .append(value)
-                                    .append(options)
-                                    .append(recurrentProcurement)
-                                    .append(renewals)
-                                    .append(variants)
-                                    .append(contractPeriod)
-                                    .append(placeOfPerformance)
-                                    .toHashCode();
+                .append(title)
+                .append(description)
+                .append(status)
+                .append(statusDetails)
+                .append(value)
+                .append(options)
+                .append(recurrentProcurement)
+                .append(renewals)
+                .append(variants)
+                .append(contractPeriod)
+                .append(placeOfPerformance)
+                .toHashCode();
     }
 
     @Override
@@ -129,17 +129,17 @@ public class PnLot {
         }
         final PnLot rhs = (PnLot) other;
         return new EqualsBuilder().append(id, rhs.id)
-                                  .append(title, rhs.title)
-                                  .append(description, rhs.description)
-                                  .append(status,rhs.status)
-                                  .append(statusDetails,rhs.statusDetails)
-                                  .append(value, rhs.value)
-                                  .append(options, rhs.options)
-                                  .append(recurrentProcurement, rhs.recurrentProcurement)
-                                  .append(renewals, rhs.renewals)
-                                  .append(variants, rhs.variants)
-                                  .append(contractPeriod, rhs.contractPeriod)
-                                  .append(placeOfPerformance, rhs.placeOfPerformance)
-                                  .isEquals();
+                .append(title, rhs.title)
+                .append(description, rhs.description)
+                .append(status, rhs.status)
+                .append(statusDetails, rhs.statusDetails)
+                .append(value, rhs.value)
+                .append(options, rhs.options)
+                .append(recurrentProcurement, rhs.recurrentProcurement)
+                .append(renewals, rhs.renewals)
+                .append(variants, rhs.variants)
+                .append(contractPeriod, rhs.contractPeriod)
+                .append(placeOfPerformance, rhs.placeOfPerformance)
+                .isEquals();
     }
 }

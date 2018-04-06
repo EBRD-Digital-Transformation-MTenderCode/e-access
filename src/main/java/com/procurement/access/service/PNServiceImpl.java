@@ -24,16 +24,16 @@ import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 @Service
 public class PNServiceImpl implements PNService {
 
-
     private static final String SEPARATOR = "-";
     private final OCDSProperties ocdsProperties;
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
     private final TenderProcessDao tenderProcessDao;
 
-    public PNServiceImpl(OCDSProperties ocdsProperties,
-                         JsonUtil jsonUtil,
-                         DateUtil dateUtil, TenderProcessDao tenderProcessDao) {
+    public PNServiceImpl(final OCDSProperties ocdsProperties,
+                         final JsonUtil jsonUtil,
+                         final DateUtil dateUtil,
+                         final TenderProcessDao tenderProcessDao) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
@@ -41,28 +41,28 @@ public class PNServiceImpl implements PNService {
     }
 
     @Override
-    public ResponseDto createPn(String stage,
-                                String country,
-                                String owner,
-                                LocalDateTime dateTime,
-                                PnDto dto){
+    public ResponseDto createPn(final String stage,
+                                final String country,
+                                final String owner,
+                                final LocalDateTime dateTime,
+                                final PnDto dto) {
         validateFields(dto);
         final PnTender tender = dto.getTender();
         final String cpId = getCpId(country);
+        tender.setId(cpId);
         dto.setOcId(cpId);
         setLotsStatus(tender);
         setTenderStatus(tender);
-        tender.setId(cpId);
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
-        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);;
+        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
     }
 
-    private void validateFields(PnDto dto) {
+    private void validateFields(final PnDto dto) {
         if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
         if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
@@ -104,9 +104,9 @@ public class PNServiceImpl implements PNService {
             final String id = UUIDs.timeBased().toString();
             if (Objects.nonNull(tender.getItems())) {
                 tender.getItems()
-                      .stream()
-                      .filter(item -> item.getRelatedLot().equals(lot.getId()))
-                      .forEach(item -> item.setRelatedLot(id));
+                        .stream()
+                        .filter(item -> item.getRelatedLot().equals(lot.getId()))
+                        .forEach(item -> item.setRelatedLot(id));
             }
             if (Objects.nonNull(tender.getDocuments())) {
                 tender.getDocuments().forEach(document -> {
@@ -129,8 +129,8 @@ public class PNServiceImpl implements PNService {
         final TenderProcessEntity entity = new TenderProcessEntity();
         entity.setCpId(dto.getTender().getId());
         entity.setToken(UUIDs.random());
-        entity.setStage(stage);
         entity.setOwner(owner);
+        entity.setStage(stage);
         entity.setCreatedDate(dateUtil.localToDate(dateTime));
         entity.setCreatedDate(dateUtil.localToDate(LocalDateTime.now()));
         entity.setJsonData(jsonUtil.toJson(dto));

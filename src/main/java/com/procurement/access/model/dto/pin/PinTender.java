@@ -205,7 +205,7 @@ public class PinTender {
                      @JsonProperty("procurementMethodRationale") final String procurementMethodRationale,
                      @JsonProperty("mainProcurementCategory") final MainProcurementCategory mainProcurementCategory,
                      @JsonProperty("additionalProcurementCategories") final List<ExtendedProcurementCategory>
-                          additionalProcurementCategories,
+                             additionalProcurementCategories,
                      @JsonProperty("awardCriteria") final AwardCriteria awardCriteria,
                      @JsonProperty("submissionMethod") final List<SubmissionMethod> submissionMethod,
                      @JsonProperty("submissionMethodDetails") final String submissionMethodDetails,
@@ -224,7 +224,7 @@ public class PinTender {
                      @JsonProperty("procurementMethodAdditionalInfo") final String procurementMethodAdditionalInfo,
                      @JsonProperty("submissionLanguages") final List<SubmissionLanguage> submissionLanguages,
                      @JsonProperty("submissionMethodRationale") final List<SubmissionMethodRationale>
-                          submissionMethodRationale,
+                             submissionMethodRationale,
                      @JsonProperty("dynamicPurchasingSystem") final DynamicPurchasingSystem dynamicPurchasingSystem,
                      @JsonProperty("framework") final Framework framework,
                      @JsonProperty("requiresElectronicCatalogue") final Boolean requiresElectronicCatalogue,

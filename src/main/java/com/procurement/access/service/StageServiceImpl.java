@@ -96,7 +96,7 @@ public class StageServiceImpl implements StageService {
         return new ArrayList<>(documentsAfterFilter);
     }
 
-    private Set<String> getUniqueLots(final List<Lot> lots){
+    private Set<String> getUniqueLots(final List<Lot> lots) {
         return lots.stream().map(Lot::getId).collect(Collectors.toSet());
     }
 }

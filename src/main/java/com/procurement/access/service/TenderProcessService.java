@@ -3,7 +3,6 @@ package com.procurement.access.service;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.tender.TenderProcessDto;
 import java.time.LocalDateTime;
-import org.springframework.stereotype.Service;
 
 public interface TenderProcessService {
 
