@@ -5,6 +5,7 @@ import com.procurement.access.model.dto.pn.PnDto;
 import com.procurement.access.service.PNService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +27,7 @@ public class PnController {
                                                 @RequestParam("country") final String country,
                                                 @RequestParam("pmd") final String pmd,
                                                 @RequestParam("owner") final String owner,
+                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                 @RequestParam("date") final LocalDateTime dateTime,
                                                 @Valid @RequestBody final PnDto data) {
         return new ResponseEntity<>(
