@@ -57,6 +57,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
+        tender.setTenderPeriod(null);
         final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
         dto.setOcId(cpId);
@@ -86,7 +87,6 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
             throw new ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL);
-        if (Objects.nonNull(dto.getTender().getTenderPeriod())) throw new ErrorException(ErrorType.PERIOD_NOT_NULL);
         if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatus())))
             throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
         if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
