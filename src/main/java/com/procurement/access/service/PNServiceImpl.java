@@ -63,8 +63,6 @@ public class PNServiceImpl implements PNService {
     }
 
     private void validateFields(final PnDto dto) {
-        if (Objects.nonNull(dto.getOcId())) throw new ErrorException(ErrorType.OCID_NOT_NULL);
-        if (Objects.nonNull(dto.getToken())) throw new ErrorException(ErrorType.TOKEN_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
