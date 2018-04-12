@@ -1,9 +1,18 @@
-package com.procurement.access.model.dto.pin;
+package com.procurement.access.model.dto.pnToPin;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.procurement.access.exception.EnumException;
 import com.procurement.access.model.dto.ocds.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -38,6 +47,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "additionalProcurementCategories",
         "eligibilityCriteria",
         "submissionLanguages",
+        "tenderPeriod",
         "contractPeriod",
         "procuringEntity",
         "value",
@@ -49,11 +59,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "submissionMethod",
         "submissionMethodRationale",
         "submissionMethodDetails",
-        "documents",
-        "tenderPeriod"
+        "documents"
 })
-public class PinTender {
+public class PnToPinTender {
 
+    @NotNull
     @JsonProperty("id")
     private String id;
 
@@ -133,14 +143,22 @@ public class PinTender {
     @JsonProperty("mainProcurementCategory")
     private final MainProcurementCategory mainProcurementCategory;
 
+    @Valid
     @JsonProperty("additionalProcurementCategories")
     private final List<ExtendedProcurementCategory> additionalProcurementCategories;
 
+    @Valid
     @JsonProperty("eligibilityCriteria")
     private final String eligibilityCriteria;
 
+    @Valid
     @JsonProperty("submissionLanguages")
     private final List<SubmissionLanguage> submissionLanguages;
+
+    @Valid
+    @NotNull
+    @JsonProperty("tenderPeriod")
+    private PnToPinPeriod tenderPeriod;
 
     @Valid
     @NotNull
@@ -150,23 +168,24 @@ public class PinTender {
     @Valid
     @NotNull
     @JsonProperty("procuringEntity")
-    private final OrganizationReference procuringEntity;
+    private final PnToPinOrganizationReference procuringEntity;
 
     @Valid
     @NotNull
     @JsonProperty("value")
     private final Value value;
 
+    @Valid
     @JsonProperty("lotGroups")
     private final List<LotGroup> lotGroups;
 
     @NotEmpty
     @JsonProperty("lots")
-    private List<PinLot> lots;
+    private List<PnToPinLot> lots;
 
     @NotEmpty
     @JsonProperty("items")
-    private Set<Item> items;
+    private Set<PnToPinItem> items;
 
     @NotNull
     @JsonProperty("awardCriteria")
@@ -186,50 +205,48 @@ public class PinTender {
     private final String submissionMethodDetails;
 
     @JsonProperty("documents")
-    private List<Document> documents;
+    private List<PnToPinDocument> documents;
 
-    @JsonProperty("tenderPeriod")
-    private final PinPeriod tenderPeriod;
 
 
     @JsonCreator
-    public PinTender(@JsonProperty("id") final String id,
-                     @JsonProperty("title") final String title,
-                     @JsonProperty("description") final String description,
-                     @JsonProperty("status") final TenderStatus status,
-                     @JsonProperty("statusDetails") final TenderStatusDetails statusDetails,
-                     @JsonProperty("classification") final Classification classification,
-                     @JsonProperty("items") final LinkedHashSet<Item> items,
-                     @JsonProperty("value") final Value value,
-                     @JsonProperty("procurementMethod") final ProcurementMethod procurementMethod,
-                     @JsonProperty("procurementMethodDetails") final String procurementMethodDetails,
-                     @JsonProperty("procurementMethodRationale") final String procurementMethodRationale,
-                     @JsonProperty("mainProcurementCategory") final MainProcurementCategory mainProcurementCategory,
-                     @JsonProperty("additionalProcurementCategories") final List<ExtendedProcurementCategory>
-                             additionalProcurementCategories,
-                     @JsonProperty("awardCriteria") final AwardCriteria awardCriteria,
-                     @JsonProperty("submissionMethod") final List<SubmissionMethod> submissionMethod,
-                     @JsonProperty("submissionMethodDetails") final String submissionMethodDetails,
-                     @JsonProperty("eligibilityCriteria") final String eligibilityCriteria,
-                     @JsonProperty("contractPeriod") final Period contractPeriod,
-                     @JsonProperty("procuringEntity") final OrganizationReference procuringEntity,
-                     @JsonProperty("documents") final List<Document> documents,
-                     @JsonProperty("lots") final List<PinLot> lots,
-                     @JsonProperty("lotGroups") final List<LotGroup> lotGroups,
-                     @JsonProperty("acceleratedProcedure") final AcceleratedProcedure acceleratedProcedure,
-                     @JsonProperty("designContest") final DesignContest designContest,
-                     @JsonProperty("electronicWorkflows") final ElectronicWorkflows electronicWorkflows,
-                     @JsonProperty("jointProcurement") final JointProcurement jointProcurement,
-                     @JsonProperty("legalBasis") final LegalBasis legalBasis,
-                     @JsonProperty("procedureOutsourcing") final ProcedureOutsourcing procedureOutsourcing,
-                     @JsonProperty("procurementMethodAdditionalInfo") final String procurementMethodAdditionalInfo,
-                     @JsonProperty("submissionLanguages") final List<SubmissionLanguage> submissionLanguages,
-                     @JsonProperty("submissionMethodRationale") final List<SubmissionMethodRationale>
-                             submissionMethodRationale,
-                     @JsonProperty("dynamicPurchasingSystem") final DynamicPurchasingSystem dynamicPurchasingSystem,
-                     @JsonProperty("framework") final Framework framework,
-                     @JsonProperty("requiresElectronicCatalogue") final Boolean requiresElectronicCatalogue,
-                     @JsonProperty("tenderPeriod") final PinPeriod tenderPeriod) {
+    public PnToPinTender(@JsonProperty("id") final String id,
+                         @JsonProperty("title") final String title,
+                         @JsonProperty("description") final String description,
+                         @JsonProperty("status") final TenderStatus status,
+                         @JsonProperty("statusDetails") final TenderStatusDetails statusDetails,
+                         @JsonProperty("classification") final Classification classification,
+                         @JsonProperty("items") final LinkedHashSet<PnToPinItem> items,
+                         @JsonProperty("value") final Value value,
+                         @JsonProperty("procurementMethod") final ProcurementMethod procurementMethod,
+                         @JsonProperty("procurementMethodDetails") final String procurementMethodDetails,
+                         @JsonProperty("procurementMethodRationale") final String procurementMethodRationale,
+                         @JsonProperty("mainProcurementCategory") final MainProcurementCategory mainProcurementCategory,
+                         @JsonProperty("additionalProcurementCategories") final List<ExtendedProcurementCategory>
+                          additionalProcurementCategories,
+                         @JsonProperty("awardCriteria") final AwardCriteria awardCriteria,
+                         @JsonProperty("submissionMethod") final List<SubmissionMethod> submissionMethod,
+                         @JsonProperty("submissionMethodDetails") final String submissionMethodDetails,
+                         @JsonProperty("tenderPeriod") final PnToPinPeriod tenderPeriod,
+                         @JsonProperty("eligibilityCriteria") final String eligibilityCriteria,
+                         @JsonProperty("contractPeriod") final Period contractPeriod,
+                         @JsonProperty("procuringEntity") final PnToPinOrganizationReference procuringEntity,
+                         @JsonProperty("documents") final List<PnToPinDocument> documents,
+                         @JsonProperty("lots") final List<PnToPinLot> lots,
+                         @JsonProperty("lotGroups") final List<LotGroup> lotGroups,
+                         @JsonProperty("acceleratedProcedure") final AcceleratedProcedure acceleratedProcedure,
+                         @JsonProperty("designContest") final DesignContest designContest,
+                         @JsonProperty("electronicWorkflows") final ElectronicWorkflows electronicWorkflows,
+                         @JsonProperty("jointProcurement") final JointProcurement jointProcurement,
+                         @JsonProperty("legalBasis") final LegalBasis legalBasis,
+                         @JsonProperty("procedureOutsourcing") final ProcedureOutsourcing procedureOutsourcing,
+                         @JsonProperty("procurementMethodAdditionalInfo") final String procurementMethodAdditionalInfo,
+                         @JsonProperty("submissionLanguages") final List<SubmissionLanguage> submissionLanguages,
+                         @JsonProperty("submissionMethodRationale") final List<SubmissionMethodRationale>
+                          submissionMethodRationale,
+                         @JsonProperty("dynamicPurchasingSystem") final DynamicPurchasingSystem dynamicPurchasingSystem,
+                         @JsonProperty("framework") final Framework framework,
+                         @JsonProperty("requiresElectronicCatalogue") final Boolean requiresElectronicCatalogue) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -311,10 +328,10 @@ public class PinTender {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof PinTender)) {
+        if (!(other instanceof PnToPinTender)) {
             return false;
         }
-        final PinTender rhs = (PinTender) other;
+        final PnToPinTender rhs = (PnToPinTender) other;
         return new EqualsBuilder().append(id, rhs.id)
                 .append(title, rhs.title)
                 .append(description, rhs.description)
