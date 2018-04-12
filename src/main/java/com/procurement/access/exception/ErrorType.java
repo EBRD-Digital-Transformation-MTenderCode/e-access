@@ -14,7 +14,10 @@ public enum ErrorType {
     PERIOD_NOT_NULL("00.10", "Tender period must be empty."),
     NOT_ACTIVE("10.01", "The tender procedure is not in active state."),
     NOT_INTERMEDIATE("10.02", "The tender procedure is not in any of the intermediate states."),
-    NO_ACTIVE_LOTS("10.03", "There is no lot in the active state.");
+    NO_ACTIVE_LOTS("10.03", "There is no lot in the active state."),
+    INVALID_TOKEN("10.04", "Invalid access token."),
+    INVALID_CPID_FROM_DTO("10.05", "Invalid id from dto."),
+    INVALID_LOTS_RELATED_LOTS("10.06","Documents related lots not contains all lots.");
 
 
     private final String code;
