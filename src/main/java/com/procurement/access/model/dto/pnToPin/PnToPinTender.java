@@ -69,11 +69,11 @@ public class PnToPinTender {
 
     @NotNull
     @JsonProperty("title")
-    private final String title;
+    private String title;
 
     @NotNull
     @JsonProperty("description")
-    private final String description;
+    private String description;
 
     @JsonProperty("status")
     private TenderStatus status;
@@ -84,7 +84,7 @@ public class PnToPinTender {
     @Valid
     @NotNull
     @JsonProperty("classification")
-    private final Classification classification;
+    private Classification classification;
 
     @Valid
     @NotNull
@@ -123,15 +123,15 @@ public class PnToPinTender {
 
     @NotNull
     @JsonProperty("legalBasis")
-    private final LegalBasis legalBasis;
+    private LegalBasis legalBasis;
 
     @NotNull
     @JsonProperty("procurementMethod")
-    private final ProcurementMethod procurementMethod;
+    private ProcurementMethod procurementMethod;
 
     @NotNull
     @JsonProperty("procurementMethodDetails")
-    private final String procurementMethodDetails;
+    private String procurementMethodDetails;
 
     @JsonProperty("procurementMethodRationale")
     private final String procurementMethodRationale;
@@ -141,7 +141,7 @@ public class PnToPinTender {
 
     @NotNull
     @JsonProperty("mainProcurementCategory")
-    private final MainProcurementCategory mainProcurementCategory;
+    private MainProcurementCategory mainProcurementCategory;
 
     @Valid
     @JsonProperty("additionalProcurementCategories")
@@ -168,7 +168,7 @@ public class PnToPinTender {
     @Valid
     @NotNull
     @JsonProperty("procuringEntity")
-    private final PnToPinOrganizationReference procuringEntity;
+    private PnToPinOrganizationReference procuringEntity;
 
     @Valid
     @NotNull

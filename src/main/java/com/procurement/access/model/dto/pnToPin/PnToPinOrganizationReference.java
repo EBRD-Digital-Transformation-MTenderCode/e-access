@@ -26,7 +26,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "identifier",
         "additionalIdentifiers",
         "address",
-
         "contactPoint"
 })
 public class PnToPinOrganizationReference {
@@ -35,13 +34,11 @@ public class PnToPinOrganizationReference {
     @JsonProperty("id")
     private String id;
 
-    @Size(min = 1)
     @NotNull
     @JsonProperty("name")
     private final String name;
 
     @Valid
-    @NotNull
     @JsonProperty("identifier")
     private final Identifier identifier;
 
@@ -50,7 +47,6 @@ public class PnToPinOrganizationReference {
     private final Set<Identifier> additionalIdentifiers;
 
     @Valid
-    @NotNull
     @JsonProperty("address")
     private final Address address;
 

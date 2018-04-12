@@ -13,8 +13,16 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonPropertyOrder("tender")
+@JsonPropertyOrder({
+    "planning",
+    "tender"
+})
 public class PnToPinDto {
+
+    @Valid
+    @NotNull
+    @JsonProperty("planning")
+    private Planning planning;
 
     @Valid
     @NotNull
@@ -22,7 +30,9 @@ public class PnToPinDto {
     private PnToPinTender tender;
 
     @JsonCreator
-    public PnToPinDto(@JsonProperty("tender") final PnToPinTender tender) {
+    public PnToPinDto(@JsonProperty("tender") final PnToPinTender tender,
+                      @JsonProperty("plannung") final Planning planning) {
         this.tender = tender;
+        this.planning=planning;
     }
 }

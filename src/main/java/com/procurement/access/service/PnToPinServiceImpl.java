@@ -5,8 +5,10 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.Lot;
+import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.pn.PnDto;
 import com.procurement.access.model.dto.pnToPin.PnToPinDto;
+import com.procurement.access.model.dto.pnToPin.PnToPinTender;
 import com.procurement.access.model.dto.tender.TenderProcessDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
@@ -59,8 +61,23 @@ public class PnToPinServiceImpl implements PnToPinService {
 
 
 
-        TenderProcessDto tenderProcessDto = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
-        validateLots(tenderProcessDto,data);
+        TenderProcessDto pn = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        validateLots(pn,data);
+
+        //3.4.1
+        data.setPlanning(pn.getPlanning());
+        //3.4.2
+        Tender pnTender = pn.getTender();
+        PnToPinTender pinTender = data.getTender();
+        pinTender.setTitle(pnTender.getTitle());
+        pinTender.setDescription(pnTender.getDescription());
+        pinTender.setClassification(pnTender.getClassification());
+        pinTender.setLegalBasis(PnToPinTender.LegalBasis.fromValue(pnTender.getLegalBasis().toString()));
+        pinTender.setProcurementMethod(PnToPinTender.ProcurementMethod.fromValue(pnTender.getProcurementMethod().toString()));
+        pinTender.setProcurementMethodDetails(pnTender.getProcurementMethodDetails());
+        pinTender.setMainProcurementCategory(PnToPinTender.MainProcurementCategory.fromValue(pnTender.getMainProcurementCategory().toString()));
+        pinTender.setProcuringEntity(pnTender.getProcuringEntity());
+
 
 
 
