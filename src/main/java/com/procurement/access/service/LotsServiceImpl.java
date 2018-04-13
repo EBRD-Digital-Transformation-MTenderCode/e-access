@@ -12,7 +12,6 @@ import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.TenderProcess;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.JsonUtil;
 import java.util.*;

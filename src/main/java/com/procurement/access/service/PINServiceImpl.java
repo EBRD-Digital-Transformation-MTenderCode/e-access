@@ -7,7 +7,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.pin.PinDto;
+import com.procurement.access.model.dto.pin.PinProcess;
 import com.procurement.access.model.dto.pin.PinLot;
 import com.procurement.access.model.dto.pin.PinTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
@@ -45,7 +45,7 @@ public class PINServiceImpl implements PINService {
                                  final String country,
                                  final String owner,
                                  final LocalDateTime dateTime,
-                                 final PinDto dto) {
+                                 final PinProcess dto) {
         validateFields(dto);
         final PinTender tender = dto.getTender();
         final String cpId = getCpId(country);
@@ -62,7 +62,7 @@ public class PINServiceImpl implements PINService {
         return new ResponseDto<>(true, null, dto);
     }
 
-    private void validateFields(final PinDto dto) {
+    private void validateFields(final PinProcess dto) {
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
@@ -120,7 +120,7 @@ public class PINServiceImpl implements PINService {
         }
     }
 
-    private TenderProcessEntity getEntity(final PinDto dto,
+    private TenderProcessEntity getEntity(final PinProcess dto,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {

@@ -1,8 +1,8 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.tender.TenderProcessDto;
-import com.procurement.access.service.TenderProcessService;
+import com.procurement.access.model.dto.pin.PinProcess;
+import com.procurement.access.service.PINService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pin")
 public class PinController {
 
-    private final TenderProcessService tenderProcessService;
+    private final PINService pinService;
 
-    public PinController(final TenderProcessService tenderProcessService) {
-        this.tenderProcessService = tenderProcessService;
+    public PinController(final PINService pinService) {
+        this.pinService = pinService;
     }
 
     @PostMapping
@@ -29,9 +29,9 @@ public class PinController {
                                                  @RequestParam("owner") final String owner,
                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                  @RequestParam("date") final LocalDateTime dateTime,
-                                                 @Valid @RequestBody final TenderProcessDto data) {
+                                                 @Valid @RequestBody final PinProcess data) {
         return new ResponseEntity<>(
-                tenderProcessService.createPin(stage, country, owner, dateTime, data),
+                pinService.createPin(stage, country, owner, dateTime, data),
                 HttpStatus.CREATED);
     }
 }

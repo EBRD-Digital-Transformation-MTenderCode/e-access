@@ -13,7 +13,7 @@ public interface TenderProcessDao {
 
     TenderProcessEntity getByCpIdAndToken(String cpId, UUID token);
 
-    TenderProcessEntity getByCpIdAndTokenAndStage(String cpId, UUID token, String stage);
+    TenderProcessEntity getByCpIdAndStage(String cpId, String stage);
 
 }
 

@@ -5,7 +5,6 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.*;
-import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -34,10 +33,12 @@ public class StageServiceImpl implements StageService {
                                      final String owner) {
 
         final TenderProcessEntity entity = Optional.ofNullable(
-                tenderProcessDao.getByCpIdAndTokenAndStage(cpId, UUID.fromString(token), previousStage))
+                tenderProcessDao.getByCpIdAndStage(cpId, previousStage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
+        if (!entity.getToken().toString().equals(token))
+            throw new ErrorException(ErrorType.INVALID_TOKEN);
         final TenderProcess processBefore = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         if (processBefore.getTender().getStatus() != TenderStatus.ACTIVE)
             throw new ErrorException(ErrorType.NOT_ACTIVE);

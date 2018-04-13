@@ -1,7 +1,7 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.pn.PnDto;
+import com.procurement.access.model.dto.pn.PnProcess;
 import java.time.LocalDateTime;
 
 public interface PNService {
@@ -10,5 +10,5 @@ public interface PNService {
                          String country,
                          String owner,
                          LocalDateTime dateTime,
-                         PnDto dto);
+                         PnProcess dto);
 }

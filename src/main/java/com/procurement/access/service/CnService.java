@@ -1,7 +1,7 @@
 package com.procurement.access.service;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.model.dto.cn.CnProcess;
 import java.time.LocalDateTime;
 
 public interface CnService {
@@ -10,11 +10,11 @@ public interface CnService {
                          String country,
                          String owner,
                          LocalDateTime dateTime,
-                         CnDto dto);
+                         CnProcess dto);
 
 
     ResponseDto updateCn(String cpId,
                          String token,
                          String owner,
-                         CnDto dto);
+                         CnProcess dto);
 }

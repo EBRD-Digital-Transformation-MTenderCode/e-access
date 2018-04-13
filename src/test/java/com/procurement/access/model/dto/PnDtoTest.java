@@ -5,11 +5,11 @@ import com.procurement.access.AbstractDomainObjectTest;
 public class PnDtoTest extends AbstractDomainObjectTest {
 //    @Test
 //    public void testMappingPnJsonToPnDto() {
-//        compare(PnDto.class, "json/pn.json");
+//        compare(PnProcess.class, "json/pn.json");
 //    }
 //
 //    @Test
 //    public void testMappingWithoutRequiredToDocumentDto() {
-//        compare(PnDto.class, "json/pn_without_required.json");
+//        compare(PnProcess.class, "json/pn_without_required.json");
 //    }
 }

@@ -7,7 +7,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.pn.PnDto;
+import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
@@ -45,7 +45,7 @@ public class PNServiceImpl implements PNService {
                                 final String country,
                                 final String owner,
                                 final LocalDateTime dateTime,
-                                final PnDto dto) {
+                                final PnProcess dto) {
         validateFields(dto);
         final PnTender tender = dto.getTender();
         final String cpId = getCpId(country);
@@ -62,7 +62,7 @@ public class PNServiceImpl implements PNService {
         return new ResponseDto<>(true, null, dto);
     }
 
-    private void validateFields(final PnDto dto) {
+    private void validateFields(final PnProcess dto) {
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
@@ -120,7 +120,7 @@ public class PNServiceImpl implements PNService {
         }
     }
 
-    private TenderProcessEntity getEntity(final PnDto dto,
+    private TenderProcessEntity getEntity(final PnProcess dto,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {

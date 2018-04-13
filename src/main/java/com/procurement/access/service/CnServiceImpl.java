@@ -7,11 +7,9 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnLot;
+import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.CnTender;
-import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.ocds.Tender;
-import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -49,7 +47,7 @@ public class CnServiceImpl implements CnService {
                                 final String country,
                                 final String owner,
                                 final LocalDateTime dateTime,
-                                final CnDto dto) {
+                                final CnProcess dto) {
         validateFields(dto);
         final CnTender tender = dto.getTender();
         final String cpId = getCpId(country);
@@ -70,12 +68,12 @@ public class CnServiceImpl implements CnService {
     public ResponseDto updateCn(final String cpId,
                                 final String token,
                                 final String owner,
-                                final CnDto cn) {
+                                final CnProcess cn) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
-        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        final CnProcess tender = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         tender.setTender(cn.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderProcessDao.save(entity);
@@ -83,7 +81,7 @@ public class CnServiceImpl implements CnService {
         return new ResponseDto<>(true, null, cn);
     }
 
-    private void validateFields(CnDto dto) {
+    private void validateFields(CnProcess dto) {
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
@@ -143,7 +141,7 @@ public class CnServiceImpl implements CnService {
         }
     }
 
-    private TenderProcessEntity getEntity(final CnDto dto,
+    private TenderProcessEntity getEntity(final CnProcess dto,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {

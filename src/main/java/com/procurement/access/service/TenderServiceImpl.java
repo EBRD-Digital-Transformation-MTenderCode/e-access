@@ -4,9 +4,9 @@ import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.dto.cn.TenderStatusResponseDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.JsonUtil;
@@ -29,7 +29,7 @@ public class TenderServiceImpl implements TenderService {
     public ResponseDto updateStatus(final String cpId, final TenderStatus status) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        final CnDto process = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        final CnProcess process = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         process.getTender().setStatus(status);
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
@@ -41,7 +41,7 @@ public class TenderServiceImpl implements TenderService {
     public ResponseDto updateStatusDetails(final String cpId, final TenderStatusDetails statusDetails) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        final CnDto process = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        final CnProcess process = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         process.getTender().setStatusDetails(statusDetails);
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
@@ -54,7 +54,7 @@ public class TenderServiceImpl implements TenderService {
     public ResponseDto setSuspended(final String cpId, final Boolean suspended) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        final CnDto process = jsonUtil.toObject(CnDto.class, entity.getJsonData());
+        final CnProcess process = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         if (suspended) {
             process.getTender().setStatusDetails(TenderStatusDetails.SUSPENDED);
         } else {

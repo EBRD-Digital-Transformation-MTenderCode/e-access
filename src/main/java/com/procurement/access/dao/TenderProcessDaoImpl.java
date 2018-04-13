@@ -77,13 +77,12 @@ public class TenderProcessDaoImpl implements TenderProcessDao {
     }
 
     @Override
-    public TenderProcessEntity getByCpIdAndTokenAndStage(final String cpId, final UUID token, final String stage) {
+    public TenderProcessEntity getByCpIdAndStage(final String cpId, final String stage) {
         final Statement query = select()
             .all()
             .from(TENDER_TABLE)
             .where(eq(CP_ID, cpId))
-            .and(eq(STAGE, stage))
-            .and(eq(TOKEN, token)).limit(1);
+            .and(eq(STAGE, stage)).limit(1);
         final Row row = session.execute(query).one();
         if (row != null)
             return new TenderProcessEntity(
