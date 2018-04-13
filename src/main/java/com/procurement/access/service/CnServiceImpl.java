@@ -6,10 +6,12 @@ import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.cn.CnLot;
+import com.procurement.access.model.dto.cn.CnTender;
 import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.dto.ocds.Tender;
-import com.procurement.access.model.dto.tender.TenderProcessDto;
+import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -24,7 +26,7 @@ import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
 import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
 
 @Service
-public class TenderProcessServiceImpl implements TenderProcessService {
+public class CnServiceImpl implements CnService {
 
     private static final String SEPARATOR = "-";
     private final OCDSProperties ocdsProperties;
@@ -32,10 +34,10 @@ public class TenderProcessServiceImpl implements TenderProcessService {
     private final DateUtil dateUtil;
     private final TenderProcessDao tenderProcessDao;
 
-    public TenderProcessServiceImpl(final OCDSProperties ocdsProperties,
-                                    final JsonUtil jsonUtil,
-                                    final DateUtil dateUtil,
-                                    final TenderProcessDao tenderProcessDao) {
+    public CnServiceImpl(final OCDSProperties ocdsProperties,
+                         final JsonUtil jsonUtil,
+                         final DateUtil dateUtil,
+                         final TenderProcessDao tenderProcessDao) {
         this.ocdsProperties = ocdsProperties;
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
@@ -47,9 +49,9 @@ public class TenderProcessServiceImpl implements TenderProcessService {
                                 final String country,
                                 final String owner,
                                 final LocalDateTime dateTime,
-                                final TenderProcessDto dto) {
+                                final CnDto dto) {
         validateFields(dto);
-        final Tender tender = dto.getTender();
+        final CnTender tender = dto.getTender();
         final String cpId = getCpId(country);
         tender.setId(cpId);
         setLotsStatus(tender);
@@ -69,12 +71,12 @@ public class TenderProcessServiceImpl implements TenderProcessService {
     public ResponseDto updateCn(final String cpId,
                                 final String token,
                                 final String owner,
-                                final TenderProcessDto cn) {
+                                final CnDto cn) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
-        final TenderProcessDto tender = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        final CnDto tender = jsonUtil.toObject(CnDto.class, entity.getJsonData());
         tender.setTender(cn.getTender());
         entity.setJsonData(jsonUtil.toJson(tender));
         tenderProcessDao.save(entity);
@@ -82,7 +84,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         return new ResponseDto<>(true, null, cn);
     }
 
-    private void validateFields(TenderProcessDto dto) {
+    private void validateFields(CnDto dto) {
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
@@ -101,24 +103,24 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 
-    private void setTenderStatus(final Tender tender) {
+    private void setTenderStatus(final CnTender tender) {
         tender.setStatus(ACTIVE);
         tender.setStatusDetails(EMPTY);
     }
 
-    private void setLotsStatus(final Tender tender) {
+    private void setLotsStatus(final CnTender tender) {
         tender.getLots().forEach(lot -> {
             lot.setStatus(ACTIVE);
             lot.setStatusDetails(EMPTY);
         });
     }
 
-    private void setItemsId(final Tender tender) {
+    private void setItemsId(final CnTender tender) {
         tender.getItems().forEach(item -> item.setId(UUIDs.timeBased().toString()));
     }
 
-    private void setLotsIdAndItemsAndDocumentsRelatedLots(final Tender tender) {
-        for (final Lot lot : tender.getLots()) {
+    private void setLotsIdAndItemsAndDocumentsRelatedLots(final CnTender tender) {
+        for (final CnLot lot : tender.getLots()) {
             final String id = UUIDs.timeBased().toString();
             if (Objects.nonNull(tender.getItems())) {
                 tender.getItems()
@@ -142,7 +144,7 @@ public class TenderProcessServiceImpl implements TenderProcessService {
         }
     }
 
-    private TenderProcessEntity getEntity(final TenderProcessDto dto,
+    private TenderProcessEntity getEntity(final CnDto dto,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {

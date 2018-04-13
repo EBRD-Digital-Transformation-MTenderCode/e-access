@@ -16,7 +16,7 @@ import lombok.Setter;
         "token",
         "ocid",
         "planning",
-        "tender"
+        "cn"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class PinDto {
@@ -34,14 +34,14 @@ public class PinDto {
 
     @Valid
     @NotNull
-    @JsonProperty("tender")
+    @JsonProperty("cn")
     private PinTender tender;
 
     @JsonCreator
     public PinDto(@JsonProperty("token") final String token,
                   @JsonProperty("ocid") final String ocId,
                   @JsonProperty("planning") final Planning planning,
-                  @JsonProperty("tender") final PinTender tender) {
+                  @JsonProperty("cn") final PinTender tender) {
         this.token = token;
         this.ocId = ocId;
         this.planning = planning;

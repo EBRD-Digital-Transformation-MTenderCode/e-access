@@ -9,9 +9,10 @@ import com.procurement.access.model.dto.lots.LotsRequestDto;
 import com.procurement.access.model.dto.lots.LotsResponseDto;
 import com.procurement.access.model.dto.lots.LotsUpdateResponseDto;
 import com.procurement.access.model.dto.ocds.Lot;
+import com.procurement.access.model.dto.ocds.TenderProcess;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.tender.TenderProcessDto;
+import com.procurement.access.model.dto.cn.CnDto;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.JsonUtil;
 import java.util.*;
@@ -34,7 +35,7 @@ public class LotsServiceImpl implements LotsService {
     public ResponseDto getLots(final String cpId, final TenderStatus status) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
                 getLotsDtoByStatus(process.getTender().getLots(), status));
         return new ResponseDto<>(true, null, lotsResponseDto);
@@ -44,7 +45,7 @@ public class LotsServiceImpl implements LotsService {
     public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatus(process.getTender().getLots(), lotsDto, status);
         process.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(process));
@@ -58,7 +59,7 @@ public class LotsServiceImpl implements LotsService {
                                            final LotsRequestDto lotsDto) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        final TenderProcessDto process = jsonUtil.toObject(TenderProcessDto.class, entity.getJsonData());
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatusDetails(process.getTender().getLots(), lotsDto, statusDetails);
         process.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(process));

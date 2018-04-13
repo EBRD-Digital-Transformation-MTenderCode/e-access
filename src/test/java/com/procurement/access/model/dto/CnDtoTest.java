@@ -5,11 +5,11 @@ import com.procurement.access.AbstractDomainObjectTest;
 public class CnDtoTest extends AbstractDomainObjectTest {
 //    @Test
 //    public void testMappingToDocumentDto() {
-//        compare(TenderProcessDto.class, "json/tender.json");
+//        compare(CnDto.class, "json/cn.json");
 //    }
 //
 //    @Test
 //    public void testMappingWithoutRequiredToDocumentDto() {
-//        compare(TenderProcessDto.class, "json/cn_without_required.json");
+//        compare(CnDto.class, "json/cn_without_required.json");
 //    }
 }

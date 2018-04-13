@@ -1,11 +1,10 @@
-package com.procurement.access.model.dto.tender;
+package com.procurement.access.model.dto.cn;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.procurement.access.model.dto.ocds.Planning;
-import com.procurement.access.model.dto.ocds.Tender;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -17,10 +16,10 @@ import lombok.Setter;
         "token",
         "ocid",
         "planning",
-        "tender"
+        "cn"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class TenderProcessDto {
+public class CnDto {
 
     @JsonProperty("token")
     private String token;
@@ -35,14 +34,14 @@ public class TenderProcessDto {
 
     @Valid
     @NotNull
-    @JsonProperty("tender")
-    private Tender tender;
+    @JsonProperty("cn")
+    private CnTender tender;
 
     @JsonCreator
-    public TenderProcessDto(@JsonProperty("token") final String token,
-                            @JsonProperty("ocid") final String ocId,
-                            @JsonProperty("planning") final Planning planning,
-                            @JsonProperty("tender") final Tender tender) {
+    public CnDto(@JsonProperty("token") final String token,
+                 @JsonProperty("ocid") final String ocId,
+                 @JsonProperty("planning") final Planning planning,
+                 @JsonProperty("cn") final CnTender tender) {
         this.token = token;
         this.ocId = ocId;
         this.planning = planning;

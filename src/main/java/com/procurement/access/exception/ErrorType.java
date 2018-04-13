@@ -12,8 +12,8 @@ public enum ErrorType {
     LOT_STATUS_NOT_NULL("00.08", "Lot status must be empty."),
     LOT_STATUS_DETAILS_NOT_NULL("00.09", "Lot status details must be empty."),
     PERIOD_NOT_NULL("00.10", "Tender period must be empty."),
-    NOT_ACTIVE("10.01", "The tender procedure is not in active state."),
-    NOT_INTERMEDIATE("10.02", "The tender procedure is not in any of the intermediate states."),
+    NOT_ACTIVE("10.01", "The cn procedure is not in active state."),
+    NOT_INTERMEDIATE("10.02", "The cn procedure is not in any of the intermediate states."),
     NO_ACTIVE_LOTS("10.03", "There is no lot in the active state.");
 
 

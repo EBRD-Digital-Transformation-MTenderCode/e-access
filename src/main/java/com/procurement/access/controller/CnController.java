@@ -1,8 +1,8 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.tender.TenderProcessDto;
-import com.procurement.access.service.TenderProcessService;
+import com.procurement.access.model.dto.cn.CnDto;
+import com.procurement.access.service.CnService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cn")
 public class CnController {
 
-    private final TenderProcessService tenderProcessService;
+    private final CnService cnService;
 
-    public CnController(final TenderProcessService tenderProcessService) {
-        this.tenderProcessService = tenderProcessService;
+    public CnController(final CnService cnService) {
+        this.cnService = cnService;
     }
 
     @PostMapping
@@ -29,9 +29,9 @@ public class CnController {
                                                 @RequestParam("owner") final String owner,
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                 @RequestParam("date") final LocalDateTime dateTime,
-                                                @Valid @RequestBody final TenderProcessDto data) {
+                                                @Valid @RequestBody final CnDto data) {
         return new ResponseEntity<>(
-                tenderProcessService.createCn(stage, country, owner, dateTime, data),
+                cnService.createCn(stage, country, owner, dateTime, data),
                 HttpStatus.CREATED);
     }
 
@@ -39,9 +39,9 @@ public class CnController {
     public ResponseEntity<ResponseDto> updateCn(@RequestParam("identifier") final String cpId,
                                                 @RequestParam("token") final String token,
                                                 @RequestParam("owner") final String owner,
-                                                @Valid @RequestBody final TenderProcessDto data) {
+                                                @Valid @RequestBody final CnDto data) {
         return new ResponseEntity<>(
-                tenderProcessService.updateCn(owner, cpId, token, data),
+                cnService.updateCn(owner, cpId, token, data),
                 HttpStatus.OK);
     }
 }
