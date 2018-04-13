@@ -52,8 +52,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "submissionMethod",
         "submissionMethodRationale",
         "submissionMethodDetails",
-        "documents",
-        "tenderPeriod"
+        "documents"
 })
 public class CnTender {
 
