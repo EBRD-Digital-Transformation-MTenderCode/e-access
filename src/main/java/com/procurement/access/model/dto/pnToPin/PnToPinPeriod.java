@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.ocds;
+package com.procurement.access.model.dto.pnToPin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,35 +15,26 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "startDate",
-        "endDate"
-})
-public class Period {
+@JsonPropertyOrder("startDate")
+public class PnToPinPeriod {
 
+    @NotNull
     @JsonProperty("startDate")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private final LocalDateTime startDate;
 
-    @JsonProperty("endDate")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private final LocalDateTime endDate;
+
 
     @JsonCreator
-    public Period(@JsonProperty("startDate") final LocalDateTime startDate,
-                  @JsonProperty("endDate") final LocalDateTime endDate) {
+    public PnToPinPeriod(@JsonProperty("startDate") final LocalDateTime startDate) {
         this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(startDate)
-                .append(endDate)
                 .toHashCode();
     }
 
@@ -52,13 +43,12 @@ public class Period {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof Period)) {
+        if (!(other instanceof PnToPinPeriod)) {
             return false;
         }
-        final Period rhs = (Period) other;
+        final PnToPinPeriod rhs = (PnToPinPeriod) other;
         return new EqualsBuilder()
                 .append(startDate, rhs.startDate)
-                .append(endDate, rhs.endDate)
                 .isEquals();
     }
 }

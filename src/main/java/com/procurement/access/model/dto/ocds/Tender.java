@@ -195,7 +195,7 @@ public class Tender {
     private List<Document> documents;
 
     @JsonProperty("tenderPeriod")
-    private Period tenderPeriod;
+    private final Period tenderPeriod;
 
     @JsonCreator
     public Tender(@JsonProperty("id") final String id,

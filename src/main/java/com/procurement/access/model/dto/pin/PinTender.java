@@ -41,6 +41,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "mainProcurementCategory",
         "additionalProcurementCategories",
         "eligibilityCriteria",
+        "submissionLanguages",
         "contractPeriod",
         "procuringEntity",
         "value",

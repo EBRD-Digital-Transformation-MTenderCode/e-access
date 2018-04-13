@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.pn;
+package com.procurement.access.model.dto.pnToPin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,19 +14,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({
-        "token",
-        "ocid",
-        "planning",
-        "tender"
+    "planning",
+    "tender"
 })
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class PnDto {
-
-    @JsonProperty("token")
-    private String token;
-
-    @JsonProperty("ocid")
-    private String ocId;
+public class PnToPinDto {
 
     @Valid
     @NotNull
@@ -36,16 +27,12 @@ public class PnDto {
     @Valid
     @NotNull
     @JsonProperty("tender")
-    private PnTender tender;
+    private PnToPinTender tender;
 
     @JsonCreator
-    public PnDto(@JsonProperty("token") final String token,
-                 @JsonProperty("ocid") final String ocId,
-                 @JsonProperty("planning") final Planning planning,
-                 @JsonProperty("tender") final PnTender tender) {
-        this.token = token;
-        this.ocId = ocId;
-        this.planning = planning;
+    public PnToPinDto(@JsonProperty("tender") final PnToPinTender tender,
+                      @JsonProperty("plannung") final Planning planning) {
         this.tender = tender;
+        this.planning=planning;
     }
 }

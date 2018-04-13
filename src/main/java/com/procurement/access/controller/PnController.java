@@ -1,8 +1,8 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.pn.PnDto;
-import com.procurement.access.service.PNService;
+import com.procurement.access.model.dto.tender.TenderProcessDto;
+import com.procurement.access.service.TenderProcessService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pn")
 public class PnController {
 
-    private final PNService pnService;
+    private final TenderProcessService tenderProcessService;
 
-    public PnController(final PNService pnService) {
-        this.pnService = pnService;
+    public PnController(final TenderProcessService tenderProcessService) {
+        this.tenderProcessService = tenderProcessService;
     }
 
     @PostMapping
@@ -29,9 +29,9 @@ public class PnController {
                                                 @RequestParam("owner") final String owner,
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                 @RequestParam("date") final LocalDateTime dateTime,
-                                                @Valid @RequestBody final PnDto data) {
+                                                @Valid @RequestBody final TenderProcessDto data) {
         return new ResponseEntity<>(
-                pnService.createPn(stage, country, owner, dateTime, data),
+                tenderProcessService.createPn(stage, country, owner, dateTime, data),
                 HttpStatus.CREATED);
     }
 }

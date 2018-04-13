@@ -1,52 +1,11 @@
 {
-  "ocid":"",
-  "planning":
-  {
-    "--rationale": "",
-    "budget":
-    {
-      "--description": "",
-      "amount":
-      {
-        "amount": 0,
-        "currency": ""
-      },
-      "isEuropeanUnionFunded": false,
-      "--europeanUnionFunding":
-    {
-      "projectIdentifier": "",
-      "projectName": "",
-      "--uri":""
-    },
-      "budgetBreakdown":
-      [{
-        "id": "",
-        "--description": "",
-        "amount":
-        {
-          "amount": 0,
-          "currency": ""
-        },
-        "period":
-        {
-          "startDate": "",
-          "endDate": ""
-        },
-        "sourceParty":
-        {
-          "name": "",
-          "id": ""
-        }
-      }]
-    }
-  },
   "tender":
   {
     "id":"",
-    "status":"",
-    "statusdetails":"",
     "title": "",
     "description": "",
+    "--status": "",
+    "--statusDetails": "",
     "classification":
     {
       "scheme": "",
@@ -90,8 +49,12 @@
     "--procurementMethodAdditionalInfo": "",
     "mainProcurementCategory": "",
     "--additionalProcurementCategories": [""],
-    "eligibilityCriteria": "",
-    "submissionLanguages": [""],
+    "--eligibilityCriteria": "",
+    "--submissionLanguages": [""],
+    "tenderPeriod":
+    {
+      "startDate": ""
+    },
     "contractPeriod":
     {
       "startDate": "",
@@ -100,75 +63,45 @@
     "procuringEntity":
     {
       "id": "",
-      "name": "",
-      "identifier":
-      {
-        "scheme": "",
-        "id": "",
-        "legalName": "",
-        "uri": ""
-      },
-      "--additionalIdentifiers":
-    [{
-      "scheme": "",
-      "id": "",
-      "legalName": "",
-      "uri": ""
-    }],
-      "address":
-      {
-        "streetAddress": "",
-        "locality": "",
-        "region": "",
-        "--postalCode": "",
-        "countryName": ""
-      },
-      "contactPoint":
-      {
-        "name": "",
-        "email": "",
-        "telephone": "",
-        "--faxNumber": "",
-        "url": ""
-      }
+      "name": ""
     },
     "value":
     {
       "amount": 0,
       "currency": ""
     },
-    "lotGroups":
-    [{
-      "optionToCombine": false
-    }],
+    "--lotGroups":
+  [{
+    "optionToCombine": false
+  }],
     "lots":
     [{
       "id": "",
       "title": "",
       "description": "",
-      "status":"",
-      "statusdetails":"",
+      "--status": "",
+      "--statusDetails": "",
       "value":
       {
         "amount": 0,
         "currency": ""
       },
       "options":
-      {
+      [{
         "hasOptions": false
-      },
+      }],
       "variants":
-      {
+      [{
         "hasVariants": false
-      },
+      }],
       "renewals":
-      {
+      [{
         "hasRenewals": false
-      },
-      "recurrentProcurement":
-      {
+      }],
+      "--recurrentProcurement":
+      [{
         "isRecurrent": false
-      },
+      }],
       "contractPeriod":
       {
         "startDate": "",
@@ -192,13 +125,13 @@
       "id":"",
       "classification":
       {
-        "scheme": "CPV",
+        "scheme": "",
         "description": "",
         "id": ""
       },
       "--additionalClassifications":
       [{
-        "scheme": "CPVs",
+        "scheme": "",
         "description": "",
         "id": ""
       }],
@@ -211,14 +144,21 @@
       "--description": "",
       "relatedLot": ""
     }],
-    "awardCriteria": "priceOnly",
-    "requiresElectronicCatalogue": false,
-    "submissionMethod": [ "electronicSubmission" ],
-    "--submissionMethodRationale": [ "" ],
+    "awardCriteria": "",
+    "--requiresElectronicCatalogue": false,
+    "submissionMethod": [""],
+    "--submissionMethodRationale": [""],
     "--submissionMethodDetails": "",
     "--documents":
   [{
-    "id": ""
+    "documentType": "",
+    "id": "",
+    "--datePublished": "",
+    "--url": "",
+    "--title": "",
+    "--description": "",
+    "language": "",
+    "--relatedLots": [""]
   }]
   }
 }
