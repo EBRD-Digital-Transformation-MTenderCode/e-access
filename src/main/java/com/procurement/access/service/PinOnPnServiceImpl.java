@@ -71,24 +71,17 @@ public class PinOnPnServiceImpl implements PinOnPnService {
                 .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
         // validate lots from pn
         if (pn.getTender().getLots() != null) {
-            final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(l -> l.getId()).collect(Collectors.toSet());
-            for (String lotId : lotsFromDocuments) {
-                if (!lotsFromPn.contains(lotId)) {
-                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
-                }
-            }
+            final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(PnLot::getId).collect(Collectors.toSet());
+            if (!lotsFromPn.containsAll(lotsFromDocuments))
+                throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
             addLotsToPinFromPn(pn, pin);
         }
         //validate lots from pin
         else {
-            final Set<String> lotsFromPin = pin.getTender().getLots().stream().map(l -> l.getId()).collect(Collectors.toSet());
-            for (String lotId : lotsFromDocuments) {
-                if (!lotsFromPin.contains(lotId)) {
-                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
-                }
-            }
+            final Set<String> lotsFromPin = pin.getTender().getLots().stream().map(PinLot::getId).collect(Collectors.toSet());
+            if (!lotsFromPin.containsAll(lotsFromDocuments))
+                throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
         }
-
     }
 
     private void addLotsToPinFromPn(final PnProcess pn, final PinProcess pin) {
