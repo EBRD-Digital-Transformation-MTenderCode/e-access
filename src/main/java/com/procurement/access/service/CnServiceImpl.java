@@ -59,7 +59,6 @@ public class CnServiceImpl implements CnService {
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
-        tender.setTenderPeriod(null);
         final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
         tenderProcessDao.save(entity);
         dto.setOcId(cpId);
