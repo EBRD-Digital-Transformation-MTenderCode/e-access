@@ -1,41 +1,40 @@
 {
   "planning": {
-    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document.",
     "budget": {
-      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
+      "description": "Pull or agent number whom. Agency who rise.",
       "amount": {
-        "amount": 2.85,
-        "currency": "LAJ"
+        "amount": 2.3,
+        "currency": "UAH"
       },
-      "isEuropeanUnionFunded": true,
-      "europeanUnionFunding": {
-        "projectIdentifier": "proj-cn-12346",
-        "projectName": "test proj name",
-        "uri": "https://jwt.io"
-      },
+      "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-UA-1521797966040-FS-1521797969595",
-          "description": "A short free text description of this budget entry.",
+          "id": "ocds-t1s2t3-UA-1523618771827-FS-1523618776045",
+          "description": "Image this majority station throughout. Business hope hot news effect politics concern.",
           "amount": {
-            "amount": 2.85,
-            "currency": "LAJ"
+            "amount": 2.3,
+            "currency": "UAH"
           },
           "period": {
-            "startDate": "2018-03-23T09:39:25Z",
-            "endDate": "2018-05-06T02:23:40Z"
+            "startDate": "2018-04-13T11:26:11Z",
+            "endDate": "2018-07-26T08:11:51Z"
+          },
+          "sourceParty": {
+            "id": "UA-EDR-808-95-5303",
+            "name": "Gordon, Freeman and Vazquez"
           }
         }
       ]
-    }
+    },
+    "rationale": "Generation sure spend leg."
   },
   "tender": {
-    "title": "Tender title",
-    "description": "Tender description",
+    "title": "Option field him.",
+    "description": "Western explain newspaper major result should.",
     "classification": {
+      "id": "22822000-8",
       "scheme": "CPV",
-      "description": "33600000-6",
-      "id": "Фармацевтична продукція"
+      "description": "Business forms"
     },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
@@ -60,31 +59,30 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "DIRECTIVE_2014_24_EU",
-    "procurementMethod": "open",
-    "procurementMethodDetails": "Open Procurement",
-    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
-    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
+    "legalBasis": "REGULATION_966_2012",
+    "procurementMethod": "selective",
+    "procurementMethodDetails": "Information view president there administration whole.",
+    "procurementMethodRationale": "List themselves eat similar. Born movement answer onto popular offer. Election again minute bit. Window executive glass.",
+    "procurementMethodAdditionalInfo": "Compare next likely throughout level. East dog for choice. Other carry behavior prove remain summer oil. Project range cup stage become can sense.",
     "mainProcurementCategory": "goods",
     "additionalProcurementCategories": [
-      "goods"
+      "services"
     ],
-    "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
+    "eligibilityCriteria": "Sit doctor allow professional town total take. Simply value three drop dinner.",
     "submissionLanguages": [
-      "pl",
-      "ro"
+      "mt"
     ],
     "tenderPeriod": {
-      "endDate": "2018-05-06T02:23:40Z",
-      "startDate": "2018-03-23T10:55:42Z"
+      "endDate": "2018-04-13T11:29:17Z",
+      "startDate": "2018-04-13T11:26:17Z"
     },
     "contractPeriod": {
-      "startDate": "2018-09-27T00:00:00Z",
-      "endDate": "2018-11-27T00:00:00Z"
+      "startDate": "2018-04-13T11:26:17Z",
+      "endDate": "2018-08-31T08:02:45Z"
     },
     "value": {
-      "amount": 2.85,
-      "currency": "LAJ"
+      "amount": 1778517.27,
+      "currency": "UAH"
     },
     "lotGroups": [
       {
@@ -93,12 +91,12 @@
     ],
     "lots": [
       {
-        "id": "lot-id-123123",
-        "title": "A title for this lot.",
-        "description": "A description of this lot.",
+        "id": "1",
+        "title": "Side color prepare almost.",
+        "description": "Firm without nor boy Democrat central number view. Much much that structure though. Subject maintain good.",
         "value": {
-          "amount": 2.85,
-          "currency": "LAJ"
+          "amount": 173299.71,
+          "currency": "UAH"
         },
         "options": [
           {
@@ -121,214 +119,196 @@
           }
         ],
         "contractPeriod": {
-          "startDate": "2018-09-27T00:00:00Z",
-          "endDate": "2018-11-27T00:00:00Z"
+          "startDate": "2018-04-13T11:26:17Z",
+          "endDate": "2018-07-05T09:05:27Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "149-159 High Street",
-            "locality": "Birmingham",
-            "region": "Digbeth",
-            "postalCode": "B12 0JU",
-            "countryName": "United Kingdom"
+            "streetAddress": "24522 Joel Plaza",
+            "locality": "Blackchester",
+            "region": "Nebraska",
+            "postalCode": "08637",
+            "countryName": "Norfolk Island"
           },
-          "description": "Further description of the place of performance of the contract. Required by EU."
+          "description": "Claim question travel data. Yeah draw task exist dog man bill. Start hour campaign edge color coach daughter. Fact form simple performance spring hour."
         }
       }
     ],
     "items": [
       {
-        "id": "item-id-123123",
+        "id": "1",
         "classification": {
+          "id": "22822000-8",
           "scheme": "CPV",
-          "description": "Фармацевтична продукція",
-          "id": "33600000-6"
+          "description": "Business forms"
         },
         "additionalClassifications": [
           {
-            "scheme": "CPVS",
-            "description": "A textual description or title for the code.",
-            "id": "CPVs-id-12341234"
+            "id": "63721500-4",
+            "scheme": "CPV",
+            "description": "Passenger terminal operation services"
           }
         ],
-        "quantity": 10,
+        "quantity": 1.8376110038E8,
         "unit": {
-          "id": "0971",
-          "name": "kg"
+          "id": "KWT",
+          "name": "kilowatt"
         },
-        "description": "A description of the goods, services to be provided.",
-        "relatedLot": "lot-id-123123"
+        "description": "Before medical must Mr amount. Eight audience get. Close through follow she exist production.",
+        "relatedLot": "1"
       }
     ],
-    "awardCriteria": "priceOnly",
+    "awardCriteria": "bestProposal",
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
-      "electronicSubmission"
+      "written"
     ],
     "submissionMethodRationale": [
-      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
       "IPR_ISSUES"
     ],
-    "submissionMethodDetails": "Any detailed or further information on the submission method. This may include the address, e-mail address or online service to which bids should be submitted, and any special requirements to be followed for submissions.",
+    "submissionMethodDetails": "Despite street group rule success. Similar occur above mind maybe religious again.",
     "procuringEntity": {
-      "name": "Новороздільська міська лікарня",
+      "name": "Adams-Cooper",
       "identifier": {
         "scheme": "UA-EDR",
-        "id": "20764777",
-        "legalName": "Новороздільська міська лікарня",
-        "uri": "http://buyerTestLink.ua"
+        "id": "430-06-2237",
+        "legalName": "Adams-Cooper LLC",
+        "uri": "https://hamilton-coleman.com/list/posts/main/home.htm"
       },
       "additionalIdentifiers": [
         {
           "scheme": "UA-EDR",
-          "id": "123123123",
-          "legalName": "Додатково Новороздільська міська лікарня",
-          "uri": "http://additionalBuyerTestLink.ua"
+          "id": "664-62-4630",
+          "legalName": "Adams-Cooper Ltd",
+          "uri": "https://www.carson.net/index/"
         }
       ],
       "address": {
-        "streetAddress": "вул. Винниченка, 37",
-        "locality": "місто Новий Розділ",
-        "region": "Львівська область",
-        "postalCode": "7770777",
-        "countryName": "Україна"
+        "streetAddress": "08032 Lucero Meadow Suite 926",
+        "locality": "Rachelstad",
+        "region": "Virginia",
+        "postalCode": "31430-0298",
+        "countryName": "Belgium"
       },
       "contactPoint": {
-        "name": "Осипових Сергій Олександрович",
-        "email": "test2@test.test",
-        "telephone": "+380222222222",
-        "faxNumber": "+380222222222",
-        "url": "http://test.ua"
+        "name": "Anthony Hansen",
+        "email": "keith39@gmail.com",
+        "telephone": "279-228-3581",
+        "faxNumber": "883.580.7440x13381",
+        "url": "http://collins-cole.com/tags/tags/search/"
       }
     }
   },
-  "budgetBreakdown": [
-    {
-      "id": "ocds-t1s2t3-UA-1521797966040-FS-1521797969595",
-      "amount": {
-        "amount": 2.85,
-        "currency": "LAJ"
-      },
-      "description": "A short free text description of this budget entry.",
-      "period": {
-        "startDate": "2018-03-23T09:39:25Z",
-        "endDate": "2018-05-06T02:23:40Z"
-      },
-      "sourceParty": {
-        "id": "UA-EDR-753-18-5525",
-        "name": "Taylor, Dennis and Munoz"
-      }
-    }
-  ],
   "ei": [
-    "ocds-t1s2t3-UA-1521797966040"
+    "ocds-t1s2t3-UA-1523618771827"
   ],
   "buyer": [
     {
-      "name": "Taylor, Dennis and Munoz",
-      "id": "UA-EDR-753-18-5525",
+      "name": "Gordon, Freeman and Vazquez",
+      "id": "UA-EDR-808-95-5303",
       "identifier": {
+        "id": "808-95-5303",
         "scheme": "UA-EDR",
-        "id": "753-18-5525",
-        "legalName": "Taylor, Dennis and Munoz Inc",
-        "uri": "http://zuniga-smith.com/"
+        "legalName": "Gordon, Freeman and Vazquez PLC",
+        "uri": "https://rogers.net/"
       },
       "address": {
-        "streetAddress": "2485 Cook Ridge",
-        "locality": "East Janetbury",
-        "region": "California",
-        "postalCode": "88909",
-        "countryName": "Liberia"
+        "streetAddress": "1368 Harris Summit",
+        "locality": "East Michaelland",
+        "region": "Idaho",
+        "postalCode": "81779",
+        "countryName": "Tanzania"
       },
       "additionalIdentifiers": [
         {
+          "id": "661-31-7157",
           "scheme": "UA-EDR",
-          "id": "886-69-4916",
-          "legalName": "Taylor, Dennis and Munoz Group",
-          "uri": "https://spencer.com/list/main.htm"
+          "legalName": "Gordon, Freeman and Vazquez Group",
+          "uri": "http://www.rodriguez.net/home.html"
         }
       ],
       "contactPoint": {
-        "name": "David Mcintosh",
-        "email": "alisonmaxwell@hotmail.com",
-        "telephone": "1-869-514-4337",
-        "faxNumber": "04796869785",
-        "url": "https://johnson-cox.net/app/app/list/search/"
+        "name": "Marissa Gilbert",
+        "email": "richardsonstephen@gmail.com",
+        "telephone": "(384)796-7330",
+        "faxNumber": "630-295-8800x70899",
+        "url": "http://www.howard.com/main/wp-content/terms.php"
       },
       "details": {
         "typeOfBuyer": "NATIONAL_AGENCY",
         "mainGeneralActivity": "HOUSING_AND_COMMUNITY_AMENITIES",
-        "mainSectoralActivity": "WATER",
-        "isACentralPurchasingBody": true,
-        "scale": "large"
-      }
+        "mainSectoralActivity": "RAILWAY_SERVICES",
+        "isACentralPurchasingBody": false,
+        "scale": ""
+      },
+      "buyerProfile": "https://www.wood.com/list/blog/faq.htm"
     }
   ],
   "funder": [
     {
-      "name": "Taylor, Dennis and Munoz",
-      "id": "UA-EDR-753-18-5525",
+      "id": "UA-EDR-808-95-5303",
+      "name": "Gordon, Freeman and Vazquez",
       "identifier": {
+        "id": "808-95-5303",
         "scheme": "UA-EDR",
-        "id": "753-18-5525",
-        "legalName": "Taylor, Dennis and Munoz Inc",
-        "uri": "http://zuniga-smith.com/"
+        "legalName": "Gordon, Freeman and Vazquez PLC",
+        "uri": "https://rogers.net/"
       },
       "address": {
-        "streetAddress": "2485 Cook Ridge",
-        "locality": "East Janetbury",
-        "region": "California",
-        "postalCode": "88909",
-        "countryName": "Liberia"
+        "streetAddress": "1368 Harris Summit",
+        "locality": "East Michaelland",
+        "region": "Idaho",
+        "postalCode": "81779",
+        "countryName": "Tanzania"
       },
       "additionalIdentifiers": [
         {
+          "id": "661-31-7157",
           "scheme": "UA-EDR",
-          "id": "886-69-4916",
-          "legalName": "Taylor, Dennis and Munoz Group",
-          "uri": "https://spencer.com/list/main.htm"
+          "legalName": "Gordon, Freeman and Vazquez Group",
+          "uri": "http://www.rodriguez.net/home.html"
         }
       ],
       "contactPoint": {
-        "name": "David Mcintosh",
-        "email": "alisonmaxwell@hotmail.com",
-        "telephone": "1-869-514-4337",
-        "faxNumber": "04796869785",
-        "url": "https://johnson-cox.net/app/app/list/search/"
+        "name": "Marissa Gilbert",
+        "email": "richardsonstephen@gmail.com",
+        "telephone": "(384)796-7330",
+        "faxNumber": "630-295-8800x70899",
+        "url": "http://www.howard.com/main/wp-content/terms.php"
       }
     }
   ],
   "payer": [
     {
-      "name": "Taylor, Dennis and Munoz",
-      "id": "UA-EDR-753-18-5525",
+      "id": "UA-EDR-117-28-3992",
+      "name": "Mason-King",
       "identifier": {
+        "id": "117-28-3992",
         "scheme": "UA-EDR",
-        "id": "753-18-5525",
-        "legalName": "Taylor, Dennis and Munoz Inc",
-        "uri": "http://zuniga-smith.com/"
+        "legalName": "Mason-King LLC",
+        "uri": "http://www.harris.org/blog/about/"
       },
       "address": {
-        "streetAddress": "2485 Cook Ridge",
-        "locality": "East Janetbury",
-        "region": "California",
-        "postalCode": "88909",
-        "countryName": "Liberia"
+        "streetAddress": "97992 Diaz Causeway Suite 256",
+        "locality": "New Alexander",
+        "region": "Tennessee",
+        "postalCode": "15806",
+        "countryName": "United States Minor Outlying Islands"
       },
       "additionalIdentifiers": [
         {
+          "id": "872-05-9724",
           "scheme": "UA-EDR",
-          "id": "886-69-4916",
-          "legalName": "Taylor, Dennis and Munoz Group",
-          "uri": "https://spencer.com/list/main.htm"
+          "legalName": "Mason-King and Sons",
+          "uri": "http://johnson.com/faq/"
         }
       ],
       "contactPoint": {
-        "name": "David Mcintosh",
-        "email": "alisonmaxwell@hotmail.com",
-        "telephone": "1-869-514-4337",
-        "faxNumber": "04796869785",
-        "url": "https://johnson-cox.net/app/app/list/search/"
+        "name": "Jessica Jones",
+        "email": "michael65@gmail.com",
+        "telephone": "1-846-901-6879x64169",
+        "faxNumber": "288.971.5646x626",
+        "url": "http://collier.com/"
       }
     }
   ]

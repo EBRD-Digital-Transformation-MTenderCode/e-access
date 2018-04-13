@@ -16,7 +16,7 @@ import lombok.Setter;
         "token",
         "ocid",
         "planning",
-        "cn"
+        "tender"
 })
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TenderProcess {
@@ -34,14 +34,14 @@ public class TenderProcess {
 
     @Valid
     @NotNull
-    @JsonProperty("cn")
+    @JsonProperty("tender")
     private Tender tender;
 
     @JsonCreator
     public TenderProcess(@JsonProperty("token") final String token,
                          @JsonProperty("ocid") final String ocId,
                          @JsonProperty("planning") final Planning planning,
-                         @JsonProperty("cn") final Tender tender) {
+                         @JsonProperty("tender") final Tender tender) {
         this.token = token;
         this.ocId = ocId;
         this.planning = planning;
