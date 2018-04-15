@@ -49,7 +49,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
                                      final LocalDateTime dateTime,
                                      final PinProcess pin) {
 
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, previousStage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
