@@ -1,13 +1,9 @@
 package com.procurement.access.service;
 
-import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.ocds.LegalBasis;
-import com.procurement.access.model.dto.ocds.MainProcurementCategory;
-import com.procurement.access.model.dto.ocds.ProcurementMethod;
 import com.procurement.access.model.dto.pin.PinLot;
 import com.procurement.access.model.dto.pin.PinProcess;
 import com.procurement.access.model.dto.pin.PinTender;
@@ -71,7 +67,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         pinTender.setProcurementMethodDetails(pnTender.getProcurementMethodDetails());
         pinTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         pinTender.setProcuringEntity(pnTender.getProcuringEntity());
-        tenderProcessDao.save(getEntity(pin, stage, entity.getToken(),  dateTime, owner));
+        tenderProcessDao.save(getEntity(pin, stage, entity.getToken(), dateTime, owner));
         pin.setOcId(cpId);
         pin.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, pin);
