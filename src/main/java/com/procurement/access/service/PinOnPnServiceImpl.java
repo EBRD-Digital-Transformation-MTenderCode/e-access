@@ -1,5 +1,6 @@
 package com.procurement.access.service;
 
+import com.datastax.driver.core.utils.UUIDs;
 import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
@@ -14,6 +15,7 @@ import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
+import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,43 +28,51 @@ import org.springframework.stereotype.Service;
 public class PinOnPnServiceImpl implements PinOnPnService {
 
     private final JsonUtil jsonUtil;
+    private final DateUtil dateUtil;
     private final TenderProcessDao tenderProcessDao;
 
-    public PinOnPnServiceImpl(JsonUtil jsonUtil,
-                              TenderProcessDao tenderProcessDao) {
+
+    public PinOnPnServiceImpl(final JsonUtil jsonUtil,
+                              final DateUtil dateUtil,
+                              final TenderProcessDao tenderProcessDao) {
         this.jsonUtil = jsonUtil;
+        this.dateUtil = dateUtil;
         this.tenderProcessDao = tenderProcessDao;
     }
 
     @Override
-    public ResponseDto createPinOnPn(String cpId, String token, String owner, String stage, String previousStage, LocalDateTime dateTime, PinProcess pin) {
+    public ResponseDto createPinOnPn(final String cpId,
+                                     final String token,
+                                     final String owner,
+                                     final String stage,
+                                     final String previousStage,
+                                     final LocalDateTime dateTime,
+                                     final PinProcess pin) {
 
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
         if (!entity.getToken().toString().equals(token))
             throw new ErrorException(ErrorType.INVALID_TOKEN);
         if (!entity.getCpId().equals(pin.getTender().getId()))
             throw new ErrorException(ErrorType.INVALID_CPID_FROM_DTO);
-
         final PnProcess pn = jsonUtil.toObject(PnProcess.class, entity.getJsonData());
         final PnTender pnTender = pn.getTender();
-
         validateLots(pn, pin);
-
         pin.setPlanning(pn.getPlanning());
         final PinTender pinTender = pin.getTender();
         pinTender.setTitle(pnTender.getTitle());
         pinTender.setDescription(pnTender.getDescription());
         pinTender.setClassification(pnTender.getClassification());
-        pinTender.setLegalBasis(LegalBasis.fromValue(pnTender.getLegalBasis().toString()));
-        pinTender.setProcurementMethod(ProcurementMethod.fromValue(pnTender.getProcurementMethod().toString()));
+        pinTender.setLegalBasis(pnTender.getLegalBasis());
+        pinTender.setProcurementMethod(pnTender.getProcurementMethod());
         pinTender.setProcurementMethodDetails(pnTender.getProcurementMethodDetails());
-        pinTender.setMainProcurementCategory(MainProcurementCategory.fromValue(pnTender.getMainProcurementCategory().toString()));
+        pinTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         pinTender.setProcuringEntity(pnTender.getProcuringEntity());
-
+        tenderProcessDao.save(getEntity(pin, stage, dateTime, owner));
+        pin.setOcId(cpId);
+        pin.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, pin);
     }
 
@@ -106,5 +116,19 @@ public class PinOnPnServiceImpl implements PinOnPnService {
                 pnLot.getContractPeriod(),
                 pnLot.getPlaceOfPerformance()
         );
+    }
+
+    private TenderProcessEntity getEntity(final PinProcess pin,
+                                          final String stage,
+                                          final LocalDateTime dateTime,
+                                          final String owner) {
+        final TenderProcessEntity entity = new TenderProcessEntity();
+        entity.setCpId(pin.getTender().getId());
+        entity.setToken(UUIDs.random());
+        entity.setStage(stage);
+        entity.setOwner(owner);
+        entity.setCreatedDate(dateUtil.localToDate(dateTime));
+        entity.setJsonData(jsonUtil.toJson(pin));
+        return entity;
     }
 }

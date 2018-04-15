@@ -130,7 +130,6 @@ public class PNServiceImpl implements PNService {
         entity.setOwner(owner);
         entity.setStage(stage);
         entity.setCreatedDate(dateUtil.localToDate(dateTime));
-        entity.setCreatedDate(dateUtil.localToDate(LocalDateTime.now()));
         entity.setJsonData(jsonUtil.toJson(dto));
         return entity;
     }

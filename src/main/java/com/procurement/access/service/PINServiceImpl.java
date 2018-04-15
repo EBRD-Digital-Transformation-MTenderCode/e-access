@@ -130,7 +130,6 @@ public class PINServiceImpl implements PINService {
         entity.setStage(stage);
         entity.setOwner(owner);
         entity.setCreatedDate(dateUtil.localToDate(dateTime));
-        entity.setCreatedDate(dateUtil.localToDate(LocalDateTime.now()));
         entity.setJsonData(jsonUtil.toJson(dto));
         return entity;
     }
