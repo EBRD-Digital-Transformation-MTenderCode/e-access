@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +71,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         pinTender.setProcurementMethodDetails(pnTender.getProcurementMethodDetails());
         pinTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         pinTender.setProcuringEntity(pnTender.getProcuringEntity());
-        tenderProcessDao.save(getEntity(pin, stage, dateTime, owner));
+        tenderProcessDao.save(getEntity(pin, stage, entity.getToken(),  dateTime, owner));
         pin.setOcId(cpId);
         pin.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, pin);
@@ -120,11 +121,12 @@ public class PinOnPnServiceImpl implements PinOnPnService {
 
     private TenderProcessEntity getEntity(final PinProcess pin,
                                           final String stage,
+                                          final UUID token,
                                           final LocalDateTime dateTime,
                                           final String owner) {
         final TenderProcessEntity entity = new TenderProcessEntity();
         entity.setCpId(pin.getTender().getId());
-        entity.setToken(UUIDs.random());
+        entity.setToken(token);
         entity.setStage(stage);
         entity.setOwner(owner);
         entity.setCreatedDate(dateUtil.localToDate(dateTime));
