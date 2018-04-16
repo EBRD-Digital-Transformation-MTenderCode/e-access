@@ -7,8 +7,8 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.pin.PinProcess;
 import com.procurement.access.model.dto.pin.PinLot;
+import com.procurement.access.model.dto.pin.PinProcess;
 import com.procurement.access.model.dto.pin.PinTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
@@ -67,10 +67,12 @@ public class PINServiceImpl implements PINService {
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
             throw new ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL);
-        if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatus())))
-            throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
-        if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
-            throw new ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL);
+        if (dto.getTender().getLots() != null) {
+            if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatus())))
+                throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
+            if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
+                throw new ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL);
+        }
     }
 
     private String getCpId(final String country) {
@@ -87,36 +89,42 @@ public class PINServiceImpl implements PINService {
     }
 
     private void setLotsStatus(final PinTender tender) {
-        tender.getLots().forEach(lot -> {
-            lot.setStatus(PLANNED);
-            lot.setStatusDetails(EMPTY);
-        });
+        if (tender.getLots() != null) {
+            tender.getLots().forEach(lot -> {
+                lot.setStatus(PLANNED);
+                lot.setStatusDetails(EMPTY);
+            });
+        }
     }
 
     private void setItemsId(final PinTender tender) {
-        tender.getItems().forEach(item -> item.setId(UUIDs.timeBased().toString()));
+        if (tender.getItems() != null) {
+            tender.getItems().forEach(item -> item.setId(UUIDs.timeBased().toString()));
+        }
     }
 
     private void setLotsIdAndItemsAndDocumentsRelatedLots(final PinTender tender) {
-        for (final PinLot lot : tender.getLots()) {
-            final String id = UUIDs.timeBased().toString();
-            if (Objects.nonNull(tender.getItems())) {
-                tender.getItems()
-                        .stream()
-                        .filter(item -> item.getRelatedLot().equals(lot.getId()))
-                        .forEach(item -> item.setRelatedLot(id));
+        if (tender.getLots() != null) {
+            for (final PinLot lot : tender.getLots()) {
+                final String id = UUIDs.timeBased().toString();
+                if (Objects.nonNull(tender.getItems())) {
+                    tender.getItems()
+                            .stream()
+                            .filter(item -> item.getRelatedLot().equals(lot.getId()))
+                            .forEach(item -> item.setRelatedLot(id));
+                }
+                if (Objects.nonNull(tender.getDocuments())) {
+                    tender.getDocuments().forEach(document -> {
+                        final Set<String> relatedLots = document.getRelatedLots();
+                        if (relatedLots.contains(lot.getId())) {
+                            relatedLots.remove(lot.getId());
+                            relatedLots.add(id);
+                        }
+                        document.setRelatedLots(relatedLots);
+                    });
+                }
+                lot.setId(id);
             }
-            if (Objects.nonNull(tender.getDocuments())) {
-                tender.getDocuments().forEach(document -> {
-                    final Set<String> relatedLots = document.getRelatedLots();
-                    if (relatedLots.contains(lot.getId())) {
-                        relatedLots.remove(lot.getId());
-                        relatedLots.add(id);
-                    }
-                    document.setRelatedLots(relatedLots);
-                });
-            }
-            lot.setId(id);
         }
     }
 
