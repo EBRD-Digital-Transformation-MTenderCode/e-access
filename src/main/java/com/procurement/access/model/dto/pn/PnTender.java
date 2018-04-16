@@ -137,7 +137,6 @@ public class PnTender {
     @JsonProperty("eligibilityCriteria")
     private final String eligibilityCriteria;
 
-    @NotEmpty
     @JsonProperty("submissionLanguages")
     private final List<SubmissionLanguage> submissionLanguages;
 
@@ -146,7 +145,6 @@ public class PnTender {
     private final PnPeriod tenderPeriod;
 
     @Valid
-    @NotNull
     @JsonProperty("contractPeriod")
     private final Period contractPeriod;
 
