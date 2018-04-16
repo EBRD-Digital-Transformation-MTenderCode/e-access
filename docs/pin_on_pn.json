@@ -1,0 +1,188 @@
+{
+  "tender": {
+    "id": "",
+    "title": "",
+    "description": "",
+    --
+    "status": "",
+    --
+    "statusDetails": "",
+    "classification": {
+      "scheme": "",
+      "description": "",
+      "id": ""
+    },
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "",
+    "procurementMethod": "",
+    "procurementMethodDetails": "",
+    --
+    "procurementMethodRationale": "",
+    --
+    "procurementMethodAdditionalInfo": "",
+    "mainProcurementCategory": "",
+    --
+    "additionalProcurementCategories": [
+      ""
+    ],
+    --
+    "eligibilityCriteria": "",
+    --
+    "submissionLanguages": [
+      ""
+    ],
+    "tenderPeriod": {
+      "startDate": ""
+    },
+    "contractPeriod": {
+      "startDate": "",
+      "endDate": ""
+    },
+    "procuringEntity": {
+      "id": "",
+      "name": ""
+    }
+    "value": {
+      "amount": 0,
+      "currency": ""
+    },
+    --
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "lots": [
+      {
+        "id": "",
+        "title": "",
+        "description": "",
+        --
+        "status": "",
+        --
+        "statusDetails": "",
+        "value": {
+          "amount": 0,
+          "currency": ""
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        --
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "",
+          "endDate": ""
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "",
+            "locality": "",
+            "region": "",
+            --
+            "postalCode": "",
+            "countryName": ""
+          },
+          --
+          "description": ""
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "",
+        "classification": {
+          "scheme": "",
+          "description": "",
+          "id": ""
+        },
+        --
+        "additionalClassifications": [
+          {
+            "scheme": "",
+            "description": "",
+            "id": ""
+          }
+        ],
+        "quantity": 0,
+        "unit": {
+          "id": "",
+          "name": ""
+        },
+        --
+        "description": "",
+        "relatedLot": ""
+      }
+    ],
+    "awardCriteria": "",
+    --
+    "requiresElectronicCatalogue": false,
+    "submissionMethod": [
+      ""
+    ],
+    --
+    "submissionMethodRationale": [
+      ""
+    ],
+    --
+    "submissionMethodDetails": "",
+    --
+    "documents": [
+      {
+        "documentType": "",
+        "id": "",
+        --
+        "datePublished": "",
+        --
+        "url": "",
+        --
+        "title": "",
+        --
+        "description": "",
+        "language": "",
+        --
+        "relatedLots": [
+          ""
+        ]
+      }
+    ]
+  }
+}

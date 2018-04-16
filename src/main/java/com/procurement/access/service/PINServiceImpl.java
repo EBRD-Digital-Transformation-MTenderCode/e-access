@@ -78,6 +78,8 @@ public class PINServiceImpl implements PINService {
     }
 
     private void setIdOfOrganizationReference(final OrganizationReference or) {
+        if (or.getIdentifier().getScheme() == null || or.getIdentifier().getId() == null)
+            throw new ErrorException(ErrorType.IDENTIFIER_IS_NULL);
         or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 

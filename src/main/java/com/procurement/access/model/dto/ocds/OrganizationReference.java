@@ -38,12 +38,10 @@ public class OrganizationReference {
     private final String name;
 
     @Valid
-    @NotNull
     @JsonProperty("identifier")
     private final Identifier identifier;
 
     @Valid
-    @NotNull
     @JsonProperty("address")
     private final Address address;
 
@@ -52,7 +50,6 @@ public class OrganizationReference {
     private final Set<Identifier> additionalIdentifiers;
 
     @Valid
-    @NotNull
     @JsonProperty("contactPoint")
     private final ContactPoint contactPoint;
 

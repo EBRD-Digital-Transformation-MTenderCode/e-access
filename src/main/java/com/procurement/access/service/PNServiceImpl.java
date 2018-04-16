@@ -7,8 +7,8 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
-import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnLot;
+import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
@@ -78,6 +78,8 @@ public class PNServiceImpl implements PNService {
     }
 
     private void setIdOfOrganizationReference(final OrganizationReference or) {
+        if (or.getIdentifier().getScheme() == null || or.getIdentifier().getId() == null)
+            throw new ErrorException(ErrorType.IDENTIFIER_IS_NULL);
         or.setId(or.getIdentifier().getScheme() + SEPARATOR + or.getIdentifier().getId());
     }
 
