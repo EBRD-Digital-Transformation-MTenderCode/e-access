@@ -26,8 +26,8 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto updateStatus(final String cpId, final TenderStatus status) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
+    public ResponseDto updateStatus(final String cpId, final String stage, final TenderStatus status) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final CnProcess process = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         process.getTender().setStatus(status);
@@ -38,8 +38,8 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto updateStatusDetails(final String cpId, final TenderStatusDetails statusDetails) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
+    public ResponseDto updateStatusDetails(final String cpId, final String stage, final TenderStatusDetails statusDetails) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final CnProcess process = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         process.getTender().setStatusDetails(statusDetails);
@@ -51,8 +51,8 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public ResponseDto setSuspended(final String cpId, final Boolean suspended) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
+    public ResponseDto setSuspended(final String cpId, final String stage, final Boolean suspended) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final CnProcess process = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
         if (suspended) {

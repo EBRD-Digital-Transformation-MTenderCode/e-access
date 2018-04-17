@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface LotsService {
 
-    ResponseDto getLots(String cpId, TenderStatus status);
+    ResponseDto getLots(String cpId, String stage, TenderStatus status);
 
-    ResponseDto updateStatus(String cpId, TenderStatus status, LotsRequestDto lotsDto);
+    ResponseDto updateStatus(String cpId, String stage, TenderStatus status, LotsRequestDto lotsDto);
 
-    ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails, LotsRequestDto lotsDto);
+    ResponseDto updateStatusDetails(String cpId, String stage, TenderStatusDetails statusDetails, LotsRequestDto lotsDto);
 }

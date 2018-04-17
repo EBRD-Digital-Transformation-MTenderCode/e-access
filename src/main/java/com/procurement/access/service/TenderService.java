@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TenderService {
 
-    ResponseDto updateStatus(String cpId, TenderStatus status);
+    ResponseDto updateStatus(String cpId, String stage, TenderStatus status);
 
-    ResponseDto updateStatusDetails(String cpId, TenderStatusDetails statusDetails);
+    ResponseDto updateStatusDetails(String cpId, String stage, TenderStatusDetails statusDetails);
 
-    ResponseDto setSuspended(String cpId, Boolean suspended);
+    ResponseDto setSuspended(String cpId, String stage, Boolean suspended);
 }

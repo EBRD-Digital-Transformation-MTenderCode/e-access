@@ -22,25 +22,28 @@ public class TenderController {
 
     @PostMapping("/updateStatus")
     public ResponseEntity<ResponseDto> updateStatus(@RequestParam("identifier") final String cpId,
+                                                    @RequestParam("stage") final String stage,
                                                     @RequestParam("status") final String status) {
         return new ResponseEntity<>(
-                tenderService.updateStatus(cpId, TenderStatus.fromValue(status)),
+                tenderService.updateStatus(cpId, stage, TenderStatus.fromValue(status)),
                 HttpStatus.OK);
     }
 
     @PostMapping("/updateStatusDetails")
     public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam("identifier") final String cpId,
+                                                           @RequestParam("stage") final String stage,
                                                            @RequestParam("statusDetails") final String statusDetails) {
         return new ResponseEntity<>(
-                tenderService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails)),
+                tenderService.updateStatusDetails(cpId, stage, TenderStatusDetails.fromValue(statusDetails)),
                 HttpStatus.OK);
     }
 
     @PostMapping("/setSuspended")
     public ResponseEntity<ResponseDto> setSuspended(@RequestParam("identifier") final String cpId,
+                                                    @RequestParam("stage") final String stage,
                                                     @RequestParam("suspended") final Boolean suspended) {
         return new ResponseEntity<>(
-                tenderService.setSuspended(cpId, suspended),
+                tenderService.setSuspended(cpId, stage, suspended),
                 HttpStatus.OK);
     }
 }

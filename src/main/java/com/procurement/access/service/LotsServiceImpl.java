@@ -31,8 +31,8 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto getLots(final String cpId, final TenderStatus status) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
+    public ResponseDto getLots(final String cpId, final String stage, final TenderStatus status) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
@@ -41,8 +41,8 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto updateStatus(final String cpId, final TenderStatus status, final LotsRequestDto lotsDto) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
+    public ResponseDto updateStatus(final String cpId, final String stage, final TenderStatus status, final LotsRequestDto lotsDto) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatus(process.getTender().getLots(), lotsDto, status);
@@ -54,9 +54,10 @@ public class LotsServiceImpl implements LotsService {
 
     @Override
     public ResponseDto updateStatusDetails(final String cpId,
+                                           final String stage,
                                            final TenderStatusDetails statusDetails,
                                            final LotsRequestDto lotsDto) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpId(cpId))
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatusDetails(process.getTender().getLots(), lotsDto, statusDetails);

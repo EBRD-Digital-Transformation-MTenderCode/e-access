@@ -24,27 +24,30 @@ public class LotsController {
 
     @GetMapping
     public ResponseEntity<ResponseDto> getLots(@RequestParam("identifier") final String cpId,
+                                               @RequestParam("stage") final String stage,
                                                @RequestParam("status") final String status) {
         return new ResponseEntity<>(
-                lotsService.getLots(cpId, TenderStatus.fromValue(status)),
+                lotsService.getLots(cpId, stage, TenderStatus.fromValue(status)),
                 HttpStatus.OK);
     }
 
     @PostMapping("/updateStatus")
     public ResponseEntity<ResponseDto> updateStatus(@RequestParam("identifier") final String cpId,
+                                                    @RequestParam("stage") final String stage,
                                                     @RequestParam("status") final String status,
                                                     @Valid @RequestBody final LotsRequestDto data) {
         return new ResponseEntity<>(
-                lotsService.updateStatus(cpId, TenderStatus.fromValue(status), data),
+                lotsService.updateStatus(cpId, stage, TenderStatus.fromValue(status), data),
                 HttpStatus.OK);
     }
 
     @PostMapping("/updateStatusDetails")
     public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam("identifier") final String cpId,
+                                                           @RequestParam("stage") final String stage,
                                                            @RequestParam("statusDetails") final String statusDetails,
                                                            @Valid @RequestBody final LotsRequestDto data) {
         return new ResponseEntity<>(
-                lotsService.updateStatusDetails(cpId, TenderStatusDetails.fromValue(statusDetails), data),
+                lotsService.updateStatusDetails(cpId, stage, TenderStatusDetails.fromValue(statusDetails), data),
                 HttpStatus.OK);
     }
 }
