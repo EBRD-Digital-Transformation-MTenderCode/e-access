@@ -9,10 +9,6 @@ public interface TenderProcessDao {
 
     void save(TenderProcessEntity entity);
 
-//    TenderProcessEntity getByCpId(String cpId);
-
-    TenderProcessEntity getByCpIdAndToken(String cpId, UUID token);
-
     TenderProcessEntity getByCpIdAndStage(String cpId, String stage);
 
 }

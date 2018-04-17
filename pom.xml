@@ -366,7 +366,8 @@
                     <images>
                         <image>
                             <registry>${docker-registry}</registry>
-                            <name>${docker-registry}/${project.artifactId}${docker-image-profile}:${project.version}</name>
+                            <name>${docker-registry}/${project.artifactId}${docker-image-profile}:${project.version}
+                            </name>
                             <build>
                                 <dockerFileDir>${project.basedir}/src/main</dockerFileDir>
                                 <nocache/>

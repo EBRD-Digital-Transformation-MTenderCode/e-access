@@ -9,11 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -28,17 +24,17 @@ public class CnOnPnController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> createCnOnPn(@RequestParam("identifier") final String cpId,
-                                                     @RequestParam("previousStage") final String previousStage,
-                                                     @RequestParam("stage") final String stage,
-                                                     @RequestParam("country") final String country,
-                                                     @RequestParam("pmd") final String pmd,
-                                                     @RequestParam("owner") final String owner,
-                                                     @RequestParam("token") final String token,
-                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                     @RequestParam("date") final LocalDateTime dateTime,
-                                                     @Valid @RequestBody final CnProcess data) {
+                                                    @RequestParam("previousStage") final String previousStage,
+                                                    @RequestParam("stage") final String stage,
+                                                    @RequestParam("country") final String country,
+                                                    @RequestParam("pmd") final String pmd,
+                                                    @RequestParam("owner") final String owner,
+                                                    @RequestParam("token") final String token,
+                                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                    @RequestParam("date") final LocalDateTime dateTime,
+                                                    @Valid @RequestBody final CnProcess data) {
         return new ResponseEntity<>(
-            cnOnPnService.createCnOnPn(cpId, previousStage, stage, owner, token, dateTime, data),
+                cnOnPnService.createCnOnPn(cpId, previousStage, stage, owner, token, dateTime, data),
                 HttpStatus.CREATED);
     }
 }

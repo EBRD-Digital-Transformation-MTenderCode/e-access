@@ -40,30 +40,12 @@ public class TenderProcessDaoImpl implements TenderProcessDao {
     }
 
     @Override
-    public TenderProcessEntity getByCpId(final String cpId) {
-        final Statement query = select()
-                .all()
-                .from(TENDER_TABLE)
-                .where(eq(CP_ID, cpId)).limit(1);
-        final Row row = session.execute(query).one();
-        if (row != null)
-            return new TenderProcessEntity(
-                    row.getString(CP_ID),
-                    row.getUUID(TOKEN),
-                    row.getString(OWNER),
-                    row.getString(STAGE),
-                    row.getTimestamp(CREATED_DATE),
-                    row.getString(JSON_DATA));
-        return null;
-    }
-
-    @Override
-    public TenderProcessEntity getByCpIdAndToken(final String cpId, final UUID token) {
+    public TenderProcessEntity getByCpIdAndStage(final String cpId, final String stage) {
         final Statement query = select()
                 .all()
                 .from(TENDER_TABLE)
                 .where(eq(CP_ID, cpId))
-                .and(eq(TOKEN, token)).limit(1);
+                .and(eq(STAGE, stage)).limit(1);
         final Row row = session.execute(query).one();
         if (row != null)
             return new TenderProcessEntity(
@@ -73,25 +55,6 @@ public class TenderProcessDaoImpl implements TenderProcessDao {
                     row.getString(STAGE),
                     row.getTimestamp(CREATED_DATE),
                     row.getString(JSON_DATA));
-        return null;
-    }
-
-    @Override
-    public TenderProcessEntity getByCpIdAndStage(final String cpId, final String stage) {
-        final Statement query = select()
-            .all()
-            .from(TENDER_TABLE)
-            .where(eq(CP_ID, cpId))
-            .and(eq(STAGE, stage)).limit(1);
-        final Row row = session.execute(query).one();
-        if (row != null)
-            return new TenderProcessEntity(
-                row.getString(CP_ID),
-                row.getUUID(TOKEN),
-                row.getString(OWNER),
-                row.getString(STAGE),
-                row.getTimestamp(CREATED_DATE),
-                row.getString(JSON_DATA));
         return null;
 
     }

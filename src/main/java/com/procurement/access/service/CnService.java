@@ -11,10 +11,4 @@ public interface CnService {
                          String owner,
                          LocalDateTime dateTime,
                          CnProcess dto);
-
-
-    ResponseDto updateCn(String cpId,
-                         String token,
-                         String owner,
-                         CnProcess dto);
 }

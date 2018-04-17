@@ -133,7 +133,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         return entity;
     }
 
-    private void setStatuses(PinTender pinTender){
+    private void setStatuses(PinTender pinTender) {
         pinTender.setStatus(TenderStatus.PLANNING);
         pinTender.setStatusDetails(TenderStatusDetails.EMPTY);
         for (int i = 0; i < pinTender.getLots().size(); i++) {

@@ -64,23 +64,6 @@ public class CnServiceImpl implements CnService {
         return new ResponseDto<>(true, null, dto);
     }
 
-    @Override
-    public ResponseDto updateCn(final String cpId,
-                                final String token,
-                                final String owner,
-                                final CnProcess cn) {
-        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndToken(cpId, UUID.fromString(token)))
-                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
-        if (!entity.getOwner().equals(owner))
-            throw new ErrorException(ErrorType.INVALID_OWNER);
-        final CnProcess tender = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
-        tender.setTender(cn.getTender());
-        entity.setJsonData(jsonUtil.toJson(tender));
-        tenderProcessDao.save(entity);
-        cn.setToken(entity.getToken().toString());
-        return new ResponseDto<>(true, null, cn);
-    }
-
     private void validateFields(CnProcess dto) {
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);

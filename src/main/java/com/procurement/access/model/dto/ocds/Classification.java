@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.ocds;
 
 import com.fasterxml.jackson.annotation.*;
 import com.procurement.access.exception.EnumException;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

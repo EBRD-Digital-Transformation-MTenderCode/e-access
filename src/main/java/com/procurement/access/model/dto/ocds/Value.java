@@ -1,10 +1,9 @@
-
 package com.procurement.access.model.dto.ocds;
 
-import com.fasterxml.jackson.annotation.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -13,8 +12,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "amount",
-    "currency"
+        "amount",
+        "currency"
 })
 public class Value {
 
@@ -36,8 +35,8 @@ public class Value {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(amount)
-                                    .append(currency)
-                                    .toHashCode();
+                .append(currency)
+                .toHashCode();
     }
 
     @Override
@@ -50,7 +49,7 @@ public class Value {
         }
         final Value rhs = (Value) other;
         return new EqualsBuilder().append(amount, rhs.amount)
-                                  .append(currency, rhs.currency)
-                                  .isEquals();
+                .append(currency, rhs.currency)
+                .isEquals();
     }
 }

@@ -34,14 +34,4 @@ public class CnController {
                 cnService.createCn(stage, country, owner, dateTime, data),
                 HttpStatus.CREATED);
     }
-
-    @PutMapping
-    public ResponseEntity<ResponseDto> updateCn(@RequestParam("identifier") final String cpId,
-                                                @RequestParam("token") final String token,
-                                                @RequestParam("owner") final String owner,
-                                                @Valid @RequestBody final CnProcess data) {
-        return new ResponseEntity<>(
-                cnService.updateCn(owner, cpId, token, data),
-                HttpStatus.OK);
-    }
 }
