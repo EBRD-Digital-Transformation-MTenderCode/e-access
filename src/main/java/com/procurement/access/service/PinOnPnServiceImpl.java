@@ -4,6 +4,8 @@ import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
+import com.procurement.access.model.dto.ocds.TenderStatus;
+import com.procurement.access.model.dto.ocds.TenderStatusDetails;
 import com.procurement.access.model.dto.pin.PinLot;
 import com.procurement.access.model.dto.pin.PinProcess;
 import com.procurement.access.model.dto.pin.PinTender;
@@ -67,6 +69,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         pinTender.setProcurementMethodDetails(pnTender.getProcurementMethodDetails());
         pinTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         pinTender.setProcuringEntity(pnTender.getProcuringEntity());
+        setStatuses(pinTender);
         tenderProcessDao.save(getEntity(pin, stage, entity.getToken(), dateTime, owner));
         pin.setOcId(cpId);
         pin.setToken(entity.getToken().toString());
@@ -128,5 +131,15 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         entity.setCreatedDate(dateUtil.localToDate(dateTime));
         entity.setJsonData(jsonUtil.toJson(pin));
         return entity;
+    }
+
+    private void setStatuses(PinTender pinTender){
+        pinTender.setStatus(TenderStatus.PLANNING);
+        pinTender.setStatusDetails(TenderStatusDetails.EMPTY);
+        for (int i = 0; i < pinTender.getLots().size(); i++) {
+            pinTender.getLots().get(i).setStatus(TenderStatus.PLANNING);
+            pinTender.getLots().get(i).setStatusDetails(TenderStatusDetails.EMPTY);
+        }
+
     }
 }
