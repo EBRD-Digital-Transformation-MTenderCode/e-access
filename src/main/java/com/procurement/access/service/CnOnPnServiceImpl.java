@@ -9,6 +9,7 @@ import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.CnTender;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
+import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
@@ -81,7 +82,7 @@ public class CnOnPnServiceImpl implements CnOnPnService {
                 .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
         // validate lots from pn
         if (pn.getTender().getLots() != null) {
-            final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(CnLot::getId).collect(Collectors.toSet());
+            final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(PnLot::getId).collect(Collectors.toSet());
             if (!lotsFromPn.containsAll(lotsFromDocuments))
                 throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
             addLotsToCnFromPn(pn, cn);
@@ -95,8 +96,27 @@ public class CnOnPnServiceImpl implements CnOnPnService {
     }
 
     private void addLotsToCnFromPn(final PnProcess pn, final CnProcess cn) {
-        final List<CnLot> cnLots = pn.getTender().getLots();
+        final List<CnLot> cnLots = pn.getTender().getLots().stream()
+                .map(this::convertPnToCnLot)
+                .collect(Collectors.toList());
         cn.getTender().setLots(cnLots);
+    }
+
+    private CnLot convertPnToCnLot(final PnLot pnLot) {
+        return new CnLot(
+                pnLot.getId(),
+                pnLot.getTitle(),
+                pnLot.getDescription(),
+                pnLot.getStatus(),
+                pnLot.getStatusDetails(),
+                pnLot.getValue(),
+                pnLot.getOptions(),
+                pnLot.getRecurrentProcurement(),
+                pnLot.getRenewals(),
+                pnLot.getVariants(),
+                pnLot.getContractPeriod(),
+                pnLot.getPlaceOfPerformance()
+        );
     }
 
     private TenderProcessEntity getEntity(final CnProcess cn,
