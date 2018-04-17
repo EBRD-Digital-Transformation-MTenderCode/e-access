@@ -2,9 +2,7 @@ package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnProcess;
-import com.procurement.access.model.dto.pin.PinProcess;
 import com.procurement.access.service.CnOnPnService;
-import com.procurement.access.service.PinOnPnService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;

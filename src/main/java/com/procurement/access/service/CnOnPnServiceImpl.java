@@ -9,6 +9,8 @@ import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.CnTender;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
+import com.procurement.access.model.dto.pn.PnProcess;
+import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
@@ -18,7 +20,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CnOnPnServiceImpl implements CnOnPnService {
     private final JsonUtil jsonUtil;
     private final DateUtil dateUtil;
@@ -26,8 +30,8 @@ public class CnOnPnServiceImpl implements CnOnPnService {
 
 
     public CnOnPnServiceImpl(final JsonUtil jsonUtil,
-                              final DateUtil dateUtil,
-                              final TenderProcessDao tenderProcessDao) {
+                             final DateUtil dateUtil,
+                             final TenderProcessDao tenderProcessDao) {
         this.jsonUtil = jsonUtil;
         this.dateUtil = dateUtil;
         this.tenderProcessDao = tenderProcessDao;
@@ -35,26 +39,25 @@ public class CnOnPnServiceImpl implements CnOnPnService {
 
     @Override
     public ResponseDto createCnOnPn(String cpId,
-                                     String token,
-                                     String owner,
-                                     String stage,
-                                     String previousStage,
-                                     LocalDateTime dateTime,
-                                     CnProcess cn) {
+                                    String token,
+                                    String owner,
+                                    String stage,
+                                    String previousStage,
+                                    LocalDateTime dateTime,
+                                    CnProcess cn) {
 
-        if(cn.getTender().getEligibilityCriteria()==null)
-            throw new ErrorException(ErrorType.EL_CRITERIA_IS_NULL);
+        if (cn.getTender().getEligibilityCriteria() == null) throw new ErrorException(ErrorType.EL_CRITERIA_IS_NULL);
 
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, previousStage))
-                                                   .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         if (!entity.getOwner().equals(owner))
             throw new ErrorException(ErrorType.INVALID_OWNER);
         if (!entity.getToken().toString().equals(token))
             throw new ErrorException(ErrorType.INVALID_TOKEN);
         if (!entity.getCpId().equals(cn.getTender().getId()))
             throw new ErrorException(ErrorType.INVALID_CPID_FROM_DTO);
-        final CnProcess pn = jsonUtil.toObject(CnProcess.class, entity.getJsonData());
-        final CnTender pnTender = pn.getTender();
+        final PnProcess pn = jsonUtil.toObject(PnProcess.class, entity.getJsonData());
+        final PnTender pnTender = pn.getTender();
         validateLots(pn, cn);
         cn.setPlanning(pn.getPlanning());
         final CnTender cnTender = cn.getTender();
@@ -73,9 +76,9 @@ public class CnOnPnServiceImpl implements CnOnPnService {
         return new ResponseDto<>(true, null, cn);
     }
 
-    private void validateLots(final CnProcess pn, final CnProcess cn) {
+    private void validateLots(final PnProcess pn, final CnProcess cn) {
         final Set<String> lotsFromDocuments = cn.getTender().getDocuments().stream()
-                                                 .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
+                .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
         // validate lots from pn
         if (pn.getTender().getLots() != null) {
             final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(CnLot::getId).collect(Collectors.toSet());
@@ -90,7 +93,8 @@ public class CnOnPnServiceImpl implements CnOnPnService {
                 throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
         }
     }
-    private void addLotsToCnFromPn(final CnProcess pn, final CnProcess cn) {
+
+    private void addLotsToCnFromPn(final PnProcess pn, final CnProcess cn) {
         final List<CnLot> cnLots = pn.getTender().getLots();
         cn.getTender().setLots(cnLots);
     }
@@ -110,7 +114,7 @@ public class CnOnPnServiceImpl implements CnOnPnService {
         return entity;
     }
 
-    private void setStatuses(CnTender cnTender){
+    private void setStatuses(CnTender cnTender) {
         cnTender.setStatus(TenderStatus.ACTIVE);
         cnTender.setStatusDetails(TenderStatusDetails.EMPTY);
         for (int i = 0; i < cnTender.getLots().size(); i++) {
