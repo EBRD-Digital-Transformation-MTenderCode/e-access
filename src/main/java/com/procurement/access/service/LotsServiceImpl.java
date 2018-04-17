@@ -90,8 +90,7 @@ public class LotsServiceImpl implements LotsService {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
-        lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId())
-                .setStatusDetails(statusDetails));
+        lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatusDetails(statusDetails));
         return new ArrayList<>(lotsMap.values());
     }
 }
