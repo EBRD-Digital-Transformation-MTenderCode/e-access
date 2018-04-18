@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.procurement.access.model.dto.ocds.*;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.validation.Valid;
@@ -143,7 +143,7 @@ public class CnTender {
 
     @NotEmpty
     @JsonProperty("submissionLanguages")
-    private final List<SubmissionLanguage> submissionLanguages;
+    private List<SubmissionLanguage> submissionLanguages;
 
     @Valid
     @NotNull
@@ -200,7 +200,7 @@ public class CnTender {
                     @JsonProperty("status") final TenderStatus status,
                     @JsonProperty("statusDetails") final TenderStatusDetails statusDetails,
                     @JsonProperty("classification") final Classification classification,
-                    @JsonProperty("items") final LinkedHashSet<Item> items,
+                    @JsonProperty("items") final HashSet<Item> items,
                     @JsonProperty("value") final Value value,
                     @JsonProperty("procurementMethod") final ProcurementMethod procurementMethod,
                     @JsonProperty("procurementMethodDetails") final String procurementMethodDetails,

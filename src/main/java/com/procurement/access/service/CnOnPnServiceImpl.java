@@ -71,7 +71,7 @@ public class CnOnPnServiceImpl implements CnOnPnService {
         cnTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         cnTender.setProcuringEntity(pnTender.getProcuringEntity());
         setStatuses(cnTender);
-        tenderProcessDao.save(getEntity(cn, stage, entity.getToken(), dateTime, owner));
+        tenderProcessDao.save(getEntity(cn, cpId, stage, entity.getToken(), dateTime, owner));
         cn.setOcId(cpId);
         cn.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, cn);
@@ -119,28 +119,28 @@ public class CnOnPnServiceImpl implements CnOnPnService {
         );
     }
 
+    private void setStatuses(CnTender cnTender) {
+        cnTender.setStatus(TenderStatus.ACTIVE);
+        cnTender.setStatusDetails(TenderStatusDetails.EMPTY);
+        cnTender.getLots().forEach(lot -> {
+            lot.setStatus(TenderStatus.ACTIVE);
+            lot.setStatusDetails(TenderStatusDetails.EMPTY);
+        });
+    }
+
     private TenderProcessEntity getEntity(final CnProcess cn,
+                                          final String cpId,
                                           final String stage,
                                           final UUID token,
                                           final LocalDateTime dateTime,
                                           final String owner) {
         final TenderProcessEntity entity = new TenderProcessEntity();
-        entity.setCpId(cn.getTender().getId());
+        entity.setCpId(cpId);
         entity.setToken(token);
         entity.setStage(stage);
         entity.setOwner(owner);
         entity.setCreatedDate(dateUtil.localToDate(dateTime));
         entity.setJsonData(jsonUtil.toJson(cn));
         return entity;
-    }
-
-    private void setStatuses(CnTender cnTender) {
-        cnTender.setStatus(TenderStatus.ACTIVE);
-        cnTender.setStatusDetails(TenderStatusDetails.EMPTY);
-        for (int i = 0; i < cnTender.getLots().size(); i++) {
-            cnTender.getLots().get(i).setStatus(TenderStatus.ACTIVE);
-            cnTender.getLots().get(i).setStatusDetails(TenderStatusDetails.EMPTY);
-        }
-
     }
 }

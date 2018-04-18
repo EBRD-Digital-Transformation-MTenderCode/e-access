@@ -1,226 +1,261 @@
 {
-  "token": "",
-  "ocid": "",
   "planning": {
-    "--rationale": "",
     "budget": {
-      "--description": "",
       "amount": {
-        "amount": 0,
-        "currency": ""
+        "amount": 12345.76,
+        "currency": "AMD"
       },
-      "isEuropenUnionFunded": false,
-      "--europenUnionFunding": {
-        "projectIdentifier": "",
-        "projectName": "",
-        "--uri": ""
-      },
+      "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "",
-          "--description": "",
+          "id": "ocds-t1s2t3-MD-1524038998189-FS-1524039034809",
           "amount": {
-            "amount": 0,
-            "currency": ""
+            "amount": 11355.4,
+            "currency": "AMD"
           },
           "period": {
-            "startDate": "",
-            "endDate": ""
+            "startDate": "2018-04-16T20:00:00Z",
+            "endDate": "2018-09-25T21:00:00Z"
           },
           "sourceParty": {
-            "name": "",
-            "id": ""
+            "name": "Google Company",
+            "id": "Identification Scheme*-Identifier*"
+          }
+        },
+        {
+          "id": "ocds-t1s2t3-MD-1524039077836-FS-1524039109814",
+          "description": "Budget Description2",
+          "amount": {
+            "amount": 10355.4,
+            "currency": "AMD"
+          },
+          "period": {
+            "startDate": "2018-04-16T20:00:00Z",
+            "endDate": "2018-09-25T21:00:00Z"
+          },
+          "sourceParty": {
+            "name": "Yandex Company",
+            "id": "Identification Scheme*-Identifier*"
           }
         }
       ]
     }
   },
   "tender": {
-    "id": "",
-    "status": "",
-    "statusdetails": "",
+    "id": "ocds-t1s2t3-MD-1524045477568",
     "title": "",
     "description": "",
+    "status": "planning",
+    "statusDetails": "empty",
     "classification": {
-      "scheme": "",
-      "description": "",
-      "id": ""
+      "scheme": "CPV",
+      "id": "48760000-3",
+      "description": "Virus protection software packag"
     },
-    "--acceleratedProcedure": {
-      "isAcceleratedProcedure": false
-    },
-    "--designContest": {
-      "serviceContractAward": false
-    },
-    "--electronicWorkflows": {
-      "--useOrdering": false,
-      "--usePayment": false,
-      "--acceptInvoicing": false
-    },
-    "--jointProcurement": {
-      "isJointProcurement": false
-    },
-    "--procedureOutsourcing": {
-      "procedureOutsourced": false
-    },
-    "--framework": {
-      "isAFramework": false
-    },
-    "--dynamicPurchasingSystem": {
-      "hasDynamicPurchasingSystem": false
-    },
-    "legalBasis": "",
-    "procurementMethod": "",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethod": "open",
     "procurementMethodDetails": "",
-    "--procurementMethodRationale": "",
-    "--procurementMethodAdditionalInfo": "",
-    "mainProcurementCategory": "",
-    "--additionalProcurementCategories": [
-      ""
-    ],
-    "--eligibilityCriteria": "",
-    "--submissionLanguages": [
-      ""
-    ],
+    "mainProcurementCategory": "goods",
     "tenderPeriod": {
-      "startDate": ""
-    },
-    "--contractPeriod": {
-      "startDate": "",
-      "endDate": ""
+      "startDate": "2018-06-23T21:00:00Z"
     },
     "procuringEntity": {
-      "id": "",
-      "name": "",
+      "name": "111",
+      "id": "2Additional identifier scheme*-2Additional identifier ID*",
       "identifier": {
-        "scheme": "",
-        "id": "",
-        "legalName": "",
-        "uri": ""
+        "id": "2Additional identifier ID*",
+        "scheme": "2Additional identifier scheme*",
+        "legalName": "2Additional identifier legal name*",
+        "uri": "2Additional identifier URI*"
       },
-      "--additionalIdentifiers": [
-        {
-          "scheme": "",
-          "id": "",
-          "legalName": "",
-          "uri": ""
-        }
-      ],
       "address": {
         "streetAddress": "",
         "locality": "",
         "region": "",
-        "--postalCode": "",
         "countryName": ""
       },
       "contactPoint": {
         "name": "",
         "email": "",
         "telephone": "",
-        "--faxNumber": "",
         "url": ""
       }
     },
     "value": {
-      "amount": 0,
-      "currency": ""
+      "amount": 123.365,
+      "currency": "AMD"
     },
-    "--lotGroups": [
+    "lots": [
       {
-        "optionToCombine": false
-      }
-    ],
-    "--lots": [
+        "id": "f89fec00-42ee-11e8-9964-717cefe573e2",
+        "title": "first",
+        "status": "planning",
+        "statusDetails": "empty"
+      },
       {
-        "id": "",
-        "--title": "",
-        "--description": "",
-        "status": "",
-        "statusDetails": "",
-        "--value": {
-          "amount": 0,
-          "currency": ""
-        },
-        "--options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "--variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "--renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "--recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "--contractPeriod": {
-          "startDate": "",
-          "endDate": ""
-        },
-        "--placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "locality": "",
-            "region": "",
-            "--postalCode": "",
-            "countryName": ""
-          },
-          "--description": ""
-        }
-      }
-    ],
-    "--items": [
-      {
-        "id": "",
-        "classification": {
-          "scheme": "",
-          "description": "",
-          "id": ""
-        },
-        "--additionalClassifications": [
-          {
-            "scheme": "",
-            "description": "",
-            "id": ""
-          }
-        ],
-        "--quantity": 0,
-        "--unit": {
-          "id": "",
-          "name": ""
-        },
-        "--description": "",
-        "relatedLot": ""
-      }
-    ],
-    "--awardCriteria": "priceOnly",
-    "--requiresElectronicCatalogue": false,
-    "--submissionMethod": [
-      ""
-    ],
-    "--submissionMethodRationale": [
-      ""
-    ],
-    "--submissionMethodDetails": "",
-    "--documents": [
-      {
-        "documentType": "",
-        "id": "",
-        "--title": "",
-        "--description": "",
-        "language": "",
-        "--relatedLots": [
-          ""
-        ]
+        "id": "f89fec01-42ee-11e8-9964-717cefe573e2",
+        "title": "second",
+        "status": "planning",
+        "statusDetails": "empty"
       }
     ]
-  }
+  },
+  "ei": [
+    "ocds-t1s2t3-MD-1524038998189",
+    "ocds-t1s2t3-MD-1524039077836"
+  ],
+  "buyer": [
+    {
+      "name": "Burns-Davis",
+      "id": "UA-EDR-354-37-1072",
+      "identifier": {
+        "id": "354-37-1072",
+        "scheme": "UA-EDR",
+        "legalName": "Burns-Davis PLC",
+        "uri": "http://edward.net/"
+      },
+      "address": {
+        "streetAddress": "077 Shaw Plaza Apt. 268",
+        "locality": "Sethtown",
+        "region": "Kansas",
+        "postalCode": "72091-7701",
+        "countryName": "Pakistan"
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "713-49-7544",
+          "scheme": "UA-EDR",
+          "legalName": "Burns-Davis PLC",
+          "uri": "http://baker.com/posts/about.asp"
+        }
+      ],
+      "contactPoint": {
+        "name": "Jacqueline Soto",
+        "email": "tiffanygutierrez@yahoo.com",
+        "telephone": "724-095-3938x237",
+        "faxNumber": "897-612-1545",
+        "url": "http://hudson.biz/explore/list/category/"
+      },
+      "details": {
+        "typeOfBuyer": "REGIONAL_AGENCY",
+        "mainGeneralActivity": "ENVIRONMENT",
+        "mainSectoralActivity": "WATER",
+        "isACentralPurchasingBody": true,
+        "scale": "sme"
+      },
+      "buyerProfile": "http://ray.com/"
+    }
+  ],
+  "funder": [
+    {
+      "id": "Identification Scheme*-Identifier*",
+      "name": "Yandex Company",
+      "identifier": {
+        "id": "Identifier*",
+        "scheme": "Identification Scheme*",
+        "legalName": "Legal Name*",
+        "uri": "URI*"
+      },
+      "address": {
+        "streetAddress": "Street Address*",
+        "locality": "Locality*",
+        "region": "1",
+        "postalCode": "Postal Code",
+        "countryName": "Republic of Moldova"
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "2Additional identifier ID*",
+          "scheme": "2Additional identifier scheme*",
+          "legalName": "2Additional identifier legal name*",
+          "uri": "2Additional identifier URI*"
+        },
+        {
+          "id": "1Additional identifier ID*",
+          "scheme": "1Additional identifier scheme*",
+          "legalName": "1Additional identifier legal name*",
+          "uri": "1Additional identifier URI*"
+        }
+      ],
+      "contactPoint": {
+        "name": "Name*",
+        "email": "E-mail*",
+        "telephone": "Telephone*",
+        "faxNumber": "Fax*",
+        "url": "URL*"
+      }
+    },
+    {
+      "id": "Identification Scheme*-Identifier*",
+      "name": "Google Company",
+      "identifier": {
+        "id": "Identifier*",
+        "scheme": "Identification Scheme*",
+        "legalName": "Legal Name*",
+        "uri": "URI*"
+      },
+      "address": {
+        "streetAddress": "Street Address*",
+        "locality": "Locality*",
+        "region": "1",
+        "postalCode": "Postal Code",
+        "countryName": "Republic of Moldova"
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "2Additional identifier ID*",
+          "scheme": "2Additional identifier scheme*",
+          "legalName": "2Additional identifier legal name*",
+          "uri": "2Additional identifier URI*"
+        },
+        {
+          "id": "1Additional identifier ID*",
+          "scheme": "1Additional identifier scheme*",
+          "legalName": "1Additional identifier legal name*",
+          "uri": "1Additional identifier URI*"
+        }
+      ],
+      "contactPoint": {
+        "name": "Name*",
+        "email": "E-mail*",
+        "telephone": "Telephone*",
+        "faxNumber": "Fax*",
+        "url": "URL*"
+      }
+    }
+  ],
+  "payer": [
+    {
+      "id": "UA-EDR-354-37-1072",
+      "name": "Burns-Davis",
+      "identifier": {
+        "id": "354-37-1072",
+        "scheme": "UA-EDR",
+        "legalName": "Burns-Davis PLC",
+        "uri": "http://edward.net/"
+      },
+      "address": {
+        "streetAddress": "077 Shaw Plaza Apt. 268",
+        "locality": "Sethtown",
+        "region": "Kansas",
+        "postalCode": "72091-7701",
+        "countryName": "Pakistan"
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "713-49-7544",
+          "scheme": "UA-EDR",
+          "legalName": "Burns-Davis PLC",
+          "uri": "http://baker.com/posts/about.asp"
+        }
+      ],
+      "contactPoint": {
+        "name": "Jacqueline Soto",
+        "email": "tiffanygutierrez@yahoo.com",
+        "telephone": "724-095-3938x237",
+        "faxNumber": "897-612-1545",
+        "url": "http://hudson.biz/explore/list/category/"
+      }
+    }
+  ]
 }
