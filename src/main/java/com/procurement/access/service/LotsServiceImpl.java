@@ -79,7 +79,11 @@ public class LotsServiceImpl implements LotsService {
     private List<Lot> setLotsStatus(final List<Lot> lots, final LotsRequestDto lotsDto, final TenderStatus status) {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final Map<String, Lot> lotsMap = new HashMap<>();
-        lots.forEach(lot -> lotsMap.put(lot.getId(), lot));
+        lots.forEach(lot -> {
+            lotsMap.put(lot.getId(), lot);
+            if (lot.getStatusDetails().equals(TenderStatusDetails.UNSUCCESSFUL))
+                lot.setStatusDetails(TenderStatusDetails.EMPTY);
+        });
         lotsDto.getLots().forEach(lotDto -> lotsMap.get(lotDto.getId()).setStatus(status));
         return new ArrayList<>(lotsMap.values());
     }
