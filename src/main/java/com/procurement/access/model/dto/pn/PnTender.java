@@ -132,15 +132,15 @@ public class PnTender {
     @JsonProperty("additionalProcurementCategories")
     private final List<ExtendedProcurementCategory> additionalProcurementCategories;
 
-    @NotNull
     @JsonProperty("eligibilityCriteria")
     private final String eligibilityCriteria;
 
     @JsonProperty("submissionLanguages")
     private final List<SubmissionLanguage> submissionLanguages;
 
-    @JsonProperty("tenderPeriod")
     @Valid
+    @NotNull
+    @JsonProperty("tenderPeriod")
     private final PnPeriod tenderPeriod;
 
     @Valid

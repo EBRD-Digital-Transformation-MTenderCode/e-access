@@ -148,6 +148,11 @@ public class PinTender {
 
     @Valid
     @NotNull
+    @JsonProperty("tenderPeriod")
+    private final PinPeriod tenderPeriod;
+
+    @Valid
+    @NotNull
     @JsonProperty("contractPeriod")
     private final Period contractPeriod;
 
@@ -191,9 +196,6 @@ public class PinTender {
 
     @JsonProperty("documents")
     private List<Document> documents;
-
-    @JsonProperty("tenderPeriod")
-    private final PinPeriod tenderPeriod;
 
 
     @JsonCreator
