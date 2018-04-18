@@ -23,16 +23,16 @@ public class CnOnPinController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> createCnOnPn(@RequestParam("identifier") final String cpId,
-                                                    @RequestParam("previousStage") final String previousStage,
-                                                    @RequestParam("stage") final String stage,
-                                                    @RequestParam("country") final String country,
-                                                    @RequestParam("pmd") final String pmd,
-                                                    @RequestParam("owner") final String owner,
-                                                    @RequestParam("token") final String token,
-                                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                    @RequestParam("date") final LocalDateTime dateTime,
-                                                    @Valid @RequestBody final CnProcess data) {
+    public ResponseEntity<ResponseDto> createPinOnPin(@RequestParam("identifier") final String cpId,
+                                                      @RequestParam("previousStage") final String previousStage,
+                                                      @RequestParam("stage") final String stage,
+                                                      @RequestParam("country") final String country,
+                                                      @RequestParam("pmd") final String pmd,
+                                                      @RequestParam("owner") final String owner,
+                                                      @RequestParam("token") final String token,
+                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                      @RequestParam("date") final LocalDateTime dateTime,
+                                                      @Valid @RequestBody final CnProcess data) {
         return new ResponseEntity<>(
                 cnOnPinService.createCnOnPin(cpId, previousStage, stage, owner, token, dateTime, data),
                 HttpStatus.CREATED);
