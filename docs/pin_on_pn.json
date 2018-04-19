@@ -26,6 +26,7 @@
     }
   },
   "tender": {
+    "id": "ocds-t1s2t3-MD-1524138291068",
     "title": "Tender title",
     "description": "Tender description",
     "classification": {
@@ -205,7 +206,7 @@
         "description": "Description Test CN document to tender",
         "language": "ro",
         "relatedLots": [
-          "lot-id-123123"
+          "11c81bc1-43c7-11e8-befd-373bd8d530b4"
         ]
       }
     ]

@@ -34,7 +34,14 @@ public class PinOnPnController {
                                                      @RequestParam("date") final LocalDateTime dateTime,
                                                      @Valid @RequestBody final PinProcess data) {
         return new ResponseEntity<>(
-                pinOnPnService.createPinOnPn(cpId, previousStage, stage, owner, token, dateTime, data),
+                pinOnPnService.createPinOnPn(
+                        cpId,
+                        token,
+                        owner,
+                        stage,
+                        previousStage,
+                        dateTime,
+                        data),
                 HttpStatus.CREATED);
     }
 }
