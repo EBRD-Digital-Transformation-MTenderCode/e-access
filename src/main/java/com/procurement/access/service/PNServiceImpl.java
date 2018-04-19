@@ -117,12 +117,14 @@ public class PNServiceImpl implements PNService {
                 }
                 if (tender.getDocuments() != null) {
                     tender.getDocuments().forEach(document -> {
-                        final Set<String> relatedLots = document.getRelatedLots();
-                        if (relatedLots.contains(lot.getId())) {
-                            relatedLots.remove(lot.getId());
-                            relatedLots.add(id);
+                        if (document.getRelatedLots() != null) {
+                            final Set<String> relatedLots = document.getRelatedLots();
+                            if (relatedLots.contains(lot.getId())) {
+                                relatedLots.remove(lot.getId());
+                                relatedLots.add(id);
+                            }
+                            document.setRelatedLots(relatedLots);
                         }
-                        document.setRelatedLots(relatedLots);
                     });
                 }
                 lot.setId(id);

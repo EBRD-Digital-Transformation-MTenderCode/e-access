@@ -117,12 +117,14 @@ public class PINServiceImpl implements PINService {
                 }
                 if (Objects.nonNull(tender.getDocuments())) {
                     tender.getDocuments().forEach(document -> {
-                        final Set<String> relatedLots = document.getRelatedLots();
-                        if (relatedLots.contains(lot.getId())) {
-                            relatedLots.remove(lot.getId());
-                            relatedLots.add(id);
+                        if (Objects.nonNull(document.getRelatedLots())) {
+                            final Set<String> relatedLots = document.getRelatedLots();
+                            if (relatedLots.contains(lot.getId())) {
+                                relatedLots.remove(lot.getId());
+                                relatedLots.add(id);
+                            }
+                            document.setRelatedLots(relatedLots);
                         }
-                        document.setRelatedLots(relatedLots);
                     });
                 }
                 lot.setId(id);
