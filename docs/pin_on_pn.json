@@ -199,12 +199,10 @@
     },
     "documents": [
       {
-        "documentType": "tenderNotice",
         "id": "1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
         "url": "http://bpe.eprocurement.systems/api/v1/storage/get/1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
         "title": "Title Test CN document to tender",
         "description": "Description Test CN document to tender",
-        "language": "ro",
         "relatedLots": [
           "11c81bc1-43c7-11e8-befd-373bd8d530b4"
         ]

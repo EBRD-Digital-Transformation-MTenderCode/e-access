@@ -21,6 +21,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
         "relatedLots"
 })
 public class Document {
+
     @NotNull
     @JsonProperty("id")
     private final String id;
@@ -43,7 +44,7 @@ public class Document {
     private Set<String> relatedLots;
 
     @JsonCreator
-    public Document(@JsonProperty("id") final String id,
+    public Document(@NotNull @JsonProperty("id") final String id,
                     @JsonProperty("documentType") final DocumentType documentType,
                     @JsonProperty("title") final String title,
                     @JsonProperty("description") final String description,

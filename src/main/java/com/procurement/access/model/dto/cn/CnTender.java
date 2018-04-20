@@ -190,6 +190,7 @@ public class CnTender {
     @JsonProperty("submissionMethodDetails")
     private final String submissionMethodDetails;
 
+    @Valid
     @JsonProperty("documents")
     private List<Document> documents;
 

@@ -1,45 +1,40 @@
 {
   "planning": {
-    "rationale": "",
     "budget": {
-      "description": "",
+      "description": "Long scientist together alone again yard Mr. Six hand sister. Bit early detail eat bill sign quickly.",
       "amount": {
-        "amount": 0,
-        "currency": ""
+        "amount": 123456.789,
+        "currency": "AMD"
       },
       "isEuropeanUnionFunded": false,
-      "europeanUnionFunding": {
-        "projectIdentifier": "",
-        "projectName": "",
-        "uri": ""
-      },
       "budgetBreakdown": [
         {
-          "id": "",
-          "description": "",
+          "id": "ocds-t1s2t3-MD-1524124918543-FS-1524126471232",
+          "description": "Yourself reach piece law land. Here list serve deal poor while positive. Return last lawyer real particularly certain morning fact.",
           "amount": {
-            "amount": 0,
-            "currency": ""
+            "amount": 123456.789,
+            "currency": "AMD"
           },
           "period": {
-            "startDate": "",
-            "endDate": ""
+            "startDate": "2018-05-25T21:00:00Z",
+            "endDate": "2018-06-26T21:00:00Z"
           },
           "sourceParty": {
-            "name": "",
-            "id": ""
+            "id": "Identification Scheme*-Identifier*",
+            "name": "Official Name*"
           }
         }
       ]
-    }
+    },
+    "rationale": "Hour authority majority conference number you."
   },
   "tender": {
-    "title": "",
-    "description": "",
+    "title": "People design when piece film.",
+    "description": "Significant land add.",
     "classification": {
-      "scheme": "",
-      "description": "",
-      "id": ""
+      "id": "48760000-3",
+      "scheme": "CPV",
+      "description": "Virus protection software package"
     },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
@@ -64,57 +59,30 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "",
-    "procurementMethod": "",
-    "procurementMethodDetails": "",
-    "procurementMethodRationale": "",
-    "procurementMethodAdditionalInfo": "",
-    "mainProcurementCategory": "",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Lot decision claim example a short can serve.",
+    "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
+    "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy.",
+    "mainProcurementCategory": "works",
     "additionalProcurementCategories": [
-      ""
+      "goods"
     ],
-    "eligibilityCriteria": "",
+    "eligibilityCriteria": "Group series task this answer cultural. Region alone throughout challenge.",
     "submissionLanguages": [
-      ""
+      "fr"
     ],
-    "contractPeriod": {
-      "startDate": "",
-      "endDate": ""
+    "tenderPeriod": {
+      "endDate": "2018-06-23T21:00:00Z",
+      "startDate": "2018-04-19T14:51:09Z"
     },
-    "procuringEntity": {
-      "name": "",
-      "identifier": {
-        "scheme": "",
-        "id": "",
-        "legalName": "",
-        "uri": ""
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "",
-          "id": "",
-          "legalName": "",
-          "uri": ""
-        }
-      ],
-      "address": {
-        "streetAddress": "",
-        "locality": "",
-        "region": "",
-        "postalCode": "",
-        "countryName": ""
-      },
-      "contactPoint": {
-        "name": "",
-        "email": "",
-        "telephone": "",
-        "faxNumber": "",
-        "url": ""
-      }
+    "contractPeriod": {
+      "startDate": "2018-06-24T21:00:00Z",
+      "endDate": "2018-06-25T21:00:00Z"
     },
     "value": {
-      "amount": 0,
-      "currency": ""
+      "amount": 2213.86,
+      "currency": "AMD"
     },
     "lotGroups": [
       {
@@ -123,83 +91,121 @@
     ],
     "lots": [
       {
-        "id": "",
-        "title": "",
-        "description": "",
+        "id": "1",
+        "title": "Relate factor worker place study.",
+        "description": "Figure care watch sea image. Soon scientist must radio.",
         "value": {
-          "amount": 0,
-          "currency": ""
+          "amount": 5399.38,
+          "currency": "AMD"
         },
-        "options": {
-          "hasOptions": false
-        },
-        "variants": {
-          "hasVariants": false
-        },
-        "renewals": {
-          "hasRenewals": false
-        },
-        "recurrentProcurement": {
-          "isRecurrent": false
-        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
         "contractPeriod": {
-          "startDate": "",
-          "endDate": ""
+          "startDate": "2018-06-24T21:00:00Z",
+          "endDate": "2018-06-25T21:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "",
-            "locality": "",
-            "region": "",
-            "postalCode": "",
-            "countryName": ""
+            "streetAddress": "9495 Medina Isle Suite 682",
+            "locality": "West Jake",
+            "region": "Utah",
+            "postalCode": "52317-3634",
+            "countryName": "Guyana"
           },
-          "description": ""
+          "description": "Television language fund our. Talk loss stage. Run so road answer however job result. Our west article media less wide those."
         }
       }
     ],
     "items": [
       {
-        "id": "",
+        "id": "1",
         "classification": {
-          "scheme": "",
-          "description": "",
-          "id": ""
+          "id": "48760000-3",
+          "scheme": "CPV",
+          "description": "Virus protection software package"
         },
         "additionalClassifications": [
           {
-            "scheme": "CPVs",
-            "description": "",
-            "id": ""
+            "id": "42419800-4",
+            "scheme": "CPV",
+            "description": "Parts of conveyors"
           }
         ],
-        "quantity": 0,
+        "quantity": 7.55775695E7,
         "unit": {
-          "id": "",
-          "name": ""
+          "id": "E54",
+          "name": "trip"
         },
-        "description": "",
-        "relatedLot": ""
+        "description": "Budget doctor practice brother southern represent. Chair almost usually machine.",
+        "relatedLot": "1"
       }
     ],
-    "awardCriteria": "priceOnly",
+    "awardCriteria": "singleBidOnly",
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
       "electronicSubmission"
     ],
     "submissionMethodRationale": [
-      ""
+      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"
     ],
-    "submissionMethodDetails": "",
+    "submissionMethodDetails": "Employee nice try whether mind early wish. Game choose say total.",
+    "procuringEntity": {
+      "name": "Townsend Group",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "614-98-8183",
+        "legalName": "Townsend Group Inc",
+        "uri": "http://hunter.org/tag/app/tag/terms.htm"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "319-59-6344",
+          "legalName": "Townsend Group Ltd",
+          "uri": "http://www.calderon-johnson.com/tags/tags/search/"
+        }
+      ],
+      "address": {
+        "streetAddress": "00515 Mitchell Vista",
+        "locality": "East Amy",
+        "region": "New Mexico",
+        "postalCode": "28102-7595",
+        "countryName": "Fiji"
+      },
+      "contactPoint": {
+        "name": "Deborah Rodriguez",
+        "email": "xdavis@gmail.com",
+        "telephone": "(404)308-2365",
+        "faxNumber": "1-965-814-1935",
+        "url": "http://smith.com/main/main/homepage.php"
+      }
+    },
     "documents": [
       {
-        "documentType": "",
-        "id": "",
-        "title": "",
-        "description": "",
-        "language": "",
+        "id": "1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
+        "url": "http://bpe.eprocurement.systems/api/v1/storage/get/1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
+        "title": "Title Test CN document to tender",
+        "description": "Description Test CN document to tender",
         "relatedLots": [
-          ""
+          "11c81bc1-43c7-11e8-befd-373bd8d530b4"
         ]
       }
     ]
