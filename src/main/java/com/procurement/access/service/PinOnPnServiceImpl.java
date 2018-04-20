@@ -70,7 +70,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         pinTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         pinTender.setProcuringEntity(pnTender.getProcuringEntity());
         setStatuses(pinTender);
-        tenderProcessDao.save(getEntity(pin, stage, entity.getToken(), dateTime, owner));
+        tenderProcessDao.save(getEntity(pin, cpId, stage, entity.getToken(), dateTime, owner));
         pin.setOcId(cpId);
         pin.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, pin);
@@ -118,22 +118,7 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         );
     }
 
-    private TenderProcessEntity getEntity(final PinProcess pin,
-                                          final String stage,
-                                          final UUID token,
-                                          final LocalDateTime dateTime,
-                                          final String owner) {
-        final TenderProcessEntity entity = new TenderProcessEntity();
-        entity.setCpId(pin.getTender().getId());
-        entity.setToken(token);
-        entity.setStage(stage);
-        entity.setOwner(owner);
-        entity.setCreatedDate(dateUtil.localToDate(dateTime));
-        entity.setJsonData(jsonUtil.toJson(pin));
-        return entity;
-    }
-
-    private void setStatuses(PinTender pinTender) {
+    private void setStatuses(final PinTender pinTender) {
         pinTender.setStatus(TenderStatus.PLANNING);
         pinTender.setStatusDetails(TenderStatusDetails.EMPTY);
         for (int i = 0; i < pinTender.getLots().size(); i++) {
@@ -142,4 +127,22 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         }
 
     }
+
+    private TenderProcessEntity getEntity(final PinProcess pin,
+                                          final String cpId,
+                                          final String stage,
+                                          final UUID token,
+                                          final LocalDateTime dateTime,
+                                          final String owner) {
+        final TenderProcessEntity entity = new TenderProcessEntity();
+        entity.setCpId(cpId);
+        entity.setToken(token);
+        entity.setStage(stage);
+        entity.setOwner(owner);
+        entity.setCreatedDate(dateUtil.localToDate(dateTime));
+        entity.setJsonData(jsonUtil.toJson(pin));
+        return entity;
+    }
+
+
 }

@@ -55,14 +55,14 @@ public class CnServiceImpl implements CnService {
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
-        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
+        final TenderProcessEntity entity = getEntity(dto, cpId, stage, dateTime, owner);
         tenderProcessDao.save(entity);
         dto.setOcId(cpId);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
     }
 
-    private void validateFields(CnProcess dto) {
+    private void validateFields(final CnProcess dto) {
         if (Objects.nonNull(dto.getTender().getId())) throw new ErrorException(ErrorType.TENDER_ID_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatus())) throw new ErrorException(ErrorType.TENDER_STATUS_NOT_NULL);
         if (Objects.nonNull(dto.getTender().getStatusDetails()))
@@ -125,11 +125,12 @@ public class CnServiceImpl implements CnService {
     }
 
     private TenderProcessEntity getEntity(final CnProcess dto,
+                                          final String cpId,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {
         final TenderProcessEntity entity = new TenderProcessEntity();
-        entity.setCpId(dto.getTender().getId());
+        entity.setCpId(cpId);
         entity.setToken(UUIDs.random());
         entity.setStage(stage);
         entity.setOwner(owner);

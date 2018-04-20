@@ -56,7 +56,7 @@ public class PINServiceImpl implements PINService {
         setItemsId(tender);
         setLotsIdAndItemsAndDocumentsRelatedLots(tender);
         setIdOfOrganizationReference(tender.getProcuringEntity());
-        final TenderProcessEntity entity = getEntity(dto, stage, dateTime, owner);
+        final TenderProcessEntity entity = getEntity(dto, cpId, stage, dateTime, owner);
         tenderProcessDao.save(entity);
         dto.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, dto);
@@ -133,11 +133,12 @@ public class PINServiceImpl implements PINService {
     }
 
     private TenderProcessEntity getEntity(final PinProcess dto,
+                                          final String cpId,
                                           final String stage,
                                           final LocalDateTime dateTime,
                                           final String owner) {
         final TenderProcessEntity entity = new TenderProcessEntity();
-        entity.setCpId(dto.getTender().getId());
+        entity.setCpId(cpId);
         entity.setToken(UUIDs.random());
         entity.setStage(stage);
         entity.setOwner(owner);
