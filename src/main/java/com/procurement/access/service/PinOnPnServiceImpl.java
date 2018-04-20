@@ -23,6 +23,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
+import static com.procurement.access.model.dto.ocds.TenderStatus.PLANNED;
+import static com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY;
+
 @Service
 public class PinOnPnServiceImpl implements PinOnPnService {
 
@@ -69,7 +72,8 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         pinTender.setProcurementMethodDetails(pnTender.getProcurementMethodDetails());
         pinTender.setMainProcurementCategory(pnTender.getMainProcurementCategory());
         pinTender.setProcuringEntity(pnTender.getProcuringEntity());
-        setStatuses(pinTender);
+        setTenderStatus(pinTender);
+        setLotsStatus(pinTender);
         tenderProcessDao.save(getEntity(pin, cpId, stage, entity.getToken(), dateTime, owner));
         pin.setOcId(cpId);
         pin.setToken(entity.getToken().toString());
@@ -125,13 +129,16 @@ public class PinOnPnServiceImpl implements PinOnPnService {
         );
     }
 
-    private void setStatuses(final PinTender pinTender) {
-        pinTender.setStatus(TenderStatus.PLANNED);
-        pinTender.setStatusDetails(TenderStatusDetails.EMPTY);
-        if (pinTender.getLots() != null) {
-            pinTender.getLots().stream().forEach(pinLot -> {
-                pinLot.setStatus(TenderStatus.PLANNED);
-                pinLot.setStatusDetails(TenderStatusDetails.EMPTY);
+    private void setTenderStatus(final PinTender tender) {
+        tender.setStatus(PLANNED);
+        tender.setStatusDetails(EMPTY);
+    }
+
+    private void setLotsStatus(final PinTender tender) {
+        if (tender.getLots() != null) {
+            tender.getLots().forEach(lot -> {
+                lot.setStatus(PLANNED);
+                lot.setStatusDetails(EMPTY);
             });
         }
     }
