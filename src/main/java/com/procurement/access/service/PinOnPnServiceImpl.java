@@ -126,13 +126,14 @@ public class PinOnPnServiceImpl implements PinOnPnService {
     }
 
     private void setStatuses(final PinTender pinTender) {
-        pinTender.setStatus(TenderStatus.PLANNING);
+        pinTender.setStatus(TenderStatus.PLANNED);
         pinTender.setStatusDetails(TenderStatusDetails.EMPTY);
-        for (int i = 0; i < pinTender.getLots().size(); i++) {
-            pinTender.getLots().get(i).setStatus(TenderStatus.PLANNING);
-            pinTender.getLots().get(i).setStatusDetails(TenderStatusDetails.EMPTY);
+        if (pinTender.getLots() != null) {
+            pinTender.getLots().stream().forEach(pinLot -> {
+                pinLot.setStatus(TenderStatus.PLANNED);
+                pinLot.setStatusDetails(TenderStatusDetails.EMPTY);
+            });
         }
-
     }
 
     private TenderProcessEntity getEntity(final PinProcess pin,
