@@ -44,7 +44,7 @@ public class Document {
     private Set<String> relatedLots;
 
     @JsonCreator
-    public Document(@NotNull @JsonProperty("id") final String id,
+    public Document(@JsonProperty("id") final String id,
                     @JsonProperty("documentType") final DocumentType documentType,
                     @JsonProperty("title") final String title,
                     @JsonProperty("description") final String description,
