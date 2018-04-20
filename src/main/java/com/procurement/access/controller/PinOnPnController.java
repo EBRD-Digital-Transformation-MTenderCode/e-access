@@ -25,8 +25,8 @@ public class PinOnPnController {
     @PostMapping
     public ResponseEntity<ResponseDto> createPinOnPn(@RequestParam("identifier") final String cpId,
                                                      @RequestParam("token") final String token,
-                                                     @RequestParam("country") final String country,
-                                                     @RequestParam("pmd") final String pmd,
+                                                     @RequestParam(value = "country", required = false) final String country,
+                                                     @RequestParam(value = "pmd", required = false) final String pmd,
                                                      @RequestParam("owner") final String owner,
                                                      @RequestParam("stage") final String stage,
                                                      @RequestParam("previousStage") final String previousStage,

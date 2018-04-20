@@ -77,20 +77,27 @@ public class PinOnPnServiceImpl implements PinOnPnService {
     }
 
     private void validateLots(final PnProcess pn, final PinProcess pin) {
-        final Set<String> lotsFromDocuments = pin.getTender().getDocuments().stream()
-                .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
+        Set<String> lotsFromDocuments = null;
+        if (pin.getTender().getDocuments() != null) {
+            lotsFromDocuments = pin.getTender().getDocuments().stream()
+                    .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
+        }
         // validate lots from pn
         if (pn.getTender().getLots() != null) {
-            final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(PnLot::getId).collect(Collectors.toSet());
-            if (!lotsFromPn.containsAll(lotsFromDocuments))
-                throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
+            if (lotsFromDocuments != null) {
+                final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(PnLot::getId).collect(Collectors.toSet());
+                if (!lotsFromPn.containsAll(lotsFromDocuments))
+                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
+            }
             addLotsToPinFromPn(pn, pin);
         }
         //validate lots from pin
         else {
-            final Set<String> lotsFromPin = pin.getTender().getLots().stream().map(PinLot::getId).collect(Collectors.toSet());
-            if (!lotsFromPin.containsAll(lotsFromDocuments))
-                throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
+            if (pin.getTender().getLots() != null && lotsFromDocuments != null) {
+                final Set<String> lotsFromPin = pin.getTender().getLots().stream().map(PinLot::getId).collect(Collectors.toSet());
+                if (!lotsFromPin.containsAll(lotsFromDocuments))
+                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
+            }
         }
     }
 

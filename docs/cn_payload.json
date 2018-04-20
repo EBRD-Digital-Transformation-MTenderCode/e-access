@@ -9,19 +9,11 @@
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1524124918543-FS-1524126471232",
+          "id": "ocds-t1s2t3-MD-1524213153982-FS-1524213174504",
           "description": "Yourself reach piece law land. Here list serve deal poor while positive. Return last lawyer real particularly certain morning fact.",
           "amount": {
             "amount": 123456.789,
             "currency": "AMD"
-          },
-          "period": {
-            "startDate": "2018-05-25T21:00:00Z",
-            "endDate": "2018-06-26T21:00:00Z"
-          },
-          "sourceParty": {
-            "id": "Identification Scheme*-Identifier*",
-            "name": "Official Name*"
           }
         }
       ]
@@ -73,8 +65,7 @@
       "fr"
     ],
     "tenderPeriod": {
-      "endDate": "2018-06-23T21:00:00Z",
-      "startDate": "2018-04-19T14:51:09Z"
+      "endDate": "2018-06-23T21:00:00Z"
     },
     "contractPeriod": {
       "startDate": "2018-06-24T21:00:00Z",
@@ -197,17 +188,13 @@
         "faxNumber": "1-965-814-1935",
         "url": "http://smith.com/main/main/homepage.php"
       }
-    },
-    "documents": [
-      {
-        "id": "1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
-        "url": "http://bpe.eprocurement.systems/api/v1/storage/get/1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
-        "title": "Title Test CN document to tender",
-        "description": "Description Test CN document to tender",
-        "relatedLots": [
-          "11c81bc1-43c7-11e8-befd-373bd8d530b4"
-        ]
-      }
-    ]
-  }
+    }
+  },
+  "documents": [
+    {
+      "id": "86764090-43d2-11e8-bd88-c70eb3dcb0fe",
+      "title": "Title Test CN document to tender",
+      "description": "Description Test CN document to tender"
+    }
+  ]
 }

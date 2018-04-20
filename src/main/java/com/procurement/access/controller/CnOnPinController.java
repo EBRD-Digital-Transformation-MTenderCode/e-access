@@ -26,8 +26,8 @@ public class CnOnPinController {
     public ResponseEntity<ResponseDto> createPinOnPin(@RequestParam("identifier") final String cpId,
                                                       @RequestParam("previousStage") final String previousStage,
                                                       @RequestParam("stage") final String stage,
-                                                      @RequestParam("country") final String country,
-                                                      @RequestParam("pmd") final String pmd,
+                                                      @RequestParam(value = "country", required = false) final String country,
+                                                      @RequestParam(value = "pmd", required = false) final String pmd,
                                                       @RequestParam("owner") final String owner,
                                                       @RequestParam("token") final String token,
                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

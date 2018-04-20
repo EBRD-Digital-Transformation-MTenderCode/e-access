@@ -1,37 +1,37 @@
 {
   "planning": {
-    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document.",
+    "rationale": "Rationale",
     "budget": {
-      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
+      "description": "Budget Description",
       "amount": {
-        "amount": 2.07872268165E9,
-        "currency": "MDL"
+        "amount": 12345.76,
+        "currency": "AMD"
       },
-      "isEuropeanUnionFunded": true,
+      "isEuropeanUnionFunded": false,
       "europeanUnionFunding": {
-        "projectIdentifier": "proj-cn-12346",
-        "projectName": "test proj name",
-        "uri": "https://jwt.io"
+        "projectIdentifier": "Project Identifier",
+        "projectName": "Project Name",
+        "uri": "Project uri"
       },
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1524125291119-FS-1524134063796",
-          "description": "1 A short free text description of this budget entry.",
+          "id": "ocds-t1s2t3-MD-1524213153982-FS-1524213174504",
+          "description": "Budget Description",
           "amount": {
-            "amount": 5,
-            "currency": "MDL"
+            "amount": 12355.4,
+            "currency": "AMD"
           }
         }
       ]
     }
   },
   "tender": {
-    "id": "ocds-t1s2t3-MD-1524138291068",
-    "title": "Tender title",
-    "description": "Tender description",
+    "id": "ocds-t1s2t3-MD-1524214929908",
+    "title": "",
+    "description": "",
     "classification": {
       "scheme": "CPV",
-      "description": "Fire-prevention installation works",
+      "description": "Virus protection software packag",
       "id": "48760000-3"
     },
     "acceleratedProcedure": {
@@ -57,30 +57,60 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
     "procurementMethod": "open",
-    "procurementMethodDetails": "Open Procurement",
-    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
-    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
+    "procurementMethodDetails": "",
+    "procurementMethodRationale": "",
+    "procurementMethodAdditionalInfo": "",
     "mainProcurementCategory": "goods",
     "additionalProcurementCategories": [
-      "goods"
+      "works"
     ],
-    "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
+    "eligibilityCriteria": "",
     "submissionLanguages": [
-      "pl",
-      "ro"
+      "de"
     ],
     "tenderPeriod": {
-      "startDate": "2018-05-16T15:58:30Z"
+      "startDate": "2018-06-23T21:00:00Z"
     },
     "contractPeriod": {
-      "startDate": "2018-09-27T00:00:00Z",
-      "endDate": "2018-08-13T11:32:10Z"
+      "startDate": "2018-06-24T21:00:00Z",
+      "endDate": "2018-06-25T21:00:00Z"
+    },
+    "procuringEntity": {
+      "name": "111",
+      "identifier": {
+        "scheme": "2Additional identifier scheme*",
+        "id": "2Additional identifier ID*",
+        "legalName": "2Additional identifier legal name*",
+        "uri": "2Additional identifier URI*"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "",
+          "id": "",
+          "legalName": "",
+          "uri": ""
+        }
+      ],
+      "address": {
+        "streetAddress": "",
+        "locality": "",
+        "region": "",
+        "postalCode": "",
+        "countryName": ""
+      },
+      "contactPoint": {
+        "name": "",
+        "email": "",
+        "telephone": "",
+        "faxNumber": "",
+        "url": ""
+      }
     },
     "value": {
-      "amount": 2.07872268165E9,
-      "currency": "MDL"
+      "amount": 123,
+      "currency": "AMD"
     },
     "lotGroups": [
       {
@@ -89,12 +119,12 @@
     ],
     "lots": [
       {
-        "id": "lot-id-123123",
-        "title": "A title for this lot.",
-        "description": "A description of this lot.",
+        "id": "82170b41-4479-11e8-b3a8-010be2392769",
+        "title": "",
+        "description": "",
         "value": {
-          "amount": 2.07872268165E9,
-          "currency": "MDL"
+          "amount": 123,
+          "currency": "AMD"
         },
         "options": [
           {
@@ -117,96 +147,53 @@
           }
         ],
         "contractPeriod": {
-          "startDate": "2018-09-27T00:00:00Z",
-          "endDate": "2018-11-27T00:00:00Z"
+          "startDate": "2018-06-24T21:00:00Z",
+          "endDate": "2018-06-25T21:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "149-159 High Street",
-            "locality": "Birmingham",
-            "region": "Digbeth",
-            "postalCode": "B12 0JU",
-            "countryName": "United Kingdom"
+            "streetAddress": "",
+            "locality": "",
+            "region": "",
+            "postalCode": "",
+            "countryName": ""
           },
-          "description": "Further description of the place of performance of the contract. Required by EU."
+          "description": ""
         }
       }
     ],
     "items": [
       {
-        "id": "item-id-123123",
+        "id": "82170b40-4479-11e8-b3a8-010be2392769",
         "classification": {
           "scheme": "CPV",
-          "description": "Fire-prevention installation works",
+          "description": "Virus protection software package",
           "id": "48760000-3"
         },
         "additionalClassifications": [
           {
-            "scheme": "CPVS",
-            "description": "A textual description or title for the code.",
-            "id": "CPVs-id-12341234"
+            "scheme": "CPV",
+            "description": "Virus protection software package",
+            "id": "48760000-3"
           }
         ],
-        "quantity": 10,
+        "quantity": 0,
         "unit": {
-          "id": "0971",
-          "name": "kg"
+          "id": "",
+          "name": ""
         },
-        "description": "A description of the goods, services to be provided.",
-        "relatedLot": "lot-id-123123"
+        "description": "",
+        "relatedLot": ""
       }
     ],
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
-      "electronicSubmission"
+      "written"
     ],
     "submissionMethodRationale": [
-      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
       "IPR_ISSUES"
     ],
-    "submissionMethodDetails": "Any detailed or further information on the submission method. This may include the address, e-mail address or online service to which bids should be submitted, and any special requirements to be followed for submissions.",
-    "procuringEntity": {
-      "name": "Новороздільська міська лікарня",
-      "identifier": {
-        "scheme": "UA-EDR",
-        "id": "20764777",
-        "legalName": "Новороздільська міська лікарня",
-        "uri": "http://buyerTestLink.ua"
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "UA-EDR",
-          "id": "123123123",
-          "legalName": "Додатково Новороздільська міська лікарня",
-          "uri": "http://additionalBuyerTestLink.ua"
-        }
-      ],
-      "address": {
-        "streetAddress": "вул. Винниченка, 37",
-        "locality": "місто Новий Розділ",
-        "region": "Львівська область",
-        "postalCode": "7770777",
-        "countryName": "Україна"
-      },
-      "contactPoint": {
-        "name": "Осипових Сергій Олександрович",
-        "email": "test2@test.test",
-        "telephone": "+380222222222",
-        "faxNumber": "+380222222222",
-        "url": "http://test.ua"
-      }
-    },
-    "documents": [
-      {
-        "id": "1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
-        "url": "http://bpe.eprocurement.systems/api/v1/storage/get/1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
-        "title": "Title Test CN document to tender",
-        "description": "Description Test CN document to tender",
-        "relatedLots": [
-          "11c81bc1-43c7-11e8-befd-373bd8d530b4"
-        ]
-      }
-    ]
+    "submissionMethodDetails": ""
   }
 }

@@ -25,7 +25,7 @@ public class PnController {
     @PostMapping
     public ResponseEntity<ResponseDto> createPn(@RequestParam("stage") final String stage,
                                                 @RequestParam("country") final String country,
-                                                @RequestParam("pmd") final String pmd,
+                                                @RequestParam(value = "pmd", required = false) final String pmd,
                                                 @RequestParam("owner") final String owner,
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                 @RequestParam("date") final LocalDateTime dateTime,
