@@ -35,7 +35,8 @@ public class LotsServiceImpl implements LotsService {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
-        final LotsResponseDto lotsResponseDto = new LotsResponseDto(entity.getOwner(),
+        final LotsResponseDto lotsResponseDto = new LotsResponseDto(
+                process.getTender().getAwardCriteria().value(),
                 getLotsDtoByStatus(process.getTender().getLots(), status));
         return new ResponseDto<>(true, null, lotsResponseDto);
     }

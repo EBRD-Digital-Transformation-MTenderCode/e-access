@@ -8,16 +8,16 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LotsResponseDto {
 
-    @JsonProperty(value = "owner")
-    private String owner;
+    @JsonProperty(value = "awardCriteria")
+    private String awardCriteria;
 
     @JsonProperty(value = "lots")
     private List<LotDto> lots;
 
     @JsonCreator
-    public LotsResponseDto(@JsonProperty("id") final String owner,
+    public LotsResponseDto(@JsonProperty("awardCriteria") final String awardCriteria,
                            @JsonProperty("lots") final List<LotDto> lots) {
-        this.owner = owner;
+        this.awardCriteria = awardCriteria;
         this.lots = lots;
     }
 
