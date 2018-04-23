@@ -36,13 +36,13 @@ public class CnOnPinServiceImpl implements CnOnPinService {
     }
 
     @Override
-    public ResponseDto createCnOnPin(String cpId,
-                                     String token,
-                                     String owner,
-                                     String stage,
-                                     String previousStage,
-                                     LocalDateTime dateTime,
-                                     CnProcess cn) {
+    public ResponseDto createCnOnPin(final String cpId,
+                                     final String previousStage,
+                                     final String stage,
+                                     final String owner,
+                                     final String token,
+                                     final LocalDateTime dateTime,
+                                     final CnProcess cn) {
 
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, previousStage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));

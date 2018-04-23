@@ -40,13 +40,13 @@ public class CnOnPnServiceImpl implements CnOnPnService {
     }
 
     @Override
-    public ResponseDto createCnOnPn(String cpId,
-                                    String token,
-                                    String owner,
-                                    String stage,
-                                    String previousStage,
-                                    LocalDateTime dateTime,
-                                    CnProcess cn) {
+    public ResponseDto createCnOnPn(final String cpId,
+                                    final String previousStage,
+                                    final String stage,
+                                    final String owner,
+                                    final String token,
+                                    final LocalDateTime dateTime,
+                                    final CnProcess cn) {
 
         if (cn.getTender().getEligibilityCriteria() == null) throw new ErrorException(ErrorType.EL_CRITERIA_IS_NULL);
 

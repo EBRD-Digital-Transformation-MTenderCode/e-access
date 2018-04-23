@@ -8,10 +8,11 @@ public interface CnOnPinService {
 
     ResponseDto createCnOnPin(
             String cpId,
-            String token,
-            String owner,
-            String stage,
             String previousStage,
+            String stage,
+            String owner,
+            String token,
             LocalDateTime dateTime,
             CnProcess data);
+
 }
