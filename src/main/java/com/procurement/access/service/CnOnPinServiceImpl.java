@@ -91,10 +91,12 @@ public class CnOnPinServiceImpl implements CnOnPinService {
     }
 
     private void addLotsToCnFromPin(final PinProcess pin, final CnProcess cn) {
-        final List<CnLot> cnLots = pin.getTender().getLots().stream()
-                .map(this::convertPinToCnLot)
-                .collect(Collectors.toList());
-        cn.getTender().setLots(cnLots);
+        if (pin.getTender().getLots() != null) {
+            final List<CnLot> cnLots = pin.getTender().getLots().stream()
+                    .map(this::convertPinToCnLot)
+                    .collect(Collectors.toList());
+            cn.getTender().setLots(cnLots);
+        }
     }
 
     private CnLot convertPinToCnLot(final PinLot pinLot) {
@@ -156,10 +158,11 @@ public class CnOnPinServiceImpl implements CnOnPinService {
     private void setStatuses(CnTender cnTender) {
         cnTender.setStatus(TenderStatus.ACTIVE);
         cnTender.setStatusDetails(TenderStatusDetails.EMPTY);
-        cnTender.getLots().forEach(lot -> {
-            lot.setStatus(TenderStatus.ACTIVE);
-            lot.setStatusDetails(TenderStatusDetails.EMPTY);
-        });
+        if (cnTender.getLots() != null)
+            cnTender.getLots().forEach(lot -> {
+                lot.setStatus(TenderStatus.ACTIVE);
+                lot.setStatusDetails(TenderStatusDetails.EMPTY);
+            });
     }
 
     private TenderProcessEntity getEntity(final CnProcess cn,
