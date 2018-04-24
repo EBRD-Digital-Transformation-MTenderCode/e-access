@@ -59,7 +59,10 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         /*tender*/
         final CnTender cnTender = convertPinToCnTender(pinTender);
         /*lots*/
-        addLotsToCnFromPin(pin, cn);
+        List<CnLot> lotsFromPin = getLotsToCnFromPin(pin);
+        if (lotsFromPin != null) {
+            cn.getTender().setLots(lotsFromPin);
+        }
         /*tender status, lot status*/
         setStatuses(cnTender);
         /*submissionLanguages*/
@@ -90,13 +93,14 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         }
     }
 
-    private void addLotsToCnFromPin(final PinProcess pin, final CnProcess cn) {
+    private List<CnLot> getLotsToCnFromPin(final PinProcess pin) {
         if (pin.getTender().getLots() != null) {
             final List<CnLot> cnLots = pin.getTender().getLots().stream()
                     .map(this::convertPinToCnLot)
                     .collect(Collectors.toList());
-            cn.getTender().setLots(cnLots);
+            return cnLots;
         }
+        return null;
     }
 
     private CnLot convertPinToCnLot(final PinLot pinLot) {
