@@ -55,7 +55,7 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         final PinProcess pin = jsonUtil.toObject(PinProcess.class, entity.getJsonData());
         final PinTender pinTender = pin.getTender();
 
-        if (!dateUtil.localToDate(pinTender.getTenderPeriod().getStartDate()).equals(dateUtil.localToDate(dateTime)))
+        if (!pinTender.getTenderPeriod().getStartDate().toLocalDate().equals(dateTime.toLocalDate()))
             throw new ErrorException(ErrorType.INVALID_START_DATE);
 
         /*planning*/
