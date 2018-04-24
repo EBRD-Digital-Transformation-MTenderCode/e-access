@@ -63,7 +63,7 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         /*tender*/
         final CnTender cnTender = convertPinToCnTender(pinTender);
         /*lots*/
-        setLotsToCnFromPin(pin, cnTender);
+        setLotsToCnFromPin(pinTender, cnTender);
          /*tender status, lot status*/
         setStatuses(cnTender);
         /*submissionLanguages*/
@@ -73,29 +73,29 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         if (cn.getTender().getDocuments() != null)
             cnTender.setDocuments(cn.getTender().getDocuments());
         cn.setTender(cnTender);
-        validateLots(cn);
+        validateLots(cnTender);
         tenderProcessDao.save(getEntity(cn, cpId, stage, entity.getToken(), dateTime, owner));
         cn.setOcId(cpId);
         cn.setToken(entity.getToken().toString());
         return new ResponseDto<>(true, null, cn);
     }
 
-    private void setLotsToCnFromPin(final PinProcess pin, final CnTender cnTender) {
-        if (pin.getTender().getLots() != null) {
-            final List<CnLot> cnLots = pin.getTender().getLots().stream()
+    private void setLotsToCnFromPin(final PinTender pinTender, final CnTender cnTender) {
+        if (pinTender.getLots() != null) {
+            final List<CnLot> cnLots = pinTender.getLots().stream()
                     .map(this::convertPinToCnLot)
                     .collect(Collectors.toList());
             cnTender.setLots(cnLots);
         }
     }
 
-    private void validateLots(final CnProcess cn) {
-        if (cn.getTender().getDocuments() != null) {
-            final Set<String> lotsFromDocuments = cn.getTender().getDocuments().stream()
+    private void validateLots(final CnTender cnTender) {
+        if (cnTender.getDocuments() != null) {
+            final Set<String> lotsFromDocuments = cnTender.getDocuments().stream()
                     .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
             // validate lots
-            if (cn.getTender().getLots() != null) {
-                final Set<String> lots = cn.getTender().getLots().stream().map(CnLot::getId).collect(Collectors
+            if (cnTender.getLots() != null) {
+                final Set<String> lots = cnTender.getLots().stream().map(CnLot::getId).collect(Collectors
                         .toSet());
                 if (!lots.containsAll(lotsFromDocuments))
                     throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
