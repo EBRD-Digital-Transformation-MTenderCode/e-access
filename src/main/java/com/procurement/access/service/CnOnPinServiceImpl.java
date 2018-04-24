@@ -63,11 +63,8 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         /*tender*/
         final CnTender cnTender = convertPinToCnTender(pinTender);
         /*lots*/
-        List<CnLot> lotsFromPin = getLotsToCnFromPin(pin);
-        if (lotsFromPin != null) {
-            cn.getTender().setLots(lotsFromPin);
-        }
-        /*tender status, lot status*/
+        setLotsToCnFromPin(pin, cnTender);
+         /*tender status, lot status*/
         setStatuses(cnTender);
         /*submissionLanguages*/
         if (cn.getTender().getSubmissionLanguages() != null)
@@ -83,11 +80,20 @@ public class CnOnPinServiceImpl implements CnOnPinService {
         return new ResponseDto<>(true, null, cn);
     }
 
+    private void setLotsToCnFromPin(final PinProcess pin, final CnTender cnTender) {
+        if (pin.getTender().getLots() != null) {
+            final List<CnLot> cnLots = pin.getTender().getLots().stream()
+                    .map(this::convertPinToCnLot)
+                    .collect(Collectors.toList());
+            cnTender.setLots(cnLots);
+        }
+    }
+
     private void validateLots(final CnProcess cn) {
         if (cn.getTender().getDocuments() != null) {
             final Set<String> lotsFromDocuments = cn.getTender().getDocuments().stream()
                     .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
-            // validate lots from pin
+            // validate lots
             if (cn.getTender().getLots() != null) {
                 final Set<String> lots = cn.getTender().getLots().stream().map(CnLot::getId).collect(Collectors
                         .toSet());
@@ -95,16 +101,6 @@ public class CnOnPinServiceImpl implements CnOnPinService {
                     throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
             }
         }
-    }
-
-    private List<CnLot> getLotsToCnFromPin(final PinProcess pin) {
-        if (pin.getTender().getLots() != null) {
-            final List<CnLot> cnLots = pin.getTender().getLots().stream()
-                    .map(this::convertPinToCnLot)
-                    .collect(Collectors.toList());
-            return cnLots;
-        }
-        return null;
     }
 
     private CnLot convertPinToCnLot(final PinLot pinLot) {

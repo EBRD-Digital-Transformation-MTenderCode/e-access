@@ -9,7 +9,6 @@ import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.CnTender;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
-import com.procurement.access.model.dto.pin.PinLot;
 import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnTender;
@@ -60,9 +59,10 @@ public class CnOnPnServiceImpl implements CnOnPnService {
             throw new ErrorException(ErrorType.INVALID_CPID_FROM_DTO);
         final PnProcess pn = jsonUtil.toObject(PnProcess.class, entity.getJsonData());
         final PnTender pnTender = pn.getTender();
-        validateLots(pn, cn);
         cn.setPlanning(pn.getPlanning());
         final CnTender cnTender = cn.getTender();
+        setLotsToCnFromPn(pnTender, cnTender);
+        validateLots(cnTender);
         cnTender.setTitle(pnTender.getTitle());
         cnTender.setDescription(pnTender.getDescription());
         cnTender.setClassification(pnTender.getClassification());
@@ -78,38 +78,28 @@ public class CnOnPnServiceImpl implements CnOnPnService {
         return new ResponseDto<>(true, null, cn);
     }
 
-    private void validateLots(final PnProcess pn, final CnProcess cn) {
-        Set<String> lotsFromDocuments = null;
-        if (cn.getTender().getDocuments() != null) {
-            lotsFromDocuments = cn.getTender().getDocuments().stream()
-                    .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
-        }
-        // validate lots from pn
-        if (pn.getTender().getLots() != null) {
-            if (lotsFromDocuments != null) {
-                final Set<String> lotsFromPn = pn.getTender().getLots().stream().map(PnLot::getId).collect(Collectors.toSet());
-                if (!lotsFromPn.containsAll(lotsFromDocuments))
-                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
-            }
-            addLotsToCnFromPn(pn, cn);
-        }
-        //validate lots from pin
-        else {
-            if (cn.getTender().getLots() != null && lotsFromDocuments != null) {
-                final Set<String> lotsFromCn = cn.getTender().getLots().stream().map(CnLot::getId).collect(Collectors.toSet());
-                if (!lotsFromCn.containsAll(lotsFromDocuments))
-                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
-            }
+    private void setLotsToCnFromPn(final PnTender pnTender, final CnTender cnTender) {
+        if (pnTender.getLots() != null) {
+            final List<CnLot> cnLots = pnTender.getLots().stream()
+                    .map(this::convertPnToCnLot)
+                    .collect(Collectors.toList());
+            cnTender.setLots(cnLots);
         }
     }
 
-    private void addLotsToCnFromPn(final PnProcess pn, final CnProcess cn) {
-        if (pn.getTender().getLots() != null) {
-            final List<CnLot> cnLots = pn.getTender().getLots().stream()
-                    .map(this::convertPnToCnLot)
-                    .collect(Collectors.toList());
-            cn.getTender().setLots(cnLots);
+    private void validateLots(final CnTender cnTender) {
+        Set<String> lotsFromDocuments = null;
+        if (cnTender.getDocuments() != null) {
+            lotsFromDocuments = cnTender.getDocuments().stream()
+                    .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
         }
+
+        if (cnTender.getLots() != null && lotsFromDocuments != null) {
+            final Set<String> lotsFromCn = cnTender.getLots().stream().map(CnLot::getId).collect(Collectors.toSet());
+            if (!lotsFromCn.containsAll(lotsFromDocuments))
+                throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
+        }
+
     }
 
     private CnLot convertPnToCnLot(final PnLot pnLot) {
