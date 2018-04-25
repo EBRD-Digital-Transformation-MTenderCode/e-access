@@ -48,8 +48,10 @@ public class StageServiceImpl implements StageService {
             throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final Tender tender = processBefore.getTender();
         tender.setLots(filterLots(tender.getLots()));
+        if (processBefore.getTender().getItems() != null)
         tender.setItems(filterItems(processBefore.getTender().getItems(), tender.getLots()));
-        tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
+        if (processBefore.getTender().getDocuments() != null)
+            tender.setDocuments(filterDocuments(processBefore.getTender().getDocuments(), tender.getLots()));
         final TenderProcess tenderAfter = new TenderProcess(
                 null,
                 entity.getCpId(),
@@ -83,11 +85,10 @@ public class StageServiceImpl implements StageService {
     }
 
     private List<Document> filterDocuments(final List<Document> documents, final List<Lot> lots) {
-        if (Objects.isNull(documents)) return null;
         final Set<Document> documentsAfterFilter = new HashSet<>();
         final Set<String> lotsID = getUniqueLots(lots);
         for (final Document document : documents) {
-            if (document.getRelatedLots().size() == 0) {
+            if (document.getRelatedLots() == null || document.getRelatedLots().isEmpty()) {
                 documentsAfterFilter.add(document);
             } else {
                 if (document.getRelatedLots().stream().anyMatch(lotsID::contains))
