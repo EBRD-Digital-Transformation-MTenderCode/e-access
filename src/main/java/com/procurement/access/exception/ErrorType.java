@@ -20,7 +20,8 @@ public enum ErrorType {
     INVALID_CPID_FROM_DTO("10.05", "Invalid tender id."),
     INVALID_LOTS_RELATED_LOTS("10.06", "Documents related lots not contains all lots."),
     EL_CRITERIA_IS_NULL("10.07", "EligibilityCriteria must be presented!"),
-    INVALID_START_DATE("10.08", "Invalid tender period start date.");
+    INVALID_START_DATE("10.08", "Invalid tender period start date."),
+    INVALID_CURRENCY("10.09", "Invalid currency.");
 
 
     private final String code;

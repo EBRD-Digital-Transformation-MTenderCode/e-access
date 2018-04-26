@@ -1,40 +1,38 @@
 {
   "planning": {
+    "rationale": "CN/Rationale for Planning",
     "budget": {
-      "description": "Pull or agent number whom. Agency who rise.",
       "amount": {
-        "amount": 2.3,
-        "currency": "UAH"
+        "amount": 5000,
+        "currency": "CUC"
       },
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-UA-1523618771827-FS-1523618776045",
-          "description": "Image this majority station throughout. Business hope hot news effect politics concern.",
+          "id": "ocds-t1s2t3-MD-1524728022539-FS-1524728328355",
           "amount": {
-            "amount": 2.3,
+            "amount": 2000.0,
             "currency": "UAH"
           },
           "period": {
-            "startDate": "2018-04-13T11:26:11Z",
-            "endDate": "2018-07-26T08:11:51Z"
+            "startDate": "2018-05-12T01:00:00Z",
+            "endDate": "2018-05-20T01:00:01Z"
           },
           "sourceParty": {
-            "id": "UA-EDR-808-95-5303",
-            "name": "Gordon, Freeman and Vazquez"
+            "id": "EI/Identifier/Identification Scheme*-EI/Identifier*/ID",
+            "name": "Rols Roys-Buyer Official Name/EI/*"
           }
         }
       ]
-    },
-    "rationale": "Generation sure spend leg."
+    }
   },
   "tender": {
-    "title": "Option field him.",
-    "description": "Western explain newspaper major result should.",
+    "title": "CN/Tender Title-Test Platform (definition of type of object)",
+    "description": "CN/Short description of tender",
     "classification": {
-      "id": "22822000-8",
       "scheme": "CPV",
-      "description": "Business forms"
+      "description": "CN/Description of CPV name*",
+      "id": "92532000-9"
     },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
@@ -59,29 +57,54 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "REGULATION_966_2012",
-    "procurementMethod": "selective",
-    "procurementMethodDetails": "Information view president there administration whole.",
-    "procurementMethodRationale": "List themselves eat similar. Born movement answer onto popular offer. Election again minute bit. Window executive glass.",
-    "procurementMethodAdditionalInfo": "Compare next likely throughout level. East dog for choice. Other carry behavior prove remain summer oil. Project range cup stage become can sense.",
-    "mainProcurementCategory": "goods",
-    "additionalProcurementCategories": [
-      "services"
-    ],
-    "eligibilityCriteria": "Sit doctor allow professional town total take. Simply value three drop dinner.",
+    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Some method details/procurementMethodDetails",
+    "mainProcurementCategory": "services",
     "submissionLanguages": [
-      "mt"
+      "et"
     ],
     "tenderPeriod": {
-      "endDate": "2018-04-13T11:29:17Z",
-      "startDate": "2018-04-13T11:26:17Z"
+      "endDate": "2018-06-10T00:00:00Z",
+      "startDate": "2018-04-26T15:56:58Z"
     },
     "contractPeriod": {
-      "startDate": "2018-04-13T11:26:17Z",
-      "endDate": "2018-08-31T08:02:45Z"
+      "startDate": "2018-05-15T00:00:00Z",
+      "endDate": "2018-06-15T00:00:00Z"
+    },
+    "procuringEntity": {
+      "name": "Official Name*Test scenario for EI-26/04/2018",
+      "identifier": {
+        "scheme": "Identifier Scheme Test scenario for EI-26/04/2018",
+        "id": "Identification ID* Test scenario for EI-26/04/2018",
+        "legalName": "Legal Name*Test scenario for EI-26/04/2018",
+        "uri": "URI* Test scenario for EI-12/04/2018"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "1Additional identifier scheme*Test scenario for EI-26/04/2018",
+          "id": "1Additional identifier ID* Test scenario for EI-26/04/2018",
+          "legalName": "1Additional identifier legal name* Test scenario for EI-26/04/2018",
+          "uri": "1Additional identifier URI* Test scenario for EI-26/04/2018"
+        }
+      ],
+      "address": {
+        "streetAddress": "Street Address* Test scenario for EI-26/04/2018",
+        "locality": "Locality* Test scenario for EI-26/04/2018",
+        "region": "Region Test scenario for EI-26/04/2018",
+        "postalCode": "Postal code Test scenario for EI-26/04/2018",
+        "countryName": "Republic of Unated Kindom or USA Test scenario for EI-26/04/2018"
+      },
+      "contactPoint": {
+        "name": "Name* Test scenario for EI-26/04/2018",
+        "email": "E-mail*Test scenario for EI-26/04/2018",
+        "telephone": "Telephone* Test scenario for EI-26/04/2018",
+        "faxNumber": "Fax* Test scenario for EI-26/04/2018",
+        "url": "URL*Test Test scenario for EI-26/04/2018"
+      }
     },
     "value": {
-      "amount": 1778517.27,
+      "amount": 2000,
       "currency": "UAH"
     },
     "lotGroups": [
@@ -92,10 +115,10 @@
     "lots": [
       {
         "id": "1",
-        "title": "Side color prepare almost.",
-        "description": "Firm without nor boy Democrat central number view. Much much that structure though. Subject maintain good.",
+        "title": "lots/title",
+        "description": "Something about lot 1",
         "value": {
-          "amount": 173299.71,
+          "amount": 1000,
           "currency": "UAH"
         },
         "options": [
@@ -119,197 +142,110 @@
           }
         ],
         "contractPeriod": {
-          "startDate": "2018-04-13T11:26:17Z",
-          "endDate": "2018-07-05T09:05:27Z"
+          "startDate": "2018-05-15T00:00:00Z",
+          "endDate": "2018-06-15T00:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "24522 Joel Plaza",
-            "locality": "Blackchester",
-            "region": "Nebraska",
-            "postalCode": "08637",
-            "countryName": "Norfolk Island"
+            "streetAddress": "placeOfPerformance/address/streetAddress",
+            "locality": "placeOfPerformance/address/locality",
+            "region": "placeOfPerformance/address/region",
+            "postalCode": "placeOfPerformance/address/postal code",
+            "countryName": "placeOfPerformance/address/country mane"
           },
-          "description": "Claim question travel data. Yeah draw task exist dog man bill. Start hour campaign edge color coach daughter. Fact form simple performance spring hour."
+          "description": "some description"
         }
       }
     ],
     "items": [
       {
-        "id": "1",
+        "id": "",
         "classification": {
-          "id": "22822000-8",
           "scheme": "CPV",
-          "description": "Business forms"
+          "description": "Desct about 2",
+          "id": "item2"
         },
         "additionalClassifications": [
           {
-            "id": "63721500-4",
-            "scheme": "CPV",
-            "description": "Passenger terminal operation services"
+            "scheme": "CPVS",
+            "description": "additionalClassifications/description",
+            "id": "additionalClassifications/id"
           }
         ],
-        "quantity": 1.8376110038E8,
+        "quantity": 12,
         "unit": {
-          "id": "KWT",
-          "name": "kilowatt"
+          "id": "unit id = IE",
+          "name": "unit/name = person"
         },
-        "description": "Before medical must Mr amount. Eight audience get. Close through follow she exist production.",
         "relatedLot": "1"
       }
     ],
-    "awardCriteria": "bestProposal",
+    "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
-      "written"
+      "electronicSubmission"
     ],
-    "submissionMethodRationale": [
-      "IPR_ISSUES"
-    ],
-    "submissionMethodDetails": "Despite street group rule success. Similar occur above mind maybe religious again.",
-    "procuringEntity": {
-      "name": "Adams-Cooper",
-      "identifier": {
-        "scheme": "UA-EDR",
-        "id": "430-06-2237",
-        "legalName": "Adams-Cooper LLC",
-        "uri": "https://hamilton-coleman.com/list/posts/main/home.htm"
+    "documents": [
+      {
+        "documentType": "evaluationCriteria",
+        "id": "073d3a50-494e-11e8-bcee-fd2243130aae",
+        "title": "documentType/Title",
+        "description": "documentType/description",
+        "language": "da",
+        "relatedLots": [
+          "2"
+        ]
       },
-      "additionalIdentifiers": [
-        {
-          "scheme": "UA-EDR",
-          "id": "664-62-4630",
-          "legalName": "Adams-Cooper Ltd",
-          "uri": "https://www.carson.net/index/"
-        }
-      ],
-      "address": {
-        "streetAddress": "08032 Lucero Meadow Suite 926",
-        "locality": "Rachelstad",
-        "region": "Virginia",
-        "postalCode": "31430-0298",
-        "countryName": "Belgium"
+      {
+        "documentType": "eligibilityCriteria",
+        "id": "f02acc50-4953-11e8-bcee-fd2243130aae",
+        "title": "PDF format/documentType/Title",
+        "description": "documentType/description",
+        "language": "en",
+        "relatedLots": [
+          "2"
+        ]
       },
-      "contactPoint": {
-        "name": "Anthony Hansen",
-        "email": "keith39@gmail.com",
-        "telephone": "279-228-3581",
-        "faxNumber": "883.580.7440x13381",
-        "url": "http://collins-cole.com/tags/tags/search/"
+      {
+        "documentType": "billOfQuantity",
+        "id": "8172d5a0-4953-11e8-bcee-fd2243130aae",
+        "title": "DOC format/documentType/Title",
+        "description": "documentType/description",
+        "language": "en",
+        "relatedLots": [
+          "2"
+        ]
+      },
+      {
+        "documentType": "illustration",
+        "id": "555d4810-4953-11e8-bcee-fd2243130aae",
+        "title": "DOCX/documentType/Title",
+        "description": "documentType/description",
+        "language": "da",
+        "relatedLots": [
+          "2"
+        ]
+      },
+      {
+        "documentType": "marketStudies",
+        "id": "4484e240-4954-11e8-bcee-fd2243130aae",
+        "title": "TXT/documentType/Title",
+        "description": "documentType/description",
+        "language": "da",
+        "relatedLots": [
+          "2"
+        ]
+      },
+      {
+        "documentType": "tenderNotice",
+        "id": "4484e240-4954-11e8-bcee-fd2243130aae",
+        "title": "TXT/documentType/Title",
+        "description": "documentType/description",
+        "language": "da",
+        "relatedLots": [
+          "2"
+        ]
       }
-    }
-  },
-  "ei": [
-    "ocds-t1s2t3-UA-1523618771827"
-  ],
-  "buyer": [
-    {
-      "name": "Gordon, Freeman and Vazquez",
-      "id": "UA-EDR-808-95-5303",
-      "identifier": {
-        "id": "808-95-5303",
-        "scheme": "UA-EDR",
-        "legalName": "Gordon, Freeman and Vazquez PLC",
-        "uri": "https://rogers.net/"
-      },
-      "address": {
-        "streetAddress": "1368 Harris Summit",
-        "locality": "East Michaelland",
-        "region": "Idaho",
-        "postalCode": "81779",
-        "countryName": "Tanzania"
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "661-31-7157",
-          "scheme": "UA-EDR",
-          "legalName": "Gordon, Freeman and Vazquez Group",
-          "uri": "http://www.rodriguez.net/home.html"
-        }
-      ],
-      "contactPoint": {
-        "name": "Marissa Gilbert",
-        "email": "richardsonstephen@gmail.com",
-        "telephone": "(384)796-7330",
-        "faxNumber": "630-295-8800x70899",
-        "url": "http://www.howard.com/main/wp-content/terms.php"
-      },
-      "details": {
-        "typeOfBuyer": "NATIONAL_AGENCY",
-        "mainGeneralActivity": "HOUSING_AND_COMMUNITY_AMENITIES",
-        "mainSectoralActivity": "RAILWAY_SERVICES",
-        "isACentralPurchasingBody": false,
-        "scale": ""
-      },
-      "buyerProfile": "https://www.wood.com/list/blog/faq.htm"
-    }
-  ],
-  "funder": [
-    {
-      "id": "UA-EDR-808-95-5303",
-      "name": "Gordon, Freeman and Vazquez",
-      "identifier": {
-        "id": "808-95-5303",
-        "scheme": "UA-EDR",
-        "legalName": "Gordon, Freeman and Vazquez PLC",
-        "uri": "https://rogers.net/"
-      },
-      "address": {
-        "streetAddress": "1368 Harris Summit",
-        "locality": "East Michaelland",
-        "region": "Idaho",
-        "postalCode": "81779",
-        "countryName": "Tanzania"
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "661-31-7157",
-          "scheme": "UA-EDR",
-          "legalName": "Gordon, Freeman and Vazquez Group",
-          "uri": "http://www.rodriguez.net/home.html"
-        }
-      ],
-      "contactPoint": {
-        "name": "Marissa Gilbert",
-        "email": "richardsonstephen@gmail.com",
-        "telephone": "(384)796-7330",
-        "faxNumber": "630-295-8800x70899",
-        "url": "http://www.howard.com/main/wp-content/terms.php"
-      }
-    }
-  ],
-  "payer": [
-    {
-      "id": "UA-EDR-117-28-3992",
-      "name": "Mason-King",
-      "identifier": {
-        "id": "117-28-3992",
-        "scheme": "UA-EDR",
-        "legalName": "Mason-King LLC",
-        "uri": "http://www.harris.org/blog/about/"
-      },
-      "address": {
-        "streetAddress": "97992 Diaz Causeway Suite 256",
-        "locality": "New Alexander",
-        "region": "Tennessee",
-        "postalCode": "15806",
-        "countryName": "United States Minor Outlying Islands"
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "872-05-9724",
-          "scheme": "UA-EDR",
-          "legalName": "Mason-King and Sons",
-          "uri": "http://johnson.com/faq/"
-        }
-      ],
-      "contactPoint": {
-        "name": "Jessica Jones",
-        "email": "michael65@gmail.com",
-        "telephone": "1-846-901-6879x64169",
-        "faxNumber": "288.971.5646x626",
-        "url": "http://collier.com/"
-      }
-    }
-  ]
+    ]
+  }
 }

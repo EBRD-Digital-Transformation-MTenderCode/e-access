@@ -9,6 +9,8 @@ import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnLot;
 import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.CnTender;
+import com.procurement.access.model.dto.ocds.Budget;
+import com.procurement.access.model.dto.ocds.Currency;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
@@ -16,6 +18,7 @@ import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import static com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE;
@@ -71,6 +74,17 @@ public class CnServiceImpl implements CnService {
             throw new ErrorException(ErrorType.LOT_STATUS_NOT_NULL);
         if (dto.getTender().getLots().stream().anyMatch(l -> Objects.nonNull(l.getStatusDetails())))
             throw new ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL);
+        checkFsCurrency(dto);
+    }
+
+    private void checkFsCurrency(final CnProcess dto) {
+        final Budget budget = dto.getPlanning().getBudget();
+        if (budget.getBudgetBreakdown().stream().map(b -> b.getAmount().getCurrency()).collect(Collectors.toSet()).size() > 1) {
+            throw new ErrorException(ErrorType.INVALID_CURRENCY);
+        }
+        final Currency budgetCurrency = budget.getAmount().getCurrency();
+        final Currency brCurrency = budget.getBudgetBreakdown().get(0).getAmount().getCurrency();
+        if (!budgetCurrency.equals(brCurrency)) throw new ErrorException(ErrorType.INVALID_CURRENCY);
     }
 
     private String getCpId(final String country) {
