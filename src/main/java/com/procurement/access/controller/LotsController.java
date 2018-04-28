@@ -50,4 +50,14 @@ public class LotsController {
                 lotsService.updateStatusDetails(cpId, stage, TenderStatusDetails.fromValue(statusDetails), data),
                 HttpStatus.OK);
     }
+
+    @PostMapping("/updateStatusDetailsById")
+    public ResponseEntity<ResponseDto> updateStatusDetails(@RequestParam("identifier") final String cpId,
+                                                           @RequestParam("stage") final String stage,
+                                                           @RequestParam("statusDetails") final String statusDetails,
+                                                           @RequestParam("lotId") final String lotId) {
+        return new ResponseEntity<>(
+                lotsService.updateStatusDetailsById(cpId, stage, lotId, TenderStatusDetails.fromValue(statusDetails)),
+                HttpStatus.OK);
+    }
 }

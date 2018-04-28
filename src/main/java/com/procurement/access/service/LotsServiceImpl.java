@@ -4,10 +4,7 @@ import com.procurement.access.dao.TenderProcessDao;
 import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
-import com.procurement.access.model.dto.lots.LotDto;
-import com.procurement.access.model.dto.lots.LotsRequestDto;
-import com.procurement.access.model.dto.lots.LotsResponseDto;
-import com.procurement.access.model.dto.lots.LotsUpdateResponseDto;
+import com.procurement.access.model.dto.lots.*;
 import com.procurement.access.model.dto.ocds.Lot;
 import com.procurement.access.model.dto.ocds.TenderProcess;
 import com.procurement.access.model.dto.ocds.TenderStatus;
@@ -66,6 +63,23 @@ public class LotsServiceImpl implements LotsService {
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
         return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
+    }
+
+    @Override
+    public ResponseDto updateStatusDetailsById(final String cpId,
+                                               final String stage,
+                                               final String lotId,
+                                               final TenderStatusDetails statusDetails) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
+        final Lot updatedLot = process.getTender().getLots().stream()
+                .filter(lot -> lot.getId().equals(lotId))
+                .findFirst().orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        updatedLot.setStatusDetails(statusDetails);
+        entity.setJsonData(jsonUtil.toJson(process));
+        tenderProcessDao.save(entity);
+        return new ResponseDto<>(true, null, new LotUpdateResponseDto(updatedLot));
     }
 
     private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {
