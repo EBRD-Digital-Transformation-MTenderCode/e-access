@@ -92,7 +92,7 @@ public class LotsServiceImpl implements LotsService {
                 .anyMatch(lot -> !(lot.getStatusDetails().equals(TenderStatusDetails.AWARDED)))) {
             throw new ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED);
         }
-        return new ResponseDto<>(true, null, null);
+        return new ResponseDto<>(true, null, "All active lots are awarded.");
     }
 
     private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {

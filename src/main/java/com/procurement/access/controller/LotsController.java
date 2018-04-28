@@ -61,7 +61,7 @@ public class LotsController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("/checkStatusDetails")
+    @GetMapping("/checkStatusDetails")
     public ResponseEntity<ResponseDto> checkStatusDetails(@RequestParam("identifier") final String cpId,
                                                           @RequestParam("stage") final String stage) {
         return new ResponseEntity<>(
