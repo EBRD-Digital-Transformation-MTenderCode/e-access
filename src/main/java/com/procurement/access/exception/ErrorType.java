@@ -21,7 +21,8 @@ public enum ErrorType {
     INVALID_LOTS_RELATED_LOTS("10.06", "Documents related lots not contains all lots."),
     EL_CRITERIA_IS_NULL("10.07", "EligibilityCriteria must be presented!"),
     INVALID_START_DATE("10.08", "Invalid tender period start date."),
-    INVALID_CURRENCY("10.09", "Invalid currency.");
+    INVALID_CURRENCY("10.09", "Invalid currency."),
+    NOT_ALL_LOTS_AWARDED("10.09", "Not all active lots are awarded.");
 
 
     private final String code;

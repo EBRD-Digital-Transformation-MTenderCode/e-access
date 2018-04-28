@@ -82,6 +82,19 @@ public class LotsServiceImpl implements LotsService {
         return new ResponseDto<>(true, null, new LotUpdateResponseDto(updatedLot));
     }
 
+    @Override
+    public ResponseDto checkStatusDetails(String cpId, String stage) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
+        if (process.getTender().getLots().stream()
+                .filter(lot -> lot.getStatus().equals(TenderStatus.ACTIVE))
+                .anyMatch(lot -> !(lot.getStatusDetails().equals(TenderStatusDetails.AWARDED)))) {
+            throw new ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED);
+        }
+        return new ResponseDto<>(true, null, null);
+    }
+
     private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final List<LotDto> lotsByStatus = lots.stream()

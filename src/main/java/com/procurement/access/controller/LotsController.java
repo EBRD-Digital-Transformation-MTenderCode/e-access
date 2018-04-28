@@ -60,4 +60,12 @@ public class LotsController {
                 lotsService.updateStatusDetailsById(cpId, stage, lotId, TenderStatusDetails.fromValue(statusDetails)),
                 HttpStatus.OK);
     }
+
+    @PostMapping("/checkStatusDetails")
+    public ResponseEntity<ResponseDto> checkStatusDetails(@RequestParam("identifier") final String cpId,
+                                                          @RequestParam("stage") final String stage) {
+        return new ResponseEntity<>(
+                lotsService.checkStatusDetails(cpId, stage),
+                HttpStatus.OK);
+    }
 }
