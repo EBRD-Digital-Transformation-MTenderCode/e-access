@@ -68,4 +68,5 @@ public class LotsController {
                 lotsService.checkStatusDetails(cpId, stage),
                 HttpStatus.OK);
     }
+
 }
