@@ -69,4 +69,13 @@ public class LotsController {
                 HttpStatus.OK);
     }
 
+    @PostMapping("/updateLots")
+    public ResponseEntity<ResponseDto> updateLots(@RequestParam("identifier") final String cpId,
+                                                          @RequestParam("stage") final String stage,
+                                                          @Valid @RequestBody final LotsRequestDto data) {
+        return new ResponseEntity<>(
+                lotsService.updateLots(cpId, stage, data),
+                HttpStatus.OK);
+    }
+
 }

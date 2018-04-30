@@ -95,6 +95,36 @@ public class LotsServiceImpl implements LotsService {
         return new ResponseDto<>(true, null, "All active lots are awarded.");
     }
 
+    @Override
+    public ResponseDto updateLots(final String cpId, final String stage, final LotsRequestDto lotsDto) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
+        final List<Lot> updatedLots = updateLots(process.getTender().getLots(), lotsDto);
+        process.getTender().setLots(updatedLots);
+        entity.setJsonData(jsonUtil.toJson(process));
+        tenderProcessDao.save(entity);
+        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
+    }
+
+    private List<Lot> updateLots(final List<Lot> lots, final LotsRequestDto lotsDto) {
+        if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
+        final Map<String, Lot> lotsMap = new HashMap<>();
+        lots.forEach(lot -> {
+            if (lot.getStatus().equals(TenderStatus.ACTIVE) && lot.getStatusDetails().equals(TenderStatusDetails.AWARDED)){
+                lot.setStatus(TenderStatus.COMPLETE);
+                lot.setStatusDetails(TenderStatusDetails.EMPTY);
+            }
+            lotsMap.put(lot.getId(), lot);
+        });
+        lotsDto.getLots().forEach(lotDto -> {
+            Lot lot = lotsMap.get(lotDto.getId());
+            lot.setStatus(TenderStatus.UNSUCCESSFUL);
+            lot.setStatusDetails(TenderStatusDetails.EMPTY);
+        });
+        return new ArrayList<>(lotsMap.values());
+    }
+
     private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final List<LotDto> lotsByStatus = lots.stream()

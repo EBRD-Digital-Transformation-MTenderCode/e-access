@@ -19,4 +19,6 @@ public interface LotsService {
 
     ResponseDto checkStatusDetails(String cpId, String stage);
 
+    ResponseDto updateLots(String cpId, String stage, LotsRequestDto lotsDto);
+
 }
