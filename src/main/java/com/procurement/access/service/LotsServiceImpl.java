@@ -5,10 +5,7 @@ import com.procurement.access.exception.ErrorException;
 import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.lots.*;
-import com.procurement.access.model.dto.ocds.Lot;
-import com.procurement.access.model.dto.ocds.TenderProcess;
-import com.procurement.access.model.dto.ocds.TenderStatus;
-import com.procurement.access.model.dto.ocds.TenderStatusDetails;
+import com.procurement.access.model.dto.ocds.*;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.JsonUtil;
 import java.util.*;
@@ -101,17 +98,28 @@ public class LotsServiceImpl implements LotsService {
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final List<Lot> updatedLots = updateLots(process.getTender().getLots(), lotsDto);
+        final List<Item> items = getItemsForCompiledLots(process.getTender().getItems(), updatedLots);
         process.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
-        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
+        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots, items));
     }
+
+    private List<Item> getItemsForCompiledLots(final Set<Item> items, final List<Lot> lots) {
+        final List<String> compiledLots = lots.stream()
+                .filter(lot -> (lot.getStatus().equals(TenderStatus.COMPLETE)
+                        && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)))
+                .map(lot -> lot.getId())
+                .collect(Collectors.toList());
+        return items.stream().filter(item -> compiledLots.contains(item.getRelatedLot())).collect(Collectors.toList());
+    }
+
 
     private List<Lot> updateLots(final List<Lot> lots, final LotsRequestDto lotsDto) {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
         final Map<String, Lot> lotsMap = new HashMap<>();
         lots.forEach(lot -> {
-            if (lot.getStatus().equals(TenderStatus.ACTIVE) && lot.getStatusDetails().equals(TenderStatusDetails.AWARDED)){
+            if (lot.getStatus().equals(TenderStatus.ACTIVE) && lot.getStatusDetails().equals(TenderStatusDetails.AWARDED)) {
                 lot.setStatus(TenderStatus.COMPLETE);
                 lot.setStatusDetails(TenderStatusDetails.EMPTY);
             }

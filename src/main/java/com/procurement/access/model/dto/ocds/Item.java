@@ -58,8 +58,7 @@ public class Item {
     public Item(@JsonProperty("id") final String id,
                 @JsonProperty("description") final String description,
                 @JsonProperty("classification") final Classification classification,
-                @JsonProperty("additionalClassifications") final HashSet<Classification>
-                        additionalClassifications,
+                @JsonProperty("additionalClassifications") final HashSet<Classification> additionalClassifications,
                 @JsonProperty("quantity") final Double quantity,
                 @JsonProperty("unit") final Unit unit,
                 @JsonProperty("relatedLot") final String relatedLot) {
