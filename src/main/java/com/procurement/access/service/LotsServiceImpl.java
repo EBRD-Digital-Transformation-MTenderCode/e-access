@@ -111,9 +111,10 @@ public class LotsServiceImpl implements LotsService {
                         && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)))
                 .map(lot -> lot.getId())
                 .collect(Collectors.toList());
-        return items.stream().filter(item -> compiledLots.contains(item.getRelatedLot())).collect(Collectors.toList());
+        return items.stream()
+                .filter(item -> compiledLots.contains(item.getRelatedLot()))
+                .collect(Collectors.toList());
     }
-
 
     private List<Lot> updateLots(final List<Lot> lots, final LotsRequestDto lotsDto) {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
