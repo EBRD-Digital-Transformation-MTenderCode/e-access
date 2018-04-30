@@ -1,6 +1,7 @@
 package com.procurement.access.model.dto.lots;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.procurement.access.model.dto.ocds.Item;
 import com.procurement.access.model.dto.ocds.Lot;
@@ -9,6 +10,7 @@ import java.util.Set;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LotsUpdateResponseDto {
 
     @JsonProperty(value = "lots")

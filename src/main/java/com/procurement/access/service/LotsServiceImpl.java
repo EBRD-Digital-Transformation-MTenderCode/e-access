@@ -44,7 +44,7 @@ public class LotsServiceImpl implements LotsService {
         process.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
-        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
+        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots, null));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class LotsServiceImpl implements LotsService {
         process.getTender().setLots(updatedLots);
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
-        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots));
+        return new ResponseDto<>(true, null, new LotsUpdateResponseDto(updatedLots, null));
     }
 
     @Override
