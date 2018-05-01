@@ -1,38 +1,43 @@
 {
   "planning": {
-    "rationale": "CN/Rationale for Planning",
     "budget": {
+      "description": "Administration country never often. Million player commercial middle. Figure cut north trip whether beautiful.",
       "amount": {
-        "amount": 5000,
-        "currency": "CUC"
+        "amount": 3909.79,
+        "currency": "CNY"
       },
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1524728022539-FS-1524728328355",
+          "id": "ocds-t1s2t3-TEST-1525185591780-FS-1525185595295",
+          "description": "Six range its member add. People help adult something car authority. Career knowledge science.",
           "amount": {
-            "amount": 2000.0,
-            "currency": "UAH"
+            "amount": 3909.79,
+            "currency": "CNY"
           },
           "period": {
-            "startDate": "2018-05-12T01:00:00Z",
-            "endDate": "2018-05-20T01:00:01Z"
+            "startDate": "2018-05-01T14:39:51Z",
+            "endDate": "2018-06-30T23:57:27Z"
           },
           "sourceParty": {
-            "id": "EI/Identifier/Identification Scheme*-EI/Identifier*/ID",
-            "name": "Rols Roys-Buyer Official Name/EI/*"
+            "name": "Meyer-Sharp",
+            "id": "UA-EDR-289-07-0145"
           }
         }
       ]
-    }
+    },
+    "rationale": "Either debate employee present where provide small."
   },
   "tender": {
-    "title": "CN/Tender Title-Test Platform (definition of type of object)",
-    "description": "CN/Short description of tender",
+    "id": "ocds-t1s2t3-TEST-1525185604019",
+    "title": "Probably scientist our behavior.",
+    "description": "There will training although against herself three. Accept near page audience. Eye help into direction college send.",
+    "status": "active",
+    "statusDetails": "empty",
     "classification": {
-      "scheme": "CPV",
-      "description": "CN/Description of CPV name*",
-      "id": "92532000-9"
+      "id": "90732400-1",
+      "description": "Soil pollution advisory services",
+      "scheme": "CPV"
     },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
@@ -57,55 +62,55 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "legalBasis": "DIRECTIVE_2009_81_EC",
     "procurementMethod": "open",
-    "procurementMethodDetails": "Some method details/procurementMethodDetails",
-    "mainProcurementCategory": "services",
-    "submissionLanguages": [
-      "et"
+    "procurementMethodDetails": "Treat certainly especially account.",
+    "procurementMethodRationale": "Big treatment southern teach then let. Show person a subject.",
+    "procurementMethodAdditionalInfo": "Coach middle media thank. Author would buy heart here card hot job. Return cup development serious.",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "works"
     ],
-    "tenderPeriod": {
-      "endDate": "2018-06-10T00:00:00Z",
-      "startDate": "2018-04-26T15:56:58Z"
-    },
+    "eligibilityCriteria": "Full beyond full subject any various. Choice left woman Mrs her baby. Full clearly relationship friend care attack.",
     "contractPeriod": {
-      "startDate": "2018-05-15T00:00:00Z",
-      "endDate": "2018-06-15T00:00:00Z"
+      "startDate": "2018-05-01T14:40:03Z",
+      "endDate": "2018-08-12T01:47:33Z"
     },
     "procuringEntity": {
-      "name": "Official Name*Test scenario for EI-26/04/2018",
+      "name": "Watson, Gordon and Wood",
+      "id": "UA-EDR-410-33-5812",
       "identifier": {
-        "scheme": "Identifier Scheme Test scenario for EI-26/04/2018",
-        "id": "Identification ID* Test scenario for EI-26/04/2018",
-        "legalName": "Legal Name*Test scenario for EI-26/04/2018",
-        "uri": "URI* Test scenario for EI-12/04/2018"
+        "id": "410-33-5812",
+        "scheme": "UA-EDR",
+        "legalName": "Watson, Gordon and Wood Group",
+        "uri": "http://jennings.com/explore/categories/main/"
+      },
+      "address": {
+        "streetAddress": "9382 Roberts Hills",
+        "locality": "Paulmouth",
+        "region": "West Virginia",
+        "postalCode": "32930",
+        "countryName": "Burkina Faso"
       },
       "additionalIdentifiers": [
         {
-          "scheme": "1Additional identifier scheme*Test scenario for EI-26/04/2018",
-          "id": "1Additional identifier ID* Test scenario for EI-26/04/2018",
-          "legalName": "1Additional identifier legal name* Test scenario for EI-26/04/2018",
-          "uri": "1Additional identifier URI* Test scenario for EI-26/04/2018"
+          "id": "638-39-7048",
+          "scheme": "UA-EDR",
+          "legalName": "Watson, Gordon and Wood Ltd",
+          "uri": "https://www.cox.com/posts/search/"
         }
       ],
-      "address": {
-        "streetAddress": "Street Address* Test scenario for EI-26/04/2018",
-        "locality": "Locality* Test scenario for EI-26/04/2018",
-        "region": "Region Test scenario for EI-26/04/2018",
-        "postalCode": "Postal code Test scenario for EI-26/04/2018",
-        "countryName": "Republic of Unated Kindom or USA Test scenario for EI-26/04/2018"
-      },
       "contactPoint": {
-        "name": "Name* Test scenario for EI-26/04/2018",
-        "email": "E-mail*Test scenario for EI-26/04/2018",
-        "telephone": "Telephone* Test scenario for EI-26/04/2018",
-        "faxNumber": "Fax* Test scenario for EI-26/04/2018",
-        "url": "URL*Test Test scenario for EI-26/04/2018"
+        "name": "Adam Espinoza",
+        "email": "angela41@hotmail.com",
+        "telephone": "04563299387",
+        "faxNumber": "680-504-5449x92653",
+        "url": "https://www.byrd-ramos.com/"
       }
     },
     "value": {
-      "amount": 2000,
-      "currency": "UAH"
+      "amount": 383.73,
+      "currency": "CNY"
     },
     "lotGroups": [
       {
@@ -114,26 +119,18 @@
     ],
     "lots": [
       {
-        "id": "1",
-        "title": "lots/title",
-        "description": "Something about lot 1",
+        "id": "88f331a3-4d4d-11e8-8f19-7f8644d512b9",
+        "title": "Own Mr involve think do.",
+        "description": "Player world pick force goal family. Page be PM report right point.",
+        "status": "active",
+        "statusDetails": "awarded",
         "value": {
-          "amount": 1000,
-          "currency": "UAH"
+          "amount": 10.66,
+          "currency": "CNY"
         },
         "options": [
           {
             "hasOptions": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
           }
         ],
         "recurrentProcurement": [
@@ -141,111 +138,279 @@
             "isRecurrent": false
           }
         ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
         "contractPeriod": {
-          "startDate": "2018-05-15T00:00:00Z",
-          "endDate": "2018-06-15T00:00:00Z"
+          "startDate": "2018-05-01T14:40:03Z",
+          "endDate": "2018-08-12T09:40:52Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "placeOfPerformance/address/streetAddress",
-            "locality": "placeOfPerformance/address/locality",
-            "region": "placeOfPerformance/address/region",
-            "postalCode": "placeOfPerformance/address/postal code",
-            "countryName": "placeOfPerformance/address/country mane"
+            "streetAddress": "84300 James Parkways",
+            "locality": "Lake Colleenland",
+            "region": "Ohio",
+            "postalCode": "22667",
+            "countryName": "Congo"
           },
-          "description": "some description"
+          "description": "Hard sea all policy blood deal clearly."
+        }
+      },
+      {
+        "id": "88f46a21-4d4d-11e8-8f19-7f8644d512b9",
+        "title": "None effect fear foot range popular successful.",
+        "description": "Way be head time down. Course side top truth gun top.",
+        "status": "active",
+        "statusDetails": "awarded",
+        "value": {
+          "amount": 2.32221863752E9,
+          "currency": "CNY"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-05-01T14:40:03Z",
+          "endDate": "2018-09-25T20:02:08Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "07565 Perez Course Apt. 550",
+            "locality": "Samuelview",
+            "region": "Idaho",
+            "postalCode": "88701",
+            "countryName": "Brunei Darussalam"
+          },
+          "description": "Probably area room certainly spring. Rather once matter red world we."
+        }
+      },
+      {
+        "id": "88f46a20-4d4d-11e8-8f19-7f8644d512b9",
+        "title": "Whose not require vote.",
+        "description": "Toward different have man worry show.",
+        "status": "unsuccessful",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 8.569921386395912E14,
+          "currency": "CNY"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-05-01T14:40:03Z",
+          "endDate": "2018-07-29T02:50:32Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "7486 Wayne Prairie Apt. 843",
+            "locality": "Marcusshire",
+            "region": "New Mexico",
+            "postalCode": "34323-3216",
+            "countryName": "South Africa"
+          },
+          "description": "Rise level while always brother. Stuff any investment benefit skin. Strong building surface number decision. Pay civil glass science ahead relationship."
         }
       }
     ],
     "items": [
       {
-        "id": "",
+        "id": "88f22030-4d4d-11e8-8f19-7f8644d512b9",
+        "description": "Ball energy cause recent break camera top. Professional consumer animal program reflect. Democratic tell hard food positive travel ok.",
         "classification": {
-          "scheme": "CPV",
-          "description": "Desct about 2",
-          "id": "item2"
+          "id": "90732400-1",
+          "description": "Soil pollution advisory services",
+          "scheme": "CPV"
         },
         "additionalClassifications": [
           {
-            "scheme": "CPVS",
-            "description": "additionalClassifications/description",
-            "id": "additionalClassifications/id"
+            "id": "45316100-6",
+            "description": "Installation of outdoor illumination equipment",
+            "scheme": "CPV"
           }
         ],
-        "quantity": 12,
+        "quantity": 91.82,
         "unit": {
-          "id": "unit id = IE",
-          "name": "unit/name = person"
+          "id": "JR",
+          "name": "jar"
         },
-        "relatedLot": "1"
+        "relatedLot": "88f46a20-4d4d-11e8-8f19-7f8644d512b9"
+      },
+      {
+        "id": "88f22031-4d4d-11e8-8f19-7f8644d512b9",
+        "description": "Memory truth mother pretty throw through American. Yeah time central catch sort game hard.",
+        "classification": {
+          "id": "90732400-1",
+          "description": "Soil pollution advisory services",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "15545000-0",
+            "description": "Cheese spreads",
+            "scheme": "CPV"
+          }
+        ],
+        "quantity": 125247.92,
+        "unit": {
+          "id": "LTR",
+          "name": "litre"
+        },
+        "relatedLot": "88f331a3-4d4d-11e8-8f19-7f8644d512b9"
+      },
+      {
+        "id": "88f22032-4d4d-11e8-8f19-7f8644d512b9",
+        "description": "Back front certainly reveal skill. Sit scientist Mr modern offer once.",
+        "classification": {
+          "id": "90732400-1",
+          "description": "Soil pollution advisory services",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "37442320-7",
+            "description": "Upper body resistance machines",
+            "scheme": "CPV"
+          }
+        ],
+        "quantity": 644315.79,
+        "unit": {
+          "id": "E14",
+          "name": "kilocalorie (international table)"
+        },
+        "relatedLot": "88f46a21-4d4d-11e8-8f19-7f8644d512b9"
+      },
+      {
+        "id": "88f331a0-4d4d-11e8-8f19-7f8644d512b9",
+        "description": "Discussion audience natural throughout several return. Quickly new wait player professional keep interview network.",
+        "classification": {
+          "id": "90732400-1",
+          "description": "Soil pollution advisory services",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "45213130-3",
+            "description": "Bank construction work",
+            "scheme": "CPV"
+          }
+        ],
+        "quantity": 5.608015622938544E14,
+        "unit": {
+          "id": "LM",
+          "name": "linear metre"
+        },
+        "relatedLot": "88f46a20-4d4d-11e8-8f19-7f8644d512b9"
+      },
+      {
+        "id": "88f331a1-4d4d-11e8-8f19-7f8644d512b9",
+        "description": "Live evening owner authority. Exist good fly attack. Range green decision laugh.",
+        "classification": {
+          "id": "90732400-1",
+          "description": "Soil pollution advisory services",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "45214500-5",
+            "description": "Construction work for buildings of further education",
+            "scheme": "CPV"
+          }
+        ],
+        "quantity": 5.787361636E7,
+        "unit": {
+          "id": "BO",
+          "name": "bottle"
+        },
+        "relatedLot": "88f331a3-4d4d-11e8-8f19-7f8644d512b9"
+      },
+      {
+        "id": "88f331a2-4d4d-11e8-8f19-7f8644d512b9",
+        "description": "Up visit win wall science available. Relate both catch modern process interest. Adult require so campaign.",
+        "classification": {
+          "id": "90732400-1",
+          "description": "Soil pollution advisory services",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "19252000-7",
+            "description": "Crocheted fabrics",
+            "scheme": "CPV"
+          }
+        ],
+        "quantity": 1.2806212922965E11,
+        "unit": {
+          "id": "MON",
+          "name": "month"
+        },
+        "relatedLot": "88f46a21-4d4d-11e8-8f19-7f8644d512b9"
       }
     ],
-    "awardCriteria": "priceOnly",
+    "awardCriteria": "bestProposal",
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
-      "electronicSubmission"
+      "written"
     ],
+    "submissionMethodRationale": [
+      "REQUIRES_SPECIALISED_EQUIPMENT"
+    ],
+    "submissionMethodDetails": "Piece watch represent still development avoid face. Professional well live contain.",
     "documents": [
       {
-        "documentType": "evaluationCriteria",
-        "id": "073d3a50-494e-11e8-bcee-fd2243130aae",
-        "title": "documentType/Title",
-        "description": "documentType/description",
-        "language": "da",
+        "id": "8870e240-4d4d-11e8-bcee-fd2243130aae",
+        "documentType": "technicalSpecifications",
+        "title": "Tv much black.",
+        "description": "Much allow either account single with own new. College company national television require for should imagine. Boy mention answer main whom.",
+        "language": "lv",
         "relatedLots": [
-          "2"
-        ]
-      },
-      {
-        "documentType": "eligibilityCriteria",
-        "id": "f02acc50-4953-11e8-bcee-fd2243130aae",
-        "title": "PDF format/documentType/Title",
-        "description": "documentType/description",
-        "language": "en",
-        "relatedLots": [
-          "2"
-        ]
-      },
-      {
-        "documentType": "billOfQuantity",
-        "id": "8172d5a0-4953-11e8-bcee-fd2243130aae",
-        "title": "DOC format/documentType/Title",
-        "description": "documentType/description",
-        "language": "en",
-        "relatedLots": [
-          "2"
-        ]
-      },
-      {
-        "documentType": "illustration",
-        "id": "555d4810-4953-11e8-bcee-fd2243130aae",
-        "title": "DOCX/documentType/Title",
-        "description": "documentType/description",
-        "language": "da",
-        "relatedLots": [
-          "2"
-        ]
-      },
-      {
-        "documentType": "marketStudies",
-        "id": "4484e240-4954-11e8-bcee-fd2243130aae",
-        "title": "TXT/documentType/Title",
-        "description": "documentType/description",
-        "language": "da",
-        "relatedLots": [
-          "2"
-        ]
-      },
-      {
-        "documentType": "tenderNotice",
-        "id": "4484e240-4954-11e8-bcee-fd2243130aae",
-        "title": "TXT/documentType/Title",
-        "description": "documentType/description",
-        "language": "da",
-        "relatedLots": [
-          "2"
+          "88f46a20-4d4d-11e8-8f19-7f8644d512b9"
         ]
       }
+    ],
+    "submissionLanguages": [
+      "cs"
     ]
   }
 }

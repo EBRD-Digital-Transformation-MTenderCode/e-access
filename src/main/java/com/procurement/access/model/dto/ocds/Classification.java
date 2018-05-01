@@ -13,9 +13,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "scheme",
         "id",
         "description",
+        "scheme",
         "uri"
 })
 public class Classification {
@@ -69,47 +69,5 @@ public class Classification {
                 .append(description, rhs.description)
                 .append(uri, rhs.uri)
                 .isEquals();
-    }
-
-    public enum Scheme {
-        CPV("CPV"),
-        CPVS("CPVS"),
-        GSIN("GSIN"),
-        UNSPSC("UNSPSC"),
-        CPC("CPC"),
-        OKDP("OKDP"),
-        OKPD("OKPD");
-
-        private static final Map<String, Scheme> CONSTANTS = new HashMap<>();
-        private final String value;
-
-        static {
-            for (final Scheme c : values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        Scheme(final String value) {
-            this.value = value;
-        }
-
-        @JsonCreator
-        public static Scheme fromValue(final String value) {
-            final Scheme constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new EnumException(Scheme.class.getName(), value, Arrays.toString(values()));
-            }
-            return constant;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        @JsonValue
-        public String value() {
-            return this.value;
-        }
     }
 }
