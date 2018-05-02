@@ -116,22 +116,22 @@ public class LotsServiceImpl implements LotsService {
                 .collect(Collectors.toList());
     }
 
-    private List<Lot> updateLots(final List<Lot> lots, final LotsRequestDto lotsDto) {
+    private List<Lot> updateLots(final List<Lot> lots, final LotsRequestDto unsuccessfulLots) {
         if (lots.isEmpty()) throw new ErrorException(ErrorType.NO_ACTIVE_LOTS);
-        final Map<String, Lot> lotsMap = new HashMap<>();
+        final Set<String> unsuccessfulLotIds = unsuccessfulLots.getLots().stream()
+                .map(lot -> lot.getId())
+                .collect(Collectors.toSet());
         lots.forEach(lot -> {
             if (lot.getStatus().equals(TenderStatus.ACTIVE) && lot.getStatusDetails().equals(TenderStatusDetails.AWARDED)) {
                 lot.setStatus(TenderStatus.COMPLETE);
                 lot.setStatusDetails(TenderStatusDetails.EMPTY);
             }
-            lotsMap.put(lot.getId(), lot);
+            if (unsuccessfulLotIds.contains(lot.getId())){
+                lot.setStatus(TenderStatus.UNSUCCESSFUL);
+                lot.setStatusDetails(TenderStatusDetails.EMPTY);
+            }
         });
-        lotsDto.getLots().forEach(lotDto -> {
-            Lot lot = lotsMap.get(lotDto.getId());
-            lot.setStatus(TenderStatus.UNSUCCESSFUL);
-            lot.setStatusDetails(TenderStatusDetails.EMPTY);
-        });
-        return new ArrayList<>(lotsMap.values());
+        return lots;
     }
 
     private List<LotDto> getLotsDtoByStatus(final List<Lot> lots, final TenderStatus status) {
