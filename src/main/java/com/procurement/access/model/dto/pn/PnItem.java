@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.procurement.access.model.dto.databinding.MoneyDeserializer;
 import com.procurement.access.model.dto.ocds.Classification;
 import com.procurement.access.model.dto.ocds.Unit;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import javax.validation.Valid;
@@ -45,7 +48,8 @@ public class PnItem {
     private final Set<Classification> additionalClassifications;
 
     @JsonProperty("quantity")
-    private final Double quantity;
+    @JsonDeserialize(using = MoneyDeserializer.class)
+    private final BigDecimal quantity;
 
     @Valid
     @JsonProperty("unit")
@@ -61,7 +65,7 @@ public class PnItem {
                   @JsonProperty("classification") final Classification classification,
                   @JsonProperty("additionalClassifications") final HashSet<Classification>
                           additionalClassifications,
-                  @JsonProperty("quantity") final Double quantity,
+                  @JsonProperty("quantity") final BigDecimal quantity,
                   @JsonProperty("unit") final Unit unit,
                   @JsonProperty("relatedLot") final String relatedLot) {
         this.id = id;
