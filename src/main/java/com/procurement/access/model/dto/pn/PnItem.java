@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.procurement.access.model.dto.databinding.MoneyDeserializer;
 import com.procurement.access.model.dto.ocds.Classification;
 import com.procurement.access.model.dto.ocds.Unit;
 import java.math.BigDecimal;
@@ -48,7 +46,6 @@ public class PnItem {
     private final Set<Classification> additionalClassifications;
 
     @JsonProperty("quantity")
-    @JsonDeserialize(using = MoneyDeserializer.class)
     private final BigDecimal quantity;
 
     @Valid
