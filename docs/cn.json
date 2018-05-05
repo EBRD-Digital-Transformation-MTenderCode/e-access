@@ -1,57 +1,244 @@
 {
   "planning": {
     "budget": {
-      "description": "Relationship fall upon. Hot happy attorney.",
       "amount": {
-        "amount": 504153169.20,
-        "currency": "DDM"
+        "amount": 1100,
+        "currency": "UAH"
       },
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-TEST-1525434492765-FS-1525434497064",
-          "description": "Compare technology contain hair step she. Produce painting evidence hotel spring bill specific.",
+          "id": "ocds-t1s2t3-MD-1525674413132-FS-1525675148394",
           "amount": {
-            "amount": 504153169.20,
-            "currency": "DDM"
+            "amount": 5E+2,
+            "currency": "UAH"
           },
           "period": {
-            "startDate": "2018-05-04T11:48:04Z",
-            "endDate": "2018-07-29T11:16:10Z"
+            "startDate": "2018-05-13T21:00:00Z",
+            "endDate": "2018-05-27T21:00:00Z"
           },
           "sourceParty": {
-            "name": "Ramos LLC",
-            "id": "UA-EDR-862-43-6089"
+            "id": "Identification Scheme*-Identifier*",
+            "name": "Owner of budgetOfficial Name*"
+          }
+        },
+        {
+          "id": "ocds-t1s2t3-MD-1525674413132-FS-1525674989462",
+          "amount": {
+            "amount": 6E+2,
+            "currency": "UAH"
+          },
+          "period": {
+            "startDate": "2018-05-06T21:00:00Z",
+            "endDate": "2018-06-03T21:00:00Z"
+          },
+          "sourceParty": {
+            "id": "Donors Money Identification scheme*-Donors Money Identifier",
+            "name": "Donors Money Official Name*"
           }
         }
       ]
-    },
-    "rationale": "Occur involve miss artist."
+    }
   },
   "tender": {
-    "id": "ocds-t1s2t3-TEST-1525434509049",
-    "title": "Fire thank research one.",
-    "description": "Economy treat stage cut. Night as baby yourself. Rather with huge forget. Green out detail write owner probably follow thus.",
-    "status": "active",
-    "statusDetails": "empty",
-    "classification": {
-      "id": "71322000-1",
-      "description": "Engineering design services for the construction of civil engineering works",
-      "scheme": "CPV"
-    },
-    "acceleratedProcedure": {
-      "isAcceleratedProcedure": false
-    },
-    "designContest": {
-      "serviceContractAward": false
-    },
-    "electronicWorkflows": {
-      "useOrdering": false,
-      "usePayment": false,
-      "acceptInvoicing": false
+    "procuringEntity": {
+      "name": "1 Third-party Entity Official Name*",
+      "address": {
+        "countryName": "Third-party Entity Coun",
+        "region": "Third-party Entity Reg",
+        "locality": "Third-party Entity Local",
+        "streetAddress": "Third-party Entity Street Add",
+        "postalCode": "Third-party Entity Postal "
+      },
+      "identifier": {
+        "id": "Third-party Entity 1",
+        "scheme": "Third-party Entity Third-party Entity",
+        "legalName": "Third-party EntityLegal Name*",
+        "uri": "Third-party Entity URI*"
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "1Additional identifier ID* Third-party Entity",
+          "scheme": "1Additional identifier scheme* Third-party Entity",
+          "legalName": "1Additional identifier legal name* Third-party Entity",
+          "uri": "1Additional identifier URI* Third-party Entity"
+        },
+        {
+          "id": "2Additional identifier ID* Third-party Entity",
+          "scheme": "2Additional identifier scheme* Third-party Entity",
+          "legalName": "2Additional identifier legal name* Third-party Entity",
+          "uri": "2Additional identifier URI* Third-party Entity"
+        }
+      ],
+      "contactPoint": {
+        "name": "Third-party Entity Fuul name",
+        "telephone": "Third-party Entity telep",
+        "email": "Third-party Entity email",
+        "faxNumber": "Third-party Entity fax",
+        "url": "Third-party Entity url"
+      }
     },
     "jointProcurement": {
-      "isJointProcurement": false
+      "isJointProcurement": true
+    },
+    "submissionLanguages": [
+      "hr",
+      "lv",
+      "bg",
+      "en",
+      "de",
+      "cs",
+      "da",
+      "et",
+      "es",
+      "el",
+      "ga",
+      "it",
+      "fr",
+      "pt",
+      "nl",
+      "hu",
+      "mt",
+      "lt",
+      "pl",
+      "ro",
+      "sk",
+      "sl",
+      "fi",
+      "sv"
+    ],
+    "procurementMethod": "selective",
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "title": "Title II.1) Information about lots",
+    "mainProcurementCategory": "services",
+    "description": "Short description*\n",
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "documents": [
+      {
+        "id": "20deb1c0-51c6-11e8-b006-c1b4deb3fe6e",
+        "title": "Documents of Lot The document title",
+        "description": "A short description of the document\n",
+        "documentType": "evaluationCriteria",
+        "language": "Documents of Lot Language*",
+        "relatedLots": [
+          "root_section2_lots-0"
+        ]
+      },
+      {
+        "id": "f28f8f40-51c2-11e8-b006-c1b4deb3fe6e",
+        "title": "2The document title",
+        "description": "2 A short description of the document\n",
+        "documentType": "cancellationDetails",
+        "language": "Language 2"
+      }
+    ],
+    "lots": [
+      {
+        "id": "root_section2_lots-0",
+        "title": "Added lots #1/Title of lot*",
+        "description": "Short description of lot*\n1",
+        "value": {
+          "amount": 1000,
+          "currency": "UAH"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "countryName": "Ukraine 1",
+            "region": "Cherkasska obl 1",
+            "locality": "Added lotsLocality* 1",
+            "streetAddress": "Kolomiyska st 1",
+            "postalCode": "Test postal code 1"
+          },
+          "description": "Further description of the place of performance of the contract\n\n1"
+        },
+        "contractPeriod": {
+          "startDate": "2018-05-13T21:00:00Z",
+          "endDate": "2018-06-03T21:00:00Z"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ]
+      }
+    ],
+    "items": [
+      {
+        "id": "root_section2_lots_0_items-0",
+        "description": "Short description of item\n",
+        "classification": {
+          "scheme": "CPV",
+          "id": "03000000-1",
+          "description": "Agricultural, farming, fishing, forestry and related products"
+        },
+        "additionalClassification": [
+          {
+            "scheme": "CPVs",
+            "id": "03010000-1",
+            "description": "Supplimentary CPV code/CPVs Name* 1.1"
+          }
+        ]
+      },
+      {
+        "additionalClassification": [
+          null,
+          {
+            "scheme": "CPVs",
+            "id": "03000000-1",
+            "description": "CPVs Name* 1.2"
+          }
+        ],
+        "quantity": 100,
+        "unit": {
+          "id": "Unit id*",
+          "name": "Unit name"
+        },
+        "relatedLot": "root_section2_lots-0"
+      }
+    ],
+    "classification": {
+      "scheme": "CPV",
+      "id": "03000000-1",
+      "description": "Agricultural, farming, fishing, forestry and related products"
+    },
+    "contractPeriod": {
+      "startDate": "2018-05-13T21:00:00Z",
+      "endDate": "2018-06-03T21:00:00Z"
+    },
+    "value": {
+      "amount": 1000,
+      "currency": "UAH"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "procurementMethodDetails": "Restricted Tender",
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": true
+    },
+    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "designContest": {
+      "serviceContractAward": false
     },
     "procedureOutsourcing": {
       "procedureOutsourced": false
@@ -62,355 +249,14 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "DIRECTIVE_2014_25_EU",
-    "procurementMethod": "limited",
-    "procurementMethodDetails": "Restricted Tender",
-    "procurementMethodRationale": "Easy else final floor trial remember. Heavy image political design challenge minute.",
-    "procurementMethodAdditionalInfo": "Capital single PM catch give. Amount amount buy sport view.",
-    "mainProcurementCategory": "goods",
-    "additionalProcurementCategories": [
-      "services"
-    ],
-    "eligibilityCriteria": "Travel well his near certain. Himself feeling force second. Old than idea with.",
-    "contractPeriod": {
-      "startDate": "2018-05-04T11:48:28Z",
-      "endDate": "2018-07-29T23:22:33Z"
+    "tenderPeriod": {
+      "endDate": "2018-06-03T21:00:00Z",
+      "startDate": "2018-05-07T07:26:09Z"
     },
-    "procuringEntity": {
-      "name": "Steele-Giles",
-      "id": "UA-EDR-143-80-3750",
-      "identifier": {
-        "id": "143-80-3750",
-        "scheme": "UA-EDR",
-        "legalName": "Steele-Giles Ltd",
-        "uri": "https://wheeler-fletcher.net/"
-      },
-      "address": {
-        "streetAddress": "17998 Massey Lake",
-        "locality": "West Travismouth",
-        "region": "Texas",
-        "postalCode": "02418",
-        "countryName": "Cameroon"
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "391-15-4768",
-          "scheme": "UA-EDR",
-          "legalName": "Steele-Giles Ltd",
-          "uri": "http://fuller.com/blog/posts/privacy.html"
-        }
-      ],
-      "contactPoint": {
-        "name": "Ashley Shaffer",
-        "email": "tonivega@yahoo.com",
-        "telephone": "07131999398",
-        "faxNumber": "1-293-786-7476",
-        "url": "https://www.reynolds.org/index/"
-      }
-    },
-    "value": {
-      "amount": 4654321654643216546786432135465468423452346554231234513.12,
-      "currency": "DDM"
-    },
-    "lotGroups": [
-      {
-        "optionToCombine": false
-      }
-    ],
-    "lots": [
-      {
-        "id": "0fe79e97-4f91-11e8-8d79-9595250b0767",
-        "title": "Media particular identify contain century.",
-        "description": "Trade far sound movie character offer trip. Win seven Democrat difficult seven. Spend hour who senior report pay majority become.",
-        "status": "unsuccessful",
-        "statusDetails": "empty",
-        "value": {
-          "amount": 42.23,
-          "currency": "DDM"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2018-05-04T11:48:28Z",
-          "endDate": "2018-08-10T15:32:03Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "0926 Danielle Glen",
-            "locality": "Sanchezland",
-            "region": "Missouri",
-            "postalCode": "15536",
-            "countryName": "Barbados"
-          },
-          "description": "History director development list lawyer course. Kid himself recognize."
-        }
-      },
-      {
-        "id": "0fe79e98-4f91-11e8-8d79-9595250b0767",
-        "title": "Course within small top.",
-        "description": "Next contain such court hear sit. Maybe forward pay. Also act off book including stay up hold.",
-        "status": "active",
-        "statusDetails": "awarded",
-        "value": {
-          "amount": 97737116.50,
-          "currency": "DDM"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2018-05-04T11:48:28Z",
-          "endDate": "2018-09-24T10:33:21Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "560 Diaz Spurs Apt. 389",
-            "locality": "Eatonton",
-            "region": "Maryland",
-            "postalCode": "20194-2954",
-            "countryName": "Malaysia"
-          },
-          "description": "Move important participant pattern purpose it finally. Evening also through yet skin TV western."
-        }
-      },
-      {
-        "id": "0fe79e96-4f91-11e8-8d79-9595250b0767",
-        "title": "Coach democratic condition decision peace choice above.",
-        "description": "Ago ability beat own. Determine wide return religious us. Notice now land.",
-        "status": "active",
-        "statusDetails": "awarded",
-        "value": {
-          "amount": 3566872.19,
-          "currency": "DDM"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2018-05-04T11:48:28Z",
-          "endDate": "2018-10-25T07:19:29Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "10575 Stacy Trail Suite 829",
-            "locality": "East Samanthachester",
-            "region": "Minnesota",
-            "postalCode": "66328-6134",
-            "countryName": "Uruguay"
-          },
-          "description": "Nothing writer common. Treat big describe. Order south contain teach write wait. Room let growth fear."
-        }
-      }
-    ],
-    "items": [
-      {
-        "id": "0fe79e90-4f91-11e8-8d79-9595250b0767",
-        "description": "That do pressure indicate. Financial building your.",
-        "classification": {
-          "id": "71322000-1",
-          "description": "Engineering design services for the construction of civil engineering works",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "42662200-6",
-            "description": "Non-electric welding equipment",
-            "scheme": "CPV"
-          }
-        ],
-        "quantity": 883861366.8,
-        "unit": {
-          "id": "D64",
-          "name": "block"
-        },
-        "relatedLot": "0fe79e96-4f91-11e8-8d79-9595250b0767"
-      },
-      {
-        "id": "0fe79e91-4f91-11e8-8d79-9595250b0767",
-        "description": "Single theory care skill onto white all. Happen yet southern prevent. Resource that police to floor also.",
-        "classification": {
-          "id": "71322000-1",
-          "description": "Engineering design services for the construction of civil engineering works",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "63100000-0",
-            "description": "Cargo handling and storage services",
-            "scheme": "CPV"
-          }
-        ],
-        "quantity": 50.96,
-        "unit": {
-          "id": "CMT",
-          "name": "centimetre"
-        },
-        "relatedLot": "0fe79e96-4f91-11e8-8d79-9595250b0767"
-      },
-      {
-        "id": "0fe79e92-4f91-11e8-8d79-9595250b0767",
-        "description": "Necessary where member mind reach. Capital something still population.",
-        "classification": {
-          "id": "71322000-1",
-          "description": "Engineering design services for the construction of civil engineering works",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "42711000-3",
-            "description": "Machines for processing man-made textile materials",
-            "scheme": "CPV"
-          }
-        ],
-        "quantity": 2.61,
-        "unit": {
-          "id": "JR",
-          "name": "jar"
-        },
-        "relatedLot": "0fe79e97-4f91-11e8-8d79-9595250b0767"
-      },
-      {
-        "id": "0fe79e93-4f91-11e8-8d79-9595250b0767",
-        "description": "Budget occur instead book long. Us voice apply drop rest give yes ahead.",
-        "classification": {
-          "id": "71322000-1",
-          "description": "Engineering design services for the construction of civil engineering works",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "38310000-1",
-            "description": "Precision balances",
-            "scheme": "CPV"
-          }
-        ],
-        "quantity": 127.8,
-        "unit": {
-          "id": "E14",
-          "name": "kilocalorie (international table)"
-        },
-        "relatedLot": "0fe79e98-4f91-11e8-8d79-9595250b0767"
-      },
-      {
-        "id": "0fe79e94-4f91-11e8-8d79-9595250b0767",
-        "description": "Candidate live popular difference. Job think listen watch hotel year.",
-        "classification": {
-          "id": "71322000-1",
-          "description": "Engineering design services for the construction of civil engineering works",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "09211650-2",
-            "description": "Brake fluids",
-            "scheme": "CPV"
-          }
-        ],
-        "quantity": 8643.87,
-        "unit": {
-          "id": "LO",
-          "name": "lot [unit of procurement]"
-        },
-        "relatedLot": "0fe79e97-4f91-11e8-8d79-9595250b0767"
-      },
-      {
-        "id": "0fe79e95-4f91-11e8-8d79-9595250b0767",
-        "description": "Dinner throughout structure reality. Individual people dinner number author at.",
-        "classification": {
-          "id": "71322000-1",
-          "description": "Engineering design services for the construction of civil engineering works",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "34941000-5",
-            "description": "Rails and accessories",
-            "scheme": "CPV"
-          }
-        ],
-        "quantity": 291334197302999.75,
-        "unit": {
-          "id": "KGM",
-          "name": "kilogram"
-        },
-        "relatedLot": "0fe79e98-4f91-11e8-8d79-9595250b0767"
-      }
-    ],
-    "awardCriteria": "singleBidOnly",
-    "requiresElectronicCatalogue": false,
-    "submissionMethod": [
-      "inPerson"
-    ],
-    "submissionMethodRationale": [
-      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"
-    ],
-    "submissionMethodDetails": "White look camera fact although bank senior. Total husband large practice source along shake.",
-    "documents": [
-      {
-        "id": "0eba4220-4f91-11e8-bcee-fd2243130aae",
-        "documentType": "billOfQuantity",
-        "title": "Deep save ten stop ready despite morning.",
-        "description": "Show like focus pull recognize particularly.",
-        "language": "et",
-        "relatedLots": [
-          "0fe79e97-4f91-11e8-8d79-9595250b0767"
-        ]
-      }
-    ],
-    "submissionLanguages": [
-      "fr"
-    ]
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    }
   }
 }

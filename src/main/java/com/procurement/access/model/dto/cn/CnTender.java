@@ -142,6 +142,7 @@ public class CnTender {
     private final String eligibilityCriteria;
 
     @NotEmpty
+    @Valid
     @JsonProperty("submissionLanguages")
     private List<SubmissionLanguage> submissionLanguages;
 
@@ -161,14 +162,17 @@ public class CnTender {
     private final Value value;
 
     @NotEmpty
+    @Valid
     @JsonProperty("lotGroups")
     private final List<LotGroup> lotGroups;
 
     @NotEmpty
+    @Valid
     @JsonProperty("lots")
     private List<CnLot> lots;
 
     @NotEmpty
+    @Valid
     @JsonProperty("items")
     private Set<Item> items;
 
@@ -181,6 +185,7 @@ public class CnTender {
     private final Boolean requiresElectronicCatalogue;
 
     @NotEmpty
+    @Valid
     @JsonProperty("submissionMethod")
     private final List<SubmissionMethod> submissionMethod;
 

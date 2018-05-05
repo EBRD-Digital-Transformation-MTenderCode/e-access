@@ -170,10 +170,12 @@ public class PinTender {
     private final List<LotGroup> lotGroups;
 
     @NotEmpty
+    @Valid
     @JsonProperty("lots")
     private List<PinLot> lots;
 
     @NotEmpty
+    @Valid
     @JsonProperty("items")
     private Set<Item> items;
 
@@ -185,6 +187,7 @@ public class PinTender {
     private final Boolean requiresElectronicCatalogue;
 
     @NotEmpty
+    @Valid
     @JsonProperty("submissionMethod")
     private final List<SubmissionMethod> submissionMethod;
 

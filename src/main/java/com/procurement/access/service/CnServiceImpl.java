@@ -11,6 +11,7 @@ import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.CnTender;
 import com.procurement.access.model.dto.ocds.Budget;
 import com.procurement.access.model.dto.ocds.Currency;
+import com.procurement.access.model.dto.ocds.Item;
 import com.procurement.access.model.dto.ocds.OrganizationReference;
 import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
@@ -117,10 +118,11 @@ public class CnServiceImpl implements CnService {
         for (final CnLot lot : tender.getLots()) {
             final String id = UUIDs.timeBased().toString();
             if (Objects.nonNull(tender.getItems())) {
-                tender.getItems()
-                        .stream()
-                        .filter(item -> item.getRelatedLot().equals(lot.getId()))
-                        .forEach(item -> item.setRelatedLot(id));
+                for (Item item: tender.getItems()) {
+                    if (lot.getId().equals(item.getRelatedLot())){
+                        item.setRelatedLot(id);
+                    }
+                }
             }
             if (Objects.nonNull(tender.getDocuments())) {
                 tender.getDocuments().forEach(document -> {
