@@ -78,7 +78,8 @@ public class TenderServiceImpl implements TenderService {
         if (process.getTender().getLots() != null) {
             process.getTender().getLots().forEach(lot -> {
                 lot.setStatus(TenderStatus.UNSUCCESSFUL);
-                lot.setStatusDetails(TenderStatusDetails.EMPTY);            });
+                lot.setStatusDetails(TenderStatusDetails.EMPTY);
+            });
         }
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
