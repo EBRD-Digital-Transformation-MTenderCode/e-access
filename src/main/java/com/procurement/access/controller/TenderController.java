@@ -49,4 +49,12 @@ public class TenderController {
                 tenderService.setSuspended(cpId, stage, suspended),
                 HttpStatus.OK);
     }
+
+    @PostMapping("/setUnsuccessful")
+    public ResponseEntity<ResponseDto> setUnsuccessful(@RequestParam("identifier") final String cpId,
+                                                       @RequestParam("stage") final String stage) {
+        return new ResponseEntity<>(
+                tenderService.setUnsuccessful(cpId, stage),
+                HttpStatus.OK);
+    }
 }

@@ -2,39 +2,24 @@
   "planning": {
     "budget": {
       "amount": {
-        "amount": 1100,
-        "currency": "UAH"
+        "amount": 1000,
+        "currency": "XBC"
       },
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1525674413132-FS-1525675148394",
+          "id": "ocds-t1s2t3-TEST-1525700834355-FS-1525700838287",
           "amount": {
-            "amount": 5E+2,
-            "currency": "UAH"
+            "amount": 1000,
+            "currency": "XBC"
           },
           "period": {
-            "startDate": "2018-05-13T21:00:00Z",
-            "endDate": "2018-05-27T21:00:00Z"
+            "startDate": "2018-05-06T14:00:00Z",
+            "endDate": "2018-09-03T21:00:00Z"
           },
           "sourceParty": {
-            "id": "Identification Scheme*-Identifier*",
-            "name": "Owner of budgetOfficial Name*"
-          }
-        },
-        {
-          "id": "ocds-t1s2t3-MD-1525674413132-FS-1525674989462",
-          "amount": {
-            "amount": 6E+2,
-            "currency": "UAH"
-          },
-          "period": {
-            "startDate": "2018-05-06T21:00:00Z",
-            "endDate": "2018-06-03T21:00:00Z"
-          },
-          "sourceParty": {
-            "id": "Donors Money Identification scheme*-Donors Money Identifier",
-            "name": "Donors Money Official Name*"
+            "id": "UA-EDR-148-75-9778",
+            "name": "Hood, Fisher and Martinez"
           }
         }
       ]
@@ -42,121 +27,73 @@
   },
   "tender": {
     "procuringEntity": {
-      "name": "1 Third-party Entity Official Name*",
+      "name": "Hood, Fisher and Martinez",
       "address": {
-        "countryName": "Third-party Entity Coun",
-        "region": "Third-party Entity Reg",
-        "locality": "Third-party Entity Local",
-        "streetAddress": "Third-party Entity Street Add",
-        "postalCode": "Third-party Entity Postal "
+        "countryName": "Greenland",
+        "region": "Alaska",
+        "locality": "North Maria",
+        "streetAddress": "157 Thomas Track Apt. 119",
+        "postalCode": "13674-4525"
       },
       "identifier": {
-        "id": "Third-party Entity 1",
-        "scheme": "Third-party Entity Third-party Entity",
-        "legalName": "Third-party EntityLegal Name*",
-        "uri": "Third-party Entity URI*"
+        "id": "148-75-9778",
+        "scheme": "UA-EDR",
+        "legalName": "Hood, Fisher and Martinez Ltd",
+        "uri": "https://www.johnson-york.com/posts/search/explore/register/"
       },
       "additionalIdentifiers": [
         {
-          "id": "1Additional identifier ID* Third-party Entity",
-          "scheme": "1Additional identifier scheme* Third-party Entity",
-          "legalName": "1Additional identifier legal name* Third-party Entity",
-          "uri": "1Additional identifier URI* Third-party Entity"
-        },
-        {
-          "id": "2Additional identifier ID* Third-party Entity",
-          "scheme": "2Additional identifier scheme* Third-party Entity",
-          "legalName": "2Additional identifier legal name* Third-party Entity",
-          "uri": "2Additional identifier URI* Third-party Entity"
+          "id": "177-04-3844",
+          "scheme": "UA-EDR",
+          "legalName": "Hood, Fisher and Martinez LLC",
+          "uri": "http://duarte-martinez.com/index.php"
         }
       ],
       "contactPoint": {
-        "name": "Third-party Entity Fuul name",
-        "telephone": "Third-party Entity telep",
-        "email": "Third-party Entity email",
-        "faxNumber": "Third-party Entity fax",
-        "url": "Third-party Entity url"
+        "name": "Amy Scott",
+        "telephone": "1-407-859-3129x757",
+        "email": "karen42@gmail.com",
+        "faxNumber": "1-989-002-5885x99080",
+        "url": "http://www.gutierrez.com/homepage.html"
       }
     },
     "jointProcurement": {
       "isJointProcurement": true
     },
     "submissionLanguages": [
-      "hr",
-      "lv",
-      "bg",
-      "en",
-      "de",
-      "cs",
-      "da",
-      "et",
-      "es",
-      "el",
-      "ga",
-      "it",
-      "fr",
-      "pt",
-      "nl",
-      "hu",
-      "mt",
-      "lt",
-      "pl",
-      "ro",
-      "sk",
-      "sl",
-      "fi",
-      "sv"
+      "bg"
     ],
     "procurementMethod": "selective",
     "submissionMethod": [
       "electronicSubmission"
     ],
-    "title": "Title II.1) Information about lots",
-    "mainProcurementCategory": "services",
-    "description": "Short description*\n",
+    "title": "Carry lead air.",
+    "mainProcurementCategory": "goods",
+    "description": "How develop tell tough agree find past. Too affect enjoy senior stay should in hundred. City happen listen them no though successful.",
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
-    "documents": [
-      {
-        "id": "20deb1c0-51c6-11e8-b006-c1b4deb3fe6e",
-        "title": "Documents of Lot The document title",
-        "description": "A short description of the document\n",
-        "documentType": "evaluationCriteria",
-        "language": "Documents of Lot Language*",
-        "relatedLots": [
-          "root_section2_lots-0"
-        ]
-      },
-      {
-        "id": "f28f8f40-51c2-11e8-b006-c1b4deb3fe6e",
-        "title": "2The document title",
-        "description": "2 A short description of the document\n",
-        "documentType": "cancellationDetails",
-        "language": "Language 2"
-      }
-    ],
     "lots": [
       {
         "id": "root_section2_lots-0",
-        "title": "Added lots #1/Title of lot*",
-        "description": "Short description of lot*\n1",
+        "title": "Recent build they those.",
+        "description": "Hand part morning learn. Stop area second senior knowledge suggest during.",
         "value": {
-          "amount": 1000,
-          "currency": "UAH"
+          "amount": 521196733615.32,
+          "currency": "XBC"
         },
         "placeOfPerformance": {
           "address": {
-            "countryName": "Ukraine 1",
-            "region": "Cherkasska obl 1",
-            "locality": "Added lotsLocality* 1",
-            "streetAddress": "Kolomiyska st 1",
-            "postalCode": "Test postal code 1"
+            "countryName": "Saudi Arabia",
+            "region": "Rhode Island",
+            "locality": "New Christopher",
+            "streetAddress": "926 Perkins Dale",
+            "postalCode": "12193"
           },
-          "description": "Further description of the place of performance of the contract\n\n1"
+          "description": "Father war use how standard."
         },
         "contractPeriod": {
-          "startDate": "2018-05-13T21:00:00Z",
-          "endDate": "2018-06-03T21:00:00Z"
+          "startDate": "2018-05-29T21:00:00Z",
+          "endDate": "2018-06-29T21:00:00Z"
         },
         "options": [
           {
@@ -183,49 +120,32 @@
     "items": [
       {
         "id": "root_section2_lots_0_items-0",
-        "description": "Short description of item\n",
+        "description": "Between itself road system student. Left color read indicate crime bring. Attention society factor. Lay employee business economy feel again contain.",
         "classification": {
           "scheme": "CPV",
-          "id": "03000000-1",
-          "description": "Agricultural, farming, fishing, forestry and related products"
+          "id": "44212226-9",
+          "description": "Farming, hunting and fishing products"
         },
-        "additionalClassification": [
-          {
-            "scheme": "CPVs",
-            "id": "03010000-1",
-            "description": "Supplimentary CPV code/CPVs Name* 1.1"
-          }
-        ]
-      },
-      {
-        "additionalClassification": [
-          null,
-          {
-            "scheme": "CPVs",
-            "id": "03000000-1",
-            "description": "CPVs Name* 1.2"
-          }
-        ],
-        "quantity": 100,
+        "quantity": 603457624.89,
         "unit": {
-          "id": "Unit id*",
-          "name": "Unit name"
+          "id": "IE",
+          "name": "person"
         },
         "relatedLot": "root_section2_lots-0"
       }
     ],
     "classification": {
       "scheme": "CPV",
-      "id": "03000000-1",
-      "description": "Agricultural, farming, fishing, forestry and related products"
+      "id": "44212226-9",
+      "description": "Farming, hunting and fishing products"
     },
     "contractPeriod": {
-      "startDate": "2018-05-13T21:00:00Z",
-      "endDate": "2018-06-03T21:00:00Z"
+      "startDate": "2018-05-29T21:00:00Z",
+      "endDate": "2018-06-29T21:00:00Z"
     },
     "value": {
-      "amount": 1000,
-      "currency": "UAH"
+      "amount": 521196733615.32,
+      "currency": "XBC"
     },
     "lotGroups": [
       {
@@ -234,7 +154,7 @@
     ],
     "procurementMethodDetails": "Restricted Tender",
     "acceleratedProcedure": {
-      "isAcceleratedProcedure": true
+      "isAcceleratedProcedure": false
     },
     "legalBasis": "DIRECTIVE_2014_24_EU",
     "designContest": {
@@ -250,8 +170,8 @@
       "hasDynamicPurchasingSystem": false
     },
     "tenderPeriod": {
-      "endDate": "2018-06-03T21:00:00Z",
-      "startDate": "2018-05-07T07:26:09Z"
+      "endDate": "2018-05-07T18:00:00Z",
+      "startDate": "2018-05-07T06:52:40Z"
     },
     "electronicWorkflows": {
       "useOrdering": false,

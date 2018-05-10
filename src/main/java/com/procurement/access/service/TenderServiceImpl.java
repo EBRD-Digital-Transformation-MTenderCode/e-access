@@ -6,6 +6,7 @@ import com.procurement.access.exception.ErrorType;
 import com.procurement.access.model.dto.bpe.ResponseDto;
 import com.procurement.access.model.dto.cn.CnProcess;
 import com.procurement.access.model.dto.cn.TenderStatusResponseDto;
+import com.procurement.access.model.dto.ocds.TenderProcess;
 import com.procurement.access.model.dto.ocds.TenderStatus;
 import com.procurement.access.model.dto.ocds.TenderStatusDetails;
 import com.procurement.access.model.entity.TenderProcessEntity;
@@ -65,5 +66,23 @@ public class TenderServiceImpl implements TenderService {
         return new ResponseDto<>(true, null,
                 new TenderStatusResponseDto(process.getTender().getStatus().value(),
                         process.getTender().getStatusDetails().value()));
+    }
+
+    @Override
+    public ResponseDto setUnsuccessful(final String cpId, final String stage) {
+        final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
+                .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
+        final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
+        process.getTender().setStatus(TenderStatus.UNSUCCESSFUL);
+        process.getTender().setStatusDetails(TenderStatusDetails.EMPTY);
+        if (process.getTender().getLots() != null) {
+            process.getTender().getLots().forEach(lot -> {
+                lot.setStatus(TenderStatus.UNSUCCESSFUL);
+                lot.setStatusDetails(TenderStatusDetails.EMPTY);
+            });
+        }
+        entity.setJsonData(jsonUtil.toJson(process));
+        tenderProcessDao.save(entity);
+        return new ResponseDto<>(true, null, process);
     }
 }
