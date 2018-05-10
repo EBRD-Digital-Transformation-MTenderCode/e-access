@@ -59,7 +59,7 @@ public class LotsServiceImpl implements LotsService {
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
         final List<Lot> updatedLots = setLotsStatusDetails(process.getTender().getLots(), lotsDto, statusDetails);
         final Tender tender = process.getTender();
-        if (tender.getLots().size() == updatedLots.size()) {
+        if (tender.getLots().size() == lotsDto.getLots().size() && statusDetails.equals(TenderStatusDetails.UNSUCCESSFUL)) {
             tender.setStatus(TenderStatus.UNSUCCESSFUL);
             tender.setStatusDetails(TenderStatusDetails.EMPTY);
             updatedLots.forEach(lot -> {
@@ -105,11 +105,11 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public ResponseDto updateLots(final String cpId, final String stage, final LotsRequestDto lotsDto) {
+    public ResponseDto updateLots(final String cpId, final String stage, final LotsRequestDto unsuccessfulLots) {
         final TenderProcessEntity entity = Optional.ofNullable(tenderProcessDao.getByCpIdAndStage(cpId, stage))
                 .orElseThrow(() -> new ErrorException(ErrorType.DATA_NOT_FOUND));
         final TenderProcess process = jsonUtil.toObject(TenderProcess.class, entity.getJsonData());
-        final List<Lot> updatedLots = updateLots(process.getTender().getLots(), lotsDto);
+        final List<Lot> updatedLots = updateLots(process.getTender().getLots(), unsuccessfulLots);
         final List<Item> items = getItemsForCompiledLots(process.getTender().getItems(), updatedLots);
         final Tender tender = process.getTender();
         if (tender.getLots().size() == updatedLots.size()) {
