@@ -60,7 +60,7 @@ public class LotsServiceImpl implements LotsService {
         final List<Lot> updatedLots = setLotsStatusDetails(process.getTender().getLots(), lotsDto, statusDetails);
         final Tender tender = process.getTender();
         tender.setLots(updatedLots);
-        if (isAllLotsUnsuccessful(tender.getLots())) {
+        if (!isAnyActiveLots(tender.getLots())) {
             tender.setStatus(TenderStatus.UNSUCCESSFUL);
             tender.setStatusDetails(TenderStatusDetails.EMPTY);
         }
@@ -109,11 +109,11 @@ public class LotsServiceImpl implements LotsService {
         final Tender tender = process.getTender();
         tender.setLots(updatedLots);
         List<Item> items = null;
-        if (isAllLotsUnsuccessful(tender.getLots())) {
+        if (isAnyActiveLots(tender.getLots())) {
+            items = getItemsForCompiledLots(process.getTender().getItems(), updatedLots);
+        } else {
             tender.setStatus(TenderStatus.UNSUCCESSFUL);
             tender.setStatusDetails(TenderStatusDetails.EMPTY);
-        } else {
-            items = getItemsForCompiledLots(process.getTender().getItems(), updatedLots);
         }
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
@@ -181,10 +181,11 @@ public class LotsServiceImpl implements LotsService {
         return new ArrayList<>(lotsMap.values());
     }
 
-    private Boolean isAllLotsUnsuccessful(final List<Lot> lots) {
+    private Boolean isAnyActiveLots(final List<Lot> lots) {
         if (lots != null && !lots.isEmpty()) {
-            return lots.stream().allMatch(lot -> lot.getStatus().equals(TenderStatus.UNSUCCESSFUL));
+            return lots.stream().anyMatch(lot -> (lot.getStatus().equals(TenderStatus.COMPLETE)
+                    && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)));
         }
-        return true;
+        return false;
     }
 }
