@@ -109,7 +109,7 @@ public class LotsServiceImpl implements LotsService {
         final Tender tender = process.getTender();
         tender.setLots(updatedLots);
         List<Item> items = null;
-        if (isAnyCmpleteLots(tender.getLots())) {
+        if (isAnyCompleteLots(tender.getLots())) {
             items = getItemsForCompiledLots(process.getTender().getItems(), updatedLots);
         } else {
             tender.setStatus(TenderStatus.UNSUCCESSFUL);
@@ -189,7 +189,7 @@ public class LotsServiceImpl implements LotsService {
         return false;
     }
 
-    private Boolean isAnyCmpleteLots(final List<Lot> lots) {
+    private Boolean isAnyCompleteLots(final List<Lot> lots) {
         if (lots != null && !lots.isEmpty()) {
             return lots.stream().anyMatch(lot -> (lot.getStatus().equals(TenderStatus.COMPLETE)
                     && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)));
