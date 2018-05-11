@@ -43,6 +43,10 @@ public class LotsServiceImpl implements LotsService {
         final List<Lot> updatedLots = setLotsStatus(process.getTender().getLots(), lotsDto, status);
         final Tender tender = process.getTender();
         tender.setLots(updatedLots);
+        if (!isAnyActiveLots(tender.getLots())) {
+            tender.setStatus(TenderStatus.UNSUCCESSFUL);
+            tender.setStatusDetails(TenderStatusDetails.EMPTY);
+        }
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
         return new ResponseDto<>(true, null,
@@ -60,10 +64,6 @@ public class LotsServiceImpl implements LotsService {
         final List<Lot> updatedLots = setLotsStatusDetails(process.getTender().getLots(), lotsDto, statusDetails);
         final Tender tender = process.getTender();
         tender.setLots(updatedLots);
-        if (!isAnyActiveLots(tender.getLots())) {
-            tender.setStatus(TenderStatus.UNSUCCESSFUL);
-            tender.setStatusDetails(TenderStatusDetails.EMPTY);
-        }
         entity.setJsonData(jsonUtil.toJson(process));
         tenderProcessDao.save(entity);
         return new ResponseDto<>(true, null,
@@ -109,7 +109,7 @@ public class LotsServiceImpl implements LotsService {
         final Tender tender = process.getTender();
         tender.setLots(updatedLots);
         List<Item> items = null;
-        if (isAnyActiveLots(tender.getLots())) {
+        if (isAnyCmpleteLots(tender.getLots())) {
             items = getItemsForCompiledLots(process.getTender().getItems(), updatedLots);
         } else {
             tender.setStatus(TenderStatus.UNSUCCESSFUL);
@@ -182,6 +182,14 @@ public class LotsServiceImpl implements LotsService {
     }
 
     private Boolean isAnyActiveLots(final List<Lot> lots) {
+        if (lots != null && !lots.isEmpty()) {
+            return lots.stream().anyMatch(lot -> (lot.getStatus().equals(TenderStatus.ACTIVE)
+                    && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)));
+        }
+        return false;
+    }
+
+    private Boolean isAnyCmpleteLots(final List<Lot> lots) {
         if (lots != null && !lots.isEmpty()) {
             return lots.stream().anyMatch(lot -> (lot.getStatus().equals(TenderStatus.COMPLETE)
                     && lot.getStatusDetails().equals(TenderStatusDetails.EMPTY)));
