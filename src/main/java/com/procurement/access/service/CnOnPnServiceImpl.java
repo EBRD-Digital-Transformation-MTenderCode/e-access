@@ -16,10 +16,7 @@ import com.procurement.access.model.entity.TenderProcessEntity;
 import com.procurement.access.utils.DateUtil;
 import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -91,10 +88,11 @@ public class CnOnPnServiceImpl implements CnOnPnService {
         Set<String> lotsFromDocuments = null;
         if (cnTender.getDocuments() != null) {
             lotsFromDocuments = cnTender.getDocuments().stream()
+                    .filter(document -> Objects.nonNull(document.getRelatedLots()))
                     .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
         }
 
-        if (cnTender.getLots() != null && lotsFromDocuments != null) {
+        if (cnTender.getLots() != null && lotsFromDocuments != null && !lotsFromDocuments.isEmpty()) {
             final Set<String> lotsFromCn = cnTender.getLots().stream().map(CnLot::getId).collect(Collectors.toSet());
             if (!lotsFromCn.containsAll(lotsFromDocuments))
                 throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);

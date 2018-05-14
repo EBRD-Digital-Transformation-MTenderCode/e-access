@@ -90,16 +90,17 @@ public class CnOnPinServiceImpl implements CnOnPinService {
     }
 
     private void validateLots(final CnTender cnTender) {
+        Set<String> lotsFromDocuments = null;
         if (cnTender.getDocuments() != null) {
-            final Set<String> lotsFromDocuments = cnTender.getDocuments().stream()
+            lotsFromDocuments = cnTender.getDocuments().stream()
+                    .filter(document -> Objects.nonNull(document.getRelatedLots()))
                     .flatMap(d -> d.getRelatedLots().stream()).collect(Collectors.toSet());
-            // validate lots
-            if (cnTender.getLots() != null) {
-                final Set<String> lots = cnTender.getLots().stream().map(CnLot::getId).collect(Collectors
-                        .toSet());
-                if (!lots.containsAll(lotsFromDocuments))
-                    throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
-            }
+        }
+
+        if (cnTender.getLots() != null && lotsFromDocuments != null && !lotsFromDocuments.isEmpty()) {
+            final Set<String> lotsFromCn = cnTender.getLots().stream().map(CnLot::getId).collect(Collectors.toSet());
+            if (!lotsFromCn.containsAll(lotsFromDocuments))
+                throw new ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS);
         }
     }
 
