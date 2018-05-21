@@ -22,10 +22,10 @@ data class CnTender(
         val description: String,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
         @JsonProperty("classification") @Valid
         val classification: Classification,
@@ -70,13 +70,13 @@ data class CnTender(
         val procuringEntity: OrganizationReference,
 
         @JsonProperty("documents") @Valid
-        val documents: List<Document>?,
+        var documents: List<Document>?,
 
         @JsonProperty("lots") @NotEmpty @Valid
-        val lots: List<CnLot>,
+        var lots: List<CnLot>?,
 
         @JsonProperty("lotGroups") @NotEmpty @Valid
-        val lotGroups: List<LotGroup>,
+        val lotGroups: List<LotGroup>?,
 
         @JsonProperty("acceleratedProcedure") @Valid
         val acceleratedProcedure: AcceleratedProcedure,
@@ -100,7 +100,7 @@ data class CnTender(
         val procurementMethodAdditionalInfo: String?,
 
         @JsonProperty("submissionLanguages") @NotEmpty @Valid
-        val submissionLanguages: List<SubmissionLanguage>,
+        var submissionLanguages: List<SubmissionLanguage>?,
 
         @JsonProperty("submissionMethodRationale")
         val submissionMethodRationale: List<SubmissionMethodRationale>?,
@@ -113,5 +113,5 @@ data class CnTender(
 
         @JsonProperty("requiresElectronicCatalogue")
         @get:JsonProperty("requiresElectronicCatalogue")
-        val requiresElectronicCatalogue: Boolean
+        val requiresElectronicCatalogue: Boolean?
 )

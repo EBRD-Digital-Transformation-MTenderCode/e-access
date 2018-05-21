@@ -21,10 +21,10 @@ data class CnLot(
         val description: String,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
         @JsonProperty("value") @Valid
         val value: Value,
@@ -33,7 +33,7 @@ data class CnLot(
         val options: List<Option>,
 
         @JsonProperty("recurrentProcurement") @Valid @NotEmpty
-        val recurrentProcurement: List<RecurrentProcurement>,
+        val recurrentProcurement: List<RecurrentProcurement>?,
 
         @JsonProperty("renewals") @Valid @NotEmpty
         val renewals: List<Renewal>,

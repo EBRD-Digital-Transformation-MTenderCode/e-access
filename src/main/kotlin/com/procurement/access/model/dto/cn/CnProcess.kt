@@ -11,13 +11,13 @@ import javax.validation.Valid
 data class CnProcess(
 
         @JsonProperty("token")
-        val token: String?,
+        var token: String?,
 
         @JsonProperty("ocid")
-        val ocId: String?,
+        var ocId: String?,
 
         @JsonProperty("planning") @Valid
-        val planning: Planning,
+        var planning: Planning,
 
         @JsonProperty("tender") @Valid
-        val tender: CnTender)
+        var tender: CnTender)

@@ -30,6 +30,9 @@ data class PinTender(
         @JsonProperty("classification") @Valid
         val classification: Classification,
 
+        @JsonProperty("items") @Valid @NotEmpty
+        val items: HashSet<Item>,
+
         @JsonProperty("value") @Valid
         val value: Value,
 
@@ -71,9 +74,6 @@ data class PinTender(
 
         @JsonProperty("lots") @Valid @NotEmpty
         val lots: List<PinLot>,
-
-        @JsonProperty("items") @Valid @NotEmpty
-        val items: HashSet<Item>,
 
         @JsonProperty("lotGroups")
         val lotGroups: List<LotGroup>?,
