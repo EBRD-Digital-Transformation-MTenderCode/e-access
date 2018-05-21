@@ -1,182 +1,293 @@
 {
-  "planning": {
-    "budget": {
-      "amount": {
-        "amount": 1000,
-        "currency": "XBC"
-      },
-      "isEuropeanUnionFunded": false,
-      "budgetBreakdown": [
+  "awardPeriod": {
+    "startDate": "2018-05-11T15:26:34Z",
+    "endDate": "2018-05-11T15:27:49Z"
+  },
+  "awards": [
+    {
+      "id": "b0b00671-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:27:49Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd640fd0-552e-11e8-b4e2-a77e260a38b7"
+      ],
+      "relatedBid": "27e93960-552f-11e8-82d1-aba607341064",
+      "suppliers": [
         {
-          "id": "ocds-t1s2t3-TEST-1525700834355-FS-1525700838287",
-          "amount": {
-            "amount": 1000,
-            "currency": "XBC"
+          "id": "UA-EDR-184-31-6332",
+          "name": "Wong-Olsen",
+          "identifier": {
+            "id": "184-31-6332",
+            "scheme": "UA-EDR",
+            "legalName": "Wong-Olsen Ltd",
+            "uri": "https://www.hurley.org/register/"
           },
-          "period": {
-            "startDate": "2018-05-06T14:00:00Z",
-            "endDate": "2018-09-03T21:00:00Z"
+          "address": {
+            "streetAddress": "537 Ward Course Apt. 199",
+            "locality": "North Amy",
+            "region": "Washington",
+            "postalCode": "29804",
+            "countryName": "Romania"
           },
-          "sourceParty": {
-            "id": "UA-EDR-148-75-9778",
-            "name": "Hood, Fisher and Martinez"
+          "additionalIdentifiers": [
+            {
+              "id": "380-78-6935",
+              "scheme": "UA-EDR",
+              "legalName": "Wong-Olsen LLC",
+              "uri": "http://www.smith.com/about.htm"
+            }
+          ],
+          "contactPoint": {
+            "name": "Angela Webb",
+            "email": "stokesjeffrey@yahoo.com",
+            "telephone": "(033)336-7460",
+            "faxNumber": "(684)068-9451x09772",
+            "url": "https://www.mccormick.info/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0b00673-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:27:49Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd63e8c7-552e-11e8-b4e2-a77e260a38b7"
+      ],
+      "relatedBid": "372a8f00-552f-11e8-82d1-aba607341064",
+      "suppliers": [
+        {
+          "id": "UA-EDR-381-22-5525",
+          "name": "Russell Inc",
+          "identifier": {
+            "id": "381-22-5525",
+            "scheme": "UA-EDR",
+            "legalName": "Russell Inc LLC",
+            "uri": "https://lutz.com/tag/explore/search/"
+          },
+          "address": {
+            "streetAddress": "118 Sean Stravenue",
+            "locality": "Port Lynnmouth",
+            "region": "Maryland",
+            "postalCode": "37582-0479",
+            "countryName": "Iceland"
+          },
+          "additionalIdentifiers": [
+            {
+              "id": "009-92-3937",
+              "scheme": "UA-EDR",
+              "legalName": "Russell Inc and Sons",
+              "uri": "https://www.drake.com/category/tag/blog/search/"
+            }
+          ],
+          "contactPoint": {
+            "name": "Sheri Nelson",
+            "email": "christopher50@gmail.com",
+            "telephone": "+53(3)7110631353",
+            "faxNumber": "308.586.6226x980",
+            "url": "https://www.ruiz-sharp.com/tags/home.php"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0b00675-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:27:49Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd63e8c7-552e-11e8-b4e2-a77e260a38b7"
+      ],
+      "relatedBid": "4438d800-552f-11e8-82d1-aba607341064",
+      "suppliers": [
+        {
+          "id": "UA-EDR-337-04-2290",
+          "name": "Morrison PLC",
+          "identifier": {
+            "id": "337-04-2290",
+            "scheme": "UA-EDR",
+            "legalName": "Morrison PLC LLC",
+            "uri": "http://www.johnson.net/"
+          },
+          "address": {
+            "streetAddress": "954 Mckay Loaf",
+            "locality": "West Angelahaven",
+            "region": "Connecticut",
+            "postalCode": "00542",
+            "countryName": "Cyprus"
+          },
+          "additionalIdentifiers": [
+            {
+              "id": "131-95-7790",
+              "scheme": "UA-EDR",
+              "legalName": "Morrison PLC and Sons",
+              "uri": "http://www.mendoza.com/"
+            }
+          ],
+          "contactPoint": {
+            "name": "Stephanie Cohen",
+            "email": "vargasjeffrey@gmail.com",
+            "telephone": "320-333-5153",
+            "faxNumber": "1-908-241-4226",
+            "url": "http://morris-clark.net/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0b00676-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:26:35Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd63e8c6-552e-11e8-b4e2-a77e260a38b7"
+      ]
+    },
+    {
+      "id": "b0b00672-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:27:49Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd640fd0-552e-11e8-b4e2-a77e260a38b7"
+      ],
+      "relatedBid": "2e06edb0-552f-11e8-82d1-aba607341064",
+      "suppliers": [
+        {
+          "id": "UA-EDR-337-04-2290",
+          "name": "Morrison PLC",
+          "identifier": {
+            "id": "337-04-2290",
+            "scheme": "UA-EDR",
+            "legalName": "Morrison PLC LLC",
+            "uri": "http://www.johnson.net/"
+          },
+          "address": {
+            "streetAddress": "954 Mckay Loaf",
+            "locality": "West Angelahaven",
+            "region": "Connecticut",
+            "postalCode": "00542",
+            "countryName": "Cyprus"
+          },
+          "additionalIdentifiers": [
+            {
+              "id": "131-95-7790",
+              "scheme": "UA-EDR",
+              "legalName": "Morrison PLC and Sons",
+              "uri": "http://www.mendoza.com/"
+            }
+          ],
+          "contactPoint": {
+            "name": "Stephanie Cohen",
+            "email": "vargasjeffrey@gmail.com",
+            "telephone": "320-333-5153",
+            "faxNumber": "1-908-241-4226",
+            "url": "http://morris-clark.net/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0b00670-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:27:49Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd640fd0-552e-11e8-b4e2-a77e260a38b7"
+      ],
+      "relatedBid": "22437430-552f-11e8-82d1-aba607341064",
+      "suppliers": [
+        {
+          "id": "UA-EDR-381-22-5525",
+          "name": "Russell Inc",
+          "identifier": {
+            "id": "381-22-5525",
+            "scheme": "UA-EDR",
+            "legalName": "Russell Inc LLC",
+            "uri": "https://lutz.com/tag/explore/search/"
+          },
+          "address": {
+            "streetAddress": "118 Sean Stravenue",
+            "locality": "Port Lynnmouth",
+            "region": "Maryland",
+            "postalCode": "37582-0479",
+            "countryName": "Iceland"
+          },
+          "additionalIdentifiers": [
+            {
+              "id": "009-92-3937",
+              "scheme": "UA-EDR",
+              "legalName": "Russell Inc and Sons",
+              "uri": "https://www.drake.com/category/tag/blog/search/"
+            }
+          ],
+          "contactPoint": {
+            "name": "Sheri Nelson",
+            "email": "christopher50@gmail.com",
+            "telephone": "+53(3)7110631353",
+            "faxNumber": "308.586.6226x980",
+            "url": "https://www.ruiz-sharp.com/tags/home.php"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0b00674-552f-11e8-a38e-133f2156561e",
+      "date": "2018-05-11T15:27:49Z",
+      "description": "",
+      "status": "unsuccessful",
+      "statusDetails": "empty",
+      "relatedLots": [
+        "fd63e8c7-552e-11e8-b4e2-a77e260a38b7"
+      ],
+      "relatedBid": "3dbb7780-552f-11e8-82d1-aba607341064",
+      "suppliers": [
+        {
+          "id": "UA-EDR-184-31-6332",
+          "name": "Wong-Olsen",
+          "identifier": {
+            "id": "184-31-6332",
+            "scheme": "UA-EDR",
+            "legalName": "Wong-Olsen Ltd",
+            "uri": "https://www.hurley.org/register/"
+          },
+          "address": {
+            "streetAddress": "537 Ward Course Apt. 199",
+            "locality": "North Amy",
+            "region": "Washington",
+            "postalCode": "29804",
+            "countryName": "Romania"
+          },
+          "additionalIdentifiers": [
+            {
+              "id": "380-78-6935",
+              "scheme": "UA-EDR",
+              "legalName": "Wong-Olsen LLC",
+              "uri": "http://www.smith.com/about.htm"
+            }
+          ],
+          "contactPoint": {
+            "name": "Angela Webb",
+            "email": "stokesjeffrey@yahoo.com",
+            "telephone": "(033)336-7460",
+            "faxNumber": "(684)068-9451x09772",
+            "url": "https://www.mccormick.info/"
           }
         }
       ]
     }
-  },
-  "tender": {
-    "procuringEntity": {
-      "name": "Hood, Fisher and Martinez",
-      "address": {
-        "countryName": "Greenland",
-        "region": "Alaska",
-        "locality": "North Maria",
-        "streetAddress": "157 Thomas Track Apt. 119",
-        "postalCode": "13674-4525"
-      },
-      "identifier": {
-        "id": "148-75-9778",
-        "scheme": "UA-EDR",
-        "legalName": "Hood, Fisher and Martinez Ltd",
-        "uri": "https://www.johnson-york.com/posts/search/explore/register/"
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "177-04-3844",
-          "scheme": "UA-EDR",
-          "legalName": "Hood, Fisher and Martinez LLC",
-          "uri": "http://duarte-martinez.com/index.php"
-        }
-      ],
-      "contactPoint": {
-        "name": "Amy Scott",
-        "telephone": "1-407-859-3129x757",
-        "email": "karen42@gmail.com",
-        "faxNumber": "1-989-002-5885x99080",
-        "url": "http://www.gutierrez.com/homepage.html"
-      }
-    },
-    "jointProcurement": {
-      "isJointProcurement": true
-    },
-    "submissionLanguages": [
-      "bg"
-    ],
-    "procurementMethod": "selective",
-    "submissionMethod": [
-      "electronicSubmission"
-    ],
-    "title": "Carry lead air.",
-    "mainProcurementCategory": "goods",
-    "description": "How develop tell tough agree find past. Too affect enjoy senior stay should in hundred. City happen listen them no though successful.",
-    "awardCriteria": "priceOnly",
-    "requiresElectronicCatalogue": false,
-    "lots": [
-      {
-        "id": "root_section2_lots-0",
-        "title": "Recent build they those.",
-        "description": "Hand part morning learn. Stop area second senior knowledge suggest during.",
-        "value": {
-          "amount": 521196733615.32,
-          "currency": "XBC"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "countryName": "Saudi Arabia",
-            "region": "Rhode Island",
-            "locality": "New Christopher",
-            "streetAddress": "926 Perkins Dale",
-            "postalCode": "12193"
-          },
-          "description": "Father war use how standard."
-        },
-        "contractPeriod": {
-          "startDate": "2018-05-29T21:00:00Z",
-          "endDate": "2018-06-29T21:00:00Z"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ]
-      }
-    ],
-    "items": [
-      {
-        "id": "root_section2_lots_0_items-0",
-        "description": "Between itself road system student. Left color read indicate crime bring. Attention society factor. Lay employee business economy feel again contain.",
-        "classification": {
-          "scheme": "CPV",
-          "id": "44212226-9",
-          "description": "Farming, hunting and fishing products"
-        },
-        "quantity": 603457624.89,
-        "unit": {
-          "id": "IE",
-          "name": "person"
-        },
-        "relatedLot": "root_section2_lots-0"
-      }
-    ],
-    "classification": {
-      "scheme": "CPV",
-      "id": "44212226-9",
-      "description": "Farming, hunting and fishing products"
-    },
-    "contractPeriod": {
-      "startDate": "2018-05-29T21:00:00Z",
-      "endDate": "2018-06-29T21:00:00Z"
-    },
-    "value": {
-      "amount": 521196733615.32,
-      "currency": "XBC"
-    },
-    "lotGroups": [
-      {
-        "optionToCombine": false
-      }
-    ],
-    "procurementMethodDetails": "Restricted Tender",
-    "acceleratedProcedure": {
-      "isAcceleratedProcedure": false
-    },
-    "legalBasis": "DIRECTIVE_2014_24_EU",
-    "designContest": {
-      "serviceContractAward": false
-    },
-    "procedureOutsourcing": {
-      "procedureOutsourced": false
-    },
-    "framework": {
-      "isAFramework": false
-    },
-    "dynamicPurchasingSystem": {
-      "hasDynamicPurchasingSystem": false
-    },
-    "tenderPeriod": {
-      "endDate": "2018-05-07T18:00:00Z",
-      "startDate": "2018-05-07T06:52:40Z"
-    },
-    "electronicWorkflows": {
-      "useOrdering": false,
-      "usePayment": false,
-      "acceptInvoicing": false
+  ],
+  "unsuccessfulLots": [
+    {
+      "id": "fd63e8c6-552e-11e8-b4e2-a77e260a38b7"
     }
-  }
+  ]
 }
