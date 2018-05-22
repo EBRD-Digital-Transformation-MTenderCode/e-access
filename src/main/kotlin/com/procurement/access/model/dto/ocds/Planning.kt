@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import javax.validation.Valid
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("budget", "rationale")
+//@JsonPropertyOrder("budget", "rationale")
 data class Planning(
 
         @Valid

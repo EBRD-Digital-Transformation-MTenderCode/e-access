@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "scheme", "legalName", "uri")
+//@JsonPropertyOrder("id", "scheme", "legalName", "uri")
 data class Identifier(
 
         @JsonProperty("id")

@@ -6,7 +6,6 @@ import com.procurement.access.model.dto.lots.LotsUpdateResponseDto;
 import com.procurement.access.model.dto.ocds.Tender;
 import com.procurement.access.model.dto.ocds.TenderProcess;
 import com.procurement.access.model.entity.TenderProcessEntity;
-import com.procurement.access.utils.JsonUtil;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("projectIdentifier", "projectName", "uri")
+//@JsonPropertyOrder("projectIdentifier", "projectName", "uri")
 data class EuropeanUnionFunding(
 
         @JsonProperty("projectIdentifier")

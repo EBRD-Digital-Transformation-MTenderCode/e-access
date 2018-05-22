@@ -8,11 +8,11 @@ import javax.validation.Valid
 import javax.validation.constraints.Size
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "name", "identifier", "address", "additionalIdentifiers", "contactPoint")
+//@JsonPropertyOrder("id", "name", "identifier", "address", "additionalIdentifiers", "contactPoint")
 data class OrganizationReference(
 
         @JsonProperty("id")
-        val id: String?,
+        var id: String?,
 
         @JsonProperty("name") @Size(min = 1)
         val name: String,

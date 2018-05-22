@@ -9,11 +9,11 @@ import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "classification", "acceleratedProcedure", "designContest", "electronicWorkflows", "jointProcurement", "procedureOutsourcing", "framework", "dynamicPurchasingSystem", "legalBasis", "procurementMethod", "procurementMethodDetails", "procurementMethodRationale", "procurementMethodAdditionalInfo", "mainProcurementCategory", "additionalProcurementCategories", "eligibilityCriteria", "contractPeriod", "procuringEntity", "value", "lotGroups", "lots", "items", "awardCriteria", "requiresElectronicCatalogue", "submissionMethod", "submissionMethodRationale", "submissionMethodDetails", "documents")
+//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "classification", "acceleratedProcedure", "designContest", "electronicWorkflows", "jointProcurement", "procedureOutsourcing", "framework", "dynamicPurchasingSystem", "legalBasis", "procurementMethod", "procurementMethodDetails", "procurementMethodRationale", "procurementMethodAdditionalInfo", "mainProcurementCategory", "additionalProcurementCategories", "eligibilityCriteria", "contractPeriod", "procuringEntity", "value", "lotGroups", "lots", "items", "awardCriteria", "requiresElectronicCatalogue", "submissionMethod", "submissionMethodRationale", "submissionMethodDetails", "documents")
 data class CnTender(
 
         @JsonProperty("id")
-        val id: String?,
+        var id: String?,
 
         @JsonProperty("title")
         val title: String,
@@ -31,7 +31,7 @@ data class CnTender(
         val classification: Classification,
 
         @JsonProperty("items") @NotEmpty
-        val items: HashSet<Item>,
+        val items: HashSet<Item>?,
 
         @param:JsonProperty("value") @Valid
         val value: Value,
@@ -55,7 +55,7 @@ data class CnTender(
         val awardCriteria: AwardCriteria,
 
         @JsonProperty("submissionMethod") @NotEmpty @Valid
-        val submissionMethod: List<SubmissionMethod>,
+        val submissionMethod: List<SubmissionMethod>?,
 
         @JsonProperty("submissionMethodDetails")
         val submissionMethodDetails: String?,

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "documentType", "title", "description", "language", "relatedLots")
+//@JsonPropertyOrder("id", "documentType", "title", "description", "language", "relatedLots")
 data class Document(
 
         @JsonProperty("id")
@@ -25,5 +25,5 @@ data class Document(
         val language: String,
 
         @JsonProperty("relatedLots")
-        val relatedLots: HashSet<String>?
+        var relatedLots: HashSet<String>?
 )

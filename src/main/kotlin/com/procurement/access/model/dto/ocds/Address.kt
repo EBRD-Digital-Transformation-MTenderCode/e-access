@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("streetAddress", "locality", "region", "postalCode", "countryName")
+//@JsonPropertyOrder("streetAddress", "locality", "region", "postalCode", "countryName")
 data class Address(
 
         @JsonProperty("streetAddress")

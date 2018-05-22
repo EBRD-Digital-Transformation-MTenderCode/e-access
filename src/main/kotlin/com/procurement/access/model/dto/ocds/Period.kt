@@ -10,7 +10,7 @@ import com.procurement.point.databinding.JsonDateSerializer
 import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("startDate", "endDate")
+//@JsonPropertyOrder("startDate", "endDate")
 data class Period(
 
         @JsonProperty("startDate")

@@ -10,9 +10,7 @@ import com.procurement.access.model.dto.pin.PinLot
 import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.model.dto.pin.PinTender
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.DateUtil
-import com.procurement.access.utils.JsonUtil
-import com.procurement.access.utils.toDate
+import com.procurement.access.utils.*
 import com.procurement.notice.exception.ErrorException
 import com.procurement.notice.exception.ErrorType
 import com.procurement.notice.model.bpe.ResponseDto
@@ -30,13 +28,10 @@ interface CnOnPinService {
             token: String,
             dateTime: LocalDateTime,
             data: CnProcess): ResponseDto<*>
-
 }
 
 @Service
-class CnOnPinServiceImpl(private val jsonUtil: JsonUtil,
-                         private val dateUtil: DateUtil,
-                         private val tenderProcessDao: TenderProcessDao) : CnOnPinService {
+class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPinService {
 
     override fun createCnOnPin(cpId: String,
                                previousStage: String,
@@ -51,42 +46,52 @@ class CnOnPinServiceImpl(private val jsonUtil: JsonUtil,
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         if (entity.cpId != cn.tender.id) throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
-        val pinProcess = jsonUtil.toObject(PinProcess::class.java, entity.jsonData)
+        val pinProcess = toObject(PinProcess::class.java, entity.jsonData)
         val pinTender = pinProcess.tender
-        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
-            throw ErrorException(ErrorType.INVALID_START_DATE)
-        cn.planning = pinProcess.planning
+        validatePeriod(pinTender, dateTime)
         val cnTender = convertPinToCnTender(pinTender)
-        setLotsToCnFromPin(pinTender, cnTender)
-        setStatuses(cnTender)
         if (cn.tender.submissionLanguages != null) cnTender.submissionLanguages = cn.tender.submissionLanguages
         if (cn.tender.documents != null) cnTender.documents = cn.tender.documents
-        cn.tender = cnTender
+        setLotsToCnFromPin(pinTender, cnTender)
         validateLots(cnTender)
-        tenderProcessDao.save(getEntity(cn, cpId, stage, entity.token, dateTime, owner))
+        setStatuses(cnTender)
         cn.ocId = cpId
+        cn.planning = pinProcess.planning
+        cn.tender = cnTender
+        tenderProcessDao.save(getEntity(cn, cpId, stage, entity.token, dateTime, owner))
         cn.token = entity.token.toString()
         return ResponseDto(true, null, cn)
     }
 
+    private fun validatePeriod(pinTender: PinTender, dateTime: LocalDateTime) {
+        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
+            throw ErrorException(ErrorType.INVALID_START_DATE)
+    }
+
     private fun setLotsToCnFromPin(pinTender: PinTender, cnTender: CnTender) {
         if (pinTender.lots != null) {
-            cnTender.lots = pinTender.lots.asSequence()
-                    .map({ convertPinToCnLot(it) }).toList()
+            cnTender.lots = pinTender.lots.asSequence().map({ convertPinToCnLot(it) }).toList()
+        }
+    }
+
+    private fun setStatuses(cnTender: CnTender) {
+        cnTender.status = TenderStatus.ACTIVE
+        cnTender.statusDetails = TenderStatusDetails.EMPTY
+        cnTender.lots?.forEach { lot ->
+            lot.status = TenderStatus.ACTIVE
+            lot.statusDetails = TenderStatusDetails.EMPTY
         }
     }
 
     private fun validateLots(cnTender: CnTender) {
-        var lotsFromDocuments: HashSet<String>? = null
         if (cnTender.documents != null) {
-            lotsFromDocuments = cnTender.documents!!.asSequence()
+            val lotsFromDocuments = cnTender.documents!!.asSequence()
                     .filter({ it.relatedLots != null })
                     .flatMap({ it.relatedLots!!.asSequence() }).toHashSet()
-        }
-        if (cnTender.lots != null && lotsFromDocuments != null && !lotsFromDocuments.isEmpty()) {
-            val lotsFromCn = cnTender.lots!!.asSequence()
-                    .map({ it.id }).toHashSet()
-            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS)
+            if (cnTender.lots != null && !lotsFromDocuments.isEmpty()) {
+                val lotsFromCn = cnTender.lots!!.asSequence().map({ it.id }).toHashSet()
+                if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS)
+            }
         }
     }
 
@@ -146,15 +151,6 @@ class CnOnPinServiceImpl(private val jsonUtil: JsonUtil,
         )
     }
 
-    private fun setStatuses(cnTender: CnTender) {
-        cnTender.status = TenderStatus.ACTIVE
-        cnTender.statusDetails = TenderStatusDetails.EMPTY
-        cnTender.lots?.forEach { lot ->
-            lot.status = TenderStatus.ACTIVE
-            lot.statusDetails = TenderStatusDetails.EMPTY
-        }
-    }
-
     private fun getEntity(cn: CnProcess,
                           cpId: String,
                           stage: String,
@@ -167,8 +163,6 @@ class CnOnPinServiceImpl(private val jsonUtil: JsonUtil,
                 stage = stage,
                 owner = owner,
                 createdDate = dateTime.toDate(),
-                jsonData = jsonUtil.toJson(cn))
+                jsonData = toJson(cn))
     }
-
-
 }

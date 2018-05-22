@@ -8,7 +8,7 @@ import com.procurement.notice.databinding.MoneyDeserializer
 import java.math.BigDecimal
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("amount", "currency")
+//@JsonPropertyOrder("amount", "currency")
 data class Value(
 
         @JsonProperty("amount")

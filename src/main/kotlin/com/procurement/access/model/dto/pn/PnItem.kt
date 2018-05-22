@@ -10,7 +10,7 @@ import java.util.*
 import javax.validation.Valid
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "description", "classification", "additionalClassifications", "quantity", "unit", "relatedLot")
+//@JsonPropertyOrder("id", "description", "classification", "additionalClassifications", "quantity", "unit", "relatedLot")
 data class PnItem(
 
         @JsonProperty("id")

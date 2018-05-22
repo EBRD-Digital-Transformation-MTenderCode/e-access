@@ -1,7 +1,6 @@
 package com.procurement.access.controller;
 
 import com.procurement.access.model.dto.lots.LotsRequestDto;
-import com.procurement.access.service.LotsService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
-@JsonPropertyOrder("useOrdering", "usePayment", "acceptInvoicing")
+//@JsonPropertyOrder("useOrdering", "usePayment", "acceptInvoicing")
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 data class PnElectronicWorkflows(
 

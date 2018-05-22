@@ -7,7 +7,7 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "description", "amount", "period", "sourceParty")
+//@JsonPropertyOrder("id", "description", "amount", "period", "sourceParty")
 data class BudgetBreakdown(
 
         @JsonProperty("id")

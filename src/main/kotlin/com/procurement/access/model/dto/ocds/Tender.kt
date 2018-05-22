@@ -8,7 +8,7 @@ import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "classification", "acceleratedProcedure", "designContest", "electronicWorkflows", "jointProcurement", "procedureOutsourcing", "framework", "dynamicPurchasingSystem", "legalBasis", "procurementMethod", "procurementMethodDetails", "procurementMethodRationale", "procurementMethodAdditionalInfo", "mainProcurementCategory", "additionalProcurementCategories", "eligibilityCriteria", "contractPeriod", "procuringEntity", "value", "lotGroups", "lots", "items", "awardCriteria", "requiresElectronicCatalogue", "submissionMethod", "submissionMethodRationale", "submissionMethodDetails", "documents", "tenderPeriod")
+//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "classification", "acceleratedProcedure", "designContest", "electronicWorkflows", "jointProcurement", "procedureOutsourcing", "framework", "dynamicPurchasingSystem", "legalBasis", "procurementMethod", "procurementMethodDetails", "procurementMethodRationale", "procurementMethodAdditionalInfo", "mainProcurementCategory", "additionalProcurementCategories", "eligibilityCriteria", "contractPeriod", "procuringEntity", "value", "lotGroups", "lots", "items", "awardCriteria", "requiresElectronicCatalogue", "submissionMethod", "submissionMethodRationale", "submissionMethodDetails", "documents", "tenderPeriod")
 data class Tender(
 
         @JsonProperty("id")
@@ -21,10 +21,10 @@ data class Tender(
         val description: String,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
         @JsonProperty("classification") @Valid
         val classification: Classification,

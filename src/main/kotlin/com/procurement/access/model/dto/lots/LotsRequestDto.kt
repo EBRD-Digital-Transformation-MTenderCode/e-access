@@ -5,5 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class LotsRequestDto(
 
         @JsonProperty("unsuccessfulLots")
-        val lots: List<LotDto>?
+        val lots: HashSet<LotDto>?
 )

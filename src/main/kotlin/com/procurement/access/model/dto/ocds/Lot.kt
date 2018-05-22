@@ -7,7 +7,7 @@ import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "value", "options", "recurrentProcurement", "renewals", "variants", "contractPeriod", "placeOfPerformance")
+//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "value", "options", "recurrentProcurement", "renewals", "variants", "contractPeriod", "placeOfPerformance")
 data class Lot(
 
         @JsonProperty("id")
@@ -20,10 +20,10 @@ data class Lot(
         val description: String,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
         @Valid
         @JsonProperty("value")

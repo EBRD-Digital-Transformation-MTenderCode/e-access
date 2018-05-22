@@ -8,11 +8,11 @@ import java.util.*
 import javax.validation.Valid
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("id", "description", "classification", "additionalClassifications", "quantity", "unit", "relatedLot")
+//@JsonPropertyOrder("id", "description", "classification", "additionalClassifications", "quantity", "unit", "relatedLot")
 data class Item(
 
         @JsonProperty("id")
-        val id: String?,
+        var id: String?,
 
         @JsonProperty("description")
         val description: String?,
@@ -33,5 +33,5 @@ data class Item(
         val unit: Unit,
 
         @param:JsonProperty("relatedLot")
-        val relatedLot: String
+        var relatedLot: String
 )

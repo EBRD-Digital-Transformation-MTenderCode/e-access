@@ -7,8 +7,6 @@ import com.procurement.access.model.dto.pn.PnLot;
 import com.procurement.access.model.dto.pn.PnProcess;
 import com.procurement.access.model.dto.pn.PnTender;
 import com.procurement.access.model.entity.TenderProcessEntity;
-import com.procurement.access.utils.DateUtil;
-import com.procurement.access.utils.JsonUtil;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
