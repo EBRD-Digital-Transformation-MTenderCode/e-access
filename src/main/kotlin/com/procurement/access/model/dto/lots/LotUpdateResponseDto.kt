@@ -6,5 +6,5 @@ import com.procurement.access.model.dto.ocds.Lot
 data class LotUpdateResponseDto(
 
         @JsonProperty("lot")
-        val lot: Lot?
+        val lot: Lot
 )

@@ -4,31 +4,27 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 import javax.validation.Valid
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "name", "identifier", "address", "additionalIdentifiers", "contactPoint")
 data class OrganizationReference(
 
         @JsonProperty("id")
         var id: String?,
 
-        @JsonProperty("name") @Size(min = 1)
+        @JsonProperty("name") @Size(min = 1) @NotNull
         val name: String,
 
-        @Valid
-        @param:JsonProperty("identifier")
+        @param:JsonProperty("identifier") @Valid
         val identifier: Identifier?,
 
-        @Valid
-        @JsonProperty("address")
+        @JsonProperty("address") @Valid
         val address: Address?,
 
-        @Valid
-        @JsonProperty("additionalIdentifiers")
+        @JsonProperty("additionalIdentifiers") @Valid
         val additionalIdentifiers: HashSet<Identifier>?,
 
-        @Valid
-        @JsonProperty("contactPoint")
+        @JsonProperty("contactPoint") @Valid
         val contactPoint: ContactPoint?
 )

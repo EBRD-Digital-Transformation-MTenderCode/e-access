@@ -13,7 +13,7 @@ data class LotsUpdateResponseDto(
         val tenderStatus: TenderStatus?,
 
         @JsonProperty("lots")
-        val lots: List<Lot>?,
+        val lots: List<Lot>,
 
         @JsonProperty("items")
         val items: List<Item>?

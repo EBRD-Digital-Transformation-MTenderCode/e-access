@@ -3,13 +3,12 @@ package com.procurement.access.model.dto.ocds
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("budget", "rationale")
 data class Planning(
 
-        @Valid
-        @JsonProperty("budget")
+        @JsonProperty("budget") @Valid @NotNull
         val budget: Budget,
 
         @JsonProperty("rationale")

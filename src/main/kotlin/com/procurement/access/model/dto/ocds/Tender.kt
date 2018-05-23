@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "classification", "acceleratedProcedure", "designContest", "electronicWorkflows", "jointProcurement", "procedureOutsourcing", "framework", "dynamicPurchasingSystem", "legalBasis", "procurementMethod", "procurementMethodDetails", "procurementMethodRationale", "procurementMethodAdditionalInfo", "mainProcurementCategory", "additionalProcurementCategories", "eligibilityCriteria", "contractPeriod", "procuringEntity", "value", "lotGroups", "lots", "items", "awardCriteria", "requiresElectronicCatalogue", "submissionMethod", "submissionMethodRationale", "submissionMethodDetails", "documents", "tenderPeriod")
 data class Tender(
 
         @JsonProperty("id")
@@ -16,7 +16,7 @@ data class Tender(
         @JsonProperty("title")
         val title: String,
 
-        @JsonProperty("description")
+        @JsonProperty("description") @NotNull
         val description: String,
 
         @JsonProperty("status")
@@ -25,94 +25,94 @@ data class Tender(
         @JsonProperty("statusDetails")
         var statusDetails: TenderStatusDetails?,
 
-        @JsonProperty("classification") @Valid
+        @JsonProperty("classification") @Valid @NotNull
         val classification: Classification,
 
-        @JsonProperty("items") @NotEmpty
-        var items: HashSet<Item>?,
+        @JsonProperty("acceleratedProcedure") @Valid @NotNull
+        val acceleratedProcedure: AcceleratedProcedure,
 
-        @JsonProperty("value") @Valid
-        val value: Value,
+        @JsonProperty("designContest") @Valid @NotNull
+        val designContest: DesignContest,
 
-        @JsonProperty("procurementMethod")
+        @JsonProperty("electronicWorkflows") @Valid @NotNull
+        val electronicWorkflows: ElectronicWorkflows,
+
+        @JsonProperty("jointProcurement") @Valid @NotNull
+        val jointProcurement: JointProcurement,
+
+        @JsonProperty("procedureOutsourcing") @Valid @NotNull
+        val procedureOutsourcing: ProcedureOutsourcing,
+
+        @JsonProperty("framework") @Valid @NotNull
+        val framework: Framework,
+
+        @JsonProperty("dynamicPurchasingSystem") @Valid @NotNull
+        val dynamicPurchasingSystem: DynamicPurchasingSystem,
+
+        @JsonProperty("legalBasis") @NotNull
+        val legalBasis: LegalBasis,
+
+        @JsonProperty("procurementMethod") @NotNull
         val procurementMethod: ProcurementMethod,
 
-        @JsonProperty("procurementMethodDetails")
+        @JsonProperty("procurementMethodDetails") @NotNull
         val procurementMethodDetails: String,
 
         @JsonProperty("procurementMethodRationale")
         val procurementMethodRationale: String?,
 
-        @JsonProperty("mainProcurementCategory")
+        @JsonProperty("procurementMethodAdditionalInfo")
+        val procurementMethodAdditionalInfo: String?,
+
+        @JsonProperty("mainProcurementCategory") @NotNull
         val mainProcurementCategory: MainProcurementCategory,
 
         @JsonProperty("additionalProcurementCategories")
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
-        @JsonProperty("awardCriteria")
-        val awardCriteria: AwardCriteria,
-
-        @JsonProperty("submissionMethod") @NotEmpty
-        val submissionMethod: List<SubmissionMethod>,
-
-        @JsonProperty("submissionMethodDetails")
-        val submissionMethodDetails: String?,
-
-        @JsonProperty("tenderPeriod")
-        val tenderPeriod: Period?,
-
-        @JsonProperty("eligibilityCriteria")
+        @JsonProperty("eligibilityCriteria") @NotNull
         val eligibilityCriteria: String,
-
-        @JsonProperty("contractPeriod") @Valid
-        val contractPeriod: Period,
-
-        @JsonProperty("procuringEntity") @Valid
-        val procuringEntity: OrganizationReference,
-
-        @JsonProperty("documents") @Valid
-        var documents: List<Document>?,
-
-        @JsonProperty("lots") @NotEmpty
-        var lots: List<Lot>,
-
-        @JsonProperty("lotGroups") @NotEmpty
-        val lotGroups: List<LotGroup>,
-
-        @JsonProperty("acceleratedProcedure") @Valid
-        val acceleratedProcedure: AcceleratedProcedure,
-
-        @JsonProperty("designContest") @Valid
-        val designContest: DesignContest,
-
-        @JsonProperty("electronicWorkflows") @Valid
-        val electronicWorkflows: ElectronicWorkflows,
-
-        @JsonProperty("jointProcurement") @Valid
-        val jointProcurement: JointProcurement,
-
-        @JsonProperty("legalBasis")
-        val legalBasis: LegalBasis,
-
-        @JsonProperty("procedureOutsourcing") @Valid
-        val procedureOutsourcing: ProcedureOutsourcing,
-
-        @JsonProperty("procurementMethodAdditionalInfo")
-        val procurementMethodAdditionalInfo: String?,
 
         @JsonProperty("submissionLanguages") @NotEmpty
         val submissionLanguages: List<SubmissionLanguage>,
 
+        @JsonProperty("contractPeriod") @Valid @NotNull
+        val contractPeriod: Period,
+
+        @JsonProperty("procuringEntity") @Valid @NotNull
+        val procuringEntity: OrganizationReference,
+
+        @JsonProperty("value") @Valid @NotNull
+        val value: Value,
+
+        @JsonProperty("lotGroups") @Valid @NotEmpty
+        val lotGroups: List<LotGroup>,
+
+        @JsonProperty("lots") @Valid @NotEmpty
+        var lots: List<Lot>,
+
+        @JsonProperty("items") @Valid @NotEmpty
+        var items: HashSet<Item>?,
+
+        @JsonProperty("awardCriteria") @NotNull
+        val awardCriteria: AwardCriteria,
+
+        @JsonProperty("requiresElectronicCatalogue") @NotNull
+        @get:JsonProperty("requiresElectronicCatalogue")
+        val requiresElectronicCatalogue: Boolean,
+
+        @JsonProperty("submissionMethod") @NotEmpty
+        val submissionMethod: List<SubmissionMethod>,
+
         @JsonProperty("submissionMethodRationale")
         val submissionMethodRationale: List<SubmissionMethodRationale>?,
 
-        @JsonProperty("dynamicPurchasingSystem") @Valid
-        val dynamicPurchasingSystem: DynamicPurchasingSystem,
+        @JsonProperty("submissionMethodDetails")
+        val submissionMethodDetails: String?,
 
-        @JsonProperty("framework") @Valid
-        val framework: Framework,
+        @JsonProperty("documents") @Valid
+        var documents: List<Document>?,
 
-        @JsonProperty("requiresElectronicCatalogue")
-        @get:JsonProperty("requiresElectronicCatalogue")
-        val requiresElectronicCatalogue: Boolean
+        @JsonProperty("tenderPeriod")
+        val tenderPeriod: Period?
 )

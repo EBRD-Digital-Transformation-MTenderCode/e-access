@@ -1,19 +1,19 @@
 package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import javax.validation.constraints.NotNull
 
-//@JsonPropertyOrder("useOrdering", "usePayment", "acceptInvoicing")
 data class ElectronicWorkflows(
 
-        @JsonProperty("useOrdering")
+        @JsonProperty("useOrdering")  @NotNull
         @get:JsonProperty("useOrdering")
         val useOrdering: Boolean,
 
-        @JsonProperty("usePayment")
+        @JsonProperty("usePayment")  @NotNull
         @get:JsonProperty("usePayment")
         val usePayment: Boolean,
 
-        @JsonProperty("acceptInvoicing")
+        @JsonProperty("acceptInvoicing")  @NotNull
         @get:JsonProperty("acceptInvoicing")
         val acceptInvoicing: Boolean
 )

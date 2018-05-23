@@ -3,15 +3,15 @@ package com.procurement.access.model.dto.ocds
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "documentType", "title", "description", "language", "relatedLots")
 data class Document(
 
-        @JsonProperty("id")
+        @JsonProperty("id") @NotNull
         val id: String,
 
-        @JsonProperty("documentType")
+        @JsonProperty("documentType")  @NotNull
         val documentType: DocumentType,
 
         @JsonProperty("title")
@@ -20,7 +20,7 @@ data class Document(
         @JsonProperty("description")
         val description: String?,
 
-        @JsonProperty("language")
+        @JsonProperty("language") @NotNull
         val language: String,
 
         @JsonProperty("relatedLots")

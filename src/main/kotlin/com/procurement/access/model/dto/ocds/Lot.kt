@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "value", "options", "recurrentProcurement", "renewals", "variants", "contractPeriod", "placeOfPerformance")
 data class Lot(
 
-        @JsonProperty("id")
+        @JsonProperty("id") @NotNull
         val id: String,
 
-        @JsonProperty("title")
+        @JsonProperty("title") @NotNull
         val title: String,
 
-        @JsonProperty("description")
+        @JsonProperty("description") @NotNull
         val description: String,
 
         @JsonProperty("status")
@@ -24,37 +24,24 @@ data class Lot(
         @JsonProperty("statusDetails")
         var statusDetails: TenderStatusDetails?,
 
-        @Valid
-        @JsonProperty("value")
+        @JsonProperty("value") @Valid @NotNull
         val value: Value,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("options")
-        val options: List<Option>,
+        @JsonProperty("options") @Valid @NotEmpty
+        val options: List<Option>?,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("recurrentProcurement")
-        val recurrentProcurement: List<RecurrentProcurement>,
+        @JsonProperty("recurrentProcurement") @Valid @NotEmpty
+        val recurrentProcurement: List<RecurrentProcurement>?,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("renewals")
-        val renewals: List<Renewal>,
+        @JsonProperty("renewals") @Valid @NotEmpty
+        val renewals: List<Renewal>?,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("variants")
-        val variants: List<Variant>,
+        @JsonProperty("variants") @Valid @NotEmpty
+        val variants: List<Variant>?,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("contractPeriod")
+        @JsonProperty("contractPeriod") @Valid @NotNull
         val contractPeriod: Period,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("placeOfPerformance")
+        @JsonProperty("placeOfPerformance") @Valid @NotNull
         val placeOfPerformance: PlaceOfPerformance
 )

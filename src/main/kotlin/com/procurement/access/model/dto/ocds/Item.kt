@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.util.*
 import javax.validation.Valid
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "description", "classification", "additionalClassifications", "quantity", "unit", "relatedLot")
 data class Item(
 
         @JsonProperty("id")
@@ -16,21 +16,18 @@ data class Item(
         @JsonProperty("description")
         val description: String?,
 
-        @Valid
-        @JsonProperty("classification")
+        @JsonProperty("classification") @Valid @NotNull
         val classification: Classification,
 
-        @Valid
-        @JsonProperty("additionalClassifications")
-        val additionalClassifications: HashSet<Classification>,
+        @JsonProperty("additionalClassifications") @Valid
+        val additionalClassifications: HashSet<Classification>?,
 
-        @JsonProperty("quantity")
+        @JsonProperty("quantity") @NotNull
         val quantity: BigDecimal,
 
-        @Valid
-        @JsonProperty("unit")
+        @JsonProperty("unit") @Valid @NotNull
         val unit: Unit,
 
-        @param:JsonProperty("relatedLot")
+        @JsonProperty("relatedLot") @NotNull
         var relatedLot: String
 )

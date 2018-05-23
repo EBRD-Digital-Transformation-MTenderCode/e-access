@@ -7,10 +7,9 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "value", "options", "variants", "renewals", "recurrentProcurement", "contractPeriod", "placeOfPerformance")
 data class PnLot(
 
-        @JsonProperty("id") @field:NotNull
+        @JsonProperty("id") @NotNull
         var id: String,
 
         @JsonProperty("title")

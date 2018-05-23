@@ -8,7 +8,6 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "value", "options", "recurrentProcurement", "renewals", "variants", "contractPeriod", "placeOfPerformance")
 data class CnLot(
 
         @JsonProperty("id") @NotNull
@@ -32,14 +31,14 @@ data class CnLot(
         @JsonProperty("options") @Valid @NotEmpty
         val options: List<Option>?,
 
-        @JsonProperty("recurrentProcurement") @Valid @NotEmpty
-        val recurrentProcurement: List<RecurrentProcurement>?,
+        @JsonProperty("variants") @Valid @NotEmpty
+        val variants: List<Variant>?,
 
         @JsonProperty("renewals") @Valid @NotEmpty
         val renewals: List<Renewal>?,
 
-        @JsonProperty("variants") @Valid @NotEmpty
-        val variants: List<Variant>?,
+        @JsonProperty("recurrentProcurement") @Valid @NotEmpty
+        val recurrentProcurement: List<RecurrentProcurement>?,
 
         @JsonProperty("contractPeriod") @Valid @NotNull
         val contractPeriod: Period?,

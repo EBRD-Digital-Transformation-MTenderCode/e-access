@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "description", "amount", "project", "projectID", "uri", "source", "europeanUnionFunding", "isEuropeanUnionFunded", "budgetBreakdown")
 data class Budget(
 
         @JsonProperty("id")
@@ -15,8 +15,7 @@ data class Budget(
         @JsonProperty("description")
         val description: String?,
 
-        @Valid
-        @JsonProperty("amount")
+        @JsonProperty("amount") @Valid @NotNull
         val amount: Value,
 
         @JsonProperty("project")
@@ -31,16 +30,13 @@ data class Budget(
         @JsonProperty("source")
         val source: String?,
 
-        @Valid
-        @JsonProperty("europeanUnionFunding")
+        @JsonProperty("europeanUnionFunding") @Valid
         val europeanUnionFunding: EuropeanUnionFunding?,
 
-        @JsonProperty("isEuropeanUnionFunded")
+        @JsonProperty("isEuropeanUnionFunded") @NotNull
         @get:JsonProperty("isEuropeanUnionFunded")
         val isEuropeanUnionFunded: Boolean,
 
-        @Valid
-        @NotEmpty
-        @JsonProperty("budgetBreakdown")
+        @JsonProperty("budgetBreakdown") @Valid @NotEmpty
         val budgetBreakdown: List<BudgetBreakdown>
 )

@@ -7,18 +7,18 @@ import com.procurement.access.model.dto.ocds.Unit
 import java.math.BigDecimal
 import java.util.*
 import javax.validation.Valid
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "description", "classification", "additionalClassifications", "quantity", "unit", "relatedLot")
 data class PnItem(
 
-        @JsonProperty("id")
+        @JsonProperty("id") @NotNull
         var id: String,
 
         @JsonProperty("description")
         val description: String?,
 
-        @JsonProperty("classification") @Valid
+        @JsonProperty("classification") @Valid @NotNull
         val classification: Classification,
 
         @JsonProperty("additionalClassifications") @Valid
@@ -30,6 +30,6 @@ data class PnItem(
         @JsonProperty("unit") @Valid
         val unit: Unit?,
 
-        @JsonProperty("relatedLot")
+        @JsonProperty("relatedLot") @NotNull
         var relatedLot: String
 )

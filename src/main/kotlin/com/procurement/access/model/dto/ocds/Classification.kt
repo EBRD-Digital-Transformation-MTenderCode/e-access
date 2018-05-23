@@ -2,20 +2,20 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder("id", "description", "scheme", "uri")
 data class Classification(
 
-        @param:JsonProperty("scheme")
+        @JsonProperty("scheme") @NotNull
         val scheme: Scheme,
 
-        @param:JsonProperty("id")
+        @JsonProperty("id") @NotNull
         val id: String,
 
-        @param:JsonProperty("description")
+        @JsonProperty("description") @NotNull
         val description: String,
 
-        @param:JsonProperty("uri")
+        @JsonProperty("uri")
         val uri: String?
 )
