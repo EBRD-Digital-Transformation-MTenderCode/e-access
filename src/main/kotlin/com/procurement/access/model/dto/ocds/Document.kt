@@ -11,7 +11,7 @@ data class Document(
         @JsonProperty("id") @NotNull
         val id: String,
 
-        @JsonProperty("documentType")  @NotNull
+        @JsonProperty("documentType") @NotNull
         val documentType: DocumentType,
 
         @JsonProperty("title")

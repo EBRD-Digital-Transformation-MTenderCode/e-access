@@ -89,7 +89,7 @@ data class CnTender(
         @JsonProperty("lotGroups") @Valid @NotEmpty
         val lotGroups: List<LotGroup>?,
 
-        @JsonProperty("lots")  @Valid @NotEmpty
+        @JsonProperty("lots") @Valid @NotEmpty
         var lots: List<CnLot>?,
 
         @JsonProperty("items") @Valid @NotEmpty
@@ -98,7 +98,7 @@ data class CnTender(
         @JsonProperty("awardCriteria") @NotNull
         val awardCriteria: AwardCriteria,
 
-        @JsonProperty("requiresElectronicCatalogue")  @NotNull
+        @JsonProperty("requiresElectronicCatalogue") @NotNull
         @get:JsonProperty("requiresElectronicCatalogue")
         val requiresElectronicCatalogue: Boolean?,
 

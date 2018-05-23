@@ -5,15 +5,15 @@ import javax.validation.constraints.NotNull
 
 data class ElectronicWorkflows(
 
-        @JsonProperty("useOrdering")  @NotNull
+        @JsonProperty("useOrdering") @NotNull
         @get:JsonProperty("useOrdering")
         val useOrdering: Boolean,
 
-        @JsonProperty("usePayment")  @NotNull
+        @JsonProperty("usePayment") @NotNull
         @get:JsonProperty("usePayment")
         val usePayment: Boolean,
 
-        @JsonProperty("acceptInvoicing")  @NotNull
+        @JsonProperty("acceptInvoicing") @NotNull
         @get:JsonProperty("acceptInvoicing")
         val acceptInvoicing: Boolean
 )

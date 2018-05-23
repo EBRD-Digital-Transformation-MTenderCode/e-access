@@ -1,45 +1,37 @@
 {
   "planning": {
-    "rationale":  "String",
     "budget": {
-      "description":  "String",
       "amount": {
-        "amount": 0,
-        "currency":  "String"
+        "amount": 400.11,
+        "currency": "EUR"
       },
       "isEuropeanUnionFunded": false,
-      "europeanUnionFunding": {
-        "projectIdentifier":  "String",
-        "projectName":  "String",
-        "uri":  "String"
-      },
       "budgetBreakdown": [
         {
-          "id":  "String",
-          "description":  "String",
+          "id": "ocds-t1s2t3-MD-1526242168113-FS-1526242185601",
           "amount": {
-            "amount": 0,
-            "currency":  "String"
+            "amount": 400.11,
+            "currency": "EUR"
           },
           "period": {
-            "startDate":  "String",
-            "endDate":  "String"
+            "startDate": "2018-05-14T21:00:00Z",
+            "endDate": "2018-05-17T21:00:00Z"
           },
           "sourceParty": {
-            "name":  "String",
-            "id":  "String"
+            "id": "Buyer Identification Scheme*-Buyer Identifier*",
+            "name": "Buyer Official Name*"
           }
         }
       ]
     }
   },
   "tender": {
-    "title":  "String",
-    "description":  "String",
+    "title": "Title*",
+    "description": "Short description",
     "classification": {
-      "scheme":  "String",
-      "description":  "String",
-      "id":  "String"
+      "scheme": "CPV",
+      "id": "03000000-1",
+      "description": "Agricultural, farming, fishing, forestry and related products"
     },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
@@ -64,57 +56,43 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis":  "String",
-    "procurementMethod":  "String",
-    "procurementMethodDetails":  "String",
-    "procurementMethodRationale":  "String",
-    "procurementMethodAdditionalInfo":  "String",
-    "mainProcurementCategory":  "String",
-    "additionalProcurementCategories": [
-       "String"
-    ],
-    "eligibilityCriteria":  "String",
+    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "procurementMethod": "selective",
+    "procurementMethodDetails": "Restricted Tender",
+    "mainProcurementCategory": "goods",
     "submissionLanguages": [
-       "String"
+      "en"
     ],
     "contractPeriod": {
-      "startDate":  "String",
-      "endDate":  "String"
+      "startDate": "2018-05-22T21:00:00Z",
+      "endDate": "2018-05-30T21:00:00Z"
     },
     "procuringEntity": {
-      "name":  "String",
+      "name": "Buyer Official Name*",
       "identifier": {
-        "scheme":  "String",
-        "id":  "String",
-        "legalName":  "String",
-        "uri":  "String"
+        "id": "Buyer Identifier*",
+        "scheme": "Buyer Identification Scheme*",
+        "legalName": "Buyer Legal Name*",
+        "uri": "Buyer URI*"
       },
-      "additionalIdentifiers": [
-        {
-          "scheme":  "String",
-          "id":  "String",
-          "legalName":  "String",
-          "uri":  "String"
-        }
-      ],
       "address": {
-        "streetAddress":  "String",
-        "locality":  "String",
-        "region":  "String",
-        "postalCode":  "String",
-        "countryName":  "String"
+        "streetAddress": "Лисового",
+        "locality": "Buyer Locality*",
+        "region": "Dnipropetrovsk oblast",
+        "postalCode": "50000",
+        "countryName": "Украина"
       },
       "contactPoint": {
-        "name":  "String",
-        "email":  "String",
-        "telephone":  "String",
-        "faxNumber":  "String",
-        "url":  "String"
+        "name": "Volkov Dmitriy",
+        "email": "fufik93@gmail.com",
+        "telephone": "0972108063",
+        "faxNumber": "Buyer Fax",
+        "url": "Buyer URL*"
       }
     },
     "value": {
-      "amount": 0,
-      "currency":  "String"
+      "amount": 400.11,
+      "currency": "EUR"
     },
     "lotGroups": [
       {
@@ -123,12 +101,12 @@
     ],
     "lots": [
       {
-        "id":  "String",
-        "title":  "String",
-        "description":  "String",
+        "id": "root_section2_lots-0",
+        "title": "Title of lot*",
+        "description": "Short description\n",
         "value": {
-          "amount": 0,
-          "currency":  "String"
+          "amount": 400.11,
+          "currency": "EUR"
         },
         "options": [
           {
@@ -141,9 +119,7 @@
           }
         ],
         "renewals": [
-          {
-            "hasRenewals": false
-          }
+          {}
         ],
         "recurrentProcurement": [
           {
@@ -151,65 +127,41 @@
           }
         ],
         "contractPeriod": {
-          "startDate":  "String",
-          "endDate":  "String"
+          "startDate": "2018-05-27T21:00:00Z",
+          "endDate": "2018-06-06T21:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress":  "String",
-            "locality":  "String",
-            "region":  "String",
-            "postalCode":  "String",
-            "countryName":  "String"
-          },
-          "description":  "String"
+            "streetAddress": "Лисового",
+            "locality": "Locality*",
+            "region": "Dnipropetrovsk oblast",
+            "postalCode": "50000",
+            "countryName": "Украина"
+          }
         }
       }
     ],
     "items": [
       {
-        "id":  "String",
+        "id": "root_section2_lots_0_items-0",
+        "description": "Short description",
         "classification": {
-          "scheme":  "String",
-          "description":  "String",
-          "id":  "String"
+          "scheme": "CPV",
+          "id": "03000000-1",
+          "description": "Agricultural, farming, fishing, forestry and related products"
         },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVs",
-            "description":  "String",
-            "id":  "String"
-          }
-        ],
-        "quantity": 0,
+        "quantity": 50,
         "unit": {
-          "id":  "String",
-          "name":  "String"
+          "id": "Unit id*",
+          "name": "Unit name*"
         },
-        "description":  "String",
-        "relatedLot":  "String"
+        "relatedLot": "root_section2_lots-0"
       }
     ],
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
       "electronicSubmission"
-    ],
-    "submissionMethodRationale": [
-       "String"
-    ],
-    "submissionMethodDetails":  "String",
-    "documents": [
-      {
-        "documentType":  "String",
-        "id":  "String",
-        "title":  "String",
-        "description":  "String",
-        "language":  "String",
-        "relatedLots": [
-           "String"
-        ]
-      }
     ]
   }
 }

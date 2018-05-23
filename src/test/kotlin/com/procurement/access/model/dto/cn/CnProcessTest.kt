@@ -8,6 +8,6 @@ class CnProcessTest {
     @Test
     @DisplayName("cnProcessDto")
     fun cnProcessDto() {
-        compare(CnProcess::class.java, "cn.json")
+        compare(CnProcess::class.java, "/json/cn.json")
     }
 }
