@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.dto.pn.PnProcess
-import com.procurement.access.service.PNService
+import com.procurement.access.service.PnService
 import com.procurement.notice.model.bpe.ResponseDto
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -14,7 +14,7 @@ import javax.validation.Valid
 @Validated
 @RestController
 @RequestMapping("/pn")
-class PnController(private val pnService: PNService) {
+class PnController(private val pnService: PnService) {
 
     @PostMapping
     fun createPn(@RequestParam("stage") stage: String,

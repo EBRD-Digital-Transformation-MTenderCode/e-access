@@ -14,7 +14,7 @@ import com.procurement.notice.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
-interface PNService {
+interface PnService {
 
     fun createPn(stage: String,
                  country: String,
@@ -24,8 +24,8 @@ interface PNService {
 }
 
 @Service
-class PNServiceImpl(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao) : PNService {
+class PnServiceImpl(private val generationService: GenerationService,
+                    private val tenderProcessDao: TenderProcessDao) : PnService {
 
     override fun createPn(stage: String,
                           country: String,
