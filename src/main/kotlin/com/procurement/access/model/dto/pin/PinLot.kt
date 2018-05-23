@@ -2,48 +2,48 @@ package com.procurement.access.model.dto.pin
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.model.dto.ocds.*
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 //@JsonPropertyOrder("id", "title", "description", "status", "statusDetails", "value", "options", "recurrentProcurement", "renewals", "variants", "contractPeriod", "placeOfPerformance")
 data class PinLot(
 
         @JsonProperty("id")
-        val id: String,
+        var id: String,
 
-        @JsonProperty("title")
-        val title: String,
+        @JsonProperty("title") @NotNull
+        val title: String?,
 
-        @JsonProperty("description")
-        val description: String,
+        @JsonProperty("description") @NotNull
+        val description: String?,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
-        @JsonProperty("value") @Valid
-        val value: Value,
+        @JsonProperty("value") @Valid @NotNull
+        val value: Value?,
 
         @JsonProperty("options") @Valid @NotEmpty
-        val options: List<Option>,
+        val options: List<Option>?,
 
-        @JsonProperty("recurrentProcurement") @Valid
+        @JsonProperty("recurrentProcurement") @Valid @NotNull
         val recurrentProcurement: List<RecurrentProcurement>?,
 
-        @JsonProperty("renewals") @Valid @NotEmpty
-        val renewals: List<Renewal>,
+        @JsonProperty("renewals") @Valid @NotEmpty @NotNull
+        val renewals: List<Renewal>?,
 
-        @JsonProperty("variants") @Valid @NotEmpty
-        val variants: List<Variant>,
+        @JsonProperty("variants") @Valid @NotEmpty @NotNull
+        val variants: List<Variant>?,
 
-        @JsonProperty("contractPeriod") @Valid
-        val contractPeriod: Period,
+        @JsonProperty("contractPeriod") @Valid @NotNull
+        val contractPeriod: Period?,
 
-        @JsonProperty("placeOfPerformance") @Valid
-        val placeOfPerformance: PlaceOfPerformance
+        @JsonProperty("placeOfPerformance") @Valid @NotNull
+        val placeOfPerformance: PlaceOfPerformance?
 )

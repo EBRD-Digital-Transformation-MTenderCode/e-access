@@ -1,10 +1,10 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.model.dto.cn.CnProcess
-import com.procurement.access.model.dto.cn.CnTender
-import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
+import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
+import com.procurement.access.model.dto.pn.PnProcess
+import com.procurement.access.model.dto.pn.PnTender
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -14,74 +14,64 @@ import com.procurement.notice.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
-interface CnService {
+interface PNService {
 
-    fun createCn(stage: String,
+    fun createPn(stage: String,
                  country: String,
                  owner: String,
                  dateTime: LocalDateTime,
-                 cn: CnProcess): ResponseDto<*>
+                 pn: PnProcess): ResponseDto<*>
 }
 
 @Service
-class CnServiceImpl(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao) : CnService {
+class PNServiceImpl(private val generationService: GenerationService,
+                    private val tenderProcessDao: TenderProcessDao) : PNService {
 
-    override fun createCn(stage: String,
+    override fun createPn(stage: String,
                           country: String,
                           owner: String,
                           dateTime: LocalDateTime,
-                          cn: CnProcess): ResponseDto<*> {
-
-        validateFields(cn)
-        checkCurrency(cn)
+                          pn: PnProcess): ResponseDto<*> {
+        validateFields(pn)
         val cpId = generationService.getCpId(country)
-        cn.ocId = cpId
-        cn.tender.apply {
+        pn.ocId = cpId
+        pn.tender.apply {
             id = cpId
             procuringEntity.id = generationService.generateOrganizationId(procuringEntity)
             setStatuses(this)
             setItemsId(this)
             setLotsIdAndItemsAndDocumentsRelatedLots(this)
         }
-        val entity = getEntity(cn, cpId, stage, dateTime, owner)
+        val entity = getEntity(pn, cpId, stage, dateTime, owner)
         tenderProcessDao.save(entity)
-        cn.token = entity.token.toString()
-        return ResponseDto(true, null, cn)
+        pn.token = entity.token.toString()
+        return ResponseDto(true, null, pn)
     }
 
-    private fun validateFields(cn: CnProcess) {
-        if (cn.tender.id != null) throw ErrorException(ErrorType.TENDER_ID_NOT_NULL)
-        if (cn.tender.status != null) throw ErrorException(ErrorType.TENDER_STATUS_NOT_NULL)
-        if (cn.tender.statusDetails != null) throw ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL)
-        cn.tender.lots?.let { lots ->
+    private fun validateFields(pn: PnProcess) {
+        if (pn.tender.id != null) throw ErrorException(ErrorType.TENDER_ID_NOT_NULL)
+        if (pn.tender.status != null) throw ErrorException(ErrorType.TENDER_STATUS_NOT_NULL)
+        if (pn.tender.statusDetails != null) throw ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL)
+        pn.tender.lots?.let { lots ->
             if (lots.asSequence().any({ lot -> lot.status != null })) throw ErrorException(ErrorType.LOT_STATUS_NOT_NULL)
             if (lots.asSequence().any({ lot -> lot.statusDetails != null })) throw ErrorException(ErrorType.LOT_STATUS_DETAILS_NOT_NULL)
         }
     }
 
-    private fun checkCurrency(cn: CnProcess) {
-        val budget = cn.planning.budget
-        if (budget.budgetBreakdown.asSequence().map { it.amount }.toSet().size > 1)
-            throw ErrorException(ErrorType.INVALID_CURRENCY)
-        if (budget.amount.currency != budget.budgetBreakdown[0].amount.currency)
-            throw ErrorException(ErrorType.INVALID_CURRENCY)
-    }
-
-    private fun setStatuses(tender: CnTender) {
-        tender.status = ACTIVE
+    private fun setStatuses(tender: PnTender) {
+        tender.status = TenderStatus.PLANNING
         tender.statusDetails = EMPTY
         tender.lots?.forEach { lot ->
-            lot.status = ACTIVE
+            lot.status = TenderStatus.PLANNING
             lot.statusDetails = EMPTY
         }
     }
 
-    private fun setItemsId(tender: CnTender) {
+    private fun setItemsId(tender: PnTender) {
         tender.items?.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
     }
 
-    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: CnTender) {
+    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: PnTender) {
         tender.lots?.forEach { lot ->
             val id = generationService.generateTimeBasedUUID().toString()
             tender.items?.asSequence()
@@ -95,7 +85,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getEntity(dto: CnProcess,
+    private fun getEntity(pn: PnProcess,
                           cpId: String,
                           stage: String,
                           dateTime: LocalDateTime,
@@ -106,7 +96,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                 stage = stage,
                 owner = owner,
                 createdDate = dateTime.toDate(),
-                jsonData = toJson(dto)
+                jsonData = toJson(pn)
         )
     }
 }

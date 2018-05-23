@@ -1,10 +1,9 @@
 package com.procurement.access.dao
 
 import com.datastax.driver.core.Session
+import com.datastax.driver.core.querybuilder.QueryBuilder.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
-
-import com.datastax.driver.core.querybuilder.QueryBuilder.*
 
 interface TenderProcessDao {
 
@@ -15,7 +14,7 @@ interface TenderProcessDao {
 }
 
 @Service
-class TenderProcessDaoImpl(private val session: Session): TenderProcessDao {
+class TenderProcessDaoImpl(private val session: Session) : TenderProcessDao {
 
     override fun save(entity: TenderProcessEntity) {
         val insert = insertInto(TENDER_TABLE)

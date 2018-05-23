@@ -102,9 +102,8 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         var itemsForCompiledLots: List<Item>? = null
         val updatedLots = updateLots(process.tender.lots, lotsDto)
-        val isAnyCompleteLots = isAnyCompleteLots(updatedLots)
         process.tender.apply {
-            if (isAnyCompleteLots) {
+            if (isAnyCompleteLots(updatedLots)) {
                 itemsForCompiledLots = getItemsForCompiledLots(items, updatedLots)
             } else {
                 status = TenderStatus.UNSUCCESSFUL
@@ -162,11 +161,14 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         if (lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
     }
 
-    private fun getItemsForCompiledLots(items: Set<Item>, lots: List<Lot>): List<Item> {
-        val lotsIds = lots.asSequence()
-                .filter { it.status == TenderStatus.COMPLETE && it.statusDetails == TenderStatusDetails.EMPTY }
-                .map { it.id }.toHashSet()
-        return items.asSequence().filter { lotsIds.contains(it.relatedLot) }.toList()
+    private fun getItemsForCompiledLots(items: Set<Item>?, lots: List<Lot>): List<Item>? {
+        if (items != null) {
+            val lotsIds = lots.asSequence()
+                    .filter { it.status == TenderStatus.COMPLETE && it.statusDetails == TenderStatusDetails.EMPTY }
+                    .map { it.id }.toHashSet()
+            return items.asSequence().filter { lotsIds.contains(it.relatedLot) }.toList()
+        }
+        return null
     }
 
     private fun updateLots(lots: List<Lot>, unsuccessfulLots: LotsRequestDto): List<Lot> {

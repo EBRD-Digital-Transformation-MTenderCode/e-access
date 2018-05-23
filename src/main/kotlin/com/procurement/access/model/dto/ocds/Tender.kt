@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import java.util.*
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
@@ -30,7 +29,7 @@ data class Tender(
         val classification: Classification,
 
         @JsonProperty("items") @NotEmpty
-        val items: HashSet<Item>,
+        var items: HashSet<Item>?,
 
         @JsonProperty("value") @Valid
         val value: Value,
@@ -72,10 +71,10 @@ data class Tender(
         val procuringEntity: OrganizationReference,
 
         @JsonProperty("documents") @Valid
-        val documents: List<Document>?,
+        var documents: List<Document>?,
 
         @JsonProperty("lots") @NotEmpty
-        val lots: List<Lot>,
+        var lots: List<Lot>,
 
         @JsonProperty("lotGroups") @NotEmpty
         val lotGroups: List<LotGroup>,

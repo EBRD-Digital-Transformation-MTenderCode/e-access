@@ -10,7 +10,9 @@ import com.procurement.access.model.dto.pn.PnLot
 import com.procurement.access.model.dto.pn.PnProcess
 import com.procurement.access.model.dto.pn.PnTender
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.*
+import com.procurement.access.utils.toDate
+import com.procurement.access.utils.toJson
+import com.procurement.access.utils.toObject
 import com.procurement.notice.exception.ErrorException
 import com.procurement.notice.exception.ErrorType
 import com.procurement.notice.model.bpe.ResponseDto
@@ -27,7 +29,7 @@ interface CnOnPnService {
             owner: String,
             token: String,
             dateTime: LocalDateTime,
-            data: CnProcess): ResponseDto<*>
+            cn: CnProcess): ResponseDto<*>
 }
 
 @Service

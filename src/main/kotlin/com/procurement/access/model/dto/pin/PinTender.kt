@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.pin
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.model.dto.ocds.*
 import java.util.*
 import javax.validation.Valid
@@ -13,40 +12,40 @@ import javax.validation.constraints.NotEmpty
 data class PinTender(
 
         @JsonProperty("id")
-        val id: String?,
+        var id: String?,
 
         @JsonProperty("title")
-        val title: String,
+        var title: String,
 
         @JsonProperty("description")
-        val description: String,
+        var description: String,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
         @JsonProperty("classification") @Valid
-        val classification: Classification,
+        var classification: Classification,
 
         @JsonProperty("items") @Valid @NotEmpty
-        val items: HashSet<Item>,
+        val items: HashSet<Item>?,
 
         @JsonProperty("value") @Valid
         val value: Value,
 
         @JsonProperty("procurementMethod")
-        val procurementMethod: ProcurementMethod,
+        var procurementMethod: ProcurementMethod,
 
         @JsonProperty("procurementMethodDetails")
-        val procurementMethodDetails: String,
+        var procurementMethodDetails: String,
 
         @JsonProperty("procurementMethodRationale")
         val procurementMethodRationale: String?,
 
         @JsonProperty("mainProcurementCategory")
-        val mainProcurementCategory: MainProcurementCategory,
+        var mainProcurementCategory: MainProcurementCategory,
 
         @JsonProperty("additionalProcurementCategories")
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
@@ -67,13 +66,13 @@ data class PinTender(
         val contractPeriod: Period,
 
         @JsonProperty("procuringEntity") @Valid
-        val procuringEntity: OrganizationReference,
+        var procuringEntity: OrganizationReference,
 
         @JsonProperty("documents") @Valid
         val documents: List<Document>?,
 
         @JsonProperty("lots") @Valid @NotEmpty
-        val lots: List<PinLot>,
+        var lots: List<PinLot>?,
 
         @JsonProperty("lotGroups")
         val lotGroups: List<LotGroup>?,
@@ -91,7 +90,7 @@ data class PinTender(
         val jointProcurement: JointProcurement,
 
         @JsonProperty("legalBasis")
-        val legalBasis: LegalBasis,
+        var legalBasis: LegalBasis,
 
         @JsonProperty("procedureOutsourcing") @Valid
         val procedureOutsourcing: ProcedureOutsourcing,

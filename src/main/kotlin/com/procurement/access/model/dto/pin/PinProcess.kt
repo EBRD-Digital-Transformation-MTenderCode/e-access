@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.pin
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.model.dto.ocds.Planning
 import javax.validation.Valid
 
@@ -11,13 +10,13 @@ import javax.validation.Valid
 data class PinProcess(
 
         @JsonProperty("token")
-        val token: String?,
+        var token: String?,
 
         @JsonProperty("ocid")
-        val ocId: String?,
+        var ocId: String?,
 
         @JsonProperty("planning") @Valid
-        val planning: Planning,
+        var planning: Planning,
 
         @JsonProperty("tender") @Valid
         val tender: PinTender

@@ -10,7 +10,9 @@ import com.procurement.access.model.dto.pin.PinLot
 import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.model.dto.pin.PinTender
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.*
+import com.procurement.access.utils.toDate
+import com.procurement.access.utils.toJson
+import com.procurement.access.utils.toObject
 import com.procurement.notice.exception.ErrorException
 import com.procurement.notice.exception.ErrorType
 import com.procurement.notice.model.bpe.ResponseDto
@@ -27,7 +29,7 @@ interface CnOnPinService {
             owner: String,
             token: String,
             dateTime: LocalDateTime,
-            data: CnProcess): ResponseDto<*>
+            cn: CnProcess): ResponseDto<*>
 }
 
 @Service
@@ -70,7 +72,7 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
 
     private fun setLotsToCnFromPin(pinTender: PinTender, cnTender: CnTender) {
         if (pinTender.lots != null) {
-            cnTender.lots = pinTender.lots.asSequence().map({ convertPinToCnLot(it) }).toList()
+            cnTender.lots = pinTender.lots!!.asSequence().map({ convertPinToCnLot(it) }).toList()
         }
     }
 

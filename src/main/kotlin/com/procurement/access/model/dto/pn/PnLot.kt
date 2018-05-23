@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.pn
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.model.dto.ocds.*
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
@@ -12,7 +11,7 @@ import javax.validation.constraints.NotNull
 data class PnLot(
 
         @JsonProperty("id") @field:NotNull
-        val id: String,
+        var id: String,
 
         @JsonProperty("title")
         val title: String?,
@@ -21,10 +20,10 @@ data class PnLot(
         val description: String?,
 
         @JsonProperty("status")
-        val status: TenderStatus?,
+        var status: TenderStatus?,
 
         @JsonProperty("statusDetails")
-        val statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails?,
 
         @JsonProperty("value") @Valid
         val value: Value?,

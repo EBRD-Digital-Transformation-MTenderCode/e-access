@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.pn
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.Unit
 import java.math.BigDecimal
@@ -14,7 +13,7 @@ import javax.validation.Valid
 data class PnItem(
 
         @JsonProperty("id")
-        val id: String,
+        var id: String,
 
         @JsonProperty("description")
         val description: String?,
@@ -32,5 +31,5 @@ data class PnItem(
         val unit: Unit?,
 
         @JsonProperty("relatedLot")
-        val relatedLot: String
+        var relatedLot: String
 )
