@@ -66,8 +66,9 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
     }
 
     private fun validatePeriod(pinTender: PinTender, dateTime: LocalDateTime) {
-        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
-            throw ErrorException(ErrorType.INVALID_START_DATE)
+//TODO check this valiation
+//        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
+//            throw ErrorException(ErrorType.INVALID_START_DATE)
     }
 
     private fun setLotsToCnFromPin(pinTender: PinTender, cnTender: CnTender) {
