@@ -49,8 +49,8 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         if (entity.cpId != pin.tender.id) throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
         val pn = toObject(PnProcess::class.java, entity.jsonData)
-        validateLots(pn.tender, pin.tender)
         addLotsToPinFromPn(pn.tender, pin.tender)
+        validateLots(pn.tender, pin.tender)
         pin.planning = pn.planning
         pin.tender.apply {
             title = pn.tender.title

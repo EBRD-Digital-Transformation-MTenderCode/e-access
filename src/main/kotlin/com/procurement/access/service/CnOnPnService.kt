@@ -73,11 +73,10 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
     }
 
     private fun validateFields(cn: CnProcess) {
-        cn.tender.eligibilityCriteria ?: throw ErrorException(ErrorType.EL_CRITERIA_IS_NULL)
     }
 
     private fun setLotsToCnFromPn(pnTender: PnTender, cnTender: CnTender) {
-        if (pnTender.lots != null) {
+        if (pnTender.lots != null && !pnTender.lots!!.isEmpty()) {
             cnTender.lots = pnTender.lots.asSequence().map({ convertPnToCnLot(it) }).toList()
         }
     }

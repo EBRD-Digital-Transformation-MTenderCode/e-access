@@ -71,7 +71,7 @@ data class CnTender(
         @JsonProperty("additionalProcurementCategories")
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
-        @JsonProperty("eligibilityCriteria")
+        @JsonProperty("eligibilityCriteria") @NotNull
         val eligibilityCriteria: String?,
 
         @JsonProperty("submissionLanguages") @Valid @NotEmpty

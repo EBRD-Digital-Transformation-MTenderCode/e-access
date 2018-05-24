@@ -66,6 +66,8 @@ class CnServiceImpl(private val generationService: GenerationService,
             throw ErrorException(ErrorType.INVALID_CURRENCY)
         if (budget.amount.currency != budget.budgetBreakdown[0].amount.currency)
             throw ErrorException(ErrorType.INVALID_CURRENCY)
+        if (cn.tender.value.currency != budget.budgetBreakdown[0].amount.currency)
+            throw ErrorException(ErrorType.INVALID_CURRENCY)
     }
 
     private fun setStatuses(tender: CnTender) {

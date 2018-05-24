@@ -66,9 +66,8 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
     }
 
     private fun validatePeriod(pinTender: PinTender, dateTime: LocalDateTime) {
-//TODO check this valiation
-//        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
-//            throw ErrorException(ErrorType.INVALID_START_DATE)
+        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
+            throw ErrorException(ErrorType.INVALID_START_DATE)
     }
 
     private fun setLotsToCnFromPin(pinTender: PinTender, cnTender: CnTender) {
@@ -120,8 +119,8 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
                 id = pinTender.id,
                 title = pinTender.title,
                 description = pinTender.description,
-                status = pinTender.status,
-                statusDetails = pinTender.statusDetails,
+                status = null,
+                statusDetails = null,
                 classification = pinTender.classification,
                 acceleratedProcedure = pinTender.acceleratedProcedure,
                 designContest = pinTender.designContest,
@@ -144,13 +143,13 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
                 value = pinTender.value,
                 lotGroups = pinTender.lotGroups,
                 lots = null,
-                items = HashSet(pinTender.items),
+                items = pinTender.items,
                 awardCriteria = pinTender.awardCriteria,
                 requiresElectronicCatalogue = pinTender.requiresElectronicCatalogue,
                 submissionMethod = pinTender.submissionMethod,
                 submissionMethodRationale = pinTender.submissionMethodRationale,
                 submissionMethodDetails = pinTender.submissionMethodDetails,
-                documents = pinTender.documents
+                documents = null
         )
     }
 
