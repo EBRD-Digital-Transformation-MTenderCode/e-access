@@ -127,7 +127,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     private fun setLotsStatus(lots: List<Lot>, lotsDto: LotsRequestDto, status: TenderStatus) {
         if (lots.isEmpty()) throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
-        val lotsIds = lotsDto.lots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
+        val lotsIds = lotsDto.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
         lots.forEach { lot ->
             if (lot.id in lotsIds) lot.status = status
             if (lot.statusDetails == TenderStatusDetails.UNSUCCESSFUL) lot.statusDetails = TenderStatusDetails.EMPTY
@@ -136,7 +136,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     private fun setLotsStatusDetails(lots: List<Lot>, lotsDto: LotsRequestDto, statusDetails: TenderStatusDetails) {
         if (lots.isEmpty()) throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
-        val lotsIds = lotsDto.lots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
+        val lotsIds = lotsDto.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
         lots.forEach { lot ->
             if (lot.id in lotsIds) lot.statusDetails = statusDetails
         }
@@ -173,7 +173,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     private fun updateLots(lots: List<Lot>, unsuccessfulLots: LotsRequestDto): List<Lot> {
         if (lots.isEmpty()) throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
-        val lotIds = unsuccessfulLots.lots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
+        val lotIds = unsuccessfulLots.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
         lots.forEach { lot ->
             if (lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.AWARDED) {
                 lot.status = TenderStatus.COMPLETE
@@ -189,7 +189,8 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     private fun isAnyCompleteLots(lots: List<Lot>?): Boolean {
         return if (lots != null && !lots.isEmpty()) {
-            lots.stream().anyMatch { (_, _, _, status, statusDetails) -> status == TenderStatus.COMPLETE && statusDetails == TenderStatusDetails.EMPTY }
+            lots.asSequence()
+                    .any { it.status == TenderStatus.COMPLETE && it.statusDetails == TenderStatusDetails.EMPTY }
         } else false
     }
 }

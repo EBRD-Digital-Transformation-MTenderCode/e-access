@@ -177,17 +177,17 @@
             "hasOptions": true
           }
         ],
-        "variants": [
+        "recurrentProcurement": [
           {
-            "hasVariants": true
+            "isRecurrent": true
           }
         ],
         "renewals": [
           {}
         ],
-        "recurrentProcurement": [
+        "variants": [
           {
-            "isRecurrent": true
+            "hasVariants": true
           }
         ],
         "contractPeriod": {
@@ -252,6 +252,10 @@
           "string"
         ]
       }
-    ]
+    ],
+    "tenderPeriod": {
+      "startDate": "2018-05-17T15:24:53Z",
+      "endDate": "2018-06-17T15:24:53Z"
+    }
   }
 }

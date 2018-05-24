@@ -34,7 +34,7 @@ class PinServiceImpl(private val generationService: GenerationService,
                            pin: PinProcess): ResponseDto<*> {
         validateFields(pin)
         val cpId = generationService.getCpId(country)
-        pin.ocId = cpId
+        pin.ocid = cpId
         pin.tender.apply {
             id = cpId
             procuringEntity.id = generationService.generateOrganizationId(procuringEntity)

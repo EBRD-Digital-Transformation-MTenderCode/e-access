@@ -1,0 +1,9 @@
+{
+  "awardCriteria": "string",
+
+  "lots": [
+    {
+      "id": "string"
+    }
+  ]
+}

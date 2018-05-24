@@ -64,7 +64,7 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
             setStatuses(this)
         }
         tenderProcessDao.save(getEntity(pin, cpId, stage, entity.token, dateTime, owner))
-        pin.ocId = cpId
+        pin.ocid = cpId
         pin.token = entity.token.toString()
         return ResponseDto(true, null, pin)
     }

@@ -9,14 +9,15 @@ import javax.validation.constraints.NotNull
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 data class PnProcess(
 
+        @JsonProperty("ocid")
+        var ocid: String?,
+
         @JsonProperty("token")
         var token: String?,
-
-        @JsonProperty("ocid")
-        var ocId: String?,
 
         @JsonProperty("planning") @Valid @NotNull
         val planning: Planning,
 
         @JsonProperty("tender") @Valid @NotNull
-        val tender: PnTender)
+        val tender: PnTender
+)

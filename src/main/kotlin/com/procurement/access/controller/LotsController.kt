@@ -1,6 +1,9 @@
 package com.procurement.access.controller
 
+import com.procurement.access.model.dto.lots.LotUpdateResponseDto
 import com.procurement.access.model.dto.lots.LotsRequestDto
+import com.procurement.access.model.dto.lots.LotsUpdateResponseDto
+import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.service.LotsService
@@ -89,6 +92,13 @@ class LotsController(private val lotsService: LotsService) {
                         cpId = cpId,
                         stage = stage,
                         lotsDto = data),
+                HttpStatus.OK)
+    }
+
+    @PostMapping("/test")
+    fun test(): ResponseEntity<TenderProcess> {
+        return ResponseEntity(
+                null,
                 HttpStatus.OK)
     }
 

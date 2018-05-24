@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "details": [
+    {
+      "code": "string",
+      "message": "string"
+    }
+  ],
+  "data": "string"
+}

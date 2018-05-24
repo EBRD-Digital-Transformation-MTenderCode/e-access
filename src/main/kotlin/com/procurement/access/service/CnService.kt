@@ -36,7 +36,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         validateFields(cn)
         checkCurrency(cn)
         val cpId = generationService.getCpId(country)
-        cn.ocId = cpId
+        cn.ocid = cpId
         cn.tender.apply {
             id = cpId
             procuringEntity.id = generationService.generateOrganizationId(procuringEntity)

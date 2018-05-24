@@ -1,0 +1,74 @@
+{
+  "tenderStatus": "planning",
+  "lots": [
+    {
+      "id": "string",
+      "title": "string",
+      "description": "string",
+      "status": "planning",
+      "statusDetails": "preselection",
+      "value": {
+        "amount": 0.00,
+        "currency": "ADP"
+      },
+      "options": [
+        {
+          "hasOptions": true
+        }
+      ],
+      "recurrentProcurement": [
+        {
+          "isRecurrent": true
+        }
+      ],
+      "renewals": [
+        {}
+      ],
+      "variants": [
+        {
+          "hasVariants": true
+        }
+      ],
+      "contractPeriod": {
+        "startDate": "2018-05-17T15:24:53Z",
+        "endDate": "2018-06-17T15:24:53Z"
+      },
+      "placeOfPerformance": {
+        "address": {
+          "streetAddress": "string",
+          "locality": "string",
+          "region": "string",
+          "postalCode": "string",
+          "countryName": "string"
+        },
+        "description": "string"
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "string",
+      "description": "string",
+      "classification": {
+        "scheme": "CPV",
+        "id": "string",
+        "description": "string",
+        "uri": "string"
+      },
+      "additionalClassifications": [
+        {
+          "scheme": "CPV",
+          "id": "string",
+          "description": "string",
+          "uri": "string"
+        }
+      ],
+      "quantity": 0,
+      "unit": {
+        "id": "string",
+        "name": "string"
+      },
+      "relatedLot": "string"
+    }
+  ]
+}

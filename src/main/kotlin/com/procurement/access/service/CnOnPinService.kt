@@ -57,7 +57,7 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
         setLotsToCnFromPin(pinTender, cnTender)
         validateLots(cnTender)
         setStatuses(cnTender)
-        cn.ocId = cpId
+        cn.ocid = cpId
         cn.planning = pinProcess.planning
         cn.tender = cnTender
         tenderProcessDao.save(getEntity(cn, cpId, stage, entity.token, dateTime, owner))

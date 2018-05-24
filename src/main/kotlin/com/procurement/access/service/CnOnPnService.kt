@@ -43,7 +43,6 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
                               dateTime: LocalDateTime,
                               cn: CnProcess): ResponseDto<*> {
 
-        validateFields(cn)
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
                 ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
@@ -64,7 +63,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         setLotsToCnFromPn(pnTender, cnTender)
         validateLots(cnTender)
         setStatuses(cnTender)
-        cn.ocId = cpId
+        cn.ocid = cpId
         cn.planning = pnProcess.planning
         cn.tender = cnTender
         tenderProcessDao.save(getEntity(cn, cpId, stage, entity.token, dateTime, owner))
@@ -72,11 +71,8 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         return ResponseDto(true, null, cn)
     }
 
-    private fun validateFields(cn: CnProcess) {
-    }
-
     private fun setLotsToCnFromPn(pnTender: PnTender, cnTender: CnTender) {
-        if (pnTender.lots != null && !pnTender.lots!!.isEmpty()) {
+        if (pnTender.lots != null && !pnTender.lots.isEmpty()) {
             cnTender.lots = pnTender.lots.asSequence().map({ convertPnToCnLot(it) }).toList()
         }
     }

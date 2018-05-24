@@ -34,7 +34,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                           pn: PnProcess): ResponseDto<*> {
         validateFields(pn)
         val cpId = generationService.getCpId(country)
-        pn.ocId = cpId
+        pn.ocid = cpId
         pn.tender.apply {
             id = cpId
             procuringEntity.id = generationService.generateOrganizationId(procuringEntity)
