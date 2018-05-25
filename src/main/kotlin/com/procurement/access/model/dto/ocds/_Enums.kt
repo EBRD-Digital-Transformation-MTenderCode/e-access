@@ -2,7 +2,7 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.notice.exception.EnumException
+import com.procurement.access.exception.EnumException
 import java.util.*
 
 enum class Currency constructor(private val value: String) {

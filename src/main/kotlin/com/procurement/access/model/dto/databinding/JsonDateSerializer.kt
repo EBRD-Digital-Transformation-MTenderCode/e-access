@@ -1,4 +1,4 @@
-package com.procurement.point.databinding
+package com.procurement.access.databinding
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException

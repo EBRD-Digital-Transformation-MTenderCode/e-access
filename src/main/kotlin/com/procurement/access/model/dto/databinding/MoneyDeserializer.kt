@@ -1,4 +1,4 @@
-package com.procurement.notice.databinding
+package com.procurement.access.databinding
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext

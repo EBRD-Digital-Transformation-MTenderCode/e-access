@@ -4,7 +4,7 @@ import com.procurement.access.model.dto.lots.LotsRequestDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.service.LotsService
-import com.procurement.notice.model.bpe.ResponseDto
+import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated

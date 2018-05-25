@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.service.StageService
-import com.procurement.notice.model.bpe.ResponseDto
+import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated

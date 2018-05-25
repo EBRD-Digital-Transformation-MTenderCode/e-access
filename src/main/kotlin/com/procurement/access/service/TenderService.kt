@@ -11,9 +11,9 @@ import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
-import com.procurement.notice.exception.ErrorException
-import com.procurement.notice.exception.ErrorType
-import com.procurement.notice.model.bpe.ResponseDto
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 
 interface TenderService {

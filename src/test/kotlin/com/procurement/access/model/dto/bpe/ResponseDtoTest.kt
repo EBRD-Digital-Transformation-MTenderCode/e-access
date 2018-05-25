@@ -1,7 +1,7 @@
 package com.procurement.access.model.dto.bpe
 
 import com.procurement.access.utils.compare
-import com.procurement.notice.model.bpe.ResponseDto
+import com.procurement.access.model.bpe.ResponseDto
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
