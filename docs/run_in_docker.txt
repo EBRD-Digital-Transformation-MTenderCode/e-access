@@ -15,30 +15,9 @@ docker network create \
 #****************************************#
 
 mvn clean package docker:build
-docker login https://docker-registry.eprocurement.systems
+docker login https://dev.docker-registry.eprocurement.systems
 Username: docker
-Password: 3FFcKYtMxzmwFMa
-docker push docker-registry.eprocurement.systems/e-access:17.12.1
+Password: EGrH4rOVQrcwXCtM
+docker push dev.docker-registry.eprocurement.systems/e-access:17.12.1
 
 docker save docker-registry.eprocurement.systems/e-access:17.12.1 | bzip2 | ssh root@10.0.10.116 'bunzip2 | docker load'
-n6Z8WBaZlSrLHZU
-
-
-echo 'Stopping container...'
-docker stop access-1
-
-echo 'Removing container...'
-docker rm access-1
-
-echo 'Removing image...'
-docker rmi docker-registry.eprocurement.systems/e-access:17.12.1
-
-echo 'Re-deploying'
-docker run -d --name=access-1 \
-  --env __PROP_spring_cloud_config_uri=http://config-server-1:8700 \
-  --env __PROP_spring_profiles_active=default \
-  --env __PROP_spring_cloud_config_label=e434577 \
-  --publish 9031:8080 \
-  --network ocds-network \
-  --dns 10.0.10.115 \
-  docker-registry.eprocurement.systems/e-access:17.12.1
