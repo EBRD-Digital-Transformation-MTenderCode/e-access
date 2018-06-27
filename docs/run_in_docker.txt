@@ -15,6 +15,6 @@ docker network create \
 #****************************************#
 
 mvn clean package docker:build
-docker push dev.docker-registry.eprocurement.systems/e-access:18.06.1
+docker push docker-registry.eprocurement.systems/e-access:18.06.1
 
 docker save docker-registry.eprocurement.systems/e-access:18.06.1 | bzip2 | ssh root@10.0.20.116 'bunzip2 | docker load'
