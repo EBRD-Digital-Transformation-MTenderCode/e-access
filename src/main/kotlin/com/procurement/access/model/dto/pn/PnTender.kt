@@ -1,5 +1,6 @@
 package com.procurement.access.model.dto.pn
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.model.dto.ocds.*
@@ -8,111 +9,95 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class PnTender(
+data class PnTender @JsonCreator constructor(
 
-        @JsonProperty("id")
         var id: String?,
 
-        @JsonProperty("title") @NotNull
+        @field:NotNull
         val title: String,
 
-        @JsonProperty("description") @NotNull
+        @field:NotNull
         val description: String,
 
-        @JsonProperty("status")
         var status: TenderStatus?,
 
-        @JsonProperty("statusDetails")
         var statusDetails: TenderStatusDetails?,
 
-        @JsonProperty("classification") @Valid @NotNull
+        @field:Valid @field:NotNull
         val classification: Classification,
 
-        @JsonProperty("acceleratedProcedure") @Valid
+        @field:Valid
         val acceleratedProcedure: AcceleratedProcedure?,
 
-        @JsonProperty("designContest") @Valid
+        @field:Valid
         val designContest: DesignContest?,
 
-        @JsonProperty("electronicWorkflows") @Valid
+        @field:Valid
         val electronicWorkflows: PnElectronicWorkflows?,
 
-        @JsonProperty("jointProcurement") @Valid
+        @field:Valid
         val jointProcurement: JointProcurement?,
 
-        @JsonProperty("procedureOutsourcing") @Valid
+        @field:Valid
         val procedureOutsourcing: ProcedureOutsourcing?,
 
-        @JsonProperty("framework") @Valid
+        @field:Valid
         val framework: Framework?,
 
-        @JsonProperty("dynamicPurchasingSystem") @Valid
+        @field:Valid
         val dynamicPurchasingSystem: DynamicPurchasingSystem?,
 
-        @JsonProperty("legalBasis") @NotNull
+        @field:NotNull
         val legalBasis: LegalBasis,
 
-        @JsonProperty("procurementMethod") @NotNull
+        @field:NotNull
         val procurementMethod: ProcurementMethod,
 
-        @JsonProperty("procurementMethodDetails") @NotNull
+        @field:NotNull
         val procurementMethodDetails: String,
 
-        @JsonProperty("procurementMethodRationale")
         val procurementMethodRationale: String?,
 
-        @JsonProperty("procurementMethodAdditionalInfo")
         val procurementMethodAdditionalInfo: String?,
 
-        @JsonProperty("mainProcurementCategory") @NotNull
+        @field:NotNull
         val mainProcurementCategory: MainProcurementCategory,
 
-        @JsonProperty("additionalProcurementCategories")
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
-        @JsonProperty("eligibilityCriteria")
         val eligibilityCriteria: String?,
 
-        @JsonProperty("submissionLanguages")
         val submissionLanguages: List<SubmissionLanguage>?,
 
-        @JsonProperty("contractPeriod") @Valid
+        @field:Valid
         val contractPeriod: Period?,
 
-        @JsonProperty("procuringEntity") @Valid @NotNull
+        @field:Valid @field:NotNull
         val procuringEntity: OrganizationReference,
 
-        @JsonProperty("value") @Valid @NotNull
+        @field:Valid @field:NotNull
         val value: Value,
 
-        @JsonProperty("lotGroups")
         val lotGroups: List<LotGroup?>,
 
-        @JsonProperty("lots")
         val lots: List<PnLot>?,
 
-        @JsonProperty("items")
         val items: LinkedHashSet<PnItem>?,
 
-        @JsonProperty("awardCriteria")
         val awardCriteria: AwardCriteria?,
 
-        @JsonProperty("requiresElectronicCatalogue")
         @get:JsonProperty("requiresElectronicCatalogue")
         val requiresElectronicCatalogue: Boolean?,
 
-        @JsonProperty("submissionMethod")
         val submissionMethod: List<SubmissionMethod>?,
 
-        @JsonProperty("submissionMethodDetails")
         val submissionMethodDetails: String?,
 
-        @JsonProperty("submissionMethodRationale")
         val submissionMethodRationale: List<SubmissionMethodRationale>?,
 
-        @JsonProperty("documents") @Valid
+        @field:Valid
         val documents: List<Document>?,
 
-        @JsonProperty("tenderPeriod") @Valid @NotNull
+        @field:Valid @field:NotNull
         val tenderPeriod: PnPeriod
 )

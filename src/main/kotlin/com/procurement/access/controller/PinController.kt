@@ -1,8 +1,8 @@
 package com.procurement.access.controller
 
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.service.PinService
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,7 +23,7 @@ class PinController(private val pinService: PinService) {
                   @RequestParam("owner") owner: String,
                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                   @RequestParam("date") dateTime: LocalDateTime,
-                  @Valid @RequestBody data: PinProcess): ResponseEntity<ResponseDto<*>> {
+                  @Valid @RequestBody data: PinProcess): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 pinService.createPin(
                         stage = stage,

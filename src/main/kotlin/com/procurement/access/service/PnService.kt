@@ -1,6 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.pn.PnProcess
@@ -8,9 +11,6 @@ import com.procurement.access.model.dto.pn.PnTender
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -20,7 +20,7 @@ interface PnService {
                  country: String,
                  owner: String,
                  dateTime: LocalDateTime,
-                 pn: PnProcess): ResponseDto<*>
+                 pn: PnProcess): ResponseDto
 }
 
 @Service
@@ -31,7 +31,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                           country: String,
                           owner: String,
                           dateTime: LocalDateTime,
-                          pn: PnProcess): ResponseDto<*> {
+                          pn: PnProcess): ResponseDto {
         validateFields(pn)
         val cpId = generationService.getCpId(country)
         pn.ocid = cpId

@@ -1,10 +1,10 @@
 package com.procurement.access.controller
 
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.LotsRequestDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.service.LotsService
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -19,7 +19,7 @@ class LotsController(private val lotsService: LotsService) {
     @GetMapping
     fun getLots(@RequestParam("identifier") cpId: String,
                 @RequestParam("stage") stage: String,
-                @RequestParam("status") status: String): ResponseEntity<ResponseDto<*>> {
+                @RequestParam("status") status: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.getLots(
                         cpId = cpId,
@@ -32,7 +32,7 @@ class LotsController(private val lotsService: LotsService) {
     fun updateStatus(@RequestParam("identifier") cpId: String,
                      @RequestParam("stage") stage: String,
                      @RequestParam("status") status: String,
-                     @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto<*>> {
+                     @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.updateStatus(
                         cpId = cpId,
@@ -46,7 +46,7 @@ class LotsController(private val lotsService: LotsService) {
     fun updateStatusDetails(@RequestParam("identifier") cpId: String,
                             @RequestParam("stage") stage: String,
                             @RequestParam("statusDetails") statusDetails: String,
-                            @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto<*>> {
+                            @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.updateStatusDetails(
                         cpId = cpId,
@@ -60,7 +60,7 @@ class LotsController(private val lotsService: LotsService) {
     fun updateStatusDetailsById(@RequestParam("identifier") cpId: String,
                                 @RequestParam("stage") stage: String,
                                 @RequestParam("statusDetails") statusDetails: String,
-                                @RequestParam("lotId") lotId: String): ResponseEntity<ResponseDto<*>> {
+                                @RequestParam("lotId") lotId: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.updateStatusDetailsById(
                         cpId = cpId,
@@ -72,7 +72,7 @@ class LotsController(private val lotsService: LotsService) {
 
     @GetMapping("/checkStatusDetails")
     fun checkStatusDetails(@RequestParam("identifier") cpId: String,
-                           @RequestParam("stage") stage: String): ResponseEntity<ResponseDto<*>> {
+                           @RequestParam("stage") stage: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.checkStatusDetails(
                         cpId = cpId,
@@ -83,7 +83,7 @@ class LotsController(private val lotsService: LotsService) {
     @PostMapping("/updateLots")
     fun updateLots(@RequestParam("identifier") cpId: String,
                    @RequestParam("stage") stage: String,
-                   @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto<*>> {
+                   @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.updateLots(
                         cpId = cpId,

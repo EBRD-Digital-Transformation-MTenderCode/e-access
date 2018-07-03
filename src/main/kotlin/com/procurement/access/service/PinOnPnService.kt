@@ -1,6 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.pin.PinLot
@@ -13,9 +16,6 @@ import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
@@ -29,7 +29,7 @@ interface PinOnPnService {
             stage: String,
             previousStage: String,
             dateTime: LocalDateTime,
-            pin: PinProcess): ResponseDto<*>
+            pin: PinProcess): ResponseDto
 }
 
 @Service
@@ -41,7 +41,7 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
                                stage: String,
                                previousStage: String,
                                dateTime: LocalDateTime,
-                               pin: PinProcess): ResponseDto<*> {
+                               pin: PinProcess): ResponseDto {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
                 ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)

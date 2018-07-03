@@ -1,24 +1,23 @@
 package com.procurement.access.model.dto.ocds
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class Address(
+data class Address @JsonCreator constructor(
 
-        @JsonProperty("streetAddress") @NotNull
+        @field:NotNull
         val streetAddress: String,
 
-        @JsonProperty("locality") @NotNull
+        @field:NotNull
         val locality: String,
 
-        @JsonProperty("region") @NotNull
+        @field:NotNull
         val region: String,
 
-        @JsonProperty("postalCode")
         val postalCode: String?,
 
-        @JsonProperty("countryName") @NotNull
+        @field:NotNull
         val countryName: String
 )

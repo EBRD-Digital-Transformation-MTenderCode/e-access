@@ -1,15 +1,15 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -19,7 +19,7 @@ interface StageService {
                       token: String,
                       previousStage: String,
                       newStage: String,
-                      owner: String): ResponseDto<*>
+                      owner: String): ResponseDto
 }
 
 @Service
@@ -29,7 +29,7 @@ class StageServiceImpl(private val tenderProcessDao: TenderProcessDao) : StageSe
                                token: String,
                                previousStage: String,
                                newStage: String,
-                               owner: String): ResponseDto<*> {
+                               owner: String): ResponseDto {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
                 ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)

@@ -1,47 +1,45 @@
 package com.procurement.access.model.dto.ocds
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class Lot(
+data class Lot @JsonCreator constructor(
 
-        @JsonProperty("id") @NotNull
+        @field:NotNull
         val id: String,
 
-        @JsonProperty("title") @NotNull
+        @field:NotNull
         val title: String,
 
-        @JsonProperty("description") @NotNull
+        @field:NotNull
         val description: String,
 
-        @JsonProperty("status")
         var status: TenderStatus?,
 
-        @JsonProperty("statusDetails")
         var statusDetails: TenderStatusDetails?,
 
-        @JsonProperty("value") @Valid @NotNull
+        @field:Valid @field:NotNull
         val value: Value,
 
-        @JsonProperty("options") @Valid @NotEmpty
+        @field:Valid @field:NotEmpty
         val options: List<Option>?,
 
-        @JsonProperty("recurrentProcurement") @Valid @NotEmpty
+        @field:Valid @field:NotEmpty
         val recurrentProcurement: List<RecurrentProcurement>?,
 
-        @JsonProperty("renewals") @Valid @NotEmpty
+        @field:Valid @field:NotEmpty
         val renewals: List<Renewal>?,
 
-        @JsonProperty("variants") @Valid @NotEmpty
+        @field:Valid @field:NotEmpty
         val variants: List<Variant>?,
 
-        @JsonProperty("contractPeriod") @Valid @NotNull
+        @field:Valid @field:NotNull
         val contractPeriod: Period,
 
-        @JsonProperty("placeOfPerformance") @Valid @NotNull
+        @field:Valid @field:NotNull
         val placeOfPerformance: PlaceOfPerformance
 )

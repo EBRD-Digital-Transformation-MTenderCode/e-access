@@ -1,8 +1,15 @@
 package com.procurement.access.exception
 
-data class ErrorException(private val error: ErrorType) : RuntimeException() {
+class ErrorException(error: ErrorType, message: String? = null) : RuntimeException(message) {
 
-    val code: String = error.code
-    val msg: String = error.message
+    var code: String = error.code
+    var msg: String
+
+    init {
+        when (message) {
+            null -> this.msg = error.message
+            else -> this.msg = error.message + message
+        }
+    }
 
 }
