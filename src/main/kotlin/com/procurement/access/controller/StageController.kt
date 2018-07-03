@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
-import com.procurement.access.service.StageService
 import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.service.StageService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -20,7 +20,7 @@ class StageController(private val stageService: StageService) {
                       @RequestParam("token") token: String,
                       @RequestParam("previousStage") previousStage: String,
                       @RequestParam("stage") newStage: String,
-                      @RequestParam("owner") owner: String): ResponseEntity<ResponseDto<*>> {
+                      @RequestParam("owner") owner: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 stageService.startNewStage(
                         cpId = cpId,

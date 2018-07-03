@@ -1,10 +1,9 @@
 package com.procurement.access.model.dto.lots
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.procurement.access.model.dto.ocds.Lot
 
-data class LotUpdateResponseDto(
+data class LotUpdateResponseDto @JsonCreator constructor(
 
-        @JsonProperty("lot")
         val lot: Lot
 )

@@ -1,19 +1,20 @@
 package com.procurement.access.model.dto.ocds
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.constraints.NotNull
 
-data class ElectronicWorkflows(
+data class ElectronicWorkflows @JsonCreator constructor(
 
-        @JsonProperty("useOrdering") @NotNull
+        @field:NotNull
         @get:JsonProperty("useOrdering")
         val useOrdering: Boolean,
 
-        @JsonProperty("usePayment") @NotNull
+        @field:NotNull
         @get:JsonProperty("usePayment")
         val usePayment: Boolean,
 
-        @JsonProperty("acceptInvoicing") @NotNull
+        @field:NotNull
         @get:JsonProperty("acceptInvoicing")
         val acceptInvoicing: Boolean
 )

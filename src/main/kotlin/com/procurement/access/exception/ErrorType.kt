@@ -1,6 +1,7 @@
 package com.procurement.access.exception
 
 enum class ErrorType constructor(val code: String, val message: String) {
+    INVALID_JSON_TYPE("00.00", "Invalid type: "),
     DATA_NOT_FOUND("00.01", "Data not found."),
     INVALID_OWNER("00.02", "Invalid owner."),
     OCID_NOT_NULL("00.03", "Ocid must be empty."),

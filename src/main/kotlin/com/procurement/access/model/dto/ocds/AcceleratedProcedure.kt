@@ -1,11 +1,12 @@
 package com.procurement.access.model.dto.ocds
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.constraints.NotNull
 
-data class AcceleratedProcedure(
+data class AcceleratedProcedure @JsonCreator constructor(
 
-        @JsonProperty("isAcceleratedProcedure") @NotNull
+        @field:NotNull
         @get:JsonProperty("isAcceleratedProcedure")
         val isAcceleratedProcedure: Boolean
 )

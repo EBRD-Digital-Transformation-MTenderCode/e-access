@@ -1,9 +1,9 @@
 package com.procurement.access.controller
 
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.service.TenderService
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -20,7 +20,7 @@ class TenderController(private val tenderService: TenderService) {
     @PostMapping("/updateStatus")
     fun updateStatus(@RequestParam("identifier") cpId: String,
                      @RequestParam("stage") stage: String,
-                     @RequestParam("status") status: String): ResponseEntity<ResponseDto<*>> {
+                     @RequestParam("status") status: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 tenderService.updateStatus(
                         cpId = cpId,
@@ -32,7 +32,7 @@ class TenderController(private val tenderService: TenderService) {
     @PostMapping("/updateStatusDetails")
     fun updateStatusDetails(@RequestParam("identifier") cpId: String,
                             @RequestParam("stage") stage: String,
-                            @RequestParam("statusDetails") statusDetails: String): ResponseEntity<ResponseDto<*>> {
+                            @RequestParam("statusDetails") statusDetails: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 tenderService.updateStatusDetails(
                         cpId = cpId,
@@ -44,7 +44,7 @@ class TenderController(private val tenderService: TenderService) {
     @PostMapping("/setSuspended")
     fun setSuspended(@RequestParam("identifier") cpId: String,
                      @RequestParam("stage") stage: String,
-                     @RequestParam("suspended") suspended: Boolean?): ResponseEntity<ResponseDto<*>> {
+                     @RequestParam("suspended") suspended: Boolean?): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 tenderService.setSuspended(
                         cpId = cpId,
@@ -55,7 +55,7 @@ class TenderController(private val tenderService: TenderService) {
 
     @PostMapping("/setUnsuccessful")
     fun setUnsuccessful(@RequestParam("identifier") cpId: String,
-                        @RequestParam("stage") stage: String): ResponseEntity<ResponseDto<*>> {
+                        @RequestParam("stage") stage: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 tenderService.setUnsuccessful(
                         cpId = cpId,

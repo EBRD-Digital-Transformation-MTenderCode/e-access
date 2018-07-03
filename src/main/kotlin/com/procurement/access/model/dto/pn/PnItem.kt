@@ -1,7 +1,7 @@
 package com.procurement.access.model.dto.pn
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.Unit
 import java.math.BigDecimal
@@ -10,26 +10,23 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class PnItem(
+data class PnItem @JsonCreator constructor(
 
-        @JsonProperty("id") @NotNull
+        @field:NotNull
         var id: String,
 
-        @JsonProperty("description")
         val description: String?,
 
-        @JsonProperty("classification") @Valid @NotNull
+        @field:Valid @field:NotNull
         val classification: Classification,
 
-        @JsonProperty("additionalClassifications") @Valid
+        @field:Valid
         val additionalClassifications: HashSet<Classification>?,
 
-        @JsonProperty("quantity")
         val quantity: BigDecimal?,
 
-        @JsonProperty("unit") @Valid
+        @field:Valid
         val unit: Unit?,
 
-        @JsonProperty("relatedLot") @NotNull
         var relatedLot: String
 )

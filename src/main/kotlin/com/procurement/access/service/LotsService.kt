@@ -1,29 +1,29 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.util.*
 
 interface LotsService {
 
-    fun getLots(cpId: String, stage: String, status: TenderStatus): ResponseDto<*>
+    fun getLots(cpId: String, stage: String, status: TenderStatus): ResponseDto
 
-    fun updateStatus(cpId: String, stage: String, tenderStatus: TenderStatus, lotsDto: LotsRequestDto): ResponseDto<*>
+    fun updateStatus(cpId: String, stage: String, tenderStatus: TenderStatus, lotsDto: LotsRequestDto): ResponseDto
 
-    fun updateStatusDetails(cpId: String, stage: String, tenderStatusDetails: TenderStatusDetails, lotsDto: LotsRequestDto): ResponseDto<*>
+    fun updateStatusDetails(cpId: String, stage: String, tenderStatusDetails: TenderStatusDetails, lotsDto: LotsRequestDto): ResponseDto
 
-    fun updateStatusDetailsById(cpId: String, stage: String, lotId: String, statusDetails: TenderStatusDetails): ResponseDto<*>
+    fun updateStatusDetailsById(cpId: String, stage: String, lotId: String, statusDetails: TenderStatusDetails): ResponseDto
 
-    fun checkStatusDetails(cpId: String, stage: String): ResponseDto<*>
+    fun checkStatusDetails(cpId: String, stage: String): ResponseDto
 
-    fun updateLots(cpId: String, stage: String, lotsDto: LotsRequestDto): ResponseDto<*>
+    fun updateLots(cpId: String, stage: String, lotsDto: LotsRequestDto): ResponseDto
 
 }
 
@@ -32,7 +32,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     override fun getLots(cpId: String,
                          stage: String,
-                         status: TenderStatus): ResponseDto<*> {
+                         status: TenderStatus): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val lotsResponseDto = LotsResponseDto(
@@ -44,7 +44,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     override fun updateStatus(cpId: String,
                               stage: String,
                               tenderStatus: TenderStatus,
-                              lotsDto: LotsRequestDto): ResponseDto<*> {
+                              lotsDto: LotsRequestDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.apply {
@@ -63,7 +63,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     override fun updateStatusDetails(cpId: String,
                                      stage: String,
                                      tenderStatusDetails: TenderStatusDetails,
-                                     lotsDto: LotsRequestDto): ResponseDto<*> {
+                                     lotsDto: LotsRequestDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.apply {
@@ -78,7 +78,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     override fun updateStatusDetailsById(cpId: String,
                                          stage: String,
                                          lotId: String,
-                                         statusDetails: TenderStatusDetails): ResponseDto<*> {
+                                         statusDetails: TenderStatusDetails): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val updatedLot = setLotsStatusDetails(process.tender.lots, lotId, statusDetails)
@@ -88,7 +88,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     }
 
     override fun checkStatusDetails(cpId: String,
-                                    stage: String): ResponseDto<*> {
+                                    stage: String): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         checkLotStatusDetails(process.tender.lots)
@@ -97,7 +97,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     override fun updateLots(cpId: String,
                             stage: String,
-                            lotsDto: LotsRequestDto): ResponseDto<*> {
+                            lotsDto: LotsRequestDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         var itemsForCompiledLots: List<Item>? = null

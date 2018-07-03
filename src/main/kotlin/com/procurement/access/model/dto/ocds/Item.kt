@@ -1,33 +1,31 @@
 package com.procurement.access.model.dto.ocds
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.util.*
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class Item(
+data class Item @JsonCreator constructor(
 
-        @JsonProperty("id")
         var id: String?,
 
-        @JsonProperty("description")
         val description: String?,
 
-        @JsonProperty("classification") @Valid @NotNull
+        @field:Valid @field:NotNull
         val classification: Classification,
 
-        @JsonProperty("additionalClassifications") @Valid
+        @field:Valid
         val additionalClassifications: HashSet<Classification>?,
 
-        @JsonProperty("quantity") @NotNull
+        @field:NotNull
         val quantity: BigDecimal,
 
-        @JsonProperty("unit") @Valid @NotNull
+        @field:Valid @field:NotNull
         val unit: Unit,
 
-        @JsonProperty("relatedLot") @NotNull
+        @field:NotNull
         var relatedLot: String
 )

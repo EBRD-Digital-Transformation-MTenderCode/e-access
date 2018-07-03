@@ -1,6 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.TenderStatus.PLANNED
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.pin.PinProcess
@@ -8,9 +11,6 @@ import com.procurement.access.model.dto.pin.PinTender
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -20,7 +20,7 @@ interface PinService {
                   country: String,
                   owner: String,
                   dateTime: LocalDateTime,
-                  pin: PinProcess): ResponseDto<*>
+                  pin: PinProcess): ResponseDto
 }
 
 @Service
@@ -31,7 +31,7 @@ class PinServiceImpl(private val generationService: GenerationService,
                            country: String,
                            owner: String,
                            dateTime: LocalDateTime,
-                           pin: PinProcess): ResponseDto<*> {
+                           pin: PinProcess): ResponseDto {
         validateFields(pin)
         val cpId = generationService.getCpId(country)
         pin.ocid = cpId

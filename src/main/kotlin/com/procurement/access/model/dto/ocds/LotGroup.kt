@@ -1,12 +1,12 @@
 package com.procurement.access.model.dto.ocds
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.constraints.NotNull
 
-data class LotGroup(
+data class LotGroup @JsonCreator constructor(
 
-        @NotNull
-        @JsonProperty("optionToCombine")
+        @field:NotNull
         @get:JsonProperty("optionToCombine")
         val optionToCombine: Boolean
 )

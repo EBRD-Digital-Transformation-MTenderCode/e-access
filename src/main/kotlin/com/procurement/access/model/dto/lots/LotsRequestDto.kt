@@ -1,9 +1,8 @@
 package com.procurement.access.model.dto.lots
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonCreator
 
-data class LotsRequestDto(
+data class LotsRequestDto @JsonCreator constructor(
 
-        @JsonProperty("unsuccessfulLots")
         val unsuccessfulLots: HashSet<LotDto>?
 )

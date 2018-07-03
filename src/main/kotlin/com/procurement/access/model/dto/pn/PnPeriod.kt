@@ -1,26 +1,16 @@
 package com.procurement.access.model.dto.pn
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.access.databinding.JsonDateDeserializer
-import com.procurement.access.databinding.JsonDateSerializer
 import java.time.LocalDateTime
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class PnPeriod(
+data class PnPeriod @JsonCreator constructor(
 
-        @NotNull
-        @JsonProperty("startDate")
-        @JsonDeserialize(using = JsonDateDeserializer::class)
-        @JsonSerialize(using = JsonDateSerializer::class)
+        @field:NotNull
         val startDate: LocalDateTime,
 
-        @JsonProperty("endDate")
-        @JsonDeserialize(using = JsonDateDeserializer::class)
-        @JsonSerialize(using = JsonDateSerializer::class)
         val endDate: LocalDateTime?
 )
 
