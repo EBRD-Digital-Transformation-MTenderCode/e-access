@@ -3,6 +3,8 @@ package com.procurement.access.model.dto.pn
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.ocds.*
 import java.util.*
 import javax.validation.Valid
@@ -86,6 +88,7 @@ data class PnTender @JsonCreator constructor(
 
         val awardCriteria: AwardCriteria?,
 
+        @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("requiresElectronicCatalogue")
         val requiresElectronicCatalogue: Boolean?,
 

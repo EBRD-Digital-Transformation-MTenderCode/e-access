@@ -3,6 +3,8 @@ package com.procurement.access.model.dto.cn
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.ocds.*
 import java.util.*
 import javax.validation.Valid
@@ -19,7 +21,6 @@ data class CnTender @JsonCreator constructor(
 
         @field:NotNull
         val description: String,
-
 
         var status: TenderStatus?,
 
@@ -69,7 +70,7 @@ data class CnTender @JsonCreator constructor(
         @field:NotNull
         val eligibilityCriteria: String?,
 
-        @field:Valid @field:NotEmpty
+        @field:NotEmpty
         var submissionLanguages: List<SubmissionLanguage>?,
 
         @field:Valid @field:NotNull
@@ -94,10 +95,11 @@ data class CnTender @JsonCreator constructor(
         val awardCriteria: AwardCriteria,
 
         @field:NotNull
+        @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("requiresElectronicCatalogue")
         val requiresElectronicCatalogue: Boolean?,
 
-        @field:Valid @field:NotEmpty
+        @field:NotEmpty
         val submissionMethod: List<SubmissionMethod>?,
 
         val submissionMethodRationale: List<SubmissionMethodRationale>?,

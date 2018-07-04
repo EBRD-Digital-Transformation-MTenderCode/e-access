@@ -1,196 +1,52 @@
 {
-  "ocid": "ocds-t1s2t3-MD-1521823082027",
   "planning": {
     "budget": {
-      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
+      "description": "Long scientist together alone again yard Mr. Six hand sister. Bit early detail eat bill sign quickly.",
       "amount": {
-        "amount": 2.85,
-        "currency": "LAJ"
+        "amount": 1234789.789,
+        "currency": "LVL"
       },
-      "europeanUnionFunding": {
-        "projectIdentifier": "proj-cn-12346",
-        "projectName": "test proj name",
-        "uri": "https://jwt.io"
-      },
-      "isEuropeanUnionFunded": true,
+      "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-UA-1521797966040-FS-1521797969595",
-          "description": "A short free text description of this budget entry.",
+          "id": "ocds-t1s2t3-MD-1530709204399-FS-1530709286783",
+          "description": "Yourself reach piece law land. Here list serve deal poor while positive. Return last lawyer real particularly certain morning fact.",
           "amount": {
-            "amount": 2.85,
-            "currency": "LAJ"
+            "amount": 1000.00,
+            "currency": "LVL"
           },
           "period": {
-            "startDate": "2018-03-23T09:39:25Z",
-            "endDate": "2018-05-06T02:23:40Z"
+            "startDate": "2018-05-25T21:00:00Z",
+            "endDate": "2018-05-26T21:00:00Z"
           },
           "sourceParty": {
-            "name": "Taylor, Dennis and Munoz",
-            "id": "UA-EDR-753-18-5525"
+            "id": "scheme-id",
+            "name": "buyerName"
           }
         }
       ]
     },
-    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document."
+    "rationale": "Hour authority majority conference number you."
   },
   "tender": {
-    "id": "ocds-t1s2t3-MD-1521823082027",
-    "title": "Tender title",
-    "description": "Tender description",
-    "status": "active",
-    "statusDetails": "empty",
-    "items": [
-      {
-        "id": "8da82fb0-2eb8-11e8-907c-df4915b32957",
-        "description": "A description of the goods, services to be provided.",
-        "classification": {
-          "scheme": "CPV",
-          "id": "15540000-5",
-          "description": "Cheese products"
-        },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "id": "CPVs-id-12341234",
-            "description": "A textual description or title for the code."
-          }
-        ],
-        "quantity": 10.0,
-        "unit": {
-          "name": "kg",
-          "id": "0971"
-        },
-        "relatedLot": "8da82fb1-2eb8-11e8-907c-df4915b32957"
-      }
-    ],
-    "value": {
-      "amount": 2.85,
-      "currency": "LAJ"
-    },
-    "procurementMethod": "open",
-    "procurementMethodDetails": "Open Procurement",
-    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
-    "mainProcurementCategory": "goods",
-    "additionalProcurementCategories": [
-      "goods"
-    ],
-    "awardCriteria": "priceOnly",
-    "submissionMethod": [
-      "electronicSubmission"
-    ],
-    "submissionMethodDetails": "Any detailed or further information on the submission method. This may include the address, e-mail address or online service to which bids should be submitted, and any special requirements to be followed for submissions.",
-    "tenderPeriod": {
-      "startDate": "2018-03-23T16:38:01Z",
-      "endDate": "2018-05-06T02:23:40Z"
-    },
-    "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
-    "contractPeriod": {
-      "startDate": "2018-09-27T00:00:00Z",
-      "endDate": "2018-11-27T00:00:00Z"
-    },
-    "procuringEntity": {
-      "name": "Новороздільська міська лікарня",
-      "identifier": {
-        "scheme": "UA-EDR",
-        "id": "20764777",
-        "legalName": "Новороздільська міська лікарня",
-        "uri": "http://buyerTestLink.ua"
-      },
-      "address": {
-        "streetAddress": "вул. Винниченка, 37",
-        "locality": "місто Новий Розділ",
-        "region": "Львівська область",
-        "postalCode": "7770777",
-        "countryName": "Україна"
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "UA-EDR",
-          "id": "123123123",
-          "legalName": "Додатково Новороздільська міська лікарня",
-          "uri": "http://additionalBuyerTestLink.ua"
-        }
-      ],
-      "contactPoint": {
-        "name": "Осипових Сергій Олександрович",
-        "email": "test2@test.test",
-        "telephone": "+380222222222",
-        "faxNumber": "+380222222222",
-        "url": "http://test.ua"
-      }
-    },
     "documents": [
       {
-        "id": "e585d8d0-2e91-11e8-ac76-4940f127948b",
         "documentType": "tenderNotice",
-        "title": "The document title.",
-        "description": "A short description of the document. We recommend descriptions do not exceed 250 words. In the event the document is not accessible online, the description field can be used to describe arrangements for obtaining a copy of the document.",
-        "language": "ro",
-        "relatedLots": [
-          "lot-id-123123"
-        ]
+        "id": "056e5e10-748d-11e8-98e2-37f049aee40f",
+        "title": "Title Test CN document to tender",
+        "description": "Description Test CN document to tender",
+        "language": "ro"
       }
     ],
-    "lots": [
-      {
-        "id": "8da82fb1-2eb8-11e8-907c-df4915b32957",
-        "title": "A title for this lot.",
-        "description": "A description of this lot.",
-        "status": "active",
-        "statusDetails": "empty",
-        "value": {
-          "amount": 2.85,
-          "currency": "LAJ"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2018-09-27T00:00:00Z",
-          "endDate": "2018-11-27T00:00:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "149-159 High Street",
-            "locality": "Birmingham",
-            "region": "Digbeth",
-            "postalCode": "B12 0JU",
-            "countryName": "United Kingdom"
-          },
-          "description": "Further description of the place of performance of the contract. Required by EU."
-        }
-      }
-    ],
-    "lotGroups": [
-      {
-        "optionToCombine": false
-      }
-    ],
+    "title": "People design when piece film.",
+    "description": "Significant land add.",
+    "classification": {
+      "id": "48760000-3",
+      "scheme": "CPV",
+      "description": "Virus protection software package"
+    },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
-    },
-    "classification": {
-      "scheme": "CPV",
-      "id": "15540000-5",
-      "description": "Cheese products"
     },
     "designContest": {
       "serviceContractAward": false
@@ -203,25 +59,218 @@
     "jointProcurement": {
       "isJointProcurement": false
     },
-    "legalBasis": "DIRECTIVE_2014_24_EU",
     "procedureOutsourcing": {
       "procedureOutsourced": false
-    },
-    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
-    "submissionLanguages": [
-      "pl",
-      "ro"
-    ],
-    "submissionMethodRationale": [
-      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE",
-      "IPR_ISSUES"
-    ],
-    "dynamicPurchasingSystem": {
-      "hasDynamicPurchasingSystem": false
     },
     "framework": {
       "isAFramework": false
     },
-    "requiresElectronicCatalogue": false
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Lot decision claim example a short can serve.",
+    "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
+    "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy.",
+    "mainProcurementCategory": "works",
+    "additionalProcurementCategories": [
+      "goods"
+    ],
+    "eligibilityCriteria": "Group series task this answer cultural. Region alone throughout challenge.",
+    "submissionLanguages": [
+      "fr"
+    ],
+    "tenderPeriod": {
+      "endDate": "2018-09-05T13:51:00Z",
+      "startDate": "2018-07-04T13:05:59Z"
+    },
+    "contractPeriod": {
+      "startDate": "2018-07-24T21:00:00Z",
+      "endDate": "2018-09-25T21:00:00Z"
+    },
+    "value": {
+      "amount": 22130.86,
+      "currency": "LVL"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "lots": [
+      {
+        "id": "1",
+        "title": "Relate factor worker place study.",
+        "description": "Figure care watch sea image. Soon scientist must radio.",
+        "value": {
+          "amount": 500,
+          "currency": "LVL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-07-24T21:00:00Z",
+          "endDate": "2018-09-25T21:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "9495 Medina Isle Suite 682",
+            "locality": "West Jake",
+            "region": "Utah",
+            "postalCode": "52317-3634",
+            "countryName": "Guyana"
+          },
+          "description": "Television language fund our. Talk loss stage. Run so road answer however job result. Our west article media less wide those."
+        }
+      },
+      {
+        "id": "2",
+        "title": "Relate factor worker place study.",
+        "description": "Figure care watch sea image. Soon scientist must radio.",
+        "value": {
+          "amount": 500,
+          "currency": "LVL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-07-24T21:00:00Z",
+          "endDate": "2018-09-25T21:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "9495 Medina Isle Suite 682",
+            "locality": "West Jake",
+            "region": "Utah",
+            "postalCode": "52317-3634",
+            "countryName": "Guyana"
+          },
+          "description": "Television language fund our. Talk loss stage. Run so road answer however job result. Our west article media less wide those."
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "1",
+        "classification": {
+          "id": "48760000-1",
+          "scheme": "CPV",
+          "description": "Virus protection software package"
+        },
+        "additionalClassifications": [
+          {
+            "id": "42419800-4",
+            "scheme": "CPV",
+            "description": "Parts of conveyors"
+          }
+        ],
+        "quantity": 7557759.5,
+        "unit": {
+          "id": "E54",
+          "name": "trip"
+        },
+        "description": "Budget doctor practice brother southern represent. Chair almost usually machine.",
+        "relatedLot": "1"
+      },
+      {
+        "id": "2",
+        "classification": {
+          "id": "48760000-2",
+          "scheme": "CPV",
+          "description": "Virus protection software package"
+        },
+        "additionalClassifications": [
+          {
+            "id": "42419800-4",
+            "scheme": "CPV",
+            "description": "Parts of conveyors"
+          }
+        ],
+        "quantity": 7577569.5,
+        "unit": {
+          "id": "E54",
+          "name": "trip"
+        },
+        "description": "Budget doctor practice brother southern represent. Chair almost usually machine.",
+        "relatedLot": "2"
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodRationale": [
+      "TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"
+    ],
+    "submissionMethodDetails": "Employee nice try whether mind early wish. Game choose say total.",
+    "procuringEntity": {
+      "name": "Townsend Group",
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "614-98-8183",
+        "legalName": "Townsend Group Inc",
+        "uri": "http://hunter.org/tag/app/tag/terms.htm"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "UA-EDR",
+          "id": "319-59-6344",
+          "legalName": "Townsend Group Ltd",
+          "uri": "http://www.calderon-johnson.com/tags/tags/search/"
+        }
+      ],
+      "address": {
+        "streetAddress": "00515 Mitchell Vista",
+        "locality": "East Amy",
+        "region": "New Mexico",
+        "postalCode": "28102-7595",
+        "countryName": "Fiji"
+      },
+      "contactPoint": {
+        "name": "Deborah Rodriguez",
+        "email": "xdavis@gmail.com",
+        "telephone": "(404)308-2365",
+        "faxNumber": "1-965-814-1935",
+        "url": "http://smith.com/main/main/homepage.php"
+      }
+    }
   }
 }

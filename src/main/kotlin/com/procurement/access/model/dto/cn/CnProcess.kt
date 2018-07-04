@@ -17,4 +17,5 @@ data class CnProcess @JsonCreator constructor(
         var planning: Planning,
 
         @field:Valid @field:NotNull
-        var tender: CnTender)
+        var tender: CnTender
+)
