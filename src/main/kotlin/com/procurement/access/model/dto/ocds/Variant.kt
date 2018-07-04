@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull
 data class Variant @JsonCreator constructor(
 
         @field:NotNull
-        @JsonProperty("hasVariants")
         @get:JsonProperty("hasVariants")
         val hasVariants: Boolean
 )

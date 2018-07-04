@@ -104,6 +104,6 @@ data class CnTender @JsonCreator constructor(
 
         val submissionMethodDetails: String?,
 
-        @JsonProperty("documents") @field:Valid
+        @field:Valid
         var documents: List<Document>?
 )

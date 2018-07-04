@@ -6,7 +6,7 @@ import com.procurement.access.model.dto.ocds.Planning
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PinProcess @JsonCreator constructor(
 
         var ocid: String?,

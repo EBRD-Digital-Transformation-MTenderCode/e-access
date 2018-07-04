@@ -55,14 +55,12 @@ data class Tender @JsonCreator constructor(
         @field:NotNull
         val procurementMethodDetails: String,
 
-
         val procurementMethodRationale: String?,
 
         val procurementMethodAdditionalInfo: String?,
 
         @field:NotNull
         val mainProcurementCategory: MainProcurementCategory,
-
 
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 

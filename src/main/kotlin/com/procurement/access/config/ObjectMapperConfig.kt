@@ -7,12 +7,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.procurement.access.databinding.JsonDateDeserializer
 import com.procurement.access.databinding.JsonDateSerializer
-import com.procurement.access.databinding.MoneyDeserializer
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.StringsDeserializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Configuration
@@ -22,7 +20,6 @@ class ObjectMapperConfig(@Autowired objectMapper: ObjectMapper) {
         val module = SimpleModule()
         module.addSerializer(LocalDateTime::class.java, JsonDateSerializer())
         module.addDeserializer(LocalDateTime::class.java, JsonDateDeserializer())
-        module.addDeserializer(BigDecimal::class.java, MoneyDeserializer())
         module.addDeserializer(String::class.java, StringsDeserializer())
         module.addDeserializer(Int::class.java, IntDeserializer())
         objectMapper.registerModule(module)
