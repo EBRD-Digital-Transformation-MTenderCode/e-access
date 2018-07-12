@@ -22,5 +22,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     EL_CRITERIA_IS_NULL("10.07", "EligibilityCriteria must be presented!"),
     INVALID_START_DATE("10.08", "Invalid tender period start date."),
     INVALID_CURRENCY("10.09", "Invalid currency."),
-    NOT_ALL_LOTS_AWARDED("10.09", "Not all active lots are awarded.");
+    NOT_ALL_LOTS_AWARDED("10.10", "Not all active lots are awarded."),
+    INVALID_ITEMS("10.11", "Invalid items code.");
 }
