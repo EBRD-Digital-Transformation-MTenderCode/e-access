@@ -21,9 +21,9 @@ class ItemsServiceImpl : ItemsService {
                             pmd: String,
                             itemsDto: ItemsRequestDto): ResponseDto {
         checkItemCodes(itemsDto.items, 3)
-        var commonClassOfItems = getCommonClassOfItems(itemsDto.items, 3, 7)
-        commonClassOfItems = addCheckSum(commonClassOfItems)
-        return ResponseDto(true, null, commonClassOfItems)
+        val commonChars = getCommonChars(itemsDto.items, 3, 7)
+        val commonClass = addCheckSum(commonChars)
+        return ResponseDto(true, null, commonClass)
     }
 }
 
@@ -31,7 +31,7 @@ private fun checkItemCodes(items: HashSet<ItemRequestDto>, charCount: Int) {
     if (items.asSequence().map { it.classification.id.take(charCount) }.toSet().size > 1) throw ErrorException(ErrorType.INVALID_ITEMS)
 }
 
-private fun getCommonClassOfItems(items: HashSet<ItemRequestDto>, countFrom: Int, countTo: Int): String {
+private fun getCommonChars(items: HashSet<ItemRequestDto>, countFrom: Int, countTo: Int): String {
     var commonItemClass = ""
     for (count in countFrom..countTo) {
         val itemClass = items.asSequence().map { it.classification.id.take(count) }.toSet()
@@ -44,9 +44,9 @@ private fun getCommonClassOfItems(items: HashSet<ItemRequestDto>, countFrom: Int
     return commonItemClass
 }
 
-private fun addCheckSum(commonClassOfItems: String): String {
-    var classOfItems = commonClassOfItems
-    val length = commonClassOfItems.length
+private fun addCheckSum(commonChars: String): String {
+    var classOfItems = commonChars
+    val length = commonChars.length
     for (c in length..7) classOfItems = classOfItems.plus("0")
     val n1 = classOfItems[0].toString().toInt()
     val n2 = classOfItems[1].toString().toInt()
