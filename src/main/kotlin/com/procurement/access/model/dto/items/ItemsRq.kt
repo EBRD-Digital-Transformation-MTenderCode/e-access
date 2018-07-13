@@ -5,20 +5,20 @@ import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
-data class ItemsRequestDto @JsonCreator constructor(
+data class ItemsRq @JsonCreator constructor(
 
         @field:NotEmpty @field:NotNull
-        val items: HashSet<ItemRequestDto>
+        val items: HashSet<ItemItemsRq>
 )
 
 
-data class ItemRequestDto @JsonCreator constructor(
+data class ItemItemsRq @JsonCreator constructor(
 
         @field:Valid @field:NotNull
-        val classification: ClassificationRequestDto
+        val classification: ClassificationItemItemsRq
 )
 
-data class ClassificationRequestDto @JsonCreator constructor(
+data class ClassificationItemItemsRq @JsonCreator constructor(
 
         @field:NotNull
         val id: String
