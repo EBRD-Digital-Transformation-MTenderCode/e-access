@@ -15,5 +15,5 @@ data class Value @JsonCreator constructor(
         val amount: BigDecimal,
 
         @field:NotNull
-        val currency: Currency
+        var currency: Currency
 )

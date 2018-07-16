@@ -2,6 +2,9 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
@@ -20,5 +23,8 @@ data class BudgetBreakdown @JsonCreator constructor(
         val period: Period,
 
         @field:Valid @field:NotNull
-        val sourceParty: OrganizationReference
+        val sourceParty: SourceParty,
+
+        @field:Valid
+        val europeanUnionFunding: EuropeanUnionFunding?
 )

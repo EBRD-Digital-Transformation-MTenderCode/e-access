@@ -12,23 +12,10 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Budget @JsonCreator constructor(
 
-        val id: String?,
-
         val description: String?,
 
         @field:Valid @field:NotNull
         val amount: Value,
-
-        val project: String?,
-
-        val projectID: String?,
-
-        val uri: String?,
-
-        val source: String?,
-
-        @field:Valid
-        val europeanUnionFunding: EuropeanUnionFunding?,
 
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)

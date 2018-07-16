@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnProcess
+import com.procurement.access.model.dto.cn.Cn
 import com.procurement.access.service.CnOnPnService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -26,7 +26,7 @@ class CnOnPnController(private val cnOnPnService: CnOnPnService) {
                      @RequestParam("token") token: String,
                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                      @RequestParam("date") dateTime: LocalDateTime,
-                     @Valid @RequestBody data: CnProcess): ResponseEntity<ResponseDto> {
+                     @Valid @RequestBody data: Cn): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 cnOnPnService.createCnOnPn(
                         cpId = cpId,

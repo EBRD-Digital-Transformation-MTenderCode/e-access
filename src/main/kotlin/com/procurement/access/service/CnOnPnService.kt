@@ -4,9 +4,9 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnLot
-import com.procurement.access.model.dto.cn.CnProcess
-import com.procurement.access.model.dto.cn.CnTender
+import com.procurement.access.model.dto.cn.LotCn
+import com.procurement.access.model.dto.cn.Cn
+import com.procurement.access.model.dto.cn.TenderCn
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.pn.PnLot
@@ -29,7 +29,7 @@ interface CnOnPnService {
             owner: String,
             token: String,
             dateTime: LocalDateTime,
-            cn: CnProcess): ResponseDto
+            cn: Cn): ResponseDto
 }
 
 @Service
@@ -41,7 +41,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
                               owner: String,
                               token: String,
                               dateTime: LocalDateTime,
-                              cn: CnProcess): ResponseDto {
+                              cn: Cn): ResponseDto {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
                 ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
@@ -71,13 +71,13 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         return ResponseDto(true, null, cn)
     }
 
-    private fun setLotsToCnFromPn(pnTender: PnTender, cnTender: CnTender) {
+    private fun setLotsToCnFromPn(pnTender: PnTender, cnTender: TenderCn) {
         if (pnTender.lots != null && !pnTender.lots.isEmpty()) {
-            cnTender.lots = pnTender.lots.asSequence().map({ convertPnToCnLot(it) }).toList()
+            cnTender.lots = pnTender.lots.asSequence().map({ convertPnToCnLot(it) }).toHashSet()
         }
     }
 
-    private fun validateLots(cnTender: CnTender) {
+    private fun validateLots(cnTender: TenderCn) {
         if (cnTender.documents != null) {
             val lotsFromDocuments = cnTender.documents!!.asSequence()
                     .filter({ it.relatedLots != null })
@@ -89,7 +89,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         }
     }
 
-    private fun setStatuses(cnTender: CnTender) {
+    private fun setStatuses(cnTender: TenderCn) {
         cnTender.status = TenderStatus.ACTIVE
         cnTender.statusDetails = TenderStatusDetails.EMPTY
         cnTender.lots?.forEach { lot ->
@@ -98,8 +98,8 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         }
     }
 
-    private fun convertPnToCnLot(pnLot: PnLot): CnLot {
-        return CnLot(
+    private fun convertPnToCnLot(pnLot: PnLot): LotCn {
+        return LotCn(
                 id = pnLot.id,
                 title = pnLot.title,
                 description = pnLot.description,
@@ -115,7 +115,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         )
     }
 
-    private fun getEntity(cn: CnProcess,
+    private fun getEntity(cn: Cn,
                           cpId: String,
                           stage: String,
                           token: UUID,

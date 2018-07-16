@@ -6,13 +6,27 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.ocds.*
-import java.util.*
+import java.util.HashSet
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class CnTender @JsonCreator constructor(
+data class Cn @JsonCreator constructor(
+
+        var ocid: String?,
+
+        var token: String?,
+
+        @field:Valid @field:NotNull
+        var planning: Planning,
+
+        @field:Valid @field:NotNull
+        var tender: TenderCn
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class TenderCn @JsonCreator constructor(
 
         var id: String?,
 
@@ -63,7 +77,7 @@ data class CnTender @JsonCreator constructor(
 
         val procurementMethodAdditionalInfo: String?,
 
-        val mainProcurementCategory: MainProcurementCategory,
+        val mainProcurementCategory: String,
 
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
@@ -86,7 +100,7 @@ data class CnTender @JsonCreator constructor(
         val lotGroups: List<LotGroup>?,
 
         @field:Valid @field:NotEmpty
-        var lots: List<CnLot>?,
+        var lots: HashSet<LotCn>?,
 
         @field:Valid @field:NotEmpty
         val items: HashSet<Item>?,
@@ -102,10 +116,48 @@ data class CnTender @JsonCreator constructor(
         @field:NotEmpty
         val submissionMethod: List<SubmissionMethod>?,
 
-        val submissionMethodRationale: List<SubmissionMethodRationale>?,
+        val submissionMethodRationale: List<String>?,
 
         val submissionMethodDetails: String?,
 
         @field:Valid
         var documents: List<Document>?
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class LotCn @JsonCreator constructor(
+
+        @field:NotNull
+        var id: String?,
+
+        @field:NotNull
+        val title: String?,
+
+        @field:NotNull
+        val description: String?,
+
+        var status: TenderStatus?,
+
+        var statusDetails: TenderStatusDetails?,
+
+        @field:Valid @field:NotNull
+        val value: Value?,
+
+        @field:Valid @field:NotEmpty
+        val options: List<Option>?,
+
+        @field:Valid @field:NotEmpty
+        val variants: List<Variant>?,
+
+        @field:Valid @field:NotEmpty
+        val renewals: List<Renewal>?,
+
+        @field:Valid @field:NotEmpty
+        val recurrentProcurement: List<RecurrentProcurement>?,
+
+        @field:Valid @field:NotNull
+        val contractPeriod: Period?,
+
+        @field:Valid @field:NotNull
+        val placeOfPerformance: PlaceOfPerformance?
 )

@@ -8,6 +8,6 @@
 //    @Test
 //    @DisplayName("cnProcessDto")
 //    fun cnProcessDto() {
-//        compare(CnProcess::class.java, "/json/cn.json")
+//        compare(Cn::class.java, "/json/cn.json")
 //    }
 //}
