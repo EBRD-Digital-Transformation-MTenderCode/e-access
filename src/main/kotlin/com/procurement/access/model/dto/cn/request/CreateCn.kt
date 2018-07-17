@@ -56,14 +56,12 @@ data class TenderCreateCn @JsonCreator constructor(
         @field:NotNull
         val mainProcurementCategory: String,
 
-        @field:NotNull
-        val submissionMethodRationale: List<String>,
+        @field:NotEmpty
+        val submissionMethod: List<String>?,
 
-        @field:NotNull
-        val submissionMethodDetails: String,
+        val submissionMethodRationale: List<String>?,
 
-        @field:NotNull
-        val procurementMethodDetails: String,
+        val submissionMethodDetails: String?,
 
         @field:NotNull
         val eligibilityCriteria: String,
