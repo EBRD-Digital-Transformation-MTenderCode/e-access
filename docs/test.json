@@ -1,18 +1,17 @@
 {
   "planning": {
     "budget": {
-      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
+      "description": "Budget Description",
       "amount": {
-        "amount": 10.00,
+        "amount": 100.00,
         "currency": "MDL"
       },
-      "isEuropeanUnionFunded": false,
+      "isEuropeanUnionFunded": true,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1531394757741-FS-1531398489815",
-          "description": "1",
+          "id": "ocds-t1s2t3-MD-1531821672443-FS-1531831043190",
           "amount": {
-            "amount": 10.00,
+            "amount": 100.00,
             "currency": "MDL"
           },
           "period": {
@@ -21,24 +20,92 @@
           },
           "sourceParty": {
             "id": "string-string",
-            "name": "NAME"
+            "name": "buyer"
           },
           "europeanUnionFunding": {
-            "projectName": "1",
-            "projectIdentifier": "1"
+            "projectName": "fh",
+            "projectIdentifier": "hthth"
           }
         }
       ]
     },
-    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document."
+    "rationale": "Rationale"
   },
   "tender": {
-    "title": "Tender title",
-    "description": "Tender description",
+    "title": "Tender Title",
+    "description": "Tender Description",
+    "classification": {
+      "id": "79200000-6",
+      "description": "Servicii de contabilitate, servicii de audit şi servicii fiscale",
+      "scheme": "CPV"
+    },
+    "legalBasis": "DIRECTIVE_2009_81_EC",
+    "procurementMethodRationale": "Method Rationale",
+    "procurementMethodAdditionalInfo": "Method info",
+    "tenderPeriod": {
+      "endDate": "2018-09-17T13:52:00Z",
+      "startDate": "2018-07-17T15:13:43Z"
+    },
+    "procuringEntity": {
+      "name": "Bebelo Name*",
+      "identifier": {
+        "scheme": "CXEMA Scheme*",
+        "id": "444777*",
+        "legalName": "Legal IMR Name*",
+        "uri": "URI*"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "CPVS",
+          "id": "AA08-2",
+          "legalName": "A textual description or title for the code.",
+          "uri": "URI"
+        }
+      ],
+      "address": {
+        "streetAddress": "Street Address",
+        "locality": "Locality",
+        "region": "1",
+        "postalCode": "Postal Code",
+        "countryName": "Republic of Moldova"
+      },
+      "contactPoint": {
+        "name": "Name*",
+        "email": "E-mail*",
+        "telephone": "Telephone*",
+        "faxNumber": "Fax*",
+        "url": "URL*"
+      }
+    },
+    "lots": [
+      {
+        "id": "1",
+        "title": "Title",
+        "description": "description",
+        "value": {
+          "amount": 10,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-09-17T13:53:00Z",
+          "endDate": "2018-09-20T21:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "Street",
+            "locality": "Locality",
+            "region": "Region",
+            "postalCode": "20001",
+            "countryName": "Republic of Moldova"
+          },
+          "description": "Description"
+        }
+      }
+    ],
     "items": [
       {
-        "id": "8da82fb0-2eb8-11e8-907c-df4915b32957",
-        "description": "A description of the goods, services to be provided.",
+        "id": "1",
+        "description": "description",
         "classification": {
           "id": "79200000-6",
           "description": "Servicii de contabilitate, servicii de audit şi servicii fiscale",
@@ -51,171 +118,20 @@
             "scheme": "CPVS"
           }
         ],
-        "quantity": 10.00,
+        "quantity": 12.00,
         "unit": {
           "id": "KGM",
           "name": "kilogram"
         },
-        "relatedLot": "8da82fb1-2eb8-11e8-907c-df4915b32957"
+        "relatedLot": "1"
       }
-    ],
-    "value": {
-      "amount": 1.85,
-      "currency": "MDL"
-    },
-    "procurementMethod": "open",
-    "procurementMethodDetails": "Licitație limitată",
-    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
-    "mainProcurementCategory": "services",
-    "additionalProcurementCategories": [
-      "goods"
-    ],
-    "awardCriteria": "priceOnly",
-    "submissionMethod": [
-      "electronicSubmission"
-    ],
-    "submissionMethodDetails": "submissionMethodDetails",
-    "tenderPeriod": {
-      "startDate": "2018-07-17T14:40:23Z",
-      "endDate": "2018-09-06T02:23:40Z"
-    },
-    "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
-    "contractPeriod": {
-      "startDate": "2018-09-27T00:00:00Z",
-      "endDate": "2018-11-27T00:00:00Z"
-    },
-    "procuringEntity": {
-      "name": "Новороздільська міська лікарня",
-      "identifier": {
-        "scheme": "UA-EDR",
-        "id": "20764777",
-        "legalName": "Новороздільська міська лікарня",
-        "uri": "http://buyerTestLink.ua"
-      },
-      "address": {
-        "streetAddress": "вул. Винниченка, 37",
-        "locality": "місто Новий Розділ",
-        "region": "Львівська область",
-        "postalCode": "7770777",
-        "countryName": "Україна"
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "UA-EDR",
-          "id": "123123123",
-          "legalName": "Додатково Новороздільська міська лікарня",
-          "uri": "http://additionalBuyerTestLink.ua"
-        }
-      ],
-      "contactPoint": {
-        "name": "Осипових Сергій Олександрович",
-        "email": "test2@test.test",
-        "telephone": "+380222222222",
-        "faxNumber": "+380222222222",
-        "url": "http://test.ua"
-      }
-    },
-    "documents": [
-      {
-        "id": "e585d8d0-2e91-11e8-ac76-4940f127948b",
-        "documentType": "tenderNotice",
-        "title": "The document title.",
-        "description": "A short description of the document. We recommend descriptions do not exceed 250 words. In the event the document is not accessible online, the description field can be used to describe arrangements for obtaining a copy of the document.",
-        "language": "ro",
-        "relatedLots": [
-          "lot-id-123123"
-        ]
-      }
-    ],
-    "lots": [
-      {
-        "id": "8da82fb1-2eb8-11e8-907c-df4915b32957",
-        "title": "A title for this lot.",
-        "description": "A description of this lot.",
-        "status": "active",
-        "statusDetails": "empty",
-        "value": {
-          "amount": 1.85,
-          "currency": "MDL"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2018-09-27T00:00:00Z",
-          "endDate": "2018-11-27T00:00:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "149-159 High Street",
-            "locality": "Birmingham",
-            "region": "Digbeth",
-            "postalCode": "B12 0JU",
-            "countryName": "United Kingdom"
-          },
-          "description": "Further description of the place of performance of the contract. Required by EU."
-        }
-      }
-    ],
-    "lotGroups": [
-      {
-        "optionToCombine": false
-      }
-    ],
-    "acceleratedProcedure": {
-      "isAcceleratedProcedure": false
-    },
-    "classification": {
-      "id": "79200000-6",
-      "description": "Servicii de contabilitate, servicii de audit şi servicii fiscale",
-      "scheme": "CPV"
-    },
-    "designContest": {
-      "serviceContractAward": false
-    },
-    "electronicWorkflows": {
-      "useOrdering": false,
-      "usePayment": false,
-      "acceptInvoicing": false
-    },
-    "jointProcurement": {
-      "isJointProcurement": false
-    },
-    "legalBasis": "DIRECTIVE_2014_24_EU",
-    "procedureOutsourcing": {
-      "procedureOutsourced": false
-    },
-    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
-    "submissionLanguages": [
-      "pl",
-      "ro"
     ],
     "submissionMethodRationale": [
       "submissionMethodRationale"
     ],
-    "dynamicPurchasingSystem": {
-      "hasDynamicPurchasingSystem": false
-    },
-    "framework": {
-      "isAFramework": false
-    },
-    "requiresElectronicCatalogue": false
+    "submissionMethodDetails": "submissionMethodDetails",
+    "procurementMethodDetails": "Licitație limitată",
+    "eligibilityCriteria": "eligibilityCriteria",
+    "mainProcurementCategory": "services"
   }
 }
