@@ -76,7 +76,7 @@
     ],
     "submissionMethodDetails": "submissionMethodDetails",
     "tenderPeriod": {
-      "startDate": "2018-07-17T14:25:39Z",
+      "startDate": "2018-07-17T14:40:23Z",
       "endDate": "2018-09-06T02:23:40Z"
     },
     "eligibilityCriteria": "A description of any eligibility criteria for potential suppliers.",
@@ -135,8 +135,8 @@
         "status": "active",
         "statusDetails": "empty",
         "value": {
-          "amount": 2.85,
-          "currency": "LAJ"
+          "amount": 1.85,
+          "currency": "MDL"
         },
         "options": [
           {
