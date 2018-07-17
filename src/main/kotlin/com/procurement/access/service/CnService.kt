@@ -39,7 +39,6 @@ class CnServiceImpl(private val generationService: GenerationService,
                           owner: String,
                           dateTime: LocalDateTime,
                           cnDto: CnCreate): ResponseDto {
-
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
         val cpId = generationService.getCpId(country)

@@ -99,17 +99,21 @@ data class TenderCn @JsonCreator constructor(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class LotCn @JsonCreator constructor(
 
-        var id: String?,
+        var id: String,
 
         val title: String?,
 
         val description: String?,
 
-        var status: TenderStatus?,
+        var status: TenderStatus,
 
-        var statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails,
 
-        val value: Value?,
+        val value: Value,
+
+        val contractPeriod: Period,
+
+        val placeOfPerformance: PlaceOfPerformance,
 
         val options: List<Option>?,
 
@@ -117,9 +121,5 @@ data class LotCn @JsonCreator constructor(
 
         val renewals: List<Renewal>?,
 
-        val recurrentProcurement: List<RecurrentProcurement>?,
-
-        val contractPeriod: Period?,
-
-        val placeOfPerformance: PlaceOfPerformance?
+        val recurrentProcurement: List<RecurrentProcurement>?
 )

@@ -45,7 +45,7 @@ data class TenderPn @JsonCreator constructor(
 
         val designContest: DesignContest?,
 
-        val electronicWorkflows: ElectronicWorkflowsPn?,
+        val electronicWorkflows: ElectronicWorkflows?,
 
         val jointProcurement: JointProcurement?,
 
@@ -85,7 +85,7 @@ data class TenderPn @JsonCreator constructor(
 
         val lots: List<LotPn>?,
 
-        val items: LinkedHashSet<ItemPn>?,
+        val items: HashSet<Item>?,
 
         val awardCriteria: AwardCriteria?,
 
@@ -99,7 +99,7 @@ data class TenderPn @JsonCreator constructor(
 
         val submissionMethodRationale: List<String>?,
 
-        val documents: List<Document>
+        val documents: List<Document>?
 )
 
 
@@ -112,55 +112,21 @@ data class LotPn @JsonCreator constructor(
 
         val description: String?,
 
-        var status: TenderStatus?,
+        var status: TenderStatus,
 
-        var statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails,
 
-        val value: Value?,
+        val value: Value,
+
+        val contractPeriod: Period,
+
+        val placeOfPerformance: PlaceOfPerformance,
 
         val options: List<Option>?,
 
-        val recurrentProcurement: List<RecurrentProcurement>?,
+        val variants: List<Variant>?,
 
         val renewals: List<Renewal>?,
 
-        val variants: List<Variant>?,
-
-        val contractPeriod: Period?,
-
-        val placeOfPerformance: PlaceOfPerformance?
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ItemPn @JsonCreator constructor(
-
-        var id: String,
-
-        val description: String?,
-
-        val classification: Classification,
-
-        val additionalClassifications: HashSet<Classification>?,
-
-        val quantity: BigDecimal?,
-
-        val unit: Unit?,
-
-        var relatedLot: String
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ElectronicWorkflowsPn @JsonCreator constructor(
-
-        @field:JsonDeserialize(using = BooleansDeserializer::class)
-        @get:JsonProperty("useOrdering")
-        val useOrdering: Boolean?,
-
-        @field:JsonDeserialize(using = BooleansDeserializer::class)
-        @get:JsonProperty("usePayment")
-        val usePayment: Boolean?,
-
-        @field:JsonDeserialize(using = BooleansDeserializer::class)
-        @get:JsonProperty("acceptInvoicing")
-        val acceptInvoicing: Boolean?
+        val recurrentProcurement: List<RecurrentProcurement>?
 )
