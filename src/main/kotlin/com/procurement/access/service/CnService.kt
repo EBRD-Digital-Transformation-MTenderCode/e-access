@@ -29,7 +29,7 @@ interface CnService {
                  pmd: String,
                  owner: String,
                  dateTime: LocalDateTime,
-                 cn: CreateCn): ResponseDto
+                 cnDto: CreateCn): ResponseDto
 }
 
 @Service
@@ -127,7 +127,7 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setItemsId(tender: TenderCreateCn) {
-        tender.items?.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
+        tender.items.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCreateCn) {

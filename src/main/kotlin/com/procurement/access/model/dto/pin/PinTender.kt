@@ -64,7 +64,7 @@ data class PinTender @JsonCreator constructor(
         val procurementMethodAdditionalInfo: String?,
 
         @field:NotNull
-        var mainProcurementCategory: MainProcurementCategory,
+        var mainProcurementCategory: String,
 
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
@@ -101,7 +101,7 @@ data class PinTender @JsonCreator constructor(
 
         val submissionMethodDetails: String?,
 
-        val submissionMethodRationale: List<SubmissionMethodRationale>?,
+        val submissionMethodRationale: List<String>?,
 
         @field:Valid
         val documents: List<Document>?,

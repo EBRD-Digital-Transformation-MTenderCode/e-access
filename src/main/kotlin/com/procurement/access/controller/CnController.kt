@@ -32,7 +32,7 @@ class CnController(private val cnService: CnService) {
                         pmd = pmd,
                         owner = owner,
                         dateTime = dateTime,
-                        cn = data),
+                        cnDto = data),
                 HttpStatus.CREATED)
     }
 }

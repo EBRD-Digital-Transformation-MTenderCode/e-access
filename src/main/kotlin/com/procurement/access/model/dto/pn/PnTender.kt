@@ -63,7 +63,7 @@ data class PnTender @JsonCreator constructor(
         val procurementMethodAdditionalInfo: String?,
 
         @field:NotNull
-        val mainProcurementCategory: MainProcurementCategory,
+        val mainProcurementCategory: String,
 
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 

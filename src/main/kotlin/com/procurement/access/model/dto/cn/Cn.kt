@@ -114,7 +114,7 @@ data class TenderCn @JsonCreator constructor(
         val requiresElectronicCatalogue: Boolean?,
 
         @field:NotEmpty
-        val submissionMethod: List<String>?,
+        val submissionMethod: List<SubmissionMethod>?,
 
         val submissionMethodRationale: List<String>?,
 
