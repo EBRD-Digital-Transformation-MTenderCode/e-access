@@ -9,9 +9,9 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.pin.PinLot
 import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.model.dto.pin.PinTender
-import com.procurement.access.model.dto.pn.PnLot
-import com.procurement.access.model.dto.pn.PnProcess
-import com.procurement.access.model.dto.pn.PnTender
+import com.procurement.access.model.dto.pn.LotPn
+import com.procurement.access.model.dto.pn.Pn
+import com.procurement.access.model.dto.pn.TenderPn
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -48,7 +48,7 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         if (entity.cpId != pin.tender.id) throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
-        val pn = toObject(PnProcess::class.java, entity.jsonData)
+        val pn = toObject(Pn::class.java, entity.jsonData)
         addLotsToPinFromPn(pn.tender, pin.tender)
         validateLots(pn.tender, pin.tender)
         pin.planning = pn.planning
@@ -69,7 +69,7 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
         return ResponseDto(true, null, pin)
     }
 
-    private fun validateLots(pnTender: PnTender, pinTender: PinTender) {
+    private fun validateLots(pnTender: TenderPn, pinTender: PinTender) {
         if (pinTender.documents != null) {
             val lotsFromDocuments = pinTender.documents.asSequence()
                     .filter({ it.relatedLots != null })
@@ -87,13 +87,13 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
         }
     }
 
-    private fun addLotsToPinFromPn(pnTender: PnTender, pinTender: PinTender) {
+    private fun addLotsToPinFromPn(pnTender: TenderPn, pinTender: PinTender) {
         if (pnTender.lots != null) {
             pinTender.lots = pnTender.lots.asSequence().map { convertPnToPinLot(it) }.toList()
         }
     }
 
-    private fun convertPnToPinLot(pnLot: PnLot): PinLot {
+    private fun convertPnToPinLot(pnLot: LotPn): PinLot {
         return PinLot(
                 id = pnLot.id,
                 title = pnLot.title,

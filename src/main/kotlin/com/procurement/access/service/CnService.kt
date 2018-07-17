@@ -7,10 +7,7 @@ import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.Cn
 import com.procurement.access.model.dto.cn.LotCn
 import com.procurement.access.model.dto.cn.TenderCn
-import com.procurement.access.model.dto.cn.request.CreateCn
-import com.procurement.access.model.dto.cn.request.ItemCreateCn
-import com.procurement.access.model.dto.cn.request.LotCreateCn
-import com.procurement.access.model.dto.cn.request.TenderCreateCn
+import com.procurement.access.model.dto.cn.request.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
@@ -29,7 +26,7 @@ interface CnService {
                  pmd: String,
                  owner: String,
                  dateTime: LocalDateTime,
-                 cnDto: CreateCn): ResponseDto
+                 cnDto: CnCreate): ResponseDto
 }
 
 @Service
@@ -41,7 +38,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                           pmd: String,
                           owner: String,
                           dateTime: LocalDateTime,
-                          cnDto: CreateCn): ResponseDto {
+                          cnDto: CnCreate): ResponseDto {
 
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
@@ -88,6 +85,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                         documents = tenderDto.documents,
                         classification = tenderDto.classification,
                         contractPeriod = setContractPeriod(tenderDto.lots),
+                        tenderPeriod = Period(dateTime, tenderDto.tenderPeriod.endDate),
                         submissionMethodRationale = tenderDto.submissionMethodRationale,
                         submissionLanguages = null,
                         procurementMethodAdditionalInfo = null,
@@ -106,14 +104,14 @@ class CnServiceImpl(private val generationService: GenerationService,
         return ResponseDto(true, null, cn)
     }
 
-    private fun checkLotsCurrency(cn: CreateCn) {
+    private fun checkLotsCurrency(cn: CnCreate) {
         val budgetCurrency = cn.planning.budget.amount.currency
         cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
             throw ErrorException(ErrorType.INVALID_CURRENCY)
         }
     }
 
-    private fun checkLotsContractPeriod(cn: CreateCn) {
+    private fun checkLotsContractPeriod(cn: CnCreate) {
         val tenderPeriodEndDate = cn.tender.tenderPeriod.endDate
         cn.tender.lots
                 .asSequence()
@@ -122,15 +120,15 @@ class CnServiceImpl(private val generationService: GenerationService,
                 }?.let { throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD) }
     }
 
-    private fun setLots(lotsDto: HashSet<LotCreateCn>): HashSet<LotCn> {
+    private fun setLots(lotsDto: HashSet<LotCnCreate>): HashSet<LotCn> {
         return lotsDto.asSequence().map { convertDtoLotToCnLot(it) }.toHashSet()
     }
 
-    private fun setItemsId(tender: TenderCreateCn) {
+    private fun setItemsId(tender: TenderCnCreate) {
         tender.items.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
     }
 
-    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCreateCn) {
+    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
         tender.lots.forEach { lot ->
             val id = generationService.generateTimeBasedUUID().toString()
             tender.items.asSequence()
@@ -157,7 +155,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getValueFromLots(lotsDto: HashSet<LotCreateCn>): Value {
+    private fun getValueFromLots(lotsDto: HashSet<LotCnCreate>): Value {
         val currency = lotsDto.elementAt(0).value.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
@@ -165,17 +163,17 @@ class CnServiceImpl(private val generationService: GenerationService,
         return Value(totalAmount, currency)
     }
 
-    private fun setItems(itemsDto: HashSet<ItemCreateCn>): HashSet<Item> {
+    private fun setItems(itemsDto: HashSet<ItemCnCreate>): HashSet<Item> {
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toHashSet()
     }
 
-    private fun setContractPeriod(lotsDto: HashSet<LotCreateCn>): Period {
+    private fun setContractPeriod(lotsDto: HashSet<LotCnCreate>): Period {
         val startDate = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
         val endDate = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
         return Period(startDate!!, endDate!!)
     }
 
-    private fun convertDtoLotToCnLot(lotDto: LotCreateCn): LotCn {
+    private fun convertDtoLotToCnLot(lotDto: LotCnCreate): LotCn {
         return LotCn(
                 id = lotDto.id,
                 title = lotDto.title,
@@ -192,7 +190,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         )
     }
 
-    private fun convertDtoItemToCnItem(itemDto: ItemCreateCn): Item {
+    private fun convertDtoItemToCnItem(itemDto: ItemCnCreate): Item {
         return Item(
                 id = itemDto.id,
                 description = itemDto.description,

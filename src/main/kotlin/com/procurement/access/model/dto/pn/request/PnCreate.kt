@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.cn.request
+package com.procurement.access.model.dto.pn.request
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -14,25 +14,25 @@ import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
-data class CreateCn @JsonCreator constructor(
+data class PnCreate @JsonCreator constructor(
 
         @field:Valid @field:NotNull
-        var planning: PlanningCreateCn,
+        var planning: PlanningPnCreate,
 
         @field:Valid @field:NotNull
-        var tender: TenderCreateCn
+        var tender: TenderPnCreate
 )
 
 
-data class PlanningCreateCn @JsonCreator constructor(
+data class PlanningPnCreate @JsonCreator constructor(
 
         @field:Valid @field:NotNull
-        val budget: BudgetCreateCn,
+        val budget: BudgetPnCreate,
 
         val rationale: String?
 )
 
-data class BudgetCreateCn @JsonCreator constructor(
+data class BudgetPnCreate @JsonCreator constructor(
 
         val description: String?,
 
@@ -48,20 +48,24 @@ data class BudgetCreateCn @JsonCreator constructor(
         val budgetBreakdown: List<BudgetBreakdown>
 )
 
-data class TenderCreateCn @JsonCreator constructor(
+data class TenderPnCreate @JsonCreator constructor(
 
         @field:Valid @field:NotNull
         val classification: Classification,
 
+        val value: Value?,
+
         @field:NotNull
         val mainProcurementCategory: String,
 
-        val submissionMethodRationale: List<String>?,
-
-        val submissionMethodDetails: String?,
+        @field:NotNull
+        val submissionMethodRationale: List<String>,
 
         @field:NotNull
-        val eligibilityCriteria: String,
+        val submissionMethodDetails: String,
+
+        @field:NotNull
+        val procurementMethodDetails: String,
 
         @field:NotNull
         val title: String,
@@ -72,51 +76,46 @@ data class TenderCreateCn @JsonCreator constructor(
         @field:NotNull
         val legalBasis: LegalBasis,
 
-        @field:NotNull
-        val procurementMethodDetails: String,
-
         val procurementMethodRationale: String?,
 
         val procurementMethodAdditionalInfo: String?,
 
+        val eligibilityCriteria: String?,
+
         @field:Valid @field:NotNull
-        val tenderPeriod: PeriodCreateCn,
+        val tenderPeriod: PeriodPnCreate,
 
         @field:Valid @field:NotNull
         val procuringEntity: OrganizationReference,
 
         @field:Valid @field:NotEmpty
-        var lots: HashSet<LotCreateCn>,
+        var lots: HashSet<LotPnCreate>?,
 
         @field:Valid @field:NotEmpty
-        val items: HashSet<ItemCreateCn>,
+        val items: HashSet<ItemPnCreate>?,
 
         @field:Valid
         var documents: List<Document>?
 )
 
-data class LotCreateCn @JsonCreator constructor(
+data class LotPnCreate @JsonCreator constructor(
 
         @field:NotNull
         var id: String,
 
-        @field:NotNull
-        val title: String,
+        val title: String?,
 
-        @field:NotNull
-        val description: String,
+        val description: String?,
 
         @field:Valid @field:NotNull
         val value: Value,
 
-        @field:Valid @field:NotNull
-        val contractPeriod: Period,
+        val contractPeriod: Period?,
 
-        @field:Valid @field:NotNull
-        val placeOfPerformance: PlaceOfPerformance
+        val placeOfPerformance: PlaceOfPerformance?
 )
 
-data class ItemCreateCn @JsonCreator constructor(
+data class ItemPnCreate @JsonCreator constructor(
 
         @field:NotNull
         var id: String,
@@ -140,8 +139,8 @@ data class ItemCreateCn @JsonCreator constructor(
         var relatedLot: String
 )
 
-data class PeriodCreateCn @JsonCreator constructor(
+data class PeriodPnCreate @JsonCreator constructor(
 
         @field:NotNull
-        val endDate: LocalDateTime
+        val startDate: LocalDateTime
 )

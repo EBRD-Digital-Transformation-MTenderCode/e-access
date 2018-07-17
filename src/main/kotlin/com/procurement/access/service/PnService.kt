@@ -6,8 +6,8 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
-import com.procurement.access.model.dto.pn.PnProcess
-import com.procurement.access.model.dto.pn.PnTender
+import com.procurement.access.model.dto.pn.Pn
+import com.procurement.access.model.dto.pn.TenderPn
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -20,7 +20,7 @@ interface PnService {
                  country: String,
                  owner: String,
                  dateTime: LocalDateTime,
-                 pn: PnProcess): ResponseDto
+                 pn: Pn): ResponseDto
 }
 
 @Service
@@ -31,7 +31,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                           country: String,
                           owner: String,
                           dateTime: LocalDateTime,
-                          pn: PnProcess): ResponseDto {
+                          pn: Pn): ResponseDto {
         validateFields(pn)
         val cpId = generationService.getCpId(country)
         pn.ocid = cpId
@@ -48,7 +48,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         return ResponseDto(true, null, pn)
     }
 
-    private fun validateFields(pn: PnProcess) {
+    private fun validateFields(pn: Pn) {
         if (pn.tender.id != null) throw ErrorException(ErrorType.TENDER_ID_NOT_NULL)
         if (pn.tender.status != null) throw ErrorException(ErrorType.TENDER_STATUS_NOT_NULL)
         if (pn.tender.statusDetails != null) throw ErrorException(ErrorType.TENDER_STATUS_DETAILS_NOT_NULL)
@@ -58,7 +58,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun setStatuses(tender: PnTender) {
+    private fun setStatuses(tender: TenderPn) {
         tender.status = TenderStatus.PLANNING
         tender.statusDetails = EMPTY
         tender.lots?.forEach { lot ->
@@ -67,11 +67,11 @@ class PnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun setItemsId(tender: PnTender) {
+    private fun setItemsId(tender: TenderPn) {
         tender.items?.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
     }
 
-    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: PnTender) {
+    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderPn) {
         tender.lots?.forEach { lot ->
             val id = generationService.generateTimeBasedUUID().toString()
             tender.items?.asSequence()
@@ -85,7 +85,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getEntity(pn: PnProcess,
+    private fun getEntity(pn: Pn,
                           cpId: String,
                           stage: String,
                           dateTime: LocalDateTime,

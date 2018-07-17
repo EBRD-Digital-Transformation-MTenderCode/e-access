@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.pn.PnProcess
+import com.procurement.access.model.dto.pn.Pn
 import com.procurement.access.service.PnService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -24,7 +24,7 @@ class PnController(private val pnService: PnService) {
                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                  @RequestParam("date")
                  dateTime: LocalDateTime,
-                 @Valid @RequestBody data: PnProcess): ResponseEntity<ResponseDto> {
+                 @Valid @RequestBody data: Pn): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 pnService.createPn(
                         stage = stage,

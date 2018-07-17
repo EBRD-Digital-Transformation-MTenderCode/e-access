@@ -8,7 +8,7 @@
 //    @Test
 //    @DisplayName("PnProcessDto")
 //    fun pnProcessDto() {
-//        compare(PnProcess::class.java, "/json/pn.json")
+//        compare(Pn::class.java, "/json/pn.json")
 //    }
 //
 //}

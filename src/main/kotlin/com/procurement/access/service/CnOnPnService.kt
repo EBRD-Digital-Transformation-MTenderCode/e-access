@@ -9,9 +9,9 @@ import com.procurement.access.model.dto.cn.Cn
 import com.procurement.access.model.dto.cn.TenderCn
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
-import com.procurement.access.model.dto.pn.PnLot
-import com.procurement.access.model.dto.pn.PnProcess
-import com.procurement.access.model.dto.pn.PnTender
+import com.procurement.access.model.dto.pn.LotPn
+import com.procurement.access.model.dto.pn.Pn
+import com.procurement.access.model.dto.pn.TenderPn
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -48,7 +48,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         if (entity.cpId != cn.tender.id) throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
-        val pnProcess = toObject(PnProcess::class.java, entity.jsonData)
+        val pnProcess = toObject(Pn::class.java, entity.jsonData)
         val pnTender = pnProcess.tender
         val cnTender = cn.tender.copy(
                 title = pnTender.title,
@@ -71,7 +71,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         return ResponseDto(true, null, cn)
     }
 
-    private fun setLotsToCnFromPn(pnTender: PnTender, cnTender: TenderCn) {
+    private fun setLotsToCnFromPn(pnTender: TenderPn, cnTender: TenderCn) {
         if (pnTender.lots != null && !pnTender.lots.isEmpty()) {
             cnTender.lots = pnTender.lots.asSequence().map({ convertPnToCnLot(it) }).toHashSet()
         }
@@ -98,7 +98,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
         }
     }
 
-    private fun convertPnToCnLot(pnLot: PnLot): LotCn {
+    private fun convertPnToCnLot(pnLot: LotPn): LotCn {
         return LotCn(
                 id = pnLot.id,
                 title = pnLot.title,
