@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.pn.request
+package com.procurement.access.model.dto.pn
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -56,7 +56,7 @@ data class TenderPnCreate @JsonCreator constructor(
         val value: Value?,
 
         @field:NotNull
-        val mainProcurementCategory: String,
+        val mainProcurementCategory: MainProcurementCategory,
 
         @field:NotNull
         val submissionMethodRationale: List<String>,
@@ -89,10 +89,10 @@ data class TenderPnCreate @JsonCreator constructor(
         val procuringEntity: OrganizationReference,
 
         @field:Valid @field:NotEmpty
-        var lots: HashSet<LotPnCreate>?,
+        var lots: List<LotPnCreate>?,
 
         @field:Valid @field:NotEmpty
-        val items: HashSet<ItemPnCreate>?,
+        val items: List<ItemPnCreate>?,
 
         @field:Valid
         var documents: List<Document>?

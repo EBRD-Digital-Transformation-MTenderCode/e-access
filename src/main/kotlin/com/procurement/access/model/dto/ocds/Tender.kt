@@ -17,97 +17,71 @@ data class Tender @JsonCreator constructor(
 
         val title: String,
 
-        @field:NotNull
         val description: String,
 
-        var status: TenderStatus?,
+        var status: TenderStatus,
 
-        var statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails,
 
-        @field:Valid @field:NotNull
         val classification: Classification,
 
-        @field:Valid @field:NotNull
-        val acceleratedProcedure: AcceleratedProcedure,
+        val mainProcurementCategory: MainProcurementCategory,
 
-        @field:Valid @field:NotNull
-        val designContest: DesignContest,
+        val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
-        @field:Valid @field:NotNull
-        val electronicWorkflows: ElectronicWorkflows,
-
-        @field:Valid @field:NotNull
-        val jointProcurement: JointProcurement,
-
-        @field:Valid @field:NotNull
-        val procedureOutsourcing: ProcedureOutsourcing,
-
-        @field:Valid @field:NotNull
-        val framework: Framework,
-
-        @field:Valid @field:NotNull
-        val dynamicPurchasingSystem: DynamicPurchasingSystem,
-
-        @field:NotNull
-        val legalBasis: LegalBasis,
-
-        @field:NotNull
         val procurementMethod: ProcurementMethod,
 
-        @field:NotNull
         val procurementMethodDetails: String,
 
         val procurementMethodRationale: String?,
 
         val procurementMethodAdditionalInfo: String?,
 
-        @field:NotNull
-        val mainProcurementCategory: MainProcurementCategory,
+        val submissionMethod: List<SubmissionMethod>,
 
-        val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
+        val submissionMethodDetails: String,
 
-        @field:NotNull
+        val submissionMethodRationale: List<String>,
+
+        val submissionLanguages: List<SubmissionLanguage>?,
+
         val eligibilityCriteria: String,
 
-        @field:NotEmpty
-        val submissionLanguages: List<SubmissionLanguage>,
+        val acceleratedProcedure: AcceleratedProcedure,
 
-        @field:Valid @field:NotNull
-        val contractPeriod: Period,
+        val designContest: DesignContest,
 
-        @field:Valid @field:NotNull
+        val electronicWorkflows: ElectronicWorkflows,
+
+        val jointProcurement: JointProcurement,
+
+        val procedureOutsourcing: ProcedureOutsourcing,
+
+        val framework: Framework,
+
+        val dynamicPurchasingSystem: DynamicPurchasingSystem,
+
+        val legalBasis: LegalBasis,
+
         val procuringEntity: OrganizationReference,
 
-        @field:Valid @field:NotNull
-        val value: Value,
-
-        @field:Valid @field:NotEmpty
-        val lotGroups: List<LotGroup>,
-
-        @field:Valid @field:NotEmpty
-        var lots: List<Lot>,
-
-        @field:Valid @field:NotEmpty
-        var items: HashSet<Item>?,
-
-        @field:NotNull
         val awardCriteria: AwardCriteria,
-
-        @field:NotNull
 
         @get:JsonProperty("requiresElectronicCatalogue")
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         val requiresElectronicCatalogue: Boolean,
 
-        @field:NotEmpty
-        val submissionMethod: List<SubmissionMethod>,
+        val contractPeriod: Period,
 
-        val submissionMethodRationale: List<SubmissionMethodRationale>?,
+        val tenderPeriod: Period,
 
-        val submissionMethodDetails: String?,
+        val value: Value,
 
-        @field:Valid
-        var documents: List<Document>?,
+        val lotGroups: List<LotGroup>,
 
-        val tenderPeriod: Period?
+        val lots: List<Lot>,
+
+        val items: List<Item>,
+
+        val documents: List<Document>?
 )

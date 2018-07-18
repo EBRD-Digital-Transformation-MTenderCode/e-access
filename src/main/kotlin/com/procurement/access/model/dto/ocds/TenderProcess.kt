@@ -12,9 +12,7 @@ data class TenderProcess @JsonCreator constructor(
 
         var token: String?,
 
-        @field:Valid @field:NotNull
         val planning: Planning,
 
-        @field:Valid @field:NotNull
         val tender: Tender
 )

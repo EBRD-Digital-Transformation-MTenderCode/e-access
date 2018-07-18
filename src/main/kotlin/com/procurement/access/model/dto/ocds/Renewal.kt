@@ -13,5 +13,5 @@ data class Renewal @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("hasRenewals")
-        private val hasRenewals: Boolean
+        private val hasRenewals: Boolean?
 )

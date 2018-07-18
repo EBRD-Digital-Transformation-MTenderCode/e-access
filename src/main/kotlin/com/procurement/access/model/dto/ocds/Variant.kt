@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Variant @JsonCreator constructor(
 
-        @field:JsonDeserialize(using = BooleansDeserializer::class)
         @field:NotNull
+        @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("hasVariants")
-        val hasVariants: Boolean
+        val hasVariants: Boolean?
 )

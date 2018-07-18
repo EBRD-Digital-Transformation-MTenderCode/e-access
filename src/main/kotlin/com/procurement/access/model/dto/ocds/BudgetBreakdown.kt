@@ -11,18 +11,17 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class BudgetBreakdown @JsonCreator constructor(
 
-        @field:NotNull
         val id: String,
 
         val description: String?,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val amount: Value,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val period: Period,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val sourceParty: SourceParty,
 
         @field:Valid

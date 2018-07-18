@@ -7,10 +7,8 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class EuropeanUnionFunding @JsonCreator constructor(
 
-        @field:NotNull
         val projectIdentifier: String,
 
-        @field:NotNull
         val projectName: String,
 
         val uri: String?

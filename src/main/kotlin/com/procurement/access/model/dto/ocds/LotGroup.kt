@@ -13,5 +13,5 @@ data class LotGroup @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("optionToCombine")
-        val optionToCombine: Boolean
+        val optionToCombine: Boolean?
 )

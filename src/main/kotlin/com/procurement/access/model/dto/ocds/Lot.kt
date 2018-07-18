@@ -9,20 +9,17 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Lot @JsonCreator constructor(
 
-        @field:NotNull
         val id: String,
 
-        @field:NotNull
         val title: String,
 
-        @field:NotNull
         val description: String,
 
         var status: TenderStatus?,
 
         var statusDetails: TenderStatusDetails?,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val value: Value,
 
         @field:Valid @field:NotEmpty
@@ -37,9 +34,9 @@ data class Lot @JsonCreator constructor(
         @field:Valid @field:NotEmpty
         val variants: List<Variant>?,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val contractPeriod: Period,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val placeOfPerformance: PlaceOfPerformance
 )

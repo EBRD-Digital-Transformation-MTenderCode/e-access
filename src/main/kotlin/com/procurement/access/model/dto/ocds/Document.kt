@@ -8,10 +8,8 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Document @JsonCreator constructor(
 
-        @field:NotNull
         val id: String,
 
-        @field:NotNull
         val documentType: DocumentType,
 
         val title: String?,

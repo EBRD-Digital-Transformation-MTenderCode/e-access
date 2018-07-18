@@ -7,9 +7,7 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Unit @JsonCreator constructor(
 
-        @field:NotNull
         val id: String,
 
-        @field:NotNull
         val name: String
 )

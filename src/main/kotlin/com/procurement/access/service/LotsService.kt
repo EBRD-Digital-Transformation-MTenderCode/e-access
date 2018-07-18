@@ -161,7 +161,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         if (lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
     }
 
-    private fun getItemsForCompiledLots(items: Set<Item>?, lots: List<Lot>): List<Item>? {
+    private fun getItemsForCompiledLots(items: List<Item>?, lots: List<Lot>): List<Item>? {
         if (items != null) {
             val lotsIds = lots.asSequence()
                     .filter { it.status == TenderStatus.COMPLETE && it.statusDetails == TenderStatusDetails.EMPTY }

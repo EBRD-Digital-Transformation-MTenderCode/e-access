@@ -13,5 +13,5 @@ data class DesignContest @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("serviceContractAward")
-        val serviceContractAward: Boolean
+        val serviceContractAward: Boolean?
 )

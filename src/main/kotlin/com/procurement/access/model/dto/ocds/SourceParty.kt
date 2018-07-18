@@ -10,6 +10,5 @@ data class SourceParty @JsonCreator constructor(
 
         var id: String,
 
-        @field:NotNull
         val name: String
 )

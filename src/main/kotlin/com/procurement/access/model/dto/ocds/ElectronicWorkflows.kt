@@ -13,15 +13,15 @@ data class ElectronicWorkflows @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("useOrdering")
-        val useOrdering: Boolean,
+        val useOrdering: Boolean?,
 
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("usePayment")
-        val usePayment: Boolean,
+        val usePayment: Boolean?,
 
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("acceptInvoicing")
-        val acceptInvoicing: Boolean
+        val acceptInvoicing: Boolean?
 )

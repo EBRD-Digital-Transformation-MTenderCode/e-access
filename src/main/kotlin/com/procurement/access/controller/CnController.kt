@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.request.CnCreate
+import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.service.CnService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus

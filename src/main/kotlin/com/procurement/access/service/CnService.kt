@@ -4,10 +4,7 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.Cn
-import com.procurement.access.model.dto.cn.LotCn
-import com.procurement.access.model.dto.cn.TenderCn
-import com.procurement.access.model.dto.cn.request.*
+import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
@@ -17,7 +14,6 @@ import com.procurement.access.utils.toJson
 import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
-import java.util.*
 
 interface CnService {
 
@@ -47,7 +43,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         setItemsId(cnDto.tender)
         setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
-        val cn = Cn(
+        val tp = TenderProcess(
                 ocid = cpId,
                 token = null,
                 planning = Planning(
@@ -59,48 +55,48 @@ class CnServiceImpl(private val generationService: GenerationService,
                         ),
                         rationale = planningDto.rationale
                 ),
-                tender = TenderCn(
+                tender = Tender(
                         id = cpId,
+                        title = tenderDto.title,
+                        description = tenderDto.description,
                         status = ACTIVE,
                         statusDetails = EMPTY,
+                        classification = tenderDto.classification,
+                        mainProcurementCategory = tenderDto.mainProcurementCategory,
+                        additionalProcurementCategories = null,
+                        procurementMethod = getPmd(pmd),
+                        procurementMethodDetails = tenderDto.procurementMethodDetails,
+                        procurementMethodRationale = tenderDto.procurementMethodRationale,
+                        procurementMethodAdditionalInfo = null,
+                        submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
+                        submissionMethodDetails = tenderDto.submissionMethodDetails,
+                        submissionMethodRationale = tenderDto.submissionMethodRationale,
+                        submissionLanguages = null,
+                        eligibilityCriteria = tenderDto.eligibilityCriteria,
+                        acceleratedProcedure = AcceleratedProcedure(isAcceleratedProcedure = false),
                         designContest = DesignContest(serviceContractAward = false),
                         electronicWorkflows = ElectronicWorkflows(useOrdering = false, acceptInvoicing = false, usePayment = false),
                         jointProcurement = JointProcurement(isJointProcurement = false),
                         procedureOutsourcing = ProcedureOutsourcing(procedureOutsourced = false),
                         framework = Framework(isAFramework = false),
                         dynamicPurchasingSystem = DynamicPurchasingSystem(hasDynamicPurchasingSystem = false),
-                        lotGroups = listOf(LotGroup(optionToCombine = false)),
-                        requiresElectronicCatalogue = false,
-                        acceleratedProcedure = AcceleratedProcedure(isAcceleratedProcedure = false),
-                        awardCriteria = AwardCriteria.PRICE_ONLY,
-                        submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
-                        lots = setLots(tenderDto.lots),
+                        legalBasis = tenderDto.legalBasis,
                         procuringEntity = tenderDto.procuringEntity,
-                        description = tenderDto.description,
-                        procurementMethod = getPmd(pmd),
-                        value = getValueFromLots(tenderDto.lots),
-                        items = setItems(tenderDto.items),
-                        title = tenderDto.title,
-                        documents = tenderDto.documents,
-                        classification = tenderDto.classification,
+                        awardCriteria = AwardCriteria.PRICE_ONLY,
+                        requiresElectronicCatalogue = false,
                         contractPeriod = setContractPeriod(tenderDto.lots),
                         tenderPeriod = Period(dateTime, tenderDto.tenderPeriod.endDate),
-                        submissionMethodRationale = tenderDto.submissionMethodRationale,
-                        submissionLanguages = null,
-                        procurementMethodAdditionalInfo = null,
-                        legalBasis = tenderDto.legalBasis,
-                        eligibilityCriteria = tenderDto.eligibilityCriteria,
-                        submissionMethodDetails = tenderDto.submissionMethodDetails,
-                        additionalProcurementCategories = null,
-                        mainProcurementCategory = tenderDto.mainProcurementCategory,
-                        procurementMethodRationale = tenderDto.procurementMethodRationale,
-                        procurementMethodDetails = tenderDto.procurementMethodDetails
+                        value = getValueFromLots(tenderDto.lots),
+                        lotGroups = listOf(LotGroup(optionToCombine = false)),
+                        lots = setLots(tenderDto.lots),
+                        items = setItems(tenderDto.items),
+                        documents = tenderDto.documents
                 )
         )
-        val entity = getEntity(cn, cpId, stage, dateTime, owner)
+        val entity = getEntity(tp, cpId, stage, dateTime, owner)
         tenderProcessDao.save(entity)
-        cn.token = entity.token.toString()
-        return ResponseDto(true, null, cn)
+        tp.token = entity.token.toString()
+        return ResponseDto(true, null, tp)
     }
 
     private fun checkLotsCurrency(cn: CnCreate) {
@@ -119,8 +115,8 @@ class CnServiceImpl(private val generationService: GenerationService,
                 }?.let { throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD) }
     }
 
-    private fun setLots(lotsDto: HashSet<LotCnCreate>): HashSet<LotCn> {
-        return lotsDto.asSequence().map { convertDtoLotToCnLot(it) }.toHashSet()
+    private fun setLots(lotsDto: List<LotCnCreate>): List<Lot> {
+        return lotsDto.asSequence().map { convertDtoLotToCnLot(it) }.toList()
     }
 
     private fun setItemsId(tender: TenderCnCreate) {
@@ -154,7 +150,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getValueFromLots(lotsDto: HashSet<LotCnCreate>): Value {
+    private fun getValueFromLots(lotsDto: List<LotCnCreate>): Value {
         val currency = lotsDto.elementAt(0).value.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
@@ -162,18 +158,18 @@ class CnServiceImpl(private val generationService: GenerationService,
         return Value(totalAmount, currency)
     }
 
-    private fun setItems(itemsDto: HashSet<ItemCnCreate>): HashSet<Item> {
-        return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toHashSet()
+    private fun setItems(itemsDto: List<ItemCnCreate>): List<Item> {
+        return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun setContractPeriod(lotsDto: HashSet<LotCnCreate>): Period {
+    private fun setContractPeriod(lotsDto: List<LotCnCreate>): Period {
         val startDate = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
         val endDate = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
         return Period(startDate!!, endDate!!)
     }
 
-    private fun convertDtoLotToCnLot(lotDto: LotCnCreate): LotCn {
-        return LotCn(
+    private fun convertDtoLotToCnLot(lotDto: LotCnCreate): Lot {
+        return Lot(
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
@@ -201,7 +197,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         )
     }
 
-    private fun getEntity(dto: Cn,
+    private fun getEntity(tp: TenderProcess,
                           cpId: String,
                           stage: String,
                           dateTime: LocalDateTime,
@@ -212,7 +208,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                 stage = stage,
                 owner = owner,
                 createdDate = dateTime.toDate(),
-                jsonData = toJson(dto)
+                jsonData = toJson(tp)
         )
     }
 }

@@ -13,5 +13,5 @@ data class JointProcurement @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("isJointProcurement")
-        val isJointProcurement: Boolean
+        val isJointProcurement: Boolean?
 )

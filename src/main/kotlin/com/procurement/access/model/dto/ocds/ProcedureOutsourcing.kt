@@ -13,5 +13,5 @@ data class ProcedureOutsourcing @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("procedureOutsourced")
-        val procedureOutsourced: Boolean
+        val procedureOutsourced: Boolean?
 )

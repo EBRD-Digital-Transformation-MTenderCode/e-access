@@ -13,5 +13,5 @@ data class Framework @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("isAFramework")
-        val isAFramework: Boolean
+        val isAFramework: Boolean?
 )

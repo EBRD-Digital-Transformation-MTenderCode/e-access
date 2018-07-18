@@ -13,5 +13,5 @@ data class DynamicPurchasingSystem @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("hasDynamicPurchasingSystem")
-        val hasDynamicPurchasingSystem: Boolean
+        val hasDynamicPurchasingSystem: Boolean?
 )

@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.cn.request
+package com.procurement.access.model.dto.cn
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -17,10 +17,10 @@ import javax.validation.constraints.NotNull
 data class CnCreate @JsonCreator constructor(
 
         @field:Valid @field:NotNull
-        var planning: PlanningCnCreate,
+        val planning: PlanningCnCreate,
 
         @field:Valid @field:NotNull
-        var tender: TenderCnCreate
+        val tender: TenderCnCreate
 )
 
 
@@ -50,11 +50,24 @@ data class BudgetCnCreate @JsonCreator constructor(
 
 data class TenderCnCreate @JsonCreator constructor(
 
+        @field:NotNull
+        val title: String,
+
+        @field:NotNull
+        val description: String,
+
         @field:Valid @field:NotNull
         val classification: Classification,
 
         @field:NotNull
-        val mainProcurementCategory: String,
+        val mainProcurementCategory: MainProcurementCategory,
+
+        @field:NotNull
+        val procurementMethodDetails: String,
+
+        val procurementMethodRationale: String?,
+
+        val procurementMethodAdditionalInfo: String?,
 
         @field:NotNull
         val submissionMethodRationale: List<String>,
@@ -63,23 +76,10 @@ data class TenderCnCreate @JsonCreator constructor(
         val submissionMethodDetails: String,
 
         @field:NotNull
-        val procurementMethodDetails: String,
-
-        @field:NotNull
         val eligibilityCriteria: String,
 
         @field:NotNull
-        val title: String,
-
-        @field:NotNull
-        val description: String,
-
-        @field:NotNull
         val legalBasis: LegalBasis,
-
-        val procurementMethodRationale: String?,
-
-        val procurementMethodAdditionalInfo: String?,
 
         @field:Valid @field:NotNull
         val tenderPeriod: PeriodCnCreate,
@@ -88,13 +88,13 @@ data class TenderCnCreate @JsonCreator constructor(
         val procuringEntity: OrganizationReference,
 
         @field:Valid @field:NotEmpty
-        var lots: HashSet<LotCnCreate>,
+        val lots: List<LotCnCreate>,
 
         @field:Valid @field:NotEmpty
-        val items: HashSet<ItemCnCreate>,
+        val items: List<ItemCnCreate>,
 
         @field:Valid
-        var documents: List<Document>?
+        val documents: List<Document>?
 )
 
 data class LotCnCreate @JsonCreator constructor(

@@ -13,5 +13,5 @@ data class AcceleratedProcedure @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("isAcceleratedProcedure")
-        val isAcceleratedProcedure: Boolean
+        val isAcceleratedProcedure: Boolean?
 )
