@@ -11,11 +11,10 @@ data class OrganizationReference @JsonCreator constructor(
 
         var id: String?,
 
-        @field:NotNull
         val name: String,
 
         @field:Valid
-        val identifier: Identifier?,
+        val identifier: Identifier,
 
         @field:Valid
         val address: Address?,

@@ -11,7 +11,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class MoneyDeserializer : JsonDeserializer<BigDecimal>() {
+class QuantityDeserializer : JsonDeserializer<BigDecimal>() {
 
     private val delegate = NumberDeserializers.BigDecimalDeserializer.instance
 
@@ -21,8 +21,7 @@ class MoneyDeserializer : JsonDeserializer<BigDecimal>() {
             throw ErrorException(ErrorType.INVALID_JSON_TYPE, jsonParser.currentName)
         }
         var bd = delegate.deserialize(jsonParser, deserializationContext)
-        if (bd < BigDecimal.valueOf(0.00)) throw ErrorException(ErrorType.INVALID_JSON_TYPE, jsonParser.currentName)
-        bd = bd.setScale(2, RoundingMode.HALF_UP)
+        if (bd <= BigDecimal.ZERO) throw ErrorException(ErrorType.INVALID_JSON_TYPE, jsonParser.currentName)
         return bd
     }
 }

@@ -14,18 +14,16 @@ data class Item @JsonCreator constructor(
 
         val description: String?,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val classification: Classification,
 
         @field:Valid
         val additionalClassifications: HashSet<Classification>?,
 
-        @field:NotNull
         val quantity: BigDecimal,
 
-        @field:Valid @field:NotNull
+        @field:Valid
         val unit: Unit,
 
-        @field:NotNull
         var relatedLot: String
 )

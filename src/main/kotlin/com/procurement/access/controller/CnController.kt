@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnProcess
+import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.service.CnService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -19,19 +19,20 @@ class CnController(private val cnService: CnService) {
     @PostMapping
     fun createCn(@RequestParam("stage") stage: String,
                  @RequestParam("country") country: String,
-                 @RequestParam(value = "pmd", required = false) pmd: String,
+                 @RequestParam("pmd") pmd: String,
                  @RequestParam("owner") owner: String,
                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                  @RequestParam("date") dateTime: LocalDateTime,
-                 @Valid @RequestBody data: CnProcess): ResponseEntity<ResponseDto> {
+                 @Valid @RequestBody data: CnCreate): ResponseEntity<ResponseDto> {
 
         return ResponseEntity(
                 cnService.createCn(
                         stage = stage,
                         country = country,
+                        pmd = pmd,
                         owner = owner,
                         dateTime = dateTime,
-                        cn = data),
+                        cnDto = data),
                 HttpStatus.CREATED)
     }
 }

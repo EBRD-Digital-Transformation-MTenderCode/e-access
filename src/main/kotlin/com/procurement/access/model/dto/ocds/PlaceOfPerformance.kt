@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PlaceOfPerformance @JsonCreator constructor(
 
-        val address: Address?,
+        val address: Address,
 
         val description: String?
 )

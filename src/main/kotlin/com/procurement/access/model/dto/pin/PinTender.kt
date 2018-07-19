@@ -3,6 +3,8 @@ package com.procurement.access.model.dto.pin
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.ocds.*
 import java.util.*
 import javax.validation.Valid
@@ -62,7 +64,7 @@ data class PinTender @JsonCreator constructor(
         val procurementMethodAdditionalInfo: String?,
 
         @field:NotNull
-        var mainProcurementCategory: MainProcurementCategory,
+        var mainProcurementCategory: String,
 
         val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
@@ -90,15 +92,16 @@ data class PinTender @JsonCreator constructor(
         @field:NotNull
         val awardCriteria: AwardCriteria,
 
+        @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("requiresElectronicCatalogue")
         val requiresElectronicCatalogue: Boolean?,
 
-        @field:Valid @field:NotEmpty
+        @field:NotEmpty
         val submissionMethod: List<SubmissionMethod>,
 
         val submissionMethodDetails: String?,
 
-        val submissionMethodRationale: List<SubmissionMethodRationale>?,
+        val submissionMethodRationale: List<String>?,
 
         @field:Valid
         val documents: List<Document>?,

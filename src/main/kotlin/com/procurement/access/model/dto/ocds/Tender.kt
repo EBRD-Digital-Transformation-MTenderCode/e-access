@@ -3,6 +3,8 @@ package com.procurement.access.model.dto.ocds
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import java.util.*
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
@@ -15,97 +17,71 @@ data class Tender @JsonCreator constructor(
 
         val title: String,
 
-        @field:NotNull
         val description: String,
 
-        var status: TenderStatus?,
+        var status: TenderStatus,
 
-        var statusDetails: TenderStatusDetails?,
+        var statusDetails: TenderStatusDetails,
 
-        @field:Valid @field:NotNull
         val classification: Classification,
 
-        @field:Valid @field:NotNull
-        val acceleratedProcedure: AcceleratedProcedure,
+        val mainProcurementCategory: MainProcurementCategory,
 
-        @field:Valid @field:NotNull
-        val designContest: DesignContest,
+        val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
-        @field:Valid @field:NotNull
-        val electronicWorkflows: ElectronicWorkflows,
-
-        @field:Valid @field:NotNull
-        val jointProcurement: JointProcurement,
-
-        @field:Valid @field:NotNull
-        val procedureOutsourcing: ProcedureOutsourcing,
-
-        @field:Valid @field:NotNull
-        val framework: Framework,
-
-        @field:Valid @field:NotNull
-        val dynamicPurchasingSystem: DynamicPurchasingSystem,
-
-        @field:NotNull
-        val legalBasis: LegalBasis,
-
-        @field:NotNull
         val procurementMethod: ProcurementMethod,
 
-        @field:NotNull
         val procurementMethodDetails: String,
-
 
         val procurementMethodRationale: String?,
 
         val procurementMethodAdditionalInfo: String?,
 
-        @field:NotNull
-        val mainProcurementCategory: MainProcurementCategory,
-
-
-        val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
-
-        @field:NotNull
-        val eligibilityCriteria: String,
-
-        @field:NotEmpty
-        val submissionLanguages: List<SubmissionLanguage>,
-
-        @field:Valid @field:NotNull
-        val contractPeriod: Period,
-
-        @field:Valid @field:NotNull
-        val procuringEntity: OrganizationReference,
-
-        @field:Valid @field:NotNull
-        val value: Value,
-
-        @field:Valid @field:NotEmpty
-        val lotGroups: List<LotGroup>,
-
-        @field:Valid @field:NotEmpty
-        var lots: List<Lot>,
-
-        @field:Valid @field:NotEmpty
-        var items: HashSet<Item>?,
-
-        @field:NotNull
-        val awardCriteria: AwardCriteria,
-
-        @field:NotNull
-        @get:JsonProperty("requiresElectronicCatalogue")
-        val requiresElectronicCatalogue: Boolean,
-
-        @field:NotEmpty
         val submissionMethod: List<SubmissionMethod>,
 
-        val submissionMethodRationale: List<SubmissionMethodRationale>?,
+        val submissionMethodDetails: String,
 
-        val submissionMethodDetails: String?,
+        val submissionMethodRationale: List<String>,
 
-        @field:Valid
-        var documents: List<Document>?,
+        val submissionLanguages: List<SubmissionLanguage>?,
 
-        val tenderPeriod: Period?
+        val eligibilityCriteria: String,
+
+        val acceleratedProcedure: AcceleratedProcedure,
+
+        val designContest: DesignContest,
+
+        val electronicWorkflows: ElectronicWorkflows,
+
+        val jointProcurement: JointProcurement,
+
+        val procedureOutsourcing: ProcedureOutsourcing,
+
+        val framework: Framework,
+
+        val dynamicPurchasingSystem: DynamicPurchasingSystem,
+
+        val legalBasis: LegalBasis,
+
+        val procuringEntity: OrganizationReference,
+
+        val awardCriteria: AwardCriteria,
+
+        @get:JsonProperty("requiresElectronicCatalogue")
+        @field:JsonDeserialize(using = BooleansDeserializer::class)
+        val requiresElectronicCatalogue: Boolean,
+
+        val contractPeriod: Period,
+
+        val tenderPeriod: Period,
+
+        val value: Value,
+
+        val lotGroups: List<LotGroup>,
+
+        val lots: List<Lot>,
+
+        val items: List<Item>,
+
+        val documents: List<Document>?
 )

@@ -10,10 +10,8 @@ import javax.validation.constraints.NotNull
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Value @JsonCreator constructor(
 
-        @field:NotNull
         @field:JsonDeserialize(using = MoneyDeserializer::class)
         val amount: BigDecimal,
 
-        @field:NotNull
-        val currency: Currency
+        var currency: String
 )
