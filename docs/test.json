@@ -1,137 +1,231 @@
 {
   "planning": {
     "budget": {
-      "description": "Budget Description",
+      "description": "wow",
       "amount": {
-        "amount": 100.00,
+        "amount": 1000.00,
         "currency": "MDL"
       },
       "isEuropeanUnionFunded": true,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1531821672443-FS-1531831043190",
+          "id": "ocds-t1s2t3-MD-1532015605935-FS-1532015616107",
+          "description": "Hello world!",
           "amount": {
-            "amount": 100.00,
+            "amount": 1000.00,
             "currency": "MDL"
           },
           "period": {
-            "startDate": "2018-07-08T00:00:00Z",
-            "endDate": "2018-08-20T00:00:00Z"
+            "startDate": "2018-05-25T21:00:00Z",
+            "endDate": "2018-05-26T21:00:00Z"
           },
           "sourceParty": {
-            "id": "string-string",
-            "name": "buyer"
+            "id": "MD-IDNO-id",
+            "name": "buyerName"
           },
           "europeanUnionFunding": {
-            "projectName": "fh",
-            "projectIdentifier": "hthth"
+            "projectName": "PJNAME",
+            "projectIdentifier": "PJINDET",
+            "uri": "uri4"
           }
         }
       ]
     },
-    "rationale": "Rationale"
+    "rationale": "enotis"
   },
   "tender": {
-    "title": "Tender Title",
-    "description": "Tender Description",
-    "classification": {
-      "id": "79200000-6",
-      "description": "Servicii de contabilitate, servicii de audit şi servicii fiscale",
-      "scheme": "CPV"
-    },
-    "legalBasis": "DIRECTIVE_2009_81_EC",
-    "procurementMethodRationale": "Method Rationale",
-    "procurementMethodAdditionalInfo": "Method info",
+    "title": "gav",
+    "description": "gav gav",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
+    "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy",
     "tenderPeriod": {
-      "endDate": "2018-09-17T13:52:00Z",
-      "startDate": "2018-07-17T15:13:43Z"
+      "endDate": "2018-09-18T18:45:00Z",
+      "startDate": "2018-07-19T16:02:32Z"
     },
     "procuringEntity": {
-      "name": "Bebelo Name*",
+      "name": "Edward-Compan",
       "identifier": {
-        "scheme": "CXEMA Scheme*",
-        "id": "444777*",
-        "legalName": "Legal IMR Name*",
-        "uri": "URI*"
+        "scheme": "rrr",
+        "id": "gggg",
+        "legalName": "fff",
+        "uri": "hhh"
       },
       "additionalIdentifiers": [
         {
-          "scheme": "CPVS",
-          "id": "AA08-2",
-          "legalName": "A textual description or title for the code.",
-          "uri": "URI"
+          "scheme": "hhh",
+          "id": "gg",
+          "legalName": "fff",
+          "uri": "jjj"
         }
       ],
       "address": {
-        "streetAddress": "Street Address",
-        "locality": "Locality",
-        "region": "1",
-        "postalCode": "Postal Code",
-        "countryName": "Republic of Moldova"
+        "streetAddress": "",
+        "postalCode": "",
+        "addressDetails": {
+          "country": {
+            "id": "MD"
+          },
+          "region": {
+            "id": "MD-AN"
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": ""
+          }
+        }
       },
       "contactPoint": {
-        "name": "Name*",
-        "email": "E-mail*",
-        "telephone": "Telephone*",
-        "faxNumber": "Fax*",
-        "url": "URL*"
+        "name": "hgfh",
+        "email": "hfgh",
+        "telephone": "hgfhfh",
+        "faxNumber": "hgfh",
+        "url": "hgfhgf"
       }
     },
     "lots": [
       {
         "id": "1",
-        "title": "Title",
-        "description": "description",
+        "title": "lot1",
+        "description": "looot",
         "value": {
-          "amount": 10,
+          "amount": 300,
           "currency": "MDL"
         },
         "contractPeriod": {
-          "startDate": "2018-09-17T13:53:00Z",
-          "endDate": "2018-09-20T21:00:00Z"
+          "startDate": "2018-10-10T14:45:00Z",
+          "endDate": "2018-10-19T14:45:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "Street",
-            "locality": "Locality",
-            "region": "Region",
-            "postalCode": "20001",
-            "countryName": "Republic of Moldova"
+            "streetAddress": "",
+            "postalCode": "",
+            "addressDetails": {
+              "country": {
+                "id": "MD"
+              },
+              "region": {
+                "id": "MD-AN"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
           },
-          "description": "Description"
+          "description": "1"
+        }
+      },
+      {
+        "id": "2",
+        "title": "lot2",
+        "description": "looot",
+        "value": {
+          "amount": 400,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-10-10T14:45:00Z",
+          "endDate": "2018-10-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "",
+            "postalCode": "",
+            "addressDetails": {
+              "country": {
+                "id": "MD"
+              },
+              "region": {
+                "id": "MD-AN"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          },
+          "description": "2"
         }
       }
     ],
     "items": [
       {
         "id": "1",
-        "description": "description",
+        "description": "",
         "classification": {
-          "id": "79200000-6",
-          "description": "Servicii de contabilitate, servicii de audit şi servicii fiscale",
+          "id": "30199220-8",
+          "description": "Cărţi poştale neilustrate",
           "scheme": "CPV"
         },
         "additionalClassifications": [
           {
-            "id": "AA08-2",
-            "description": "Staniu",
+            "id": "AB06-7",
+            "description": "Plastic",
             "scheme": "CPVS"
           }
         ],
-        "quantity": 12.00,
+        "quantity": 1.00,
         "unit": {
-          "id": "KGM",
-          "name": "kilogram"
+          "id": "MTK",
+          "name": "square metre"
         },
         "relatedLot": "1"
+      },
+      {
+        "id": "2",
+        "description": "",
+        "classification": {
+          "id": "30199230-1",
+          "description": "Plicuri",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "AB06-7",
+            "description": "Plastic",
+            "scheme": "CPVS"
+          }
+        ],
+        "quantity": 1.00,
+        "unit": {
+          "id": "MTK",
+          "name": "square metre"
+        },
+        "relatedLot": "2"
       }
     ],
+    "documents": [
+      {
+        "documentType": "biddingDocuments",
+        "id": "1",
+        "title": "doc k tenderu",
+        "description": "doc k tenderu"
+      },
+      {
+        "documentType": "biddingDocuments",
+        "id": "2",
+        "title": "doc k lotu1",
+        "description": "doc k lotu1",
+        "relatedLots": [
+          "1"
+        ]
+      }
+    ],
+    "classification": {
+      "id": "30199200-2",
+      "description": "Plicuri, cărţi poştale şi cărţi poştale neilustrate",
+      "scheme": "CPV"
+    },
     "submissionMethodRationale": [
       "submissionMethodRationale"
     ],
     "submissionMethodDetails": "submissionMethodDetails",
-    "procurementMethodDetails": "Licitație limitată",
+    "procurementMethodDetails": "Licitatia deschisa",
     "eligibilityCriteria": "eligibilityCriteria",
-    "mainProcurementCategory": "services"
+    "mainProcurementCategory": "goods"
   }
 }
