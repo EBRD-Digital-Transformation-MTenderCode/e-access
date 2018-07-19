@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.Cn
+import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.service.CnOnPinService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -26,7 +26,7 @@ class CnOnPinController(private val cnOnPinService: CnOnPinService) {
                        @RequestParam("token") token: String,
                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                        @RequestParam("date") dateTime: LocalDateTime,
-                       @Valid @RequestBody data: Cn): ResponseEntity<ResponseDto> {
+                       @Valid @RequestBody data: CnCreate): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 cnOnPinService.createCnOnPin(
                         cpId = cpId,
