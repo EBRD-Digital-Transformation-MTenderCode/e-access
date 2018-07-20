@@ -78,7 +78,7 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
 //                    .flatMap({ it.relatedLots!!.asSequence() }).toHashSet()
 //            if (cnTender.lots != null && !lotsFromDocuments.isEmpty()) {
 //                val lotsFromCn = cnTender.lots!!.asSequence().map({ it.id }).toHashSet()
-//                if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS)
+//                if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
 //            }
 //        }
 //    }
