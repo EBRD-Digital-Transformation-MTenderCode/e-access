@@ -38,7 +38,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         process.tender.status = status
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(true, null,
-                TenderStatusResponseDto(process.tender.status?.value(), process.tender.statusDetails?.value()))
+                TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     override fun updateStatusDetails(cpId: String,
@@ -49,7 +49,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         process.tender.statusDetails = statusDetails
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(true, null,
-                TenderStatusResponseDto(process.tender.status?.value(), process.tender.statusDetails?.value()))
+                TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     override fun setSuspended(cpId: String,
@@ -64,7 +64,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(true, null,
-                TenderStatusResponseDto(process.tender.status?.value(), process.tender.statusDetails?.value()))
+                TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     override fun setUnsuccessful(cpId: String,

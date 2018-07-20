@@ -63,11 +63,11 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
 //
 //            if (pnTender.lots != null) {
 //                val lotsFromPn = pnTender.lots.asSequence().map({ it.id }).toHashSet()
-//                if (!lotsFromPn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS)
+//                if (!lotsFromPn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
 //            } else {
 //                if (pinTender.lots != null) {
 //                    val lotsFromPin = pinTender.lots!!.asSequence().map({ it.id }).toHashSet()
-//                    if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_LOTS_RELATED_LOTS)
+//                    if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
 //                }
 //            }
 //        }

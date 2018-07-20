@@ -40,8 +40,8 @@ class CnServiceImpl(private val generationService: GenerationService,
         val cpId = generationService.getCpId(country)
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
-        setItemsId(cnDto.tender)
-        setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender)
+        setItemsId(tenderDto)
+        setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
         val tp = TenderProcess(
                 ocid = cpId,
@@ -84,9 +84,9 @@ class CnServiceImpl(private val generationService: GenerationService,
                         procuringEntity = tenderDto.procuringEntity,
                         awardCriteria = AwardCriteria.PRICE_ONLY,
                         requiresElectronicCatalogue = false,
-                        contractPeriod = setContractPeriod(tenderDto.lots),
+                        contractPeriod = setContractPeriod(tenderDto.lots, planningDto.budget),
                         tenderPeriod = Period(dateTime, tenderDto.tenderPeriod.endDate),
-                        value = getValueFromLots(tenderDto.lots),
+                        value = getValueFromLots(tenderDto.lots, planningDto.budget.amount),
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
@@ -102,17 +102,19 @@ class CnServiceImpl(private val generationService: GenerationService,
     private fun checkLotsCurrency(cn: CnCreate) {
         val budgetCurrency = cn.planning.budget.amount.currency
         cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
-            throw ErrorException(ErrorType.INVALID_CURRENCY)
+            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
         }
     }
 
     private fun checkLotsContractPeriod(cn: CnCreate) {
-        val tenderPeriodEndDate = cn.tender.tenderPeriod.endDate
-        cn.tender.lots
-                .asSequence()
-                .firstOrNull {
-                    it.contractPeriod.startDate.isAfter(it.contractPeriod.endDate) || !it.contractPeriod.startDate.isAfter(tenderPeriodEndDate)
-                }?.let { throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD) }
+        cn.tender.lots.forEach { lot ->
+            if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
+                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            }
+            if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
+                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            }
+        }
     }
 
     private fun setLots(lotsDto: List<LotCnCreate>): List<Lot> {
@@ -124,17 +126,38 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
+        validateRelatedLots(tender)
         tender.lots.forEach { lot ->
             val id = generationService.generateTimeBasedUUID().toString()
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }
                     .forEach { it.relatedLot = id }
-            tender.documents?.asSequence()
-                    ?.filter { it.relatedLots != null }
-                    ?.filter { it.relatedLots!!.contains(lot.id) }
-                    ?.forEach { it.relatedLots!!.minus(lot.id).plus(id) }
-            lot.id = id
+            tender.documents?.forEach { document ->
+                document.relatedLots?.let { relatedLots ->
+                    if (relatedLots.contains(lot.id)) {
+                        relatedLots.remove(lot.id)
+                        relatedLots.add(id)
+                    }
+                }
+            }
         }
+    }
+
+    private fun validateRelatedLots(tender: TenderCnCreate) {
+        val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
+        if (tender.documents != null) {
+            val lotsFromDocuments = tender.documents.asSequence()
+                    .filter { it.relatedLots != null }
+                    .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+            if (lotsFromDocuments.isNotEmpty()) {
+                if (lotsFromDocuments.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+                if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            }
+        }
+        val lotsFromItems = tender.items.asSequence()
+                .map { it.relatedLot }.toHashSet()
+        if (lotsFromItems.size != lotsFromCn.size) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
     }
 
     private fun getPmd(pmd: String): ProcurementMethod {
@@ -150,11 +173,12 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getValueFromLots(lotsDto: List<LotCnCreate>): Value {
+    private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetAmount: Value): Value {
         val currency = lotsDto.elementAt(0).value.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+        if (totalAmount > budgetAmount.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
         return Value(totalAmount, currency)
     }
 
@@ -162,10 +186,14 @@ class CnServiceImpl(private val generationService: GenerationService,
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun setContractPeriod(lotsDto: List<LotCnCreate>): Period {
-        val startDate = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
-        val endDate = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
-        return Period(startDate!!, endDate!!)
+    private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): Period {
+        val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
+        val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
+        budget.budgetBreakdown.forEach { bb ->
+            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+        }
+        return Period(startDate, endDate)
     }
 
     private fun convertDtoLotToCnLot(lotDto: LotCnCreate): Lot {
