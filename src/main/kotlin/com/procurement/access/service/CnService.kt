@@ -4,10 +4,7 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnCreate
-import com.procurement.access.model.dto.cn.ItemCnCreate
-import com.procurement.access.model.dto.cn.LotCnCreate
-import com.procurement.access.model.dto.cn.TenderCnCreate
+import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
@@ -87,7 +84,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                         procuringEntity = tenderDto.procuringEntity,
                         awardCriteria = AwardCriteria.PRICE_ONLY,
                         requiresElectronicCatalogue = false,
-                        contractPeriod = setContractPeriod(tenderDto.lots),
+                        contractPeriod = setContractPeriod(tenderDto.lots, planningDto.budget),
                         tenderPeriod = Period(dateTime, tenderDto.tenderPeriod.endDate),
                         value = getValueFromLots(tenderDto.lots, planningDto.budget.amount),
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
@@ -189,10 +186,14 @@ class CnServiceImpl(private val generationService: GenerationService,
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun setContractPeriod(lotsDto: List<LotCnCreate>): Period {
-        val startDate = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
-        val endDate = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
-        return Period(startDate!!, endDate!!)
+    private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): Period {
+        val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
+        val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
+        budget.budgetBreakdown.forEach { bb ->
+            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+        }
+        return Period(startDate, endDate)
     }
 
     private fun convertDtoLotToCnLot(lotDto: LotCnCreate): Lot {
