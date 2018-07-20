@@ -140,6 +140,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                     }
                 }
             }
+            lot.id = id
         }
     }
 
