@@ -753,7 +753,22 @@ enum class DocumentType constructor(private val value: String) {
     BILL_OF_QUANTITY("billOfQuantity"),
     ILLUSTRATION("illustration"),
     MARKET_STUDIES("marketStudies"),
-    TENDER_NOTICE("tenderNotice");
+    TENDER_NOTICE("tenderNotice"),
+    BIDDING_DOCUMENTS("biddingDocuments"),
+    PROCUREMENT_PLAN("procurementPlan"),
+    TECHNICAL_SPECIFICATIONS("technicalSpecifications"),
+    CONTRACT_DRAFT("contractDraft"),
+    HEARING_NOTICE("hearingNotice"),
+    CLARIFICATIONS("clarifications"),
+    ENVIRONMENTAL_IMPACT("environmentalImpact"),
+    ASSET_AND_LIABILITY_ASSESSMENT("assetAndLiabilityAssessment"),
+    RISK_PROVISIONS("riskProvisions"),
+    COMPLAINTS("complaints"),
+    NEEDS_ASSESSMENT("needsAssessment"),
+    FEASIBILITY_STUDY("feasibilityStudy"),
+    PROJECT_PLAN("projectPlan"),
+    CONFLICT_OF_INTEREST("conflictOfInterest"),
+    CANCELLATION_DETAILS("cancellationDetails");
 
     override fun toString(): String {
         return this.value
