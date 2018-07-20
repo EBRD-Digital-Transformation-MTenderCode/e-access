@@ -145,16 +145,20 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun validateRelatedLots(tender: TenderCnCreate) {
+        val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
         if (tender.documents != null) {
             val lotsFromDocuments = tender.documents.asSequence()
                     .filter { it.relatedLots != null }
                     .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
             if (lotsFromDocuments.isNotEmpty()) {
-                val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
                 if (lotsFromDocuments.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
                 if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
             }
         }
+        val lotsFromItems = tender.items.asSequence()
+                .map { it.relatedLot }.toHashSet()
+        if (lotsFromItems.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
     }
 
     private fun getPmd(pmd: String): ProcurementMethod {

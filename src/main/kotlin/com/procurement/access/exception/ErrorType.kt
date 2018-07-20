@@ -18,7 +18,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     NO_ACTIVE_LOTS("10.03", "There is no lot in the active state."),
     INVALID_TOKEN("10.04", "Invalid access token."),
     INVALID_CPID_FROM_DTO("10.05", "Invalid tender id."),
-    INVALID_DOCS_RELATED_LOTS("10.06", "Documents related lots not contains all lots."),
+    INVALID_DOCS_RELATED_LOTS("10.06", "Invalid documents related lots."),
     EL_CRITERIA_IS_NULL("10.07", "EligibilityCriteria must be presented!"),
     INVALID_START_DATE("10.08", "Invalid tender period start date."),
     INVALID_CURRENCY("10.09", "Invalid currency."),
@@ -27,5 +27,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_LOT_CONTRACT_PERIOD("10.12", "Invalid contract period of lot."),
     INVALID_PMD("10.13", "Invalid pmd."),
     INVALID_LOT_AMOUNT("10.14", "Invalid lot amount."),
-    INVALID_LOT_CURRENCY("10.15", "Invalid lot currency.");
+    INVALID_LOT_CURRENCY("10.15", "Invalid lot currency."),
+    INVALID_ITEMS_RELATED_LOTS("10.17", "Invalid items related lots.");
 }
