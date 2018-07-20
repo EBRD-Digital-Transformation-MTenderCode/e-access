@@ -4,7 +4,10 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.*
+import com.procurement.access.model.dto.cn.CnCreate
+import com.procurement.access.model.dto.cn.ItemCnCreate
+import com.procurement.access.model.dto.cn.LotCnCreate
+import com.procurement.access.model.dto.cn.TenderCnCreate
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
@@ -40,8 +43,8 @@ class CnServiceImpl(private val generationService: GenerationService,
         val cpId = generationService.getCpId(country)
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
-        setItemsId(cnDto.tender)
-        setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender)
+        setItemsId(tenderDto)
+        setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
         val tp = TenderProcess(
                 ocid = cpId,
@@ -125,15 +128,21 @@ class CnServiceImpl(private val generationService: GenerationService,
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
         tender.lots.forEach { lot ->
+
             val id = generationService.generateTimeBasedUUID().toString()
+
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }
                     .forEach { it.relatedLot = id }
-            tender.documents?.asSequence()
-                    ?.filter { it.relatedLots != null }
-                    ?.filter { it.relatedLots!!.contains(lot.id) }
-                    ?.forEach { it.relatedLots!!.minus(lot.id).plus(id) }
-            lot.id = id
+
+            tender.documents?.forEach { document ->
+                document.relatedLots?.let { relatedLots ->
+                    if (relatedLots.contains(lot.id)) {
+                        relatedLots.remove(lot.id)
+                        relatedLots.add(id)
+                    }
+                }
+            }
         }
     }
 

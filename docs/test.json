@@ -1,62 +1,122 @@
 {
   "planning": {
     "budget": {
-      "description": "wow",
+      "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
       "amount": {
-        "amount": 1000.00,
+        "amount": 5.00,
         "currency": "MDL"
       },
       "isEuropeanUnionFunded": true,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1532015605935-FS-1532015616107",
-          "description": "Hello world!",
+          "id": "ocds-t1s2t3-MD-1532073382608-FS-1532073415117",
+          "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project",
           "amount": {
-            "amount": 1000.00,
+            "amount": 5.00,
             "currency": "MDL"
           },
           "period": {
-            "startDate": "2018-05-25T21:00:00Z",
-            "endDate": "2018-05-26T21:00:00Z"
+            "startDate": "2018-04-28T13:30:27Z",
+            "endDate": "2018-09-16T17:48:10Z"
           },
           "sourceParty": {
-            "id": "MD-IDNO-id",
-            "name": "buyerName"
+            "id": "MD-IDNO-987654321",
+            "name": "FS Buyer Биківнянська міська лікарня"
           },
           "europeanUnionFunding": {
-            "projectName": "PJNAME",
-            "projectIdentifier": "PJINDET",
-            "uri": "uri4"
+            "projectName": "Name or other national identification of the project providing full or partial funding",
+            "projectIdentifier": "PROJ-ID-1234-5678-0987",
+            "uri": "https://test.funding.org"
           }
         }
       ]
     },
-    "rationale": "enotis"
+    "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document."
   },
   "tender": {
-    "title": "gav",
-    "description": "gav gav",
-    "legalBasis": "DIRECTIVE_2014_23_EU",
-    "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
-    "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy",
+    "title": "Tender title",
+    "description": "Tender description",
+    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
+    "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
+    "eligibilityCriteria": "eligibilityCriteria",
     "tenderPeriod": {
-      "endDate": "2018-09-18T18:45:00Z",
-      "startDate": "2018-07-19T16:02:32Z"
+      "endDate": "2018-08-26T15:58:30Z",
+      "startDate": "2018-07-20T07:57:37Z"
     },
+    "lots": [
+      {
+        "id": "lot-id-123123",
+        "title": "A title for this lot.",
+        "description": "A description of this lot.",
+        "value": {
+          "amount": 2078722681.65,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-09-27T00:00:00Z",
+          "endDate": "2018-11-27T00:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "",
+            "postalCode": "",
+            "addressDetails": {
+              "country": {
+                "id": "MD"
+              },
+              "region": {
+                "id": "MD-AN"
+              },
+              "locality": {
+                "scheme": "other",
+                "id": "",
+                "description": ""
+              }
+            }
+          },
+          "description": "Further description of the place of performance of the contract. Required by EU."
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "item-id-123123",
+        "description": "A description of the goods, services to be provided.",
+        "classification": {
+          "id": "33600000-6",
+          "description": "Produse farmaceutice",
+          "scheme": "CPV"
+        },
+        "additionalClassifications": [
+          {
+            "id": "AA01-1",
+            "description": "Metal",
+            "scheme": "CPVS"
+          }
+        ],
+        "quantity": 10.00,
+        "unit": {
+          "id": "CMK",
+          "name": "square centimetre"
+        },
+        "relatedLot": "lot-id-123123"
+      }
+    ],
     "procuringEntity": {
-      "name": "Edward-Compan",
+      "name": "Новороздільська міська лікарня",
       "identifier": {
-        "scheme": "rrr",
-        "id": "gggg",
-        "legalName": "fff",
-        "uri": "hhh"
+        "scheme": "UA-EDR",
+        "id": "20764777",
+        "legalName": "Новороздільська міська лікарня",
+        "uri": "http://buyerTestLink.ua"
       },
       "additionalIdentifiers": [
         {
-          "scheme": "hhh",
-          "id": "gg",
-          "legalName": "fff",
-          "uri": "jjj"
+          "scheme": "UA-EDR",
+          "id": "123123123",
+          "legalName": "Додатково Новороздільська міська лікарня",
+          "uri": "http://additionalBuyerTestLink.ua"
         }
       ],
       "address": {
@@ -70,162 +130,41 @@
             "id": "MD-AN"
           },
           "locality": {
-            "scheme": "",
+            "scheme": "other",
             "id": "",
             "description": ""
           }
         }
       },
       "contactPoint": {
-        "name": "hgfh",
-        "email": "hfgh",
-        "telephone": "hgfhfh",
-        "faxNumber": "hgfh",
-        "url": "hgfhgf"
+        "name": "Осипових Сергій Олександрович",
+        "email": "test2@test.test",
+        "telephone": "+380222222222",
+        "faxNumber": "+380222222222",
+        "url": "http://test.ua"
       }
     },
-    "lots": [
-      {
-        "id": "1",
-        "title": "lot1",
-        "description": "looot",
-        "value": {
-          "amount": 300,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-10-10T14:45:00Z",
-          "endDate": "2018-10-19T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "id": "MD"
-              },
-              "region": {
-                "id": "MD-AN"
-              },
-              "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
-              }
-            }
-          },
-          "description": "1"
-        }
-      },
-      {
-        "id": "2",
-        "title": "lot2",
-        "description": "looot",
-        "value": {
-          "amount": 400,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-10-10T14:45:00Z",
-          "endDate": "2018-10-25T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "id": "MD"
-              },
-              "region": {
-                "id": "MD-AN"
-              },
-              "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
-              }
-            }
-          },
-          "description": "2"
-        }
-      }
-    ],
-    "items": [
-      {
-        "id": "1",
-        "description": "",
-        "classification": {
-          "id": "30199220-8",
-          "description": "Cărţi poştale neilustrate",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "MTK",
-          "name": "square metre"
-        },
-        "relatedLot": "1"
-      },
-      {
-        "id": "2",
-        "description": "",
-        "classification": {
-          "id": "30199230-1",
-          "description": "Plicuri",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "MTK",
-          "name": "square metre"
-        },
-        "relatedLot": "2"
-      }
-    ],
     "documents": [
       {
-        "documentType": "biddingDocuments",
-        "id": "1",
-        "title": "doc k tenderu",
-        "description": "doc k tenderu"
-      },
-      {
-        "documentType": "biddingDocuments",
-        "id": "2",
-        "title": "doc k lotu1",
-        "description": "doc k lotu1",
+        "documentType": "tenderNotice",
+        "id": "1ad4e3c0-38d1-11e8-b490-1d6fcd64b90c",
+        "title": "Title Test CN document to tender",
+        "description": "Description Test CN document to tender",
         "relatedLots": [
-          "1"
+          "lot-id-123123"
         ]
       }
     ],
     "classification": {
-      "id": "30199200-2",
-      "description": "Plicuri, cărţi poştale şi cărţi poştale neilustrate",
+      "id": "33600000-6",
+      "description": "Produse farmaceutice",
       "scheme": "CPV"
     },
     "submissionMethodRationale": [
       "submissionMethodRationale"
     ],
     "submissionMethodDetails": "submissionMethodDetails",
-    "procurementMethodDetails": "Licitatia deschisa",
-    "eligibilityCriteria": "eligibilityCriteria",
+    "procurementMethodDetails": "Licitație limitată",
     "mainProcurementCategory": "goods"
   }
 }

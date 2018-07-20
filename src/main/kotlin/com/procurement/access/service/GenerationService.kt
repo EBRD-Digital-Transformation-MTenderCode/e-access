@@ -36,7 +36,6 @@ class GenerationServiceImpl(private val ocdsProperties: OCDSProperties) : Genera
     }
 
     override fun generateOrganizationId(organizationReference: OrganizationReference): String {
-        organizationReference.identifier ?: throw ErrorException(ErrorType.IDENTIFIER_IS_NULL)
         return organizationReference.identifier.scheme + "-" + organizationReference.identifier.id
     }
 
