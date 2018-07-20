@@ -105,7 +105,7 @@ class CnServiceImpl(private val generationService: GenerationService,
     private fun checkLotsCurrency(cn: CnCreate) {
         val budgetCurrency = cn.planning.budget.amount.currency
         cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
-            throw ErrorException(ErrorType.INVALID_CURRENCY)
+            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
         }
     }
 
@@ -165,7 +165,6 @@ class CnServiceImpl(private val generationService: GenerationService,
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
         if (totalAmount > budgetAmount.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
-        if (currency != budgetAmount.currency) throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
         return Value(totalAmount, currency)
     }
 
