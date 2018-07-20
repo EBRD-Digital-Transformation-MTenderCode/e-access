@@ -89,7 +89,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                         requiresElectronicCatalogue = false,
                         contractPeriod = setContractPeriod(tenderDto.lots),
                         tenderPeriod = Period(dateTime, tenderDto.tenderPeriod.endDate),
-                        value = getValueFromLots(tenderDto.lots),
+                        value = getValueFromLots(tenderDto.lots, planningDto.budget.amount),
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
@@ -159,11 +159,12 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getValueFromLots(lotsDto: List<LotCnCreate>): Value {
+    private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetAmount: Value): Value {
         val currency = lotsDto.elementAt(0).value.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+        if (totalAmount > budgetAmount.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
         return Value(totalAmount, currency)
     }
 
