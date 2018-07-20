@@ -127,7 +127,7 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
-        validateRekatedLots(tender)
+        validateRelatedLots(tender)
         tender.lots.forEach { lot ->
             val id = generationService.generateTimeBasedUUID().toString()
             tender.items.asSequence()
@@ -144,7 +144,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun validateRekatedLots(tender: TenderCnCreate) {
+    private fun validateRelatedLots(tender: TenderCnCreate) {
         if (tender.documents != null) {
             val lotsFromDocuments = tender.documents.asSequence()
                     .filter { it.relatedLots != null }
