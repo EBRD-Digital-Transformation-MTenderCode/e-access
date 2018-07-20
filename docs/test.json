@@ -6,10 +6,10 @@
         "amount": 1000.00,
         "currency": "MDL"
       },
-      "isEuropeanUnionFunded": true,
+      "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1532080953018-FS-1532080966991",
+          "id": "ocds-t1s2t3-MD-1532089842646-FS-1532089885194",
           "description": "Hello world!",
           "amount": {
             "amount": 1000.00,
@@ -17,16 +17,11 @@
           },
           "period": {
             "startDate": "2018-05-25T21:00:00Z",
-            "endDate": "2018-05-26T21:00:00Z"
+            "endDate": "2018-12-26T21:00:00Z"
           },
           "sourceParty": {
             "id": "MD-IDNO-id",
             "name": "buyerName"
-          },
-          "europeanUnionFunding": {
-            "projectName": "PJNAME",
-            "projectIdentifier": "PJINDET",
-            "uri": "uri4"
           }
         }
       ]
@@ -40,8 +35,8 @@
     "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
     "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy",
     "tenderPeriod": {
-      "endDate": "2018-09-18T18:45:00Z",
-      "startDate": "2018-07-20T10:05:30Z"
+      "endDate": "2018-11-18T18:45:00Z",
+      "startDate": "2018-07-20T12:47:01Z"
     },
     "procuringEntity": {
       "name": "Edward-Compan",
@@ -90,12 +85,12 @@
         "title": "lot1",
         "description": "looot",
         "value": {
-          "amount": 1200,
+          "amount": 600,
           "currency": "MDL"
         },
         "contractPeriod": {
-          "startDate": "2018-10-10T14:45:00Z",
-          "endDate": "2018-10-19T14:45:00Z"
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
         },
         "placeOfPerformance": {
           "address": {
@@ -123,12 +118,12 @@
         "title": "lot2",
         "description": "looot",
         "value": {
-          "amount": 1,
+          "amount": 12,
           "currency": "MDL"
         },
         "contractPeriod": {
-          "startDate": "2018-10-25T14:45:00Z",
-          "endDate": "2018-10-25T14:45:00Z"
+          "startDate": "2018-11-21T14:45:00Z",
+          "endDate": "2018-12-22T14:45:00Z"
         },
         "placeOfPerformance": {
           "address": {
@@ -153,28 +148,6 @@
       }
     ],
     "items": [
-      {
-        "id": "1",
-        "description": "",
-        "classification": {
-          "id": "30199220-8",
-          "description": "Cărţi poştale neilustrate",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "MTK",
-          "name": "square metre"
-        },
-        "relatedLot": "1"
-      },
       {
         "id": "2",
         "description": "",
@@ -201,7 +174,7 @@
     "documents": [
       {
         "documentType": "eligibilityCriteria",
-        "id": "e0437e30-8bf8-11e8-b758-dd76462396b0",
+        "id": "22b10e20-8c19-11e8-a010-6d61bdcd6a81",
         "title": "doc k lotu1",
         "description": "doc k lotu1",
         "relatedLots": [
@@ -210,8 +183,8 @@
       }
     ],
     "classification": {
-      "id": "30199200-2",
-      "description": "Plicuri, cărţi poştale şi cărţi poştale neilustrate",
+      "id": "30199230-1",
+      "description": "Plicuri",
       "scheme": "CPV"
     },
     "submissionMethodRationale": [
