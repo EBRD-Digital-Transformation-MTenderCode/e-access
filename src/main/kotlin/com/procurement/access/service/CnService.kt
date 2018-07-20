@@ -127,6 +127,9 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
+        val lotTempIds =  tender.lots.asSequence().map { it.id }.toSet()
+        val item
+
         tender.lots.forEach { lot ->
 
             val id = generationService.generateTimeBasedUUID().toString()
