@@ -165,6 +165,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
         if (totalAmount > budgetAmount.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
+        if (currency != budgetAmount.currency) throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
         return Value(totalAmount, currency)
     }
 

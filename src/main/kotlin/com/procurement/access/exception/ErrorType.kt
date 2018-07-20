@@ -26,5 +26,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_ITEMS("10.11", "Invalid items code."),
     INVALID_LOT_CONTRACT_PERIOD("10.12", "Invalid contract period of lot."),
     INVALID_PMD("10.13", "Invalid pmd."),
-    INVALID_LOT_AMOUNT("10.14", "Invalid lot amount.");
+    INVALID_LOT_AMOUNT("10.14", "Invalid lot amount."),
+    INVALID_LOT_CURRENCY("10.15", "Invalid lot amount.");
 }
