@@ -151,6 +151,7 @@ class CnServiceImpl(private val generationService: GenerationService,
                     .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
             if (lotsFromDocuments.isNotEmpty()) {
                 val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
+                if (lotsFromDocuments.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
                 if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
             }
         }
