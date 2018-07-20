@@ -110,12 +110,14 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun checkLotsContractPeriod(cn: CnCreate) {
-        val tenderPeriodEndDate = cn.tender.tenderPeriod.endDate
-        cn.tender.lots
-                .asSequence()
-                .firstOrNull {
-                    it.contractPeriod.startDate.isAfter(it.contractPeriod.endDate) || !it.contractPeriod.startDate.isAfter(tenderPeriodEndDate)
-                }?.let { throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD) }
+        cn.tender.lots.forEach { lot ->
+            if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
+                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            }
+            if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
+                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            }
+        }
     }
 
     private fun setLots(lotsDto: List<LotCnCreate>): List<Lot> {

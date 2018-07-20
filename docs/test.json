@@ -9,7 +9,7 @@
       "isEuropeanUnionFunded": true,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1532019744770-FS-1532019759018",
+          "id": "ocds-t1s2t3-MD-1532080953018-FS-1532080966991",
           "description": "Hello world!",
           "amount": {
             "amount": 1000.00,
@@ -36,12 +36,12 @@
   "tender": {
     "title": "gav",
     "description": "gav gav",
-    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
     "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
     "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy",
     "tenderPeriod": {
       "endDate": "2018-09-18T18:45:00Z",
-      "startDate": "2018-07-19T17:02:56Z"
+      "startDate": "2018-07-20T10:05:30Z"
     },
     "procuringEntity": {
       "name": "Edward-Compan",
@@ -90,7 +90,7 @@
         "title": "lot1",
         "description": "looot",
         "value": {
-          "amount": 300,
+          "amount": 1200,
           "currency": "MDL"
         },
         "contractPeriod": {
@@ -123,11 +123,11 @@
         "title": "lot2",
         "description": "looot",
         "value": {
-          "amount": 400,
+          "amount": 1,
           "currency": "MDL"
         },
         "contractPeriod": {
-          "startDate": "2018-10-10T14:45:00Z",
+          "startDate": "2018-10-25T14:45:00Z",
           "endDate": "2018-10-25T14:45:00Z"
         },
         "placeOfPerformance": {
@@ -201,18 +201,11 @@
     "documents": [
       {
         "documentType": "eligibilityCriteria",
-        "id": "d4b44ba0-8b6a-11e8-a010-6d61bdcd6a81",
-        "title": "doc k tenderu",
-        "description": "doc k tenderu"
-      },
-      {
-        "documentType": "eligibilityCriteria",
-        "id": "d4b44ba0-8b6a-11e8-a010-6d61bdcd6a81",
+        "id": "e0437e30-8bf8-11e8-b758-dd76462396b0",
         "title": "doc k lotu1",
         "description": "doc k lotu1",
         "relatedLots": [
-          "1",
-          "2"
+          "1"
         ]
       }
     ],
