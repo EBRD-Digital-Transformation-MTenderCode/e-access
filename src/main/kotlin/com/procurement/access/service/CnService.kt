@@ -140,8 +140,6 @@ class CnServiceImpl(private val generationService: GenerationService,
                     if (relatedLots.contains(lot.id)) {
                         relatedLots.remove(lot.id)
                         relatedLots.add(id)
-                    } else {
-                        throw ErrorException(ErrorType.INVALID_DOC_LOT_ID)
                     }
                 }
             }
