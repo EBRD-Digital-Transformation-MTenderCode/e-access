@@ -10,10 +10,10 @@ eureka:
     enabled: false
 
 cassandra:
-  contact-points: 10.0.10.104,10.0.10.105,10.0.10.106
+  contact-points: 10.0.20.104,10.0.20.105,10.0.20.106
   keyspace-name: ocds
   port: 9042
   username: caclient
-  password: brT4Kn27RQs
+  password: 6AH7vbrkMWnfK
 
 ocds.prefix: ocds-t1s2t3

@@ -23,20 +23,14 @@ class BidsServiceImpl(private val tenderProcessDao: TenderProcessDao) : BidsServ
     override fun checkBid(cpId: String, stage: String, bid: CheckBidRQDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-
-
-        if (!bid.bidDto.value.currency.equals(process.tender.value.currency)) throw ErrorException(ErrorType.INVALID_CURRENCY)
-
-
+        if (bid.bidDto.value.currency != process.tender.value.currency) throw ErrorException(ErrorType.INVALID_CURRENCY)
         for (lot in process.tender.lots) {
-
             if (bid.bidDto.relatedLot.contains(lot.id)) {
                 if (bid.bidDto.value.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOTS)
                 if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOTS)
             } else {
                 throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOTS)
             }
-
         }
         return ResponseDto(true, null, null)
     }
