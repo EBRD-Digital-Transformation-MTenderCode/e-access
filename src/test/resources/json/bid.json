@@ -1,0 +1,11 @@
+{
+  "bid":
+  {
+    "--value":
+  {
+    "amount":"",
+    "currency":""
+  },
+    "relatedLots":[""]
+  }
+}
