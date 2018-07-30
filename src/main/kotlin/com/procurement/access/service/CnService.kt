@@ -162,7 +162,18 @@ class CnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun getPmd(pmd: String): ProcurementMethod {
-        return ProcurementMethod.fromValue(pmd)
+        return when (pmd) {
+            "MV" -> ProcurementMethod.MV
+            "OT" -> ProcurementMethod.OT
+            "RT" -> ProcurementMethod.RT
+            "SV" -> ProcurementMethod.SV
+            "DA" -> ProcurementMethod.DA
+            "NP" -> ProcurementMethod.NP
+            "FA" -> ProcurementMethod.FA
+            "TEST_OT" -> ProcurementMethod.TEST_OT
+            "TEST_RT" -> ProcurementMethod.TEST_RT
+            else -> throw ErrorException(ErrorType.INVALID_PMD)
+        }
     }
 
     private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetAmount: Value): Value {
