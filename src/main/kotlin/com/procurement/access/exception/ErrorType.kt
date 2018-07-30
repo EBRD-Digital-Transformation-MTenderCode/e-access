@@ -25,5 +25,8 @@ enum class ErrorType constructor(val code: String, val message: String) {
     NOT_ALL_LOTS_AWARDED("10.10", "Not all active lots are awarded."),
     INVALID_ITEMS("10.11", "Invalid items code."),
     INVALID_LOT_CONTRACT_PERIOD("10.12", "Invalid contract period of lot."),
-    INVALID_PMD("10.13", "Invalid pmd.");
+    INVALID_PMD("10.13", "Invalid pmd."),
+    BID_VALUE_MORE_THAN_SUM_LOTS("10.14","Bid value is more than sum of lots!"),
+    CHECK_BID_INVALID_LOT_STATUS("10.15","Related lot must be in status active and status details empty."),
+    CHECK_BID_LOT_NOT_FOUND("10.16","Lot not found");
 }
