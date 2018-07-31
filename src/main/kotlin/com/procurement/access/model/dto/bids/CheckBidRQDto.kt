@@ -6,9 +6,17 @@ import com.procurement.access.model.dto.ocds.Value
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CheckBidRQDto @JsonCreator constructor(
 
     @field:Valid
-    val bidDto: CheckBidDto
+    val bid: CheckBidDto
+)
+
+data class CheckBidDto @JsonCreator constructor(
+
+        @field:Valid
+        val value: Value?,
+
+        @field:NotEmpty
+        var relatedLot: List<String>
 )

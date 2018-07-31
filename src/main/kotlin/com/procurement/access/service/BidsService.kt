@@ -20,17 +20,17 @@ interface BidsService {
 @Service
 class BidsServiceImpl(private val tenderProcessDao: TenderProcessDao) : BidsService {
 
-    override fun checkBid(cpId: String, stage: String, bid: CheckBidRQDto): ResponseDto {
+    override fun checkBid(cpId: String, stage: String, checkDto: CheckBidRQDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
 
-        bid.bidDto.value?.let {
+        checkDto.bid.value?.let {
             if (it.currency != process.tender.value.currency) throw ErrorException(ErrorType.INVALID_CURRENCY)
         }
 
         for (lot in process.tender.lots) {
-            if (bid.bidDto.relatedLot.contains(lot.id)) {
-                bid.bidDto.value?.let {
+            if (checkDto.bid.relatedLot.contains(lot.id)) {
+                checkDto.bid.value?.let {
                     if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOTS)
                 }
                 if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.CHECK_BID_INVALID_LOT_STATUS)
