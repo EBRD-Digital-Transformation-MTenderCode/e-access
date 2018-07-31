@@ -9,6 +9,7 @@ import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Unit
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.*
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
@@ -44,7 +45,7 @@ data class BudgetCnCreate @JsonCreator constructor(
         val isEuropeanUnionFunded: Boolean,
 
         @field:Valid @field:NotEmpty
-        val budgetBreakdown: HashSet<BudgetBreakdown>
+        val budgetBreakdown: List<BudgetBreakdown>
 )
 
 data class TenderCnCreate @JsonCreator constructor(

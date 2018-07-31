@@ -20,5 +20,5 @@ data class Budget @JsonCreator constructor(
         @get:JsonProperty("isEuropeanUnionFunded")
         val isEuropeanUnionFunded: Boolean,
 
-        val budgetBreakdown: HashSet<BudgetBreakdown>
+        val budgetBreakdown: List<BudgetBreakdown>
 )
