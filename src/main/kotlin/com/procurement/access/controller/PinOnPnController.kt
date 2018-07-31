@@ -17,7 +17,7 @@ import javax.validation.Valid
 class PinOnPnController(private val pinOnPnService: PinOnPnService) {
 
     @PostMapping
-    fun createPinOnPn(@RequestParam("identifier") cpId: String,
+    fun createPinOnPn(@RequestParam("cpid") cpId: String,
                       @RequestParam("token") token: String,
                       @RequestParam(value = "country", required = false) country: String,
                       @RequestParam(value = "pmd", required = false) pmd: String,

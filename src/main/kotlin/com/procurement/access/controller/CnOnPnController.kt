@@ -17,7 +17,7 @@ import javax.validation.Valid
 class CnOnPnController(private val cnOnPnService: CnOnPnService) {
 
     @PostMapping
-    fun createCnOnPn(@RequestParam("identifier") cpId: String,
+    fun createCnOnPn(@RequestParam("cpid") cpId: String,
                      @RequestParam("previousStage") previousStage: String,
                      @RequestParam("stage") stage: String,
                      @RequestParam(value = "country", required = false) country: String,

@@ -17,7 +17,7 @@ import javax.validation.Valid
 class LotsController(private val lotsService: LotsService) {
 
     @GetMapping
-    fun getLots(@RequestParam("identifier") cpId: String,
+    fun getLots(@RequestParam("cpid") cpId: String,
                 @RequestParam("stage") stage: String,
                 @RequestParam("status") status: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
@@ -29,7 +29,7 @@ class LotsController(private val lotsService: LotsService) {
     }
 
     @PostMapping("/updateStatus")
-    fun updateStatus(@RequestParam("identifier") cpId: String,
+    fun updateStatus(@RequestParam("cpid") cpId: String,
                      @RequestParam("stage") stage: String,
                      @RequestParam("status") status: String,
                      @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
@@ -43,7 +43,7 @@ class LotsController(private val lotsService: LotsService) {
     }
 
     @PostMapping("/updateStatusDetails")
-    fun updateStatusDetails(@RequestParam("identifier") cpId: String,
+    fun updateStatusDetails(@RequestParam("cpid") cpId: String,
                             @RequestParam("stage") stage: String,
                             @RequestParam("statusDetails") statusDetails: String,
                             @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
@@ -57,7 +57,7 @@ class LotsController(private val lotsService: LotsService) {
     }
 
     @PostMapping("/updateStatusDetailsById")
-    fun updateStatusDetailsById(@RequestParam("identifier") cpId: String,
+    fun updateStatusDetailsById(@RequestParam("cpid") cpId: String,
                                 @RequestParam("stage") stage: String,
                                 @RequestParam("statusDetails") statusDetails: String,
                                 @RequestParam("lotId") lotId: String): ResponseEntity<ResponseDto> {
@@ -71,7 +71,7 @@ class LotsController(private val lotsService: LotsService) {
     }
 
     @GetMapping("/checkStatusDetails")
-    fun checkStatusDetails(@RequestParam("identifier") cpId: String,
+    fun checkStatusDetails(@RequestParam("cpid") cpId: String,
                            @RequestParam("stage") stage: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.checkStatusDetails(
@@ -81,7 +81,7 @@ class LotsController(private val lotsService: LotsService) {
     }
 
     @PostMapping("/updateLots")
-    fun updateLots(@RequestParam("identifier") cpId: String,
+    fun updateLots(@RequestParam("cpid") cpId: String,
                    @RequestParam("stage") stage: String,
                    @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
         return ResponseEntity(

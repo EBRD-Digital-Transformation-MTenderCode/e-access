@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 class TenderController(private val tenderService: TenderService) {
 
     @PostMapping("/updateStatus")
-    fun updateStatus(@RequestParam("identifier") cpId: String,
+    fun updateStatus(@RequestParam("cpid") cpId: String,
                      @RequestParam("stage") stage: String,
                      @RequestParam("status") status: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
@@ -30,7 +30,7 @@ class TenderController(private val tenderService: TenderService) {
     }
 
     @PostMapping("/updateStatusDetails")
-    fun updateStatusDetails(@RequestParam("identifier") cpId: String,
+    fun updateStatusDetails(@RequestParam("cpid") cpId: String,
                             @RequestParam("stage") stage: String,
                             @RequestParam("statusDetails") statusDetails: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
@@ -42,7 +42,7 @@ class TenderController(private val tenderService: TenderService) {
     }
 
     @PostMapping("/setSuspended")
-    fun setSuspended(@RequestParam("identifier") cpId: String,
+    fun setSuspended(@RequestParam("cpid") cpId: String,
                      @RequestParam("stage") stage: String,
                      @RequestParam("suspended") suspended: Boolean?): ResponseEntity<ResponseDto> {
         return ResponseEntity(
@@ -54,7 +54,7 @@ class TenderController(private val tenderService: TenderService) {
     }
 
     @PostMapping("/setUnsuccessful")
-    fun setUnsuccessful(@RequestParam("identifier") cpId: String,
+    fun setUnsuccessful(@RequestParam("cpid") cpId: String,
                         @RequestParam("stage") stage: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 tenderService.setUnsuccessful(
