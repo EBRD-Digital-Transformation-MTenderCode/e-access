@@ -17,15 +17,15 @@ class BidsController(private val bidsService: BidsService) {
     @PostMapping
     fun checkBid(@RequestParam("cpid") cpId: String,
                  @RequestParam("stage") stage: String,
-                 @Valid @RequestBody bid: CheckBidRQDto): ResponseEntity<ResponseDto> {
+                 @Valid @RequestBody data: CheckBidRQDto): ResponseEntity<ResponseDto> {
 
 
         return ResponseEntity(
-            bidsService.checkBid(
-                cpId = cpId,
-                stage = stage,
-                bid = bid),
-            HttpStatus.OK)
+                bidsService.checkBid(
+                        cpId = cpId,
+                        stage = stage,
+                        checkDto = data),
+                HttpStatus.OK)
     }
 
 }

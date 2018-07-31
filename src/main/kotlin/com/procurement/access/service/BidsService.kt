@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 
 interface BidsService {
 
-    fun checkBid(cpId: String, stage: String, bid: CheckBidRQDto): ResponseDto
+    fun checkBid(cpId: String, stage: String, checkDto: CheckBidRQDto): ResponseDto
 
 }
 
