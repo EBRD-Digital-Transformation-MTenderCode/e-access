@@ -11,11 +11,11 @@ import javax.validation.Valid
 
 @Validated
 @RestController
-@RequestMapping("/bids")
+@RequestMapping("/checkBid")
 class BidsController(private val bidsService: BidsService) {
 
-    @PostMapping("/checkBid")
-    fun checkBid(@RequestParam("identifier") cpId: String,
+    @PostMapping
+    fun checkBid(@RequestParam("cpid") cpId: String,
                  @RequestParam("stage") stage: String,
                  @Valid @RequestBody bid: CheckBidRQDto): ResponseEntity<ResponseDto> {
 
