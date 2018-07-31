@@ -39,6 +39,6 @@ class BidsServiceImpl(private val tenderProcessDao: TenderProcessDao) : BidsServ
                 }
             }
         }
-        return ResponseDto(true, null, null)
+        return ResponseDto(true, null, "ok")
     }
 }
