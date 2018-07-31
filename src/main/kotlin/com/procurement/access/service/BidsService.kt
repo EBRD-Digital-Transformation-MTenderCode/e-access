@@ -28,14 +28,15 @@ class BidsServiceImpl(private val tenderProcessDao: TenderProcessDao) : BidsServ
             if (it.currency != process.tender.value.currency) throw ErrorException(ErrorType.INVALID_CURRENCY)
         }
 
+        val lotsId = process.tender.lots.asSequence().map { it.id }.toSet()
+        if (!lotsId.containsAll(checkDto.bid.relatedLots)) throw ErrorException(ErrorType.CHECK_BID_LOT_NOT_FOUND)
+
         for (lot in process.tender.lots) {
-            if (checkDto.bid.relatedLot.contains(lot.id)) {
-                checkDto.bid.value?.let {
-                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOTS)
-                }
+            if (checkDto.bid.relatedLots.contains(lot.id)) {
                 if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.CHECK_BID_INVALID_LOT_STATUS)
-            } else {
-                throw ErrorException(ErrorType.CHECK_BID_LOT_NOT_FOUND)
+                checkDto.bid.value?.let {
+                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
+                }
             }
         }
         return ResponseDto(true, null, null)

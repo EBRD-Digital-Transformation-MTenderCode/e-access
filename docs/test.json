@@ -1,198 +1,55 @@
 {
-  "planning": {
-    "budget": {
-      "description": "wow",
-      "amount": {
-        "amount": 1000.00,
-        "currency": "MDL"
-      },
-      "isEuropeanUnionFunded": false,
-      "budgetBreakdown": [
-        {
-          "id": "ocds-t1s2t3-MD-1532089842646-FS-1532089885194",
-          "description": "Hello world!",
-          "amount": {
-            "amount": 1000.00,
-            "currency": "MDL"
-          },
-          "period": {
-            "startDate": "2018-05-25T21:00:00Z",
-            "endDate": "2018-12-26T21:00:00Z"
-          },
-          "sourceParty": {
-            "id": "MD-IDNO-id",
-            "name": "buyerName"
-          }
-        }
-      ]
-    },
-    "rationale": "enotis"
-  },
-  "tender": {
-    "title": "gav",
-    "description": "gav gav",
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
-    "procurementMethodRationale": "Write experience describe walk house high. Treatment shoulder word. Its newspaper toward happen next example safe middle.",
-    "procurementMethodAdditionalInfo": "Save instead agreement center. Art write enough item policy",
-    "tenderPeriod": {
-      "endDate": "2018-11-18T18:45:00Z",
-      "startDate": "2018-07-20T12:47:01Z"
-    },
-    "procuringEntity": {
-      "name": "Edward-Compan",
-      "identifier": {
-        "scheme": "rrr",
-        "id": "gggg",
-        "legalName": "fff",
-        "uri": "hhh"
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "hhh",
-          "id": "gg",
-          "legalName": "fff",
-          "uri": "jjj"
-        }
-      ],
-      "address": {
-        "streetAddress": "",
-        "postalCode": "",
-        "addressDetails": {
-          "country": {
-            "id": "MD"
-          },
-          "region": {
-            "id": "MD-AN"
-          },
-          "locality": {
-            "scheme": "gfd",
-            "id": "gfdg",
-            "description": "dgfdfg"
-          }
-        }
-      },
-      "contactPoint": {
-        "name": "hgfh",
-        "email": "hfgh",
-        "telephone": "hgfhfh",
-        "faxNumber": "hgfh",
-        "url": "hgfhgf"
-      }
-    },
-    "lots": [
+  "bid": {
+    "tenderers": [
       {
-        "id": "1",
-        "title": "lot1",
-        "description": "looot",
-        "value": {
-          "amount": 600,
-          "currency": "MDL"
+        "name": "Googlehfhhfghg1",
+        "identifier": {
+          "scheme": "CPhffhghghV",
+          "id": "3010000fhfgfhgg0-0",
+          "legalName": "Google Big Brother",
+          "uri": "hhtps://google.com"
         },
-        "contractPeriod": {
-          "startDate": "2018-11-19T14:45:00Z",
-          "endDate": "2018-12-25T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "id": "MD"
-              },
-              "region": {
-                "id": "MD-AN"
-              },
-              "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
-              }
+        "address": {
+          "streetAddress": "",
+          "postalCode": "",
+          "details": {
+            "countryDetails": {
+              "id": ""
+            },
+            "regionDetails": {
+              "id": ""
+            },
+            "localityDetails": {
+              "scheme": "",
+              "id": "",
+              "description": ""
             }
-          },
-          "description": "1"
-        }
-      },
-      {
-        "id": "2",
-        "title": "lot2",
-        "description": "looot",
-        "value": {
-          "amount": 12,
-          "currency": "MDL"
+          }
         },
-        "contractPeriod": {
-          "startDate": "2018-11-21T14:45:00Z",
-          "endDate": "2018-12-22T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "id": "MD"
-              },
-              "region": {
-                "id": "MD-AN"
-              },
-              "locality": {
-                "scheme": "UN/LOCODE",
-                "id": "MD AIN",
-                "description": "gfg5555"
-              }
-            }
-          },
-          "description": "2"
+        "contactPoint": {
+          "name": "",
+          "email": "",
+          "telephone": "",
+          "url": ""
         }
       }
     ],
-    "items": [
-      {
-        "id": "2",
-        "description": "",
-        "classification": {
-          "id": "30199230-1",
-          "description": "Plicuri",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "MTK",
-          "name": "square metre"
-        },
-        "relatedLot": "2"
-      }
-    ],
+    "value": {
+      "amount": 500,
+      "currency": "MDL"
+    },
     "documents": [
       {
-        "documentType": "eligibilityCriteria",
-        "id": "22b10e20-8c19-11e8-a010-6d61bdcd6a81",
-        "title": "doc k lotu1",
-        "description": "doc k lotu1",
+        "documentType": "",
+        "id": "0e3ba160-949f-11e8-9318-61ca1098e80e",
+        "title": "doc1",
         "relatedLots": [
-          "1"
+          "fd5cbaa2-9499-11e8-bbd3-5d171722b12b"
         ]
       }
     ],
-    "classification": {
-      "id": "30199230-1",
-      "description": "Plicuri",
-      "scheme": "CPV"
-    },
-    "submissionMethodRationale": [
-      "submissionMethodRationale"
-    ],
-    "submissionMethodDetails": "submissionMethodDetails",
-    "procurementMethodDetails": "Licitatia deschisa",
-    "eligibilityCriteria": "eligibilityCriteria",
-    "mainProcurementCategory": "goods"
+    "relatedLots": [
+      "fd5cbaa2-9499-11e8-bbd3-5d171722b12b"
+    ]
   }
 }

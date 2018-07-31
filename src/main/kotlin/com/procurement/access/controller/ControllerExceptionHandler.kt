@@ -16,17 +16,13 @@ class ControllerExceptionHandler {
     @ResponseBody
     @ResponseStatus(OK)
     @ExceptionHandler(Exception::class)
-    fun exception(ex: Exception) = ResponseDto(false, getErrors("Exception", ex.message), null)
-
-    @ResponseBody
-    @ResponseStatus(OK)
-    @ExceptionHandler(ErrorException::class)
-    fun error(e: ErrorException) = ResponseDto(false, getErrors(e.code, e.msg), null)
-
-    @ResponseBody
-    @ResponseStatus(OK)
-    @ExceptionHandler(EnumException::class)
-    fun enum(e: EnumException) = ResponseDto(false, getErrors(e.code, e.msg), null)
+    fun exception(ex: Exception): ResponseDto {
+        return when (ex) {
+            is ErrorException -> ResponseDto(false, getErrors(ex.code, ex.msg), null)
+            is EnumException -> ResponseDto(false, getErrors(ex.code, ex.msg), null)
+            else -> ResponseDto(false, getErrors("Exception", ex.message), null)
+        }
+    }
 
     private fun getErrors(code: String, error: String?) =
             listOf(ResponseDetailsDto(code = "400.03.$code", message = error!!))

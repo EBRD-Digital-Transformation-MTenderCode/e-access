@@ -18,5 +18,5 @@ data class CheckBidDto @JsonCreator constructor(
         val value: Value?,
 
         @field:NotEmpty
-        var relatedLot: List<String>
+        var relatedLots: List<String>
 )
