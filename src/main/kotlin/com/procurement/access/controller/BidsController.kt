@@ -28,5 +28,4 @@ class BidsController(private val bidsService: BidsService) {
             HttpStatus.OK)
     }
 
-
 }
