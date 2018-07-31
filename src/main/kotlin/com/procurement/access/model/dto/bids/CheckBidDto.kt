@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty
 data class CheckBidDto @JsonCreator constructor(
 
     @field:Valid
-    val value: Value,
+    val value: Value?,
 
     @field:NotEmpty
     var relatedLot: List<String>
