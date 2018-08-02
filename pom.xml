@@ -31,7 +31,7 @@
         <mockito.version>2.13.0</mockito.version>
         <docker-image-profile></docker-image-profile>
         <docker-maven-plugin.version>0.23.0</docker-maven-plugin.version>
-        <docker-registry>dev.docker-registry.eprocurement.systems</docker-registry>
+        <docker-registry>docker-registry.eprocurement.systems</docker-registry>
         <kotlin.version>1.2.41</kotlin.version>
     </properties>
 
