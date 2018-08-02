@@ -2,54 +2,57 @@
   "bid": {
     "tenderers": [
       {
-        "name": "Googlehfhhfghg1",
+        "name": "Googleh555fhfghg12",
         "identifier": {
-          "scheme": "CPhffhghghV",
-          "id": "3010000fhfgfhgg0-0",
+          "scheme": "MD-IDNO",
+          "id": "3010000fhf5555554548-2",
           "legalName": "Google Big Brother",
           "uri": "hhtps://google.com"
         },
         "address": {
           "streetAddress": "",
           "postalCode": "",
-          "details": {
-            "countryDetails": {
-              "id": ""
+          "addressDetails": {
+            "country": {
+              "id": "MD"
             },
-            "regionDetails": {
-              "id": ""
+            "region": {
+              "id": "8700000"
             },
-            "localityDetails": {
-              "scheme": "",
-              "id": "",
-              "description": ""
+            "locality": {
+              "scheme": "gfgf",
+              "id": "gfg",
+              "description": "gfg"
             }
           }
         },
+        "details": {
+          "scale": "sme"
+        },
         "contactPoint": {
-          "name": "",
-          "email": "",
-          "telephone": "",
-          "url": ""
+          "name": "111",
+          "email": "222",
+          "telephone": "333",
+          "url": "444"
         }
       }
     ],
     "value": {
-      "amount": 500,
+      "amount": 150,
       "currency": "MDL"
     },
     "documents": [
       {
-        "documentType": "",
+        "documentType": "submissionDocuments",
         "id": "0e3ba160-949f-11e8-9318-61ca1098e80e",
         "title": "doc1",
         "relatedLots": [
-          "fd5cbaa2-9499-11e8-bbd3-5d171722b12b"
+          "a9c3f6f4-965c-11e8-9422-df4968e00e7b"
         ]
       }
     ],
     "relatedLots": [
-      "fd5cbaa2-9499-11e8-bbd3-5d171722b12b"
+      "a9c3f6f4-965c-11e8-9422-df4968e00e7b"
     ]
   }
 }
