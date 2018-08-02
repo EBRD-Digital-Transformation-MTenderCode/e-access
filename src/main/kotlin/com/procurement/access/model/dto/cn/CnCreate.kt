@@ -93,8 +93,8 @@ data class TenderCnCreate @JsonCreator constructor(
         @field:Valid @field:NotEmpty
         val items: List<ItemCnCreate>,
 
-        @field:Valid
-        val documents: List<Document>?
+        @field:Valid @field:NotEmpty
+        val documents: List<Document>
 )
 
 data class LotCnCreate @JsonCreator constructor(
