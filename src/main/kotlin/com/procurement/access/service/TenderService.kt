@@ -37,8 +37,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.status = status
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(true, null,
-                TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     override fun updateStatusDetails(cpId: String,
@@ -48,8 +47,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.statusDetails = statusDetails
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(true, null,
-                TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     override fun setSuspended(cpId: String,
@@ -63,8 +61,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
             process.tender.statusDetails = TenderStatusDetails.EMPTY
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(true, null,
-                TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     override fun setUnsuccessful(cpId: String,
@@ -81,8 +78,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
             }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(true, null,
-                LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
+        return ResponseDto(data = LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
     }
 
     private fun getEntity(process: TenderProcess,

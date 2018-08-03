@@ -1,18 +1,17 @@
-package com.procurement.access.model.dto.bids
+package com.procurement.access.model.dto.validation
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.procurement.access.model.dto.ocds.Value
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
-data class CheckBidRQDto @JsonCreator constructor(
+data class CheckBid @JsonCreator constructor(
 
     @field:Valid
-    val bid: CheckBidDto
+    val bid: BidCheck
 )
 
-data class CheckBidDto @JsonCreator constructor(
+data class BidCheck @JsonCreator constructor(
 
         @field:Valid
         val value: Value?,

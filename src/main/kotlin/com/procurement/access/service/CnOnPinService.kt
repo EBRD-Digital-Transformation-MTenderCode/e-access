@@ -48,7 +48,7 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
 //        cn.tender = cnTender
 //        tenderProcessDao.save(getEntity(cn, cpId, stage, entity.token, dateTime, owner))
 //        cn.token = entity.token.toString()
-        return ResponseDto(true, null, cn)
+        return ResponseDto(data = cn)
     }
 //
 //    private fun validatePeriod(pinTender: PinTender, dateTime: LocalDateTime) {

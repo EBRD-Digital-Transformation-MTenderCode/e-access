@@ -103,7 +103,7 @@ class PnServiceImpl(private val generationService: GenerationService,
 //        tenderProcessDao.save(entity)
 //        pnDto.token = entity.token.toString()
 //        return ResponseDto(true, null, pnDto)
-        return ResponseDto(true, null, null)
+        return ResponseDto(data = null)
     }
 
 

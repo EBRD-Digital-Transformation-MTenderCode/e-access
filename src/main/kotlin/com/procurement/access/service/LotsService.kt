@@ -38,7 +38,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         val lotsResponseDto = LotsResponseDto(
                 process.tender.awardCriteria.value(),
                 getLotsDtoByStatus(process.tender.lots, status))
-        return ResponseDto(true, null, lotsResponseDto)
+        return ResponseDto(data = lotsResponseDto)
     }
 
     override fun updateStatus(cpId: String,
@@ -56,8 +56,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(true, null,
-                LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
+        return ResponseDto(data = LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
     }
 
     override fun updateStatusDetails(cpId: String,
@@ -71,8 +70,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(true, null,
-                LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
+        return ResponseDto(data = LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
     }
 
     override fun updateStatusDetailsById(cpId: String,
@@ -84,7 +82,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         val updatedLot = setLotsStatusDetails(process.tender.lots, lotId, statusDetails)
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(true, null, LotUpdateResponseDto(updatedLot))
+        return ResponseDto(data = LotUpdateResponseDto(updatedLot))
     }
 
     override fun checkStatusDetails(cpId: String,
@@ -92,7 +90,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         checkLotStatusDetails(process.tender.lots)
-        return ResponseDto(true, null, "All active lots are awarded.")
+        return ResponseDto(data = "All active lots are awarded.")
     }
 
     override fun updateLots(cpId: String,
@@ -112,8 +110,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(true, null,
-                LotsUpdateResponseDto(process.tender.status, updatedLots, itemsForCompiledLots))
+        return ResponseDto(data = LotsUpdateResponseDto(process.tender.status, updatedLots, itemsForCompiledLots))
     }
 
     private fun getLotsDtoByStatus(lots: List<Lot>, status: TenderStatus): List<LotDto> {

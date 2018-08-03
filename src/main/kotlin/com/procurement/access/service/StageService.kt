@@ -39,7 +39,7 @@ class StageServiceImpl(private val tenderProcessDao: TenderProcessDao) : StageSe
 //        tenderProcessDao.save(newEntity)
 //        process.token = newEntity.token.toString()
 //        return ResponseDto(true, null, process)
-        return ResponseDto(true, null, null)
+        return ResponseDto(data = null)
     }
 //
 //    private fun isHaveActiveLots(lots: List<Lot>): Boolean {

@@ -96,7 +96,7 @@ class CnServiceImpl(private val generationService: GenerationService,
         val entity = getEntity(tp, cpId, stage, dateTime, owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
-        return ResponseDto(true, null, tp)
+        return ResponseDto(data = tp)
     }
 
     private fun checkLotsCurrency(cn: CnCreate) {
@@ -132,7 +132,7 @@ class CnServiceImpl(private val generationService: GenerationService,
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }
                     .forEach { it.relatedLot = id }
-            tender.documents?.forEach { document ->
+            tender.documents.forEach { document ->
                 document.relatedLots?.let { relatedLots ->
                     if (relatedLots.contains(lot.id)) {
                         relatedLots.remove(lot.id)
@@ -146,14 +146,12 @@ class CnServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(tender: TenderCnCreate) {
         val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
-        if (tender.documents != null) {
-            val lotsFromDocuments = tender.documents.asSequence()
-                    .filter { it.relatedLots != null }
-                    .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
-            if (lotsFromDocuments.isNotEmpty()) {
-                if (lotsFromDocuments.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
-                if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
-            }
+        val lotsFromDocuments = tender.documents.asSequence()
+                .filter { it.relatedLots != null }
+                .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        if (lotsFromDocuments.isNotEmpty()) {
+            if (lotsFromDocuments.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
         }
         val lotsFromItems = tender.items.asSequence()
                 .map { it.relatedLot }.toHashSet()

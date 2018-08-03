@@ -45,7 +45,7 @@ class PinServiceImpl(private val generationService: GenerationService,
 //        val entity = getEntity(pin, cpId, stage, dateTime, owner)
 //        tenderProcessDao.save(getEntity(pin, cpId, stage, dateTime, owner))
 //        pin.token = entity.token.toString()
-        return ResponseDto(true, null, pin)
+        return ResponseDto(data = pin)
     }
 
 //    private fun validateFields(pin: PinProcess) {

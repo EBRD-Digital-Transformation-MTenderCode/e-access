@@ -54,7 +54,7 @@ class CnOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPn
 //        cn.tender = cnTender
 //        tenderProcessDao.save(getEntity(cn, cpId, stage, entity.token, dateTime, owner))
 //        cn.token = entity.token.toString()
-        return ResponseDto(true, null, cn)
+        return ResponseDto(data = cn)
     }
 
 //    private fun setLotsToCnFromPn(pnTender: TenderPn, cnTender: TenderCn) {

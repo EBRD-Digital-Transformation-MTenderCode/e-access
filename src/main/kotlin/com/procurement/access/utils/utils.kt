@@ -2,6 +2,7 @@ package com.procurement.access.utils
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
@@ -64,6 +65,14 @@ fun <Any> toJson(obj: Any): String {
 fun <T> toObject(clazz: Class<T>, json: String): T {
     try {
         return JsonMapper.mapper.readValue(json, clazz)
+    } catch (e: IOException) {
+        throw IllegalArgumentException(e)
+    }
+}
+
+fun <T> toObject(clazz: Class<T>, json: JsonNode): T {
+    try {
+        return JsonMapper.mapper.treeToValue(json, clazz)
     } catch (e: IOException) {
         throw IllegalArgumentException(e)
     }

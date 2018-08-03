@@ -52,7 +52,7 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
 //        tenderProcessDao.save(getEntity(pin, cpId, stage, entity.token, dateTime, owner))
 //        pin.ocid = cpId
 //        pin.token = entity.token.toString()
-        return ResponseDto(true, null, pin)
+        return ResponseDto(data = pin)
     }
 
 //    private fun validateLots(pnTender: TenderPn, pinTender: PinTender) {
