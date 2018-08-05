@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface CnService {
+interface CnCreateService {
 
     fun createCn(stage: String,
                  country: String,
@@ -26,8 +26,8 @@ interface CnService {
 }
 
 @Service
-class CnServiceImpl(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao) : CnService {
+class CnCreateServiceImpl(private val generationService: GenerationService,
+                          private val tenderProcessDao: TenderProcessDao) : CnCreateService {
 
     override fun createCn(stage: String,
                           country: String,
@@ -174,12 +174,12 @@ class CnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetAmount: Value): Value {
+    private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetValue: Value): Value {
         val currency = lotsDto.elementAt(0).value.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-        if (totalAmount > budgetAmount.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
+        if (totalAmount > budgetValue.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
         return Value(totalAmount, currency)
     }
 

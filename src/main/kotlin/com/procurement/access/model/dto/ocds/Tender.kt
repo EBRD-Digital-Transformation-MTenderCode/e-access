@@ -23,11 +23,11 @@ data class Tender @JsonCreator constructor(
 
         var statusDetails: TenderStatusDetails,
 
-        val classification: Classification,
+        var classification: Classification,
 
         val mainProcurementCategory: MainProcurementCategory,
 
-        val additionalProcurementCategories: List<ExtendedProcurementCategory>?,
+        var additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
         val procurementMethod: ProcurementMethod,
 
@@ -65,23 +65,23 @@ data class Tender @JsonCreator constructor(
 
         val procuringEntity: OrganizationReference,
 
-        val awardCriteria: AwardCriteria,
+        var awardCriteria: AwardCriteria,
 
         @get:JsonProperty("requiresElectronicCatalogue")
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         val requiresElectronicCatalogue: Boolean,
 
-        val contractPeriod: Period,
+        var contractPeriod: Period,
 
         val tenderPeriod: Period,
 
-        val value: Value,
+        var value: Value,
 
         val lotGroups: List<LotGroup>,
 
-        val lots: List<Lot>,
+        var lots: List<Lot>,
 
-        val items: List<Item>,
+        var items: List<Item>,
 
-        val documents: List<Document>?
+        var documents: List<Document>?
 )

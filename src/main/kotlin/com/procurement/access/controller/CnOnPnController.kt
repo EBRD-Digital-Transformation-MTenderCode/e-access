@@ -1,7 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnCreate
+import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.service.CnOnPnService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -20,13 +20,11 @@ class CnOnPnController(private val cnOnPnService: CnOnPnService) {
     fun createCnOnPn(@RequestParam("cpid") cpId: String,
                      @RequestParam("previousStage") previousStage: String,
                      @RequestParam("stage") stage: String,
-                     @RequestParam(value = "country", required = false) country: String,
-                     @RequestParam(value = "pmd", required = false) pmd: String,
                      @RequestParam("owner") owner: String,
                      @RequestParam("token") token: String,
                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                      @RequestParam("date") dateTime: LocalDateTime,
-                     @Valid @RequestBody data: CnCreate): ResponseEntity<ResponseDto> {
+                     @Valid @RequestBody data: CnUpdate): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 cnOnPnService.createCnOnPn(
                         cpId = cpId,
@@ -35,7 +33,7 @@ class CnOnPnController(private val cnOnPnService: CnOnPnService) {
                         owner = owner,
                         token = token,
                         dateTime = dateTime,
-                        cn = data),
+                        cnDto = data),
                 HttpStatus.CREATED)
     }
 }

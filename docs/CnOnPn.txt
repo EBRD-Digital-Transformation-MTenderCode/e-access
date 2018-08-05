@@ -1,0 +1,156 @@
+{
+    "planning":
+    {
+        --"rationale": "",
+        "budget":
+        {
+            --"description": "",
+            "budgetBreakdown":
+            [{
+                "id": "",
+                "amount":
+                {
+                    "amount": 0,
+                    "currency": ""
+                }
+            }]
+        }
+    },
+    "tender":
+    {
+        --"classification":
+        {
+            "scheme": "",
+            "description": "",
+            "id": ""
+        },
+        "title": "",
+        "description": "",
+        "legalBasis": "",
+        --"procurementMethodRationale": "",
+        --"procurementMethodAdditionalInfo": "",
+        "tenderPeriod":
+        {
+            "endDate": ""
+        },
+        "procuringEntity":
+        {
+            "name": "",
+            "identifier":
+            {
+                "scheme": "",
+                "id": "",
+                "legalName": "",
+                "uri": ""
+            },
+            --"additionalIdentifiers":
+            [{
+                "scheme": "",
+                "id": "",
+                "legalName": "",
+                "uri": ""
+            }],
+            "address": {
+                "streetAddress": "",
+                --"postalCode": "",
+                "addressDetails": {
+                  "country": {
+                    "id": ""
+                  },
+                  "region": {
+                    "id": ""
+                  },
+                  "locality": {
+                    "scheme": "",
+                    "id": "",
+                    "description": ""
+                  }
+                }
+            },
+            "contactPoint":
+            {
+                "name": "",
+                "email": "",
+                "telephone": "",
+                --"faxNumber": "",
+                "url": ""
+            }
+        },
+        "lots":
+        [{
+            "id": "",
+            "title": "",
+            "description": "",
+            "value":
+            {
+                "amount": 0,
+                "currency": ""
+            },
+            "contractPeriod":
+            {
+                "startDate": "",
+                "endDate": ""
+            },
+            "placeOfPerformance":
+            {
+              "address": {
+                  "streetAddress": "",
+                  --"postalCode": "",
+                  "addressDetails": {
+                    "country": {
+                      --"scheme": "",
+                      "id": "",
+                      --"description": "",
+                      --"uri": ""
+                    },
+                    "region": {
+                      --"scheme": "",
+                      "id": "",
+                      --"description": "",
+                      --"uri": ""
+                    },
+                    "locality": {
+                      "scheme": "",
+                      "id": "",
+                      "description": "",
+                      --"uri": ""
+                    }
+                  }
+              },
+              --"description": ""
+            }
+        }],
+        "items":
+        [{
+            "id":"",
+            "classification":
+            {
+                "scheme": "CPV",
+                "description": "",
+                "id": ""
+            },
+            --"additionalClassifications":
+            [{
+                "scheme": "CPVs",
+                "description": "",
+                "id": ""
+            }],
+            "quantity": 0,
+            "unit":
+            {
+                "id":"",
+                "name": ""
+            },
+            --"description": "",
+            "relatedLot": ""
+        }],
+        "documents":
+        [{
+            "documentType": "",
+            "id": "",
+            --"title": "",
+            --"description": "",
+            --"relatedLots": [""]
+        }]
+    }
+}

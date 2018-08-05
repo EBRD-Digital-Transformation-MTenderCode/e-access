@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Budget @JsonCreator constructor(
@@ -20,5 +19,6 @@ data class Budget @JsonCreator constructor(
         @get:JsonProperty("isEuropeanUnionFunded")
         val isEuropeanUnionFunded: Boolean,
 
+        @field:Valid @field:NotEmpty
         val budgetBreakdown: List<BudgetBreakdown>
 )
