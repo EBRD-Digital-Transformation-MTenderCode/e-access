@@ -44,15 +44,14 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
-
         validateLotsValue(cnDto.tender.lots, tenderProcess.planning.budget.amount)
+        validateRelatedLots(cnDto.tender)
 
         val itemsId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
         val itemsDtoId = cnDto.tender.items.asSequence().map { it.id }.toSet()
         val newItemsId = itemsDtoId - itemsId
         setNewItemsId(cnDto.tender.items, newItemsId)
 
-        validateRelatedLots(cnDto.tender)
 
         val lotsId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
