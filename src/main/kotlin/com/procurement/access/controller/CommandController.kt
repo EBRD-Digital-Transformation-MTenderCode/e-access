@@ -22,7 +22,7 @@ class CommandController(private val validationService: ValidationService) {
     fun execute(cm: CommandMessage): ResponseDto {
         return when (cm.command) {
             CommandType.CHECK_BID -> validationService.checkBid(cm)
-            CommandType.CHECK_ITEMS -> validationService.checkBid(cm)
+            CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
          }
     }
 }
