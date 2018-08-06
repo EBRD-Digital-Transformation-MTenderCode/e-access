@@ -48,21 +48,25 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
 
     override fun checkItems(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckItemsRq::class.java, cm.data)
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
         val operationType = cm.context.operationType ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
         val commonChars = getCommonChars(checkDto.items, 3, 7)
         val commonClass = commonChars.padEnd(8, '0')
         val operation = Operation.fromValue(operationType)
         if ((operation == CREATE_CN) || (operation == CREATE_PN) || (operation == CREATE_PIN)) {
-            return validateAndGetResponse(checkDto, process, commonClass)
+            return validateItemsAndGetResponse(checkDto, commonClass)
         } else if ((operation == UPDATE_CN) || (operation == UPDATE_PN)) {
-            return validateAndGetResponse(checkDto, process, commonClass)
+            val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+            val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+            val process = toObject(TenderProcess::class.java, entity.jsonData)
+            return validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
         } else if ((operation == CREATE_CN_ON_PN) || (operation == CREATE_PIN_ON_PN)) {
+            val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+            val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+            val process = toObject(TenderProcess::class.java, entity.jsonData)
             return if (process.tender.items.isEmpty()) {
-                validateAndGetResponse(checkDto, process, commonClass)
+                validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
             } else {
                 getNegativeResponse()
             }
@@ -70,7 +74,12 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         return getNegativeResponse()
     }
 
-    private fun validateAndGetResponse(checkDto: CheckItemsRq, process: TenderProcess, commonClass: String): ResponseDto {
+    private fun validateItemsAndGetResponse(checkDto: CheckItemsRq, commonClass: String): ResponseDto {
+        checkItemCodes(checkDto.items, 3)
+        return ResponseDto(data = CheckItemsRs(mdmValidation = true, tender = TenderCheck(classification = ClassificationCheck(id = commonClass))))
+    }
+
+    private fun validateItemsAndCommonClassAndGetResponse(checkDto: CheckItemsRq, process: TenderProcess, commonClass: String): ResponseDto {
         checkItemCodes(checkDto.items, 3)
         checkCommonClass(process.tender.classification.id, commonClass, 3)
         return ResponseDto(data = CheckItemsRs(mdmValidation = true, tender = TenderCheck(classification = ClassificationCheck(id = commonClass))))
