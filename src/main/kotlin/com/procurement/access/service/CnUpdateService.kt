@@ -52,13 +52,12 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val newItemsId = itemsDtoId - itemsId
         setNewItemsId(cnDto.tender.items, newItemsId)
 
-
         val lotsId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
         val newLotsId = lotsDtoId - lotsId
         setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender, newLotsId)
         val oldLotsId = lotsId - lotsDtoId
-        tenderProcess.tender.items = addNewItems(tenderProcess.tender.items, cnDto.tender.items, newItemsId)
+        tenderProcess.tender.items = setItems(cnDto.tender.items)
         tenderProcess.tender.lots = addNewLots(tenderProcess.tender.lots, cnDto.tender.lots, newLotsId)
         setOldLotStatuses(tenderProcess.tender.lots, oldLotsId)
         tenderProcess.tender.contractPeriod = setContractPeriod(cnDto.tender.lots, cnDto.planning.budget)
@@ -66,18 +65,15 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         return ResponseDto(data = tenderProcess)
     }
 
+    private fun setItems(itemsDto: List<ItemCnUpdate>): List<Item> {
+        return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
+    }
+
     private fun addNewLots(lots: List<Lot>, lotsDto: List<LotCnUpdate>, newLotsId: Set<String>): List<Lot> {
         val newLots = lotsDto.asSequence()
                 .filter { it.id in newLotsId }
                 .map { convertDtoLotToCnLot(it) }.toList()
         return lots + newLots
-    }
-
-    private fun addNewItems(items: List<Item>, itemsDto: List<ItemCnUpdate>, newItemsId: Set<String?>): List<Item> {
-        val newItems = itemsDto.asSequence()
-                .filter { it.id in newItemsId }
-                .map { convertDtoItemToCnItem(it) }.toList()
-        return items + newItems
     }
 
     private fun checkLotsCurrency(cn: CnUpdate) {
