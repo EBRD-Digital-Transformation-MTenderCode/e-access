@@ -82,7 +82,7 @@ data class TenderCnCreate @JsonCreator constructor(
         val legalBasis: LegalBasis,
 
         @field:Valid @field:NotNull
-        val tenderPeriod: PeriodCnCreate,
+        val tenderPeriod: TenderPeriodCnCreate,
 
         @field:Valid @field:NotNull
         val procuringEntity: OrganizationReference,
@@ -112,7 +112,7 @@ data class LotCnCreate @JsonCreator constructor(
         val value: Value,
 
         @field:Valid @field:NotNull
-        val contractPeriod: Period,
+        val contractPeriod: ContractPeriod,
 
         @field:Valid @field:NotNull
         val placeOfPerformance: PlaceOfPerformance
@@ -142,7 +142,7 @@ data class ItemCnCreate @JsonCreator constructor(
         var relatedLot: String
 )
 
-data class PeriodCnCreate @JsonCreator constructor(
+data class TenderPeriodCnCreate @JsonCreator constructor(
 
         @field:NotNull
         val endDate: LocalDateTime

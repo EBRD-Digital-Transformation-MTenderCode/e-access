@@ -118,7 +118,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLots(lotsDto: List<LotCnCreate>): List<Lot> {
-        return lotsDto.asSequence().map { convertDtoLotToCnLot(it) }.toList()
+        return lotsDto.asSequence().map { convertDtoLotToLot(it) }.toList()
     }
 
     private fun setItemsId(tender: TenderCnCreate) {
@@ -184,20 +184,20 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setItems(itemsDto: List<ItemCnCreate>): List<Item> {
-        return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
+        return itemsDto.asSequence().map { convertDtoItemToItem(it) }.toList()
     }
 
-    private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): Period {
+    private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): ContractPeriod {
         val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
         budget.budgetBreakdown.forEach { bb ->
             if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
         }
-        return Period(startDate, endDate)
+        return ContractPeriod(startDate, endDate)
     }
 
-    private fun convertDtoLotToCnLot(lotDto: LotCnCreate): Lot {
+    private fun convertDtoLotToLot(lotDto: LotCnCreate): Lot {
         return Lot(
                 id = lotDto.id,
                 title = lotDto.title,
@@ -209,12 +209,12 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
                 recurrentProcurement = listOf(RecurrentProcurement(false)),
                 renewals = listOf(Renewal(false)),
                 variants = listOf(Variant(false)),
-                contractPeriod = lotDto.contractPeriod,
+                contractPeriod = ContractPeriod(lotDto.contractPeriod.startDate, lotDto.contractPeriod.endDate),
                 placeOfPerformance = lotDto.placeOfPerformance
         )
     }
 
-    private fun convertDtoItemToCnItem(itemDto: ItemCnCreate): Item {
+    private fun convertDtoItemToItem(itemDto: ItemCnCreate): Item {
         return Item(
                 id = itemDto.id,
                 description = itemDto.description,

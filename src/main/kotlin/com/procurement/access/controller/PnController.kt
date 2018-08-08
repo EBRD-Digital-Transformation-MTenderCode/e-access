@@ -19,16 +19,17 @@ class PnController(private val pnService: PnService) {
     @PostMapping
     fun createPn(@RequestParam("stage") stage: String,
                  @RequestParam("country") country: String,
-                 @RequestParam(value = "pmd", required = false) pmd: String,
+                 @RequestParam("pmd") pmd: String,
                  @RequestParam("owner") owner: String,
                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                 @RequestParam("date")
-                 dateTime: LocalDateTime,
+                 @RequestParam("date") dateTime: LocalDateTime,
                  @Valid @RequestBody data: PnCreate): ResponseEntity<ResponseDto> {
+
         return ResponseEntity(
                 pnService.createPn(
                         stage = stage,
                         country = country,
+                        pmd = pmd,
                         owner = owner,
                         dateTime = dateTime,
                         pnDto = data),

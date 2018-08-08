@@ -1,6 +1,7 @@
 package com.procurement.access.model.dto.cn
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.databinding.QuantityDeserializer
@@ -36,11 +37,8 @@ data class BudgetCnUpdate @JsonCreator constructor(
 
         val description: String?,
 
-        @field:Valid @field:NotNull
-        val amount: Value,
-
         @field:Valid @field:NotEmpty
-        val budgetBreakdown: List<BudgetBreakdown>
+        val budgetBreakdown: List<BudgetBreakdownCnUpdate>
 )
 
 data class TenderCnUpdate @JsonCreator constructor(
@@ -51,27 +49,11 @@ data class TenderCnUpdate @JsonCreator constructor(
         @field:NotNull
         val description: String,
 
-        @field:Valid
-        val classification: Classification?,
-
-        @field:NotNull
-        val mainProcurementCategory: MainProcurementCategory,
-
-        @field:NotNull
-        val procurementMethodDetails: String,
-
         val procurementMethodRationale: String?,
 
         val procurementMethodAdditionalInfo: String?,
 
-        @field:NotNull
-        val submissionMethodRationale: List<String>,
-
-        @field:NotNull
-        val submissionMethodDetails: String,
-
-        @field:NotNull
-        val eligibilityCriteria: String,
+        val classification: Classification?,
 
         @field:NotNull
         val legalBasis: LegalBasis,
@@ -107,7 +89,7 @@ data class LotCnUpdate @JsonCreator constructor(
         val value: Value,
 
         @field:Valid @field:NotNull
-        val contractPeriod: Period,
+        val contractPeriod: ContractPeriod,
 
         @field:Valid @field:NotNull
         val placeOfPerformance: PlaceOfPerformance
@@ -135,6 +117,15 @@ data class ItemCnUpdate @JsonCreator constructor(
 
         @field:NotNull
         var relatedLot: String
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class BudgetBreakdownCnUpdate @JsonCreator constructor(
+
+        val id: String,
+
+        @field:Valid
+        val amount: Value
 )
 
 data class PeriodCnUpdate @JsonCreator constructor(

@@ -44,7 +44,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         if (tenderProcess.tender.items.isEmpty()) {
-            checkLotsCurrency(cnDto)
+            checkLotsCurrency(cnDto, tenderProcess.planning.budget.amount.currency)
             checkLotsContractPeriod(cnDto)
             setItemsId(cnDto.tender)
             setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender)
@@ -54,8 +54,8 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 lots = setLots(cnDto.tender.lots)
                 items = setItems(cnDto.tender.items)
                 cnDto.tender.classification?.let { classification = it }
-                value = getValueFromLots(cnDto.tender.lots, cnDto.planning.budget.amount)
-                contractPeriod = setContractPeriod(cnDto.tender.lots, cnDto.planning.budget)
+                value = getValueFromLots(cnDto.tender.lots, tenderProcess.planning.budget.amount)
+                contractPeriod = setContractPeriod(cnDto.tender.lots, tenderProcess.planning.budget)
                 awardCriteria = AwardCriteria.PRICE_ONLY
                 additionalProcurementCategories = null
             }
@@ -64,8 +64,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         return ResponseDto(data = tenderProcess)
     }
 
-    private fun checkLotsCurrency(cn: CnUpdate) {
-        val budgetCurrency = cn.planning.budget.amount.currency
+    private fun checkLotsCurrency(cn: CnUpdate, budgetCurrency: String) {
         cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
             throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
         }
@@ -137,14 +136,14 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun setContractPeriod(lotsDto: List<LotCnUpdate>, budget: BudgetCnUpdate): Period {
+    private fun setContractPeriod(lotsDto: List<LotCnUpdate>, budget: Budget): ContractPeriod {
         val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
         budget.budgetBreakdown.forEach { bb ->
             if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
         }
-        return Period(startDate, endDate)
+        return ContractPeriod(startDate, endDate)
     }
 
     private fun convertDtoLotToCnLot(lotDto: LotCnUpdate): Lot {

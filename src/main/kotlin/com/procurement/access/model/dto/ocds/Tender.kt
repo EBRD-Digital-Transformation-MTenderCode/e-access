@@ -71,7 +71,7 @@ data class Tender @JsonCreator constructor(
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         val requiresElectronicCatalogue: Boolean,
 
-        var contractPeriod: Period,
+        var contractPeriod: ContractPeriod?,
 
         val tenderPeriod: Period,
 

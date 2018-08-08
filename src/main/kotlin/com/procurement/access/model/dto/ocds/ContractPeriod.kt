@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class Period @JsonCreator constructor(
+data class ContractPeriod @JsonCreator constructor(
 
         val startDate: LocalDateTime,
 
-        val endDate: LocalDateTime?
+        val endDate: LocalDateTime
 )

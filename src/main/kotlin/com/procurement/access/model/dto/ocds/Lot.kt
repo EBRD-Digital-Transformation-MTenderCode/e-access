@@ -11,9 +11,9 @@ data class Lot @JsonCreator constructor(
 
         val id: String,
 
-        val title: String,
+        val title: String?,
 
-        val description: String,
+        val description: String?,
 
         var status: TenderStatus?,
 
@@ -35,8 +35,8 @@ data class Lot @JsonCreator constructor(
         val variants: List<Variant>?,
 
         @field:Valid
-        val contractPeriod: Period,
+        val contractPeriod: ContractPeriod,
 
         @field:Valid
-        val placeOfPerformance: PlaceOfPerformance
+        val placeOfPerformance: PlaceOfPerformance?
 )
