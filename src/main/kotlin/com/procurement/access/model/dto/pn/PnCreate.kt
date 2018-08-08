@@ -42,7 +42,7 @@ data class BudgetPnCreate @JsonCreator constructor(
         @field:NotNull
         @field:JsonDeserialize(using = BooleansDeserializer::class)
         @get:JsonProperty("isEuropeanUnionFunded")
-        val isEuropeanUnionFunded: Boolean,
+        val isEuropeanUnionFunded: Boolean?,
 
         @field:Valid @field:NotEmpty
         val budgetBreakdown: List<BudgetBreakdown>
@@ -50,13 +50,24 @@ data class BudgetPnCreate @JsonCreator constructor(
 
 data class TenderPnCreate @JsonCreator constructor(
 
+        @field:NotNull
+        val title: String,
+
+        @field:NotNull
+        val description: String,
+
         @field:Valid @field:NotNull
         val classification: Classification,
 
-        val value: Value?,
-
         @field:NotNull
         val mainProcurementCategory: MainProcurementCategory,
+
+        @field:NotNull
+        val procurementMethodDetails: String,
+
+        val procurementMethodRationale: String?,
+
+        val procurementMethodAdditionalInfo: String?,
 
         @field:NotNull
         val submissionMethodRationale: List<String>,
@@ -65,22 +76,10 @@ data class TenderPnCreate @JsonCreator constructor(
         val submissionMethodDetails: String,
 
         @field:NotNull
-        val procurementMethodDetails: String,
-
-        @field:NotNull
-        val title: String,
-
-        @field:NotNull
-        val description: String,
+        val eligibilityCriteria: String,
 
         @field:NotNull
         val legalBasis: LegalBasis,
-
-        val procurementMethodRationale: String?,
-
-        val procurementMethodAdditionalInfo: String?,
-
-        val eligibilityCriteria: String?,
 
         @field:Valid @field:NotNull
         val tenderPeriod: PeriodPnCreate,
@@ -89,13 +88,13 @@ data class TenderPnCreate @JsonCreator constructor(
         val procuringEntity: OrganizationReference,
 
         @field:Valid @field:NotEmpty
-        var lots: List<LotPnCreate>?,
+        val lots: List<LotPnCreate>,
 
         @field:Valid @field:NotEmpty
-        val items: List<ItemPnCreate>?,
+        val items: List<ItemPnCreate>,
 
-        @field:Valid
-        var documents: List<Document>?
+        @field:Valid @field:NotEmpty
+        val documents: List<Document>
 )
 
 data class LotPnCreate @JsonCreator constructor(
