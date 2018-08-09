@@ -2,8 +2,6 @@ package com.procurement.access.service
 
 import com.datastax.driver.core.utils.UUIDs
 import com.procurement.access.config.OCDSProperties
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.utils.milliNowUTC
 import org.springframework.stereotype.Service

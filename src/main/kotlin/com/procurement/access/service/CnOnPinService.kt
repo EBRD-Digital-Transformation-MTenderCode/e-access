@@ -4,7 +4,6 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.Tender

@@ -9,7 +9,6 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import java.io.IOException
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 class QuantityDeserializer : JsonDeserializer<BigDecimal>() {
 

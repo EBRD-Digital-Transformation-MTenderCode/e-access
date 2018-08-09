@@ -41,8 +41,8 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     }
 
     override fun updateLots(cpId: String,
-                              stage: String,
-                              lotsDto: LotsRequestDto): ResponseDto {
+                            stage: String,
+                            lotsDto: LotsRequestDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.apply {
@@ -58,8 +58,8 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     }
 
     override fun updateLotsEv(cpId: String,
-                            stage: String,
-                            lotsDto: LotsRequestDto): ResponseDto {
+                              stage: String,
+                              lotsDto: LotsRequestDto): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         var itemsForCompiledLots: List<Item>? = null

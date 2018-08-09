@@ -57,13 +57,15 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         } else if ((operation == UPDATE_CN) || (operation == UPDATE_PN)) {
             val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
             val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
+                    ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
             val process = toObject(TenderProcess::class.java, entity.jsonData)
             return validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
         } else if ((operation == CREATE_CN_ON_PN) || (operation == CREATE_PIN_ON_PN)) {
             val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
             val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
+                    ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
             val process = toObject(TenderProcess::class.java, entity.jsonData)
             return if (process.tender.items.isEmpty()) {
                 validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)

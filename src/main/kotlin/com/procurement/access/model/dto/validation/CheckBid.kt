@@ -7,8 +7,8 @@ import javax.validation.constraints.NotEmpty
 
 data class CheckBid @JsonCreator constructor(
 
-    @field:Valid
-    val bid: BidCheck
+        @field:Valid
+        val bid: BidCheck
 )
 
 data class BidCheck @JsonCreator constructor(

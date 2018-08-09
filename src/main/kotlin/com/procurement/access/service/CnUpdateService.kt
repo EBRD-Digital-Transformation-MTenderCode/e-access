@@ -151,7 +151,6 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
                     .forEach { it.id = generationService.generateTimeBasedUUID().toString() }
     }
 
-
     private fun getNewLotsIdAndSetItemsAndDocumentsRelatedLots(tenderDto: TenderCnUpdate, newLotsId: Set<String>):
             Set<String> {
         val lotIds = mutableSetOf<String>()

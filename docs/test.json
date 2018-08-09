@@ -4,7 +4,10 @@
   "phase": "TENDERING",
   "launchTime": "2018-08-09T07:45:00Z",
   "metaData": "{
-  \"operationId\":\"644c8420-9ba7-11e8-978c-1fb0ca2feade\",
-  \"requestId\":\"644c8420-9ba7-11e8-978c-1fb0ca2feade\",
-  \"cpid\":null,\"ocid\":null,\"stage\":null,\"prevStage\":null,\"processType\":\"tenderPeriodEnd\",\"operationType\":null,\"phase\":null,\"owner\":null,\"country\":null,\"language\":null,\"pmd\":null,\"token\":null,\"access\":null,\"startDate\":null,\"endDate\":null,\"id\":null}"
+  \
+  "operationId\":\"644c8420-9ba7-11e8-978c-1fb0ca2feade\",
+  \
+  "requestId\":\"644c8420-9ba7-11e8-978c-1fb0ca2feade\",
+  \
+  "cpid\":null,\"ocid\":null,\"stage\":null,\"prevStage\":null,\"processType\":\"tenderPeriodEnd\",\"operationType\":null,\"phase\":null,\"owner\":null,\"country\":null,\"language\":null,\"pmd\":null,\"token\":null,\"access\":null,\"startDate\":null,\"endDate\":null,\"id\":null}"
 }
