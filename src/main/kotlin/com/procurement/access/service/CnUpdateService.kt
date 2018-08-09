@@ -64,14 +64,14 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
 
         tenderProcess.planning.apply {
-            rationale = cnDto.planning.rationale
-            budget.description = cnDto.planning.budget.description
+            cnDto.planning.rationale?.let { rationale = it }
+            cnDto.planning.budget.description?.let { budget.description = it}
         }
         tenderProcess.tender.apply {
             title = cnDto.tender.title
             description = cnDto.tender.description
-            procurementMethodRationale = cnDto.tender.procurementMethodRationale
-            procurementMethodAdditionalInfo = cnDto.tender.procurementMethodAdditionalInfo
+            cnDto.tender.procurementMethodRationale?.let { procurementMethodRationale = it }
+            cnDto.tender.procurementMethodAdditionalInfo?.let { procurementMethodAdditionalInfo = it}
             items = setItems(cnDto.tender.items)
             lots = activeLots + canceledLots
             documents = cnDto.tender.documents
