@@ -4,7 +4,10 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.*
+import com.procurement.access.model.dto.cn.CnUpdate
+import com.procurement.access.model.dto.cn.ItemCnUpdate
+import com.procurement.access.model.dto.cn.LotCnUpdate
+import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
@@ -46,13 +49,11 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         checkLotsCurrency(cnDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
         validateRelatedLots(cnDto.tender)
-
         //new items
         val itemsDbId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
         val itemsDtoId = cnDto.tender.items.asSequence().map { it.id }.toSet()
         val newItemsId = itemsDtoId - itemsDbId
         setNewItemsId(cnDto.tender.items, newItemsId)
-
         //new, old lots
         val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
@@ -62,8 +63,19 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val activeLots = getActiveLots(cnDto.tender.lots, tenderProcess.tender.lots, newLotsId)
         val canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
 
-        tenderProcess.tender.items = setItems(cnDto.tender.items)
-        tenderProcess.tender.lots = activeLots + canceledLots
+        tenderProcess.planning.apply {
+            rationale = cnDto.planning.rationale
+            budget.description = cnDto.planning.budget.description
+        }
+        tenderProcess.tender.apply {
+            title = cnDto.tender.title
+            description = cnDto.tender.description
+            procurementMethodRationale = cnDto.tender.procurementMethodRationale
+            procurementMethodAdditionalInfo = cnDto.tender.procurementMethodAdditionalInfo
+            items = setItems(cnDto.tender.items)
+            lots = activeLots + canceledLots
+            documents = cnDto.tender.documents
+        }
         setContractPeriod(tenderProcess.tender, tenderProcess.planning.budget, activeLots)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
 

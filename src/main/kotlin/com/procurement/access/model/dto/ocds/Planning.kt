@@ -10,5 +10,5 @@ data class Planning @JsonCreator constructor(
 
         val budget: Budget,
 
-        val rationale: String?
+        var rationale: String?
 )

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Budget @JsonCreator constructor(
 
-        val description: String?,
+        var description: String?,
 
         val amount: Value,
 

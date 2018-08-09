@@ -15,9 +15,9 @@ data class Tender @JsonCreator constructor(
 
         val id: String?,
 
-        val title: String,
+        var title: String,
 
-        val description: String,
+        var description: String,
 
         var status: TenderStatus,
 
@@ -33,9 +33,9 @@ data class Tender @JsonCreator constructor(
 
         val procurementMethodDetails: String,
 
-        val procurementMethodRationale: String?,
+        var procurementMethodRationale: String?,
 
-        val procurementMethodAdditionalInfo: String?,
+        var procurementMethodAdditionalInfo: String?,
 
         val submissionMethod: List<SubmissionMethod>,
 
