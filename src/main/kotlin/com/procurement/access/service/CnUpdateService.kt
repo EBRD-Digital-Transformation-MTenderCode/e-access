@@ -97,9 +97,9 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val totalAmount = activeLots.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-        tender.value = Value(totalAmount, tender.value.currency)
+        if (totalAmount > tender.value.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
+        tender.value.amount = totalAmount
     }
-
 
     private fun getActiveLots(lotsDto: List<LotCnUpdate>, lotsTender: List<Lot>, newLotsId: Set<String>): List<Lot> {
         val activeLots = mutableListOf<Lot>()

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull
 data class Value @JsonCreator constructor(
 
         @field:JsonDeserialize(using = MoneyDeserializer::class)
-        val amount: BigDecimal,
+        var amount: BigDecimal,
 
         var currency: String
 )
