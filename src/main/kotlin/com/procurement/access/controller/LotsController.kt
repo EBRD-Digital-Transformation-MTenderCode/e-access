@@ -28,20 +28,6 @@ class LotsController(private val lotsService: LotsService) {
                 HttpStatus.OK)
     }
 
-    @PostMapping("/updateStatus")
-    fun updateStatus(@RequestParam("cpid") cpId: String,
-                     @RequestParam("stage") stage: String,
-                     @RequestParam("status") status: String,
-                     @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
-        return ResponseEntity(
-                lotsService.updateStatus(
-                        cpId = cpId,
-                        stage = stage,
-                        tenderStatus = TenderStatus.fromValue(status),
-                        lotsDto = data),
-                HttpStatus.OK)
-    }
-
     @PostMapping("/updateStatusDetails")
     fun updateStatusDetails(@RequestParam("cpid") cpId: String,
                             @RequestParam("stage") stage: String,
@@ -86,6 +72,18 @@ class LotsController(private val lotsService: LotsService) {
                    @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.updateLots(
+                        cpId = cpId,
+                        stage = stage,
+                        lotsDto = data),
+                HttpStatus.OK)
+    }
+
+    @PostMapping("/updateLotsEv")
+    fun updateLotsEv(@RequestParam("cpid") cpId: String,
+                     @RequestParam("stage") stage: String,
+                     @Valid @RequestBody data: LotsRequestDto): ResponseEntity<ResponseDto> {
+        return ResponseEntity(
+                lotsService.updateLotsEv(
                         cpId = cpId,
                         stage = stage,
                         lotsDto = data),
