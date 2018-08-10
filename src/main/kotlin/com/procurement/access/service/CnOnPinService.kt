@@ -48,13 +48,14 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
         validatePeriod(tenderProcess.tender, dateTime)
         validateDocumentsRelatedLots(tenderProcess.tender, cnDto.tender)
         tenderProcess.tender.documents = cnDto.tender.documents
+        tenderProcess.tender.tenderPeriod = null
         setStatuses(tenderProcess.tender)
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
     }
 
     private fun validatePeriod(pinTender: Tender, dateTime: LocalDateTime) {
-        if (pinTender.tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
+        if (pinTender.tenderPeriod!!.startDate.toLocalDate() != dateTime.toLocalDate())
             throw ErrorException(ErrorType.INVALID_START_DATE)
     }
 

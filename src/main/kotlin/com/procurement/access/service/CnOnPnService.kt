@@ -61,6 +61,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 contractPeriod = setContractPeriod(cnDto.tender.lots, tenderProcess.planning.budget)
                 awardCriteria = AwardCriteria.PRICE_ONLY
                 additionalProcurementCategories = null
+                tenderPeriod = null
             }
             tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         }

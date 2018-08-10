@@ -69,7 +69,7 @@ data class Tender @JsonCreator constructor(
 
         var contractPeriod: ContractPeriod?,
 
-        val tenderPeriod: Period,
+        var tenderPeriod: Period?,
 
         var value: Value,
 
