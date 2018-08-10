@@ -33,10 +33,8 @@ data class PlanningCnUpdate @JsonCreator constructor(
 
 data class BudgetCnUpdate @JsonCreator constructor(
 
-        val description: String?,
+        val description: String?
 
-        @field:Valid @field:NotEmpty
-        val budgetBreakdown: List<BudgetBreakdownCnUpdate>
 )
 
 data class TenderCnUpdate @JsonCreator constructor(
@@ -53,14 +51,8 @@ data class TenderCnUpdate @JsonCreator constructor(
 
         val classification: Classification?,
 
-        @field:NotNull
-        val legalBasis: LegalBasis,
-
         @field:Valid @field:NotNull
         val tenderPeriod: PeriodCnUpdate,
-
-        @field:Valid @field:NotNull
-        val procuringEntity: OrganizationReference,
 
         @field:Valid @field:NotEmpty
         val lots: List<LotCnUpdate>,
@@ -115,15 +107,6 @@ data class ItemCnUpdate @JsonCreator constructor(
 
         @field:NotNull
         var relatedLot: String
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class BudgetBreakdownCnUpdate @JsonCreator constructor(
-
-        val id: String,
-
-        @field:Valid
-        val amount: Value
 )
 
 data class PeriodCnUpdate @JsonCreator constructor(
