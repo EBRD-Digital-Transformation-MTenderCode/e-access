@@ -1,13 +1,139 @@
 {
-  "action": "SCHEDULE",
-  "ocid": "ocds-t1s2t3-MD-1533800387901",
-  "phase": "TENDERING",
-  "launchTime": "2018-08-09T07:45:00Z",
-  "metaData": "{
-  \
-  "operationId\":\"644c8420-9ba7-11e8-978c-1fb0ca2feade\",
-  \
-  "requestId\":\"644c8420-9ba7-11e8-978c-1fb0ca2feade\",
-  \
-  "cpid\":null,\"ocid\":null,\"stage\":null,\"prevStage\":null,\"processType\":\"tenderPeriodEnd\",\"operationType\":null,\"phase\":null,\"owner\":null,\"country\":null,\"language\":null,\"pmd\":null,\"token\":null,\"access\":null,\"startDate\":null,\"endDate\":null,\"id\":null}"
+  "planning": {
+    "rationale": "PROVERKA",
+    "budget": {
+      "budgetBreakdown": [
+        {
+          "id": "ocds-t1s2t3-MD-1533733635083-FS-1533733752757",
+          "amount": {
+            "amount": 900,
+            "currency": "MDL"
+          }
+        },
+        {
+          "id": "ocds-t1s2t3-MD-1533733635083-FS-1533733752757",
+          "amount": {
+            "amount": 800,
+            "currency": "MDL"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "title": "gav",
+    "description": "gav gav",
+    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "procurementMethodAdditionalInfo": "fsdfsdf",
+    "tenderPeriod": {
+      "endDate": "2018-08-13T08:55:00Z"
+    },
+    "procuringEntity": {
+      "name": "Edward-Compan",
+      "address": {
+        "streetAddress": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "iso-alpha2",
+            "id": "MD",
+            "description": "MOLDOVA",
+            "uri": "http://reference.iatistandard.org/202/codelists/Country/#id1"
+          },
+          "region": {
+            "scheme": "CUATM",
+            "id": "1000000",
+            "description": "Anenii Noi",
+            "uri": "www.statistica.md/public/files/Clasificatoare/CUATM_rom.zip"
+          },
+          "locality": {
+            "scheme": "CUAM",
+            "id": "1001001",
+            "description": "dgfdfg"
+          }
+        }
+      },
+      "identifier": {
+        "id": "gggg",
+        "scheme": "MD-IDNO",
+        "legalName": "fff",
+        "uri": "hhh"
+      },
+      "contactPoint": {
+        "name": "hgfh",
+        "email": "hfgh",
+        "telephone": "hgfhfh",
+        "faxNumber": "hgfh",
+        "url": "hgfhgf"
+      }
+    },
+    "lots": [
+      {
+        "id": "1e6c3231-9ed5-11e8-b59c-311915ff3018",
+        "title": "lot1update",
+        "description": "looot",
+        "value": {
+          "amount": 400,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-11-22T14:45:00Z",
+          "endDate": "2018-12-26T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "11111111",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "id": "Ml"
+              },
+              "region": {
+                "id": "MD-AN"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "1",
+        "description": "",
+        "classification": {
+          "id": "30199220-8",
+          "description": "Cărţi poştale neilustrate",
+          "scheme": "CPV"
+        },
+        "quantity": 15.00,
+        "unit": {
+          "id": "86",
+          "name": " Milion metri patrati spatiu locativ "
+        },
+        "relatedLot": "1e6c3235-9ed5-11e8-b59c-311915ff3018"
+      }
+    ],
+    "documents": [
+      {
+        "documentType": "tenderNotice",
+        "id": "70ce9a70-970c-11e8-9318-61ca1098e80e",
+        "title": "doc1"
+      }
+    ],
+    "classification": {
+      "id": "30199220-8",
+      "description": "Cărţi poştale neilustrate",
+      "scheme": "CPV"
+    },
+    "submissionMethodRationale": [
+      "submissionMethodRationale"
+    ],
+    "submissionMethodDetails": "submissionMethodDetails",
+    "procurementMethodDetails": "test",
+    "eligibilityCriteria": "eligibilityCriteria"
+  }
 }
