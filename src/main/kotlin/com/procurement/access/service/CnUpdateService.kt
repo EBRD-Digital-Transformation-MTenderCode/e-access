@@ -11,6 +11,7 @@ import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
+import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -45,6 +46,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
+        validateTenderStatus(tenderProcess)
         //dto lots validation
         checkLotsCurrency(cnDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
@@ -81,6 +83,10 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateTenderStatus(tenderProcess: TenderProcess) {
+        if (tenderProcess.tender.statusDetails == SUSPENDED) throw ErrorException(ErrorType.SUSPENDED)
     }
 
     private fun setContractPeriod(tender: Tender, budget: Budget, activeLots: List<Lot>) {
