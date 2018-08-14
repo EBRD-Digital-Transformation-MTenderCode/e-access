@@ -11,7 +11,6 @@ import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
@@ -35,7 +34,6 @@ class PnServiceImpl(private val generationService: GenerationService,
                           owner: String,
                           dateTime: LocalDateTime,
                           pnDto: PnCreate): ResponseDto {
-
         checkLotsCurrency(pnDto)
         checkLotsContractPeriod(pnDto)
         val cpId = generationService.getCpId(country)
@@ -43,7 +41,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val tenderDto = pnDto.tender
         setItemsId(pnDto.tender)
         setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
-//        val startDate = getStartDate(pnDto.tender.tenderPeriod.startDate)
+        validateStartDate(pnDto.tender.tenderPeriod.startDate)
         pnDto.tender.procuringEntity.id = generationService.generateOrganizationId(pnDto.tender.procuringEntity)
         val tp = TenderProcess(
                 ocid = cpId,
@@ -100,6 +98,13 @@ class PnServiceImpl(private val generationService: GenerationService,
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ResponseDto(data = tp)
+    }
+
+    private fun validateStartDate(startDate: LocalDateTime) {
+        val month = startDate.month
+        if (month != month.firstMonthOfQuarter()) throw ErrorException(ErrorType.INVALID_START_DATE)
+        val day = startDate.dayOfMonth
+        if (day != 1) throw ErrorException(ErrorType.INVALID_START_DATE)
     }
 
     private fun checkLotsCurrency(pn: PnCreate) {
@@ -172,15 +177,15 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun getValueFromLots(lotsDto: List<LotPnCreate>?, budgetValue: Value): Value {
-        return if (lotsDto != null) {
-            val currency = lotsDto.elementAt(0).value.currency
+        return if (lotsDto != null && lotsDto.isNotEmpty()) {
+            val currency = budgetValue.currency
             val totalAmount = lotsDto.asSequence()
                     .sumByDouble { it.value.amount.toDouble() }
                     .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
             if (totalAmount > budgetValue.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
             Value(totalAmount, currency)
         } else {
-            Value(BigDecimal.ZERO, "")
+            budgetValue
         }
     }
 
@@ -198,7 +203,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = TenderStatus.ACTIVE,
+                status = TenderStatus.PLANNING,
                 statusDetails = EMPTY,
                 value = lotDto.value,
                 options = listOf(Option(false)),

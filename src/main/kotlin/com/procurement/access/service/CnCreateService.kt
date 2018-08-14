@@ -175,7 +175,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetValue: Value): Value {
-        val currency = lotsDto.elementAt(0).value.currency
+        val currency = budgetValue.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
