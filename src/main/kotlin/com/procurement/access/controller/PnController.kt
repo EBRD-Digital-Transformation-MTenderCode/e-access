@@ -41,7 +41,7 @@ class PnController(private val pnService: PnService,
 
 
     @PutMapping
-    fun updateCn(@RequestParam("cpid") cpId: String,
+    fun updatePn(@RequestParam("cpid") cpId: String,
                  @RequestParam("stage") stage: String,
                  @RequestParam("owner") owner: String,
                  @RequestParam("token") token: String,
