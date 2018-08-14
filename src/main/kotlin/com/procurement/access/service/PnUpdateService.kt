@@ -10,6 +10,7 @@ import com.procurement.access.model.dto.cn.LotCnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
+import com.procurement.access.model.dto.ocds.TenderStatus.PLANNING
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.pn.ItemPnUpdate
 import com.procurement.access.model.dto.pn.LotPnUpdate
@@ -90,10 +91,10 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     private fun setContractPeriod(tender: Tender, budget: Budget, activeLots: List<Lot>) {
         val startDate: LocalDateTime = activeLots.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = activeLots.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
-        budget.budgetBreakdown.forEach { bb ->
-            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-        }
+//        budget.budgetBreakdown.forEach { bb ->
+//            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+//            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+//        }
         tender.contractPeriod = ContractPeriod(startDate, endDate)
     }
 
@@ -201,7 +202,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = ACTIVE,
+                status = PLANNING,
                 statusDetails = EMPTY,
                 value = lotDto.value,
                 options = listOf(Option(false)),
@@ -218,7 +219,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = ACTIVE,
+                status = PLANNING,
                 statusDetails = EMPTY,
                 value = lotTender.value,
                 options = listOf(Option(false)),
