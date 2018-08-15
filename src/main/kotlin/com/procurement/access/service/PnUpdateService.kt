@@ -84,16 +84,22 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             lots = activeLots + canceledLots
             documents = pnDto.tender.documents
         }
-        setContractPeriod(tenderProcess.tender, activeLots)
-        setTenderValueByActiveLots(tenderProcess.tender, activeLots)
+        if (pnDto.tender.items != null) {
+            setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
+            setTenderValueByActiveLots(tenderProcess.tender, activeLots)
+        }
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
     }
 
-    private fun setContractPeriod(tender: Tender, activeLots: List<Lot>) {
+    private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
         val startDate: LocalDateTime = activeLots.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = activeLots.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
+        budget.budgetBreakdown.forEach { bb ->
+            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+        }
         tender.contractPeriod = ContractPeriod(startDate, endDate)
     }
 
@@ -145,6 +151,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             }
         }
+        TODO()
     }
 
     private fun setNewItemsId(itemsDto: List<ItemPnUpdate>, newItemsId: Set<String?>) {
