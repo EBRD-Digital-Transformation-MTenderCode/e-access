@@ -49,9 +49,9 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         var activeLots: List<Lot> = listOf()
         var canceledLots: List<Lot>
-        if (pnDto.tender.items != null) {
+        if (pnDto.tender.items != null && pnDto.tender.lots != null) {
             validateLotsAndItemsAndDocuments(pnDto, tenderProcess.tender.value.currency)
-            val lotsDto = pnDto.tender.lots!!
+            val lotsDto = pnDto.tender.lots
             val itemsDto = pnDto.tender.items
 
             val itemsDbId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
@@ -92,11 +92,9 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun validateLotsAndItemsAndDocuments(pnDto: PnUpdate, currency: String) {
-        if (pnDto.tender.lots == null) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
-        if (pnDto.tender.items == null) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
-        checkLotsCurrency(pnDto.tender.lots, currency)
-        checkLotsContractPeriod(pnDto.tender.lots)
-        validateRelatedLots(pnDto.tender.lots, pnDto.tender.items, pnDto.tender.documents)
+        checkLotsCurrency(pnDto.tender.lots!!, currency)
+        checkLotsContractPeriod(pnDto.tender.lots!!)
+        validateRelatedLots(pnDto.tender.lots!!, pnDto.tender.items!!, pnDto.tender.documents)
     }
 
     private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
