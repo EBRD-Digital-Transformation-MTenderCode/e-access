@@ -84,7 +84,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             lots = activeLots + canceledLots
             documents = pnDto.tender.documents
         }
-        if (pnDto.tender.lots != null) {
+        if (pnDto.tender.items != null) {
             setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
             setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         }
