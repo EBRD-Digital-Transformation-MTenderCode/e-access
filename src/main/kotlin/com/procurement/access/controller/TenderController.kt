@@ -63,15 +63,4 @@ class TenderController(private val tenderService: TenderService) {
                 HttpStatus.OK)
     }
 
-    @PostMapping("/checkToken")
-    fun checkToken(@RequestParam("cpid") cpId: String,
-                   @RequestParam("stage") stage: String,
-                   @RequestParam("token") token: String): ResponseEntity<ResponseDto> {
-        return ResponseEntity(
-                tenderService.checkToken(
-                        cpId = cpId,
-                        stage = stage,
-                        token = token),
-                HttpStatus.OK)
-    }
 }

@@ -19,6 +19,8 @@ interface ValidationService {
     fun checkBid(cm: CommandMessage): ResponseDto
 
     fun checkItems(cm: CommandMessage): ResponseDto
+
+    fun checkToken(cm: CommandMessage): ResponseDto
 }
 
 @Service
@@ -74,6 +76,15 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
             }
         }
         return getNegativeResponse()
+    }
+
+    override fun checkToken(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+        val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+        return ResponseDto(data = "ok")
     }
 
     private fun validateItemsAndGetResponse(checkDto: CheckItemsRq, commonClass: String): ResponseDto {

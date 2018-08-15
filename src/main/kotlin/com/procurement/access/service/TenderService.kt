@@ -25,8 +25,6 @@ interface TenderService {
     fun setSuspended(cpId: String, stage: String, suspended: Boolean?): ResponseDto
 
     fun setUnsuccessful(cpId: String, stage: String): ResponseDto
-
-    fun checkToken(cpId: String, stage: String, token: String): ResponseDto
 }
 
 @Service
@@ -81,12 +79,6 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
-    }
-
-    override fun checkToken(cpId: String, stage: String, token: String): ResponseDto {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
-        return ResponseDto(data = "ok")
     }
 
     private fun getEntity(process: TenderProcess,

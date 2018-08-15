@@ -26,6 +26,7 @@ class CommandController(private val validationService: ValidationService) {
         return when (cm.command) {
             CommandType.CHECK_BID -> validationService.checkBid(cm)
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
+            CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
         }
     }
 }

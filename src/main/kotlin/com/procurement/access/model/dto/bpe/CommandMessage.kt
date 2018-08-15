@@ -43,7 +43,8 @@ data class Context @JsonCreator constructor(
 
 enum class CommandType(private val value: String) {
     CHECK_BID("checkBid"),
-    CHECK_ITEMS("checkItems");
+    CHECK_ITEMS("checkItems"),
+    CHECK_TOKEN("checkToken");
 
     @JsonValue
     fun value(): String {
