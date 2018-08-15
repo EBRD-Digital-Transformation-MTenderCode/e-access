@@ -15,7 +15,7 @@ data class CommandMessage @JsonCreator constructor(
 
         val context: Context,
 
-        val data: JsonNode,
+        val data: JsonNode?,
 
         val version: ApiVersion
 )
