@@ -1,6 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.lots.CheckLotStatusRequestDto
 import com.procurement.access.model.dto.lots.LotsRequestDto
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
@@ -63,6 +64,18 @@ class LotsController(private val lotsService: LotsService) {
                 lotsService.checkStatusDetails(
                         cpId = cpId,
                         stage = stage),
+                HttpStatus.OK)
+    }
+
+    @GetMapping("/checkStatus")
+    fun checkStatus(@RequestParam("cpid") cpId: String,
+                    @RequestParam("stage") stage: String,
+                    @Valid @RequestBody data: CheckLotStatusRequestDto): ResponseEntity<ResponseDto> {
+        return ResponseEntity(
+                lotsService.checkStatus(
+                        cpId = cpId,
+                        stage = stage,
+                        lotDto = data),
                 HttpStatus.OK)
     }
 

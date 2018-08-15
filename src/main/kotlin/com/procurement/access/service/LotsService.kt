@@ -24,6 +24,8 @@ interface LotsService {
     fun updateStatusDetailsById(cpId: String, stage: String, lotId: String, statusDetails: TenderStatusDetails): ResponseDto
 
     fun checkStatusDetails(cpId: String, stage: String): ResponseDto
+
+    fun checkStatus(cpId: String, stage: String, lotDto: CheckLotStatusRequestDto): ResponseDto
 }
 
 @Service
@@ -109,6 +111,24 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         checkLotStatusDetails(process.tender.lots)
         return ResponseDto(data = "All active lots are awarded.")
+    }
+
+    override fun checkStatus(cpId: String, stage: String, lotDto: CheckLotStatusRequestDto): ResponseDto {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        checkLotStatus(process.tender.lots, lotDto.relatedLot)
+        return ResponseDto(data = "Lot status valid.")
+    }
+
+    private fun checkLotStatus(lots: List<Lot>, relatedLot: String) {
+        val lot = lots.asSequence().firstOrNull { it.id == relatedLot }
+        if (lot != null) {
+            if (lot.status != TenderStatus.ACTIVE || lot.statusDetails !== TenderStatusDetails.EMPTY) {
+                throw ErrorException(ErrorType.INVALID_LOT_STATUS)
+            }
+        } else {
+            throw ErrorException(ErrorType.LOT_NOT_FOUND)
+        }
     }
 
     private fun getLotsDtoByStatus(lots: List<Lot>, status: TenderStatus): List<LotDto> {

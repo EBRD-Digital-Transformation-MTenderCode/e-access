@@ -34,10 +34,10 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
             if (it.currency != process.tender.value.currency) throw ErrorException(ErrorType.INVALID_CURRENCY)
         }
         val lotsId = process.tender.lots.asSequence().map { it.id }.toSet()
-        if (!lotsId.containsAll(checkDto.bid.relatedLots)) throw ErrorException(ErrorType.CHECK_BID_LOT_NOT_FOUND)
+        if (!lotsId.containsAll(checkDto.bid.relatedLots)) throw ErrorException(ErrorType.LOT_NOT_FOUND)
         for (lot in process.tender.lots) {
             if (checkDto.bid.relatedLots.contains(lot.id)) {
-                if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.CHECK_BID_INVALID_LOT_STATUS)
+                if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
                 checkDto.bid.value?.let {
                     if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
                 }
