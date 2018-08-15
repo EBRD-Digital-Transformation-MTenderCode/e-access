@@ -50,9 +50,11 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         var activeLots: List<Lot> = listOf()
         var canceledLots: List<Lot>
         if (pnDto.tender.items != null && pnDto.tender.lots != null) {
-            validateLotsAndItemsAndDocuments(pnDto, tenderProcess.tender.value.currency)
             val lotsDto = pnDto.tender.lots
             val itemsDto = pnDto.tender.items
+            checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
+            checkLotsContractPeriod(lotsDto)
+            validateRelatedLots(lotsDto, itemsDto, pnDto.tender.documents)
 
             val itemsDbId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
             val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
@@ -89,12 +91,6 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
-    }
-
-    private fun validateLotsAndItemsAndDocuments(pnDto: PnUpdate, currency: String) {
-        checkLotsCurrency(pnDto.tender.lots!!, currency)
-        checkLotsContractPeriod(pnDto.tender.lots!!)
-        validateRelatedLots(pnDto.tender.lots!!, pnDto.tender.items!!, pnDto.tender.documents)
     }
 
     private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
