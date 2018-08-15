@@ -53,7 +53,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             val lotsDto = pnDto.tender.lots
             val itemsDto = pnDto.tender.items
             checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
-            checkLotsContractPeriod(lotsDto)
+            checkLotsContractPeriod(lotsDto, pnDto.tender.tenderPeriod.startDate)
             validateRelatedLots(lotsDto, itemsDto, pnDto.tender.documents)
 
             val itemsDbId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
@@ -124,11 +124,14 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun getCanceledLots(lotsTender: List<Lot>, canceledLotsId: Set<String>): List<Lot> {
-        val canceledLots = lotsTender.asSequence().filter { it.id in canceledLotsId }.toList()
-        canceledLots.asSequence().forEach {
-            it.status = TenderStatus.CANCELLED
-            it.statusDetails = TenderStatusDetails.EMPTY
-        }
+        val canceledLots = mutableListOf<Lot>()
+        lotsTender.asSequence()
+                .filter { it.id in canceledLotsId }
+                .forEach {lot ->
+                    lot.status = TenderStatus.CANCELLED
+                    lot.statusDetails = TenderStatusDetails.EMPTY
+                    canceledLots.add(lot)
+                }
         return canceledLots
     }
 
@@ -142,13 +145,15 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun checkLotsContractPeriod(lotsDto: List<LotPnUpdate>) {
+    private fun checkLotsContractPeriod(lotsDto: List<LotPnUpdate>, tenderPeriodStartDate: LocalDateTime) {
         lotsDto.forEach { lot ->
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
                 throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             }
+            if (lot.contractPeriod.startDate < tenderPeriodStartDate) {
+                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            }
         }
-        TODO()
     }
 
     private fun setNewItemsId(itemsDto: List<ItemPnUpdate>, newItemsId: Set<String?>) {
