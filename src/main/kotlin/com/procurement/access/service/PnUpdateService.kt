@@ -50,23 +50,22 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         var activeLots: List<Lot> = listOf()
         var canceledLots: List<Lot>
         if (pnDto.tender.items != null) {
-            if (pnDto.tender.lots == null) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+            validateLotsAndItemsAndDocuments(pnDto, tenderProcess.tender.value.currency)
+            val lotsDto = pnDto.tender.lots!!
             val itemsDto = pnDto.tender.items
-            val lotsDto = pnDto.tender.lots
-            validateRelatedLots(lotsDto, itemsDto, pnDto.tender.documents)
+
             val itemsDbId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
             val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
             val newItemsId = itemsDtoId - itemsDbId
             setNewItemsId(itemsDto, newItemsId)
             updatedItems = getItems(itemsDto)
 
-            checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
-            checkLotsContractPeriod(lotsDto)
-            val lotsDtoId = pnDto.tender.lots.asSequence().map { it.id }.toSet()
+            val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
             val newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(pnDto.tender, lotsDtoId - lotsDbId)
             val canceledLotsId = lotsDbId - lotsDtoId
-            activeLots = getActiveLots(pnDto.tender.lots, tenderProcess.tender.lots, newLotsId)
+            activeLots = getActiveLots(lotsDto, tenderProcess.tender.lots, newLotsId)
             canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
+
         } else {
             canceledLots = getCanceledLots(tenderProcess.tender.lots, lotsDbId)
         }
@@ -90,6 +89,13 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateLotsAndItemsAndDocuments(pnDto: PnUpdate, currency: String) {
+        if (pnDto.tender.lots == null) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        checkLotsCurrency(pnDto.tender.lots, currency)
+        checkLotsContractPeriod(pnDto.tender.lots)
+        validateRelatedLots(pnDto.tender.lots, pnDto.tender.items!!, pnDto.tender.documents)
     }
 
     private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
