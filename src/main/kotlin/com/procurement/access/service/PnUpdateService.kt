@@ -67,7 +67,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             val canceledLotsId = lotsDbId - lotsDtoId
             activeLots = getActiveLots(lotsDto, tenderProcess.tender.lots, newLotsId)
             canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
-
+            setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
+            setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         } else {
             canceledLots = getCanceledLots(tenderProcess.tender.lots, lotsDbId)
         }
@@ -83,10 +84,6 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             items = updatedItems
             lots = activeLots + canceledLots
             documents = pnDto.tender.documents
-        }
-        if (pnDto.tender.items != null) {
-            setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
-            setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         }
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
