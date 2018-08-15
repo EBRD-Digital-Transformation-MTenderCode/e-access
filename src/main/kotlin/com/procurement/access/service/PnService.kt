@@ -119,7 +119,7 @@ class PnServiceImpl(private val generationService: GenerationService,
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
                 throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             }
-            if (lot.contractPeriod.endDate > pn.tender.tenderPeriod.startDate) {
+            if (lot.contractPeriod.startDate < pn.tender.tenderPeriod.startDate) {
                 throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             }
         }
