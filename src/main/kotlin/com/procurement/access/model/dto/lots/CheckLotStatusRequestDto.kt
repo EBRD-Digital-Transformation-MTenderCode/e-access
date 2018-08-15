@@ -6,5 +6,5 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CheckLotStatusRequestDto @JsonCreator constructor(
 
-        val relatedLot: String?
+        val relatedLot: String
 )
