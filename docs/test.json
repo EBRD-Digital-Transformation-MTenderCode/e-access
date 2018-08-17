@@ -8,7 +8,7 @@
       "isEuropeanUnionFunded": true,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1534248504719-FS-1534248520484",
+          "id": "ocds-t1s2t3-MD-1534501687212-FS-1534501697441",
           "description": "Hello world!",
           "amount": {
             "amount": 900.00,
@@ -29,15 +29,15 @@
           }
         },
         {
-          "id": "ocds-t1s2t3-MD-1534248504719-FS-1534329123626",
+          "id": "ocds-t1s2t3-MD-1534501687212-FS-1534501724872",
           "description": "Hello world!",
           "amount": {
             "amount": 800.00,
             "currency": "MDL"
           },
           "period": {
-            "startDate": "2018-05-25T21:00:00Z",
-            "endDate": "2018-12-26T21:00:00Z"
+            "startDate": "2018-05-25T22:00:00Z",
+            "endDate": "2018-12-27T21:00:00Z"
           },
           "sourceParty": {
             "id": "MD-IDNO-Enotis",
@@ -55,10 +55,9 @@
   "tender": {
     "title": "gav",
     "description": "gav gav",
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
-    "procurementMethodAdditionalInfo": "fsdfsdf",
+    "legalBasis": "DIRECTIVE_2014_24_EU",
     "tenderPeriod": {
-      "startDate": "2018-07-01T00:00:00Z"
+      "startDate": "2018-07-01T01:01:01Z"
     },
     "procuringEntity": {
       "name": "Edward-Compan",
@@ -98,204 +97,12 @@
         "url": "hgfhgf"
       }
     },
-    "lots": [
-      {
-        "id": "1",
-        "title": "lot1",
-        "description": "looot",
-        "value": {
-          "amount": 200.00,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-11-19T14:45:00Z",
-          "endDate": "2018-12-25T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "scheme": "iso-alpha2",
-                "id": "MD",
-                "description": "MOLDOVA",
-                "uri": "http://reference.iatistandard.org/202/codelists/Country/#id1"
-              },
-              "region": {
-                "scheme": "CUATM",
-                "id": "1000000",
-                "description": "Anenii Noi",
-                "uri": "www.statistica.md/public/files/Clasificatoare/CUATM_rom.zip"
-              },
-              "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
-              }
-            }
-          },
-          "description": null
-        }
-      },
-      {
-        "id": "2",
-        "title": "lot2",
-        "description": "looot",
-        "value": {
-          "amount": 500.00,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-11-21T14:45:00Z",
-          "endDate": "2018-12-22T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "scheme": "iso-alpha2",
-                "id": "MD",
-                "description": "MOLDOVA",
-                "uri": "http://reference.iatistandard.org/202/codelists/Country/#id1"
-              },
-              "region": {
-                "scheme": "CUATM",
-                "id": "1000000",
-                "description": "Anenii Noi",
-                "uri": "www.statistica.md/public/files/Clasificatoare/CUATM_rom.zip"
-              },
-              "locality": {
-                "scheme": "CUATM",
-                "id": "1001001",
-                "description": "s.Albiniţa"
-              }
-            }
-          },
-          "description": "2"
-        }
-      },
-      {
-        "id": "3",
-        "title": "lot3",
-        "description": "looot",
-        "value": {
-          "amount": 200.00,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-11-19T14:45:00Z",
-          "endDate": "2018-12-25T14:45:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "",
-            "postalCode": "",
-            "addressDetails": {
-              "country": {
-                "scheme": "iso-alpha2",
-                "id": "MD",
-                "description": "MOLDOVA",
-                "uri": "http://reference.iatistandard.org/202/codelists/Country/#id1"
-              },
-              "region": {
-                "scheme": "CUATM",
-                "id": "1000000",
-                "description": "Anenii Noi",
-                "uri": "www.statistica.md/public/files/Clasificatoare/CUATM_rom.zip"
-              },
-              "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
-              }
-            }
-          },
-          "description": null
-        }
-      }
-    ],
-    "items": [
-      {
-        "id": "2",
-        "description": "",
-        "classification": {
-          "id": "30199230-1",
-          "description": "Plicuri",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "86",
-          "name": " Milion metri patrati spatiu locativ "
-        },
-        "relatedLot": "2"
-      },
-      {
-        "id": "3",
-        "description": "",
-        "classification": {
-          "id": "30199230-1",
-          "description": "Plicuri",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "86",
-          "name": " Milion metri patrati spatiu locativ "
-        },
-        "relatedLot": "3"
-      },
-      {
-        "id": "1",
-        "description": "",
-        "classification": {
-          "id": "30199220-8",
-          "description": "Cărţi poştale neilustrate",
-          "scheme": "CPV"
-        },
-        "additionalClassifications": [
-          {
-            "id": "AB06-7",
-            "description": "Plastic",
-            "scheme": "CPVS"
-          }
-        ],
-        "quantity": 1.00,
-        "unit": {
-          "id": "86",
-          "name": " Milion metri patrati spatiu locativ "
-        },
-        "relatedLot": "1"
-      }
-    ],
-    "documents": [
-      {
-        "documentType": "tenderNotice",
-        "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
-        "title": "doc1"
-      }
-    ],
+    "items": null,
+    "lots": null,
     "classification": {
-      "id": "30199200-2",
-      "description": "Plicuri, cărţi poştale şi cărţi poştale neilustrate",
-      "scheme": "CPV"
+      "id": "30100000-0",
+      "scheme": "CPV",
+      "description": "Maşini de procesare de text"
     },
     "submissionMethodRationale": [
       "submissionMethodRationale"

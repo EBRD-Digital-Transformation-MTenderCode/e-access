@@ -87,13 +87,13 @@ data class TenderPnCreate @JsonCreator constructor(
         @field:Valid @field:NotNull
         val procuringEntity: OrganizationReference,
 
-        @field:Valid @field:NotEmpty
+        @field:Valid
         val lots: List<LotPnCreate>?,
 
-        @field:Valid @field:NotEmpty
+        @field:Valid
         val items: List<ItemPnCreate>?,
 
-        @field:Valid @field:NotEmpty
+        @field:Valid
         val documents: List<Document>?
 )
 

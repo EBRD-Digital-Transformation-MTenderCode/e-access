@@ -53,13 +53,13 @@ data class TenderPnUpdate @JsonCreator constructor(
         @field:Valid @field:NotNull
         val tenderPeriod: PeriodPnUpdate,
 
-        @field:Valid @field:NotEmpty
+        @field:Valid
         val lots: List<LotPnUpdate>?,
 
-        @field:Valid @field:NotEmpty
+        @field:Valid
         val items: List<ItemPnUpdate>?,
 
-        @field:Valid @field:NotEmpty
+        @field:Valid
         val documents: List<Document>?
 )
 
