@@ -10,7 +10,6 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.pn.ItemPnUpdate
 import com.procurement.access.model.dto.pn.LotPnUpdate
 import com.procurement.access.model.dto.pn.PnUpdate
-import com.procurement.access.model.dto.pn.TenderPnUpdate
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -63,7 +62,11 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             updatedItems = getItems(itemsDto)
 
             val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
-            val newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(pnDto.tender, lotsDtoId - lotsDbId)
+            val newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(
+                    pnDto.tender.lots,
+                    updatedItems,
+                    pnDto.tender.documents,
+                    lotsDtoId - lotsDbId)
             val canceledLotsId = lotsDbId - lotsDtoId
             activeLots = getActiveLots(lotsDto, tenderProcess.tender.lots, newLotsId)
             canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
@@ -127,7 +130,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         val canceledLots = mutableListOf<Lot>()
         lotsTender.asSequence()
                 .filter { it.id in canceledLotsId }
-                .forEach {lot ->
+                .forEach { lot ->
                     lot.status = TenderStatus.CANCELLED
                     lot.statusDetails = TenderStatusDetails.EMPTY
                     canceledLots.add(lot)
@@ -163,17 +166,22 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                     .forEach { it.id = generationService.generateTimeBasedUUID().toString() }
     }
 
-    private fun getNewLotsIdAndSetItemsAndDocumentsRelatedLots(tenderDto: TenderPnUpdate, newLotsId: Set<String>): Set<String> {
+    private fun getNewLotsIdAndSetItemsAndDocumentsRelatedLots(lotsDto: List<LotPnUpdate>?,
+                                                               items: List<Item>?,
+                                                               documentsDto: List<Document>?,
+                                                               newLotsId: Set<String>): Set<String> {
         val lotIds = mutableSetOf<String>()
         if (newLotsId.isNotEmpty()) {
-            tenderDto.lots?.asSequence()
+            lotsDto?.asSequence()
                     ?.filter { it.id in newLotsId }
                     ?.forEach { lot ->
                         val id = generationService.generateTimeBasedUUID().toString()
-                        tenderDto.items?.asSequence()
-                                ?.filter { it.relatedLot == lot.id }
-                                ?.forEach { it.relatedLot = id }
-                        tenderDto.documents?.forEach { document ->
+                        items?.forEach { item ->
+                            if (item.relatedLot == lot.id) {
+                                item.relatedLot = id
+                            }
+                        }
+                        documentsDto?.forEach { document ->
                             document.relatedLots?.let { relatedLots ->
                                 if (relatedLots.contains(lot.id)) {
                                     relatedLots.remove(lot.id)
