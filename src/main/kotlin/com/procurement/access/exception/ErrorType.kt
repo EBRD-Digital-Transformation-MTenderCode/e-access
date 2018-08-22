@@ -32,6 +32,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     BID_VALUE_MORE_THAN_SUM_LOT("10.18", "Bid amount is more than amount of lot!"),
     INVALID_LOT_STATUS("10.19", "Related lot must be in status active and status details empty."),
     LOT_NOT_FOUND("10.20", "Lot not found"),
+    INVALID_TENDER_STATUS("10.21", "Tender in 'UNSUCCESSFUL' status."),
     SUSPENDED("20.01", "Tender is suspended."),
     CONTEXT_PARAM_NOT_FOUND("20.01", "Context parameter not found.");
 }
