@@ -62,6 +62,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
             val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
                     ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
             val process = toObject(TenderProcess::class.java, entity.jsonData)
+            validateTenderStatus(process)
             return validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
         } else if ((operation == CREATE_CN_ON_PN) || (operation == CREATE_PIN_ON_PN)) {
             val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
@@ -69,6 +70,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
             val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
                     ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
             val process = toObject(TenderProcess::class.java, entity.jsonData)
+            validateTenderStatus(process)
             return if (process.tender.items.isEmpty()) {
                 validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
             } else {
@@ -76,6 +78,10 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
             }
         }
         return getNegativeResponse()
+    }
+
+    private fun validateTenderStatus(process: TenderProcess) {
+        if(process.tender.status == TenderStatus.UNSUCCESSFUL) throw ErrorException(ErrorType.INVALID_TENDER_STATUS)
     }
 
     override fun checkToken(cm: CommandMessage): ResponseDto {
