@@ -46,14 +46,14 @@ class LotsController(private val lotsService: LotsService) {
     @PostMapping("/updateStatusDetailsById")
     fun updateStatusDetailsById(@RequestParam("cpid") cpId: String,
                                 @RequestParam("stage") stage: String,
-                                @RequestParam("statusDetails") statusDetails: String,
+                                @RequestParam("lotAwarded") lotAwarded: Boolean,
                                 @RequestParam("lotId") lotId: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 lotsService.updateStatusDetailsById(
                         cpId = cpId,
                         stage = stage,
                         lotId = lotId,
-                        statusDetails = TenderStatusDetails.fromValue(statusDetails)),
+                        lotAwarded = lotAwarded),
                 HttpStatus.OK)
     }
 

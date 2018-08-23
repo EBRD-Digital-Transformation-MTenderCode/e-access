@@ -21,7 +21,7 @@ interface LotsService {
 
     fun updateStatusDetails(cpId: String, stage: String, tenderStatusDetails: TenderStatusDetails, lotsDto: LotsRequestDto): ResponseDto
 
-    fun updateStatusDetailsById(cpId: String, stage: String, lotId: String, statusDetails: TenderStatusDetails): ResponseDto
+    fun updateStatusDetailsById(cpId: String, stage: String, lotId: String, lotAwarded: Boolean): ResponseDto
 
     fun checkStatusDetails(cpId: String, stage: String): ResponseDto
 
@@ -96,9 +96,14 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     override fun updateStatusDetailsById(cpId: String,
                                          stage: String,
                                          lotId: String,
-                                         statusDetails: TenderStatusDetails): ResponseDto {
+                                         lotAwarded: Boolean): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
+        var statusDetails = if (lotAwarded) {
+            TenderStatusDetails.AWARDED
+        } else {
+            TenderStatusDetails.EMPTY
+        }
         val updatedLot = setLotsStatusDetails(process.tender.lots, lotId, statusDetails)
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
