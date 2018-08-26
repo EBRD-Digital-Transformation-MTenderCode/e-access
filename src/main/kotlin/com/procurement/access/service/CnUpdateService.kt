@@ -47,24 +47,31 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         validateTenderStatus(tenderProcess)
-        //dto lots validation
-        checkLotsCurrency(cnDto, tenderProcess.tender.value.currency)
+
+        val activeLots: List<Lot>
+        val canceledLots: List<Lot>
+        val updatedItems: List<Item>
+        val lotsDto = cnDto.tender.lots
+        val itemsDto = cnDto.tender.items
+        val documentsDto = cnDto.tender.documents
+        checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
-        validateRelatedLots(cnDto.tender)
-        //new items
-        val itemsDbId = tenderProcess.tender.items.asSequence().map { it.id }.toSet()
-        val itemsDtoId = cnDto.tender.items.asSequence().map { it.id }.toSet()
-        val newItemsId = itemsDtoId - itemsDbId
-        setNewItemsId(cnDto.tender.items, newItemsId)
-        //new, old lots
-        val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
-        val newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(cnDto.tender, lotsDtoId - lotsDbId)
+        val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
+        var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId
-
-        val activeLots = getActiveLots(cnDto.tender.lots, tenderProcess.tender.lots, newLotsId)
-        val canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
-
+        newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(cnDto.tender, newLotsId)
+        val lotIds = lotsDbId + newLotsId
+        validateRelatedLots(lotIds = lotIds, items = itemsDto, documents = documentsDto)
+        /*activeLots*/
+        activeLots = getActiveLots(lotsDto = cnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
+        setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
+        setTenderValueByActiveLots(tenderProcess.tender, activeLots)
+        /*canceledLots*/
+        canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
+        /*updatedItems*/
+        updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
+        /*tenderProcess*/
         tenderProcess.planning.apply {
             rationale = cnDto.planning.rationale
             budget.description = cnDto.planning.budget.description
@@ -74,22 +81,26 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
             description = cnDto.tender.description
             procurementMethodRationale = cnDto.tender.procurementMethodRationale
             procurementMethodAdditionalInfo = cnDto.tender.procurementMethodAdditionalInfo
-            items = setItems(cnDto.tender.items)
+            items = updatedItems
             lots = activeLots + canceledLots
-            documents = cnDto.tender.documents
+            documents = documentsDto
         }
-        setContractPeriod(tenderProcess.tender, tenderProcess.planning.budget, activeLots)
-        setTenderValueByActiveLots(tenderProcess.tender, activeLots)
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun checkLotsCurrency(lotsDto: List<LotCnUpdate>, budgetCurrency: String) {
+        lotsDto.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
+            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
+        }
     }
 
     private fun validateTenderStatus(tenderProcess: TenderProcess) {
         if (tenderProcess.tender.statusDetails == SUSPENDED) throw ErrorException(ErrorType.SUSPENDED)
     }
 
-    private fun setContractPeriod(tender: Tender, budget: Budget, activeLots: List<Lot>) {
+    private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
         val startDate: LocalDateTime = activeLots.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = activeLots.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
         budget.budgetBreakdown.forEach { bb ->
@@ -107,36 +118,30 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         tender.value.amount = totalAmount
     }
 
-    private fun getActiveLots(lotsDto: List<LotCnUpdate>, lotsTender: List<Lot>, newLotsId: Set<String>): List<Lot> {
+    private fun getActiveLots(lotsDto: List<LotCnUpdate>, lotsTender: List<Lot> = listOf(), newLotsId: Set<String>): List<Lot> {
         val activeLots = mutableListOf<Lot>()
         lotsDto.forEach { lotDto ->
             if (lotDto.id in newLotsId) {
                 activeLots.add(convertDtoLotToLot(lotDto))
             } else {
                 val updatableTenderLot = lotsTender.asSequence().first { it.id == lotDto.id }
-                activeLots.add(updateLot(updatableTenderLot, lotDto))
+                updatableTenderLot.updateLot(lotDto)
+                activeLots.add(updatableTenderLot)
             }
         }
         return activeLots
     }
 
     private fun getCanceledLots(lotsTender: List<Lot>, canceledLotsId: Set<String>): List<Lot> {
-        val canceledLots = lotsTender.asSequence().filter { it.id in canceledLotsId }.toList()
-        canceledLots.asSequence().forEach {
-            it.status = TenderStatus.CANCELLED
-            it.statusDetails = TenderStatusDetails.EMPTY
-        }
+        val canceledLots = mutableListOf<Lot>()
+        lotsTender.asSequence()
+                .filter { it.id in canceledLotsId }
+                .forEach { lot ->
+                    lot.status = TenderStatus.CANCELLED
+                    lot.statusDetails = TenderStatusDetails.EMPTY
+                    canceledLots.add(lot)
+                }
         return canceledLots
-    }
-
-    private fun setItems(itemsDto: List<ItemCnUpdate>): List<Item> {
-        return itemsDto.asSequence().map { convertDtoItemToItem(it) }.toList()
-    }
-
-    private fun checkLotsCurrency(cn: CnUpdate, budgetCurrency: String) {
-        cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
-            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
-        }
     }
 
     private fun checkLotsContractPeriod(cn: CnUpdate) {
@@ -150,52 +155,37 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun setNewItemsId(itemsDto: List<ItemCnUpdate>, newItemsId: Set<String?>) {
-        if (newItemsId.isNotEmpty())
-            itemsDto.asSequence()
-                    .filter { it.id in newItemsId }
-                    .forEach { it.id = generationService.generateTimeBasedUUID().toString() }
+    private fun getNewLotsIdAndSetItemsAndDocumentsRelatedLots(tender: TenderCnUpdate, newLotsId: Set<String>): Set<String> {
+        val newLotsIdSet = mutableSetOf<String>()
+        tender.lots.asSequence()
+                .filter { it.id in newLotsId }
+                .forEach { lot ->
+                    val id = generationService.getTimeBasedUUID()
+                    tender.items.asSequence()
+                            .filter { it.relatedLot == lot.id }
+                            .forEach { it.relatedLot = id }
+                    tender.documents.asSequence()
+                            .filter { it.relatedLots != null }
+                            .filter { it.relatedLots!!.contains(lot.id) }
+                            .forEach { it.relatedLots!!.minus(lot.id).plus(id) }
+                    lot.id = id
+                    newLotsIdSet.add(id)
+                }
+        return newLotsIdSet
     }
 
-    private fun getNewLotsIdAndSetItemsAndDocumentsRelatedLots(tenderDto: TenderCnUpdate, newLotsId: Set<String>):
-            Set<String> {
-        val lotIds = mutableSetOf<String>()
-        if (newLotsId.isNotEmpty()) {
-            tenderDto.lots.asSequence()
-                    .filter { it.id in newLotsId }
-                    .forEach { lot ->
-                        val id = generationService.generateTimeBasedUUID().toString()
-                        tenderDto.items.asSequence()
-                                .filter { it.relatedLot == lot.id }
-                                .forEach { it.relatedLot = id }
-                        tenderDto.documents.forEach { document ->
-                            document.relatedLots?.let { relatedLots ->
-                                if (relatedLots.contains(lot.id)) {
-                                    relatedLots.remove(lot.id)
-                                    relatedLots.add(id)
-                                }
-                            }
-                        }
-                        lot.id = id
-                        lotIds.add(id)
-                    }
-        }
-        return lotIds
-    }
-
-    private fun validateRelatedLots(tender: TenderCnUpdate) {
-        val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
-        val lotsFromDocuments = tender.documents.asSequence()
+    private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemCnUpdate>, documents: List<Document>) {
+        val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotsFromItems.size != lotIds.size) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        val lotsFromDocuments = documents.asSequence()
                 .filter { it.relatedLots != null }
-                .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+                .flatMap { it.relatedLots!!.asSequence() }
+                .toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (lotsFromDocuments.size > lotsFromCn.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
-            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (lotsFromDocuments.size > lotIds.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
         }
-        val lotsFromItems = tender.items.asSequence()
-                .map { it.relatedLot }.toHashSet()
-        if (lotsFromItems.size != lotsFromCn.size) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
-        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
     }
 
     private fun convertDtoLotToLot(lotDto: LotCnUpdate): Lot {
@@ -215,33 +205,24 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         )
     }
 
-    private fun updateLot(lotTender: Lot, lotDto: LotCnUpdate): Lot {
-        return Lot(
-                id = lotDto.id,
-                title = lotDto.title,
-                description = lotDto.description,
-                status = ACTIVE,
-                statusDetails = EMPTY,
-                value = lotTender.value,
-                options = listOf(Option(false)),
-                recurrentProcurement = listOf(RecurrentProcurement(false)),
-                renewals = listOf(Renewal(false)),
-                variants = listOf(Variant(false)),
-                contractPeriod = lotDto.contractPeriod,
-                placeOfPerformance = lotDto.placeOfPerformance
-        )
+    private fun Lot.updateLot(lotDto: LotCnUpdate) {
+        this.title = lotDto.title
+        this.description = lotDto.description
+        this.contractPeriod = lotDto.contractPeriod
+        this.placeOfPerformance = lotDto.placeOfPerformance
     }
 
-    private fun convertDtoItemToItem(itemDto: ItemCnUpdate): Item {
-        return Item(
-                id = itemDto.id,
-                description = itemDto.description,
-                classification = itemDto.classification,
-                additionalClassifications = itemDto.additionalClassifications,
-                quantity = itemDto.quantity,
-                unit = itemDto.unit,
-                relatedLot = itemDto.relatedLot
-        )
+    private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemCnUpdate>): List<Item> {
+        itemsTender.forEach { item ->
+            val itemDto = itemsDto.asSequence().first { it.id == item.id }
+            item.updateItem(itemDto)
+        }
+        return itemsTender
+    }
+
+    private fun Item.updateItem(itemDto: ItemCnUpdate) {
+        this.description = itemDto.description
+        this.relatedLot = itemDto.relatedLot
     }
 
     private fun getEntity(tp: TenderProcess,

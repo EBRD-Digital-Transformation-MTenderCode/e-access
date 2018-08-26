@@ -15,6 +15,10 @@ interface GenerationService {
 
     fun generateTimeBasedUUID(): UUID
 
+    fun getRandomUUID(): String
+
+    fun getTimeBasedUUID(): String
+
     fun generateOrganizationId(organizationReference: OrganizationReference): String
 }
 
@@ -31,6 +35,14 @@ class GenerationServiceImpl(private val ocdsProperties: OCDSProperties) : Genera
 
     override fun generateTimeBasedUUID(): UUID {
         return UUIDs.timeBased()
+    }
+
+    override fun getRandomUUID(): String {
+        return generateRandomUUID().toString()
+    }
+
+    override fun getTimeBasedUUID(): String {
+        return generateTimeBasedUUID().toString()
     }
 
     override fun generateOrganizationId(organizationReference: OrganizationReference): String {

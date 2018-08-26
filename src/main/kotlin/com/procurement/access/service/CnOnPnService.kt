@@ -50,21 +50,24 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             checkLotsCurrency(cnDto, tenderProcess.planning.budget.amount.currency)
             checkLotsContractPeriod(cnDto)
             setItemsId(cnDto.tender)
+            validateRelatedLots(cnDto.tender)
             setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender)
             tenderProcess.tender.apply {
-                status = TenderStatus.ACTIVE
-                statusDetails = TenderStatusDetails.EMPTY
                 lots = setLots(cnDto.tender.lots)
                 items = setItems(cnDto.tender.items)
                 cnDto.tender.classification?.let { classification = it }
                 value = getValueFromLots(cnDto.tender.lots, tenderProcess.planning.budget.amount)
                 contractPeriod = setContractPeriod(cnDto.tender.lots, tenderProcess.planning.budget)
-                awardCriteria = AwardCriteria.PRICE_ONLY
-                additionalProcurementCategories = null
-                tenderPeriod = null
             }
-            tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         }
+        tenderProcess.tender.apply {
+            status = TenderStatus.ACTIVE
+            statusDetails = TenderStatusDetails.EMPTY
+            awardCriteria = AwardCriteria.PRICE_ONLY
+            additionalProcurementCategories = null
+            tenderPeriod = null
+        }
+        tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
     }
 
@@ -90,13 +93,12 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setItemsId(tender: TenderCnUpdate) {
-        tender.items.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
+        tender.items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnUpdate) {
-        validateRelatedLots(tender)
-        tender.lots.forEach { lot ->
-            val id = generationService.generateTimeBasedUUID().toString()
+         tender.lots.forEach { lot ->
+            val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }
                     .forEach { it.relatedLot = id }

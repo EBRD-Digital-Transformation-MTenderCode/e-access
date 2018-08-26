@@ -126,22 +126,29 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setItemsId(tender: TenderPnCreate) {
-        tender.items?.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
+        tender.items?.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderPnCreate) {
-        tender.lots?.forEach { lot ->
-            val id = generationService.generateTimeBasedUUID().toString()
-            tender.items?.asSequence()
-                    ?.filter { it.relatedLot == lot.id }
-                    ?.forEach { it.relatedLot = id }
-            tender.documents?.asSequence()
-                    ?.filter { it.relatedLots != null }
-                    ?.filter { it.relatedLots!!.contains(lot.id) }
-                    ?.forEach { it.relatedLots!!.minus(lot.id).plus(id) }
-            lot.id = id
+        tender.lots?.let { lots ->
+            lots.forEach { lot ->
+                val id = generationService.getTimeBasedUUID()
+                tender.items?.let { items ->
+                    items.asSequence()
+                            .filter { it.relatedLot == lot.id }
+                            .forEach { it.relatedLot = id }
+                }
+                tender.documents?.let { documents ->
+                    documents.asSequence()
+                            .filter { it.relatedLots != null }
+                            .filter { it.relatedLots!!.contains(lot.id) }
+                            .forEach { it.relatedLots!!.minus(lot.id).plus(id) }
+                }
+                lot.id = id
+            }
         }
     }
+
 
     private fun getPmd(pmd: String): ProcurementMethod {
         return when (pmd) {

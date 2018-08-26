@@ -16,7 +16,9 @@ data class CheckItemsRs @JsonCreator constructor(
 
         val mdmValidation: Boolean,
 
-        val tender: TenderCheck?
+        val itemsAdd: Boolean? = null,
+
+        val tender: TenderCheck? = null
 )
 
 data class TenderCheck @JsonCreator constructor(
@@ -25,6 +27,8 @@ data class TenderCheck @JsonCreator constructor(
 )
 
 data class ItemCheck @JsonCreator constructor(
+
+        val id: String,
 
         val classification: ClassificationCheck
 )

@@ -5,11 +5,8 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.ocds.Operation
+import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Operation.*
-import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.validation.*
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -51,11 +48,33 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
     override fun checkItems(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckItemsRq::class.java, cm.data)
         val operationType = cm.context.operationType ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-        val commonChars = getCommonChars(checkDto.items, 3, 7)
-        val commonClass = commonChars.padEnd(8, '0')
         val operation = Operation.fromValue(operationType)
-        if ((operation == CREATE_CN) || (operation == CREATE_PN) || (operation == CREATE_PIN)) {
-            return validateItemsAndGetResponse(checkDto, commonClass)
+        if ((operation == CREATE_CN_ON_PN) || (operation == CREATE_PIN_ON_PN)) {
+
+            val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+            val stage = cm.context.prevStage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
+                    ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+            val process = toObject(TenderProcess::class.java, entity.jsonData)
+            validateTenderStatus(process)
+            if (process.tender.items.isEmpty()) {
+                checkItemCodes(checkDto.items, 3)
+                val classificationClass = calculateClassificationClass(checkDto)
+                checkClassificationClass(process.tender.classification.id, classificationClass, 3)
+                return ResponseDto(data = CheckItemsRs(
+                        mdmValidation = true,
+                        tender = TenderCheck(classification = ClassificationCheck(id = classificationClass))))
+            } else {
+                checkItemsSizeAndIds(process.tender.items, checkDto.items)
+                return ResponseDto(data = CheckItemsRs(
+                        mdmValidation = false))
+            }
+        } else if ((operation == CREATE_CN) || (operation == CREATE_PN) || (operation == CREATE_PIN)) {
+            checkItemCodes(checkDto.items, 3)
+            val classificationClass = calculateClassificationClass(checkDto)
+            return ResponseDto(data = CheckItemsRs(
+                    mdmValidation = true,
+                    tender = TenderCheck(classification = ClassificationCheck(id = classificationClass))))
         } else if ((operation == UPDATE_CN) || (operation == UPDATE_PN)) {
             val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
             val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
@@ -63,25 +82,33 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
                     ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
             val process = toObject(TenderProcess::class.java, entity.jsonData)
             validateTenderStatus(process)
-            return validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
-        } else if ((operation == CREATE_CN_ON_PN) || (operation == CREATE_PIN_ON_PN)) {
-            val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-            val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
-            val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
-                    ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-            val process = toObject(TenderProcess::class.java, entity.jsonData)
-            validateTenderStatus(process)
-            return if (process.tender.items.isEmpty()) {
-                validateItemsAndCommonClassAndGetResponse(checkDto, process, commonClass)
+            if (process.tender.items.isEmpty()) {
+                checkItemCodes(checkDto.items, 3)
+                val classificationClass = calculateClassificationClass(checkDto)
+                checkClassificationClass(process.tender.classification.id, classificationClass, 3)
+                return ResponseDto(data = CheckItemsRs(
+                        mdmValidation = true,
+                        itemsAdd = true,
+                        tender = TenderCheck(classification = ClassificationCheck(id = classificationClass))))
             } else {
-                getNegativeResponse()
+                checkItemsSizeAndIds(process.tender.items, checkDto.items)
+                return ResponseDto(data = CheckItemsRs(
+                        mdmValidation = true,
+                        itemsAdd = false))
             }
-        }
-        return getNegativeResponse()
+        } else
+            return getNegativeResponse()
+    }
+
+    private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: HashSet<ItemCheck>) {
+        if (items.size != itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
+        val itemsIds = items.map { it.id }.toSet()
+        val itemsDtoIds = itemsDto.map { it.id }.toSet()
+        if (!itemsIds.containsAll(itemsDtoIds)) throw ErrorException(ErrorType.INVALID_ITEMS)
     }
 
     private fun validateTenderStatus(process: TenderProcess) {
-        if(process.tender.status == TenderStatus.UNSUCCESSFUL) throw ErrorException(ErrorType.INVALID_TENDER_STATUS)
+        if (process.tender.status == TenderStatus.UNSUCCESSFUL) throw ErrorException(ErrorType.INVALID_TENDER_STATUS)
     }
 
     override fun checkToken(cm: CommandMessage): ResponseDto {
@@ -93,14 +120,15 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         return ResponseDto(data = "ok")
     }
 
-    private fun validateItemsAndGetResponse(checkDto: CheckItemsRq, commonClass: String): ResponseDto {
-        checkItemCodes(checkDto.items, 3)
-        return ResponseDto(data = CheckItemsRs(mdmValidation = true, tender = TenderCheck(classification = ClassificationCheck(id = commonClass))))
+    private fun calculateClassificationClass(checkDto: CheckItemsRq): String {
+        val commonChars = getCommonChars(checkDto.items, 3, 7)
+        return commonChars.padEnd(8, '0')
     }
+
 
     private fun validateItemsAndCommonClassAndGetResponse(checkDto: CheckItemsRq, process: TenderProcess, commonClass: String): ResponseDto {
         checkItemCodes(checkDto.items, 3)
-        checkCommonClass(process.tender.classification.id, commonClass, 3)
+        checkClassificationClass(process.tender.classification.id, commonClass, 3)
         return ResponseDto(data = CheckItemsRs(mdmValidation = true, tender = TenderCheck(classification = ClassificationCheck(id = commonClass))))
     }
 
@@ -108,7 +136,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         return ResponseDto(data = CheckItemsRs(mdmValidation = false, tender = null))
     }
 
-    private fun checkCommonClass(classificationIdDB: String, commonClass: String, charCount: Int) {
+    private fun checkClassificationClass(classificationIdDB: String, commonClass: String, charCount: Int) {
         if (classificationIdDB.take(charCount) != commonClass.take(charCount))
             throw ErrorException(ErrorType.INVALID_ITEMS)
     }

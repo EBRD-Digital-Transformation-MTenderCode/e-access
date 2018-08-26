@@ -122,13 +122,13 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setItemsId(tender: TenderCnCreate) {
-        tender.items.forEach { it.id = generationService.generateTimeBasedUUID().toString() }
+        tender.items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
         validateRelatedLots(tender)
         tender.lots.forEach { lot ->
-            val id = generationService.generateTimeBasedUUID().toString()
+            val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }
                     .forEach { it.relatedLot = id }

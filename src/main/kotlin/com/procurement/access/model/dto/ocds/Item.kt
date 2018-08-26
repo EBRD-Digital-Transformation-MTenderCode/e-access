@@ -11,7 +11,7 @@ data class Item @JsonCreator constructor(
 
         var id: String?,
 
-        val description: String?,
+        var description: String?,
 
         @field:Valid
         val classification: Classification,
