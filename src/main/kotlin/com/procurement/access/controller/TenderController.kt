@@ -63,4 +63,36 @@ class TenderController(private val tenderService: TenderService) {
                 HttpStatus.OK)
     }
 
+    @PostMapping("/prepareCancellation")
+    fun prepareCancellation(@RequestParam("cpid") cpId: String,
+                            @RequestParam("stage") stage: String,
+                            @RequestParam("owner") owner: String,
+                            @RequestParam("token") token: String,
+                            @RequestParam("operationType") operationType: String): ResponseEntity<ResponseDto> {
+        return ResponseEntity(
+                tenderService.prepareCancellation(
+                        cpId = cpId,
+                        stage = stage,
+                        owner = owner,
+                        token = token,
+                        operationType = operationType),
+                HttpStatus.OK)
+    }
+
+    @PostMapping("/tenderCancellation")
+    fun tenderCancellation(@RequestParam("cpid") cpId: String,
+                           @RequestParam("stage") stage: String,
+                           @RequestParam("owner") owner: String,
+                           @RequestParam("token") token: String,
+                           @RequestParam("operationType") operationType: String): ResponseEntity<ResponseDto> {
+        return ResponseEntity(
+                tenderService.tenderCancellation(
+                        cpId = cpId,
+                        stage = stage,
+                        owner = owner,
+                        token = token,
+                        operationType = operationType),
+                HttpStatus.OK)
+    }
+
 }

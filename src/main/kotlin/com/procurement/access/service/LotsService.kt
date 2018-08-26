@@ -170,7 +170,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
 
     private fun setLotsStatusDetails(lots: List<Lot>?, lotId: String, lotStatusDetails: TenderStatusDetails): Lot {
         return lots?.asSequence()
-                ?.filter({ it.id == lotId })
+                ?.filter{ it.id == lotId }
                 ?.first()
                 ?.apply { statusDetails = lotStatusDetails }
                 ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)

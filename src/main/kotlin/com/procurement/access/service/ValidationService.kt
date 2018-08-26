@@ -108,7 +108,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
     }
 
     private fun validateTenderStatus(process: TenderProcess) {
-        if (process.tender.status == TenderStatus.UNSUCCESSFUL) throw ErrorException(ErrorType.INVALID_TENDER_STATUS)
+        if (process.tender.status == TenderStatus.UNSUCCESSFUL) throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
     }
 
     override fun checkToken(cm: CommandMessage): ResponseDto {
