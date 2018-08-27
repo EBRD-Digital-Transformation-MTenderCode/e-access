@@ -26,7 +26,7 @@ interface TenderService {
 
     fun updateStatusDetails(cpId: String, stage: String, statusDetails: TenderStatusDetails): ResponseDto
 
-    fun setSuspended(cpId: String, stage: String, suspended: Boolean?): ResponseDto
+    fun setSuspended(cpId: String, stage: String, suspended: Boolean): ResponseDto
 
     fun setUnsuccessful(cpId: String, stage: String): ResponseDto
 
@@ -60,13 +60,17 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     override fun setSuspended(cpId: String,
                               stage: String,
-                              suspended: Boolean?): ResponseDto {
+                              suspended: Boolean): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        if (suspended!!) {
+        if (suspended) {
             process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         } else {
-            process.tender.statusDetails = TenderStatusDetails.EMPTY
+            if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
+                process.tender.statusDetails = TenderStatusDetails.EMPTY
+            } else {
+                return ResponseDto(data = TenderStatusResponseDto(null, null))
+             }
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
