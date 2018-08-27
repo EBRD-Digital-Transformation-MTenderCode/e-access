@@ -108,7 +108,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = CancellationResponseDto(
-                tender = TenderCancellation(statusDetails = process.tender.statusDetails.value()),
+                tender = TenderCancellation(statusDetails = process.tender.statusDetails),
                 lots = lotsResponseDto))
     }
 
@@ -133,8 +133,8 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = CancellationResponseDto(
                 tender = TenderCancellation(
-                        status = process.tender.status.value(),
-                        statusDetails = process.tender.statusDetails.value()),
+                        status = process.tender.status,
+                        statusDetails = process.tender.statusDetails),
                 lots = lotsResponseDto))
     }
 
@@ -208,8 +208,8 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     private fun addLotToLotsResponseDto(lotsResponseDto: MutableList<LotCancellation>, lot: Lot) {
         lotsResponseDto.add(LotCancellation(
                 id = lot.id,
-                status = lot.status?.value(),
-                statusDetails = lot.statusDetails?.value()))
+                status = lot.status,
+                statusDetails = lot.statusDetails))
     }
 
     private fun getEntity(process: TenderProcess,

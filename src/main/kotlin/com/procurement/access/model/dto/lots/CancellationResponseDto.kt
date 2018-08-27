@@ -2,6 +2,8 @@ package com.procurement.access.model.dto.lots
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.procurement.access.model.dto.ocds.TenderStatus
+import com.procurement.access.model.dto.ocds.TenderStatusDetails
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CancellationResponseDto @JsonCreator constructor(
@@ -16,16 +18,16 @@ data class LotCancellation @JsonCreator constructor(
 
         val id: String,
 
-        var status: String? = null,
+        var status: TenderStatus? = null,
 
-        var statusDetails: String?
+        var statusDetails: TenderStatusDetails?
 )
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class TenderCancellation @JsonCreator constructor(
 
-        var status: String? = null,
+        var status: TenderStatus? = null,
 
-        var statusDetails: String?
+        var statusDetails: TenderStatusDetails?
 )
