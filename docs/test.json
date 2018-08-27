@@ -1,52 +1,14 @@
 {
   "planning": {
+    "rationale": "rationale_update",
     "budget": {
-      "amount": {
-        "amount": 1700.00,
-        "currency": "MDL"
-      },
-      "isEuropeanUnionFunded": true,
+      "description": "description_update",
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1534501687212-FS-1534501697441",
-          "description": "Hello world!",
+          "id": "ocds-t1s2t3-MD-1534845582864-FS-1534846045276",
           "amount": {
-            "amount": 900.00,
+            "amount": 900,
             "currency": "MDL"
-          },
-          "period": {
-            "startDate": "2018-05-25T21:00:00Z",
-            "endDate": "2018-12-26T21:00:00Z"
-          },
-          "sourceParty": {
-            "id": "MD-IDNO-Enotis",
-            "name": "Edward-Company2"
-          },
-          "europeanUnionFunding": {
-            "projectName": "PJNAME",
-            "projectIdentifier": "PJINDET",
-            "uri": "uri4"
-          }
-        },
-        {
-          "id": "ocds-t1s2t3-MD-1534501687212-FS-1534501724872",
-          "description": "Hello world!",
-          "amount": {
-            "amount": 800.00,
-            "currency": "MDL"
-          },
-          "period": {
-            "startDate": "2018-05-25T22:00:00Z",
-            "endDate": "2018-12-27T21:00:00Z"
-          },
-          "sourceParty": {
-            "id": "MD-IDNO-Enotis",
-            "name": "Edward-Company2"
-          },
-          "europeanUnionFunding": {
-            "projectName": "PJNAME",
-            "projectIdentifier": "PJINDET",
-            "uri": "uri4"
           }
         }
       ]
@@ -55,36 +17,38 @@
   "tender": {
     "title": "gav",
     "description": "gav gav",
-    "legalBasis": "DIRECTIVE_2014_24_EU",
+    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "procurementMethodRationale": "pmr_update",
+    "procurementMethodAdditionalInfo": "pmai_update",
     "tenderPeriod": {
-      "startDate": "2018-07-01T01:01:01Z"
+      "startDate": "2018-04-01T00:00:01Z"
     },
     "procuringEntity": {
-      "name": "Edward-Compan",
+      "name": "Update_company",
       "address": {
-        "streetAddress": "",
+        "streetAddress": "444",
         "addressDetails": {
           "country": {
             "scheme": "iso-alpha2",
             "id": "MD",
             "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org/202/codelists/Country/#id1"
+            "uri": "http://reference.iatistandard.org"
           },
           "region": {
             "scheme": "CUATM",
             "id": "1000000",
             "description": "Anenii Noi",
-            "uri": "www.statistica.md/public/files/Clasificatoare/CUATM_rom.zip"
+            "uri": "http://statistica.md"
           },
           "locality": {
-            "scheme": "CUATM",
+            "scheme": "CUAT",
             "id": "1001000",
-            "description": "or.Anenii Noi"
+            "description": "dgfdfg"
           }
         }
       },
       "identifier": {
-        "id": "gggg",
+        "id": "update_id",
         "scheme": "MD-IDNO",
         "legalName": "fff",
         "uri": "hhh"
@@ -97,19 +61,149 @@
         "url": "hgfhgf"
       }
     },
-    "items": null,
-    "lots": null,
-    "classification": {
-      "id": "30100000-0",
-      "scheme": "CPV",
-      "description": "Maşini de procesare de text"
-    },
+    "lots": [
+      {
+        "id": "1",
+        "title": "lot1",
+        "description": "looot",
+        "value": {
+          "amount": 100.00,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          },
+          "description": null
+        }
+      },
+      {
+        "id": "2",
+        "title": "lot2",
+        "description": "looot",
+        "value": {
+          "amount": 100.00,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          },
+          "description": null
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "e9ff54e1-aa15-11e8-aa44-399c306f4f4e",
+        "classification": {
+          "scheme": "CPV",
+          "description": "ggg",
+          "id": "30199220-8"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "description": "666",
+            "id": "AB06-7"
+          }
+        ],
+        "quantity": 100,
+        "unit": {
+          "id": "86",
+          "name": "square"
+        },
+        "description": "111",
+        "relatedLot": "1"
+      },
+      {
+        "id": "e9ff54e0-aa15-11e8-aa44-399c306f4f4e",
+        "classification": {
+          "scheme": "CPV",
+          "description": "ggg",
+          "id": "30199220-8"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "description": "666",
+            "id": "AB06-7"
+          }
+        ],
+        "quantity": 100,
+        "unit": {
+          "id": "86",
+          "name": "square"
+        },
+        "description": "111",
+        "relatedLot": "2"
+      }
+    ],
+    "documents": [
+      {
+        "documentType": "tenderNotice",
+        "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
+        "title": "doc1"
+      },
+      {
+        "documentType": "illustration",
+        "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
+        "title": "doc1"
+      }
+    ],
     "submissionMethodRationale": [
       "submissionMethodRationale"
     ],
     "submissionMethodDetails": "submissionMethodDetails",
     "procurementMethodDetails": "test",
-    "eligibilityCriteria": "eligibilityCriteria",
-    "mainProcurementCategory": "goods"
+    "eligibilityCriteria": "eligibilityCriteria"
   }
 }

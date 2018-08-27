@@ -36,11 +36,11 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
 
     override fun updatePn(cpId: String,
-           stage: String,
-           owner: String,
-           token: String,
-           dateTime: LocalDateTime,
-           pnDto: PnUpdate): ResponseDto {
+                          stage: String,
+                          owner: String,
+                          token: String,
+                          dateTime: LocalDateTime,
+                          pnDto: PnUpdate): ResponseDto {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
                 ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
@@ -80,10 +80,10 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             var newLotsId = lotsDtoId - lotsDbId
             val canceledLotsId = lotsDbId - lotsDtoId
             newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(pnDto.tender, newLotsId)
-            val lotIds = lotsDbId + newLotsId
-            validateRelatedLots(lotIds = lotIds, items = itemsDto, documents = documentsDto)
             /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
+            val activeLotsIds = activeLots.asSequence().map { it.id }.toSet()
+            validateRelatedLots(lotIds = activeLotsIds, items = itemsDto, documents = documentsDto)
             setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
             setTenderValueByActiveLots(tenderProcess.tender, activeLots)
             /*canceledLots*/
@@ -134,7 +134,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 ?.filter { it.relatedLots != null }
                 ?.flatMap { it.relatedLots!!.asSequence() }
                 ?.toHashSet()
-        if (lotsFromDocuments != null) {
+        if (lotsFromDocuments != null && lotsFromDocuments.size > 0) {
             if (lotsFromDocuments.size > lotIds.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
             if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
         }
