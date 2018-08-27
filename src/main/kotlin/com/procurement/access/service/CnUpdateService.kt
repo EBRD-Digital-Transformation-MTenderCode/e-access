@@ -61,10 +61,10 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId
         newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(cnDto.tender, newLotsId)
-        val lotIds = lotsDbId + newLotsId
-        validateRelatedLots(lotIds = lotIds, items = itemsDto, documents = documentsDto)
         /*activeLots*/
         activeLots = getActiveLots(lotsDto = cnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
+        val activeLotsIds = activeLots.asSequence().map { it.id }.toSet()
+        validateRelatedLots(lotIds = activeLotsIds, items = itemsDto, documents = documentsDto)
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         /*canceledLots*/
