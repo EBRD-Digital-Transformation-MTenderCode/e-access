@@ -137,7 +137,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
-            "cancelTender" -> { lot: Lot ->
+            "cancelTender", "cancelTenderEv" -> { lot: Lot ->
                 (lot.status == TenderStatus.ACTIVE)
                         && (lot.statusDetails == TenderStatusDetails.EMPTY
                         || lot.statusDetails == TenderStatusDetails.AWARDED)
@@ -155,7 +155,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun getLotStatusPredicateForCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
-            "cancelTender" -> { lot: Lot ->
+            "cancelTender", "cancelTenderEv" -> { lot: Lot ->
                 (lot.status == TenderStatus.ACTIVE) && (lot.statusDetails == TenderStatusDetails.CANCELLED)
             }
             "cancelPlan" -> { lot: Lot ->
@@ -169,7 +169,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun validateTenderStatusForPrepareCancellation(process: TenderProcess, operationType: String) {
         when (operationType) {
-            "cancelTender" -> {
+            "cancelTender", "cancelTenderEv" -> {
                 if (process.tender.status != TenderStatus.ACTIVE)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
                 if (process.tender.statusDetails == TenderStatusDetails.EMPTY)
@@ -186,7 +186,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun validateTenderStatusForCancellation(process: TenderProcess, operationType: String) {
         when (operationType) {
-            "cancelTender" -> {
+            "cancelTender", "cancelTenderEv" -> {
                 if (process.tender.status != TenderStatus.ACTIVE)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
                 if (process.tender.statusDetails == TenderStatusDetails.CANCELLED)
