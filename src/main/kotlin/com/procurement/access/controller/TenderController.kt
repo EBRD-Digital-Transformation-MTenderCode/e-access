@@ -44,7 +44,7 @@ class TenderController(private val tenderService: TenderService) {
     @PostMapping("/setSuspended")
     fun setSuspended(@RequestParam("cpid") cpId: String,
                      @RequestParam("stage") stage: String,
-                     @RequestParam("suspended") suspended: Boolean?): ResponseEntity<ResponseDto> {
+                     @RequestParam("suspended") suspended: Boolean): ResponseEntity<ResponseDto> {
         return ResponseEntity(
                 tenderService.setSuspended(
                         cpId = cpId,
