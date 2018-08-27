@@ -8,7 +8,6 @@ import com.procurement.access.model.dto.cn.TenderStatusResponseDto
 import com.procurement.access.model.dto.lots.CancellationResponseDto
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.LotsUpdateResponseDto
-import com.procurement.access.model.dto.lots.TenderCancellation
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus
@@ -70,7 +69,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                 process.tender.statusDetails = TenderStatusDetails.EMPTY
             } else {
                 return ResponseDto(data = TenderStatusResponseDto(null, null))
-             }
+            }
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
@@ -111,9 +110,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationResponseDto(
-                tender = TenderCancellation(statusDetails = process.tender.statusDetails),
-                lots = lotsResponseDto))
+        return ResponseDto(data = CancellationResponseDto(lots = lotsResponseDto))
     }
 
 
@@ -135,11 +132,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationResponseDto(
-                tender = TenderCancellation(
-                        status = process.tender.status,
-                        statusDetails = process.tender.statusDetails),
-                lots = lotsResponseDto))
+        return ResponseDto(data = CancellationResponseDto(lots = lotsResponseDto))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
