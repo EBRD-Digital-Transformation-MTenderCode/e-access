@@ -184,7 +184,7 @@ enum class ProcurementMethod constructor(private val value: String) {
 
 enum class Scheme constructor(private val value: String) {
     CPV("CPV"),
-    CPVS("CPVs"),
+    CPVS("CPVS"),
     GSIN("GSIN"),
     UNSPSC("UNSPSC"),
     CPC("CPC"),
