@@ -67,7 +67,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             additionalProcurementCategories = null
             tenderPeriod = null
         }
-        tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
+        tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)
     }
 
@@ -183,11 +183,12 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
 
     private fun getEntity(tp: TenderProcess,
                           entity: TenderProcessEntity,
+                          stage: String,
                           dateTime: LocalDateTime): TenderProcessEntity {
         return TenderProcessEntity(
                 cpId = entity.cpId,
                 token = entity.token,
-                stage = entity.stage,
+                stage = stage,
                 owner = entity.owner,
                 createdDate = dateTime.toDate(),
                 jsonData = toJson(tp)
