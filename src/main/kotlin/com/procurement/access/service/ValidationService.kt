@@ -126,14 +126,10 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
 
     private fun calculateClassificationClass(checkDto: CheckItemsRq): String {
         val commonChars = getCommonChars(checkDto.items, 3, 7)
+        if (commonChars.substring(1,1) == "0" || commonChars.substring(2,2) == "0" ){
+            throw ErrorException(ErrorType.INVALID_CPV_CODE)
+        }
         return commonChars.padEnd(8, '0')
-    }
-
-
-    private fun validateItemsAndCommonClassAndGetResponse(checkDto: CheckItemsRq, process: TenderProcess, commonClass: String): ResponseDto {
-        checkItemCodes(checkDto.items, 3)
-        checkClassificationClass(process.tender.classification.id, commonClass, 3)
-        return ResponseDto(data = CheckItemsRs(mdmValidation = true, tender = TenderCheck(classification = ClassificationCheck(id = commonClass))))
     }
 
     private fun getNegativeResponse(): ResponseDto {

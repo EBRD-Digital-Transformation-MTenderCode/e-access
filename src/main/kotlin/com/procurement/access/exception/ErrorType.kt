@@ -34,7 +34,8 @@ enum class ErrorType constructor(val code: String, val message: String) {
     LOT_NOT_FOUND("10.20", "Lot not found"),
     TENDER_IN_UNSUCCESSFUL_STATUS("10.21", "Tender in 'UNSUCCESSFUL' status."),
     INVALID_TENDER_STATUS("10.22", "Invalid Tender status."),
-    INVALID_OPERATION_TYPE("10.22", "Invalid operation type."),
+    INVALID_OPERATION_TYPE("10.23", "Invalid operation type."),
+    INVALID_CPV_CODE("10.24", "Invalid cpv code."),
     SUSPENDED("20.01", "Tender is suspended."),
     CONTEXT_PARAM_NOT_FOUND("20.01", "Context parameter not found.");
 }
