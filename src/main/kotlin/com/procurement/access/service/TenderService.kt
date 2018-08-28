@@ -8,7 +8,6 @@ import com.procurement.access.model.dto.cn.TenderStatusResponseDto
 import com.procurement.access.model.dto.lots.CancellationResponseDto
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.LotsUpdateResponseDto
-import com.procurement.access.model.dto.lots.TenderCancellation
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus
@@ -70,7 +69,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                 process.tender.statusDetails = TenderStatusDetails.EMPTY
             } else {
                 return ResponseDto(data = TenderStatusResponseDto(null, null))
-             }
+            }
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
@@ -111,9 +110,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationResponseDto(
-                tender = TenderCancellation(statusDetails = process.tender.statusDetails),
-                lots = lotsResponseDto))
+        return ResponseDto(data = CancellationResponseDto(lots = lotsResponseDto))
     }
 
 
@@ -135,16 +132,12 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationResponseDto(
-                tender = TenderCancellation(
-                        status = process.tender.status,
-                        statusDetails = process.tender.statusDetails),
-                lots = lotsResponseDto))
+        return ResponseDto(data = CancellationResponseDto(lots = lotsResponseDto))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
-            "cancelTender" -> { lot: Lot ->
+            "cancelTender", "cancelTenderEv" -> { lot: Lot ->
                 (lot.status == TenderStatus.ACTIVE)
                         && (lot.statusDetails == TenderStatusDetails.EMPTY
                         || lot.statusDetails == TenderStatusDetails.AWARDED)
@@ -162,7 +155,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun getLotStatusPredicateForCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
-            "cancelTender" -> { lot: Lot ->
+            "cancelTender", "cancelTenderEv" -> { lot: Lot ->
                 (lot.status == TenderStatus.ACTIVE) && (lot.statusDetails == TenderStatusDetails.CANCELLED)
             }
             "cancelPlan" -> { lot: Lot ->
@@ -176,7 +169,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun validateTenderStatusForPrepareCancellation(process: TenderProcess, operationType: String) {
         when (operationType) {
-            "cancelTender" -> {
+            "cancelTender", "cancelTenderEv" -> {
                 if (process.tender.status != TenderStatus.ACTIVE)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
                 if (process.tender.statusDetails == TenderStatusDetails.EMPTY)
@@ -193,7 +186,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun validateTenderStatusForCancellation(process: TenderProcess, operationType: String) {
         when (operationType) {
-            "cancelTender" -> {
+            "cancelTender", "cancelTenderEv" -> {
                 if (process.tender.status != TenderStatus.ACTIVE)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
                 if (process.tender.statusDetails == TenderStatusDetails.CANCELLED)
