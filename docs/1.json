@@ -1,32 +1,109 @@
 {
+  "ocid": "ocds-t1s2t3-MD-1535558018745",
   "planning": {
-    "rationale": "rationale_update",
     "budget": {
       "description": "description_update",
+      "amount": {
+        "amount": 1700.00,
+        "currency": "MDL"
+      },
+      "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1534845582864-FS-1534846045276",
+          "id": "ocds-t1s2t3-MD-1535448844826-FS-1535448860117",
+          "description": "Hello world!",
           "amount": {
-            "amount": 900,
+            "amount": 900.00,
             "currency": "MDL"
+          },
+          "period": {
+            "startDate": "2018-05-25T22:00:00Z",
+            "endDate": "2018-12-27T21:00:00Z"
+          },
+          "sourceParty": {
+            "id": "MD-IDNO-Enotis",
+            "name": "Edward-Company2"
+          }
+        },
+        {
+          "id": "ocds-t1s2t3-MD-1535448844826-FS-1535448884837",
+          "description": "Hello world!",
+          "amount": {
+            "amount": 800.00,
+            "currency": "MDL"
+          },
+          "period": {
+            "startDate": "2018-05-25T22:00:00Z",
+            "endDate": "2018-12-27T21:00:00Z"
+          },
+          "sourceParty": {
+            "id": "MD-IDNO-Enotis",
+            "name": "Edward-Company2"
           }
         }
       ]
-    }
+    },
+    "rationale": "rationale_update"
   },
   "tender": {
+    "id": "ocds-t1s2t3-MD-1535558018745",
     "title": "gav",
     "description": "gav gav",
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "status": "planning",
+    "statusDetails": "empty",
+    "classification": {
+      "scheme": "CPV",
+      "id": "30199220-8",
+      "description": "Cărţi poştale neilustrate"
+    },
+    "mainProcurementCategory": "goods",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "test",
     "procurementMethodRationale": "pmr_update",
     "procurementMethodAdditionalInfo": "pmai_update",
-    "tenderPeriod": {
-      "startDate": "2018-04-01T00:00:01Z"
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodDetails": "submissionMethodDetails",
+    "submissionMethodRationale": [
+      "submissionMethodRationale"
+    ],
+    "eligibilityCriteria": "eligibilityCriteria",
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
     },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "DIRECTIVE_2014_24_EU",
     "procuringEntity": {
-      "name": "Update_company",
+      "id": "MD-IDNO-gggg",
+      "name": "Edward-Compan",
+      "identifier": {
+        "id": "gggg",
+        "scheme": "MD-IDNO",
+        "legalName": "fff",
+        "uri": "hhh"
+      },
       "address": {
-        "streetAddress": "444",
+        "streetAddress": "",
         "addressDetails": {
           "country": {
             "scheme": "iso-alpha2",
@@ -41,17 +118,12 @@
             "uri": "http://statistica.md"
           },
           "locality": {
-            "scheme": "CUAT",
+            "scheme": "CUATM",
             "id": "1001000",
-            "description": "dgfdfg"
+            "description": "or.Anenii Noi",
+            "uri": "http://statistica.md"
           }
         }
-      },
-      "identifier": {
-        "id": "update_id",
-        "scheme": "MD-IDNO",
-        "legalName": "fff",
-        "uri": "hhh"
       },
       "contactPoint": {
         "name": "hgfh",
@@ -61,15 +133,51 @@
         "url": "hgfhgf"
       }
     },
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "tenderPeriod": {
+      "startDate": "2018-04-01T00:00:01Z"
+    },
+    "value": {
+      "amount": 1700.00,
+      "currency": "MDL"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
     "lots": [
       {
-        "id": "1",
+        "id": "f35f7b20-aba3-11e8-b97d-81d7272ae83b",
         "title": "lot1",
         "description": "looot",
+        "status": "planning",
+        "statusDetails": "empty",
         "value": {
           "amount": 100.00,
           "currency": "MDL"
         },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
         "contractPeriod": {
           "startDate": "2018-11-19T14:45:00Z",
           "endDate": "2018-12-25T14:45:00Z"
@@ -97,8 +205,7 @@
                 "description": "gfg"
               }
             }
-          },
-          "description": null
+          }
         }
       }
     ],
@@ -150,29 +257,18 @@
     ],
     "documents": [
       {
-        "documentType": "tenderNotice",
         "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
+        "documentType": "tenderNotice",
         "title": "doc1"
       },
       {
-        "documentType": "illustration",
         "id": "0a326080-a058-11e8-9318-61ca1098e80e",
+        "documentType": "illustration",
         "title": "doc1",
         "relatedLots": [
-          "1"
+          "f35f7b20-aba3-11e8-b97d-81d7272ae83b"
         ]
       }
-    ],
-    "classification": {
-      "id": "30199220-8",
-      "description": "Cărţi poştale neilustrate",
-      "scheme": "CPV"
-    },
-    "submissionMethodRationale": [
-      "submissionMethodRationale"
-    ],
-    "submissionMethodDetails": "submissionMethodDetails",
-    "procurementMethodDetails": "test",
-    "eligibilityCriteria": "eligibilityCriteria"
+    ]
   }
 }
