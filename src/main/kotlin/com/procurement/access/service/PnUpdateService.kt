@@ -93,7 +93,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
         }
         /*update Documents*/
-        updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents)
+        updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents, activeLots)
 
         tenderProcess.planning.apply {
             rationale = pnDto.planning.rationale
@@ -233,7 +233,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         return itemsTender
     }
 
-    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?): List<Document>? {
+    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?, activeLots: List<Lot>): List<Document>? {
         return if (documentsTender != null && documentsTender.isNotEmpty()) {
             if (documentsDto != null) {
                 //validation
@@ -253,6 +253,11 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             }
 
         } else {
+            if (activeLots.isEmpty() && documentsDto != null) {
+                if (documentsDto.any { it.relatedLots != null }) {
+                    throw throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+                }
+            }
             documentsDto
         }
     }

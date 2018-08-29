@@ -90,7 +90,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
-                        documents = tenderDto.documents
+                        documents = setDocuments(tenderDto)
                 )
         )
 
@@ -232,6 +232,15 @@ class PnServiceImpl(private val generationService: GenerationService,
                 unit = itemDto.unit,
                 relatedLot = itemDto.relatedLot
         )
+    }
+
+    private fun setDocuments(tenderDto: TenderPnCreate): List<Document>? {
+        if ((tenderDto.lots == null || tenderDto.lots.isEmpty()) && (tenderDto.documents != null)) {
+            if (tenderDto.documents.any { it.relatedLots != null }) {
+                throw throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            }
+        }
+        return tenderDto.documents
     }
 
     private fun getEntity(tp: TenderProcess,
