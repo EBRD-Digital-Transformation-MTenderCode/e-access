@@ -97,7 +97,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnUpdate) {
-         tender.lots.forEach { lot ->
+        tender.lots.forEach { lot ->
             val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }

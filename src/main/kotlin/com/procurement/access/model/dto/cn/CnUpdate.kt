@@ -1,7 +1,6 @@
 package com.procurement.access.model.dto.cn
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.databinding.QuantityDeserializer
 import com.procurement.access.model.dto.ocds.*

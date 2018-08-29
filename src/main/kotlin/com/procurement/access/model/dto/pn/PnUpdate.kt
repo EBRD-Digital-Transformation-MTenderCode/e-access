@@ -9,7 +9,6 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 import javax.validation.Valid
-import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 data class PnUpdate @JsonCreator constructor(
