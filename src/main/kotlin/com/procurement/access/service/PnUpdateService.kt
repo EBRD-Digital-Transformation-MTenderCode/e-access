@@ -47,7 +47,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
-
+        validateStartDate(pnDto.tender.tenderPeriod.startDate)
         var activeLots: List<Lot> = listOf()
         var canceledLots: List<Lot> = listOf()
         var updatedItems: List<Item> = listOf()
@@ -103,10 +103,18 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             items = updatedItems
             lots = activeLots + canceledLots
             documents = pnDto.tender.documents
+            tenderPeriod = Period(pnDto.tender.tenderPeriod.startDate, null)
         }
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateStartDate(startDate: LocalDateTime) {
+        val month = startDate.month
+        if (month != month.firstMonthOfQuarter()) throw ErrorException(ErrorType.INVALID_START_DATE)
+        val day = startDate.dayOfMonth
+        if (day != 1) throw ErrorException(ErrorType.INVALID_START_DATE)
     }
 
     private fun checkLotsCurrency(lotsDto: List<LotPnUpdate>, budgetCurrency: String) {
