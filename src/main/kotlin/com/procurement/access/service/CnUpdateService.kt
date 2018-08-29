@@ -169,8 +169,12 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
                             .forEach { it.relatedLot = id }
                     tender.documents.asSequence()
                             .filter { it.relatedLots != null }
-                            .filter { it.relatedLots!!.contains(lot.id) }
-                            .forEach { it.relatedLots!!.minus(lot.id).plus(id) }
+                            .forEach { document ->
+                                if (document.relatedLots!!.contains(lot.id)) {
+                                    document.relatedLots!!.remove(lot.id)
+                                    document.relatedLots!!.add(id)
+                                }
+                            }
                     lot.id = id
                     newLotsIdSet.add(id)
                 }
@@ -216,6 +220,11 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemCnUpdate>): List<Item> {
+        //validation
+        val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
+        val itemsDbId = itemsTender.asSequence().map { it.id }.toSet()
+        if (!itemsDtoId.containsAll(itemsDbId)) throw ErrorException(ErrorType.INVALID_ITEMS)
+        //update
         itemsTender.forEach { item ->
             val itemDto = itemsDto.asSequence().first { it.id == item.id }
             item.updateItem(itemDto)
@@ -232,7 +241,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         return if (documentsTender != null && documentsTender.isNotEmpty()) {
             //validation
             val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
-            val documentsDbId = documentsTender.asSequence()?.map { it.id }?.toSet()
+            val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
             val newDocumentsId = documentsDtoId - documentsDbId
             if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(ErrorType.INVALID_DOCS_ID)
             //update

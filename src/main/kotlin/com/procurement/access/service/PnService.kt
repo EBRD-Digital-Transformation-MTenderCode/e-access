@@ -141,8 +141,12 @@ class PnServiceImpl(private val generationService: GenerationService,
                 tender.documents?.let { documents ->
                     documents.asSequence()
                             .filter { it.relatedLots != null }
-                            .filter { it.relatedLots!!.contains(lot.id) }
-                            .forEach { it.relatedLots!!.minus(lot.id).plus(id) }
+                            .forEach { document ->
+                                if (document.relatedLots!!.contains(lot.id)) {
+                                    document.relatedLots!!.remove(lot.id)
+                                    document.relatedLots!!.add(id)
+                                }
+                            }
                 }
                 lot.id = id
             }

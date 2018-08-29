@@ -92,7 +92,7 @@ fun getExceptionResponseDto(exception: Exception): ResponseDto {
     return ResponseDto(
             errors = listOf(ResponseErrorDto(
                     code = "400.03.00",
-                    description = exception.message
+                    description = exception.message ?: exception.toString()
             )))
 }
 

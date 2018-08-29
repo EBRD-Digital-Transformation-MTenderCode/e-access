@@ -104,6 +104,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             description = pnDto.tender.description
             procurementMethodRationale = pnDto.tender.procurementMethodRationale
             procurementMethodAdditionalInfo = pnDto.tender.procurementMethodAdditionalInfo
+            pnDto.tender.classification?.let { classification = it }
             items = updatedItems
             lots = activeLots + canceledLots
             documents = updatedDocuments
@@ -164,8 +165,12 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 tender.documents?.let { documents ->
                     documents.asSequence()
                             .filter { it.relatedLots != null }
-                            .filter { it.relatedLots!!.contains(lot.id) }
-                            .forEach { it.relatedLots!!.minus(lot.id).plus(id) }
+                            .forEach { document ->
+                                if (document.relatedLots!!.contains(lot.id)) {
+                                    document.relatedLots!!.remove(lot.id)
+                                    document.relatedLots!!.add(id)
+                                }
+                            }
                 }
                 lot.id = id
             }
@@ -185,8 +190,12 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 tender.documents?.let { documents ->
                     documents.asSequence()
                             .filter { it.relatedLots != null }
-                            .filter { it.relatedLots!!.contains(lot.id) }
-                            .forEach { it.relatedLots!!.minus(lot.id).plus(id) }
+                            .forEach { document ->
+                                if (document.relatedLots!!.contains(lot.id)) {
+                                    document.relatedLots!!.remove(lot.id)
+                                    document.relatedLots!!.add(id)
+                                }
+                            }
                 }
                 lot.id = id
                 newLotsIdSet.add(id)
@@ -226,6 +235,11 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemPnUpdate>): List<Item> {
+        //validation
+        val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
+        val itemsDbId = itemsTender.asSequence().map { it.id }.toSet()
+        if (!itemsDtoId.containsAll(itemsDbId)) throw ErrorException(ErrorType.INVALID_ITEMS)
+        //update
         itemsTender.forEach { item ->
             val itemDto = itemsDto.asSequence().first { it.id == item.id }
             item.updateItem(itemDto)
@@ -237,7 +251,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         return if (documentsTender != null && documentsTender.isNotEmpty()) {
             if (documentsDto != null) {
                 //validation
-                val documentsDtoId = documentsDto?.asSequence()?.map { it.id }?.toSet()
+                val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
                 val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
                 val newDocumentsId = documentsDtoId - documentsDbId
                 if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(ErrorType.INVALID_DOCS_ID)

@@ -132,14 +132,14 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
             tender.items.asSequence()
                     .filter { it.relatedLot == lot.id }
                     .forEach { it.relatedLot = id }
-            tender.documents.forEach { document ->
-                document.relatedLots?.let { relatedLots ->
-                    if (relatedLots.contains(lot.id)) {
-                        relatedLots.remove(lot.id)
-                        relatedLots.add(id)
+            tender.documents.asSequence()
+                    .filter { it.relatedLots != null }
+                    .forEach { document ->
+                        if (document.relatedLots!!.contains(lot.id)) {
+                            document.relatedLots!!.remove(lot.id)
+                            document.relatedLots!!.add(id)
+                        }
                     }
-                }
-            }
             lot.id = id
         }
     }

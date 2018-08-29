@@ -1,8 +1,9 @@
 {
   "planning": {
     "budget": {
+      "description": "description_update",
       "amount": {
-        "amount": 1700.00,
+        "amount": 1700,
         "currency": "MDL"
       },
       "isEuropeanUnionFunded": false,
@@ -11,7 +12,7 @@
           "id": "ocds-t1s2t3-MD-1535448844826-FS-1535448860117",
           "description": "Hello world!",
           "amount": {
-            "amount": 900.00,
+            "amount": 900,
             "currency": "MDL"
           },
           "period": {
@@ -27,7 +28,7 @@
           "id": "ocds-t1s2t3-MD-1535448844826-FS-1535448884837",
           "description": "Hello world!",
           "amount": {
-            "amount": 800.00,
+            "amount": 800,
             "currency": "MDL"
           },
           "period": {
@@ -40,22 +41,25 @@
           }
         }
       ]
-    }
+    },
+    "rationale": "rationale_update"
   },
   "tender": {
-    "id": "ocds-t1s2t3-MD-1535529983025",
+    "id": "ocds-t1s2t3-MD-1535543897555",
     "title": "gav",
     "description": "gav gav",
     "status": "planning",
     "statusDetails": "empty",
     "classification": {
       "scheme": "CPV",
-      "id": "30100000-0",
-      "description": "Maşini de procesare de text"
+      "id": "30199220-8",
+      "description": "Cărţi poştale neilustrate"
     },
     "mainProcurementCategory": "goods",
     "procurementMethod": "open",
     "procurementMethodDetails": "test",
+    "procurementMethodRationale": "pmr_update",
+    "procurementMethodAdditionalInfo": "pmai_update",
     "submissionMethod": [
       "electronicSubmission"
     ],
@@ -130,11 +134,15 @@
     },
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
+    "contractPeriod": {
+      "startDate": "2018-11-19T14:45:00Z",
+      "endDate": "2018-12-25T14:45:00Z"
+    },
     "tenderPeriod": {
-      "startDate": "2018-07-01T01:01:01Z"
+      "startDate": "2018-04-01T00:00:01Z"
     },
     "value": {
-      "amount": 1700.00,
+      "amount": 200,
       "currency": "MDL"
     },
     "lotGroups": [
@@ -142,184 +150,549 @@
         "optionToCombine": false
       }
     ],
-    "lots": [],
-    "items": [],
+    "lots": [
+      {
+        "id": "bb4c4380-ab9e-11e8-b7dc-6342a6f4d7a7",
+        "title": "lot1",
+        "description": "looot",
+        "status": "planning",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "bb4e1840-ab9e-11e8-b7dc-6342a6f4d7a7",
+        "title": "lot2",
+        "description": "looot",
+        "status": "planning",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "497dbe00-ab9e-11e8-a8d9-f360c7507ca9",
+        "title": "lot1",
+        "description": "looot",
+        "status": "cancelled",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "497dbe01-ab9e-11e8-a8d9-f360c7507ca9",
+        "title": "lot2",
+        "description": "looot",
+        "status": "cancelled",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "4028d380-ab9e-11e8-a8d9-f360c7507ca9",
+        "title": "lot1",
+        "description": "looot",
+        "status": "cancelled",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "4028d381-ab9e-11e8-a8d9-f360c7507ca9",
+        "title": "lot2",
+        "description": "looot",
+        "status": "cancelled",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "759f74d0-ab83-11e8-85e2-d5523ec8c1d4",
+        "title": "lot1",
+        "description": "looot",
+        "status": "cancelled",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "759f74d1-ab83-11e8-85e2-d5523ec8c1d4",
+        "title": "lot2",
+        "description": "looot",
+        "status": "cancelled",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 100,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-19T14:45:00Z",
+          "endDate": "2018-12-25T14:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "444",
+            "postalCode": "555",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "gfgf",
+                "id": "gfg",
+                "description": "gfg"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "759f74d2-ab83-11e8-85e2-d5523ec8c1d4",
+        "description": "111",
+        "classification": {
+          "scheme": "CPV",
+          "id": "30199220-8",
+          "description": "Cărţi poştale neilustrate"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "id": "AB06-7",
+            "description": "Plastic"
+          }
+        ],
+        "quantity": 100,
+        "unit": {
+          "id": "86",
+          "name": " Milion metri patrati spatiu locativ "
+        },
+        "relatedLot": "bb4c4380-ab9e-11e8-b7dc-6342a6f4d7a7"
+      },
+      {
+        "id": "759f74d3-ab83-11e8-85e2-d5523ec8c1d4",
+        "description": "111",
+        "classification": {
+          "scheme": "CPV",
+          "id": "30199220-8",
+          "description": "Cărţi poştale neilustrate"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "id": "AB06-7",
+            "description": "Plastic"
+          }
+        ],
+        "quantity": 100,
+        "unit": {
+          "id": "86",
+          "name": " Milion metri patrati spatiu locativ "
+        },
+        "relatedLot": "bb4e1840-ab9e-11e8-b7dc-6342a6f4d7a7"
+      }
+    ],
     "documents": [
       {
         "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
         "documentType": "tenderNotice",
+        "title": "doc1"
+      },
+      {
+        "id": "0a326080-a058-11e8-9318-61ca1098e80e",
+        "documentType": "illustration",
         "title": "doc1",
-        "description": null,
-        "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/f7178f90-9fba-11e8-9318-61ca1098e80e",
-        "datePublished": "2018-08-14T12:10:54Z",
-        "dateModified": null,
-        "format": null,
-        "language": null,
         "relatedLots": [
-          "1"
+          "bb4c4380-ab9e-11e8-b7dc-6342a6f4d7a7",
+          "bb4e1840-ab9e-11e8-b7dc-6342a6f4d7a7"
         ]
       }
     ]
-  },
-  "ei": [
-    "ocds-t1s2t3-MD-1535448844826"
-  ],
-  "buyer": [
-    {
-      "id": "MD-IDNO-354-37-1072",
-      "name": "Burns-Davis",
-      "identifier": {
-        "id": "354-37-1072",
-        "scheme": "MD-IDNO",
-        "legalName": "Burns-Davis PLC",
-        "uri": "http://edwards.net/"
-      },
-      "address": {
-        "streetAddress": "232323",
-        "postalCode": "424422",
-        "addressDetails": {
-          "country": {
-            "scheme": "iso-alpha2",
-            "id": "MD",
-            "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org"
-          },
-          "region": {
-            "scheme": "CUATM",
-            "id": "1000000",
-            "description": "Anenii Noi",
-            "uri": "http://statistica.md"
-          },
-          "locality": {
-            "scheme": "CUATM",
-            "id": "1001000",
-            "description": "or.Anenii Noi",
-            "uri": "http://statistica.md"
-          }
-        }
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "713-49-7544",
-          "scheme": "MD-IDNO",
-          "legalName": "Burns-Davis PLC",
-          "uri": "http://baker.com/posts/about.asp"
-        }
-      ],
-      "contactPoint": {
-        "name": "Jacqueline Soto",
-        "email": "tiffanygutierrez@yahoo.com",
-        "telephone": "724-095-3938x237",
-        "faxNumber": "897-612-1545",
-        "url": "http://hudson.biz/explore/list/category/"
-      },
-      "details": {
-        "typeOfBuyer": "MINISTRY",
-        "mainGeneralActivity": "HEALTH",
-        "mainSectoralActivity": "WATER"
-      },
-      "buyerProfile": "http://ray.com/"
-    }
-  ],
-  "funder": [
-    {
-      "id": "MD-IDNO-Enotis",
-      "name": "Edward-Company2",
-      "identifier": {
-        "id": "Enotis",
-        "scheme": "MD-IDNO",
-        "legalName": "legalName",
-        "uri": "uri"
-      },
-      "address": {
-        "streetAddress": "",
-        "postalCode": "",
-        "addressDetails": {
-          "country": {
-            "scheme": "iso-alpha2",
-            "id": "MD",
-            "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org"
-          },
-          "region": {
-            "scheme": "CUATM",
-            "id": "1000000",
-            "description": "Anenii Noi",
-            "uri": "http://statistica.md"
-          },
-          "locality": {
-            "scheme": "gggg",
-            "id": "",
-            "description": ""
-          }
-        }
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "string",
-          "scheme": "string",
-          "legalName": "string",
-          "uri": "string"
-        }
-      ],
-      "contactPoint": {
-        "name": "string",
-        "email": "string",
-        "telephone": "string",
-        "faxNumber": "string",
-        "url": "string"
-      }
-    }
-  ],
-  "payer": [
-    {
-      "id": "MD-IDNO-Enotis",
-      "name": "Edward-Company",
-      "identifier": {
-        "id": "Enotis",
-        "scheme": "MD-IDNO",
-        "legalName": "legalName",
-        "uri": "uri"
-      },
-      "address": {
-        "streetAddress": "",
-        "postalCode": "",
-        "addressDetails": {
-          "country": {
-            "scheme": "iso-alpha2",
-            "id": "MD",
-            "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org"
-          },
-          "region": {
-            "scheme": "CUATM",
-            "id": "1000000",
-            "description": "Anenii Noi",
-            "uri": "http://statistica.md"
-          },
-          "locality": {
-            "scheme": "CUATM",
-            "id": "1001000",
-            "description": "or.Anenii Noi",
-            "uri": "http://statistica.md"
-          }
-        }
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "id",
-          "scheme": "scheme",
-          "legalName": "legalName2",
-          "uri": "uri2"
-        }
-      ],
-      "contactPoint": {
-        "name": "name",
-        "email": "email",
-        "telephone": "telephone",
-        "faxNumber": "fax",
-        "url": "uri3"
-      }
-    }
-  ]
+  }
 }
