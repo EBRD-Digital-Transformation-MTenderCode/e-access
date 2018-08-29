@@ -22,25 +22,35 @@
     "procurementMethodAdditionalInfo": "y",
     "mainProcurementCategory": "goods",
     "tenderPeriod": {
-      "endDate": "2018-08-29T17:20:00Z"
+      "endDate": "2018-08-29T17:50:00Z"
     },
     "procuringEntity": {
       "name": "NameofCNpE",
+      "identifier": {
+        "scheme": "MD-IDNO",
+        "id": "555-555",
+        "legalName": "legal name of pe",
+        "uri": "g"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "ert",
+          "id": "tre",
+          "legalName": "etr",
+          "uri": "ter"
+        }
+      ],
       "address": {
         "streetAddress": "add",
         "postalCode": "0000550",
         "addressDetails": {
           "country": {
-            "scheme": "iso-alpha2",
             "id": "MD",
-            "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org"
+            "scheme": "iso-apha2"
           },
           "region": {
-            "scheme": "CUATM",
             "id": "0101000",
-            "description": "mun.Chişinău",
-            "uri": "http://statistica.md"
+            "scheme": "iso-3166-2"
           },
           "locality": {
             "scheme": "other",
@@ -49,20 +59,6 @@
           }
         }
       },
-      "identifier": {
-        "id": "555-555",
-        "scheme": "MD-IDNO",
-        "legalName": "legal name of pe",
-        "uri": "g"
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "tre",
-          "scheme": "ert",
-          "legalName": "etr",
-          "uri": "ter"
-        }
-      ],
       "contactPoint": {
         "name": "contact name",
         "email": "email",
@@ -77,7 +73,7 @@
         "title": "lot10",
         "description": "1",
         "value": {
-          "amount": 150.00,
+          "amount": 150,
           "currency": "MDL"
         },
         "contractPeriod": {
@@ -90,22 +86,15 @@
             "postalCode": "5",
             "addressDetails": {
               "country": {
-                "scheme": "iso-alpha2",
-                "id": "MD",
-                "description": "MOLDOVA",
-                "uri": "http://reference.iatistandard.org"
+                "id": "MD"
               },
               "region": {
-                "scheme": "CUATM",
-                "id": "0301000",
-                "description": "mun.Bălţi",
-                "uri": "http://statistica.md"
+                "id": "0301000"
               },
               "locality": {
                 "scheme": "CUATM",
                 "id": "0301000",
-                "description": "mun.Bălţi",
-                "uri": "http://statistica.md"
+                "description": ""
               }
             }
           },
@@ -117,7 +106,7 @@
         "title": "lot10",
         "description": "1",
         "value": {
-          "amount": 150.00,
+          "amount": 150,
           "currency": "MDL"
         },
         "contractPeriod": {
@@ -130,22 +119,15 @@
             "postalCode": "5",
             "addressDetails": {
               "country": {
-                "scheme": "iso-alpha2",
-                "id": "MD",
-                "description": "MOLDOVA",
-                "uri": "http://reference.iatistandard.org"
+                "id": "MD"
               },
               "region": {
-                "scheme": "CUATM",
-                "id": "0301000",
-                "description": "mun.Bălţi",
-                "uri": "http://statistica.md"
+                "id": "0301000"
               },
               "locality": {
                 "scheme": "CUATM",
                 "id": "0301000",
-                "description": "mun.Bălţi",
-                "uri": "http://statistica.md"
+                "description": ""
               }
             }
           },
@@ -155,22 +137,7 @@
     ],
     "items": [
       {
-        "id": "0436fcf0-abab-11e8-b97d-81d7272ae83b",
-        "classification": {
-          "scheme": "CPV",
-          "description": "4",
-          "id": "98910000-5"
-        },
-        "quantity": 10,
-        "unit": {
-          "id": "120",
-          "name": " Milion decalitri "
-        },
-        "description": "p",
-        "relatedLot": "lot10"
-      },
-      {
-        "id": "0436fcf1-abab-11e8-b97d-81d7272ae83b",
+        "id": "8ed0ea10-abb0-11e8-909a-fb9236f916c2",
         "classification": {
           "scheme": "CPV",
           "description": "4",
@@ -182,24 +149,29 @@
           "name": " Milion decalitri "
         },
         "description": "p",
+        "relatedLot": "lot10"
+      },
+      {
+        "id": "8ed0ea10-abb0-11e8-909a-fb9236f916c2",
+        "classification": {
+          "scheme": "CPV",
+          "description": "4",
+          "id": "98910000-5"
+        },
+        "quantity": 10,
+        "unit": {
+          "id": "120",
+          "name": " Milion decalitri "
+        },
+        "description": "p",
         "relatedLot": "lot11"
       }
     ],
     "documents": [
       {
-        "documentType": "contractDraft",
-        "id": "28fc73f0-a127-11e8-941f-116f5508f313"
-      },
-      {
-        "documentType": "contractDraft",
+        "documentType": "tenderNotice",
         "id": "0a326080-a058-11e8-9318-61ca1098e80e"
       }
-    ],
-    "submissionMethodRationale": [
-      "submissionMethodRationale"
-    ],
-    "submissionMethodDetails": "submissionMethodDetails",
-    "procurementMethodDetails": "test",
-    "eligibilityCriteria": "eligibilityCriteria"
+    ]
   }
 }

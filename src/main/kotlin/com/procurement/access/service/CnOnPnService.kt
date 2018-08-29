@@ -9,6 +9,7 @@ import com.procurement.access.model.dto.cn.ItemCnUpdate
 import com.procurement.access.model.dto.cn.LotCnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.pn.TenderPnCreate
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -55,6 +56,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             tenderProcess.tender.apply {
                 lots = setLots(cnDto.tender.lots)
                 items = setItems(cnDto.tender.items)
+                documents = setDocuments(cnDto.tender)
                 cnDto.tender.classification?.let { classification = it }
                 value = getValueFromLots(cnDto.tender.lots, tenderProcess.planning.budget.amount)
                 contractPeriod = setContractPeriod(cnDto.tender.lots, tenderProcess.planning.budget)
@@ -86,6 +88,10 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             }
         }
+    }
+
+    private fun setDocuments(tenderDto: TenderCnUpdate): List<Document>? {
+        return tenderDto.documents
     }
 
     private fun setLots(lotsDto: List<LotCnUpdate>): List<Lot> {
