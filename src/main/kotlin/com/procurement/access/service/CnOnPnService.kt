@@ -9,7 +9,7 @@ import com.procurement.access.model.dto.cn.ItemCnUpdate
 import com.procurement.access.model.dto.cn.LotCnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
-import com.procurement.access.model.dto.pn.TenderPnCreate
+import com.procurement.access.model.dto.pn.ItemPnUpdate
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -51,18 +51,23 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             checkLotsCurrency(cnDto, tenderProcess.planning.budget.amount.currency)
             checkLotsContractPeriod(cnDto)
             setItemsId(cnDto.tender)
-            validateRelatedLots(cnDto.tender)
             setLotsIdAndItemsAndDocumentsRelatedLots(cnDto.tender)
+            val lotIds = cnDto.tender.lots.asSequence().map { it.id }.toSet()
+            validateRelatedLots(lotIds, cnDto.tender.items, cnDto.tender.documents)
             tenderProcess.tender.apply {
                 lots = setLots(cnDto.tender.lots)
                 items = setItems(cnDto.tender.items)
-                documents = setDocuments(cnDto.tender)
+                documents = updateDocuments(documents, cnDto.tender.documents)
                 cnDto.tender.classification?.let { classification = it }
                 value = getValueFromLots(cnDto.tender.lots, tenderProcess.planning.budget.amount)
                 contractPeriod = setContractPeriod(cnDto.tender.lots, tenderProcess.planning.budget)
             }
+        } else {
+            val lotIds = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
+            validateRelatedLots(lotIds, cnDto.tender.items, cnDto.tender.documents)
         }
         tenderProcess.tender.apply {
+            documents = updateDocuments(documents, cnDto.tender.documents)
             status = TenderStatus.ACTIVE
             statusDetails = TenderStatusDetails.EMPTY
             awardCriteria = AwardCriteria.PRICE_ONLY
@@ -71,6 +76,18 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemCnUpdate>, documents: List<Document>?) {
+        val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
+        if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        val lotsFromDocuments = documents?.asSequence()
+                ?.filter { it.relatedLots != null }
+                ?.flatMap { it.relatedLots!!.asSequence() }
+                ?.toHashSet()
+        if (lotsFromDocuments != null && lotsFromDocuments.size > 0) {
+            if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+        }
     }
 
     private fun checkLotsCurrency(cn: CnUpdate, budgetCurrency: String) {
@@ -90,8 +107,33 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun setDocuments(tenderDto: TenderCnUpdate): List<Document>? {
-        return tenderDto.documents
+    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?): List<Document>? {
+        return if (documentsTender != null && documentsTender.isNotEmpty()) {
+            if (documentsDto != null) {
+                //validation
+                val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
+                val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
+                val newDocumentsId = documentsDtoId - documentsDbId
+                if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(ErrorType.INVALID_DOCS_ID)
+                //update
+                documentsTender.forEach { document ->
+                    val documentDto = documentsDto.asSequence().first { it.id == document.id }
+                    document.updateDocument(documentDto)
+                }
+                val newDocuments = documentsDto.asSequence().filter { it.id in newDocumentsId }.toList()
+                documentsTender + newDocuments
+            } else {
+                documentsTender
+            }
+        } else {
+            documentsDto
+        }
+    }
+
+    private fun Document.updateDocument(documentDto: Document) {
+        this.title = documentDto.title
+        this.description = documentDto.description
+        this.relatedLots = documentDto.relatedLots
     }
 
     private fun setLots(lotsDto: List<LotCnUpdate>): List<Lot> {
@@ -118,19 +160,6 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             }
             lot.id = id
         }
-    }
-
-    private fun validateRelatedLots(tender: TenderCnUpdate) {
-        val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
-        val lotsFromDocuments = tender.documents.asSequence()
-                .filter { it.relatedLots != null }
-                .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
-        if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
-        }
-        val lotsFromItems = tender.items.asSequence()
-                .map { it.relatedLot }.toHashSet()
-        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
     }
 
     private fun getValueFromLots(lotsDto: List<LotCnUpdate>, budgetValue: Value): Value {
