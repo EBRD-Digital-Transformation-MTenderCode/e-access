@@ -81,9 +81,9 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             var newLotsId = lotsDtoId - lotsDbId
             val canceledLotsId = lotsDbId - lotsDtoId
             newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(pnDto.tender, newLotsId)
+            validateRelatedLots(lotIds = lotsDbId + newLotsId, items = itemsDto, documents = documentsDto)
             /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
-            validateRelatedLots(lotIds = lotsDbId + newLotsId, items = itemsDto, documents = documentsDto)
             setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
             setTenderValueByActiveLots(tenderProcess.tender, activeLots)
             /*canceledLots*/
@@ -140,14 +140,12 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemPnUpdate>, documents: List<Document>?) {
         val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsFromItems.size != lotIds.size) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
         if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
         val lotsFromDocuments = documents?.asSequence()
                 ?.filter { it.relatedLots != null }
                 ?.flatMap { it.relatedLots!!.asSequence() }
                 ?.toHashSet()
         if (lotsFromDocuments != null && lotsFromDocuments.size > 0) {
-            if (lotsFromDocuments.size > lotIds.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
             if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
         }
     }

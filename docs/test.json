@@ -1,32 +1,34 @@
 {
   "planning": {
-    "rationale": "rationale_update",
+    "rationale": "rationale",
     "budget": {
-      "description": "description_update",
+      "description": "e",
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1534845582864-FS-1534846045276",
+          "id": "ocds-t1s2t3-MD-1534924462809-FS-1534924556963",
           "amount": {
-            "amount": 900,
-            "currency": "MDL"
+            "amount": 0,
+            "currency": "EUR"
           }
         }
       ]
     }
   },
   "tender": {
-    "title": "gav",
-    "description": "gav gav",
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
-    "procurementMethodRationale": "pmr_update",
-    "procurementMethodAdditionalInfo": "pmai_update",
+    "title": "TITLEchanged",
+    "description": "d",
+    "legalBasis": "2014_24_EU",
+    "procurementMethodRationale": "nepceOnly",
+    "procurementMethodAdditionalInfo": "y",
+    "mainProcurementCategory": "goods",
     "tenderPeriod": {
-      "startDate": "2018-04-01T00:00:01Z"
+      "endDate": "2018-08-29T17:20:00Z"
     },
     "procuringEntity": {
-      "name": "Update_company",
+      "name": "NameofCNpE",
       "address": {
-        "streetAddress": "444",
+        "streetAddress": "add",
+        "postalCode": "0000550",
         "addressDetails": {
           "country": {
             "scheme": "iso-alpha2",
@@ -36,48 +38,56 @@
           },
           "region": {
             "scheme": "CUATM",
-            "id": "1000000",
-            "description": "Anenii Noi",
+            "id": "0101000",
+            "description": "mun.Chişinău",
             "uri": "http://statistica.md"
           },
           "locality": {
-            "scheme": "CUAT",
-            "id": "1001000",
-            "description": "dgfdfg"
+            "scheme": "other",
+            "id": "1441bjkl",
+            "description": ""
           }
         }
       },
       "identifier": {
-        "id": "update_id",
+        "id": "555-555",
         "scheme": "MD-IDNO",
-        "legalName": "fff",
-        "uri": "hhh"
+        "legalName": "legal name of pe",
+        "uri": "g"
       },
+      "additionalIdentifiers": [
+        {
+          "id": "tre",
+          "scheme": "ert",
+          "legalName": "etr",
+          "uri": "ter"
+        }
+      ],
       "contactPoint": {
-        "name": "hgfh",
-        "email": "hfgh",
-        "telephone": "hgfhfh",
-        "faxNumber": "hgfh",
-        "url": "hgfhgf"
+        "name": "contact name",
+        "email": "email",
+        "telephone": "4521",
+        "faxNumber": "45",
+        "url": "d"
       }
     },
     "lots": [
       {
-        "id": "345ec0c2-ab92-11e8-85e2-d5523ec8c1d4",
-        "title": "lot1",
-        "description": "looot",
+        "id": "lot10",
+        "title": "lot10",
+        "description": "1",
         "value": {
-          "amount": 100.00,
+          "amount": 150.00,
           "currency": "MDL"
         },
         "contractPeriod": {
-          "startDate": "2018-11-19T14:45:00Z",
-          "endDate": "2018-12-25T14:45:00Z"
+          "startDate": "2018-10-21T10:40:00Z",
+          "endDate": "2018-11-24T12:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "444",
-            "postalCode": "555",
+            "streetAddress": "Steet",
+            "postalCode": "5",
             "addressDetails": {
               "country": {
                 "scheme": "iso-alpha2",
@@ -87,77 +97,102 @@
               },
               "region": {
                 "scheme": "CUATM",
-                "id": "1000000",
-                "description": "Anenii Noi",
+                "id": "0301000",
+                "description": "mun.Bălţi",
                 "uri": "http://statistica.md"
               },
               "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
               }
             }
           },
-          "description": null
+          "description": "decr"
+        }
+      },
+      {
+        "id": "lot11",
+        "title": "lot10",
+        "description": "1",
+        "value": {
+          "amount": 150.00,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2018-10-21T10:40:00Z",
+          "endDate": "2018-11-24T12:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "Steet",
+            "postalCode": "5",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              }
+            }
+          },
+          "description": "decr"
         }
       }
     ],
     "items": [
       {
-        "id": "345ec0c1-ab92-11e8-85e2-d5523ec8c1d4",
+        "id": "0436fcf0-abab-11e8-b97d-81d7272ae83b",
         "classification": {
           "scheme": "CPV",
-          "description": "ggg",
-          "id": "30199220-8"
+          "description": "4",
+          "id": "98910000-5"
         },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "description": "666",
-            "id": "AB06-7"
-          }
-        ],
-        "quantity": 100,
+        "quantity": 10,
         "unit": {
-          "id": "86",
-          "name": "square"
+          "id": "120",
+          "name": " Milion decalitri "
         },
-        "description": "111",
-        "relatedLot": "345ec0c3-ab92-11e8-85e2-d5523ec8c1d4"
+        "description": "p",
+        "relatedLot": "lot10"
       },
       {
-        "id": "345ec0c0-ab92-11e8-85e2-d5523ec8c1d4",
+        "id": "0436fcf1-abab-11e8-b97d-81d7272ae83b",
         "classification": {
           "scheme": "CPV",
-          "description": "ggg",
-          "id": "30199220-8"
+          "description": "4",
+          "id": "98910000-5"
         },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "description": "666",
-            "id": "AB06-7"
-          }
-        ],
         "quantity": 100,
         "unit": {
-          "id": "86",
-          "name": "square"
+          "id": "120",
+          "name": " Milion decalitri "
         },
-        "description": "111",
-        "relatedLot": "345ec0c2-ab92-11e8-85e2-d5523ec8c1d4"
+        "description": "p",
+        "relatedLot": "lot11"
       }
     ],
     "documents": [
       {
-        "documentType": "tenderNotice",
-        "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
-        "title": "doc1"
+        "documentType": "contractDraft",
+        "id": "28fc73f0-a127-11e8-941f-116f5508f313"
       },
       {
-        "documentType": "illustration",
-        "id": "0a326080-a058-11e8-9318-61ca1098e80e",
-        "title": "doc1"
+        "documentType": "contractDraft",
+        "id": "0a326080-a058-11e8-9318-61ca1098e80e"
       }
     ],
     "submissionMethodRationale": [
