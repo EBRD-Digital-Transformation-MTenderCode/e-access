@@ -11,9 +11,9 @@ data class Document @JsonCreator constructor(
 
         val documentType: DocumentType,
 
-        val title: String?,
+        var title: String?,
 
-        val description: String?,
+        var description: String?,
 
         var relatedLots: HashSet<String>?,
 

@@ -51,6 +51,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         var activeLots: List<Lot> = listOf()
         var canceledLots: List<Lot> = listOf()
         var updatedItems: List<Item> = listOf()
+        var updatedDocuments: List<Document>?
         /*first insert*/
         if (tenderProcess.tender.lots.isEmpty() && pnDto.tender.lots != null) {
             val lotsDto = pnDto.tender.lots
@@ -91,6 +92,9 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             /*updatedItems*/
             updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
         }
+        /*update Documents*/
+        updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents)
+
         tenderProcess.planning.apply {
             rationale = pnDto.planning.rationale
             budget.description = pnDto.planning.budget.description
@@ -102,7 +106,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             procurementMethodAdditionalInfo = pnDto.tender.procurementMethodAdditionalInfo
             items = updatedItems
             lots = activeLots + canceledLots
-            documents = pnDto.tender.documents
+            documents = updatedDocuments
             tenderPeriod = Period(pnDto.tender.tenderPeriod.startDate, null)
         }
 
@@ -227,6 +231,36 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             item.updateItem(itemDto)
         }
         return itemsTender
+    }
+
+    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?): List<Document>? {
+        return if (documentsTender != null && documentsTender.isNotEmpty()) {
+            if (documentsDto != null) {
+                //validation
+                val documentsDtoId = documentsDto?.asSequence()?.map { it.id }?.toSet()
+                val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
+                val newDocumentsId = documentsDtoId - documentsDbId
+                if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(ErrorType.INVALID_DOCS_ID)
+                //update
+                documentsTender.forEach { document ->
+                    val documentDto = documentsDto.asSequence().first { it.id == document.id }
+                    document.updateDocument(documentDto)
+                }
+                val newDocuments = documentsDto.asSequence().filter { it.id in newDocumentsId }.toList()
+                documentsTender + newDocuments
+            } else {
+                documentsTender
+            }
+
+        } else {
+            documentsDto
+        }
+    }
+
+    private fun Document.updateDocument(documentDto: Document) {
+        this.title = documentDto.title
+        this.description = documentDto.description
+        this.relatedLots = documentDto.relatedLots
     }
 
     private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
