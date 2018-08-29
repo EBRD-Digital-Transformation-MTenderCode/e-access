@@ -83,8 +83,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(pnDto.tender, newLotsId)
             /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
-            val activeLotsIds = activeLots.asSequence().map { it.id }.toSet()
-            validateRelatedLots(lotIds = activeLotsIds, items = itemsDto, documents = documentsDto)
+            validateRelatedLots(lotIds = lotsDbId + newLotsId, items = itemsDto, documents = documentsDto)
             setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
             setTenderValueByActiveLots(tenderProcess.tender, activeLots)
             /*canceledLots*/
