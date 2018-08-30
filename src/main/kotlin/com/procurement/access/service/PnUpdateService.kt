@@ -84,8 +84,6 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             validateRelatedLots(lotIds = lotsDbId + newLotsId, items = itemsDto, documents = documentsDto)
             /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
-            setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
-            setTenderValueByActiveLots(tenderProcess.tender, activeLots)
             /*canceledLots*/
             canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
             /*updatedItems*/
@@ -93,11 +91,16 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         }
         /*update Documents*/
         updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents, activeLots)
-
+        /*ContractPeriod*/
+        setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
+        /*Value*/
+        setValueByActiveLots(tenderProcess.tender, activeLots)
+        /*planning*/
         tenderProcess.planning.apply {
             rationale = pnDto.planning.rationale
             budget.description = pnDto.planning.budget.description
         }
+        /*tender*/
         tenderProcess.tender.apply {
             title = pnDto.tender.title
             description = pnDto.tender.description
@@ -289,7 +292,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         tender.contractPeriod = ContractPeriod(startDate, endDate)
     }
 
-    private fun setTenderValueByActiveLots(tender: Tender, activeLots: List<Lot>) {
+    private fun setValueByActiveLots(tender: Tender, activeLots: List<Lot>) {
         if (activeLots.isNotEmpty()) {
             val totalAmount = activeLots.asSequence()
                     .sumByDouble { it.value.amount.toDouble() }
