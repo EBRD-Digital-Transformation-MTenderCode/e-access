@@ -14,7 +14,7 @@ docker network create \
 # Need assign uri, username and password #
 #****************************************#
 
-mvn clean package docker:build
+mvn clean package docker:build docker:push
 docker push docker-registry.eprocurement.systems/e-access:18.06.1
 
 docker save docker-registry.eprocurement.systems/e-access:18.06.1 | bzip2 | ssh root@10.0.20.116 'bunzip2 | docker load'
