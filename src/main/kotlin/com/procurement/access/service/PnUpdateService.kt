@@ -57,14 +57,13 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             val lotsDto = pnDto.tender.lots
             val itemsDto = pnDto.tender.items ?: throw ErrorException(ErrorType.INVALID_ITEMS)
             val documentsDto = pnDto.tender.documents
-            val lotsIds = lotsDto.asSequence().map { it.id }.toHashSet()
             checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
             checkLotsContractPeriod(lotsDto, pnDto.tender.tenderPeriod.startDate)
-            validateRelatedLots(lotIds = lotsIds, items = itemsDto, documents = documentsDto)
             setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
-            val lotsDtoId = pnDto.tender.lots.asSequence().map { it.id }.toSet()
+            val newLotsId = pnDto.tender.lots.asSequence().map { it.id }.toSet()
+            validateRelatedLots(lotIds = newLotsId, items = itemsDto, documents = documentsDto)
             /*activeLots*/
-            activeLots = getActiveLots(lotsDto = pnDto.tender.lots, newLotsId = lotsDtoId)
+            activeLots = getActiveLots(lotsDto = pnDto.tender.lots, newLotsId = newLotsId)
             /*updatedItems*/
             itemsDto.asSequence().forEach { it.id = generationService.getTimeBasedUUID() }
             updatedItems = convertItems(itemsDto)
