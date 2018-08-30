@@ -1,5 +1,5 @@
 {
-  "ocid": "ocds-t1s2t3-MD-1535558018745",
+  "ocid": "ocds-t1s2t3-MD-1535626875733",
   "planning": {
     "budget": {
       "description": "description_update",
@@ -46,7 +46,7 @@
     "rationale": "rationale_update"
   },
   "tender": {
-    "id": "ocds-t1s2t3-MD-1535558018745",
+    "id": "ocds-t1s2t3-MD-1535626875733",
     "title": "gav",
     "description": "gav gav",
     "status": "planning",
@@ -135,11 +135,15 @@
     },
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
+    "contractPeriod": {
+      "startDate": "2018-11-19T14:45:00Z",
+      "endDate": "2018-12-25T14:45:00Z"
+    },
     "tenderPeriod": {
       "startDate": "2018-04-01T00:00:01Z"
     },
     "value": {
-      "amount": 1700.00,
+      "amount": 100.00,
       "currency": "MDL"
     },
     "lotGroups": [
@@ -149,7 +153,7 @@
     ],
     "lots": [
       {
-        "id": "f35f7b20-aba3-11e8-b97d-81d7272ae83b",
+        "id": "77535bc0-ac46-11e8-b2ee-5b6303adb3c3",
         "title": "lot1",
         "description": "looot",
         "status": "planning",
@@ -211,7 +215,7 @@
     ],
     "items": [
       {
-        "id": "f35fa230-aba3-11e8-b97d-81d7272ae83b",
+        "id": "7753d0f0-ac46-11e8-b2ee-5b6303adb3c3",
         "description": "111",
         "classification": {
           "scheme": "CPV",
@@ -230,10 +234,10 @@
           "id": "86",
           "name": " Milion metri patrati spatiu locativ "
         },
-        "relatedLot": "f35f7b20-aba3-11e8-b97d-81d7272ae83b"
+        "relatedLot": "77535bc0-ac46-11e8-b2ee-5b6303adb3c3"
       },
       {
-        "id": "f35fa231-aba3-11e8-b97d-81d7272ae83b",
+        "id": "7753d0f1-ac46-11e8-b2ee-5b6303adb3c3",
         "description": "111",
         "classification": {
           "scheme": "CPV",
@@ -252,7 +256,7 @@
           "id": "86",
           "name": " Milion metri patrati spatiu locativ "
         },
-        "relatedLot": "f35f7b20-aba3-11e8-b97d-81d7272ae83b"
+        "relatedLot": "77535bc0-ac46-11e8-b2ee-5b6303adb3c3"
       }
     ],
     "documents": [
@@ -266,7 +270,7 @@
         "documentType": "illustration",
         "title": "doc1",
         "relatedLots": [
-          "f35f7b20-aba3-11e8-b97d-81d7272ae83b"
+          "77535bc0-ac46-11e8-b2ee-5b6303adb3c3"
         ]
       }
     ]
