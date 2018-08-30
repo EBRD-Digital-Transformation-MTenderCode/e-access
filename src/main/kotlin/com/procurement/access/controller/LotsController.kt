@@ -57,7 +57,7 @@ class LotsController(private val lotsService: LotsService) {
                 HttpStatus.OK)
     }
 
-    @GetMapping("/checkStatusDetails")
+    @PostMapping("/checkStatusDetails")
     fun checkStatusDetails(@RequestParam("cpid") cpId: String,
                            @RequestParam("stage") stage: String): ResponseEntity<ResponseDto> {
         return ResponseEntity(
