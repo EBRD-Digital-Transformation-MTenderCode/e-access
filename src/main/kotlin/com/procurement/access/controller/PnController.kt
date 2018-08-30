@@ -40,23 +40,23 @@ class PnController(private val pnService: PnService,
     }
 
 
-    @PutMapping
-    fun updatePn(@RequestParam("cpid") cpId: String,
-                 @RequestParam("stage") stage: String,
-                 @RequestParam("owner") owner: String,
-                 @RequestParam("token") token: String,
-                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                 @RequestParam("date") dateTime: LocalDateTime,
-                 @Valid @RequestBody data: PnUpdate): ResponseEntity<ResponseDto> {
-
-        return ResponseEntity(
-                pnUpdateService.updatePn(
-                        cpId = cpId,
-                        stage = stage,
-                        owner = owner,
-                        token = token,
-                        dateTime = dateTime,
-                        pnDto = data),
-                HttpStatus.CREATED)
-    }
+//    @PutMapping
+//    fun updatePn(@RequestParam("cpid") cpId: String,
+//                 @RequestParam("stage") stage: String,
+//                 @RequestParam("owner") owner: String,
+//                 @RequestParam("token") token: String,
+//                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                 @RequestParam("date") dateTime: LocalDateTime,
+//                 @Valid @RequestBody data: PnUpdate): ResponseEntity<ResponseDto> {
+//
+//        return ResponseEntity(
+//                pnUpdateService.updatePn(
+//                        cpId = cpId,
+//                        stage = stage,
+//                        owner = owner,
+//                        token = token,
+//                        dateTime = dateTime,
+//                        pnDto = data),
+//                HttpStatus.CREATED)
+//    }
 }
