@@ -175,12 +175,6 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                 if (process.tender.statusDetails != TenderStatusDetails.EMPTY)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
             }
-            "cancelPlan" -> {
-                if (process.tender.status != TenderStatus.PLANNING || process.tender.status != TenderStatus.PLANNED)
-                    throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
-                if (process.tender.statusDetails != TenderStatusDetails.EMPTY)
-                    throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
-            }
         }
     }
 
@@ -195,7 +189,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
             "cancelPlan" -> {
                 if (process.tender.status != TenderStatus.PLANNING || process.tender.status != TenderStatus.PLANNED)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
-                if (process.tender.statusDetails != TenderStatusDetails.CANCELLED)
+                if (process.tender.statusDetails != TenderStatusDetails.EMPTY)
                     throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
 
             }
