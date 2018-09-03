@@ -91,7 +91,9 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         /*update Documents*/
         updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents, activeLots)
         /*ContractPeriod*/
-        setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
+        if (activeLots.isNotEmpty()) {
+            setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
+        }
         /*Value*/
         setValueByActiveLots(tenderProcess.tender, activeLots)
         /*planning*/
