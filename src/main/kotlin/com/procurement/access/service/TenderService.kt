@@ -156,10 +156,12 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     private fun getLotStatusPredicateForCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
             "cancelTender", "cancelTenderEv" -> { lot: Lot ->
-                (lot.status == TenderStatus.ACTIVE) && (lot.statusDetails == TenderStatusDetails.CANCELLED)
+                (lot.status == TenderStatus.ACTIVE)
+                        && (lot.statusDetails == TenderStatusDetails.CANCELLED)
             }
             "cancelPlan" -> { lot: Lot ->
-                (lot.status == TenderStatus.PLANNING || lot.status == TenderStatus.PLANNED) && (lot.statusDetails == TenderStatusDetails.CANCELLED)
+                (lot.status == TenderStatus.PLANNING || lot.status == TenderStatus.PLANNED)
+                        && (lot.statusDetails == TenderStatusDetails.EMPTY)
             }
             else -> {
                 throw ErrorException(ErrorType.INVALID_OPERATION_TYPE)
