@@ -128,6 +128,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     .filter(lotStatusPredicate)
                     .forEach { lot ->
                         lot.status = TenderStatus.CANCELLED
+                        lot.statusDetails = TenderStatusDetails.EMPTY
                         addLotToLotsResponseDto(lotsResponseDto, lot)
                     }
         }
