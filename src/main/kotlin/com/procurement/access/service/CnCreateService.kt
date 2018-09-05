@@ -135,9 +135,11 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
             tender.documents.asSequence()
                     .filter { it.relatedLots != null }
                     .forEach { document ->
-                        if (document.relatedLots!!.contains(lot.id)) {
-                            document.relatedLots!!.remove(lot.id)
-                            document.relatedLots!!.add(id)
+                        document.relatedLots?.let { relatedLots ->
+                            if (relatedLots.contains(lot.id)) {
+                                relatedLots.remove(lot.id)
+                                relatedLots.add(id)
+                            }
                         }
                     }
             lot.id = id
@@ -186,8 +188,12 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): ContractPeriod {
-        val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
-        val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
+        val startDate: LocalDateTime = lotsDto.asSequence()
+                .minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
+                ?: throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+        val endDate: LocalDateTime = lotsDto.asSequence()
+                .maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
+                ?: throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
         budget.budgetBreakdown.forEach { bb ->
             if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
             if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
