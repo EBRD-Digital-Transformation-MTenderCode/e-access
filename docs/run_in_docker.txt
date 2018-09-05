@@ -22,21 +22,20 @@ docker save dev.docker-registry.eprocurement.systems/e-access:18.06.1 | bzip2 | 
 YLDKekTUnzyouh3D
 
 
-  echo 'Stopping container...'
-  docker stop access-1
+echo 'Stopping container...'
+docker stop access-1
 
-  echo 'Removing container...'
-  docker rm access-1
+echo 'Removing container...'
+docker rm access-1
 
-  echo 'Removing image...'
-  docker rmi dev.docker-registry.eprocurement.systems/e-access:18.06.1
+echo 'Removing image...'
+docker rmi dev.docker-registry.eprocurement.systems/e-access:18.06.1
 
-  echo 'Re-deploying'
-  docker run -d --name=access-1 \
-    --env __PROP_spring_cloud_config_uri=http://config-server-1:8700 \
-    --env __PROP_spring_profiles_active=default \
-    --env __PROP_spring_cloud_config_label=ce6bfd1 \
-    --publish 9031:8080 \
-    --network ocds-network \
-    --dns 10.0.20.115 \
-    dev.docker-registry.eprocurement.systems/e-access:18.06.1
+docker run -d --name=access-1 \
+  --env __PROP_spring_cloud_config_uri=http://config-server-1:8700 \
+  --env __PROP_spring_profiles_active=default \
+  --env __PROP_spring_cloud_config_label=ce6bfd1 \
+  --publish 9031:8080 \
+  --network ocds-network \
+  --dns 10.0.20.115 \
+  dev.docker-registry.eprocurement.systems/e-access:18.06.1

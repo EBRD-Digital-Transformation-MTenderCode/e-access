@@ -250,7 +250,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?, activeLots: List<Lot>): List<Document>? {
         return if (documentsTender != null && documentsTender.isNotEmpty()) {
-            if (documentsDto != null) {
+            if (documentsDto != null && documentsDto.isNotEmpty()) {
                 //validation
                 val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
                 val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
@@ -264,11 +264,10 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 val newDocuments = documentsDto.asSequence().filter { it.id in newDocumentsId }.toList()
                 documentsTender + newDocuments
             } else {
-                documentsTender
+                throw ErrorException(ErrorType.INVALID_DOCS_ID)
             }
-
         } else {
-            if (activeLots.isEmpty() && documentsDto != null) {
+            if (activeLots.isEmpty() && documentsDto != null && documentsDto.isNotEmpty()) {
                 if (documentsDto.any { it.relatedLots != null }) {
                     throw throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
                 }
