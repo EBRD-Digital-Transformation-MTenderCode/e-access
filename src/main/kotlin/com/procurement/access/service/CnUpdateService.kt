@@ -219,6 +219,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemCnUpdate>): List<Item> {
         //validation
         val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
+        if (itemsDtoId.size < itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         val itemsDbId = itemsTender.asSequence().map { it.id }.toSet()
         if (!itemsDtoId.containsAll(itemsDbId)) throw ErrorException(ErrorType.INVALID_ITEMS)
         //update
