@@ -1,13 +1,13 @@
 {
   "planning": {
-    "rationale": "rationale_update",
+    "rationale": "rationale",
     "budget": {
-      "description": "description_update",
+      "description": "e",
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1534845582864-FS-1534846045276",
+          "id": "ocds-t1s2t3-MD-1536560316694-FS-1536560354583",
           "amount": {
-            "amount": 900,
+            "amount": 560,
             "currency": "MDL"
           }
         }
@@ -15,164 +15,127 @@
     }
   },
   "tender": {
-    "title": "gav",
-    "description": "gav gav",
+    "title": "123ж",
+    "description": "d",
     "legalBasis": "NATIONAL_PROCUREMENT_LAW",
-    "procurementMethodRationale": "pmr_update",
-    "procurementMethodAdditionalInfo": "pmai_update",
+    "procurementMethodRationale": "",
+    "procurementMethodAdditionalInfo": "",
     "tenderPeriod": {
-      "startDate": "2018-04-01T00:00:01Z"
+      "endDate": "2018-09-10T14:30:00Z"
     },
     "procuringEntity": {
-      "name": "Update_company",
+      "name": "Name of CN pE",
+      "identifier": {
+        "scheme": "MD-IDNO",
+        "id": "555-555",
+        "legalName": "legal name of pe",
+        "uri": "g"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "ert",
+          "id": "tre",
+          "legalName": "etr",
+          "uri": "ter"
+        }
+      ],
       "address": {
-        "streetAddress": "444",
+        "streetAddress": "address of pe",
+        "postalCode": "00000",
         "addressDetails": {
           "country": {
-            "scheme": "iso-alpha2",
-            "id": "MD",
-            "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org"
+            "id": "MD"
           },
           "region": {
-            "scheme": "CUATM",
-            "id": "1000000",
-            "description": "Anenii Noi",
-            "uri": "http://statistica.md"
+            "id": "0101000"
           },
           "locality": {
-            "scheme": "CUAT",
-            "id": "1001000",
-            "description": "dgfdfg"
+            "scheme": "CUATM",
+            "id": "0101000",
+            "description": "hhh"
           }
         }
       },
-      "identifier": {
-        "id": "update_id",
-        "scheme": "MD-IDNO",
-        "legalName": "fff",
-        "uri": "hhh"
-      },
       "contactPoint": {
-        "name": "hgfh",
-        "email": "hfgh",
-        "telephone": "hgfhfh",
-        "faxNumber": "hgfh",
-        "url": "hgfhgf"
+        "name": "contact name",
+        "email": "email",
+        "telephone": "4521",
+        "faxNumber": "45",
+        "url": "d"
       }
     },
     "lots": [
       {
-        "id": "1",
+        "id": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e",
         "title": "lot1",
-        "description": "looot",
+        "description": "1",
         "value": {
-          "amount": 100.00,
+          "amount": 10,
           "currency": "MDL"
         },
         "contractPeriod": {
-          "startDate": "2018-11-19T14:45:00Z",
-          "endDate": "2018-12-25T14:45:00Z"
+          "startDate": "2018-10-21T10:40:00Z",
+          "endDate": "2018-11-24T12:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "444",
-            "postalCode": "555",
+            "streetAddress": "Steet",
+            "postalCode": "5",
             "addressDetails": {
               "country": {
-                "scheme": "iso-alpha2",
-                "id": "MD",
-                "description": "MOLDOVA",
-                "uri": "http://reference.iatistandard.org"
+                "id": "MD"
               },
               "region": {
-                "scheme": "CUATM",
-                "id": "1000000",
-                "description": "Anenii Noi",
-                "uri": "http://statistica.md"
+                "id": "0301000"
               },
               "locality": {
-                "scheme": "gfgf",
-                "id": "gfg",
-                "description": "gfg"
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": ""
               }
             }
           },
-          "description": null
+          "description": "decr"
         }
       }
     ],
     "items": [
       {
-        "id": "f35fa230-aba3-11e8-b97d-81d7272ae83b",
-        "description": "111",
+        "id": "72be9611-b4c5-11e8-a8f5-8d9501fbda7e",
         "classification": {
           "scheme": "CPV",
-          "id": "30199220-8",
-          "description": "Cărţi poştale neilustrate"
+          "description": "4",
+          "id": "03110000-5"
         },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "id": "AB06-7",
-            "description": "Plastic"
-          }
-        ],
-        "quantity": 100.00,
+        "quantity": 10,
         "unit": {
-          "id": "86",
-          "name": " Milion metri patrati spatiu locativ "
+          "id": "120",
+          "name": " Milion decalitri "
         },
-        "relatedLot": "f35f7b20-aba3-11e8-b97d-81d7272ae83b"
+        "description": "p",
+        "relatedLot": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e"
       },
       {
-        "id": "f35fa231-aba3-11e8-b97d-81d7272ae83b",
-        "description": "111",
+        "id": "72be9610-b4c5-11e8-a8f5-8d9501fbda7e",
         "classification": {
           "scheme": "CPV",
-          "id": "30199220-8",
-          "description": "Cărţi poştale neilustrate"
+          "description": "4",
+          "id": "03110000-5"
         },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "id": "AB06-7",
-            "description": "Plastic"
-          }
-        ],
-        "quantity": 100.00,
+        "quantity": 100,
         "unit": {
-          "id": "86",
-          "name": " Milion metri patrati spatiu locativ "
+          "id": "120",
+          "name": " Milion alyh roz "
         },
-        "relatedLot": "f35f7b20-aba3-11e8-b97d-81d7272ae83b"
+        "description": "p",
+        "relatedLot": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e"
       }
     ],
     "documents": [
       {
-        "documentType": "tenderNotice",
-        "id": "f7178f90-9fba-11e8-9318-61ca1098e80e",
-        "title": "doc1"
-      },
-      {
-        "documentType": "illustration",
-        "id": "0a326080-a058-11e8-9318-61ca1098e80e",
-        "title": "doc1",
-        "relatedLots": [
-          "1"
-        ]
+        "id:": "c08612a0-b4c1-11e8-bbf6-b765fb5acf63",
+        "documentType": "tenderNotice"
       }
-    ],
-    "classification": {
-      "id": "30199220-8",
-      "description": "Cărţi poştale neilustrate",
-      "scheme": "CPV"
-    },
-    "submissionMethodRationale": [
-      "submissionMethodRationale"
-    ],
-    "submissionMethodDetails": "submissionMethodDetails",
-    "procurementMethodDetails": "test",
-    "eligibilityCriteria": "eligibilityCriteria"
+    ]
   }
 }
