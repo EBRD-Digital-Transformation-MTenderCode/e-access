@@ -4,6 +4,7 @@ import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.CommandType
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.service.ValidationService
+import com.procurement.access.service.LotsService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/command")
-class CommandController(private val validationService: ValidationService) {
+class CommandController(private val validationService: ValidationService,
+                        private val lotsService: LotsService) {
 
     @PostMapping
     fun command(@RequestBody commandMessage: CommandMessage): ResponseEntity<ResponseDto> {
@@ -27,6 +29,7 @@ class CommandController(private val validationService: ValidationService) {
             CommandType.CHECK_BID -> validationService.checkBid(cm)
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
+            CommandType.CHECK_LOT_GET_ITEMS -> lotsService.checkStatusDetailsGetItems(cm)
         }
     }
 }

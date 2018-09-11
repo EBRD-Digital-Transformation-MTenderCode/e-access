@@ -35,7 +35,6 @@ data class Context @JsonCreator constructor(
         val language: String?,
         val pmd: String?,
         val token: String?,
-        val access: String?,
         val startDate: String?,
         val endDate: String?,
         val bidId: String?
@@ -44,7 +43,8 @@ data class Context @JsonCreator constructor(
 enum class CommandType(private val value: String) {
     CHECK_BID("checkBid"),
     CHECK_ITEMS("checkItems"),
-    CHECK_TOKEN("checkToken");
+    CHECK_TOKEN("checkToken"),
+    CHECK_LOT_GET_ITEMS("checkLotGetItems");
 
     @JsonValue
     fun value(): String {

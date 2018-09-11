@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.*
 import com.procurement.access.model.dto.ocds.*
@@ -23,7 +24,7 @@ interface LotsService {
 
     fun updateStatusDetailsById(cpId: String, stage: String, lotId: String, lotAwarded: Boolean): ResponseDto
 
-    fun checkStatusDetails(cpId: String, stage: String): ResponseDto
+    fun checkStatusDetailsGetItems(cm: CommandMessage): ResponseDto
 
     fun checkStatus(cpId: String, stage: String, lotDto: CheckLotStatusRequestDto): ResponseDto
 }
@@ -110,12 +111,13 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         return ResponseDto(data = LotUpdateResponseDto(updatedLot))
     }
 
-    override fun checkStatusDetails(cpId: String,
-                                    stage: String): ResponseDto {
+    override fun checkStatusDetailsGetItems(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT_PARAM_NOT_FOUND)
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         checkLotStatusDetails(process.tender.lots)
-        return ResponseDto(data = "All active lots are awarded.")
+        return ResponseDto(data = process.tender.items)
     }
 
     override fun checkStatus(cpId: String, stage: String, lotDto: CheckLotStatusRequestDto): ResponseDto {
