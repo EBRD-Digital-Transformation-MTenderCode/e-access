@@ -130,7 +130,6 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderPnCreate) {
-
         if (tender.lots != null) {
             val lotsId = tender.lots.asSequence().map { it.id }.toSet()
             if (lotsId.size < tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
