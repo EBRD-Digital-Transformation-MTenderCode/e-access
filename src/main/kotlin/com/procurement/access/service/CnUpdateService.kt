@@ -58,6 +58,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
         val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
+        if (lotsDtoId.size < cnDto.tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
         val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId

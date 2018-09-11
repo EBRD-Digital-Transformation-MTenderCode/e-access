@@ -61,6 +61,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             checkLotsContractPeriod(lotsDto, pnDto.tender.tenderPeriod.startDate)
             setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
             val newLotsId = pnDto.tender.lots.asSequence().map { it.id }.toSet()
+            if (newLotsId.size < pnDto.tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
             validateRelatedLots(lotIds = newLotsId, items = itemsDto, documents = documentsDto)
             /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, newLotsId = newLotsId)

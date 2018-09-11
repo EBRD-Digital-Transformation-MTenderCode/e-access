@@ -28,6 +28,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_PMD("10.13", "Invalid pmd."),
     INVALID_LOT_AMOUNT("10.14", "Invalid lot amount."),
     INVALID_LOT_CURRENCY("10.15", "Invalid lot currency."),
+    INVALID_LOT_ID("10.16", "Invalid lot id."),
     INVALID_ITEMS_RELATED_LOTS("10.17", "Invalid items related lots."),
     BID_VALUE_MORE_THAN_SUM_LOT("10.18", "Bid amount is more than amount of lot!"),
     INVALID_LOT_STATUS("10.19", "Related lot must be in status active and status details empty."),

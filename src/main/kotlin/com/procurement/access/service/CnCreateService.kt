@@ -40,6 +40,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val cpId = generationService.getCpId(country)
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
+        validateRelatedLots(tenderDto)
         setItemsId(tenderDto)
         setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
@@ -126,7 +127,6 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
-        validateRelatedLots(tender)
         tender.lots.forEach { lot ->
             val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
@@ -148,6 +148,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(tender: TenderCnCreate) {
         val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
+        if (lotsFromCn.size < tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
         val lotsFromDocuments = tender.documents.asSequence()
                 .filter { it.relatedLots != null }
                 .flatMap { it.relatedLots!!.asSequence() }.toHashSet()

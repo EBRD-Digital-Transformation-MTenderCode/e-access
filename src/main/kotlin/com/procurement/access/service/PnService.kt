@@ -130,8 +130,11 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderPnCreate) {
-        tender.lots?.let { lots ->
-            lots.forEach { lot ->
+
+        if (tender.lots != null) {
+            val lotsId = tender.lots.asSequence().map { it.id }.toSet()
+            if (lotsId.size < tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
+            tender.lots.forEach { lot ->
                 val id = generationService.getTimeBasedUUID()
                 tender.items?.let { items ->
                     items.asSequence()
@@ -152,7 +155,6 @@ class PnServiceImpl(private val generationService: GenerationService,
             }
         }
     }
-
 
     private fun getPmd(pmd: String): ProcurementMethod {
         return when (pmd) {
@@ -199,7 +201,6 @@ class PnServiceImpl(private val generationService: GenerationService,
             budgetValue
         }
     }
-
 
     private fun setLots(lotsDto: List<LotPnCreate>?): List<Lot> {
         return lotsDto?.asSequence()?.map { convertDtoLotToLot(it) }?.toList() ?: listOf()
