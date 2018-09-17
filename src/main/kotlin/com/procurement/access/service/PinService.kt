@@ -1,29 +1,31 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType.CONTEXT
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.pin.PinProcess
+import com.procurement.access.utils.toLocal
+import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 
 interface PinService {
 
-    fun createPin(stage: String,
-                  country: String,
-                  owner: String,
-                  dateTime: LocalDateTime,
-                  pin: PinProcess): ResponseDto
+    fun createPin(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class PinServiceImpl(private val generationService: GenerationService,
                      private val tenderProcessDao: TenderProcessDao) : PinService {
 
-    override fun createPin(stage: String,
-                           country: String,
-                           owner: String,
-                           dateTime: LocalDateTime,
-                           pin: PinProcess): ResponseDto {
+    override fun createPin(cm: CommandMessage): ResponseDto {
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val country = cm.context.country ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val pin = toObject(PinProcess::class.java, cm.data)
+
 //        validateFields(pin)
 //        val cpId = generationService.getCpId(country)
 //        pin.ocid = cpId

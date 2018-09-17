@@ -3,11 +3,12 @@ package com.procurement.access.service
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.TenderStatusResponseDto
-import com.procurement.access.model.dto.lots.CancellationResponseDto
+import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
-import com.procurement.access.model.dto.lots.LotsUpdateResponseDto
+import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus
@@ -25,13 +26,16 @@ interface TenderService {
 
     fun updateStatusDetails(cpId: String, stage: String, statusDetails: TenderStatusDetails): ResponseDto
 
-    fun setSuspended(cpId: String, stage: String, suspended: Boolean): ResponseDto
+    fun suspendTender(cpId: String, stage: String, suspended: Boolean): ResponseDto
+
+    fun unsuspendTender(cm: CommandMessage): ResponseDto
 
     fun setUnsuccessful(cpId: String, stage: String): ResponseDto
 
     fun prepareCancellation(cpId: String, stage: String, owner: String, token: String, operationType: String): ResponseDto
 
     fun tenderCancellation(cpId: String, stage: String, owner: String, token: String, operationType: String): ResponseDto
+
 }
 
 @Service
@@ -57,9 +61,9 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return ResponseDto(data = TenderStatusResponseDto(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
-    override fun setSuspended(cpId: String,
-                              stage: String,
-                              suspended: Boolean): ResponseDto {
+    override fun suspendTender(cpId: String,
+                               stage: String,
+                               suspended: Boolean): ResponseDto {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         if (suspended) {
@@ -89,7 +93,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
             }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = LotsUpdateResponseDto(process.tender.status, process.tender.lots, null))
+        return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.lots, null))
     }
 
     override fun prepareCancellation(cpId: String, stage: String, owner: String, token: String, operationType: String): ResponseDto {
@@ -110,7 +114,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationResponseDto(lots = lotsResponseDto))
+        return ResponseDto(data = CancellationRs(lots = lotsResponseDto))
     }
 
 
@@ -133,7 +137,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                     }
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationResponseDto(lots = lotsResponseDto))
+        return ResponseDto(data = CancellationRs(lots = lotsResponseDto))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {

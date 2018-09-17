@@ -2,7 +2,8 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
+import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.ItemCnUpdate
@@ -15,6 +16,7 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
+import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.RoundingMode
@@ -22,29 +24,25 @@ import java.time.LocalDateTime
 
 interface CnUpdateService {
 
-    fun updateCn(
-            cpId: String,
-            stage: String,
-            owner: String,
-            token: String,
-            dateTime: LocalDateTime,
-            cnDto: CnUpdate): ResponseDto
+    fun updateCn(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class CnUpdateServiceImpl(private val generationService: GenerationService,
                           private val tenderProcessDao: TenderProcessDao) : CnUpdateService {
 
-    override fun updateCn(cpId: String,
-                          stage: String,
-                          owner: String,
-                          token: String,
-                          dateTime: LocalDateTime,
-                          cnDto: CnUpdate): ResponseDto {
+    override fun updateCn(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val token = cm.context.token ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val cnDto = toObject(CnUpdate::class.java, cm.data)
+        
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
-                ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
-        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+                ?: throw ErrorException(DATA_NOT_FOUND)
+        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
+        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         validateTenderStatus(tenderProcess)
 
@@ -58,7 +56,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
         val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
-        if (lotsDtoId.size < cnDto.tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
+        if (lotsDtoId.size < cnDto.tender.lots.size) throw ErrorException(INVALID_LOT_ID)
         val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId
@@ -95,20 +93,20 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun checkLotsCurrency(lotsDto: List<LotCnUpdate>, budgetCurrency: String) {
         lotsDto.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
-            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
+            throw ErrorException(INVALID_LOT_CURRENCY)
         }
     }
 
     private fun validateTenderStatus(tenderProcess: TenderProcess) {
-        if (tenderProcess.tender.statusDetails == SUSPENDED) throw ErrorException(ErrorType.SUSPENDED)
+        if (tenderProcess.tender.statusDetails == SUSPENDED) throw ErrorException(IS_SUSPENDED)
     }
 
     private fun setContractPeriod(tender: Tender, activeLots: List<Lot>, budget: Budget) {
         val startDate: LocalDateTime = activeLots.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = activeLots.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
         budget.budgetBreakdown.forEach { bb ->
-            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
         tender.contractPeriod = ContractPeriod(startDate, endDate)
     }
@@ -117,7 +115,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val totalAmount = activeLots.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-        if (totalAmount > tender.value.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
+        if (totalAmount > tender.value.amount) throw ErrorException(INVALID_LOT_AMOUNT)
         tender.value.amount = totalAmount
     }
 
@@ -150,10 +148,10 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
     private fun checkLotsContractPeriod(cn: CnUpdate) {
         cn.tender.lots.forEach { lot ->
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
-                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
             if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
-                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
         }
     }
@@ -183,13 +181,13 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemCnUpdate>, documents: List<Document>) {
         val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
-        if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         val lotsFromDocuments = documents.asSequence()
                 .filter { it.relatedLots != null }
                 .flatMap { it.relatedLots!!.asSequence() }
                 .toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
     }
 
@@ -220,9 +218,9 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemCnUpdate>): List<Item> {
         //validation
         val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
-        if (itemsDtoId.size < itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
+        if (itemsDtoId.size < itemsDto.size) throw ErrorException(INVALID_ITEMS)
         val itemsDbId = itemsTender.asSequence().map { it.id }.toSet()
-        if (!itemsDtoId.containsAll(itemsDbId)) throw ErrorException(ErrorType.INVALID_ITEMS)
+        if (!itemsDtoId.containsAll(itemsDbId)) throw ErrorException(INVALID_ITEMS)
         //update
         itemsTender.forEach { item ->
             val itemDto = itemsDto.asSequence().first { it.id == item.id }
@@ -242,7 +240,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
             val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
             val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
             val newDocumentsId = documentsDtoId - documentsDbId
-            if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(ErrorType.INVALID_DOCS_ID)
+            if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
             //update
             documentsTender.forEach { document ->
                 val documentDto = documentsDto.asSequence().first { it.id == document.id }

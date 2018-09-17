@@ -15,28 +15,28 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/pinOnPn")
 class PinOnPnController(private val pinOnPnService: PinOnPnService) {
-
-    @PostMapping
-    fun createPinOnPn(@RequestParam("cpid") cpId: String,
-                      @RequestParam("token") token: String,
-                      @RequestParam(value = "country", required = false) country: String,
-                      @RequestParam(value = "pmd", required = false) pmd: String,
-                      @RequestParam("owner") owner: String,
-                      @RequestParam("stage") stage: String,
-                      @RequestParam("previousStage") previousStage: String,
-                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                      @RequestParam("date")
-                      dateTime: LocalDateTime,
-                      @Valid @RequestBody data: PinProcess): ResponseEntity<ResponseDto> {
-        return ResponseEntity(
-                pinOnPnService.createPinOnPn(
-                        cpId = cpId,
-                        token = token,
-                        owner = owner,
-                        stage = stage,
-                        previousStage = previousStage,
-                        dateTime = dateTime,
-                        pin = data),
-                HttpStatus.CREATED)
-    }
+//
+//    @PostMapping
+//    fun createPinOnPn(@RequestParam("cpid") cpId: String,
+//                      @RequestParam("token") token: String,
+//                      @RequestParam(value = "country", required = false) country: String,
+//                      @RequestParam(value = "pmd", required = false) pmd: String,
+//                      @RequestParam("owner") owner: String,
+//                      @RequestParam("stage") stage: String,
+//                      @RequestParam("previousStage") previousStage: String,
+//                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                      @RequestParam("date")
+//                      dateTime: LocalDateTime,
+//                      @Valid @RequestBody data: PinProcess): ResponseEntity<ResponseDto> {
+//        return ResponseEntity(
+//                pinOnPnService.createPinOnPn(
+//                        cpId = cpId,
+//                        token = token,
+//                        owner = owner,
+//                        stage = stage,
+//                        previousStage = previousStage,
+//                        dateTime = dateTime,
+//                        pin = data),
+//                HttpStatus.CREATED)
+//    }
 }

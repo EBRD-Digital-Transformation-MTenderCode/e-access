@@ -19,43 +19,43 @@ import javax.validation.Valid
 class CnController(private val cnCreateService: CnCreateService,
                    private val cnUpdateService: CnUpdateService) {
 
-    @PostMapping
-    fun createCn(@RequestParam("stage") stage: String,
-                 @RequestParam("country") country: String,
-                 @RequestParam("pmd") pmd: String,
-                 @RequestParam("owner") owner: String,
-                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                 @RequestParam("date") dateTime: LocalDateTime,
-                 @Valid @RequestBody data: CnCreate): ResponseEntity<ResponseDto> {
-
-        return ResponseEntity(
-                cnCreateService.createCn(
-                        stage = stage,
-                        country = country,
-                        pmd = pmd,
-                        owner = owner,
-                        dateTime = dateTime,
-                        cnDto = data),
-                HttpStatus.CREATED)
-    }
-
-    @PutMapping
-    fun updateCn(@RequestParam("cpid") cpId: String,
-                 @RequestParam("stage") stage: String,
-                 @RequestParam("owner") owner: String,
-                 @RequestParam("token") token: String,
-                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                 @RequestParam("date") dateTime: LocalDateTime,
-                 @Valid @RequestBody data: CnUpdate): ResponseEntity<ResponseDto> {
-
-        return ResponseEntity(
-                cnUpdateService.updateCn(
-                        cpId = cpId,
-                        stage = stage,
-                        owner = owner,
-                        token = token,
-                        dateTime = dateTime,
-                        cnDto = data),
-                HttpStatus.CREATED)
-    }
+//    @PostMapping
+//    fun createCn(@RequestParam("stage") stage: String,
+//                 @RequestParam("country") country: String,
+//                 @RequestParam("pmd") pmd: String,
+//                 @RequestParam("owner") owner: String,
+//                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                 @RequestParam("date") dateTime: LocalDateTime,
+//                 @Valid @RequestBody data: CnCreate): ResponseEntity<ResponseDto> {
+//
+//        return ResponseEntity(
+//                cnCreateService.createCn(
+//                        stage = stage,
+//                        country = country,
+//                        pmd = pmd,
+//                        owner = owner,
+//                        dateTime = dateTime,
+//                        cnDto = data),
+//                HttpStatus.CREATED)
+//    }
+//
+//    @PutMapping
+//    fun updateCn(@RequestParam("cpid") cpId: String,
+//                 @RequestParam("stage") stage: String,
+//                 @RequestParam("owner") owner: String,
+//                 @RequestParam("token") token: String,
+//                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                 @RequestParam("date") dateTime: LocalDateTime,
+//                 @Valid @RequestBody data: CnUpdate): ResponseEntity<ResponseDto> {
+//
+//        return ResponseEntity(
+//                cnUpdateService.updateCn(
+//                        cpId = cpId,
+//                        stage = stage,
+//                        owner = owner,
+//                        token = token,
+//                        dateTime = dateTime,
+//                        cnDto = data),
+//                HttpStatus.CREATED)
+//    }
 }

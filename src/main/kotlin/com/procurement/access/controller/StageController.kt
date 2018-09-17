@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/newStage")
 class StageController(private val stageService: StageService) {
 
-    @PostMapping
-    fun startNewStage(@RequestParam("cpid") cpId: String,
-                      @RequestParam("token") token: String,
-                      @RequestParam("previousStage") previousStage: String,
-                      @RequestParam("stage") newStage: String,
-                      @RequestParam("owner") owner: String): ResponseEntity<ResponseDto> {
-        return ResponseEntity(
-                stageService.startNewStage(
-                        cpId = cpId,
-                        token = token,
-                        previousStage = previousStage,
-                        newStage = newStage,
-                        owner = owner),
-                HttpStatus.OK)
-    }
+//    @PostMapping
+//    fun startNewStage(@RequestParam("cpid") cpId: String,
+//                      @RequestParam("token") token: String,
+//                      @RequestParam("previousStage") previousStage: String,
+//                      @RequestParam("stage") newStage: String,
+//                      @RequestParam("owner") owner: String): ResponseEntity<ResponseDto> {
+//        return ResponseEntity(
+//                stageService.startNewStage(
+//                        cpId = cpId,
+//                        token = token,
+//                        previousStage = previousStage,
+//                        newStage = newStage,
+//                        owner = owner),
+//                HttpStatus.OK)
+//    }
 
 
 }

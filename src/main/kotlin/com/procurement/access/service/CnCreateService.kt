@@ -2,7 +2,8 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
+import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
@@ -11,30 +12,29 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
+import com.procurement.access.utils.toLocal
+import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
 interface CnCreateService {
 
-    fun createCn(stage: String,
-                 country: String,
-                 pmd: String,
-                 owner: String,
-                 dateTime: LocalDateTime,
-                 cnDto: CnCreate): ResponseDto
+    fun createCn(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class CnCreateServiceImpl(private val generationService: GenerationService,
                           private val tenderProcessDao: TenderProcessDao) : CnCreateService {
 
-    override fun createCn(stage: String,
-                          country: String,
-                          pmd: String,
-                          owner: String,
-                          dateTime: LocalDateTime,
-                          cnDto: CnCreate): ResponseDto {
+    override fun createCn(cm: CommandMessage): ResponseDto {
+        val country = cm.context.country ?: throw ErrorException(CONTEXT)
+        val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val cnDto = toObject(CnCreate::class.java, cm.data)
+
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
         val cpId = generationService.getCpId(country)
@@ -103,17 +103,17 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     private fun checkLotsCurrency(cn: CnCreate) {
         val budgetCurrency = cn.planning.budget.amount.currency
         cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
-            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
+            throw ErrorException(INVALID_LOT_CURRENCY)
         }
     }
 
     private fun checkLotsContractPeriod(cn: CnCreate) {
         cn.tender.lots.forEach { lot ->
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
-                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
             if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
-                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
         }
     }
@@ -148,16 +148,16 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(tender: TenderCnCreate) {
         val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
-        if (lotsFromCn.size < tender.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
+        if (lotsFromCn.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
         val lotsFromDocuments = tender.documents.asSequence()
                 .filter { it.relatedLots != null }
                 .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
         val lotsFromItems = tender.items.asSequence()
                 .map { it.relatedLot }.toHashSet()
-        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
     }
 
     private fun getPmd(pmd: String): ProcurementMethod {
@@ -171,7 +171,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
             "FA" -> ProcurementMethod.FA
             "TEST_OT" -> ProcurementMethod.TEST_OT
             "TEST_RT" -> ProcurementMethod.TEST_RT
-            else -> throw ErrorException(ErrorType.INVALID_PMD)
+            else -> throw ErrorException(INVALID_PMD)
         }
     }
 
@@ -180,7 +180,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-        if (totalAmount > budgetValue.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
+        if (totalAmount > budgetValue.amount) throw ErrorException(INVALID_LOT_AMOUNT)
         return Value(totalAmount, currency)
     }
 
@@ -191,13 +191,13 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): ContractPeriod {
         val startDate: LocalDateTime = lotsDto.asSequence()
                 .minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
-                ?: throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                ?: throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         val endDate: LocalDateTime = lotsDto.asSequence()
                 .maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
-                ?: throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                ?: throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         budget.budgetBreakdown.forEach { bb ->
-            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
         return ContractPeriod(startDate, endDate)
     }

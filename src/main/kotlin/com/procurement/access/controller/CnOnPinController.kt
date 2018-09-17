@@ -16,24 +16,24 @@ import javax.validation.Valid
 @RequestMapping("/cnOnPin")
 class CnOnPinController(private val cnOnPinService: CnOnPinService) {
 
-    @PostMapping
-    fun createPinOnPin(@RequestParam("cpid") cpId: String,
-                       @RequestParam("previousStage") previousStage: String,
-                       @RequestParam("stage") stage: String,
-                       @RequestParam("owner") owner: String,
-                       @RequestParam("token") token: String,
-                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                       @RequestParam("date") dateTime: LocalDateTime,
-                       @Valid @RequestBody data: CnUpdate): ResponseEntity<ResponseDto> {
-        return ResponseEntity(
-                cnOnPinService.createCnOnPin(
-                        cpId = cpId,
-                        previousStage = previousStage,
-                        stage = stage,
-                        owner = owner,
-                        token = token,
-                        dateTime = dateTime,
-                        cnDto = data),
-                HttpStatus.CREATED)
-    }
+//    @PostMapping
+//    fun createCnOnPin(@RequestParam("cpid") cpId: String,
+//                       @RequestParam("previousStage") previousStage: String,
+//                       @RequestParam("stage") stage: String,
+//                       @RequestParam("owner") owner: String,
+//                       @RequestParam("token") token: String,
+//                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                       @RequestParam("date") dateTime: LocalDateTime,
+//                       @Valid @RequestBody data: CnUpdate): ResponseEntity<ResponseDto> {
+//        return ResponseEntity(
+//                cnOnPinService.createCnOnPin(
+//                        cpId = cpId,
+//                        previousStage = previousStage,
+//                        stage = stage,
+//                        owner = owner,
+//                        token = token,
+//                        dateTime = dateTime,
+//                        cnDto = data),
+//                HttpStatus.CREATED)
+//    }
 }

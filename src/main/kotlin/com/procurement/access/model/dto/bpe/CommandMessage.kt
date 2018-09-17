@@ -10,13 +10,9 @@ import com.procurement.access.exception.ErrorException
 data class CommandMessage @JsonCreator constructor(
 
         val id: String,
-
         val command: CommandType,
-
         val context: Context,
-
         val data: JsonNode,
-
         val version: ApiVersion
 )
 
@@ -37,14 +33,38 @@ data class Context @JsonCreator constructor(
         val token: String?,
         val startDate: String?,
         val endDate: String?,
-        val bidId: String?
+        val id: String?
 )
 
 enum class CommandType(private val value: String) {
+
+    CREATE_PIN("createPin"),
+    CREATE_PN("createPn"),
+    UPDATE_PN("updatePn"),
+    CREATE_CN("createCn"),
+    UPDATE_CN("updateCn"),
+    CREATE_PIN_ON_PN("createPinOnPn"),
+    CREATE_CN_ON_PIN("createCnOnPin"),
+    CREATE_CN_ON_PN("createCnOnPn"),
+
+    SUSPEND_TENDER("suspendTender"),
+    UNSUSPEND_TENDER("unsuspendTender"),
+    UNSUCCESSFUL_TENDER("unsuccessfulTender"),
+    PREPARE_CANCELLATION("prepareCancellation"),
+    TENDER_CANCELLATION("tenderCancellation"),
+
+    START_NEW_STAGE("startNewStage"),
+
+    GET_LOTS("getLots"),
+    UPDATE_LOT_STATUS_DETAILS("updateLotStatusDetails"),
+    UPDATE_LOT_STATUS_DETAILS_BY_BID("updateLotStatusDetailsById"),
+    UPDATE_LOTS("updateLots"),
+    UPDATE_LOTS_EV("updateLotsEv"),
+    CHECK_LOT_STATUS("checkLotStatus"),
+    CHECK_LOT_GET_ITEMS("checkLotGetItems"),
     CHECK_BID("checkBid"),
     CHECK_ITEMS("checkItems"),
-    CHECK_TOKEN("checkToken"),
-    CHECK_LOT_GET_ITEMS("checkLotGetItems");
+    CHECK_TOKEN("checkToken");
 
     @JsonValue
     fun value(): String {

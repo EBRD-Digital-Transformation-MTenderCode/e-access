@@ -1,39 +1,37 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType.CONTEXT
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.pin.PinProcess
+import com.procurement.access.utils.toLocal
+import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 
 interface PinOnPnService {
 
-    fun createPinOnPn(
-            cpId: String,
-            token: String,
-            owner: String,
-            stage: String,
-            previousStage: String,
-            dateTime: LocalDateTime,
-            pin: PinProcess): ResponseDto
+    fun createPinOnPn(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOnPnService {
 
-    override fun createPinOnPn(cpId: String,
-                               token: String,
-                               owner: String,
-                               stage: String,
-                               previousStage: String,
-                               dateTime: LocalDateTime,
-                               pin: PinProcess): ResponseDto {
+    override fun createPinOnPn(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val token = cm.context.token ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val pin = toObject(PinProcess::class.java, cm.data)
 
 //        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
-//                ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-//        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
-//        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
-//        if (entity.cpId != pin.tender.id) throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
+//                ?: throw ErrorException(DATA_NOT_FOUND)
+//        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
+//        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
+//        if (entity.cpId != pin.tender.id) throw ErrorException(INVALID_CPID_FROM_DTO)
 //        val pn = toObject(Pn::class.java, entity.jsonData)
 //        addLotsToPinFromPn(pn.tender, pin.tender)
 //        validateLots(pn.tender, pin.tender)
@@ -63,11 +61,11 @@ class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOn
 //
 //            if (pnTender.lots != null) {
 //                val lotsFromPn = pnTender.lots.asSequence().map({ it.id }).toHashSet()
-//                if (!lotsFromPn.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+//                if (!lotsFromPn.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
 //            } else {
 //                if (pinTender.lots != null) {
 //                    val lotsFromPin = pinTender.lots!!.asSequence().map({ it.id }).toHashSet()
-//                    if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+//                    if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
 //                }
 //            }
 //        }

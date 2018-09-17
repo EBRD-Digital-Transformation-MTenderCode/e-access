@@ -2,7 +2,8 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
+import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.ItemCnUpdate
@@ -12,6 +13,7 @@ import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
+import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.RoundingMode
@@ -19,39 +21,32 @@ import java.time.LocalDateTime
 
 interface CnOnPnService {
 
-    fun createCnOnPn(
-            cpId: String,
-            previousStage: String,
-            stage: String,
-            owner: String,
-            token: String,
-            dateTime: LocalDateTime,
-            cnDto: CnUpdate): ResponseDto
+    fun createCnOnPn(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class CnOnPnServiceImpl(private val generationService: GenerationService,
                         private val tenderProcessDao: TenderProcessDao) : CnOnPnService {
 
-    override fun createCnOnPn(cpId: String,
-                              previousStage: String,
-                              stage: String,
-                              owner: String,
-                              token: String,
-                              dateTime: LocalDateTime,
-                              cnDto: CnUpdate): ResponseDto {
+    override fun createCnOnPn(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val token = cm.context.token ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val cnDto = toObject(CnUpdate::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
-                ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
-        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
+        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
+        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         val tenderDto = cnDto.tender
         if (tenderProcess.tender.items.isEmpty()) {
             checkLotsCurrency(cnDto, tenderProcess.planning.budget.amount.currency)
             checkLotsContractPeriod(cnDto)
             val lotsId = tenderDto.lots.asSequence().map { it.id }.toSet()
-            if (lotsId.size < tenderDto.lots.size) throw ErrorException(ErrorType.INVALID_LOT_ID)
+            if (lotsId.size < tenderDto.lots.size) throw ErrorException(INVALID_LOT_ID)
             validateRelatedLots(lotsId, tenderDto)
             setItemsId(tenderDto)
             setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
@@ -84,26 +79,26 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 .filter { it.relatedLots != null }
                 .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
         val lotsFromItems = tender.items.asSequence()
                 .map { it.relatedLot }.toHashSet()
-        if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(ErrorType.INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
     }
 
     private fun checkLotsCurrency(cn: CnUpdate, budgetCurrency: String) {
         cn.tender.lots.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {
-            throw ErrorException(ErrorType.INVALID_LOT_CURRENCY)
+            throw ErrorException(INVALID_LOT_CURRENCY)
         }
     }
 
     private fun checkLotsContractPeriod(cn: CnUpdate) {
         cn.tender.lots.forEach { lot ->
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
-                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
             if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
-                throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
         }
     }
@@ -115,7 +110,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
                 val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
                 val newDocumentsId = documentsDtoId - documentsDbId
-                if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(ErrorType.INVALID_DOCS_ID)
+                if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
                 //update
                 documentsTender.forEach { document ->
                     val documentDto = documentsDto.asSequence().first { it.id == document.id }
@@ -168,7 +163,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
                 .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-        if (totalAmount > budgetValue.amount) throw ErrorException(ErrorType.INVALID_LOT_AMOUNT)
+        if (totalAmount > budgetValue.amount) throw ErrorException(INVALID_LOT_AMOUNT)
         return Value(totalAmount, currency)
     }
 
@@ -180,8 +175,8 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
         val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
         budget.budgetBreakdown.forEach { bb ->
-            if (startDate > bb.period.endDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-            if (endDate < bb.period.startDate) throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
+            if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
         return ContractPeriod(startDate, endDate)
     }

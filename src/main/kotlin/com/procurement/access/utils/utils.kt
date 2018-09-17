@@ -17,29 +17,53 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import java.util.*
 
 
 private object JsonMapper {
+
     val mapper: ObjectMapper = ObjectMapper()
+
+    var dateTimeFormatter: DateTimeFormatter
 
     init {
         val module = SimpleModule()
         module.addSerializer(LocalDateTime::class.java, JsonDateSerializer())
         module.addDeserializer(LocalDateTime::class.java, JsonDateDeserializer())
-        module.addDeserializer(BigDecimal::class.java, MoneyDeserializer())
         module.addDeserializer(String::class.java, StringsDeserializer())
         module.addDeserializer(Int::class.java, IntDeserializer())
+
         mapper.registerModule(module)
         mapper.registerKotlinModule()
         mapper.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
         mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         mapper.nodeFactory = JsonNodeFactory.withExactBigDecimals(true)
+
+        dateTimeFormatter = DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                .appendLiteral('T')
+                .appendValue(ChronoField.HOUR_OF_DAY, 2)
+                .appendLiteral(':')
+                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                .optionalStart()
+                .appendLiteral(':')
+                .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+                .appendLiteral('Z')
+                .toFormatter()
     }
+
 }
 
 /*Date utils*/
+fun String.toLocal(): LocalDateTime {
+    return LocalDateTime.parse(this, JsonMapper.dateTimeFormatter)
+}
+
 fun LocalDateTime.toDate(): Date {
     return Date.from(this.toInstant(ZoneOffset.UTC))
 }

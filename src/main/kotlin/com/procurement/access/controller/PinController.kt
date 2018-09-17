@@ -16,21 +16,21 @@ import javax.validation.Valid
 @RequestMapping("/pin")
 class PinController(private val pinService: PinService) {
 
-    @PostMapping
-    fun createPin(@RequestParam("stage") stage: String,
-                  @RequestParam("country") country: String,
-                  @RequestParam(value = "pmd", required = false) pmd: String,
-                  @RequestParam("owner") owner: String,
-                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                  @RequestParam("date") dateTime: LocalDateTime,
-                  @Valid @RequestBody data: PinProcess): ResponseEntity<ResponseDto> {
-        return ResponseEntity(
-                pinService.createPin(
-                        stage = stage,
-                        country = country,
-                        owner = owner,
-                        dateTime = dateTime,
-                        pin = data),
-                HttpStatus.CREATED)
-    }
+//    @PostMapping
+//    fun createPin(@RequestParam("stage") stage: String,
+//                  @RequestParam("country") country: String,
+//                  @RequestParam(value = "pmd", required = false) pmd: String,
+//                  @RequestParam("owner") owner: String,
+//                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//                  @RequestParam("date") dateTime: LocalDateTime,
+//                  @Valid @RequestBody data: PinProcess): ResponseEntity<ResponseDto> {
+//        return ResponseEntity(
+//                pinService.createPin(
+//                        stage = stage,
+//                        country = country,
+//                        owner = owner,
+//                        dateTime = dateTime,
+//                        pin = data),
+//                HttpStatus.CREATED)
+//    }
 }

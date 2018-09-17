@@ -2,7 +2,8 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
+import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
@@ -13,37 +14,30 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
+import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 interface CnOnPinService {
 
-    fun createCnOnPin(
-            cpId: String,
-            previousStage: String,
-            stage: String,
-            owner: String,
-            token: String,
-            dateTime: LocalDateTime,
-            cnDto: CnUpdate): ResponseDto
+    fun createCnOnPin(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPinService {
 
-    override fun createCnOnPin(cpId: String,
-                               previousStage: String,
-                               stage: String,
-                               owner: String,
-                               token: String,
-                               dateTime: LocalDateTime,
-                               cnDto: CnUpdate): ResponseDto {
+    override fun createCnOnPin(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val token = cm.context.token ?: throw ErrorException(CONTEXT)
+        val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val cnDto = toObject(CnUpdate::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
-                ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
-        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
+        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
+        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         validatePeriod(tenderProcess.tender, dateTime)
         validateDocumentsRelatedLots(tenderProcess.tender, cnDto.tender)
@@ -55,9 +49,9 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
     }
 
     private fun validatePeriod(pinTender: Tender, dateTime: LocalDateTime) {
-        val tenderPeriod = pinTender.tenderPeriod ?: throw ErrorException(ErrorType.INVALID_START_DATE)
+        val tenderPeriod = pinTender.tenderPeriod ?: throw ErrorException(INVALID_START_DATE)
         if (tenderPeriod.startDate.toLocalDate() != dateTime.toLocalDate())
-            throw ErrorException(ErrorType.INVALID_START_DATE)
+            throw ErrorException(INVALID_START_DATE)
     }
 
     private fun validateDocumentsRelatedLots(tender: Tender, tenderDto: TenderCnUpdate) {
@@ -66,8 +60,8 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
                 .filter { it.relatedLots != null }
                 .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (lotsFromDocuments.size > lotsFromPin.size) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
-            if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
+            if (lotsFromDocuments.size > lotsFromPin.size) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
     }
 

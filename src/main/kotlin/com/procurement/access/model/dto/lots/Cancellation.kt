@@ -6,7 +6,7 @@ import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class CancellationResponseDto @JsonCreator constructor(
+data class CancellationRs @JsonCreator constructor(
 
         val lots: List<LotCancellation>
 )
