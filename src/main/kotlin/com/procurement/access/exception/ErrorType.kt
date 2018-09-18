@@ -38,6 +38,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_OPERATION_TYPE("10.23", "Invalid operation type."),
     INVALID_CPV_CODE("10.24", "Invalid cpv code."),
     INVALID_DOCS_ID("10.25", "Invalid documents ids."),
-    IS_SUSPENDED("20.01", "Tender is suspended."),
+    IS_SUSPENDED("10.26", "Tender is suspended."),
     CONTEXT("20.01", "Context parameter not found.");
 }
