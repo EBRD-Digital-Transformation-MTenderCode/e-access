@@ -9,11 +9,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.procurement.access.databinding.JsonDateDeserializer
 import com.procurement.access.databinding.JsonDateSerializer
-import com.procurement.access.databinding.MoneyDeserializer
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.StringsDeserializer
 import java.io.IOException
-import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -26,7 +24,6 @@ import java.util.*
 private object JsonMapper {
 
     val mapper: ObjectMapper = ObjectMapper()
-
     var dateTimeFormatter: DateTimeFormatter
 
     init {

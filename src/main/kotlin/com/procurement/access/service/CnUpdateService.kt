@@ -38,7 +38,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data)
-        
+
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
