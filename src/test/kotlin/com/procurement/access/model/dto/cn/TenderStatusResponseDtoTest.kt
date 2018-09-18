@@ -8,6 +8,6 @@
 //    @Test
 //    @DisplayName("tenderStatusResponseDto")
 //    fun tenderStatusResponseDto() {
-//        compare(TenderStatusResponseDto::class.java, "/json/tender_status_resp.json")
+//        compare(UpdateTenderStatusRs::class.java, "/json/tender_status_resp.json")
 //    }
 //}

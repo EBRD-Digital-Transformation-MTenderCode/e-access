@@ -41,12 +41,14 @@ class CommandController(private val pinService: PinService,
             CREATE_PIN_ON_PN -> pinOnPnService.createPinOnPn(cm)
             CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
             CREATE_CN_ON_PN -> cnOnPnService.createCnOnPn(cm)
+            
             SUSPEND_TENDER -> tenderService.suspendTender(cm)
             UNSUSPEND_TENDER -> tenderService.unsuspendTender(cm)
             UNSUCCESSFUL_TENDER -> tenderService.setUnsuccessful(cm)
             PREPARE_CANCELLATION -> tenderService.prepareCancellation(cm)
             TENDER_CANCELLATION -> tenderService.tenderCancellation(cm)
             START_NEW_STAGE -> stageService.startNewStage(cm)
+            
             GET_LOTS -> lotsService.getLots(cm)
             UPDATE_LOT_STATUS_DETAILS -> lotsService.updateStatusDetails(cm)
             UPDATE_LOT_STATUS_DETAILS_BY_BID -> lotsService.updateStatusDetailsById(cm)

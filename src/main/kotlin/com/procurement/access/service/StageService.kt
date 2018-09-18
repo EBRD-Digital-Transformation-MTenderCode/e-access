@@ -1,36 +1,37 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.utils.toLocal
 import org.springframework.stereotype.Service
 
 interface StageService {
 
-    fun startNewStage(cpId: String,
-                      token: String,
-                      previousStage: String,
-                      newStage: String,
-                      owner: String): ResponseDto
+    fun startNewStage(cm: CommandMessage): ResponseDto
 }
 
 @Service
 class StageServiceImpl(private val tenderProcessDao: TenderProcessDao) : StageService {
 
-    override fun startNewStage(cpId: String,
-                               token: String,
-                               previousStage: String,
-                               newStage: String,
-                               owner: String): ResponseDto {
+    override fun startNewStage(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.country ?: throw ErrorException(CONTEXT)
+        val token = cm.context.pmd ?: throw ErrorException(CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val previousStage = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
 
 //        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
-//                ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-//        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
-//        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+//                ?: throw ErrorException(DATA_NOT_FOUND)
+//        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
+//        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
 //        val process = toObject(TenderProcess::class.java, entity.jsonData)
 //        process.tender.apply {
-//            if (status !== TenderStatus.ACTIVE) throw ErrorException(ErrorType.NOT_ACTIVE)
-//            if (statusDetails !== TenderStatusDetails.EMPTY) throw ErrorException(ErrorType.NOT_INTERMEDIATE)
-//            if (!isHaveActiveLots(lots)) throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
+//            if (status !== TenderStatus.ACTIVE) throw ErrorException(NOT_ACTIVE)
+//            if (statusDetails !== TenderStatusDetails.EMPTY) throw ErrorException(NOT_INTERMEDIATE)
+//            if (!isHaveActiveLots(lots)) throw ErrorException(NO_ACTIVE_LOTS)
 //            filterLots(this)
 //            filterItems(this)
 //            filterDocuments(this)

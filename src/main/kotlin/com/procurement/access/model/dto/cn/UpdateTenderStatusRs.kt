@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class TenderStatusResponseDto @JsonCreator constructor(
+data class UpdateTenderStatusRs @JsonCreator constructor(
 
         val status: String?,
 
