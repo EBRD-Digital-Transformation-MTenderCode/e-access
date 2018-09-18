@@ -17,11 +17,11 @@ interface StageService {
 class StageServiceImpl(private val tenderProcessDao: TenderProcessDao) : StageService {
 
     override fun startNewStage(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.country ?: throw ErrorException(CONTEXT)
-        val token = cm.context.pmd ?: throw ErrorException(CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val previousStage = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+//        val cpId = cm.context.country ?: throw ErrorException(CONTEXT)
+//        val token = cm.context.pmd ?: throw ErrorException(CONTEXT)
+//        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+//        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+//        val previousStage = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
 
 //        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)
 //                ?: throw ErrorException(DATA_NOT_FOUND)

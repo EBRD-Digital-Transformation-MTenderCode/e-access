@@ -19,12 +19,12 @@ interface PinOnPnService {
 class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOnPnService {
 
     override fun createPinOnPn(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val token = cm.context.token ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+//        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+//        val token = cm.context.token ?: throw ErrorException(CONTEXT)
+//        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+//        val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
+//        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+//        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val pin = toObject(PinProcess::class.java, cm.data)
 
 //        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage)

@@ -45,12 +45,12 @@ class TenderProcessDaoImpl(private val session: Session) : TenderProcessDao {
     }
 
     companion object {
-        private val TENDER_TABLE = "access_tender"
-        private val CP_ID = "cp_id"
-        private val TOKEN = "token_entity"
-        private val STAGE = "stage"
-        private val CREATED_DATE = "created_date"
-        private val OWNER = "owner"
-        private val JSON_DATA = "json_data"
+        private const val TENDER_TABLE = "access_tender"
+        private const val CP_ID = "cp_id"
+        private const val TOKEN = "token_entity"
+        private const val STAGE = "stage"
+        private const val CREATED_DATE = "created_date"
+        private const val OWNER = "owner"
+        private const val JSON_DATA = "json_data"
     }
 }

@@ -20,10 +20,10 @@ class PinServiceImpl(private val generationService: GenerationService,
                      private val tenderProcessDao: TenderProcessDao) : PinService {
 
     override fun createPin(cm: CommandMessage): ResponseDto {
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val country = cm.context.country ?: throw ErrorException(CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+//        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+//        val country = cm.context.country ?: throw ErrorException(CONTEXT)
+//        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+//        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val pin = toObject(PinProcess::class.java, cm.data)
 
 //        validateFields(pin)
