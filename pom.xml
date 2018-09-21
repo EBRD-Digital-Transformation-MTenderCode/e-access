@@ -32,7 +32,7 @@
         <!--Libs-->
         <springfox-swagger2.version>2.6.1</springfox-swagger2.version>
         <netty-transport-native-epoll.version>4.1.17.Final</netty-transport-native-epoll.version>
-        <!--Loggin-->
+        <!--Logging-->
         <logstash.logback.encoder.version>4.11</logstash.logback.encoder.version>
         <!--Database-->
         <cassandra-driver.version>3.3.0</cassandra-driver.version>
