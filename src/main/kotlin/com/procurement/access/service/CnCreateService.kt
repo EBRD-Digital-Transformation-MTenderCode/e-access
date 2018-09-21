@@ -33,6 +33,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnCreate::class.java, cm.data)
 
         checkLotsCurrency(cnDto)
@@ -61,7 +62,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
                         title = tenderDto.title,
                         description = tenderDto.description,
                         status = ACTIVE,
-                        statusDetails = EMPTY,
+                        statusDetails = TenderStatusDetails.fromValue(phase),
                         classification = tenderDto.classification,
                         mainProcurementCategory = tenderDto.mainProcurementCategory,
                         additionalProcurementCategories = null,

@@ -49,6 +49,7 @@ class CommandServiceImpl(private val historyDao: HistoryDao,
             CommandType.SET_TENDER_UNSUCCESSFUL -> tenderService.setUnsuccessful(cm)
             CommandType.SET_TENDER_PRECANCELLATION -> tenderService.setPreCancellation(cm)
             CommandType.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
+            CommandType.SET_TENDER_TENDERING -> TODO()
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_LOTS -> lotsService.getLots(cm)
