@@ -15,7 +15,7 @@ data class UpdateLotsRq @JsonCreator constructor(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class UpdateLotsRs @JsonCreator constructor(
 
-        val tenderStatus: LotStatus?,
+        val tenderStatus: TenderStatus?,
 
         val lots: List<Lot>,
 
