@@ -48,11 +48,12 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     override fun setUnsuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
-            process.tender.statusDetails = TenderStatusDetails.EMPTY
+            process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
         } else {
             return ResponseDto(data = UpdateTenderStatusRs(null, null))
         }
@@ -123,6 +124,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         val lotsResponseDto = mutableListOf<LotCancellation>()
         process.tender.apply {
             status = TenderStatus.CANCELLED
+            statusDetails = TenderStatusDetails.EMPTY
             lots.asSequence()
                     .filter(lotStatusPredicate)
                     .forEach { lot ->
