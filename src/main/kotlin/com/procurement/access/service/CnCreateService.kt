@@ -8,7 +8,6 @@ import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
-import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson

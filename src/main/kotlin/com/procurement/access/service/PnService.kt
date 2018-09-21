@@ -6,7 +6,6 @@ import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.*
-import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.pn.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
