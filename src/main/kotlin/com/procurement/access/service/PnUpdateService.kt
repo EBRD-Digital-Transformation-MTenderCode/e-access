@@ -221,8 +221,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         lotsTender.asSequence()
                 .filter { it.id in canceledLotsId }
                 .forEach { lot ->
-                    lot.status = TenderStatus.CANCELLED
-                    lot.statusDetails = TenderStatusDetails.EMPTY
+                    lot.status = LotStatus.CANCELLED
+                    lot.statusDetails = LotStatusDetails.EMPTY
                     canceledLots.add(lot)
                 }
         return canceledLots
@@ -305,8 +305,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = PLANNING,
-                statusDetails = EMPTY,
+                status = LotStatus.PLANNING,
+                statusDetails = LotStatusDetails.EMPTY,
                 value = lotDto.value,
                 options = listOf(Option(false)),
                 recurrentProcurement = listOf(RecurrentProcurement(false)),

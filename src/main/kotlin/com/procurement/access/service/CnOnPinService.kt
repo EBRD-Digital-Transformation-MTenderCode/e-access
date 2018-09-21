@@ -7,10 +7,7 @@ import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
-import com.procurement.access.model.dto.ocds.Tender
-import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
+import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -69,8 +66,8 @@ class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnP
         tender.status = TenderStatus.ACTIVE
         tender.statusDetails = TenderStatusDetails.EMPTY
         tender.lots.forEach { lot ->
-            lot.status = TenderStatus.ACTIVE
-            lot.statusDetails = TenderStatusDetails.EMPTY
+            lot.status = LotStatus.ACTIVE
+            lot.statusDetails = LotStatusDetails.EMPTY
         }
     }
 
