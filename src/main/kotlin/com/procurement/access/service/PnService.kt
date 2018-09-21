@@ -31,6 +31,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val pnDto = toObject(PnCreate::class.java, cm.data)
 
@@ -60,7 +61,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                         title = tenderDto.title,
                         description = tenderDto.description,
                         status = TenderStatus.PLANNING,
-                        statusDetails = EMPTY,
+                        statusDetails = TenderStatusDetails.fromValue(phase),
                         classification = tenderDto.classification,
                         mainProcurementCategory = tenderDto.mainProcurementCategory,
                         additionalProcurementCategories = null,
@@ -214,8 +215,8 @@ class PnServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = TenderStatus.PLANNING,
-                statusDetails = EMPTY,
+                status = LotStatus.PLANNING,
+                statusDetails = LotStatusDetails.EMPTY,
                 value = lotDto.value,
                 options = listOf(Option(false)),
                 recurrentProcurement = listOf(RecurrentProcurement(false)),

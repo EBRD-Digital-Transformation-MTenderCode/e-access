@@ -6,8 +6,6 @@ import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.*
-import com.procurement.access.model.dto.ocds.TenderStatus.PLANNING
-import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.pn.ItemPnUpdate
 import com.procurement.access.model.dto.pn.LotPnUpdate
 import com.procurement.access.model.dto.pn.PnUpdate
@@ -221,8 +219,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         lotsTender.asSequence()
                 .filter { it.id in canceledLotsId }
                 .forEach { lot ->
-                    lot.status = TenderStatus.CANCELLED
-                    lot.statusDetails = TenderStatusDetails.EMPTY
+                    lot.status = LotStatus.CANCELLED
+                    lot.statusDetails = LotStatusDetails.EMPTY
                     canceledLots.add(lot)
                 }
         return canceledLots
@@ -305,8 +303,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = PLANNING,
-                statusDetails = EMPTY,
+                status = LotStatus.PLANNING,
+                statusDetails = LotStatusDetails.EMPTY,
                 value = lotDto.value,
                 options = listOf(Option(false)),
                 recurrentProcurement = listOf(RecurrentProcurement(false)),

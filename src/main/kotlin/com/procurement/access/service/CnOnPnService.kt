@@ -35,6 +35,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
@@ -65,7 +66,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         tenderProcess.tender.apply {
             documents = updateDocuments(documents, cnDto.tender.documents)
             status = TenderStatus.ACTIVE
-            statusDetails = TenderStatusDetails.EMPTY
+            statusDetails = TenderStatusDetails.fromValue(phase)
             awardCriteria = AwardCriteria.PRICE_ONLY
             additionalProcurementCategories = null
             tenderPeriod = null
@@ -186,8 +187,8 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 id = lotDto.id,
                 title = lotDto.title,
                 description = lotDto.description,
-                status = TenderStatus.ACTIVE,
-                statusDetails = TenderStatusDetails.EMPTY,
+                status = LotStatus.ACTIVE,
+                statusDetails = LotStatusDetails.EMPTY,
                 value = lotDto.value,
                 options = listOf(Option(false)),
                 recurrentProcurement = listOf(RecurrentProcurement(false)),

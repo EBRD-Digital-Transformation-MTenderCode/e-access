@@ -9,10 +9,7 @@ import com.procurement.access.model.dto.cn.UpdateTenderStatusRs
 import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs
-import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
+import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
@@ -22,22 +19,22 @@ import org.springframework.stereotype.Service
 
 interface TenderService {
 
-    fun suspendTender(cm: CommandMessage): ResponseDto
+    fun setSuspended(cm: CommandMessage): ResponseDto
 
-    fun unsuspendTender(cm: CommandMessage): ResponseDto
+    fun setUnsuspended(cm: CommandMessage): ResponseDto
 
     fun setUnsuccessful(cm: CommandMessage): ResponseDto
 
-    fun prepareCancellation(cm: CommandMessage): ResponseDto
+    fun setPreCancellation(cm: CommandMessage): ResponseDto
 
-    fun tenderCancellation(cm: CommandMessage): ResponseDto
+    fun setCancellation(cm: CommandMessage): ResponseDto
 
 }
 
 @Service
 class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : TenderService {
 
-    override fun suspendTender(cm: CommandMessage): ResponseDto {
+    override fun setSuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
 
@@ -48,14 +45,15 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
-    override fun unsuspendTender(cm: CommandMessage): ResponseDto {
+    override fun setUnsuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
-            process.tender.statusDetails = TenderStatusDetails.EMPTY
+            process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
         } else {
             return ResponseDto(data = UpdateTenderStatusRs(null, null))
         }
@@ -73,8 +71,8 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
             status = TenderStatus.UNSUCCESSFUL
             statusDetails = TenderStatusDetails.EMPTY
             lots.forEach { lot ->
-                lot.status = TenderStatus.UNSUCCESSFUL
-                lot.statusDetails = TenderStatusDetails.EMPTY
+                lot.status = LotStatus.UNSUCCESSFUL
+                lot.statusDetails = LotStatusDetails.EMPTY
 
             }
         }
@@ -82,7 +80,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.lots, null))
     }
 
-    override fun prepareCancellation(cm: CommandMessage): ResponseDto {
+    override fun setPreCancellation(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
@@ -97,11 +95,11 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         val lotStatusPredicate = getLotStatusPredicateForPrepareCancellation(operationType)
         val lotsResponseDto = mutableListOf<LotCancellation>()
         process.tender.apply {
-            statusDetails = TenderStatusDetails.CANCELLED
+            statusDetails = TenderStatusDetails.CANCELLATION
             lots.asSequence()
                     .filter(lotStatusPredicate)
                     .forEach { lot ->
-                        lot.statusDetails = TenderStatusDetails.CANCELLED
+                        lot.statusDetails = LotStatusDetails.CANCELLED
                         addLotToLotsResponseDto(lotsResponseDto, lot)
                     }
         }
@@ -110,7 +108,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     }
 
 
-    override fun tenderCancellation(cm: CommandMessage): ResponseDto {
+    override fun setCancellation(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
@@ -126,11 +124,12 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         val lotsResponseDto = mutableListOf<LotCancellation>()
         process.tender.apply {
             status = TenderStatus.CANCELLED
+            statusDetails = TenderStatusDetails.EMPTY
             lots.asSequence()
                     .filter(lotStatusPredicate)
                     .forEach { lot ->
-                        lot.status = TenderStatus.CANCELLED
-                        lot.statusDetails = TenderStatusDetails.EMPTY
+                        lot.status = LotStatus.CANCELLED
+                        lot.statusDetails = LotStatusDetails.EMPTY
                         addLotToLotsResponseDto(lotsResponseDto, lot)
                     }
         }
@@ -142,13 +141,13 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return when (operationType) {
             "cancelTender", "cancelTenderEv" -> { lot: Lot ->
                 (lot.status == TenderStatus.ACTIVE)
-                        && (lot.statusDetails == TenderStatusDetails.EMPTY
-                        || lot.statusDetails == TenderStatusDetails.AWARDED)
+                        && (lot.statusDetails == LotStatusDetails.EMPTY
+                        || lot.statusDetails == LotStatusDetails.AWARDED)
             }
             "cancelPlan" -> { lot: Lot ->
                 (lot.status == TenderStatus.PLANNING
                         || lot.status == TenderStatus.PLANNED)
-                        && (lot.statusDetails == TenderStatusDetails.EMPTY)
+                        && (lot.statusDetails == LotStatusDetails.EMPTY)
             }
             else -> {
                 throw ErrorException(INVALID_OPERATION_TYPE)
@@ -159,12 +158,12 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     private fun getLotStatusPredicateForCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
             "cancelTender", "cancelTenderEv" -> { lot: Lot ->
-                (lot.status == TenderStatus.ACTIVE)
-                        && (lot.statusDetails == TenderStatusDetails.CANCELLED)
+                (lot.status == LotStatus.ACTIVE)
+                        && (lot.statusDetails == LotStatusDetails.CANCELLED)
             }
             "cancelPlan" -> { lot: Lot ->
                 (lot.status == TenderStatus.PLANNING || lot.status == TenderStatus.PLANNED)
-                        && (lot.statusDetails == TenderStatusDetails.EMPTY)
+                        && (lot.statusDetails == LotStatusDetails.EMPTY)
             }
             else -> {
                 throw ErrorException(INVALID_OPERATION_TYPE)
@@ -188,7 +187,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
             "cancelTender", "cancelTenderEv" -> {
                 if (process.tender.status != TenderStatus.ACTIVE)
                     throw ErrorException(TENDER_IN_UNSUCCESSFUL_STATUS)
-                if (process.tender.statusDetails != TenderStatusDetails.CANCELLED)
+                if (process.tender.statusDetails != TenderStatusDetails.CANCELLATION)
                     throw ErrorException(TENDER_IN_UNSUCCESSFUL_STATUS)
             }
             "cancelPlan" -> {

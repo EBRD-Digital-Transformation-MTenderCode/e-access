@@ -18,9 +18,9 @@ data class PinLot @JsonCreator constructor(
         @field:NotNull
         val description: String?,
 
-        var status: TenderStatus?,
+        var status: LotStatus?,
 
-        var statusDetails: TenderStatusDetails?,
+        var statusDetails: LotStatusDetails?,
 
         @field:Valid @field:NotNull
         val value: Value?,
