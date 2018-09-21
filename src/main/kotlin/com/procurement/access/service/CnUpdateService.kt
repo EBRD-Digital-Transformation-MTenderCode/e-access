@@ -10,8 +10,6 @@ import com.procurement.access.model.dto.cn.ItemCnUpdate
 import com.procurement.access.model.dto.cn.LotCnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
-import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE
-import com.procurement.access.model.dto.ocds.TenderStatusDetails.EMPTY
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate

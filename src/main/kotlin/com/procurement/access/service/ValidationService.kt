@@ -5,6 +5,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Operation.*
 import com.procurement.access.model.dto.validation.*
@@ -18,6 +19,10 @@ interface ValidationService {
     fun checkItems(cm: CommandMessage): ResponseDto
 
     fun checkToken(cm: CommandMessage): ResponseDto
+
+    fun checkLotsStatusDetails(cm: CommandMessage): ResponseDto
+
+    fun checkLotsStatus(cm: CommandMessage): ResponseDto
 }
 
 @Service
@@ -155,4 +160,36 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         }
         return commonChars
     }
+
+    override fun checkLotsStatusDetails(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+
+        val predicate = { lot: Lot -> lot.status == LotStatus.ACTIVE && lot.statusDetails != LotStatusDetails.AWARDED }
+        if (process.tender.lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
+        return ResponseDto(data = process.tender.items)
+    }
+
+    override fun checkLotsStatus(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+
+        val lot = process.tender.lots.asSequence().firstOrNull { it.id == lotDto.relatedLot }
+        if (lot != null) {
+            if (lot.status != LotStatus.ACTIVE || lot.statusDetails !== LotStatusDetails.EMPTY) {
+                throw ErrorException(ErrorType.INVALID_LOT_STATUS)
+            }
+        } else {
+            throw ErrorException(ErrorType.LOT_NOT_FOUND)
+        }
+        return ResponseDto(data = "Lot status valid.")
+    }
+
+
 }
