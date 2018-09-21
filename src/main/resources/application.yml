@@ -5,10 +5,6 @@ spring:
   application:
     name: e-access
 
-eureka:
-  client:
-    enabled: false
-
 cassandra:
   contact-points: 10.0.20.104,10.0.20.105,10.0.20.106
   keyspace-name: ocds
