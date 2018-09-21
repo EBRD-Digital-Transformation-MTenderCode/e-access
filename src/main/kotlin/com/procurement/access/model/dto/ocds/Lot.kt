@@ -14,9 +14,9 @@ data class Lot @JsonCreator constructor(
 
         var description: String?,
 
-        var status: TenderStatus?,
+        var status: LotStatus?,
 
-        var statusDetails: TenderStatusDetails?,
+        var statusDetails: LotStatusDetails?,
 
         @field:Valid
         val value: Value,

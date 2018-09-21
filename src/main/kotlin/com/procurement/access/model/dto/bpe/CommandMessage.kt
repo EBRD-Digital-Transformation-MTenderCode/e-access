@@ -47,11 +47,11 @@ enum class CommandType(private val value: String) {
     CREATE_CN_ON_PIN("createCnOnPin"),
     CREATE_CN_ON_PN("createCnOnPn"),
 
-    SUSPEND_TENDER("suspendTender"),
-    UNSUSPEND_TENDER("unsuspendTender"),
+    SET_SUSPENDED("setSuspended"),
+    UNSUSPEND_TENDER("setUnsuspended"),
     UNSUCCESSFUL_TENDER("unsuccessfulTender"),
-    PREPARE_CANCELLATION("prepareCancellation"),
-    TENDER_CANCELLATION("tenderCancellation"),
+    PREPARE_CANCELLATION("setPreCancellation"),
+    TENDER_CANCELLATION("setCancellation"),
 
     START_NEW_STAGE("startNewStage"),
 

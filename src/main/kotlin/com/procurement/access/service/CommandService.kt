@@ -44,11 +44,11 @@ class CommandServiceImpl(private val historyDao: HistoryDao,
             CommandType.CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
             CommandType.CREATE_CN_ON_PN -> cnOnPnService.createCnOnPn(cm)
 
-            CommandType.SUSPEND_TENDER -> tenderService.suspendTender(cm)
-            CommandType.UNSUSPEND_TENDER -> tenderService.unsuspendTender(cm)
+            CommandType.SET_SUSPENDED -> tenderService.setSuspended(cm)
+            CommandType.UNSUSPEND_TENDER -> tenderService.setUnsuspended(cm)
             CommandType.UNSUCCESSFUL_TENDER -> tenderService.setUnsuccessful(cm)
-            CommandType.PREPARE_CANCELLATION -> tenderService.prepareCancellation(cm)
-            CommandType.TENDER_CANCELLATION -> tenderService.tenderCancellation(cm)
+            CommandType.PREPARE_CANCELLATION -> tenderService.setPreCancellation(cm)
+            CommandType.TENDER_CANCELLATION -> tenderService.setCancellation(cm)
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_LOTS -> lotsService.getLots(cm)
