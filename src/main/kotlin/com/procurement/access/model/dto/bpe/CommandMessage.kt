@@ -52,7 +52,7 @@ enum class CommandType(private val value: String) {
     SET_TENDER_UNSUCCESSFUL("setTenderUnsuccessful"),
     SET_TENDER_PRECANCELLATION("setTenderPreCancellation"),
     SET_TENDER_CANCELLATION("setTenderCancellation"),
-    SET_TENDER_TENDERING("setTenderTendering"),
+    SET_TENDER_STATUS_DETAILS("setTenderStatusDetails"),
     START_NEW_STAGE("startNewStage"),
 
     GET_LOTS("getLots"),

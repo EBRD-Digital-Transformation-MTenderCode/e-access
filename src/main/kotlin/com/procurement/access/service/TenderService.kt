@@ -29,6 +29,8 @@ interface TenderService {
 
     fun setCancellation(cm: CommandMessage): ResponseDto
 
+    fun setStatusDetails(cm: CommandMessage): ResponseDto
+
 }
 
 @Service
@@ -135,6 +137,18 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = CancellationRs(lots = lotsResponseDto))
+    }
+
+    override fun setStatusDetails(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
+        tenderProcessDao.save(getEntity(process, entity))
+        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
