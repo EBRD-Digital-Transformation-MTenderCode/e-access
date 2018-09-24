@@ -1,141 +1,26 @@
 {
-  "planning": {
-    "rationale": "rationale",
-    "budget": {
-      "description": "e",
-      "budgetBreakdown": [
-        {
-          "id": "ocds-t1s2t3-MD-1536560316694-FS-1536560354583",
-          "amount": {
-            "amount": 560,
-            "currency": "MDL"
-          }
-        }
-      ]
-    }
+  "id": "string",
+  "command": "createCN",
+  "context": {
+    "operationId": "string",
+    "requestId": "string",
+    "cpid": "string",
+    "ocid": "string",
+    "stage": "string",
+    "prevStage": "string",
+    "processType": "string",
+    "operationType": "string",
+    "phase": "string",
+    "owner": "string",
+    "country": "string",
+    "language": "string",
+    "pmd": "string",
+    "token": "string",
+    "startDate": "string",
+    "endDate": "string",
+    "id": "string"
   },
-  "tender": {
-    "title": "123ж",
-    "description": "d",
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
-    "procurementMethodRationale": "",
-    "procurementMethodAdditionalInfo": "",
-    "tenderPeriod": {
-      "endDate": "2018-09-10T14:30:00Z"
-    },
-    "procuringEntity": {
-      "name": "Name of CN pE",
-      "identifier": {
-        "scheme": "MD-IDNO",
-        "id": "555-555",
-        "legalName": "legal name of pe",
-        "uri": "g"
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "ert",
-          "id": "tre",
-          "legalName": "etr",
-          "uri": "ter"
-        }
-      ],
-      "address": {
-        "streetAddress": "address of pe",
-        "postalCode": "00000",
-        "addressDetails": {
-          "country": {
-            "id": "MD"
-          },
-          "region": {
-            "id": "0101000"
-          },
-          "locality": {
-            "scheme": "CUATM",
-            "id": "0101000",
-            "description": "hhh"
-          }
-        }
-      },
-      "contactPoint": {
-        "name": "contact name",
-        "email": "email",
-        "telephone": "4521",
-        "faxNumber": "45",
-        "url": "d"
-      }
-    },
-    "lots": [
-      {
-        "id": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e",
-        "title": "lot1",
-        "description": "1",
-        "value": {
-          "amount": 10,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-10-21T10:40:00Z",
-          "endDate": "2018-11-24T12:00:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "Steet",
-            "postalCode": "5",
-            "addressDetails": {
-              "country": {
-                "id": "MD"
-              },
-              "region": {
-                "id": "0301000"
-              },
-              "locality": {
-                "scheme": "CUATM",
-                "id": "0301000",
-                "description": ""
-              }
-            }
-          },
-          "description": "decr"
-        }
-      }
-    ],
-    "items": [
-      {
-        "id": "72be9611-b4c5-11e8-a8f5-8d9501fbda7e",
-        "classification": {
-          "scheme": "CPV",
-          "description": "4",
-          "id": "03110000-5"
-        },
-        "quantity": 10,
-        "unit": {
-          "id": "120",
-          "name": " Milion decalitri "
-        },
-        "description": "p",
-        "relatedLot": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e"
-      },
-      {
-        "id": "72be9610-b4c5-11e8-a8f5-8d9501fbda7e",
-        "classification": {
-          "scheme": "CPV",
-          "description": "4",
-          "id": "03110000-5"
-        },
-        "quantity": 100,
-        "unit": {
-          "id": "120",
-          "name": " Milion alyh roz "
-        },
-        "description": "p",
-        "relatedLot": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e"
-      }
-    ],
-    "documents": [
-      {
-        "id:": "c08612a0-b4c1-11e8-bbf6-b765fb5acf63",
-        "documentType": "tenderNotice"
-      }
-    ]
-  }
+  "data": {
+  },
+  "version": "0.0.1"
 }
