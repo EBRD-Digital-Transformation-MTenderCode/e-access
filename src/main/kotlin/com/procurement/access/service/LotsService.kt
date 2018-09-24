@@ -55,6 +55,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         tenderProcessDao.save(entity)
         return ResponseDto(data = UpdateLotsRs(
                 tenderStatus = process.tender.status,
+                tenderStatusDetails = process.tender.statusDetails,
                 lots = process.tender.lots,
                 items = null))
     }
@@ -80,6 +81,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
     override fun setStatusUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
@@ -89,11 +91,13 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
             if (!isAnyActiveLots(lots)) {
                 status = TenderStatus.UNSUCCESSFUL
                 statusDetails = TenderStatusDetails.EMPTY
+            }else{
+                statusDetails = TenderStatusDetails.fromValue(phase)
             }
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.lots, null))
+        return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
     }
 
     override fun setStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
@@ -117,6 +121,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         tenderProcessDao.save(entity)
         return ResponseDto(data = UpdateLotsRs(
                 tenderStatus = process.tender.status,
+                tenderStatusDetails = process.tender.statusDetails,
                 lots = process.tender.lots,
                 items = itemsForCompiledLots))
     }
