@@ -83,7 +83,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
                     mdmValidation = true,
                     itemsAdd = true,
                     tender = TenderCheck(classification = ClassificationCheck(id = classificationClass))))
-        } else if ((operation == UPDATE_CN) || (operation == UPDATE_PN)) {
+        } else if (operation == UPDATE_PN) {
             val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
             val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
             val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
