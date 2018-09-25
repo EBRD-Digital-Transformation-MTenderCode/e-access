@@ -57,7 +57,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
             process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
         } else {
-            return ResponseDto(data = UpdateTenderStatusRs(null, null))
+            throw ErrorException(IS_NOT_SUSPENDED)
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
