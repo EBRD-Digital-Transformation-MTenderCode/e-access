@@ -5,7 +5,7 @@
 
     <groupId>com.procurement</groupId>
     <artifactId>e-access</artifactId>
-    <version>1.02.03</version>
+    <version>1.2.3</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -142,7 +142,6 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
