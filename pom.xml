@@ -5,7 +5,7 @@
 
     <groupId>com.procurement</groupId>
     <artifactId>e-access</artifactId>
-    <version>18.06.1</version>
+    <version>1.02.03</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
