@@ -91,7 +91,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
             if (!isAnyActiveLots(lots)) {
                 status = TenderStatus.UNSUCCESSFUL
                 statusDetails = TenderStatusDetails.EMPTY
-            }else{
+            } else {
                 statusDetails = TenderStatusDetails.fromValue(phase)
             }
         }

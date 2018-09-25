@@ -9,7 +9,6 @@ import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import org.springframework.stereotype.Service
 
-@Service
 interface HistoryDao {
 
     fun getHistory(operationId: String, command: String): HistoryEntity?
