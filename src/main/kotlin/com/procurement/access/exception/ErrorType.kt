@@ -39,6 +39,5 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_CPV_CODE("10.24", "Invalid cpv code."),
     INVALID_DOCS_ID("10.25", "Invalid documents ids."),
     IS_SUSPENDED("10.26", "Tender is suspended."),
-    IS_NOT_SUSPENDED("10.27", "Invalid tender status details. Please retry saving the answer."),
     CONTEXT("20.01", "Context parameter not found.");
 }
