@@ -33,7 +33,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val cnDto = toObject(CnCreate::class.java, cm.data)
+        val cnDto = toObject(CnCreate::class.java, cm.data).validate()
 
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)

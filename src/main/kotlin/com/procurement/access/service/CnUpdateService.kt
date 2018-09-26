@@ -5,10 +5,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnUpdate
-import com.procurement.access.model.dto.cn.ItemCnUpdate
-import com.procurement.access.model.dto.cn.LotCnUpdate
-import com.procurement.access.model.dto.cn.TenderCnUpdate
+import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -35,7 +32,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
-        val cnDto = toObject(CnUpdate::class.java, cm.data)
+        val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -87,6 +84,12 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validate(cnDto: CnUpdate) {
+        if (cnDto.tender.items.isEmpty()) throw ErrorException(EMPTY_ITEMS)
+        if (cnDto.tender.lots.isEmpty()) throw ErrorException(EMPTY_LOTS)
+        if (cnDto.tender.documents.isEmpty()) throw ErrorException(EMPTY_DOCS)
     }
 
     private fun checkLotsCurrency(lotsDto: List<LotCnUpdate>, budgetCurrency: String) {

@@ -1,26 +1,278 @@
 {
-  "id": "string",
-  "command": "createCN",
+  "id": "f24381ff-c44c-4c82-8efc-4cd58971d812",
+  "command": "createCn",
   "context": {
-    "operationId": "string",
-    "requestId": "string",
-    "cpid": "string",
-    "ocid": "string",
-    "stage": "string",
-    "prevStage": "string",
-    "processType": "string",
-    "operationType": "string",
-    "phase": "string",
-    "owner": "string",
-    "country": "string",
-    "language": "string",
-    "pmd": "string",
-    "token": "string",
-    "startDate": "string",
-    "endDate": "string",
-    "id": "string"
+    "operationId": "f24381ff-c44c-4c82-8efc-4cd58971d812",
+    "requestId": "e2b92d90-c1b8-11e8-99ee-0b69f972361b",
+    "stage": "EV",
+    "processType": "createCN",
+    "operationType": "createCN",
+    "phase": "clarification",
+    "owner": "445f6851-c908-407d-9b45-14b92f3e964b",
+    "country": "MD",
+    "language": "ro",
+    "pmd": "TEST_OT",
+    "startDate": "2018-09-26T18:20:45Z"
   },
   "data": {
+    "planning": {
+      "budget": {
+        "amount": {
+          "amount": 1700.00,
+          "currency": "MDL"
+        },
+        "isEuropeanUnionFunded": false,
+        "budgetBreakdown": [
+          {
+            "id": "ocds-t1s2t3-MD-1537971575881-FS-1537971601281",
+            "description": "Hello world!",
+            "amount": {
+              "amount": 900.00,
+              "currency": "MDL"
+            },
+            "period": {
+              "startDate": "2018-05-25T22:00:00Z",
+              "endDate": "2018-12-27T21:00:00Z"
+            },
+            "sourceParty": {
+              "id": "MD-IDNO-Enotis",
+              "name": "Edward-Company2"
+            }
+          },
+          {
+            "id": "ocds-t1s2t3-MD-1537971575881-FS-1537971617995",
+            "description": "Hello world!",
+            "amount": {
+              "amount": 800.00,
+              "currency": "MDL"
+            },
+            "period": {
+              "startDate": "2018-05-25T22:00:00Z",
+              "endDate": "2018-12-27T21:00:00Z"
+            },
+            "sourceParty": {
+              "id": "MD-IDNO-Enotis",
+              "name": "Edward-Company2"
+            }
+          }
+        ]
+      }
+    },
+    "tender": {
+      "title": "gav",
+      "description": "gav gav",
+      "legalBasis": "DIRECTIVE_2014_24_EU",
+      "procurementMethodAdditionalInfo": "fsdfsdf",
+      "tenderPeriod": {
+        "endDate": "2018-12-01T00:00:00Z",
+        "startDate": "2018-10-06T17:41:00Z"
+      },
+      "enquiryPeriod": {
+        "endDate": "2018-10-06T17:41:00Z",
+        "startDate": "2018-09-26T18:20:45Z"
+      },
+      "procuringEntity": {
+        "name": "Edward_UPDATE",
+        "address": {
+          "streetAddress": "66666666",
+          "addressDetails": {
+            "country": {
+              "scheme": "iso-alpha2",
+              "id": "MD",
+              "description": "MOLDOVA",
+              "uri": "http://reference.iatistandard.org"
+            },
+            "region": {
+              "scheme": "CUATM",
+              "id": "1000000",
+              "description": "Anenii Noi",
+              "uri": "http://statistica.md"
+            },
+            "locality": {
+              "scheme": "CUATM",
+              "id": "1001000",
+              "description": "or.Anenii Noi",
+              "uri": "http://statistica.md"
+            }
+          }
+        },
+        "identifier": {
+          "id": "66666666",
+          "scheme": "MD-IDNO",
+          "legalName": "6666",
+          "uri": "6666"
+        },
+        "contactPoint": {
+          "name": "6666",
+          "email": "6666",
+          "telephone": "66666666",
+          "faxNumber": "66666",
+          "url": "666666"
+        }
+      },
+      "lots": [
+        {
+          "id": "2",
+          "title": "lot2",
+          "description": "looot",
+          "value": {
+            "amount": 500.00,
+            "currency": "MDL"
+          },
+          "contractPeriod": {
+            "startDate": "2018-12-01T14:45:00Z",
+            "endDate": "2018-12-22T14:45:00Z"
+          },
+          "placeOfPerformance": {
+            "address": {
+              "streetAddress": "777",
+              "postalCode": "777",
+              "addressDetails": {
+                "country": {
+                  "scheme": "iso-alpha2",
+                  "id": "MD",
+                  "description": "MOLDOVA",
+                  "uri": "http://reference.iatistandard.org"
+                },
+                "region": {
+                  "scheme": "CUATM",
+                  "id": "1000000",
+                  "description": "Anenii Noi",
+                  "uri": "http://statistica.md"
+                },
+                "locality": {
+                  "scheme": "CUATM",
+                  "id": "1001001",
+                  "description": "s.Albiniţa",
+                  "uri": "http://statistica.md"
+                }
+              }
+            },
+            "description": "2"
+          }
+        },
+        {
+          "id": "1",
+          "title": "lot1",
+          "description": "looot",
+          "value": {
+            "amount": 200.00,
+            "currency": "MDL"
+          },
+          "contractPeriod": {
+            "startDate": "2018-12-01T14:45:00Z",
+            "endDate": "2018-12-25T14:45:00Z"
+          },
+          "placeOfPerformance": {
+            "address": {
+              "streetAddress": "6666",
+              "postalCode": "666",
+              "addressDetails": {
+                "country": {
+                  "scheme": "iso-alpha2",
+                  "id": "MD",
+                  "description": "MOLDOVA",
+                  "uri": "http://reference.iatistandard.org"
+                },
+                "region": {
+                  "scheme": "CUATM",
+                  "id": "1000000",
+                  "description": "Anenii Noi",
+                  "uri": "http://statistica.md"
+                },
+                "locality": {
+                  "scheme": "666",
+                  "id": "666",
+                  "description": "666"
+                }
+              }
+            },
+            "description": null
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "2",
+          "description": "777-2",
+          "classification": {
+            "id": "30199230-1",
+            "description": "Plicuri",
+            "scheme": "CPV"
+          },
+          "additionalClassifications": [
+            {
+              "id": "AB06-7",
+              "description": "Plastic",
+              "scheme": "CPVS"
+            }
+          ],
+          "quantity": 1.00,
+          "unit": {
+            "id": "86",
+            "name": "Milion metri patrati spatiu locativ"
+          },
+          "relatedLot": "2"
+        },
+        {
+          "id": "3",
+          "description": "888-2",
+          "classification": {
+            "id": "30199230-1",
+            "description": "Plicuri",
+            "scheme": "CPV"
+          },
+          "additionalClassifications": [
+            {
+              "id": "AB06-7",
+              "description": "Plastic",
+              "scheme": "CPVS"
+            }
+          ],
+          "quantity": 1.00,
+          "unit": {
+            "id": "86",
+            "name": "Milion metri patrati spatiu locativ"
+          },
+          "relatedLot": "2"
+        },
+        {
+          "id": "1",
+          "description": "666-2",
+          "classification": {
+            "id": "30199220-8",
+            "description": "Cărţi poştale neilustrate",
+            "scheme": "CPV"
+          },
+          "additionalClassifications": [
+            {
+              "id": "AB06-7",
+              "description": "Plastic",
+              "scheme": "CPVS"
+            }
+          ],
+          "quantity": 1.00,
+          "unit": {
+            "id": "86",
+            "name": "Milion metri patrati spatiu locativ"
+          },
+          "relatedLot": "1"
+        }
+      ],
+      "documents": [],
+      "classification": {
+        "id": "30199200-2",
+        "scheme": "CPV",
+        "description": "Plicuri, cărţi poştale şi cărţi poştale neilustrate"
+      },
+      "submissionMethodRationale": [
+        "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+      ],
+      "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+      "procurementMethodDetails": "TEST Licitatia deschisa",
+      "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+      "mainProcurementCategory": "goods"
+    }
   },
   "version": "0.0.1"
 }

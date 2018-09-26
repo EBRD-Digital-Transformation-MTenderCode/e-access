@@ -373,7 +373,7 @@ enum class TenderStatus constructor(private val value: String) {
 }
 
 enum class TenderStatusDetails constructor(private val value: String) {
-//    UNSUCCESSFUL("unsuccessful"),
+    //    UNSUCCESSFUL("unsuccessful"),
 //    AWARDED("awarded"),
 //    //**//
     PLANNING("planning"),

@@ -40,5 +40,9 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_DOCS_ID("10.25", "Invalid documents ids."),
     IS_SUSPENDED("10.26", "Tender is suspended."),
     IS_NOT_SUSPENDED("10.27", "Invalid tender status details. Please retry saving the answer."),
+    EMPTY_ITEMS("10.28", "Items must not be empty."),
+    EMPTY_LOTS("10.29", "Lots must not be empty."),
+    EMPTY_DOCS("10.30", "Documents must not be empty."),
+    EMPTY_BREAKDOWN("10.30", "Budget breakdowns must not be empty."),
     CONTEXT("20.01", "Context parameter not found.");
 }
