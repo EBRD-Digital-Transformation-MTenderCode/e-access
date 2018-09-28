@@ -3,6 +3,8 @@ package com.procurement.access.model.dto.pn
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.databinding.QuantityDeserializer
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Unit
 import java.math.BigDecimal
@@ -87,3 +89,18 @@ data class PeriodPnUpdate @JsonCreator constructor(
 
         val startDate: LocalDateTime
 )
+
+fun PnUpdate.validate(): PnUpdate {
+    this.tender.items?.let {
+        if (it.isEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
+        val lots = this.tender.lots ?: throw ErrorException(ErrorType.EMPTY_LOTS)
+        if (lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
+    }
+    this.tender.lots?.let {
+        if (it.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
+        val items = this.tender.items ?: throw ErrorException(ErrorType.EMPTY_ITEMS)
+        if (items.isEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
+    }
+    if (this.tender.documents?.isEmpty() == true) throw ErrorException(ErrorType.EMPTY_DOCS)
+    return this
+}

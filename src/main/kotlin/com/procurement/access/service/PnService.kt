@@ -32,7 +32,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
-        val pnDto = toObject(PnCreate::class.java, cm.data)
+        val pnDto = toObject(PnCreate::class.java, cm.data).validate()
 
         checkLotsCurrency(pnDto)
         checkLotsContractPeriod(pnDto)

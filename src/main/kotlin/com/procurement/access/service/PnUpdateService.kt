@@ -6,10 +6,7 @@ import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.*
-import com.procurement.access.model.dto.pn.ItemPnUpdate
-import com.procurement.access.model.dto.pn.LotPnUpdate
-import com.procurement.access.model.dto.pn.PnUpdate
-import com.procurement.access.model.dto.pn.TenderPnUpdate
+import com.procurement.access.model.dto.pn.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -35,7 +32,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
-        val pnDto = toObject(PnUpdate::class.java, cm.data)
+        val pnDto = toObject(PnUpdate::class.java, cm.data).validate()
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
