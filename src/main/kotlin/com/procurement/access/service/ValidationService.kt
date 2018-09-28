@@ -41,7 +41,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         if (!lotsId.containsAll(checkDto.bid.relatedLots)) throw ErrorException(ErrorType.LOT_NOT_FOUND)
         for (lot in process.tender.lots) {
             if (checkDto.bid.relatedLots.contains(lot.id)) {
-                if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
+                if (!(lot.status == LotStatus.ACTIVE && lot.statusDetails == LotStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
                 checkDto.bid.value?.let {
                     if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
                 }
