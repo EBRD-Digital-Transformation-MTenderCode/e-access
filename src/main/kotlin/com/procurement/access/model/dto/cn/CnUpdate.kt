@@ -42,7 +42,9 @@ data class TenderCnUpdate @JsonCreator constructor(
 
         val classification: Classification?,
 
-        val tenderPeriod: PeriodCnUpdate,
+        val tenderPeriod: Period,
+
+        val enquiryPeriod: Period,
 
         val lots: List<LotCnUpdate>,
 
@@ -82,11 +84,6 @@ data class ItemCnUpdate @JsonCreator constructor(
         val unit: Unit,
 
         var relatedLot: String
-)
-
-data class PeriodCnUpdate @JsonCreator constructor(
-
-        val endDate: LocalDateTime
 )
 
 fun CnUpdate.validate(): CnUpdate {

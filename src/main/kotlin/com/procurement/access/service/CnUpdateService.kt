@@ -80,16 +80,12 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
             items = updatedItems
             lots = activeLots + canceledLots
             documents = updatedDocuments
+            tenderPeriod = cnDto.tender.tenderPeriod
+            enquiryPeriod = cnDto.tender.enquiryPeriod
         }
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
-    }
-
-    private fun validate(cnDto: CnUpdate) {
-        if (cnDto.tender.items.isEmpty()) throw ErrorException(EMPTY_ITEMS)
-        if (cnDto.tender.lots.isEmpty()) throw ErrorException(EMPTY_LOTS)
-        if (cnDto.tender.documents.isEmpty()) throw ErrorException(EMPTY_DOCS)
     }
 
     private fun checkLotsCurrency(lotsDto: List<LotCnUpdate>, budgetCurrency: String) {
