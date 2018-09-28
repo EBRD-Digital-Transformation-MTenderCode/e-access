@@ -41,8 +41,9 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         validateStartDate(pnDto.tender.tenderPeriod.startDate)
         var activeLots: List<Lot> = listOf()
         var canceledLots: List<Lot> = listOf()
+        var updatedLots: List<Lot>
         var updatedItems: List<Item> = listOf()
-        var updatedDocuments: List<Document>?
+        var updatedDocuments: List<Document>
         /*first insert*/
         if (tenderProcess.tender.lots.isEmpty() && pnDto.tender.lots != null) {
             val lotsDto = pnDto.tender.lots
@@ -80,8 +81,10 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             /*updatedItems*/
             updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
         }
+        updatedLots = activeLots + canceledLots
         /*update Documents*/
         updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents, activeLots)
+
         /*ContractPeriod*/
         if (activeLots.isNotEmpty()) {
             setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
@@ -100,10 +103,16 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             procurementMethodRationale = pnDto.tender.procurementMethodRationale
             procurementMethodAdditionalInfo = pnDto.tender.procurementMethodAdditionalInfo
             pnDto.tender.classification?.let { classification = it }
-            items = updatedItems
-            lots = activeLots + canceledLots
-            documents = updatedDocuments
             tenderPeriod = Period(pnDto.tender.tenderPeriod.startDate, null)
+        }
+        if (updatedItems.isNotEmpty()) {
+            tenderProcess.tender.items = updatedItems
+        }
+        if (updatedLots.isNotEmpty()) {
+            tenderProcess.tender.lots = updatedLots
+        }
+        if (updatedDocuments.isNotEmpty()) {
+            tenderProcess.tender.documents = updatedDocuments
         }
 
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
@@ -241,7 +250,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         return itemsTender
     }
 
-    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?, activeLots: List<Lot>): List<Document>? {
+    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?, activeLots: List<Lot>): List<Document> {
         return if (documentsTender != null && documentsTender.isNotEmpty()) {
             if (documentsDto != null && documentsDto.isNotEmpty()) {
                 //validation
@@ -265,7 +274,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                     throw throw ErrorException(INVALID_DOCS_RELATED_LOTS)
                 }
             }
-            documentsDto
+            listOf()
         }
     }
 

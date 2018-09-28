@@ -1,61 +1,119 @@
 {
+  "ocid": "ocds-t1s2t3-MD-1538149900155",
   "planning": {
-    "rationale": "rationale",
     "budget": {
       "description": "e",
+      "amount": {
+        "amount": 560.00,
+        "currency": "USD"
+      },
+      "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1536560316694-FS-1536560354583",
+          "id": "ocds-t1s2t3-MD-1538144823950-FS-1538148191015",
+          "description": "description",
           "amount": {
-            "amount": 560,
-            "currency": "MDL"
+            "amount": 560.00,
+            "currency": "USD"
+          },
+          "period": {
+            "startDate": "2018-10-01T00:00:00Z",
+            "endDate": "2018-10-08T00:00:00Z"
+          },
+          "sourceParty": {
+            "id": "MD-IDNO-7787-9898-88ty",
+            "name": "nameOfFSbuyer"
           }
         }
       ]
     }
   },
   "tender": {
-    "title": "123ж",
+    "id": "ocds-t1s2t3-MD-1538149900155",
+    "title": "TITLE",
     "description": "d",
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
-    "procurementMethodRationale": "",
-    "procurementMethodAdditionalInfo": "",
-    "tenderPeriod": {
-      "endDate": "2018-09-10T14:30:00Z"
+    "status": "planning",
+    "statusDetails": "planning",
+    "classification": {
+      "scheme": "CPV",
+      "id": "03117140-7",
+      "description": "Plante utilizate ca fungicide sau cu utilizare similară"
     },
+    "mainProcurementCategory": "goods",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "TEST Licitatia deschisa",
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+    "submissionMethodRationale": [
+      "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+    ],
+    "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "DIRECTIVE_2014_23_EU",
     "procuringEntity": {
+      "id": "MD-IDNO-555-555",
       "name": "Name of CN pE",
       "identifier": {
-        "scheme": "MD-IDNO",
         "id": "555-555",
+        "scheme": "MD-IDNO",
         "legalName": "legal name of pe",
         "uri": "g"
       },
-      "additionalIdentifiers": [
-        {
-          "scheme": "ert",
-          "id": "tre",
-          "legalName": "etr",
-          "uri": "ter"
-        }
-      ],
       "address": {
         "streetAddress": "address of pe",
         "postalCode": "00000",
         "addressDetails": {
           "country": {
-            "id": "MD"
+            "scheme": "iso-alpha2",
+            "id": "MD",
+            "description": "MOLDOVA",
+            "uri": "http://reference.iatistandard.org"
           },
           "region": {
-            "id": "0101000"
+            "scheme": "CUATM",
+            "id": "0101000",
+            "description": "mun.Chişinău",
+            "uri": "http://statistica.md"
           },
           "locality": {
-            "scheme": "CUATM",
+            "scheme": "oth123",
             "id": "0101000",
             "description": "hhh"
           }
         }
       },
+      "additionalIdentifiers": [
+        {
+          "id": "tre",
+          "scheme": "ert",
+          "legalName": "etr",
+          "uri": "ter"
+        }
+      ],
       "contactPoint": {
         "name": "contact name",
         "email": "email",
@@ -64,77 +122,33 @@
         "url": "d"
       }
     },
-    "lots": [
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "contractPeriod": {
+      "startDate": "2018-10-01T19:40:00Z",
+      "endDate": "2018-10-01T23:45:00Z"
+    },
+    "tenderPeriod": {
+      "startDate": "2018-10-01T00:00:00Z"
+    },
+    "value": {
+      "amount": 0.01,
+      "currency": "USD"
+    },
+    "lotGroups": [
       {
-        "id": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e",
-        "title": "lot1",
-        "description": "1",
-        "value": {
-          "amount": 10,
-          "currency": "MDL"
-        },
-        "contractPeriod": {
-          "startDate": "2018-10-21T10:40:00Z",
-          "endDate": "2018-11-24T12:00:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "Steet",
-            "postalCode": "5",
-            "addressDetails": {
-              "country": {
-                "id": "MD"
-              },
-              "region": {
-                "id": "0301000"
-              },
-              "locality": {
-                "scheme": "CUATM",
-                "id": "0301000",
-                "description": ""
-              }
-            }
-          },
-          "description": "decr"
-        }
+        "optionToCombine": false
       }
     ],
-    "items": [
-      {
-        "id": "72be9611-b4c5-11e8-a8f5-8d9501fbda7e",
-        "classification": {
-          "scheme": "CPV",
-          "description": "4",
-          "id": "03110000-5"
-        },
-        "quantity": 10,
-        "unit": {
-          "id": "120",
-          "name": " Milion decalitri "
-        },
-        "description": "p",
-        "relatedLot": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e"
-      },
-      {
-        "id": "72be9610-b4c5-11e8-a8f5-8d9501fbda7e",
-        "classification": {
-          "scheme": "CPV",
-          "description": "4",
-          "id": "03110000-5"
-        },
-        "quantity": 100,
-        "unit": {
-          "id": "120",
-          "name": " Milion alyh roz "
-        },
-        "description": "p",
-        "relatedLot": "72be9613-b4c5-11e8-a8f5-8d9501fbda7e"
-      }
-    ],
+    "lots": [],
+    "items": [],
     "documents": [
       {
-        "id:": "c08612a0-b4c1-11e8-bbf6-b765fb5acf63",
-        "documentType": "tenderNotice"
+        "id": "ea21a690-c256-11e8-8cbe-a1835757f77d",
+        "documentType": "hearingNotice",
+        "relatedLots": [
+          "lot2"
+        ]
       }
     ]
   }
