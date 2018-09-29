@@ -55,9 +55,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             val newLotsId = pnDto.tender.lots.asSequence().map { it.id }.toSet()
             if (newLotsId.size < pnDto.tender.lots.size) throw ErrorException(INVALID_LOT_ID)
             validateRelatedLots(lotIds = newLotsId, items = itemsDto, documents = documentsDto)
-            /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, newLotsId = newLotsId)
-            /*updatedItems*/
             itemsDto.asSequence().forEach { it.id = generationService.getTimeBasedUUID() }
             updatedItems = convertItems(itemsDto)
         }
@@ -74,29 +72,18 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
             val canceledLotsId = lotsDbId - lotsDtoId
             newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(pnDto.tender, newLotsId)
             validateRelatedLots(lotIds = lotsDbId + newLotsId, items = itemsDto, documents = documentsDto)
-            /*activeLots*/
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
-            /*canceledLots*/
             canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
-            /*updatedItems*/
             updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
         }
-        updatedLots = activeLots + canceledLots
-        /*update Documents*/
-        updatedDocuments = updateDocuments(tenderProcess.tender.documents, pnDto.tender.documents, activeLots)
-
-        /*ContractPeriod*/
         if (activeLots.isNotEmpty()) {
             setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         }
-        /*Value*/
         setValueByActiveLots(tenderProcess.tender, activeLots)
-        /*planning*/
         tenderProcess.planning.apply {
             rationale = pnDto.planning.rationale
             budget.description = pnDto.planning.budget.description
         }
-        /*tender*/
         tenderProcess.tender.apply {
             title = pnDto.tender.title
             description = pnDto.tender.description
@@ -108,13 +95,14 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         if (updatedItems.isNotEmpty()) {
             tenderProcess.tender.items = updatedItems
         }
+        updatedLots = activeLots + canceledLots
         if (updatedLots.isNotEmpty()) {
             tenderProcess.tender.lots = updatedLots
         }
+        updatedDocuments = updateDocuments(tenderProcess.tender, pnDto.tender.documents)
         if (updatedDocuments.isNotEmpty()) {
             tenderProcess.tender.documents = updatedDocuments
         }
-
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
     }
@@ -250,31 +238,41 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         return itemsTender
     }
 
-    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>?, activeLots: List<Lot>): List<Document> {
-        return if (documentsTender != null && documentsTender.isNotEmpty()) {
+    private fun updateDocuments(tender: Tender, documentsDto: List<Document>?): List<Document> {
+        if (tender.documents != null && tender.documents!!.isNotEmpty()) {
             if (documentsDto != null && documentsDto.isNotEmpty()) {
                 //validation
                 val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
-                val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
+                val documentsDbId = tender.documents!!.asSequence().map { it.id }.toSet()
+                validateDocumentsRelatedLots(tender.lots, documentsDto)
                 val newDocumentsId = documentsDtoId - documentsDbId
                 if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
+                if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
                 //update
-                documentsTender.forEach { document ->
+                tender.documents!!.forEach { document ->
                     val documentDto = documentsDto.asSequence().first { it.id == document.id }
                     document.updateDocument(documentDto)
                 }
                 val newDocuments = documentsDto.asSequence().filter { it.id in newDocumentsId }.toList()
-                documentsTender + newDocuments
-            } else {
-                throw ErrorException(INVALID_DOCS_ID)
+                return tender.documents!! + newDocuments
             }
         } else {
-            if (activeLots.isEmpty() && documentsDto != null && documentsDto.isNotEmpty()) {
-                if (documentsDto.any { it.relatedLots != null }) {
-                    throw throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-                }
+            if (documentsDto != null && documentsDto.isNotEmpty()) {
+                validateDocumentsRelatedLots(tender.lots, documentsDto)
+                return documentsDto
             }
-            listOf()
+        }
+        return listOf()
+    }
+
+    private fun validateDocumentsRelatedLots(lots: List<Lot>?, documentsDto: List<Document>) {
+        val lotsFromPn = lots?.asSequence()?.map { it.id }?.toHashSet() ?: hashSetOf()
+        val lotsFromDocuments = documentsDto.asSequence()
+                .filter { it.relatedLots != null }
+                .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        if (lotsFromDocuments.isNotEmpty()) {
+            if (lotsFromDocuments.size > lotsFromPn.size) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            if (!lotsFromPn.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
     }
 
