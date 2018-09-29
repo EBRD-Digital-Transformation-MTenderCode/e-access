@@ -8,7 +8,6 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Unit
 import java.math.BigDecimal
-import java.time.LocalDateTime
 import java.util.*
 
 data class CnUpdate @JsonCreator constructor(
