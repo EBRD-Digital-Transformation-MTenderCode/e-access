@@ -34,7 +34,7 @@ data class Lot @JsonCreator constructor(
         val variants: List<Variant>?,
 
         @field:Valid
-        var contractPeriod: ContractPeriod,
+        var contractPeriod: ContractPeriod?,
 
         @field:Valid
         var placeOfPerformance: PlaceOfPerformance?

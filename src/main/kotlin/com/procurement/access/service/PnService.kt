@@ -115,14 +115,16 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun checkLotsContractPeriod(pn: PnCreate) {
-        pn.tender.lots?.forEach { lot ->
-            if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
-                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-            }
-            if (lot.contractPeriod.startDate < pn.tender.tenderPeriod.startDate) {
-                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-            }
-        }
+        pn.tender.lots?.asSequence()
+                ?.filter { it.contractPeriod != null }
+                ?.forEach {
+                    if (it.contractPeriod!!.startDate >= it.contractPeriod.endDate) {
+                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                    }
+                    if (it.contractPeriod.startDate < pn.tender.tenderPeriod.startDate) {
+                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                    }
+                }
     }
 
     private fun setItemsId(tender: TenderPnCreate) {
@@ -172,11 +174,13 @@ class PnServiceImpl(private val generationService: GenerationService,
 
     private fun setContractPeriod(lotsDto: List<LotPnCreate>?, budget: BudgetPnCreate): ContractPeriod? {
         return if (lotsDto != null) {
-            val startDate: LocalDateTime = lotsDto.asSequence()
-                    .minBy { it.contractPeriod.startDate }
+            val startDate: LocalDateTime = lotsDto.asSequence().asSequence()
+                    .filter { it.contractPeriod != null }
+                    .minBy { it.contractPeriod!!.startDate }
                     ?.contractPeriod!!.startDate
             val endDate: LocalDateTime = lotsDto.asSequence()
-                    .maxBy { it.contractPeriod.endDate }
+                    .filter { it.contractPeriod != null }
+                    .maxBy { it.contractPeriod!!.endDate }
                     ?.contractPeriod!!.endDate
             budget.budgetBreakdown.forEach { bb ->
                 if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
@@ -221,7 +225,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                 recurrentProcurement = listOf(RecurrentProcurement(false)),
                 renewals = listOf(Renewal(false)),
                 variants = listOf(Variant(false)),
-                contractPeriod = ContractPeriod(lotDto.contractPeriod.startDate, lotDto.contractPeriod.endDate),
+                contractPeriod = lotDto.contractPeriod,
                 placeOfPerformance = lotDto.placeOfPerformance
         )
     }
