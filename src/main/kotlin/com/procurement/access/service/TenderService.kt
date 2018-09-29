@@ -156,7 +156,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
-            "cancelTender", "cancelTenderEv" -> { lot: Lot ->
+            "cancelTender", "cancellationStandstillPeriod" -> { lot: Lot ->
                 (lot.status == TenderStatus.ACTIVE)
                         && (lot.statusDetails == LotStatusDetails.EMPTY
                         || lot.statusDetails == LotStatusDetails.AWARDED)
@@ -190,7 +190,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
     private fun validateTenderStatusForPrepareCancellation(process: TenderProcess, operationType: String) {
         when (operationType) {
-            "cancelTender", "cancelTenderEv" -> {
+            "cancelTender", "cancellationStandstillPeriod" -> {
                 if (process.tender.status != TenderStatus.ACTIVE)
                     throw ErrorException(TENDER_IN_UNSUCCESSFUL_STATUS)
                 if (process.tender.statusDetails != TenderStatusDetails.EMPTY)
