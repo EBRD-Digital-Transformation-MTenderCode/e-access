@@ -158,13 +158,11 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
             "cancelTender", "cancellationStandstillPeriod" -> { lot: Lot ->
-                (lot.status == TenderStatus.ACTIVE)
-                        && (lot.statusDetails == LotStatusDetails.EMPTY
-                        || lot.statusDetails == LotStatusDetails.AWARDED)
+                (lot.status == LotStatus.ACTIVE)
+                        && (lot.statusDetails == LotStatusDetails.EMPTY || lot.statusDetails == LotStatusDetails.AWARDED)
             }
             "cancelPlan" -> { lot: Lot ->
-                (lot.status == TenderStatus.PLANNING
-                        || lot.status == TenderStatus.PLANNED)
+                (lot.status == LotStatus.PLANNING || lot.status == LotStatus.PLANNED)
                         && (lot.statusDetails == LotStatusDetails.EMPTY)
             }
             else -> {
@@ -180,7 +178,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                         && (lot.statusDetails == LotStatusDetails.CANCELLED)
             }
             "cancelPlan" -> { lot: Lot ->
-                (lot.status == TenderStatus.PLANNING || lot.status == TenderStatus.PLANNED)
+                (lot.status == LotStatus.PLANNING || lot.status == LotStatus.PLANNED)
                         && (lot.statusDetails == LotStatusDetails.EMPTY)
             }
             else -> {
