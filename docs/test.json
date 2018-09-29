@@ -1,109 +1,71 @@
 {
-  "id": "a1bcd000-b00d-4644-b0e6-4b75020b0237",
-  "command": "updatePn",
-  "context": {
-    "operationId": "a1bcd000-b00d-4644-b0e6-4b75020b0237",
-    "requestId": "a998add0-c3e6-11e8-95bf-1d41f8216f75",
-    "cpid": "ocds-t1s2t3-MD-1538225546723",
-    "ocid": "ocds-t1s2t3-MD-1538225546723-PN-1538225546781",
-    "stage": "PN",
-    "prevStage": "PN",
-    "processType": "updatePN",
-    "operationType": "updatePN",
-    "phase": "planning",
-    "owner": "445f6851-c908-407d-9b45-14b92f3e964b",
-    "country": "MD",
-    "language": "ro",
-    "pmd": "TEST_OT",
-    "token": "53933816-4540-46dc-9b8f-9904ee14644a",
-    "startDate": "2018-09-29T12:53:29Z"
-  },
-  "data": {
-    "planning": {
-      "budget": {
-        "description": "e",
-        "budgetBreakdown": [
-          {
-            "id": "ocds-t1s2t3-MD-1537979578285-FS-1538074109816",
-            "amount": {
-              "amount": 400,
-              "currency": "USD"
-            }
-          }
-        ]
-      }
-    },
-    "tender": {
-      "title": "TITLE",
-      "description": "d",
-      "legalBasis": "DIRECTIVE_2014_23_EU",
-      "tenderPeriod": {
-        "startDate": "2018-10-01T00:00:00Z"
-      },
-      "procuringEntity": {
-        "name": "Name of CN pE",
-        "address": {
-          "streetAddress": "address of pe",
-          "postalCode": "00000",
-          "addressDetails": {
-            "country": {
-              "scheme": "iso-alpha2",
-              "id": "MD",
-              "description": "MOLDOVA",
-              "uri": "http://reference.iatistandard.org"
-            },
-            "region": {
-              "scheme": "CUATM",
-              "id": "0101000",
-              "description": "mun.Chişinău",
-              "uri": "http://statistica.md"
-            },
-            "locality": {
-              "scheme": "oth123",
-              "id": "0101000",
-              "description": "hhh"
-            }
-          }
-        },
-        "identifier": {
-          "id": "555-555",
-          "scheme": "MD-IDNO",
-          "legalName": "legal name of pe",
-          "uri": "g"
-        },
-        "additionalIdentifiers": [
-          {
-            "id": "tre",
-            "scheme": "ert",
-            "legalName": "etr",
-            "uri": "ter"
-          }
-        ],
-        "contactPoint": {
-          "name": "contact name",
-          "email": "email",
-          "telephone": "4521",
-          "faxNumber": "45",
-          "url": "d"
-        }
-      },
-      "documents": [
+  "planning": {
+    "budget": {
+      "description": "e",
+      "budgetBreakdown": [
         {
-          "documentType": "hearingNotice",
-          "id": "ea21a690-c256-11e8-8cbe-a1835757f77d",
-          "relatedLots": [
-            "99d47b91-c341-11e8-a3cf-159ba9e54647"
-          ]
+          "id": "ocds-t1s2t3-MD-1537979578285-FS-1538074109816",
+          "amount": {
+            "amount": 400,
+            "currency": "USD"
+          }
         }
-      ],
-      "lots": null,
-      "submissionMethodRationale": [
-        "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
-      ],
-      "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
-      "procurementMethodDetails": "TEST Licitatia deschisa",
-      "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)"
+      ]
     }
   },
-  "version": "0.0.1"
+  "tender": {
+    "title": "TITLE",
+    "description": "d",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "tenderPeriod": {
+      "startDate": "2018-10-01T00:00:00Z"
+    },
+    "procuringEntity": {
+      "name": "Name of CN pE",
+      "identifier": {
+        "scheme": "MD-IDNO",
+        "id": "555-555",
+        "legalName": "legal name of pe",
+        "uri": "g"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "ert",
+          "id": "tre",
+          "legalName": "etr",
+          "uri": "ter"
+        }
+      ],
+      "address": {
+        "streetAddress": "address of pe",
+        "postalCode": "00000",
+        "addressDetails": {
+          "country": {
+            "id": "MD"
+          },
+          "region": {
+            "id": "0101000"
+          },
+          "locality": {
+            "scheme": "oth123",
+            "id": "0101000",
+            "description": "hhh"
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "contact name",
+        "email": "email",
+        "telephone": "4521",
+        "faxNumber": "45",
+        "url": "d"
+      }
+    },
+    "documents": [
+      {
+        "documentType": "hearingNotice",
+        "id": "ea21a690-c256-11e8-8cbe-a1835757f77d"
+      }
+    ]
+  }
 }
