@@ -54,11 +54,12 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
-            process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
-        } else {
-            throw ErrorException(IS_NOT_SUSPENDED)
-        }
+        process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
+//        if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
+//            process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
+//        } else {
+//            throw ErrorException(IS_NOT_SUSPENDED)
+//        }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
     }
