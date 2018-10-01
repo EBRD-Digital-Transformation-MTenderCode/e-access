@@ -40,34 +40,35 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         validateTenderStatus(tenderProcess)
-
-        val activeLots: List<Lot>
-        val canceledLots: List<Lot>
-        val updatedItems: List<Item>
-        val updatedDocuments: List<Document>
         val lotsDto = cnDto.tender.lots
         val itemsDto = cnDto.tender.items
         val documentsDto = cnDto.tender.documents
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
-        val lotsDtoId = cnDto.tender.lots.asSequence().map { it.id }.toSet()
-        if (lotsDtoId.size < cnDto.tender.lots.size) throw ErrorException(INVALID_LOT_ID)
+        val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
         val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId
+
+        val lotsFromItems = itemsDto.asSequence().map { it.relatedLot }.toHashSet()
+        if (!lotsFromItems.containsAll(lotsDtoId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all lots have related items
+        if (!(lotsDbId + newLotsId).containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all items have related lots
+        val lotsFromDocuments = documentsDto.asSequence().filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        if (lotsFromDocuments.isNotEmpty()) {
+            if (!lotsDtoId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+        }
+
+        val activeLots: List<Lot>
+        val canceledLots: List<Lot>
+        val updatedItems: List<Item>
+        val updatedDocuments: List<Document>
         newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(cnDto.tender, newLotsId)
-        validateRelatedLots(lotIds = lotsDbId + newLotsId, items = itemsDto, documents = documentsDto)
-        /*active Lots*/
         activeLots = getActiveLots(lotsDto = cnDto.tender.lots, lotsTender = tenderProcess.tender.lots, newLotsId = newLotsId)
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
-        /*canceled Lots*/
         canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
-        /*update Items*/
         updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
-        /*update Documents*/
         updatedDocuments = updateDocuments(tenderProcess.tender.documents, documentsDto)
-        /*tenderProcess*/
         tenderProcess.planning.apply {
             rationale = cnDto.planning.rationale
             budget.description = cnDto.planning.budget.description

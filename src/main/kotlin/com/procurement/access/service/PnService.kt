@@ -39,7 +39,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val cpId = generationService.getCpId(country)
         val planningDto = pnDto.planning
         val tenderDto = pnDto.tender
-        validateRelatedLots(tenderDto)
+        validateDtoRelatedLots(tenderDto)
         setItemsId(pnDto.tender)
         setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
         validateStartDate(pnDto.tender.tenderPeriod.startDate)
@@ -65,7 +65,7 @@ class PnServiceImpl(private val generationService: GenerationService,
                         classification = tenderDto.classification,
                         mainProcurementCategory = tenderDto.mainProcurementCategory,
                         additionalProcurementCategories = null,
-                        procurementMethod = getPmd(pmd),
+                        procurementMethod = getProcurementMethod(pmd),
                         procurementMethodDetails = tenderDto.procurementMethodDetails,
                         procurementMethodRationale = tenderDto.procurementMethodRationale,
                         procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo,
@@ -94,39 +94,10 @@ class PnServiceImpl(private val generationService: GenerationService,
                         documents = setDocuments(tenderDto)
                 )
         )
-
         val entity = getEntity(tp, cpId, stage, dateTime, owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ResponseDto(data = tp)
-    }
-
-    private fun validateRelatedLots(tender: TenderPnCreate) {
-        var lotsId = hashSetOf<String>()
-        if (tender.lots != null) {
-            lotsId = tender.lots.asSequence()
-                    .map { it.id }.toHashSet()
-            if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
-        }
-        if (tender.documents != null) {
-            val lotsFromDocuments = tender.documents.asSequence()
-                    .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
-            if (lotsFromDocuments.isNotEmpty()) {
-                if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-            }
-        }
-        if (tender.items != null) {
-            val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
-            if (lotsId.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-            if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        }
-    }
-
-    private fun validateStartDate(startDate: LocalDateTime) {
-        val month = startDate.month
-        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
-        val day = startDate.dayOfMonth
-        if (day != 1) throw ErrorException(INVALID_START_DATE)
     }
 
     private fun checkLotsCurrency(pn: PnCreate) {
@@ -146,6 +117,33 @@ class PnServiceImpl(private val generationService: GenerationService,
                 if (it.startDate < pn.tender.tenderPeriod.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
         }
+    }
+
+    private fun validateDtoRelatedLots(tender: TenderPnCreate) {
+        var lotsId = hashSetOf<String>()
+        if (tender.lots != null) {
+            lotsId = tender.lots.asSequence().map { it.id }.toHashSet()
+            if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
+        }
+        if (tender.items != null) {
+            val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
+            if (!lotsFromItems.containsAll(lotsId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+            if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        }
+        if (tender.documents != null) {
+            val lotsFromDocuments = tender.documents.asSequence()
+                    .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+            if (lotsFromDocuments.isNotEmpty()) {
+                if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            }
+        }
+    }
+
+    private fun validateStartDate(startDate: LocalDateTime) {
+        val month = startDate.month
+        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
+        val day = startDate.dayOfMonth
+        if (day != 1) throw ErrorException(INVALID_START_DATE)
     }
 
     private fun setItemsId(tender: TenderPnCreate) {
@@ -178,7 +176,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun getPmd(pmd: String): ProcurementMethod {
+    private fun getProcurementMethod(pmd: String): ProcurementMethod {
         return when (pmd) {
             "MV" -> ProcurementMethod.MV
             "OT" -> ProcurementMethod.OT
@@ -196,8 +194,7 @@ class PnServiceImpl(private val generationService: GenerationService,
     private fun setContractPeriod(lotsDto: List<LotPnCreate>?, budget: BudgetPnCreate): ContractPeriod? {
         return if (lotsDto != null) {
             val contractPeriodSet = lotsDto.asSequence()
-                    .filter { it.contractPeriod != null }
-                    .mapNotNull { it.contractPeriod }.toSet()
+                    .filter { it.contractPeriod != null }.mapNotNull { it.contractPeriod }.toSet()
             if (contractPeriodSet.isNotEmpty()) {
                 val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
                 val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
@@ -217,8 +214,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         return if (lotsDto != null && lotsDto.isNotEmpty()) {
             val currency = budgetValue.currency
             val totalAmount = lotsDto.asSequence()
-                    .sumByDouble { it.value.amount.toDouble() }
-                    .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+                    .sumByDouble { it.value.amount.toDouble() }.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
             if (totalAmount > budgetValue.amount) throw ErrorException(INVALID_LOT_AMOUNT)
             Value(totalAmount, currency)
         } else {
@@ -264,11 +260,6 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setDocuments(tenderDto: TenderPnCreate): List<Document>? {
-        if ((tenderDto.lots == null || tenderDto.lots.isEmpty()) && (tenderDto.documents != null)) {
-            if (tenderDto.documents.any { it.relatedLots != null }) {
-                throw throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-            }
-        }
         return tenderDto.documents
     }
 

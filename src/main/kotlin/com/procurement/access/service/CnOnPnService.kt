@@ -58,7 +58,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             }
         } else {
             val lotsId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
-            validateRelatedLots(lotsId, tenderDto)
+            //validateRelatedLots(lotsId, tenderDto)
         }
         tenderProcess.tender.apply {
             documents = updateDocuments(documents, cnDto.tender.documents)

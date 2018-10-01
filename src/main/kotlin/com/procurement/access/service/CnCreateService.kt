@@ -40,7 +40,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val cpId = generationService.getCpId(country)
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
-        validateRelatedLots(tenderDto)
+        validateDtoRelatedLots(tenderDto)
         setItemsId(tenderDto)
         setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
@@ -147,18 +147,17 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         }
     }
 
-    private fun validateRelatedLots(tender: TenderCnCreate) {
-        val lotsFromCn = tender.lots.asSequence().map { it.id }.toHashSet()
-        if (lotsFromCn.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
-        val lotsFromDocuments = tender.documents.asSequence()
-                .filter { it.relatedLots != null }
-                .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
-        if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsFromCn.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-        }
+    private fun validateDtoRelatedLots(tender: TenderCnCreate) {
+        val lotsId = tender.lots.asSequence().map { it.id }.toHashSet()
+        if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
         val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsFromCn.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        if (!lotsFromCn.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsFromItems.containsAll(lotsId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        val lotsFromDocuments = tender.documents.asSequence()
+                .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        if (lotsFromDocuments.isNotEmpty()) {
+            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+        }
     }
 
     private fun getPmd(pmd: String): ProcurementMethod {
