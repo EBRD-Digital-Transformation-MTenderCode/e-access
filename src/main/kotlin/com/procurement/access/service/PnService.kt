@@ -115,16 +115,15 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun checkLotsContractPeriod(pn: PnCreate) {
-        pn.tender.lots?.asSequence()
-                ?.filter { it.contractPeriod != null }
-                ?.forEach {
-                    if (it.contractPeriod!!.startDate >= it.contractPeriod.endDate) {
-                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-                    }
-                    if (it.contractPeriod.startDate < pn.tender.tenderPeriod.startDate) {
-                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-                    }
-                }
+        if (pn.tender.lots != null) {
+            val contractPeriodSet = pn.tender.lots!!.asSequence()
+                    .filter { it.contractPeriod != null }
+                    .mapNotNull { it.contractPeriod }.toSet()
+            contractPeriodSet.forEach {
+                if (it.startDate >= it.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                if (it.startDate < pn.tender.tenderPeriod.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            }
+        }
     }
 
     private fun setItemsId(tender: TenderPnCreate) {
@@ -174,19 +173,19 @@ class PnServiceImpl(private val generationService: GenerationService,
 
     private fun setContractPeriod(lotsDto: List<LotPnCreate>?, budget: BudgetPnCreate): ContractPeriod? {
         return if (lotsDto != null) {
-            val startDate: LocalDateTime = lotsDto.asSequence().asSequence()
+            val contractPeriodSet = lotsDto.asSequence()
                     .filter { it.contractPeriod != null }
-                    .minBy { it.contractPeriod!!.startDate }
-                    ?.contractPeriod!!.startDate
-            val endDate: LocalDateTime = lotsDto.asSequence()
-                    .filter { it.contractPeriod != null }
-                    .maxBy { it.contractPeriod!!.endDate }
-                    ?.contractPeriod!!.endDate
-            budget.budgetBreakdown.forEach { bb ->
-                if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-                if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                    .mapNotNull { it.contractPeriod }.toSet()
+            if (contractPeriodSet.isNotEmpty()) {
+                val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
+                val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
+                budget.budgetBreakdown.forEach { bb ->
+                    if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                    if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                }
+                ContractPeriod(startDate, endDate)
             }
-            ContractPeriod(startDate, endDate)
+            null
         } else {
             null
         }

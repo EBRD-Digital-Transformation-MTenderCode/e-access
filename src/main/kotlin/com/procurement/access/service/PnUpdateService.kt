@@ -121,13 +121,12 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun checkLotsContractPeriod(lotsDto: List<LotPnUpdate>, tenderPeriodStartDate: LocalDateTime) {
-        lotsDto.forEach { lot ->
-            if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
-                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-            }
-            if (lot.contractPeriod.startDate < tenderPeriodStartDate) {
-                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-            }
+        val contractPeriodSet = lotsDto.asSequence()
+                .filter { it.contractPeriod != null }
+                .mapNotNull { it.contractPeriod }.toSet()
+        contractPeriodSet.forEach {
+            if (it.startDate >= it.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            if (it.startDate < tenderPeriodStartDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
     }
 

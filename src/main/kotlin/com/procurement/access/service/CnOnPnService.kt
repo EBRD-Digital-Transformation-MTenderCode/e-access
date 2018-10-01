@@ -5,10 +5,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnUpdate
-import com.procurement.access.model.dto.cn.ItemCnUpdate
-import com.procurement.access.model.dto.cn.LotCnUpdate
-import com.procurement.access.model.dto.cn.TenderCnUpdate
+import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -174,8 +171,9 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setContractPeriod(lotsDto: List<LotCnUpdate>, budget: Budget): ContractPeriod {
-        val startDate: LocalDateTime = lotsDto.asSequence().minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate!!
-        val endDate: LocalDateTime = lotsDto.asSequence().maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate!!
+        val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
+        val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
+        val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
         budget.budgetBreakdown.forEach { bb ->
             if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)

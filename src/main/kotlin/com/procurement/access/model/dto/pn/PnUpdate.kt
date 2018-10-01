@@ -62,9 +62,9 @@ data class LotPnUpdate @JsonCreator constructor(
 
         val value: Value,
 
-        val contractPeriod: ContractPeriod,
+        val contractPeriod: ContractPeriod?,
 
-        val placeOfPerformance: PlaceOfPerformance
+        val placeOfPerformance: PlaceOfPerformance?
 )
 
 data class ItemPnUpdate @JsonCreator constructor(

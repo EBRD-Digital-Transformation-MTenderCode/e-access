@@ -190,12 +190,9 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): ContractPeriod {
-        val startDate: LocalDateTime = lotsDto.asSequence()
-                .minBy { it.contractPeriod.startDate }?.contractPeriod?.startDate
-                ?: throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-        val endDate: LocalDateTime = lotsDto.asSequence()
-                .maxBy { it.contractPeriod.endDate }?.contractPeriod?.endDate
-                ?: throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+        val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
+        val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
+        val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
         budget.budgetBreakdown.forEach { bb ->
             if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
