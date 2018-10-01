@@ -132,6 +132,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemPnUpdate>, documents: List<Document>?) {
         val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotIds.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (documents!= null){
             val lotsFromDocuments = documents.asSequence()
