@@ -50,13 +50,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId
 
-        val lotsFromItems = itemsDto.asSequence().map { it.relatedLot }.toHashSet()
-        if (!lotsFromItems.containsAll(lotsDtoId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all lots have related items
-        if (!(lotsDbId + newLotsId).containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all items have related lots
-        val lotsFromDocuments = documentsDto.asSequence().filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
-        if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsDtoId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-        }
+        validateRelatedLots(lotsDbId, lotsDtoId, itemsDto, documentsDto)
 
         val activeLots: List<Lot>
         val canceledLots: List<Lot>
@@ -68,7 +62,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(tenderProcess.tender.lots, canceledLotsId)
         updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
-        updatedDocuments = updateDocuments(tenderProcess.tender.documents, documentsDto)
+        updatedDocuments = updateDocuments(tenderProcess.tender, documentsDto)
         tenderProcess.planning.apply {
             rationale = cnDto.planning.rationale
             budget.description = cnDto.planning.budget.description
@@ -183,16 +177,19 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         return newLotsIdSet
     }
 
-    private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemCnUpdate>, documents: List<Document>) {
+    private fun validateRelatedLots(lotsDbId: Set<String>, lotsDtoId: Set<String>, items: List<ItemCnUpdate>, documentsDto: List<Document>) {
+        val newLotsId = lotsDtoId - lotsDbId
         val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotIds.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        val lotsFromDocuments = documents.asSequence()
-                .filter { it.relatedLots != null }
-                .flatMap { it.relatedLots!!.asSequence() }
-                .toHashSet()
+        if (!lotsFromItems.containsAll(lotsDtoId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all lots have related items
+        if (!(lotsDbId + newLotsId).containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all items have related lots
+    }
+
+    private fun validateDocumentsRelatedLots(lots: List<Lot>, documentsDto: List<Document>) {
+        val lotsId = lots.asSequence().map { it.id }.toHashSet()
+        val lotsFromDocuments = documentsDto.asSequence()
+                .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotIds.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
     }
 
@@ -222,15 +219,13 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemCnUpdate>): List<Item> {
         //validation
-        val itemsDtoId = itemsDto.asSequence().map { it.id }.toSet()
+        val itemsDtoId = itemsDto.asSequence().map { it.id }.toHashSet()
         if (itemsDtoId.size < itemsDto.size) throw ErrorException(INVALID_ITEMS)
-        val itemsDbId = itemsTender.asSequence().map { it.id }.toSet()
-        if (!itemsDtoId.containsAll(itemsDbId)) throw ErrorException(INVALID_ITEMS)
+        val itemsDbId = itemsTender.asSequence().map { it.id }.toHashSet()
+        if (itemsDtoId.size != itemsDbId.size) throw ErrorException(INVALID_ITEMS)
+        if (!itemsDbId.containsAll(itemsDtoId)) throw ErrorException(INVALID_ITEMS)
         //update
-        itemsTender.forEach { item ->
-            val itemDto = itemsDto.asSequence().first { it.id == item.id }
-            item.updateItem(itemDto)
-        }
+        itemsTender.forEach { itemDb -> itemDb.updateItem(itemsDto.first { it.id == itemDb.id }) }
         return itemsTender
     }
 
@@ -239,20 +234,19 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         this.relatedLot = itemDto.relatedLot
     }
 
-    private fun updateDocuments(documentsTender: List<Document>?, documentsDto: List<Document>): List<Document> {
-        return if (documentsTender != null && documentsTender.isNotEmpty()) {
+    private fun updateDocuments(tender: Tender, documentsDto: List<Document>): List<Document> {
+        validateDocumentsRelatedLots(tender.lots, documentsDto)
+        return if (tender.documents != null && tender.documents!!.isNotEmpty()) {
+            val documentsDb = tender.documents!!
             //validation
             val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
-            val documentsDbId = documentsTender.asSequence().map { it.id }.toSet()
-            val newDocumentsId = documentsDtoId - documentsDbId
+            val documentsDbId = documentsDb.asSequence().map { it.id }.toSet()
             if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
             //update
-            documentsTender.forEach { document ->
-                val documentDto = documentsDto.asSequence().first { it.id == document.id }
-                document.updateDocument(documentDto)
-            }
+            documentsDb.forEach { docDb -> docDb.updateDocument(documentsDto.first { it.id == docDb.id }) }
+            val newDocumentsId = documentsDtoId - documentsDbId
             val newDocuments = documentsDto.asSequence().filter { it.id in newDocumentsId }.toList()
-            documentsTender + newDocuments
+            documentsDb + newDocuments
         } else {
             documentsDto
         }

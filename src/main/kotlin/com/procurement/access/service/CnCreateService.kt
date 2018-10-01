@@ -151,7 +151,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val lotsId = tender.lots.asSequence().map { it.id }.toHashSet()
         if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
         val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
-        if (!lotsFromItems.containsAll(lotsId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        if (lotsId.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         val lotsFromDocuments = tender.documents.asSequence()
                 .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
