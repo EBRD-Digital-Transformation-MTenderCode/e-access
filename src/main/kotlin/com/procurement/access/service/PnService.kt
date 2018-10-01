@@ -39,6 +39,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val cpId = generationService.getCpId(country)
         val planningDto = pnDto.planning
         val tenderDto = pnDto.tender
+        validateRelatedLots(tenderDto)
         setItemsId(pnDto.tender)
         setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
         validateStartDate(pnDto.tender.tenderPeriod.startDate)
@@ -98,6 +99,27 @@ class PnServiceImpl(private val generationService: GenerationService,
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ResponseDto(data = tp)
+    }
+
+    private fun validateRelatedLots(tender: TenderPnCreate) {
+        var lotsId = hashSetOf<String>()
+        if (tender.lots != null) {
+            lotsId = tender.lots.asSequence()
+                    .map { it.id }.toHashSet()
+            if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
+        }
+        if (tender.documents != null) {
+            val lotsFromDocuments = tender.documents.asSequence()
+                    .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+            if (lotsFromDocuments.isNotEmpty()) {
+                if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            }
+        }
+        if (tender.items != null) {
+            val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
+            if (lotsId.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+            if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        }
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
