@@ -184,6 +184,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun validateRelatedLots(lotIds: Set<String>, items: List<ItemCnUpdate>, documents: List<Document>) {
         val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotIds.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotIds.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         val lotsFromDocuments = documents.asSequence()
                 .filter { it.relatedLots != null }

@@ -82,6 +82,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         }
         val lotsFromItems = tender.items.asSequence()
                 .map { it.relatedLot }.toHashSet()
+        if (lotsId.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
     }
 
