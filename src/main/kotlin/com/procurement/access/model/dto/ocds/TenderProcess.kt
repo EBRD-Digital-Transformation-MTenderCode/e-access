@@ -10,7 +10,15 @@ data class TenderProcess @JsonCreator constructor(
 
         var token: String?,
 
+        var amendment: Amendment?,
+
         val planning: Planning,
 
         val tender: Tender
+
+)
+
+data class Amendment @JsonCreator constructor(
+
+        val relatedLots: Set<String>
 )
