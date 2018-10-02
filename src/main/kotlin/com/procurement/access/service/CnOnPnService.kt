@@ -56,11 +56,11 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             setItemsId(tenderDto.items)
             setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
             tenderProcess.tender.apply {
-                lots = setLots(cnDto.tender.lots)
-                items = setItems(cnDto.tender.items)
-                cnDto.tender.classification?.let { classification = it }
-                value = getValueFromLots(cnDto.tender.lots, tenderProcess.planning.budget.amount)
-                contractPeriod = setContractPeriod(cnDto.tender.lots, tenderProcess.planning.budget)
+                lots = setLots(tenderDto.lots)
+                items = setItems(tenderDto.items)
+                tenderDto.classification?.let { classification = it }
+                value = getValueFromLots(tenderDto.lots, tenderProcess.planning.budget.amount)
+                contractPeriod = setContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
             }
         }
         tenderProcess.tender.apply {
