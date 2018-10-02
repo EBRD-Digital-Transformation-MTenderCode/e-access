@@ -69,8 +69,8 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             statusDetails = TenderStatusDetails.fromValue(phase)
             awardCriteria = AwardCriteria.PRICE_ONLY
             additionalProcurementCategories = null
-            tenderPeriod = cnDto.tender.tenderPeriod
-            enquiryPeriod = cnDto.tender.enquiryPeriod
+            tenderPeriod = tenderDto.tenderPeriod
+            enquiryPeriod = tenderDto.enquiryPeriod
             procurementMethodRationale = tenderDto.procurementMethodRationale
             procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo
         }
