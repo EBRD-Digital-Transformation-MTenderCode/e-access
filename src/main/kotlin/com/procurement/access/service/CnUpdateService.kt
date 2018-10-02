@@ -78,9 +78,10 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
         }
-
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
-        tenderProcess.amendment = Amendment(relatedLots = canceledLots.asSequence().map { it.id }.toSet())
+        if (canceledLots.isNotEmpty()) {
+            tenderProcess.amendment = Amendment(relatedLots = canceledLots.asSequence().map { it.id }.toSet())
+        }
         return ResponseDto(data = tenderProcess)
     }
 

@@ -10,7 +10,7 @@ data class TenderProcess @JsonCreator constructor(
 
         var token: String?,
 
-        var amendment: Amendment?,
+        var amendment: Amendment? = null,
 
         val planning: Planning,
 
