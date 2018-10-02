@@ -114,7 +114,6 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
         return ResponseDto(data = tenderProcess)
     }
 
-
     private fun validateStartDate(startDate: LocalDateTime) {
         val month = startDate.month
         if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)

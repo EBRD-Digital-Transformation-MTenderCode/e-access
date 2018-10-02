@@ -34,8 +34,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
-                ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
@@ -45,6 +44,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val documentsDto = cnDto.tender.documents
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
+
         val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
         val lotsDbId = tenderProcess.tender.lots.asSequence().map { it.id }.toSet()
         var newLotsId = lotsDtoId - lotsDbId
@@ -220,7 +220,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemCnUpdate>): List<Item> {
         //validation
         val itemsDtoId = itemsDto.asSequence().map { it.id }.toHashSet()
-        if (itemsDtoId.size < itemsDto.size) throw ErrorException(INVALID_ITEMS)
+        if (itemsDtoId.size != itemsDto.size) throw ErrorException(INVALID_ITEMS)
         val itemsDbId = itemsTender.asSequence().map { it.id }.toHashSet()
         if (itemsDtoId.size != itemsDbId.size) throw ErrorException(INVALID_ITEMS)
         if (!itemsDbId.containsAll(itemsDtoId)) throw ErrorException(INVALID_ITEMS)

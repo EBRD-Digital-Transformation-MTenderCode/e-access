@@ -148,15 +148,15 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun validateDtoRelatedLots(tender: TenderCnCreate) {
-        val lotsId = tender.lots.asSequence().map { it.id }.toHashSet()
-        if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
-        val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsId.size != lotsFromItems.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        val lotsIdSet = tender.lots.asSequence().map { it.id }.toHashSet()
+        if (lotsIdSet.size != tender.lots.size) throw ErrorException(INVALID_LOT_ID)
+        val lotsFromItemsSet = tender.items.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotsIdSet.size != lotsFromItemsSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         val lotsFromDocuments = tender.documents.asSequence()
                 .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            if (!lotsIdSet.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
     }
 
