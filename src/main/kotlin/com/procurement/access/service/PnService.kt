@@ -194,7 +194,7 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setContractPeriod(lotsDto: List<LotPnCreate>?, budget: BudgetPnCreate): ContractPeriod? {
-        return if (lotsDto != null) {
+        if (lotsDto != null) {
             val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
             if (contractPeriodSet.isNotEmpty()) {
                 val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
@@ -203,12 +203,10 @@ class PnServiceImpl(private val generationService: GenerationService,
                     if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
                     if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
                 }
-                ContractPeriod(startDate, endDate)
+                return ContractPeriod(startDate, endDate)
             }
-            null
-        } else {
-            null
         }
+        return null
     }
 
     private fun getValueFromLots(lotsDto: List<LotPnCreate>?, budgetValue: Value): Value {
