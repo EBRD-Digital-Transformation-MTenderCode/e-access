@@ -41,7 +41,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
         validateDtoRelatedLots(tenderDto)
-        setItemsId(tenderDto)
+        setItemsId(tenderDto.items)
         setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
         val tp = TenderProcess(
@@ -123,8 +123,10 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         return lotsDto.asSequence().map { convertDtoLotToLot(it) }.toList()
     }
 
-    private fun setItemsId(tender: TenderCnCreate) {
-        tender.items.forEach { it.id = generationService.getTimeBasedUUID() }
+    private fun setItemsId(items: List<ItemCnCreate>) {
+        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        if (itemsId.size != items.size) throw ErrorException(INVALID_ITEMS)
+        items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {

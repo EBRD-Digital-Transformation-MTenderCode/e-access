@@ -59,7 +59,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
             val newLotsId = getLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
             activeLots = getActiveLots(lotsDto = pnDto.tender.lots, newLotsId = newLotsId)
-            itemsDto.forEach { it.id = generationService.getTimeBasedUUID() }
+            setItemsId(itemsDto)
             updatedItems = convertItems(itemsDto)
         }
         /*update*/
@@ -213,6 +213,12 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
                     canceledLots.add(lot)
                 }
         return canceledLots
+    }
+
+    private fun setItemsId(items: List<ItemPnUpdate>) {
+        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        if (itemsId.size != items.size) throw ErrorException(INVALID_ITEMS)
+        items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
     private fun convertItems(itemsDto: List<ItemPnUpdate>): List<Item> {

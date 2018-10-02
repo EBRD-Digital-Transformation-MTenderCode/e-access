@@ -5,7 +5,10 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.*
+import com.procurement.access.model.dto.cn.CnUpdate
+import com.procurement.access.model.dto.cn.ItemCnUpdate
+import com.procurement.access.model.dto.cn.LotCnUpdate
+import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -50,7 +53,7 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
             if (lotsFromItemsSet.size != lotsIdSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
 
-            setItemsId(tenderDto)
+            setItemsId(tenderDto.items)
             setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
             tenderProcess.tender.apply {
                 lots = setLots(cnDto.tender.lots)
@@ -127,8 +130,10 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
         return lotsDto.asSequence().map { convertDtoLotToCnLot(it) }.toList()
     }
 
-    private fun setItemsId(tender: TenderCnUpdate) {
-        tender.items.forEach { it.id = generationService.getTimeBasedUUID() }
+    private fun setItemsId(items: List<ItemCnUpdate>) {
+        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        if (itemsId.size != items.size) throw ErrorException(INVALID_ITEMS)
+        items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnUpdate) {

@@ -41,7 +41,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val planningDto = pnDto.planning
         val tenderDto = pnDto.tender
         validateDtoRelatedLots(tenderDto)
-        setItemsId(pnDto.tender)
+        setItemsId(pnDto.tender.items)
         setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
         pnDto.tender.procuringEntity.id = generationService.generateOrganizationId(pnDto.tender.procuringEntity)
         val tp = TenderProcess(
@@ -121,7 +121,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         var lotsId = hashSetOf<String>()
         if (tender.lots != null) {
             lotsId = tender.lots.asSequence().map { it.id }.toHashSet()
-            if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
+            if (lotsId.size != tender.lots.size) throw ErrorException(INVALID_LOT_ID)
         }
         if (tender.items != null) {
             val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
@@ -144,8 +144,12 @@ class PnServiceImpl(private val generationService: GenerationService,
         if (day != 1) throw ErrorException(INVALID_START_DATE)
     }
 
-    private fun setItemsId(tender: TenderPnCreate) {
-        tender.items?.forEach { it.id = generationService.getTimeBasedUUID() }
+    private fun setItemsId(items: List<ItemPnCreate>?) {
+        items?.let {
+            val itemsId = it.asSequence().map { it.id }.toHashSet()
+            if (itemsId.size != it.size) throw ErrorException(INVALID_ITEMS)
+            it.forEach { it.id = generationService.getTimeBasedUUID() }
+        }
     }
 
     private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderPnCreate) {

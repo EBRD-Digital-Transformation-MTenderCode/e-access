@@ -50,7 +50,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         var newLotsId = lotsDtoId - lotsDbId
         val canceledLotsId = lotsDbId - lotsDtoId
 
-        validateRelatedLots(lotsDbId, lotsDtoId, itemsDto, documentsDto)
+        validateRelatedLots(lotsDbId, lotsDtoId, itemsDto)
 
         val activeLots: List<Lot>
         val canceledLots: List<Lot>
@@ -177,7 +177,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         return newLotsIdSet
     }
 
-    private fun validateRelatedLots(lotsDbId: Set<String>, lotsDtoId: Set<String>, items: List<ItemCnUpdate>, documentsDto: List<Document>) {
+    private fun validateRelatedLots(lotsDbId: Set<String>, lotsDtoId: Set<String>, items: List<ItemCnUpdate>) {
         val newLotsId = lotsDtoId - lotsDbId
         val lotsFromItems = items.asSequence().map { it.relatedLot }.toHashSet()
         if (!lotsFromItems.containsAll(lotsDtoId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all lots have related items
