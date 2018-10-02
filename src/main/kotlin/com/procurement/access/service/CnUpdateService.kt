@@ -51,7 +51,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         var newLotsId = lotsDtoId - lotsDbId
         val oldCanceledLotsDbId = lotsDb.asSequence().filter{it.status == LotStatus.CANCELLED}.map { it.id }.toSet()
         val allCanceledLotsId = lotsDbId - lotsDtoId
-        val amendmentLots = allCanceledLotsId - oldCanceledLotsDbId
+        val newCanceledLots = allCanceledLotsId - oldCanceledLotsDbId
 
         validateRelatedLots(lotsDbId, lotsDtoId, itemsDto)
 
@@ -82,8 +82,8 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
             enquiryPeriod = cnDto.tender.enquiryPeriod
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
-        if (amendmentLots.isNotEmpty()) {
-            tenderProcess.amendment = Amendment(relatedLots = amendmentLots)
+        if (newCanceledLots.isNotEmpty()) {
+            tenderProcess.amendment = Amendment(relatedLots = newCanceledLots)
         }
         return ResponseDto(data = tenderProcess)
     }
