@@ -34,6 +34,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val pnDto = toObject(PnCreate::class.java, cm.data).validate()
 
+        validateStartDate(pnDto.tender.tenderPeriod.startDate)
         checkLotsCurrency(pnDto)
         checkLotsContractPeriod(pnDto)
         val cpId = generationService.getCpId(country)
@@ -42,7 +43,6 @@ class PnServiceImpl(private val generationService: GenerationService,
         validateDtoRelatedLots(tenderDto)
         setItemsId(pnDto.tender)
         setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
-        validateStartDate(pnDto.tender.tenderPeriod.startDate)
         pnDto.tender.procuringEntity.id = generationService.generateOrganizationId(pnDto.tender.procuringEntity)
         val tp = TenderProcess(
                 ocid = cpId,
@@ -109,9 +109,7 @@ class PnServiceImpl(private val generationService: GenerationService,
 
     private fun checkLotsContractPeriod(pn: PnCreate) {
         if (pn.tender.lots != null) {
-            val contractPeriodSet = pn.tender.lots!!.asSequence()
-                    .filter { it.contractPeriod != null }
-                    .mapNotNull { it.contractPeriod }.toSet()
+            val contractPeriodSet = pn.tender.lots!!.asSequence().map { it.contractPeriod }.toSet()
             contractPeriodSet.forEach {
                 if (it.startDate >= it.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
                 if (it.startDate < pn.tender.tenderPeriod.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
@@ -127,7 +125,7 @@ class PnServiceImpl(private val generationService: GenerationService,
         }
         if (tender.items != null) {
             val lotsFromItems = tender.items.asSequence().map { it.relatedLot }.toHashSet()
-            if (!lotsFromItems.containsAll(lotsId)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+            if (lotsFromItems.size != lotsId.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
             if (!lotsId.containsAll(lotsFromItems)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         }
         if (tender.documents != null) {
@@ -193,8 +191,7 @@ class PnServiceImpl(private val generationService: GenerationService,
 
     private fun setContractPeriod(lotsDto: List<LotPnCreate>?, budget: BudgetPnCreate): ContractPeriod? {
         return if (lotsDto != null) {
-            val contractPeriodSet = lotsDto.asSequence()
-                    .filter { it.contractPeriod != null }.mapNotNull { it.contractPeriod }.toSet()
+            val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
             if (contractPeriodSet.isNotEmpty()) {
                 val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
                 val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
