@@ -62,6 +62,8 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 value = getValueFromLots(tenderDto.lots, tenderProcess.planning.budget.amount)
                 contractPeriod = setContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
             }
+        } else {
+            updatedLots(tenderProcess.tender.lots)
         }
         tenderProcess.tender.apply {
             documents = updateDocuments(tender = this, documentsDto = cnDto.tender.documents)
@@ -207,6 +209,13 @@ class CnOnPnServiceImpl(private val generationService: GenerationService,
                 unit = itemDto.unit,
                 relatedLot = itemDto.relatedLot
         )
+    }
+
+    private fun updatedLots(lots: List<Lot>) {
+        lots.forEach { lot ->
+            lot.status = LotStatus.ACTIVE
+            lot.statusDetails = LotStatusDetails.EMPTY
+        }
     }
 
     private fun getEntity(tp: TenderProcess,
