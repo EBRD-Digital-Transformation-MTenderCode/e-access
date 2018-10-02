@@ -223,7 +223,7 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemPnUpdate>): List<Item> {
         //validation
         val itemsDtoId = itemsDto.asSequence().map { it.id }.toHashSet()
-        if (itemsDtoId.size < itemsDto.size) throw ErrorException(INVALID_ITEMS)
+        if (itemsDtoId.size != itemsDto.size) throw ErrorException(INVALID_ITEMS)
         val itemsDbId = itemsTender.asSequence().map { it.id }.toHashSet()
         if (itemsDtoId.size != itemsDbId.size) throw ErrorException(INVALID_ITEMS)
         if (!itemsDbId.containsAll(itemsDtoId)) throw ErrorException(INVALID_ITEMS)
