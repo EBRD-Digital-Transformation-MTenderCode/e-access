@@ -58,14 +58,12 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val activeLots: List<Lot>
         val canceledLots: List<Lot>
         val updatedItems: List<Item>
-        val updatedDocuments: List<Document>
         newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
         updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
-        updatedDocuments = updateDocuments(tenderProcess.tender, documentsDto)
         tenderProcess.planning.apply {
             rationale = cnDto.planning.rationale
             budget.description = cnDto.planning.budget.description
@@ -77,7 +75,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
             procurementMethodAdditionalInfo = cnDto.tender.procurementMethodAdditionalInfo
             items = updatedItems
             lots = activeLots + canceledLots
-            documents = updatedDocuments
+            documents = updateDocuments(this, documentsDto)
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
         }
