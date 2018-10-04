@@ -78,13 +78,13 @@ data class LotPnCreate @JsonCreator constructor(
 
         var id: String,
 
-        val title: String?,
+        val title: String,
 
-        val description: String?,
+        val description: String,
 
         val value: Value,
 
-        val contractPeriod: ContractPeriod?,
+        val contractPeriod: ContractPeriod,
 
         val placeOfPerformance: PlaceOfPerformance?
 )
