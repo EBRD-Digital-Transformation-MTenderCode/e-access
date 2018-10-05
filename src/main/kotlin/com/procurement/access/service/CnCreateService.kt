@@ -92,7 +92,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
-                        documents = tenderDto.documents
+                        documents = setDocuments(tenderDto.documents)
                 )
         )
         val entity = getEntity(tp, cpId, stage, dateTime, owner)
@@ -188,6 +188,12 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
 
     private fun setItems(itemsDto: List<ItemCnCreate>): List<Item> {
         return itemsDto.asSequence().map { convertDtoItemToItem(it) }.toList()
+    }
+
+    private fun setDocuments(documentsDto: List<Document>): List<Document>? {
+        val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
+        if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
+        return documentsDto
     }
 
     private fun setContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): ContractPeriod {

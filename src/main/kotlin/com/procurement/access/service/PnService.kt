@@ -259,6 +259,10 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun setDocuments(tenderDto: TenderPnCreate): List<Document>? {
+        if (tenderDto.documents != null) {
+            val docsId = tenderDto.documents.asSequence().map { it.id }.toHashSet()
+            if (docsId.size != tenderDto.documents.size) throw ErrorException(INVALID_DOCS_ID)
+        }
         return tenderDto.documents
     }
 

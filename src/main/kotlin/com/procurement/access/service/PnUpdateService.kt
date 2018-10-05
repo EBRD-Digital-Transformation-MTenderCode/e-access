@@ -239,6 +239,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun updateDocuments(tender: Tender, documentsDto: List<Document>?): List<Document> {
         if (documentsDto != null && documentsDto.isNotEmpty()) {
+            val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
+            if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
             validateDocumentsRelatedLots(tender.lots, documentsDto)
             return if (tender.documents != null && tender.documents!!.isNotEmpty()) {
                 val documentsDb = tender.documents!!
