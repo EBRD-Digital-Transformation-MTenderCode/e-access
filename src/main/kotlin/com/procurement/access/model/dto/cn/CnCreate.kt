@@ -71,7 +71,9 @@ data class TenderCnCreate @JsonCreator constructor(
 
         val items: List<ItemCnCreate>,
 
-        val documents: List<Document>
+        val documents: List<Document>,
+
+        val electronicAuctions: ElectronicAuctions?
 )
 
 data class LotCnCreate @JsonCreator constructor(

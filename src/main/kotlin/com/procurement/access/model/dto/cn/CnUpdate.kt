@@ -49,7 +49,9 @@ data class TenderCnUpdate @JsonCreator constructor(
 
         val items: List<ItemCnUpdate>,
 
-        val documents: List<Document>
+        val documents: List<Document>,
+
+        val electronicAuctions: ElectronicAuctions?
 )
 
 data class LotCnUpdate @JsonCreator constructor(
