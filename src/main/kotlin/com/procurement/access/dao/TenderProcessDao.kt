@@ -5,18 +5,10 @@ import com.datastax.driver.core.querybuilder.QueryBuilder.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
 
-interface TenderProcessDao {
-
-    fun save(entity: TenderProcessEntity)
-
-    fun getByCpIdAndStage(cpId: String, stage: String): TenderProcessEntity?
-
-}
-
 @Service
-class TenderProcessDaoImpl(private val session: Session) : TenderProcessDao {
+class TenderProcessDao(private val session: Session) {
 
-    override fun save(entity: TenderProcessEntity) {
+    fun save(entity: TenderProcessEntity) {
         val insert = insertInto(TENDER_TABLE)
         insert.value(CP_ID, entity.cpId)
                 .value(TOKEN, entity.token)
@@ -27,7 +19,7 @@ class TenderProcessDaoImpl(private val session: Session) : TenderProcessDao {
         session.execute(insert)
     }
 
-    override fun getByCpIdAndStage(cpId: String, stage: String): TenderProcessEntity? {
+    fun getByCpIdAndStage(cpId: String, stage: String): TenderProcessEntity? {
         val query = select()
                 .all()
                 .from(TENDER_TABLE)
