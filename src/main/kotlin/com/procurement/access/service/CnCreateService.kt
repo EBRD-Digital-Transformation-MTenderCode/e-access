@@ -17,16 +17,11 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface CnCreateService {
-
-    fun createCn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class CnCreateServiceImpl(private val generationService: GenerationService,
-                          private val tenderProcessDao: TenderProcessDao) : CnCreateService {
+class CnCreateService(private val generationService: GenerationService,
+                          private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createCn(cm: CommandMessage): ResponseDto {
+    fun createCn(cm: CommandMessage): ResponseDto {
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
         val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)

@@ -7,6 +7,7 @@ import com.procurement.access.utils.milliNowUTC
 import org.springframework.stereotype.Service
 import java.util.*
 
+@Service
 interface GenerationService {
 
     fun getCpId(country: String): String
