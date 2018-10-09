@@ -7,15 +7,10 @@ import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
-interface PinOnPnService {
-
-    fun createPinOnPn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class PinOnPnServiceImpl(private val tenderProcessDao: TenderProcessDao) : PinOnPnService {
+class PinOnPnService(private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createPinOnPn(cm: CommandMessage): ResponseDto {
+    fun createPinOnPn(cm: CommandMessage): ResponseDto {
 //        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
 //        val token = cm.context.token ?: throw ErrorException(CONTEXT)
 //        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)

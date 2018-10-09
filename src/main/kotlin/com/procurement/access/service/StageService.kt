@@ -5,15 +5,10 @@ import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import org.springframework.stereotype.Service
 
-interface StageService {
-
-    fun startNewStage(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class StageServiceImpl(private val tenderProcessDao: TenderProcessDao) : StageService {
+class StageService(private val tenderProcessDao: TenderProcessDao) {
 
-    override fun startNewStage(cm: CommandMessage): ResponseDto {
+    fun startNewStage(cm: CommandMessage): ResponseDto {
 //        val cpId = cm.context.country ?: throw ErrorException(CONTEXT)
 //        val token = cm.context.pmd ?: throw ErrorException(CONTEXT)
 //        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)

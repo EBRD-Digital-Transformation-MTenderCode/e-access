@@ -16,17 +16,11 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface PnUpdateService {
-
-    fun updatePn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class PnUpdateServiceImpl(private val generationService: GenerationService,
-                          private val tenderProcessDao: TenderProcessDao) : PnUpdateService {
+class PnUpdateService(private val generationService: GenerationService,
+                      private val tenderProcessDao: TenderProcessDao) {
 
-
-    override fun updatePn(cm: CommandMessage): ResponseDto {
+    fun updatePn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)

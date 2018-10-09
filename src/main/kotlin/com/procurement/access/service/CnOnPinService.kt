@@ -16,15 +16,10 @@ import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
-interface CnOnPinService {
-
-    fun createCnOnPin(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class CnOnPinServiceImpl(private val tenderProcessDao: TenderProcessDao) : CnOnPinService {
+class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createCnOnPin(cm: CommandMessage): ResponseDto {
+    fun createCnOnPin(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)

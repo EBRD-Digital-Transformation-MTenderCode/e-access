@@ -16,16 +16,11 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface PnService {
-
-    fun createPn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class PnServiceImpl(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao) : PnService {
+class PnService(private val generationService: GenerationService,
+                private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createPn(cm: CommandMessage): ResponseDto {
+    fun createPn(cm: CommandMessage): ResponseDto {
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val country = cm.context.country ?: throw ErrorException(CONTEXT)

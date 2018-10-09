@@ -7,16 +7,12 @@ import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
-interface PinService {
-
-    fun createPin(cm: CommandMessage): ResponseDto
-}
 
 @Service
-class PinServiceImpl(private val generationService: GenerationService,
-                     private val tenderProcessDao: TenderProcessDao) : PinService {
+class PinService(private val generationService: GenerationService,
+                 private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createPin(cm: CommandMessage): ResponseDto {
+    fun createPin(cm: CommandMessage): ResponseDto {
 //        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
 //        val country = cm.context.country ?: throw ErrorException(CONTEXT)
 //        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)

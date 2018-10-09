@@ -19,16 +19,11 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface CnOnPnService {
-
-    fun createCnOnPn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class CnOnPnServiceImpl(private val generationService: GenerationService,
-                        private val tenderProcessDao: TenderProcessDao) : CnOnPnService {
+class CnOnPnService(private val generationService: GenerationService,
+                    private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createCnOnPn(cm: CommandMessage): ResponseDto {
+    fun createCnOnPn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)

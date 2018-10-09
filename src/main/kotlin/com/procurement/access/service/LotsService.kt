@@ -12,24 +12,10 @@ import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.util.*
 
-interface LotsService {
-
-    fun getLots(cm: CommandMessage): ResponseDto
-
-    fun setStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto
-
-    fun setStatusDetailsAwarded(cm: CommandMessage): ResponseDto
-
-    fun setStatusUnsuccessful(cm: CommandMessage): ResponseDto
-
-    fun setStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto
-
-}
-
 @Service
-class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsService {
+class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
-    override fun getLots(cm: CommandMessage): ResponseDto {
+    fun getLots(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
 
@@ -41,7 +27,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         )
     }
 
-    override fun setStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
+    fun setStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
@@ -60,7 +46,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
                 items = null))
     }
 
-    override fun setStatusDetailsAwarded(cm: CommandMessage): ResponseDto {
+    fun setStatusDetailsAwarded(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dto = toObject(UpdateLotByBidRq::class.java, cm.data)
@@ -78,7 +64,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         return ResponseDto(data = UpdateLotByBidRs(updatedLot))
     }
 
-    override fun setStatusUnsuccessful(cm: CommandMessage): ResponseDto {
+    fun setStatusUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
@@ -100,7 +86,7 @@ class LotsServiceImpl(private val tenderProcessDao: TenderProcessDao) : LotsServ
         return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
     }
 
-    override fun setStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
+    fun setStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)

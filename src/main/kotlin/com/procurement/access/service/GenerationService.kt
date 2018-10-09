@@ -8,45 +8,29 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-interface GenerationService {
+class GenerationService(private val ocdsProperties: OCDSProperties) {
 
-    fun getCpId(country: String): String
-
-    fun generateRandomUUID(): UUID
-
-    fun generateTimeBasedUUID(): UUID
-
-    fun getRandomUUID(): String
-
-    fun getTimeBasedUUID(): String
-
-    fun generateOrganizationId(organizationReference: OrganizationReference): String
-}
-
-@Service
-class GenerationServiceImpl(private val ocdsProperties: OCDSProperties) : GenerationService {
-
-    override fun getCpId(country: String): String {
+    fun getCpId(country: String): String {
         return ocdsProperties.prefix + "-" + country + "-" + milliNowUTC()
     }
 
-    override fun generateRandomUUID(): UUID {
+    fun generateRandomUUID(): UUID {
         return UUIDs.random()
     }
 
-    override fun generateTimeBasedUUID(): UUID {
+    fun generateTimeBasedUUID(): UUID {
         return UUIDs.timeBased()
     }
 
-    override fun getRandomUUID(): String {
+    fun getRandomUUID(): String {
         return generateRandomUUID().toString()
     }
 
-    override fun getTimeBasedUUID(): String {
+    fun getTimeBasedUUID(): String {
         return generateTimeBasedUUID().toString()
     }
 
-    override fun generateOrganizationId(organizationReference: OrganizationReference): String {
+    fun generateOrganizationId(organizationReference: OrganizationReference): String {
         return organizationReference.identifier.scheme + "-" + organizationReference.identifier.id
     }
 

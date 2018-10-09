@@ -17,16 +17,12 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface CnUpdateService {
-
-    fun updateCn(cm: CommandMessage): ResponseDto
-}
 
 @Service
-class CnUpdateServiceImpl(private val generationService: GenerationService,
-                          private val tenderProcessDao: TenderProcessDao) : CnUpdateService {
+class CnUpdateService(private val generationService: GenerationService,
+                      private val tenderProcessDao: TenderProcessDao) {
 
-    override fun updateCn(cm: CommandMessage): ResponseDto {
+    fun updateCn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
@@ -49,7 +45,7 @@ class CnUpdateServiceImpl(private val generationService: GenerationService,
         val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
         val lotsDbId = lotsDb.asSequence().map { it.id }.toSet()
         var newLotsId = lotsDtoId - lotsDbId
-        val oldCanceledLotsDbId = lotsDb.asSequence().filter{it.status == LotStatus.CANCELLED}.map { it.id }.toSet()
+        val oldCanceledLotsDbId = lotsDb.asSequence().filter { it.status == LotStatus.CANCELLED }.map { it.id }.toSet()
         val allCanceledLotsId = lotsDbId - lotsDtoId
         val newCanceledLots = allCanceledLotsId - oldCanceledLotsDbId
 
