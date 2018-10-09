@@ -42,7 +42,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         val tenderDto = cnDto.tender
         validateDtoRelatedLots(tenderDto)
         setItemsId(tenderDto.items)
-        setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
+        setLotsIdAndRelatedLots(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
         val tp = TenderProcess(
                 ocid = cpId,
@@ -92,7 +92,8 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
-                        documents = setDocuments(tenderDto.documents)
+                        documents = setDocuments(tenderDto.documents),
+                        electronicAuctions = tenderDto.electronicAuctions
                 )
         )
         val entity = getEntity(tp, cpId, stage, dateTime, owner)
@@ -129,7 +130,7 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
         items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
-    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnCreate) {
+    private fun setLotsIdAndRelatedLots(tender: TenderCnCreate) {
         tender.lots.forEach { lot ->
             val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
@@ -145,6 +146,9 @@ class CnCreateServiceImpl(private val generationService: GenerationService,
                             }
                         }
                     }
+            tender.electronicAuctions?.let {
+                it.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
+            }
             lot.id = id
         }
     }

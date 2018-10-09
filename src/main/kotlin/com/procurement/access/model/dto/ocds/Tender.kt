@@ -81,5 +81,7 @@ data class Tender @JsonCreator constructor(
 
         var items: List<Item>,
 
-        var documents: List<Document>?
+        var documents: List<Document>?,
+
+        val electronicAuctions: ElectronicAuctions?
 )

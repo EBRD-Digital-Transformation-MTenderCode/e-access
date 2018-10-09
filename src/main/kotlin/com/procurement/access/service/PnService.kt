@@ -91,7 +91,8 @@ class PnServiceImpl(private val generationService: GenerationService,
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
-                        documents = setDocuments(tenderDto)
+                        documents = setDocuments(tenderDto),
+                        electronicAuctions = null
                 )
         )
         val entity = getEntity(tp, cpId, stage, dateTime, owner)

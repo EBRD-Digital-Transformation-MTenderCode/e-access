@@ -15,7 +15,7 @@ data class ElectronicAuctionsDetails @JsonCreator constructor(
 
         val id: String,
 
-        val relatedLot: String,
+        var relatedLot: String,
 
         val electronicAuctionModalities: Set<ElectronicAuctionModalities>
 )
