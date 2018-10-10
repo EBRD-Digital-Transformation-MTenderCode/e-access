@@ -5,6 +5,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.lots.CheckLotStatusDetailsRs
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Operation.*
@@ -114,7 +115,7 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
 
         val predicate = { lot: Lot -> lot.status == LotStatus.ACTIVE && lot.statusDetails != LotStatusDetails.AWARDED }
         if (process.tender.lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
-        return ResponseDto(data = process.tender.items)
+        return ResponseDto(data = CheckLotStatusDetailsRs(process.tender.items))
     }
 
     fun checkLotsStatus(cm: CommandMessage): ResponseDto {
