@@ -23,5 +23,6 @@ data class ElectronicAuctionsDetails @JsonCreator constructor(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ElectronicAuctionModalities @JsonCreator constructor(
 
-        val minStep: Value
+        val eligibleMinimumDifference: Value
 )
+
