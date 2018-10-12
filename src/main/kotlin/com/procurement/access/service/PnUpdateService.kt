@@ -109,8 +109,8 @@ class PnUpdateService(private val generationService: GenerationService,
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
-        val month = startDate.month
-        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
+//        val month = startDate.month
+//        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
         val day = startDate.dayOfMonth
         if (day != 1) throw ErrorException(INVALID_START_DATE)
     }
