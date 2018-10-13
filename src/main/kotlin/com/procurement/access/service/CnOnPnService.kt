@@ -49,7 +49,7 @@ class CnOnPnService(private val generationService: GenerationService,
             if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
 
             setItemsId(tenderDto.items)
-            setLotsIdAndItemsAndDocumentsRelatedLots(tenderDto)
+            setLotsIdAndRelatedLots(tenderDto)
             tenderProcess.tender.apply {
                 lots = setLots(tenderDto.lots)
                 items = setItems(tenderDto.items)
@@ -70,6 +70,7 @@ class CnOnPnService(private val generationService: GenerationService,
             enquiryPeriod = tenderDto.enquiryPeriod
             procurementMethodRationale = tenderDto.procurementMethodRationale
             procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo
+            electronicAuctions = tenderDto.electronicAuctions
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)
@@ -137,7 +138,7 @@ class CnOnPnService(private val generationService: GenerationService,
         items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
-    private fun setLotsIdAndItemsAndDocumentsRelatedLots(tender: TenderCnUpdate) {
+    private fun setLotsIdAndRelatedLots(tender: TenderCnUpdate) {
         tender.lots.forEach { lot ->
             val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
@@ -150,6 +151,9 @@ class CnOnPnService(private val generationService: GenerationService,
                         relatedLots.add(id)
                     }
                 }
+            }
+            tender.electronicAuctions?.let {
+                it.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
             }
             lot.id = id
         }
