@@ -54,7 +54,7 @@ class CnUpdateService(private val generationService: GenerationService,
         val activeLots: List<Lot>
         val canceledLots: List<Lot>
         val updatedItems: List<Item>
-        newLotsId = getNewLotsIdAndSetItemsAndDocumentsRelatedLots(cnDto.tender, newLotsId)
+        newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
@@ -148,7 +148,7 @@ class CnUpdateService(private val generationService: GenerationService,
         }
     }
 
-    private fun getNewLotsIdAndSetItemsAndDocumentsRelatedLots(tender: TenderCnUpdate, newLotsId: Set<String>): Set<String> {
+    private fun setLotsIdAndRelatedLots(tender: TenderCnUpdate, newLotsId: Set<String>): Set<String> {
         val newLotsIdSet = mutableSetOf<String>()
         tender.lots.asSequence()
                 .filter { it.id in newLotsId }
@@ -165,6 +165,9 @@ class CnUpdateService(private val generationService: GenerationService,
                                     document.relatedLots!!.add(id)
                                 }
                             }
+                    tender.electronicAuctions?.let {
+                        it.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
+                    }
                     lot.id = id
                     newLotsIdSet.add(id)
                 }
