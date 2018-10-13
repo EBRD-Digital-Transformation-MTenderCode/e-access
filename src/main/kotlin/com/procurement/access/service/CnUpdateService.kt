@@ -74,6 +74,7 @@ class CnUpdateService(private val generationService: GenerationService,
             documents = updateDocuments(this, documentsDto)
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
+            electronicAuctions = cnDto.tender.electronicAuctions
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         if (newCanceledLots.isNotEmpty()) {
@@ -165,8 +166,8 @@ class CnUpdateService(private val generationService: GenerationService,
                                     document.relatedLots!!.add(id)
                                 }
                             }
-                    tender.electronicAuctions?.let {
-                        it.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
+                    tender.electronicAuctions?.let { auctions ->
+                        auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
                     }
                     lot.id = id
                     newLotsIdSet.add(id)

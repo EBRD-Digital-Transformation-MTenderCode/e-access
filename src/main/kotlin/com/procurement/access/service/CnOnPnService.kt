@@ -152,8 +152,8 @@ class CnOnPnService(private val generationService: GenerationService,
                     }
                 }
             }
-            tender.electronicAuctions?.let {
-                it.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
+            tender.electronicAuctions?.let { auctions ->
+                auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
             }
             lot.id = id
         }
