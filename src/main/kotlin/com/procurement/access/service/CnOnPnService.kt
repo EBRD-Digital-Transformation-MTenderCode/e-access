@@ -5,10 +5,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.CnUpdate
-import com.procurement.access.model.dto.cn.ItemCnUpdate
-import com.procurement.access.model.dto.cn.LotCnUpdate
-import com.procurement.access.model.dto.cn.TenderCnUpdate
+import com.procurement.access.model.dto.cn.*
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -31,7 +28,7 @@ class CnOnPnService(private val generationService: GenerationService,
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val cnDto = toObject(CnUpdate::class.java, cm.data)
+        val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
@@ -47,7 +44,11 @@ class CnOnPnService(private val generationService: GenerationService,
             val lotsFromItemsSet = tenderDto.items.asSequence().map { it.relatedLot }.toHashSet()
             if (lotsFromItemsSet.size != lotsIdSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-
+            tenderDto.electronicAuctions?.let { auctions ->
+                val lotsFromAuctionsSet = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+                if (lotsFromAuctionsSet.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+                if (!lotsIdSet.containsAll(lotsFromAuctionsSet)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+            }
             setItemsId(tenderDto.items)
             setLotsIdAndRelatedLots(tenderDto)
             tenderProcess.tender.apply {
@@ -56,6 +57,7 @@ class CnOnPnService(private val generationService: GenerationService,
                 tenderDto.classification?.let { classification = it }
                 value = getValueFromLots(tenderDto.lots, tenderProcess.planning.budget.amount)
                 contractPeriod = setContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
+                electronicAuctions = tenderDto.electronicAuctions
             }
         } else {
             updatedLots(tenderProcess.tender.lots)
@@ -70,7 +72,6 @@ class CnOnPnService(private val generationService: GenerationService,
             enquiryPeriod = tenderDto.enquiryPeriod
             procurementMethodRationale = tenderDto.procurementMethodRationale
             procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo
-            electronicAuctions = tenderDto.electronicAuctions
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)

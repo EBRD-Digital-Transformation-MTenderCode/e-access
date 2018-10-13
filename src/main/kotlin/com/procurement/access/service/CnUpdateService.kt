@@ -38,6 +38,7 @@ class CnUpdateService(private val generationService: GenerationService,
         val lotsDto = cnDto.tender.lots
         val itemsDto = cnDto.tender.items
         val documentsDto = cnDto.tender.documents
+        val auctionsDto = cnDto.tender.electronicAuctions
         val lotsDb = tenderProcess.tender.lots
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
@@ -53,12 +54,15 @@ class CnUpdateService(private val generationService: GenerationService,
 
         val activeLots: List<Lot>
         val canceledLots: List<Lot>
+        val updatedLots: List<Lot>
         val updatedItems: List<Item>
         newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
+        updatedLots = activeLots + canceledLots
+        auctionsDto?.let { validateAuctionsRelatedLots(updatedLots, it) }
         updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
         tenderProcess.planning.apply {
             rationale = cnDto.planning.rationale
@@ -70,7 +74,7 @@ class CnUpdateService(private val generationService: GenerationService,
             procurementMethodRationale = cnDto.tender.procurementMethodRationale
             procurementMethodAdditionalInfo = cnDto.tender.procurementMethodAdditionalInfo
             items = updatedItems
-            lots = activeLots + canceledLots
+            lots = updatedLots
             documents = updateDocuments(this, documentsDto)
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
@@ -189,6 +193,13 @@ class CnUpdateService(private val generationService: GenerationService,
         if (lotsFromDocuments.isNotEmpty()) {
             if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
+    }
+
+    private fun validateAuctionsRelatedLots(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
+        val lotsId = lots.asSequence().map { it.id }.toHashSet()
+        val lotsFromAuctions = auctionsDto.details.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotsFromAuctions.size != lotsId.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        if (!lotsId.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
     }
 
     private fun convertDtoLotToLot(lotDto: LotCnUpdate): Lot {
