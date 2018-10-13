@@ -58,11 +58,11 @@ class CnUpdateService(private val generationService: GenerationService,
         val updatedItems: List<Item>
         newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
+        auctionsDto?.let { validateAuctionsRelatedLots(activeLots, it) }
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
         updatedLots = activeLots + canceledLots
-        auctionsDto?.let { validateAuctionsRelatedLots(updatedLots, it) }
         updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
         tenderProcess.planning.apply {
             rationale = cnDto.planning.rationale
@@ -78,7 +78,9 @@ class CnUpdateService(private val generationService: GenerationService,
             documents = updateDocuments(this, documentsDto)
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
-            electronicAuctions = cnDto.tender.electronicAuctions
+            if (auctionsDto != null) {
+                electronicAuctions = auctionsDto
+            }
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         if (newCanceledLots.isNotEmpty()) {
@@ -195,8 +197,8 @@ class CnUpdateService(private val generationService: GenerationService,
         }
     }
 
-    private fun validateAuctionsRelatedLots(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
-        val lotsId = lots.asSequence().map { it.id }.toHashSet()
+    private fun validateAuctionsRelatedLots(activeLots: List<Lot>, auctionsDto: ElectronicAuctions) {
+        val lotsId = activeLots.asSequence().map { it.id }.toHashSet()
         val lotsFromAuctions = auctionsDto.details.asSequence().map { it.relatedLot }.toHashSet()
         if (lotsFromAuctions.size != lotsId.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         if (!lotsId.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
