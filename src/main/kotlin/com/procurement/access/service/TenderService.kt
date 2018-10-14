@@ -17,26 +17,10 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
-interface TenderService {
-
-    fun setSuspended(cm: CommandMessage): ResponseDto
-
-    fun setUnsuspended(cm: CommandMessage): ResponseDto
-
-    fun setUnsuccessful(cm: CommandMessage): ResponseDto
-
-    fun setPreCancellation(cm: CommandMessage): ResponseDto
-
-    fun setCancellation(cm: CommandMessage): ResponseDto
-
-    fun setStatusDetails(cm: CommandMessage): ResponseDto
-
-}
-
 @Service
-class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : TenderService {
+class TenderService(private val tenderProcessDao: TenderProcessDao) {
 
-    override fun setSuspended(cm: CommandMessage): ResponseDto {
+    fun setSuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
 
@@ -47,7 +31,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
-    override fun setUnsuspended(cm: CommandMessage): ResponseDto {
+    fun setUnsuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
@@ -63,7 +47,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
     }
 
-    override fun setUnsuccessful(cm: CommandMessage): ResponseDto {
+    fun setUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
 
@@ -85,7 +69,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
                 process.tender.lots, null))
     }
 
-    override fun setPreCancellation(cm: CommandMessage): ResponseDto {
+    fun setPreCancellation(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
@@ -113,7 +97,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
     }
 
 
-    override fun setCancellation(cm: CommandMessage): ResponseDto {
+    fun setCancellation(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
@@ -142,7 +126,7 @@ class TenderServiceImpl(private val tenderProcessDao: TenderProcessDao) : Tender
         return ResponseDto(data = CancellationRs(lots = lotsResponseDto))
     }
 
-    override fun setStatusDetails(cm: CommandMessage): ResponseDto {
+    fun setStatusDetails(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)

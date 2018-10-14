@@ -16,16 +16,11 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface PnService {
-
-    fun createPn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class PnServiceImpl(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao) : PnService {
+class PnService(private val generationService: GenerationService,
+                private val tenderProcessDao: TenderProcessDao) {
 
-    override fun createPn(cm: CommandMessage): ResponseDto {
+    fun createPn(cm: CommandMessage): ResponseDto {
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
@@ -91,7 +86,9 @@ class PnServiceImpl(private val generationService: GenerationService,
                         lotGroups = listOf(LotGroup(optionToCombine = false)),
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
-                        documents = setDocuments(tenderDto)
+                        documents = setDocuments(tenderDto),
+                        procurementMethodModalities = null,
+                        electronicAuctions = null
                 )
         )
         val entity = getEntity(tp, cpId, stage, dateTime, owner)
@@ -138,8 +135,8 @@ class PnServiceImpl(private val generationService: GenerationService,
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
-        val month = startDate.month
-        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
+//        val month = startDate.month
+//        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
         val day = startDate.dayOfMonth
         if (day != 1) throw ErrorException(INVALID_START_DATE)
     }

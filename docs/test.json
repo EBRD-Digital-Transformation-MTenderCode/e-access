@@ -1,222 +1,32 @@
 {
-  "planning": {
-    "budget": {
-      "description": "e",
-      "amount": {
-        "amount": 1000.00,
-        "currency": "USD"
-      },
-      "isEuropeanUnionFunded": false,
-      "budgetBreakdown": [
+  "id": "string",
+  "command": "scheduleAuctions",
+  "context": {
+    "cpid": "string",
+    "pmd": "string",
+    "country": "string",
+    "startDate": "string"
+  },
+  "data": {
+    "tenderPeriod": {
+      "endDate": ""
+    },
+    "electronicAuctions": {
+      "details": [
         {
-          "id": "ocds-t1s2t3-MD-1538323917753-FS-1538323939133",
-          "description": "description",
-          "amount": {
-            "amount": 1000.00,
-            "currency": "USD"
-          },
-          "period": {
-            "startDate": "2018-10-01T00:00:00Z",
-            "endDate": "2018-12-31T00:00:00Z"
-          },
-          "sourceParty": {
-            "id": "MD-IDNO-7787-9898-88ty",
-            "name": "nameOfFSbuyer"
-          }
+          "id": "",
+          "relatedLot": "",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 150.00,
+                "currency": "MDL"
+              }
+            }
+          ]
         }
       ]
-    },
-    "rationale": "rationale"
+    }
   },
-  "tender": {
-    "id": "ocds-t1s2t3-MD-1538493989533",
-    "title": "TITLE",
-    "description": "d",
-    "status": "active",
-    "statusDetails": "clarification",
-    "classification": {
-      "scheme": "CPV",
-      "id": "75200000-8",
-      "description": "Prestări de servicii pentru comunitate"
-    },
-    "mainProcurementCategory": "services",
-    "procurementMethod": "open",
-    "procurementMethodDetails": "TEST Licitatia deschisa",
-    "procurementMethodRationale": "cscsc",
-    "procurementMethodAdditionalInfo": "asfcads ",
-    "submissionMethod": [
-      "electronicSubmission"
-    ],
-    "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
-    "submissionMethodRationale": [
-      "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
-    ],
-    "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
-    "acceleratedProcedure": {
-      "isAcceleratedProcedure": false
-    },
-    "designContest": {
-      "serviceContractAward": false
-    },
-    "electronicWorkflows": {
-      "useOrdering": false,
-      "usePayment": false,
-      "acceptInvoicing": false
-    },
-    "jointProcurement": {
-      "isJointProcurement": false
-    },
-    "procedureOutsourcing": {
-      "procedureOutsourced": false
-    },
-    "framework": {
-      "isAFramework": false
-    },
-    "dynamicPurchasingSystem": {
-      "hasDynamicPurchasingSystem": false
-    },
-    "legalBasis": "DIRECTIVE_2014_23_EU",
-    "procuringEntity": {
-      "id": "MD-IDNO-555-555",
-      "name": "Name of CN pE",
-      "identifier": {
-        "id": "555-555",
-        "scheme": "MD-IDNO",
-        "legalName": "legal name of pe",
-        "uri": "g"
-      },
-      "address": {
-        "streetAddress": "address of pe",
-        "postalCode": "00000",
-        "addressDetails": {
-          "country": {
-            "scheme": "iso-alpha2",
-            "id": "MD",
-            "description": "MOLDOVA",
-            "uri": "http://reference.iatistandard.org"
-          },
-          "region": {
-            "scheme": "CUATM",
-            "id": "0101000",
-            "description": "mun.Chişinău",
-            "uri": "http://statistica.md"
-          },
-          "locality": {
-            "scheme": "CUATM",
-            "id": "0101000",
-            "description": "mun.Chişinău",
-            "uri": "http://statistica.md"
-          }
-        }
-      },
-      "additionalIdentifiers": [
-        {
-          "id": "tre",
-          "scheme": "ert",
-          "legalName": "etr",
-          "uri": "ter"
-        }
-      ],
-      "contactPoint": {
-        "name": "contact name",
-        "email": "email",
-        "telephone": "4521",
-        "faxNumber": "45",
-        "url": "d"
-      }
-    },
-    "awardCriteria": "priceOnly",
-    "requiresElectronicCatalogue": false,
-    "contractPeriod": {
-      "startDate": "2018-10-02T00:00:00Z",
-      "endDate": "2018-12-01T00:00:00Z"
-    },
-    "tenderPeriod": {
-      "startDate": "2018-10-03T14:20:00Z",
-      "endDate": "2018-10-03T14:40:00Z"
-    },
-    "enquiryPeriod": {
-      "startDate": "2018-10-02T15:31:09Z",
-      "endDate": "2018-10-03T14:20:00Z"
-    },
-    "value": {
-      "amount": 250.00,
-      "currency": "USD"
-    },
-    "lotGroups": [
-      {
-        "optionToCombine": false
-      }
-    ],
-    "lots": [
-      {
-        "id": "88db54d1-c657-11e8-838d-b3ccdf784381",
-        "title": "title",
-        "description": "1",
-        "status": "planning",
-        "statusDetails": "empty",
-        "value": {
-          "amount": 250.00,
-          "currency": "USD"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2018-10-02T00:00:00Z",
-          "endDate": "2018-12-01T00:00:00Z"
-        }
-      }
-    ],
-    "items": [
-      {
-        "id": "88db54d0-c657-11e8-838d-b3ccdf784381",
-        "description": "в",
-        "classification": {
-          "scheme": "CPV",
-          "id": "75200000-8",
-          "description": "Prestări de servicii pentru comunitate"
-        },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "id": "AA06-6",
-            "description": "Plumb"
-          }
-        ],
-        "quantity": 10.00,
-        "unit": {
-          "id": "10",
-          "name": "Parsec"
-        },
-        "relatedLot": "88db54d1-c657-11e8-838d-b3ccdf784381"
-      }
-    ],
-    "documents": [
-      {
-        "id": "756750d0-c63d-11e8-8cbe-a1835757f77d",
-        "documentType": "tenderNotice",
-        "relatedLots": [
-          "88db54d1-c657-11e8-838d-b3ccdf784381"
-        ]
-      }
-    ]
-  }
+  "version": "0.0.1"
 }

@@ -7,29 +7,24 @@ import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
-interface CommandService {
-
-    fun execute(cm: CommandMessage): ResponseDto
-
-}
 
 @Service
-class CommandServiceImpl(private val historyDao: HistoryDao,
-                         private val pinService: PinService,
-                         private val pinOnPnService: PinOnPnService,
-                         private val pnService: PnService,
-                         private val pnUpdateService: PnUpdateService,
-                         private val cnCreateService: CnCreateService,
-                         private val cnUpdateService: CnUpdateService,
-                         private val cnOnPinService: CnOnPinService,
-                         private val cnOnPnService: CnOnPnService,
-                         private val tenderService: TenderService,
-                         private val lotsService: LotsService,
-                         private val stageService: StageService,
-                         private val validationService: ValidationService) : CommandService {
+class CommandService(private val historyDao: HistoryDao,
+                     private val pinService: PinService,
+                     private val pinOnPnService: PinOnPnService,
+                     private val pnService: PnService,
+                     private val pnUpdateService: PnUpdateService,
+                     private val cnCreateService: CnCreateService,
+                     private val cnUpdateService: CnUpdateService,
+                     private val cnOnPinService: CnOnPinService,
+                     private val cnOnPnService: CnOnPnService,
+                     private val tenderService: TenderService,
+                     private val lotsService: LotsService,
+                     private val stageService: StageService,
+                     private val validationService: ValidationService) {
 
 
-    override fun execute(cm: CommandMessage): ResponseDto {
+    fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
         if (historyEntity != null) {
             return toObject(ResponseDto::class.java, historyEntity.jsonData)
