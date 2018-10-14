@@ -146,14 +146,7 @@ class CnCreateService(private val generationService: GenerationService,
             tender.electronicAuctions?.let { auctions ->
                 auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
                     auction.relatedLot = id
-                    val lotAmountMinimum = lot.value.amount.div(BigDecimal(10))
-                    val lotCurrency = lot.value.currency
-                    for (modality in auction.electronicAuctionModalities) {
-                         if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
-                             throw ErrorException(INVALID_AUCTION_MINIMUM)
-                        if (modality.eligibleMinimumDifference.currency != lotCurrency)
-                            throw ErrorException(INVALID_AUCTION_CURRENCY)
-                    }
+                    validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
                 }
             }
             lot.id = id
@@ -175,6 +168,16 @@ class CnCreateService(private val generationService: GenerationService,
             val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
             if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        }
+    }
+
+    private fun validateAuctionsMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
+        val lotAmountMinimum = lotAmount.div(BigDecimal(10))
+        for (modality in auction.electronicAuctionModalities) {
+            if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
+                throw ErrorException(INVALID_AUCTION_MINIMUM)
+            if (modality.eligibleMinimumDifference.currency != lotCurrency)
+                throw ErrorException(INVALID_AUCTION_CURRENCY)
         }
     }
 
