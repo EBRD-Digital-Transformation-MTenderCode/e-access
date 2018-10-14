@@ -38,7 +38,6 @@ class CnUpdateService(private val generationService: GenerationService,
         val lotsDto = cnDto.tender.lots
         val itemsDto = cnDto.tender.items
         val documentsDto = cnDto.tender.documents
-        val auctionsDto = cnDto.tender.electronicAuctions
         val lotsDb = tenderProcess.tender.lots
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
@@ -56,7 +55,7 @@ class CnUpdateService(private val generationService: GenerationService,
         val updatedItems: List<Item>
         newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
-        auctionsDto?.let { validateAuctionsRelatedLots(activeLots, it) }
+        cnDto.tender.electronicAuctions?.let { validateAuctionsRelatedLots(activeLots, it) }
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
@@ -76,8 +75,9 @@ class CnUpdateService(private val generationService: GenerationService,
             documents = updateDocuments(this, documentsDto)
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
-            if (auctionsDto != null) {
-                electronicAuctions = auctionsDto
+            if (cnDto.tender.electronicAuctions != null) {
+                procurementMethodModalities = cnDto.tender.procurementMethodModalities
+                electronicAuctions = cnDto.tender.electronicAuctions
             }
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))

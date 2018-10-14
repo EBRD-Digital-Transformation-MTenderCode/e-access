@@ -62,7 +62,10 @@ class CnOnPnService(private val generationService: GenerationService,
             enquiryPeriod = tenderDto.enquiryPeriod
             procurementMethodRationale = tenderDto.procurementMethodRationale
             procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo
-            electronicAuctions = tenderDto.electronicAuctions
+            if (tenderDto.electronicAuctions != null) {
+                procurementMethodModalities = tenderDto.procurementMethodModalities
+                electronicAuctions = tenderDto.electronicAuctions
+            }
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)
