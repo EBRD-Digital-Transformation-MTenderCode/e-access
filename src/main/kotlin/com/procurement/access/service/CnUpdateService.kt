@@ -49,9 +49,7 @@ class CnUpdateService(private val generationService: GenerationService,
         val oldCanceledLotsDbId = lotsDb.asSequence().filter { it.status == LotStatus.CANCELLED }.map { it.id }.toSet()
         val allCanceledLotsId = lotsDbId - lotsDtoId
         val newCanceledLots = allCanceledLotsId - oldCanceledLotsDbId
-
         validateRelatedLots(lotsDbId, lotsDtoId, itemsDto)
-
         val activeLots: List<Lot>
         val canceledLots: List<Lot>
         val updatedLots: List<Lot>

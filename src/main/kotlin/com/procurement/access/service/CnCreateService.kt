@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 
 @Service
 class CnCreateService(private val generationService: GenerationService,
-                          private val tenderProcessDao: TenderProcessDao) {
+                      private val tenderProcessDao: TenderProcessDao) {
 
     fun createCn(cm: CommandMessage): ResponseDto {
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
@@ -158,6 +158,11 @@ class CnCreateService(private val generationService: GenerationService,
                 .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
             if (!lotsIdSet.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+        }
+        tender.electronicAuctions?.let { auctions ->
+            val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+            if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+            if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         }
     }
 
