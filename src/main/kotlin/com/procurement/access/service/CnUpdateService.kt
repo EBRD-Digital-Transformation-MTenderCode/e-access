@@ -86,6 +86,8 @@ class CnUpdateService(private val generationService: GenerationService,
         if (newCanceledLots.isNotEmpty()) {
             tenderProcess.amendment = Amendment(relatedLots = newCanceledLots)
         }
+        tenderProcess.isLotsChanged = (newLotsId.isNotEmpty() || newCanceledLots.isNotEmpty())
+
         return ResponseDto(data = tenderProcess)
     }
 
