@@ -55,7 +55,10 @@ class CnUpdateService(private val generationService: GenerationService,
         val updatedItems: List<Item>
         newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
-        cnDto.tender.electronicAuctions?.let { validateAuctionsRelatedLots(activeLots, it) }
+        if (tenderProcess.tender.electronicAuctions != null) {
+            cnDto.tender.electronicAuctions?.let { validateAuctionsRelatedLots(activeLots, it) }
+                    ?: throw ErrorException(INVALID_AUCTION)
+        }
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
