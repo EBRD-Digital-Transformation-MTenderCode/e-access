@@ -14,6 +14,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
@@ -55,10 +56,10 @@ class CnUpdateService(private val generationService: GenerationService,
         val updatedItems: List<Item>
         newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
-        if (tenderProcess.tender.electronicAuctions != null) {
-            cnDto.tender.electronicAuctions?.let { validateAuctionsRelatedLots(activeLots, it) }
-                    ?: throw ErrorException(INVALID_AUCTION)
+        tenderProcess.tender.electronicAuctions?.let {
+            cnDto.tender.electronicAuctions ?: throw ErrorException(INVALID_AUCTION)
         }
+        cnDto.tender.electronicAuctions?.let { validateAuctions(activeLots, it) }
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
@@ -200,11 +201,26 @@ class CnUpdateService(private val generationService: GenerationService,
         }
     }
 
-    private fun validateAuctionsRelatedLots(activeLots: List<Lot>, auctionsDto: ElectronicAuctions) {
-        val lotsId = activeLots.asSequence().map { it.id }.toHashSet()
-        val lotsFromAuctions = auctionsDto.details.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsFromAuctions.size != lotsId.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (!lotsId.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+    private fun validateAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
+        val lotsIdSet = lots.asSequence().map { it.id }.toSet()
+        val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        lots.forEach { lot ->
+            auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
+                validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
+            }
+        }
+    }
+
+    private fun validateAuctionsMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
+        val lotAmountMinimum = lotAmount.div(BigDecimal(10))
+        for (modality in auction.electronicAuctionModalities) {
+            if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
+                throw ErrorException(INVALID_AUCTION_MINIMUM)
+            if (modality.eligibleMinimumDifference.currency != lotCurrency)
+                throw ErrorException(INVALID_AUCTION_CURRENCY)
+        }
     }
 
     private fun convertDtoLotToLot(lotDto: LotCnUpdate): Lot {
