@@ -17,7 +17,3 @@ CREATE TABLE IF NOT EXISTS  ocds.access_history (
     json_data text,
     primary key(operation_id, command)
 );
-
-SELECT * FROM ocds.access_tender;
-
-TRUNCATE ocds.access_tender;
