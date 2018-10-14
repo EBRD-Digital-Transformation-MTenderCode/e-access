@@ -54,7 +54,7 @@ class CnUpdateService(private val generationService: GenerationService,
         val canceledLots: List<Lot>
         val updatedLots: List<Lot>
         val updatedItems: List<Item>
-        newLotsId = setLotsIdAndRelatedLots(cnDto.tender, newLotsId)
+        newLotsId = setLotsId(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
         tenderProcess.tender.electronicAuctions?.let {
             cnDto.tender.electronicAuctions ?: throw ErrorException(INVALID_AUCTION)
@@ -159,7 +159,7 @@ class CnUpdateService(private val generationService: GenerationService,
         }
     }
 
-    private fun setLotsIdAndRelatedLots(tender: TenderCnUpdate, newLotsId: Set<String>): Set<String> {
+    private fun setLotsId(tender: TenderCnUpdate, newLotsId: Set<String>): Set<String> {
         val newLotsIdSet = mutableSetOf<String>()
         tender.lots.asSequence()
                 .filter { it.id in newLotsId }
