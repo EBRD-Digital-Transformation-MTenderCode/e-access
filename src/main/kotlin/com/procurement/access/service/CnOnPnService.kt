@@ -51,8 +51,8 @@ class CnOnPnService(private val generationService: GenerationService,
             }
         } else {
             updatedLots(tenderProcess.tender.lots)
+            tenderDto.electronicAuctions?.let { validateAuctions(tenderProcess.tender.lots, it) }
         }
-        tenderDto.electronicAuctions?.let { validateAuctionsRelatedLots(tenderProcess.tender.lots, it) }
         tenderProcess.tender.apply {
             documents = updateDocuments(tender = this, documentsDto = cnDto.tender.documents)
             status = TenderStatus.ACTIVE
@@ -72,11 +72,19 @@ class CnOnPnService(private val generationService: GenerationService,
         return ResponseDto(data = tenderProcess)
     }
 
-    private fun validateAuctionsRelatedLots(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
-        val lotsId = lots.asSequence().map { it.id }.toHashSet()
-        val lotsFromAuctions = auctionsDto.details.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsFromAuctions.size != lotsId.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (!lotsId.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+    private fun validateAuctions(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
+        lots.forEach { lot ->
+            auctionsDto.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
+                val lotAmountMinimum = lot.value.amount.div(BigDecimal(10))
+                val lotCurrency = lot.value.currency
+                for (modality in auction.electronicAuctionModalities) {
+                    if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
+                        throw ErrorException(INVALID_AUCTION_MINIMUM)
+                    if (modality.eligibleMinimumDifference.currency != lotCurrency)
+                        throw ErrorException(INVALID_AUCTION_CURRENCY)
+                }
+            }
+        }
     }
 
     private fun validateDtoRelatedLots(tender: TenderCnUpdate) {
@@ -85,6 +93,11 @@ class CnOnPnService(private val generationService: GenerationService,
         val lotsFromItemsSet = tender.items.asSequence().map { it.relatedLot }.toHashSet()
         if (lotsFromItemsSet.size != lotsIdSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
+        tender.electronicAuctions?.let { auctions ->
+            val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+            if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+            if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        }
     }
 
     private fun checkLotsCurrency(cn: CnUpdate, budgetCurrency: String) {
