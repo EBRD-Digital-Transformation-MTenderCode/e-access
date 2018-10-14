@@ -169,7 +169,7 @@ class CnOnPnService(private val generationService: GenerationService,
                     val lotAmountMinimum = lot.value.amount.div(BigDecimal(10))
                     val lotCurrency = lot.value.currency
                     for (modality in auction.electronicAuctionModalities) {
-                        if (modality.eligibleMinimumDifference.amount < lotAmountMinimum)
+                        if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
                             throw ErrorException(INVALID_AUCTION_MINIMUM)
                         if (modality.eligibleMinimumDifference.currency != lotCurrency)
                             throw ErrorException(INVALID_AUCTION_CURRENCY)
