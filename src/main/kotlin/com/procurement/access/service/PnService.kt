@@ -87,6 +87,7 @@ class PnService(private val generationService: GenerationService,
                         lots = setLots(tenderDto.lots),
                         items = setItems(tenderDto.items),
                         documents = setDocuments(tenderDto),
+                        procurementMethodModalities = null,
                         electronicAuctions = null
                 )
         )
