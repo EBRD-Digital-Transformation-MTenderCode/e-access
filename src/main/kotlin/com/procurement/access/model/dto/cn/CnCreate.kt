@@ -73,7 +73,7 @@ data class TenderCnCreate @JsonCreator constructor(
 
         val documents: List<Document>,
 
-        val procurementMethodModalities: Set<ProcurementMethodModalities>?,
+        val procurementMethodModalities: Set<String>?,
 
         val electronicAuctions: ElectronicAuctions?
 )

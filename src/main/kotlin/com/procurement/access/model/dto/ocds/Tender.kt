@@ -83,7 +83,7 @@ data class Tender @JsonCreator constructor(
 
         var documents: List<Document>?,
 
-        var procurementMethodModalities: Set<ProcurementMethodModalities>?,
+        var procurementMethodModalities: Set<String>?,
 
         var electronicAuctions: ElectronicAuctions?
 )
