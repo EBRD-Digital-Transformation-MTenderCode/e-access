@@ -41,13 +41,13 @@ class CnOnPnService(private val generationService: GenerationService,
             checkLotsContractPeriod(cnDto)
             validateDtoRelatedLots(tenderDto)
             setItemsId(tenderDto.items)
-            setLotsIdAndRelatedLots(tenderDto)
+            setLotsId(tenderDto)
             tenderProcess.tender.apply {
-                lots = setLots(tenderDto.lots)
-                items = setItems(tenderDto.items)
+                lots = getLots(tenderDto.lots)
+                items = getItems(tenderDto.items)
                 tenderDto.classification?.let { classification = it }
                 value = getValueFromLots(tenderDto.lots, tenderProcess.planning.budget.amount)
-                contractPeriod = setContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
+                contractPeriod = getContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
             }
         } else {
             updatedLots(tenderProcess.tender.lots)
@@ -80,6 +80,7 @@ class CnOnPnService(private val generationService: GenerationService,
         if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         tender.electronicAuctions?.let { auctions ->
             val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+            if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         }
@@ -137,7 +138,7 @@ class CnOnPnService(private val generationService: GenerationService,
         this.relatedLots = documentDto.relatedLots
     }
 
-    private fun setLots(lotsDto: List<LotCnUpdate>): List<Lot> {
+    private fun getLots(lotsDto: List<LotCnUpdate>): List<Lot> {
         return lotsDto.asSequence().map { convertDtoLotToCnLot(it) }.toList()
     }
 
@@ -147,7 +148,7 @@ class CnOnPnService(private val generationService: GenerationService,
         items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
 
-    private fun setLotsIdAndRelatedLots(tender: TenderCnUpdate) {
+    private fun setLotsId(tender: TenderCnUpdate) {
         tender.lots.forEach { lot ->
             val id = generationService.getTimeBasedUUID()
             tender.items.asSequence()
@@ -164,7 +165,7 @@ class CnOnPnService(private val generationService: GenerationService,
             tender.electronicAuctions?.let { auctions ->
                 auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
                     auction.relatedLot = id
-                    validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
+                    validateAuctionMinimum(lot.value.amount, lot.value.currency, auction)
                 }
             }
             lot.id = id
@@ -174,16 +175,17 @@ class CnOnPnService(private val generationService: GenerationService,
     private fun validateAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
         val lotsIdSet = lots.asSequence().map { it.id }.toSet()
         val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         lots.forEach { lot ->
             auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
-                validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
+                validateAuctionMinimum(lot.value.amount, lot.value.currency, auction)
             }
         }
     }
 
-    private fun validateAuctionsMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
+    private fun validateAuctionMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
         val lotAmountMinimum = lotAmount.div(BigDecimal(10))
         for (modality in auction.electronicAuctionModalities) {
             if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
@@ -202,11 +204,11 @@ class CnOnPnService(private val generationService: GenerationService,
         return Value(totalAmount, currency)
     }
 
-    private fun setItems(itemsDto: List<ItemCnUpdate>): List<Item> {
+    private fun getItems(itemsDto: List<ItemCnUpdate>): List<Item> {
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun setContractPeriod(lotsDto: List<LotCnUpdate>, budget: Budget): ContractPeriod {
+    private fun getContractPeriod(lotsDto: List<LotCnUpdate>, budget: Budget): ContractPeriod {
         val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
