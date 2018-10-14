@@ -51,7 +51,7 @@ data class TenderCnUpdate @JsonCreator constructor(
 
         val documents: List<Document>,
 
-        val procurementMethodModalities: Set<String>?,
+        val procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
         val electronicAuctions: ElectronicAuctions?
 )
@@ -98,6 +98,7 @@ fun CnUpdate.validate(): CnUpdate {
         if (this.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
     }
     this.tender.electronicAuctions?.let {
+        it.validate()
         this.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
         if (this.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
     }

@@ -8,9 +8,8 @@
     "startDate": "string"
   },
   "data": {
-    "tenderPeriod":
-    {
-      "endDate":""
+    "tenderPeriod": {
+      "endDate": ""
     },
     "electronicAuctions": {
       "details": [
