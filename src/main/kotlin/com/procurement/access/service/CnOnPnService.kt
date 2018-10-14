@@ -162,25 +162,30 @@ class CnOnPnService(private val generationService: GenerationService,
                 }
             }
             tender.electronicAuctions?.let { auctions ->
-                validateAuctionsMinimum(lot.id, lot.value.amount, lot.value.currency, auctions)
+                auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
+                    auction.relatedLot = id
+                    validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
+                }
             }
             lot.id = id
         }
     }
 
-    private fun validateAuctions(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
-        lots.forEach { lot -> validateAuctionsMinimum(lot.id, lot.value.amount, lot.value.currency, auctionsDto) }
+    private fun validateAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
+        lots.forEach { lot ->
+            auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
+                validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
+            }
+        }
     }
 
-    private fun validateAuctionsMinimum(lotId: String, lotAmount: BigDecimal, lotCurrency: String, auctionsDto: ElectronicAuctions) {
-        auctionsDto.details.asSequence().filter { it.relatedLot == lotId }.forEach { auction ->
-            val lotAmountMinimum = lotAmount.div(BigDecimal(10))
-            for (modality in auction.electronicAuctionModalities) {
-                if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
-                    throw ErrorException(INVALID_AUCTION_MINIMUM)
-                if (modality.eligibleMinimumDifference.currency != lotCurrency)
-                    throw ErrorException(INVALID_AUCTION_CURRENCY)
-            }
+    private fun validateAuctionsMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
+        val lotAmountMinimum = lotAmount.div(BigDecimal(10))
+        for (modality in auction.electronicAuctionModalities) {
+            if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
+                throw ErrorException(INVALID_AUCTION_MINIMUM)
+            if (modality.eligibleMinimumDifference.currency != lotCurrency)
+                throw ErrorException(INVALID_AUCTION_CURRENCY)
         }
     }
 
