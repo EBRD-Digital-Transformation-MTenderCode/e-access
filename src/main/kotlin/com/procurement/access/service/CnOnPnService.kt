@@ -72,10 +72,6 @@ class CnOnPnService(private val generationService: GenerationService,
         return ResponseDto(data = tenderProcess)
     }
 
-    private fun validateAuctions(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
-        lots.forEach { lot -> validateAuctionsMinimum(lot.id, lot.value.amount, lot.value.currency, auctionsDto) }
-    }
-
     private fun validateDtoRelatedLots(tender: TenderCnUpdate) {
         val lotsIdSet = tender.lots.asSequence().map { it.id }.toSet()
         if (lotsIdSet.size != tender.lots.size) throw ErrorException(INVALID_LOT_ID)
@@ -170,6 +166,10 @@ class CnOnPnService(private val generationService: GenerationService,
             }
             lot.id = id
         }
+    }
+
+    private fun validateAuctions(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
+        lots.forEach { lot -> validateAuctionsMinimum(lot.id, lot.value.amount, lot.value.currency, auctionsDto) }
     }
 
     private fun validateAuctionsMinimum(lotId: String, lotAmount: BigDecimal, lotCurrency: String, auctionsDto: ElectronicAuctions) {
