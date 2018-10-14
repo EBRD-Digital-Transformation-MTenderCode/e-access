@@ -13,6 +13,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
@@ -163,7 +164,17 @@ class CnOnPnService(private val generationService: GenerationService,
                 }
             }
             tender.electronicAuctions?.let { auctions ->
-                auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { it.relatedLot = id }
+                auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
+                    auction.relatedLot = id
+                    val lotAmountMinimum = lot.value.amount.div(BigDecimal(10))
+                    val lotCurrency = lot.value.currency
+                    for (modality in auction.electronicAuctionModalities) {
+                        if (modality.eligibleMinimumDifference.amount < lotAmountMinimum)
+                            throw ErrorException(INVALID_AUCTION_MINIMUM)
+                        if (modality.eligibleMinimumDifference.currency != lotCurrency)
+                            throw ErrorException(INVALID_AUCTION_CURRENCY)
+                    }
+                }
             }
             lot.id = id
         }
