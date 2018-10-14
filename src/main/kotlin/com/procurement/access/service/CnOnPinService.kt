@@ -7,6 +7,7 @@ import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
+import com.procurement.access.model.dto.cn.validate
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -25,7 +26,7 @@ class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
-        val cnDto = toObject(CnUpdate::class.java, cm.data)
+        val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
