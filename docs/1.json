@@ -1,204 +1,242 @@
 {
-  "id": "0e29671a-63be-4050-b5a4-512a2a9be092",
-  "command": "createCn",
+  "id": "2217257c-31d9-4347-ad75-c2f81fd12000",
+  "command": "createCnOnPn",
   "context": {
-    "operationId": "0e29671a-63be-4050-b5a4-512a2a9be092",
-    "requestId": "721a3e60-c32c-11e8-a4d6-8f9951eba3b9",
+    "operationId": "2217257c-31d9-4347-ad75-c2f81fd12000",
+    "requestId": "7e2e17a0-cfaa-11e8-9524-616fec870631",
+    "cpid": "ocds-t1s2t3-MD-1539518878996",
+    "ocid": "ocds-t1s2t3-MD-1539518878996-PN-1539518879039",
     "stage": "EV",
-    "processType": "createCN",
-    "operationType": "createCN",
+    "prevStage": "PN",
+    "processType": "updateCN",
+    "operationType": "createCNonPN",
     "phase": "clarification",
     "owner": "445f6851-c908-407d-9b45-14b92f3e964b",
     "country": "MD",
     "language": "ro",
     "pmd": "TEST_OT",
-    "startDate": "2018-09-28T14:40:29Z"
+    "token": "30613845-7c51-4c82-acb2-66521be995a0",
+    "startDate": "2018-10-14T12:13:00Z",
+    "isAuction": false
   },
   "data": {
     "planning": {
       "budget": {
-        "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
-        "amount": {
-          "amount": 5.00,
-          "currency": "MDL"
-        },
-        "isEuropeanUnionFunded": true,
         "budgetBreakdown": [
           {
-            "id": "ocds-t1s2t3-MD-1538145377716-FS-1538145381668",
-            "description": "Billion data culture speak appear others decade. State move against. College rule student become low body.",
+            "id": "ocds-t1s2t3-MD-1538389789361-FS-1538394511504",
             "amount": {
-              "amount": 5.00,
+              "amount": 900,
               "currency": "MDL"
-            },
-            "period": {
-              "startDate": "2018-09-28T14:36:17Z",
-              "endDate": "2019-03-27T14:36:17Z"
-            },
-            "sourceParty": {
-              "id": "MD-IDNO-809-78-1228",
-              "name": "Pearson-Hoover"
-            },
-            "europeanUnionFunding": {
-              "projectName": "engineer turn-key partnerships",
-              "projectIdentifier": "0-652-76506-8",
-              "uri": "http://walker.com/explore/app/tags/terms/"
+            }
+          },
+          {
+            "id": "ocds-t1s2t3-MD-1537971575881-FS-1537971617995",
+            "amount": {
+              "amount": 800,
+              "currency": "MDL"
             }
           }
         ]
-      },
-      "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document."
+      }
     },
     "tender": {
-      "title": "Tender title",
-      "description": "Tender description",
+      "id": "ocds-t1s2t3-MD-1538048773105",
+      "title": "gav",
+      "description": "gav gav",
       "legalBasis": "DIRECTIVE_2014_24_EU",
-      "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
-      "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
-      "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+      "procurementMethodAdditionalInfo": "fsdfsdf",
       "tenderPeriod": {
-        "endDate": "2018-09-28T14:48:00Z",
-        "startDate": "2018-09-28T14:43:00Z"
+        "endDate": "2018-10-14T17:55:00Z",
+        "startDate": "2018-10-14T17:50:00Z"
       },
       "enquiryPeriod": {
-        "endDate": "2018-09-28T14:43:00Z",
-        "startDate": "2018-09-28T14:40:29Z"
+        "endDate": "2018-10-14T17:50:00Z",
+        "startDate": "2018-10-14T12:13:00Z"
+      },
+      "electronicAuctions": {
+        "details": [
+          {
+            "id": "111",
+            "relatedLot": "ca949d43-cfa9-11e8-bf0f-7f16ca473292",
+            "electronicAuctionModalities": [
+              {
+                "eligibleMinimumDifference": {
+                  "amount": 10,
+                  "currency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "id": "222",
+            "relatedLot": "ca949d42-cfa9-11e8-bf0f-7f16ca473292",
+            "electronicAuctionModalities": [
+              {
+                "eligibleMinimumDifference": {
+                  "amount": 10.00,
+                  "currency": "MDL"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "procuringEntity": {
+        "name": "Edward_UPDATE",
+        "identifier": {
+          "scheme": "MD-IDNO",
+          "id": "66666666",
+          "legalName": "6666",
+          "uri": "6666"
+        },
+        "address": {
+          "streetAddress": "66666666",
+          "addressDetails": {
+            "country": {
+              "id": "MD"
+            },
+            "region": {
+              "id": "1000000"
+            },
+            "locality": {
+              "scheme": "CUATM",
+              "id": "1001000",
+              "description": "66666"
+            }
+          }
+        },
+        "contactPoint": {
+          "name": "6666",
+          "email": "6666",
+          "telephone": "66666666",
+          "faxNumber": "66666",
+          "url": "666666"
+        }
       },
       "lots": [
         {
-          "id": "lot-id-123123",
-          "title": "A title for this lot.",
-          "description": "A description of this lot.",
+          "id": "ca949d43-cfa9-11e8-bf0f-7f16ca473292",
+          "title": "lot1",
+          "description": "looot",
           "value": {
-            "amount": 1.65,
+            "amount": 500,
             "currency": "MDL"
           },
           "contractPeriod": {
-            "startDate": "2018-10-16T00:00:00Z",
-            "endDate": "2018-11-16T00:00:00Z"
+            "startDate": "2018-12-29T14:45:00Z",
+            "endDate": "2018-12-30T14:45:00Z"
           },
           "placeOfPerformance": {
             "address": {
-              "streetAddress": "",
-              "postalCode": "",
+              "streetAddress": "6666",
+              "postalCode": "666",
               "addressDetails": {
                 "country": {
-                  "scheme": "iso-alpha2",
-                  "id": "MD",
-                  "description": "MOLDOVA",
-                  "uri": "http://reference.iatistandard.org"
+                  "id": "MD"
                 },
                 "region": {
-                  "scheme": "CUATM",
-                  "id": "3400000",
-                  "description": "Donduşeni",
-                  "uri": "http://statistica.md"
+                  "id": "1000000"
                 },
                 "locality": {
-                  "scheme": "other",
-                  "id": "",
-                  "description": ""
+                  "scheme": "666",
+                  "id": "666",
+                  "description": "666"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "ca949d42-cfa9-11e8-bf0f-7f16ca473292",
+          "title": "lot2",
+          "description": "looot",
+          "value": {
+            "amount": 400,
+            "currency": "MDL"
+          },
+          "contractPeriod": {
+            "startDate": "2018-12-22T14:45:00Z",
+            "endDate": "2018-12-22T14:45:01Z"
+          },
+          "placeOfPerformance": {
+            "address": {
+              "streetAddress": "777",
+              "postalCode": "777",
+              "addressDetails": {
+                "country": {
+                  "id": "MD"
+                },
+                "region": {
+                  "id": "1000000"
+                },
+                "locality": {
+                  "scheme": "CUATM",
+                  "id": "1001001",
+                  "description": "777"
                 }
               }
             },
-            "description": "Further description of the place of performance of the contract. Required by EU."
+            "description": "2"
           }
         }
       ],
       "items": [
         {
-          "id": "item-id-123123",
-          "description": "A description of the goods, services to be provided.",
+          "id": "ca949d41-cfa9-11e8-bf0f-7f16ca473292",
           "classification": {
-            "id": "55300000-3",
-            "description": "Servicii de restaurant şi de servire a mâncării",
-            "scheme": "CPV"
+            "scheme": "CPV",
+            "description": "ggg",
+            "id": "30199220-8"
           },
           "additionalClassifications": [
             {
-              "id": "AA01-1",
-              "description": "Metal",
-              "scheme": "CPVS"
+              "scheme": "CPVS",
+              "description": "666",
+              "id": "AB06-7"
             }
           ],
-          "quantity": 10.00,
+          "quantity": 1,
           "unit": {
-            "id": "118",
-            "name": "Decilitru"
+            "id": "86",
+            "name": "square"
           },
-          "relatedLot": "lot-id-123123"
+          "description": "666-2",
+          "relatedLot": "ca949d43-cfa9-11e8-bf0f-7f16ca473292"
+        },
+        {
+          "id": "ca949d40-cfa9-11e8-bf0f-7f16ca473292",
+          "classification": {
+            "scheme": "CPV",
+            "description": "ggg",
+            "id": "30199230-1"
+          },
+          "additionalClassifications": [
+            {
+              "scheme": "CPVS",
+              "description": "777",
+              "id": "AB06-7"
+            }
+          ],
+          "quantity": 2,
+          "unit": {
+            "id": "86",
+            "name": "square metre"
+          },
+          "description": "777-2",
+          "relatedLot": "ca949d42-cfa9-11e8-bf0f-7f16ca473292"
         }
       ],
-      "procuringEntity": {
-        "name": "Новороздільська міська лікарня",
-        "address": {
-          "streetAddress": "",
-          "postalCode": "",
-          "addressDetails": {
-            "country": {
-              "scheme": "iso-alpha2",
-              "id": "MD",
-              "description": "MOLDOVA",
-              "uri": "http://reference.iatistandard.org"
-            },
-            "region": {
-              "scheme": "CUATM",
-              "id": "3800000",
-              "description": "Dubăsari",
-              "uri": "http://statistica.md"
-            },
-            "locality": {
-              "scheme": "other",
-              "id": "",
-              "description": ""
-            }
-          }
-        },
-        "identifier": {
-          "id": "20764777",
-          "scheme": "MD-IDNO",
-          "legalName": "Новороздільська міська лікарня",
-          "uri": "http://buyerTestLink.ua"
-        },
-        "additionalIdentifiers": [
-          {
-            "id": "123123123",
-            "scheme": "MD-IDNO",
-            "legalName": "Додатково Новороздільська міська лікарня",
-            "uri": "http://additionalBuyerTestLink.ua"
-          }
-        ],
-        "contactPoint": {
-          "name": "Осипових Сергій Олександрович",
-          "email": "test2@test.test",
-          "telephone": "+380222222222",
-          "faxNumber": "+380222222222",
-          "url": "http://test.ua"
-        }
-      },
       "documents": [
         {
-          "documentType": "tenderNotice",
-          "id": "df413e80-c1b0-11e8-8cbe-a1835757f77d",
-          "title": "File for test",
-          "description": "test file ",
-          "language": "en",
+          "documentType": "projectPlan",
+          "id": "f33eeb0e-eb12-476c-a62c-b35cec612b9c-1539341161194",
+          "title": "doc1т",
           "relatedLots": [
-            "lot-id-123123"
+            "ca949d43-cfa9-11e8-bf0f-7f16ca473292"
           ]
         }
-      ],
-      "classification": {
-        "id": "55300000-3",
-        "scheme": "CPV",
-        "description": "Servicii de restaurant şi de servire a mâncării"
-      },
-      "submissionMethodRationale": [
-        "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
-      ],
-      "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
-      "procurementMethodDetails": "TEST Licitatia deschisa",
-      "mainProcurementCategory": "services"
+      ]
     }
   },
   "version": "0.0.1"

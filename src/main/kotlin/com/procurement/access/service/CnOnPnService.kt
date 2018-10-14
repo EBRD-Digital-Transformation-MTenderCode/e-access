@@ -47,11 +47,11 @@ class CnOnPnService(private val generationService: GenerationService,
                 tenderDto.classification?.let { classification = it }
                 value = getValueFromLots(tenderDto.lots, tenderProcess.planning.budget.amount)
                 contractPeriod = setContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
-                electronicAuctions = tenderDto.electronicAuctions
             }
         } else {
             updatedLots(tenderProcess.tender.lots)
         }
+        tenderDto.electronicAuctions?.let { validateAuctionsRelatedLots(tenderProcess.tender.lots, it) }
         tenderProcess.tender.apply {
             documents = updateDocuments(tender = this, documentsDto = cnDto.tender.documents)
             status = TenderStatus.ACTIVE
@@ -62,9 +62,17 @@ class CnOnPnService(private val generationService: GenerationService,
             enquiryPeriod = tenderDto.enquiryPeriod
             procurementMethodRationale = tenderDto.procurementMethodRationale
             procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo
+            electronicAuctions = tenderDto.electronicAuctions
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateAuctionsRelatedLots(lots: List<Lot>, auctionsDto: ElectronicAuctions) {
+        val lotsId = lots.asSequence().map { it.id }.toHashSet()
+        val lotsFromAuctions = auctionsDto.details.asSequence().map { it.relatedLot }.toHashSet()
+        if (lotsFromAuctions.size != lotsId.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        if (!lotsId.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
     }
 
     private fun validateDtoRelatedLots(tender: TenderCnUpdate) {
@@ -73,11 +81,6 @@ class CnOnPnService(private val generationService: GenerationService,
         val lotsFromItemsSet = tender.items.asSequence().map { it.relatedLot }.toHashSet()
         if (lotsFromItemsSet.size != lotsIdSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        tender.electronicAuctions?.let { auctions ->
-            val lotsFromAuctionsSet = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
-            if (lotsFromAuctionsSet.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-            if (!lotsIdSet.containsAll(lotsFromAuctionsSet)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        }
     }
 
     private fun checkLotsCurrency(cn: CnUpdate, budgetCurrency: String) {
