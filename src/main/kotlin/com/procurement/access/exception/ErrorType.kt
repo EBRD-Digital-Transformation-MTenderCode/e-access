@@ -48,6 +48,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_AUCTION("10.32", "Electronic auctions must not be empty."),
     INVALID_PMM("10.33", "Procurement method modalities must not be empty."),
     INVALID_AUCTION_MINIMUM("10.34", "Invalid auction minimum."),
-    INVALID_AUCTION_CURRENCY("10.34", "Invalid auction currency."),
+    INVALID_AUCTION_CURRENCY("10.35", "Invalid auction currency."),
+    RULES_NOT_FOUND("10.36", "Rules not found."),
     CONTEXT("20.01", "Context parameter not found.");
 }

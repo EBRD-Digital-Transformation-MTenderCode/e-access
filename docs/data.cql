@@ -17,3 +17,11 @@ CREATE TABLE IF NOT EXISTS  ocds.access_history (
     json_data text,
     primary key(operation_id, command)
 );
+
+CREATE TABLE IF NOT EXISTS  ocds.access_rules (
+    country text,
+    pmd text,
+    parameter text,
+    value text,
+    primary key(country, pmd, parameter)
+);
