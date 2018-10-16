@@ -184,6 +184,7 @@ enum class ProcurementMethod constructor(private val value: String) {
     NP("selective"),
     FA("limited"),
     TEST_OT("open"),
+    TEST_SV("open"),
     TEST_RT("selective");
 
     @JsonValue
