@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
@@ -20,7 +21,8 @@ import java.time.LocalDateTime
 
 @Service
 class CnCreateService(private val generationService: GenerationService,
-                      private val tenderProcessDao: TenderProcessDao) {
+                      private val tenderProcessDao: TenderProcessDao,
+                      private val rulesService: RulesService) {
 
     fun createCn(cm: CommandMessage): ResponseDto {
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
@@ -30,6 +32,7 @@ class CnCreateService(private val generationService: GenerationService,
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnCreate::class.java, cm.data).validate()
+        validateAuctionsDto(country, pmd, cnDto)
 
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
@@ -97,6 +100,15 @@ class CnCreateService(private val generationService: GenerationService,
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ResponseDto(data = tp)
+    }
+
+    private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnCreate) {
+        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory.value())) {
+            cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
+            if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
+            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+            cnDto.tender.electronicAuctions.validate()
+        }
     }
 
     private fun checkLotsCurrency(cn: CnCreate) {

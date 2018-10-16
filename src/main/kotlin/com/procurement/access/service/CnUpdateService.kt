@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
@@ -21,13 +22,16 @@ import java.time.LocalDateTime
 
 @Service
 class CnUpdateService(private val generationService: GenerationService,
-                      private val tenderProcessDao: TenderProcessDao) {
+                      private val tenderProcessDao: TenderProcessDao,
+                      private val rulesService: RulesService) {
 
     fun updateCn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val country = cm.context.country ?: throw ErrorException(CONTEXT)
+        val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
@@ -36,6 +40,7 @@ class CnUpdateService(private val generationService: GenerationService,
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         validateTenderStatus(tenderProcess)
+        validateAuctionsDto(country, pmd, cnDto, tenderProcess.tender.mainProcurementCategory)
         val lotsDto = cnDto.tender.lots
         val itemsDto = cnDto.tender.items
         val documentsDto = cnDto.tender.documents
@@ -198,6 +203,15 @@ class CnUpdateService(private val generationService: GenerationService,
                 .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
             if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+        }
+    }
+
+    private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnUpdate, mainProcurementCategory: MainProcurementCategory) {
+        if (rulesService.isAuctionRequired(country, pmd, mainProcurementCategory.value())) {
+            cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
+            if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
+            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+            cnDto.tender.electronicAuctions.validate()
         }
     }
 

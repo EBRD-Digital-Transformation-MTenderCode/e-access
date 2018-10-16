@@ -12,6 +12,12 @@ class RulesService(private val rulesDao: RulesDao) {
         return rulesDao.getValue(country, pmd, RULE) ?: throw ErrorException(ErrorType.RULES_NOT_FOUND)
     }
 
+    fun isAuctionRequired(country: String, pmd: String, mainProcurementCategory: String): Boolean {
+        return rulesDao.getValue(country, pmd, mainProcurementCategory)?.toBoolean()
+                ?: throw ErrorException(ErrorType.RULES_NOT_FOUND)
+    }
+
+
     companion object {
         private const val RULE = "rule"
     }
