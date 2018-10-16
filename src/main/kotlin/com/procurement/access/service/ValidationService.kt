@@ -30,9 +30,9 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         for (lot in process.tender.lots) {
             if (checkDto.bid.relatedLots.contains(lot.id)) {
                 if (!(lot.status == LotStatus.ACTIVE && lot.statusDetails == LotStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
-                checkDto.bid.value?.let {
-                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
-                }
+//                checkDto.bid.value?.let {
+//                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
+//                }
             }
         }
         return ResponseDto(data = "ok")
