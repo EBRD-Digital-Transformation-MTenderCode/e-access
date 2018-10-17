@@ -1,26 +1,28 @@
 {
+  "ocid": "ocds-t1s2t3-MD-1539777665308",
+  "isLotsChanged": false,
   "planning": {
     "budget": {
       "description": "e",
       "amount": {
-        "amount": 1000.00,
-        "currency": "USD"
+        "amount": 12000.00,
+        "currency": "MDL"
       },
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-t1s2t3-MD-1538323917753-FS-1538323939133",
+          "id": "ocds-t1s2t3-MD-1539775531645-FS-1539775561108",
           "description": "description",
           "amount": {
-            "amount": 1000.00,
-            "currency": "USD"
+            "amount": 12000.00,
+            "currency": "MDL"
           },
           "period": {
-            "startDate": "2018-10-01T00:00:00Z",
-            "endDate": "2018-12-31T00:00:00Z"
+            "startDate": "2018-09-02T00:00:00Z",
+            "endDate": "2019-01-01T00:00:00Z"
           },
           "sourceParty": {
-            "id": "MD-IDNO-7787-9898-88ty",
+            "id": "MD-IDNO-7787-9898-88",
             "name": "nameOfFSbuyer"
           }
         }
@@ -29,21 +31,19 @@
     "rationale": "rationale"
   },
   "tender": {
-    "id": "ocds-t1s2t3-MD-1538493989533",
+    "id": "ocds-t1s2t3-MD-1539777665308",
     "title": "TITLE",
     "description": "d",
     "status": "active",
     "statusDetails": "clarification",
     "classification": {
       "scheme": "CPV",
-      "id": "75200000-8",
-      "description": "Prestări de servicii pentru comunitate"
+      "id": "03111000-2",
+      "description": "Seminţe"
     },
-    "mainProcurementCategory": "services",
+    "mainProcurementCategory": "goods",
     "procurementMethod": "open",
-    "procurementMethodDetails": "TEST Licitatia deschisa",
-    "procurementMethodRationale": "cscsc",
-    "procurementMethodAdditionalInfo": "asfcads ",
+    "procurementMethodDetails": "Small-value tender",
     "submissionMethod": [
       "electronicSubmission"
     ],
@@ -75,7 +75,7 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
     "procuringEntity": {
       "id": "MD-IDNO-555-555",
       "name": "Name of CN pE",
@@ -83,7 +83,7 @@
         "id": "555-555",
         "scheme": "MD-IDNO",
         "legalName": "legal name of pe",
-        "uri": "g"
+        "uri": "ddededed"
       },
       "address": {
         "streetAddress": "address of pe",
@@ -114,34 +114,33 @@
           "id": "tre",
           "scheme": "ert",
           "legalName": "etr",
-          "uri": "ter"
+          "uri": "dfedfsdfsdf"
         }
       ],
       "contactPoint": {
         "name": "contact name",
         "email": "email",
         "telephone": "4521",
-        "faxNumber": "45",
-        "url": "d"
+        "faxNumber": "45"
       }
     },
     "awardCriteria": "priceOnly",
     "requiresElectronicCatalogue": false,
     "contractPeriod": {
-      "startDate": "2018-10-02T00:00:00Z",
-      "endDate": "2018-12-01T00:00:00Z"
+      "startDate": "2018-11-01T19:40:00Z",
+      "endDate": "2018-12-01T20:45:00Z"
     },
     "tenderPeriod": {
-      "startDate": "2018-10-03T14:20:00Z",
-      "endDate": "2018-10-03T14:40:00Z"
+      "startDate": "2018-10-17T12:10:00Z",
+      "endDate": "2018-10-17T12:30:00Z"
     },
     "enquiryPeriod": {
-      "startDate": "2018-10-02T15:31:09Z",
-      "endDate": "2018-10-03T14:20:00Z"
+      "startDate": "2018-10-17T12:01:05Z",
+      "endDate": "2018-10-17T12:10:00Z"
     },
     "value": {
-      "amount": 250.00,
-      "currency": "USD"
+      "amount": 5500.00,
+      "currency": "MDL"
     },
     "lotGroups": [
       {
@@ -150,14 +149,14 @@
     ],
     "lots": [
       {
-        "id": "88db54d1-c657-11e8-838d-b3ccdf784381",
-        "title": "title",
-        "description": "1",
-        "status": "planning",
+        "id": "533e15c2-d204-11e8-b482-ff83a50aef66",
+        "title": "lot2",
+        "description": "2",
+        "status": "active",
         "statusDetails": "empty",
         "value": {
-          "amount": 250.00,
-          "currency": "USD"
+          "amount": 2000.00,
+          "currency": "MDL"
         },
         "options": [
           {
@@ -180,43 +179,171 @@
           }
         ],
         "contractPeriod": {
-          "startDate": "2018-10-02T00:00:00Z",
-          "endDate": "2018-12-01T00:00:00Z"
+          "startDate": "2018-12-01T19:40:00Z",
+          "endDate": "2018-12-01T20:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "Steet",
+            "postalCode": "5",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              }
+            }
+          },
+          "description": "decr"
+        }
+      },
+      {
+        "id": "533e15c3-d204-11e8-b482-ff83a50aef66",
+        "title": "lot2",
+        "description": "2",
+        "status": "active",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 3500.00,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-01T19:40:00Z",
+          "endDate": "2018-11-02T20:45:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "Steet",
+            "postalCode": "5",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              }
+            }
+          },
+          "description": "decr"
         }
       }
     ],
     "items": [
       {
-        "id": "88db54d0-c657-11e8-838d-b3ccdf784381",
-        "description": "в",
+        "id": "533e15c0-d204-11e8-b482-ff83a50aef66",
+        "description": "p",
         "classification": {
           "scheme": "CPV",
-          "id": "75200000-8",
-          "description": "Prestări de servicii pentru comunitate"
+          "id": "03111300-5",
+          "description": "Seminţe de floarea-soarelui"
         },
-        "additionalClassifications": [
-          {
-            "scheme": "CPVS",
-            "id": "AA06-6",
-            "description": "Plumb"
-          }
-        ],
         "quantity": 10.00,
         "unit": {
-          "id": "10",
-          "name": "Parsec"
+          "id": "120",
+          "name": "Milion decalitri"
         },
-        "relatedLot": "88db54d1-c657-11e8-838d-b3ccdf784381"
+        "relatedLot": "533e15c2-d204-11e8-b482-ff83a50aef66"
+      },
+      {
+        "id": "533e15c1-d204-11e8-b482-ff83a50aef66",
+        "description": "p",
+        "classification": {
+          "scheme": "CPV",
+          "id": "03111400-6",
+          "description": "Seminţe de bumbac"
+        },
+        "quantity": 100.00,
+        "unit": {
+          "id": "120",
+          "name": "Milion decalitri"
+        },
+        "relatedLot": "533e15c3-d204-11e8-b482-ff83a50aef66"
       }
     ],
     "documents": [
       {
-        "id": "756750d0-c63d-11e8-8cbe-a1835757f77d",
+        "id": "3773bc6a-bdf0-413a-8802-7d2da732e995-1539765199040",
         "documentType": "tenderNotice",
         "relatedLots": [
-          "88db54d1-c657-11e8-838d-b3ccdf784381"
+          "533e15c3-d204-11e8-b482-ff83a50aef66"
         ]
       }
-    ]
+    ],
+    "procurementMethodModalities": [
+      "electronicAuction"
+    ],
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "asasas",
+          "relatedLot": "533e15c3-d204-11e8-b482-ff83a50aef66",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 5.00,
+                "currency": "MDL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "asasas",
+          "relatedLot": "533e15c2-d204-11e8-b482-ff83a50aef66",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 9.00,
+                "currency": "MDL"
+              }
+            }
+          ]
+        }
+      ]
+    }
   }
 }

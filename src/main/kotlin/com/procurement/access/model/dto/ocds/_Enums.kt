@@ -5,6 +5,37 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.exception.EnumException
 import java.util.*
 
+
+enum class ProcurementMethodModalities constructor(private val value: String) {
+    ELECTRONIC_AUCTION("electronicAuction");
+
+    @JsonValue
+    fun value(): String {
+        return this.value
+    }
+
+    override fun toString(): String {
+        return this.value
+    }
+
+    companion object {
+
+        private val CONSTANTS = HashMap<String, ProcurementMethodModalities>()
+
+        init {
+            for (c in values()) {
+                CONSTANTS[c.value] = c
+            }
+        }
+
+        @JsonCreator
+        fun fromValue(value: String): ProcurementMethodModalities {
+            return CONSTANTS[value]
+                    ?: throw EnumException(ProcurementMethodModalities::class.java.name, value, Arrays.toString(values()))
+        }
+    }
+}
+
 enum class AwardCriteria constructor(private val value: String) {
     PRICE_ONLY("priceOnly"),
     COST_ONLY("costOnly"),
@@ -153,6 +184,7 @@ enum class ProcurementMethod constructor(private val value: String) {
     NP("selective"),
     FA("limited"),
     TEST_OT("open"),
+    TEST_SV("open"),
     TEST_RT("selective");
 
     @JsonValue

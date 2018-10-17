@@ -9,18 +9,10 @@ import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import org.springframework.stereotype.Service
 
-interface HistoryDao {
-
-    fun getHistory(operationId: String, command: String): HistoryEntity?
-
-    fun saveHistory(operationId: String, command: String, response: ResponseDto): HistoryEntity
-
-}
-
 @Service
-class HistoryDaoImpl(private val session: Session) : HistoryDao {
+class HistoryDao(private val session: Session) {
 
-    override fun getHistory(operationId: String, command: String): HistoryEntity? {
+    fun getHistory(operationId: String, command: String): HistoryEntity? {
         val query = select()
                 .all()
                 .from(HISTORY_TABLE)
@@ -35,7 +27,7 @@ class HistoryDaoImpl(private val session: Session) : HistoryDao {
                 row.getString(JSON_DATA)) else null
     }
 
-    override fun saveHistory(operationId: String, command: String, response: ResponseDto): HistoryEntity {
+    fun saveHistory(operationId: String, command: String, response: ResponseDto): HistoryEntity {
         val entity = HistoryEntity(
                 operationId = operationId,
                 command = command,

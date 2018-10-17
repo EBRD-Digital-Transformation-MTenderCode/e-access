@@ -16,17 +16,11 @@ import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
-interface PnUpdateService {
-
-    fun updatePn(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class PnUpdateServiceImpl(private val generationService: GenerationService,
-                          private val tenderProcessDao: TenderProcessDao) : PnUpdateService {
+class PnUpdateService(private val generationService: GenerationService,
+                      private val tenderProcessDao: TenderProcessDao) {
 
-
-    override fun updatePn(cm: CommandMessage): ResponseDto {
+    fun updatePn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
@@ -115,8 +109,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
-        val month = startDate.month
-        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
+//        val month = startDate.month
+//        if (month != month.firstMonthOfQuarter()) throw ErrorException(INVALID_START_DATE)
         val day = startDate.dayOfMonth
         if (day != 1) throw ErrorException(INVALID_START_DATE)
     }
@@ -239,6 +233,8 @@ class PnUpdateServiceImpl(private val generationService: GenerationService,
 
     private fun updateDocuments(tender: Tender, documentsDto: List<Document>?): List<Document> {
         if (documentsDto != null && documentsDto.isNotEmpty()) {
+            val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
+            if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
             validateDocumentsRelatedLots(tender.lots, documentsDto)
             return if (tender.documents != null && tender.documents!!.isNotEmpty()) {
                 val documentsDb = tender.documents!!
