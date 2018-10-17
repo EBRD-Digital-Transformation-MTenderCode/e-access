@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.cn
+package com.procurement.access.model.dto.tender
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
