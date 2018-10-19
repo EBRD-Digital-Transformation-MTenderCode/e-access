@@ -27,6 +27,19 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
+    fun getLotsAuction(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        return ResponseDto(data = GetLotsAuctionRs(
+                tender = GetLotsAuctionTender(
+                        id = process.tender.id!!,
+                        title = process.tender.title,
+                        description = process.tender.description,
+                        lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))))
+    }
+
     fun setStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)

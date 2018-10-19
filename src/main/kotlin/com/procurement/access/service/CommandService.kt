@@ -48,6 +48,7 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_LOTS -> lotsService.getLots(cm)
+            CommandType.GET_LOTS_AUCTION -> lotsService.getLotsAuction(cm)
             CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setStatusDetailsUnsuccessful(cm)
             CommandType.SET_LOTS_SD_AWARDED -> lotsService.setStatusDetailsAwarded(cm)
             CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setStatusUnsuccessful(cm)
