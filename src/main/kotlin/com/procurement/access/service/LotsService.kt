@@ -37,6 +37,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                         id = process.tender.id!!,
                         title = process.tender.title,
                         description = process.tender.description,
+                        awardCriteria = process.tender.awardCriteria.value(),
                         lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))))
     }
 

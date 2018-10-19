@@ -17,5 +17,7 @@ data class GetLotsAuctionTender @JsonCreator constructor(
 
         val description: String?,
 
+        val awardCriteria: String?,
+
         val lots: List<LotDto>
 )
