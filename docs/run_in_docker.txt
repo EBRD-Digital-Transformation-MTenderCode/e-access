@@ -1,3 +1,8 @@
+#login
+docker login https://docker-registry.eprocurement.systems
+Username: docker
+Password: 3FFcKYtMxzmwFMa
+
 #*****************************#
 # Create Network if not exist #
 #*****************************#
