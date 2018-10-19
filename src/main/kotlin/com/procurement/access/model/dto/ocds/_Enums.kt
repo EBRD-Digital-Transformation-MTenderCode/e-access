@@ -539,7 +539,12 @@ enum class DocumentType constructor(private val value: String) {
     FEASIBILITY_STUDY("feasibilityStudy"),
     PROJECT_PLAN("projectPlan"),
     CONFLICT_OF_INTEREST("conflictOfInterest"),
-    CANCELLATION_DETAILS("cancellationDetails");
+    CANCELLATION_DETAILS("cancellationDetails"),
+    SHORTLISTED_FIRMS("shortlistedFirms"),
+    EVALUATION_REPORTS("evaluationReports"),
+    CONTRACT_ARRANGEMENTS("contractArrangements"),
+    CONTRACT_GUARANTEES("contractGuarantees");
+
 
     override fun toString(): String {
         return this.value
