@@ -116,7 +116,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
         val lotsByStatus = lots.asSequence()
                 .filter { it.status == status }
-                .map { LotDto(it.id) }.toList()
+                .map { LotDto(id = it.id, title = it.title, description = it.description, value = it.value) }.toList()
         if (lotsByStatus.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
         return lotsByStatus
     }
