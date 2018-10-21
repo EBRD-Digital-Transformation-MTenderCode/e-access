@@ -1,9 +1,9 @@
 {
-  "id": "2217257c-31d9-4347-ad75-c2f81fdf2451",
+  "id": "00bd9eac-a277-453a-84b5-c69328fdd402",
   "command": "createCn",
   "context": {
-    "operationId": "2217257c-31d9-4347-ad75-c2f81fdf2451",
-    "requestId": "21d7c750-d2f5-11e8-80be-a55dbe3e3d08",
+    "operationId": "00bd9eac-a277-453a-84b5-c69328fdd402",
+    "requestId": "0cf39ee0-d507-11e8-a4fb-dbe4bddffdcf",
     "stage": "EV",
     "processType": "createCN",
     "operationType": "createCN",
@@ -11,148 +11,78 @@
     "owner": "445f6851-c908-407d-9b45-14b92f3e964b",
     "country": "MD",
     "language": "ro",
-    "pmd": "TEST_SV",
-    "startDate": "2018-10-18T16:44:51Z",
+    "pmd": "TEST_OT",
+    "startDate": "2018-10-21T07:58:09Z",
+    "timeStamp": 1540108689359273,
     "isAuction": false
   },
   "data": {
     "planning": {
       "budget": {
+        "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project.",
         "amount": {
-          "amount": 1700.00,
+          "amount": 200.00,
           "currency": "MDL"
         },
-        "isEuropeanUnionFunded": false,
+        "isEuropeanUnionFunded": true,
         "budgetBreakdown": [
           {
-            "id": "ocds-t1s2t3-MD-1539878383817-FS-1539878417760",
-            "description": "Hello world!",
+            "id": "ocds-t1s2t3-MD-1540039295591-FS-1540039323817",
+            "description": "A short free text description of the budget source. May be used to provide the title of the budget line, or the programme used to fund this project",
             "amount": {
-              "amount": 900.00,
+              "amount": 200.00,
               "currency": "MDL"
             },
             "period": {
-              "startDate": "2018-05-25T22:00:00Z",
-              "endDate": "2018-12-27T21:00:00Z"
+              "startDate": "2018-04-28T13:30:27Z",
+              "endDate": "2019-10-26T17:48:10Z"
             },
             "sourceParty": {
-              "id": "MD-IDNO-Enotis1",
-              "name": "BUYER_NAME1"
-            }
-          },
-          {
-            "id": "ocds-t1s2t3-MD-1539867077385-FS-1539867089805",
-            "description": "Hello world!",
-            "amount": {
-              "amount": 800.00,
-              "currency": "MDL"
+              "id": "MD-IDNO-987654321",
+              "name": "FS Buyer Биківнянська міська лікарня"
             },
-            "period": {
-              "startDate": "2018-05-25T22:00:00Z",
-              "endDate": "2018-12-27T21:00:00Z"
-            },
-            "sourceParty": {
-              "id": "MD-IDNO-Enotis1",
-              "name": "BUYER_NAME1"
+            "europeanUnionFunding": {
+              "projectName": "Name or other national identification of the project providing full or partial funding",
+              "projectIdentifier": "PROJ-ID-1234-5678-0987",
+              "uri": "https://test.funding.org"
             }
           }
         ]
-      }
+      },
+      "rationale": "The rationale for the procurement provided in free text. More detail can be provided in an attached document."
     },
     "tender": {
-      "title": "gav",
-      "description": "gav gav",
+      "title": "Tender title",
+      "description": "Tender description",
       "legalBasis": "DIRECTIVE_2014_24_EU",
-      "procurementMethodAdditionalInfo": "fsdfsdf",
+      "procurementMethodRationale": "Rationale of procurement method, especially in the case of Limited tendering.",
+      "procurementMethodAdditionalInfo": "Additional information about the procurement method.",
+      "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
       "tenderPeriod": {
-        "endDate": "2018-11-20T23:59:00Z",
-        "startDate": "2018-10-18T18:35:00Z"
+        "endDate": "2018-10-21T08:05:00Z",
+        "startDate": "2018-10-21T08:00:00Z"
       },
       "enquiryPeriod": {
-        "endDate": "2018-10-18T18:35:00Z",
-        "startDate": "2018-10-18T16:44:51Z"
-      },
-      "procurementMethodModalities": [
-        "electronicAuction"
-      ],
-      "electronicAuctions": {
-        "details": [
-          {
-            "id": "1",
-            "relatedLot": "1",
-            "electronicAuctionModalities": [
-              {
-                "eligibleMinimumDifference": {
-                  "amount": 50.00,
-                  "currency": "MDL"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "procuringEntity": {
-        "name": "Edward_UPDATE",
-        "address": {
-          "streetAddress": "66666666",
-          "addressDetails": {
-            "country": {
-              "scheme": "iso-alpha2",
-              "id": "MD",
-              "description": "MOLDOVA",
-              "uri": "http://reference.iatistandard.org"
-            },
-            "region": {
-              "scheme": "CUATM",
-              "id": "1000000",
-              "description": "Anenii Noi",
-              "uri": "http://statistica.md"
-            },
-            "locality": {
-              "scheme": "CUATM",
-              "id": "1001000",
-              "description": "or.Anenii Noi",
-              "uri": "http://statistica.md"
-            }
-          }
-        },
-        "identifier": {
-          "id": "66666666",
-          "scheme": "MD-IDNO",
-          "legalName": "6666",
-          "uri": "trtt"
-        },
-        "additionalIdentifiers": [
-          {
-            "id": "22",
-            "scheme": "33",
-            "legalName": "11"
-          }
-        ],
-        "contactPoint": {
-          "name": "6666",
-          "email": "6666",
-          "telephone": "66666666",
-          "faxNumber": "66666"
-        }
+        "endDate": "2018-10-21T08:00:00Z",
+        "startDate": "2018-10-21T07:58:09Z"
       },
       "lots": [
         {
-          "id": "1",
-          "title": "lot1",
-          "description": "looot",
+          "id": "lot-id-111111",
+          "title": "A title for this lot.",
+          "description": "A description of this lot.",
           "value": {
-            "amount": 500.00,
+            "amount": 100.00,
             "currency": "MDL"
           },
           "contractPeriod": {
-            "startDate": "2018-12-25T14:45:00Z",
-            "endDate": "2018-12-30T14:45:00Z"
+            "startDate": "2018-10-22T00:00:00Z",
+            "endDate": "2018-12-16T00:00:00Z"
           },
           "placeOfPerformance": {
             "address": {
-              "streetAddress": "6666",
-              "postalCode": "666",
+              "streetAddress": "",
+              "postalCode": "",
               "addressDetails": {
                 "country": {
                   "scheme": "iso-alpha2",
@@ -162,89 +92,197 @@
                 },
                 "region": {
                   "scheme": "CUATM",
-                  "id": "1000000",
-                  "description": "Anenii Noi",
+                  "id": "3400000",
+                  "description": "Donduşeni",
                   "uri": "http://statistica.md"
                 },
                 "locality": {
-                  "scheme": "666",
-                  "id": "666",
-                  "description": "666"
+                  "scheme": "other",
+                  "id": "",
+                  "description": ""
                 }
               }
             },
-            "description": null
+            "description": "Further description of the place of performance of the contract. Required by EU."
+          }
+        },
+        {
+          "id": "lot-id-222222",
+          "title": "A title for this lot.",
+          "description": "A description of this lot.",
+          "value": {
+            "amount": 100.00,
+            "currency": "MDL"
+          },
+          "contractPeriod": {
+            "startDate": "2018-10-22T00:00:00Z",
+            "endDate": "2018-12-16T00:00:00Z"
+          },
+          "placeOfPerformance": {
+            "address": {
+              "streetAddress": "",
+              "postalCode": "",
+              "addressDetails": {
+                "country": {
+                  "scheme": "iso-alpha2",
+                  "id": "MD",
+                  "description": "MOLDOVA",
+                  "uri": "http://reference.iatistandard.org"
+                },
+                "region": {
+                  "scheme": "CUATM",
+                  "id": "3400000",
+                  "description": "Donduşeni",
+                  "uri": "http://statistica.md"
+                },
+                "locality": {
+                  "scheme": "other",
+                  "id": "",
+                  "description": ""
+                }
+              }
+            },
+            "description": "Further description of the place of performance of the contract. Required by EU."
           }
         }
       ],
       "items": [
         {
-          "id": "2",
-          "description": "666-2",
+          "id": "item-id-333333",
+          "description": "A description of the goods, services to be provided.",
           "classification": {
-            "id": "30199220-8",
-            "description": "Cărţi poştale neilustrate",
+            "id": "33600000-6",
+            "description": "Produse farmaceutice",
             "scheme": "CPV"
           },
           "additionalClassifications": [
             {
-              "id": "AB06-7",
-              "description": "Plastic",
+              "id": "AA01-1",
+              "description": "Metal",
               "scheme": "CPVS"
             }
           ],
-          "quantity": 2.00,
+          "quantity": 10.00,
           "unit": {
-            "id": "86",
-            "name": "Milion metri patrati spatiu locativ"
+            "id": "118",
+            "name": "Decilitru"
           },
-          "relatedLot": "1"
+          "relatedLot": "lot-id-222222"
         },
         {
-          "id": "1",
-          "description": "666-2",
+          "id": "item-id-222222",
+          "description": "A description of the goods, services to be provided.",
           "classification": {
-            "id": "30199220-8",
-            "description": "Cărţi poştale neilustrate",
+            "id": "33600000-6",
+            "description": "Produse farmaceutice",
             "scheme": "CPV"
           },
           "additionalClassifications": [
             {
-              "id": "AB06-7",
-              "description": "Plastic",
+              "id": "AA01-1",
+              "description": "Metal",
               "scheme": "CPVS"
             }
           ],
-          "quantity": 1.00,
+          "quantity": 10.00,
           "unit": {
-            "id": "86",
-            "name": "Milion metri patrati spatiu locativ"
+            "id": "118",
+            "name": "Decilitru"
           },
-          "relatedLot": "1"
+          "relatedLot": "lot-id-111111"
+        },
+        {
+          "id": "item-id-111111",
+          "description": "A description of the goods, services to be provided.",
+          "classification": {
+            "id": "33600000-6",
+            "description": "Produse farmaceutice",
+            "scheme": "CPV"
+          },
+          "additionalClassifications": [
+            {
+              "id": "AA01-1",
+              "description": "Metal",
+              "scheme": "CPVS"
+            }
+          ],
+          "quantity": 10.00,
+          "unit": {
+            "id": "118",
+            "name": "Decilitru"
+          },
+          "relatedLot": "lot-id-111111"
         }
       ],
+      "procuringEntity": {
+        "name": "Новороздільська міська лікарня",
+        "address": {
+          "streetAddress": "",
+          "postalCode": "",
+          "addressDetails": {
+            "country": {
+              "scheme": "iso-alpha2",
+              "id": "MD",
+              "description": "MOLDOVA",
+              "uri": "http://reference.iatistandard.org"
+            },
+            "region": {
+              "scheme": "CUATM",
+              "id": "3800000",
+              "description": "Dubăsari",
+              "uri": "http://statistica.md"
+            },
+            "locality": {
+              "scheme": "other",
+              "id": "",
+              "description": ""
+            }
+          }
+        },
+        "identifier": {
+          "id": "20764777",
+          "scheme": "MD-IDNO",
+          "legalName": "Новороздільська міська лікарня",
+          "uri": "http://buyerTestLink.ua"
+        },
+        "additionalIdentifiers": [
+          {
+            "id": "123123123",
+            "scheme": "MD-IDNO",
+            "legalName": "Додатково Новороздільська міська лікарня",
+            "uri": "http://additionalBuyerTestLink.ua"
+          }
+        ],
+        "contactPoint": {
+          "name": "Осипових Сергій Олександрович",
+          "email": "test2@test.test",
+          "telephone": "+380222222222",
+          "faxNumber": "+380222222222",
+          "url": "http://test.ua"
+        }
+      },
       "documents": [
         {
-          "documentType": "evaluationReports",
-          "id": "f33eeb0e-eb12-476c-a62c-b35cec612b9c-1539867161072",
+          "documentType": "tenderNotice",
+          "id": "a55d5a9a-d586-4710-9ce5-9c67aee29b03-1540038965922",
+          "title": "File for test",
+          "description": "test file ",
           "language": "en",
-          "title": "doc1т",
           "relatedLots": [
-            "1"
+            "lot-id-111111"
           ]
         }
       ],
       "classification": {
-        "id": "30199220-8",
+        "id": "33600000-6",
         "scheme": "CPV",
-        "description": "Cărţi poştale neilustrate"
+        "description": "Produse farmaceutice"
       },
       "submissionMethodRationale": [
         "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
       ],
       "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
-      "procurementMethodDetails": "Small-value tender",
-      "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+      "procurementMethodDetails": "TEST Licitatia deschisa",
       "mainProcurementCategory": "goods"
     }
   },

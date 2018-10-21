@@ -13,5 +13,5 @@ data class LotDto @JsonCreator constructor(
 
         var description: String?,
 
-        val value: Value
+        val value: Value?
 )
