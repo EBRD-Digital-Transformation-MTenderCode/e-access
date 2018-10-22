@@ -17,3 +17,27 @@ CREATE TABLE IF NOT EXISTS  ocds.access_history (
     json_data text,
     primary key(operation_id, command)
 );
+
+CREATE TABLE IF NOT EXISTS  ocds.access_rules (
+    country text,
+    pmd text,
+    parameter text,
+    value text,
+    primary key(country, pmd, parameter)
+);
+
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'OT', 'goods', 'false');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'OT', 'services', 'false');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'OT', 'works', 'false');
+
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'SV', 'goods', 'true');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'SV', 'services', 'true');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'SV', 'works', 'false');
+
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_OT', 'goods', 'false');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_OT', 'services', 'false');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_OT', 'works', 'false');
+
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'goods', 'true');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'services', 'true');
+INSERT INTO ocds.submission_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'works', 'false');

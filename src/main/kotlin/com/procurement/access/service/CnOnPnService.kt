@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
@@ -19,7 +20,8 @@ import java.time.LocalDateTime
 
 @Service
 class CnOnPnService(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao) {
+                    private val tenderProcessDao: TenderProcessDao,
+                    private val rulesService: RulesService) {
 
     fun createCnOnPn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -27,6 +29,8 @@ class CnOnPnService(private val generationService: GenerationService,
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
+        val country = cm.context.country ?: throw ErrorException(CONTEXT)
+        val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
@@ -36,6 +40,7 @@ class CnOnPnService(private val generationService: GenerationService,
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         val tenderDto = cnDto.tender
+        validateAuctionsDto(country, pmd, cnDto, tenderProcess.tender.mainProcurementCategory)
         if (tenderProcess.tender.items.isEmpty()) {
             checkLotsCurrency(cnDto, tenderProcess.planning.budget.amount.currency)
             checkLotsContractPeriod(cnDto)
@@ -70,6 +75,15 @@ class CnOnPnService(private val generationService: GenerationService,
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, stage, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnUpdate, mainProcurementCategory: MainProcurementCategory) {
+        if (rulesService.isAuctionRequired(country, pmd, mainProcurementCategory.value())) {
+            cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
+            if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
+            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+            cnDto.tender.electronicAuctions.validate()
+        }
     }
 
     private fun validateDtoRelatedLots(tender: TenderCnUpdate) {
