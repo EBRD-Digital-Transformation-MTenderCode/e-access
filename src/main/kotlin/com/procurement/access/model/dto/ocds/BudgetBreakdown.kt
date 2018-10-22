@@ -11,16 +11,12 @@ data class BudgetBreakdown @JsonCreator constructor(
 
         val description: String?,
 
-        @field:Valid
         val amount: Value,
 
-        @field:Valid
         val period: Period,
 
-        @field:Valid
         val sourceParty: SourceParty?,
 
-        @field:Valid
         val europeanUnionFunding: EuropeanUnionFunding?,
 
         val project: String?,

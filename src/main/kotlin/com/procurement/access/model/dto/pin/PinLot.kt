@@ -12,34 +12,25 @@ data class PinLot @JsonCreator constructor(
 
         var id: String,
 
-        @field:NotNull
         val title: String?,
 
-        @field:NotNull
         val description: String?,
 
         var status: LotStatus?,
 
         var statusDetails: LotStatusDetails?,
 
-        @field:Valid @field:NotNull
         val value: Value?,
 
-        @field:Valid @field:NotEmpty
         val options: List<Option>?,
 
-        @field:Valid @field:NotNull
         val recurrentProcurement: List<RecurrentProcurement>?,
 
-        @field:Valid @field:NotEmpty @field:NotNull
         val renewals: List<Renewal>?,
 
-        @field:Valid @field:NotEmpty @field:NotNull
         val variants: List<Variant>?,
 
-        @field:Valid @field:NotNull
         val contractPeriod: Period?,
 
-        @field:Valid @field:NotNull
         val placeOfPerformance: PlaceOfPerformance?
 )

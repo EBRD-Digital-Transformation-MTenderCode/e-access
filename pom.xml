@@ -41,7 +41,7 @@
         <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
         <!--Docker-->
-        <docker-registry>docker.io/eprocurementsystems</docker-registry>
+        <docker-registry>dev.docker-registry.eprocurement.systems</docker-registry>
         <docker-image-profile></docker-image-profile>
         <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
     </properties>
