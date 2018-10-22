@@ -5,11 +5,13 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.UpdateTenderStatusRs
 import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.tender.UnsuspendedTender
+import com.procurement.access.model.dto.tender.UnsuspendedTenderRs
+import com.procurement.access.model.dto.tender.UpdateTenderStatusRs
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
@@ -28,7 +30,9 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = UpdateTenderStatusRs(
+                process.tender.status.value(),
+                process.tender.statusDetails.value()))
     }
 
     fun setUnsuspended(cm: CommandMessage): ResponseDto {
@@ -44,7 +48,11 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
             throw ErrorException(IS_NOT_SUSPENDED)
         }
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = UnsuspendedTenderRs(UnsuspendedTender(
+                process.tender.status.value(),
+                process.tender.statusDetails.value(),
+                process.tender.procurementMethodModalities,
+                process.tender.electronicAuctions)))
     }
 
     fun setUnsuccessful(cm: CommandMessage): ResponseDto {

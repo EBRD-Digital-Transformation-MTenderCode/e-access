@@ -204,6 +204,7 @@ class CnCreateService(private val generationService: GenerationService,
             "NP" -> ProcurementMethod.NP
             "FA" -> ProcurementMethod.FA
             "TEST_OT" -> ProcurementMethod.TEST_OT
+            "TEST_SV" -> ProcurementMethod.TEST_SV
             "TEST_RT" -> ProcurementMethod.TEST_RT
             else -> throw ErrorException(INVALID_PMD)
         }
