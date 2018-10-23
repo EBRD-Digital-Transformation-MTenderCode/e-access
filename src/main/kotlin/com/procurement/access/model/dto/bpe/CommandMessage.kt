@@ -57,10 +57,10 @@ enum class CommandType(private val value: String) {
 
     GET_LOTS("getLots"),
     GET_LOTS_AUCTION("getLotsAuction"),
-    SET_LOTS_SD_UNSUCCESSFUL("setStatusDetailsUnsuccessful"),
-    SET_LOTS_SD_AWARDED("setStatusDetailsAwarded"),
-    SET_LOTS_UNSUCCESSFUL("setStatusUnsuccessful"),
-    SET_LOTS_UNSUCCESSFUL_EV("setStatusUnsuccessfulEv"),
+    SET_LOTS_SD_UNSUCCESSFUL("setLotsStatusDetailsUnsuccessful"),
+    SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
+    SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
+    SET_LOTS_UNSUCCESSFUL_EV("setLotsStatusUnsuccessfulEv"),
 
     CHECK_LOTS_STATUS_DETAILS("checkLotsStatusDetails"),
     CHECK_LOTS_STATUS("checkLotsStatus"),

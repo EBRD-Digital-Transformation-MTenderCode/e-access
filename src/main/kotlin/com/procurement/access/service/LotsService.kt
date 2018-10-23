@@ -41,7 +41,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                         lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))))
     }
 
-    fun setStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
@@ -60,7 +60,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 items = null))
     }
 
-    fun setStatusDetailsAwarded(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusDetailsAwarded(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dto = toObject(UpdateLotByBidRq::class.java, cm.data)
@@ -78,7 +78,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = UpdateLotByBidRs(updatedLot))
     }
 
-    fun setStatusUnsuccessful(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusUnsuccessful(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
@@ -100,7 +100,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
     }
 
-    fun setStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
