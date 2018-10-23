@@ -415,6 +415,7 @@ enum class TenderStatusDetails constructor(private val value: String) {
     CANCELLATION("cancellation"),
     SUSPENDED("suspended"),
     AWARDING("awarding"),
+    AUCTION("auction"),
     AWARDED_STANDSTILL("awardedStandStill"),
     AWARDED_SUSPENDED("awardedSuspended"),
     AWARDED_CONTRACT_PREPARATION("awardedContractPreparation"),

@@ -9,7 +9,7 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails
 
 data class UpdateLotsRq @JsonCreator constructor(
 
-        val unsuccessfulLots: HashSet<LotDto>?
+        val unsuccessfulLots: HashSet<UpdateLotDto>?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,4 +22,9 @@ data class UpdateLotsRs @JsonCreator constructor(
         val lots: List<Lot>,
 
         val items: List<Item>?
+)
+
+data class UpdateLotDto @JsonCreator constructor(
+
+        val id: String
 )
