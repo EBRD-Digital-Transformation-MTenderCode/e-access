@@ -23,8 +23,3 @@ data class UpdateLotsRs @JsonCreator constructor(
 
         val items: List<Item>?
 )
-
-data class UpdateLotDto @JsonCreator constructor(
-
-        val id: String
-)
