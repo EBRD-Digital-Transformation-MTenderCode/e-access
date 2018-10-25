@@ -112,7 +112,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             setLotsStatusEv(lots, lotsDto.unsuccessfulLots)
             if (isAnyCompleteLots(lots)) {
                 statusDetails = TenderStatusDetails.AWARDED_CONTRACT_PREPARATION
-//                itemsForCompiledLots = getItemsForCompiledLots(items, lots)
+//              itemsForCompiledLots = getItemsForCompiledLots(items, lots)
             } else {
                 status = TenderStatus.UNSUCCESSFUL
                 statusDetails = TenderStatusDetails.EMPTY
