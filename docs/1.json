@@ -1,14 +1,186 @@
-Serhii Olshanskiy
-
-
-
-
-```Caused by: com.mitchellbosecke.pebble.error.AttributeNotFoundException: Attribute [pmd] of [com.procurement.formsservice.model.cn.update.CnUpdateContext$Parameters] does not exist or can not be accessed and strict variables is set to true. (update-cn-template:999)```
-Untitled
-2018-10-26T10:09:07.549471483Z 10:09:07.548 [http-nio-8080-exec-1] ERROR c.p.f.controller.WebExceptionHandler - Error of evaluate template 'update-cn-template' with context '{"context":{"parameters":{"ocid":"ocds-t1s2t3-MD-1538148399284-PN-1538148399342"},"procuringEntity":{"name":"Name of CN pE","address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"oth123","id":"0101000","description":"hhh"},"streetAddress":"address of pe","postalCode":"00000"},"identifier":{"scheme":"MD-IDNO","id":"555-555","legalName":"legal name of pe","uri":"g"},"additionalIdentifiers":[{"scheme":"ert","id":"tre","legalName":"etr","uri":"ter"}],"contactPoint":{"name":"contact name","url":"d","telephone":"4521","email":"email","faxNumber":"45"},"uris":{"country":"/country/MD?lang=RO","region":"/region?lang=RO&country=MD","locality":"/locality?lang=RO&country=MD&region=0101000","registrationScheme":"/registration-scheme?lang=RO&country=MD"}},"tender":{"title":"TITLE","description":"d","documents":[],"lots":[{"id":"e5043741-c332-11e8-a3cf-159ba9e54647","title":"lot2","description":"2","value":{"amount":0.01,"currency":"USD"},"performance":{"placeOfPerformance":{"address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"675hhh","id":"0301000","description":""},"streetAddress":"Steet","postalCode":"5"},"description":"decr"},"deliveryPeriod":{"startDate":"2018-10-01T19:40:00Z","endDate":"2018-10-01T23:45:00Z"}},"items":[{"id":"e5043740-c332-11e8-a3cf-159ba9e54647","relatedLot":"e5043741-c332-11e8-a3cf-159ba9e54647","description":"p","quantity":{"quantity":1.0E7,"unitClass":{"id":"","description":""},"unit":{"id":"10","description":"Parsec"}},"classification":{"scheme":"CPV","id":"03117140-7","description":"Plante utilizate ca fungicide sau cu utilizare similară","title":"03117140-7 - Plante utilizate ca fungicide sau cu utilizare similară"},"additionalClassifications":null}],"documents":[{"id":"ea21a690-c256-11e8-8cbe-a1835757f77d","type":"hearingNotice","title":null,"description":null,"relatedLots":"e5043741-c332-11e8-a3cf-159ba9e54647"}]}],"procurementMethodModalities":null,"electronicAuctions":null,"procurementMethodDetails":"TEST Licitatia deschisa","legalBasis":"DIRECTIVE_2014_23_EU","enquiryPeriod":null,"tenderPeriod":null,"budgetBreakdown":[{"id":"ocds-t1s2t3-MD-1538144823950-FS-1538148191015","amount":{"amount":560.0,"currency":"USD"}}],"uris":{"country":"/country?lang=RO","region":"/region?lang=RO&country=$country$","locality":"/locality?lang=RO&country=$country$&region=$region$","unitClass":"/unit-class?lang=RO","unit":"/unit?lang=RO&unitClass=$unitClass$","cpv":"/cpv?lang=RO&code=03117140-7","cpvs":"/cpvs?lang=RO","pmd":"/pmd?lang=RO&country=MD"},"currency":"USD"},"parentEntity":"PN"}}'
-2018-10-26T10:09:07.549527284Z com.procurement.formsservice.exception.TemplateEvaluateException: Error of evaluate template 'update-cn-template' with context '{"context":{"parameters":{"ocid":"ocds-t1s2t3-MD-1538148399284-PN-1538148399342"},"procuringEntity":{"name":"Name of CN pE","address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"oth123","id":"0101000","description":"hhh"},"streetAddress":"address of pe","postalCode":"00000"},"identifier":{"scheme":"MD-IDNO","id":"555-555","legalName":"legal name of pe","uri":"g"},"additionalIdentifiers":[{"scheme":"ert","id":"tre","legalName":"etr","uri":"ter"}],"contactPoint":{"name":"contact name","url":"d","telephone":"4521","email":"email","faxNumber":"45"},"uris":{"country":"/country/MD?lang=RO","region":"/region?lang=RO&country=MD","locality":"/locality?lang=RO&country=MD&region=0101000","registrationScheme":"/registration-scheme?lang=RO&country=MD"}},"tender":{"title":"TITLE","description":"d","documents":[],"lots":[{"id":"e5043741-c332-11e8-a3cf-159ba9e54647","title":"lot2","description":"2","value":{"amount":0.01,"currency":"USD"},"performance":{"placeOfPerformance":{"address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"675hhh","id":"0301000","description":""},"streetAddress":"Steet","postalCode":"5"},"description":"decr"},"deliveryPeriod":{"startDate":"2018-10-01T19:40:00Z","endDate":"2018-10-01T23:45:00Z"}},"items":[{"id":"e5043740-c332-11e8-a3cf-159ba9e54647","relatedLot":"e5043741-c332-11e8-a3cf-159ba9e54647","description":"p","quantity":{"quantity":1.0E7,"unitClass":{"id":"","description":""},"unit":{"id":"10","description":"Parsec"}},"classification":{"scheme":"CPV","id":"03117140-7","description":"Plante utilizate ca fungicide sau cu utilizare similară","title":"03117140-7 - Plante utilizate ca fungicide sau cu utilizare similară"},"additionalClassifications":null}],"documents":[{"id":"ea21a690-c256-11e8-8cbe-a1835757f77d","type":"hearingNotice","title":null,"description":null,"relatedLots":"e5043741-c332-11e8-a3cf-159ba9e54647"}]}],"procurementMethodModalities":null,"electronicAuctions":null,"procurementMethodDetails":"TEST Licitatia deschisa","legalBasis":"DIRECTIVE_2014_23_EU","enquiryPeriod":null,"tenderPeriod":null,"budgetBreakdown":[{"id":"ocds-t1s2t3-MD-1538144823950-FS-1538148191015","amount":{"amount":560.0,"currency":"USD"}}],"uris":{"country":"/country?lang=RO","region":"/region?lang=RO&country=$country$","locality":"/locality?lang=RO&country=$country$&region=$region$","unitClass":"/unit-class?lang=RO","unit":"/unit?lang=RO&unitClass=$unitClass$","cpv":"/cpv?lang=RO&code=03117140-7","cpvs":"/cpvs?lang=RO","pmd":"/pmd?lang=RO&country=MD"},"currency":"USD"},"parentEntity":"PN"}}'
-Collapse
-
-Message Input
-
-Message @oserhii
+{
+  "id": "a0bcd000-b00d-0000-b0e0-0b70020b1195",
+  "command": "updateCn",
+  "context": {
+    "operationId": "a0bcd000-b00d-0000-b0e0-0b70020b1195",
+    "requestId": "22b6ec20-d929-11e8-8bc7-1dbb05fbb065",
+    "cpid": "ocds-t1s2t3-MD-1540562658437",
+    "ocid": "ocds-t1s2t3-MD-1540562658437-EV-1540563111755",
+    "stage": "EV",
+    "prevStage": "EV",
+    "processType": "updateCN",
+    "operationType": "updateCN",
+    "phase": "clarification",
+    "owner": "445f6851-c908-407d-9b45-14b92f3e964b",
+    "country": "MD",
+    "language": "ro",
+    "pmd": "TEST_SV",
+    "token": "b67c9a2a-176d-4fa5-9559-ad18f71080d6",
+    "startDate": "2018-10-26T14:12:13Z",
+    "timeStamp": 1540563133410179,
+    "isAuction": true
+  },
+  "data": {
+    "planning": {
+      "rationale": "rationale",
+      "budget": {
+        "description": "e",
+        "budgetBreakdown": [
+          {
+            "id": "ocds-t1s2t3-MD-1540482110327-FS-1540554639744",
+            "amount": {
+              "amount": 56000,
+              "currency": "USD"
+            }
+          }
+        ]
+      }
+    },
+    "tender": {
+      "title": "TITLE of PN_edited twice(TEST_OT)",
+      "description": "very open procedure for testing",
+      "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+      "tenderPeriod": {
+        "endDate": "2018-10-26T14:41:21Z",
+        "startDate": "2018-10-26T14:21:00Z"
+      },
+      "enquiryPeriod": {
+        "endDate": "2018-10-26T14:21:00Z",
+        "startDate": "2018-10-26T14:11:51Z"
+      },
+      "procurementMethodModalities": [
+        "auct"
+      ],
+      "electronicAuctions": {
+        "details": [
+          {
+            "id": "gh1250",
+            "relatedLot": "079bcb51-d928-11e8-8cc7-6b56c72c398a",079bcb51-d928-11e8-8cc7-6b56c72c398a
+            "electronicAuctionModalities": [
+              {
+                "eligibleMinimumDifference": {
+                  "amount": 9,
+                  "currency": "USD"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "procuringEntity": {
+        "name": "Name of CN pE_edited",
+        "address": {
+          "streetAddress": "address of pe",
+          "postalCode": "00000",
+          "addressDetails": {
+            "country": {
+              "scheme": "iso-alpha2",
+              "id": "MD",
+              "description": "MOLDOVA",
+              "uri": "http://reference.iatistandard.org"
+            },
+            "region": {
+              "scheme": "CUATM",
+              "id": "0101000",
+              "description": "mun.Chişinău",
+              "uri": "http://statistica.md"
+            },
+            "locality": {
+              "scheme": "MD-CUATM",
+              "id": "0101000",
+              "description": "hhh"
+            }
+          }
+        },
+        "identifier": {
+          "id": "555-555",
+          "scheme": "MD-IDNO",
+          "legalName": "legal name of pe"
+        },
+        "additionalIdentifiers": [
+          {
+            "id": "tre",
+            "scheme": "ert",
+            "legalName": "LEGAL NAME"
+          }
+        ],
+        "contactPoint": {
+          "name": "contact name",
+          "email": "email",
+          "telephone": "4521",
+          "faxNumber": "45"
+        }
+      },
+      "lots": [
+        {
+          "id": "1",
+          "title": "f",
+          "description": "f",
+          "value": {
+            "amount": 600.00,
+            "currency": "USD"
+          },
+          "contractPeriod": {
+            "startDate": "2018-11-15T00:00:00Z",
+            "endDate": "2018-11-19T00:00:00Z"
+          },
+          "placeOfPerformance": {
+            "address": {
+              "streetAddress": "ggg",
+              "addressDetails": {
+                "country": {
+                  "scheme": "iso-alpha2",
+                  "id": "MD",
+                  "description": "MOLDOVA",
+                  "uri": "http://reference.iatistandard.org"
+                },
+                "region": {
+                  "scheme": "CUATM",
+                  "id": "0101000",
+                  "description": "mun.Chişinău",
+                  "uri": "http://statistica.md"
+                },
+                "locality": {
+                  "scheme": "fgfgf",
+                  "id": "fgfgf",
+                  "description": "fgfgfg"
+                }
+              }
+            },
+            "description": null
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "079bcb50-d928-11e8-8cc7-6b56c72c398a",
+          "classification": {
+            "scheme": "CPV",
+            "description": "4",
+            "id": "03100000-2"
+          },
+          "quantity": 50,
+          "unit": {
+            "id": "120",
+            "name": "FVF"
+          },
+          "description": "p",
+          "relatedLot": "1"
+        }
+      ],
+      "documents": [
+        {
+          "documentType": "tenderNotice",
+          "id": "ddc63be6-4e10-4808-9cf7-a37b8ecf8d44-1540482219160"
+        }
+      ],
+      "submissionMethodRationale": [
+        "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+      ],
+      "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+      "procurementMethodDetails": "TEST smallValue",
+      "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)"
+    }
+  },
+  "version": "0.0.1"
+}
