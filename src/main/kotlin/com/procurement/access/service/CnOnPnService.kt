@@ -187,7 +187,7 @@ class CnOnPnService(private val generationService: GenerationService,
     }
 
     private fun validateAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
-        val lotsIdSet = lots.asSequence().map { it.id }.toSet()
+        val lotsIdSet = lots.asSequence().filter { it.status == LotStatus.ACTIVE }.map { it.id }.toSet()
         val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
         if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
