@@ -188,11 +188,11 @@ class CnOnPnService(private val generationService: GenerationService,
 
     private fun validateAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
         val activeLots = lots.asSequence().filter { it.status == LotStatus.ACTIVE }.toList()
-        val lotsIdSet = activeLots.asSequence().map { it.id }.toSet()
+        val activeLotsIdSet = activeLots.asSequence().map { it.id }.toSet()
         val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
         if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        if (lotsFromAuctions.size != activeLotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+        if (!activeLotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
         activeLots.forEach { lot ->
             auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
                 validateAuctionMinimum(lot.value.amount, lot.value.currency, auction)
