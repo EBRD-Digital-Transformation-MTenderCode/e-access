@@ -264,10 +264,12 @@ class CnOnPnService(private val generationService: GenerationService,
     }
 
     private fun updatedLots(lots: List<Lot>) {
-        lots.forEach { lot ->
-            lot.status = LotStatus.ACTIVE
-            lot.statusDetails = LotStatusDetails.EMPTY
-        }
+        lots.asSequence()
+                .filter { it.status == LotStatus.PLANNING }
+                .forEach { lot ->
+                    lot.status = LotStatus.ACTIVE
+                    lot.statusDetails = LotStatusDetails.EMPTY
+                }
     }
 
     private fun getEntity(tp: TenderProcess,
