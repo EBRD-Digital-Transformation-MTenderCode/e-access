@@ -23,7 +23,7 @@ import java.util.*
 
 private object JsonMapper {
 
-    val mapper: ObjectMapper = ObjectMapper()
+    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
     var dateTimeFormatter: DateTimeFormatter
 
     init {
@@ -34,7 +34,6 @@ private object JsonMapper {
         module.addDeserializer(Int::class.java, IntDeserializer())
 
         mapper.registerModule(module)
-        mapper.registerKotlinModule()
         mapper.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
         mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

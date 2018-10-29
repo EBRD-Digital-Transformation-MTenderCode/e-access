@@ -69,7 +69,9 @@ data class Tender @JsonCreator constructor(
 
         var contractPeriod: ContractPeriod?,
 
-        var tenderPeriod: Period?,
+        var tenderPeriod: Period? = null,
+
+        var enquiryPeriod: Period? = null,
 
         var value: Value,
 
@@ -79,5 +81,9 @@ data class Tender @JsonCreator constructor(
 
         var items: List<Item>,
 
-        var documents: List<Document>?
+        var documents: List<Document>?,
+
+        var procurementMethodModalities: Set<String>?,
+
+        var electronicAuctions: ElectronicAuctions?
 )

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.procurement.access.databinding.JsonDateDeserializer
 import com.procurement.access.databinding.JsonDateSerializer
 import com.procurement.access.model.dto.databinding.IntDeserializer
@@ -23,7 +23,7 @@ class ObjectMapperConfig(@Autowired objectMapper: ObjectMapper) {
         module.addDeserializer(String::class.java, StringsDeserializer())
         module.addDeserializer(Int::class.java, IntDeserializer())
         objectMapper.registerModule(module)
-        objectMapper.registerKotlinModule()
+        objectMapper.registerModule(KotlinModule())
         objectMapper.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
         objectMapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

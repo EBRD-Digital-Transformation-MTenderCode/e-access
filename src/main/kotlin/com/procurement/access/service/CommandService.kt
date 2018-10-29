@@ -7,30 +7,25 @@ import com.procurement.access.model.bpe.ResponseDto
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
-interface CommandService {
-
-    fun execute(cm: CommandMessage): ResponseDto
-
-}
 
 @Service
-class CommandServiceImpl(private val historyDao: HistoryDao,
-                         private val pinService: PinService,
-                         private val pinOnPnService: PinOnPnService,
-                         private val pnService: PnService,
-                         private val pnUpdateService: PnUpdateService,
-                         private val cnCreateService: CnCreateService,
-                         private val cnUpdateService: CnUpdateService,
-                         private val cnOnPinService: CnOnPinService,
-                         private val cnOnPnService: CnOnPnService,
-                         private val tenderService: TenderService,
-                         private val lotsService: LotsService,
-                         private val stageService: StageService,
-                         private val validationService: ValidationService) : CommandService {
+class CommandService(private val historyDao: HistoryDao,
+                     private val pinService: PinService,
+                     private val pinOnPnService: PinOnPnService,
+                     private val pnService: PnService,
+                     private val pnUpdateService: PnUpdateService,
+                     private val cnCreateService: CnCreateService,
+                     private val cnUpdateService: CnUpdateService,
+                     private val cnOnPinService: CnOnPinService,
+                     private val cnOnPnService: CnOnPnService,
+                     private val tenderService: TenderService,
+                     private val lotsService: LotsService,
+                     private val stageService: StageService,
+                     private val validationService: ValidationService) {
 
 
-    override fun execute(cm: CommandMessage): ResponseDto {
-        var historyEntity = historyDao.getHistory(cm.context.operationId, cm.command.value())
+    fun execute(cm: CommandMessage): ResponseDto {
+        var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
         if (historyEntity != null) {
             return toObject(ResponseDto::class.java, historyEntity.jsonData)
         }
@@ -49,14 +44,15 @@ class CommandServiceImpl(private val historyDao: HistoryDao,
             CommandType.SET_TENDER_UNSUCCESSFUL -> tenderService.setUnsuccessful(cm)
             CommandType.SET_TENDER_PRECANCELLATION -> tenderService.setPreCancellation(cm)
             CommandType.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
-            CommandType.SET_TENDER_TENDERING -> TODO()
+            CommandType.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_LOTS -> lotsService.getLots(cm)
-            CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setStatusDetailsUnsuccessful(cm)
-            CommandType.SET_LOTS_SD_AWARDED -> lotsService.setStatusDetailsAwarded(cm)
-            CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setStatusUnsuccessful(cm)
-            CommandType.SET_LOTS_UNSUCCESSFUL_EV -> lotsService.setStatusUnsuccessfulEv(cm)
+            CommandType.GET_LOTS_AUCTION -> lotsService.getLotsAuction(cm)
+            CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
+            CommandType.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
+            CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setLotsStatusUnsuccessful(cm)
+            CommandType.SET_LOTS_UNSUCCESSFUL_EV -> lotsService.setLotsStatusUnsuccessfulEv(cm)
 
             CommandType.CHECK_LOTS_STATUS_DETAILS -> validationService.checkLotsStatusDetails(cm)
             CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
@@ -64,7 +60,7 @@ class CommandServiceImpl(private val historyDao: HistoryDao,
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
         }
-        historyEntity = historyDao.saveHistory(cm.context.operationId, cm.command.value(), response)
+        historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }
 

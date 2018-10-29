@@ -18,6 +18,26 @@ CREATE TABLE IF NOT EXISTS  ocds.access_history (
     primary key(operation_id, command)
 );
 
-SELECT * FROM ocds.access_tender;
+CREATE TABLE IF NOT EXISTS  ocds.access_rules (
+    country text,
+    pmd text,
+    parameter text,
+    value text,
+    primary key(country, pmd, parameter)
+);
 
-TRUNCATE ocds.access_tender;
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'OT', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'OT', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'OT', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'SV', 'goods', 'true');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'SV', 'services', 'true');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'SV', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_OT', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_OT', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_OT', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'goods', 'true');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'services', 'true');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'works', 'false');

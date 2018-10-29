@@ -17,7 +17,7 @@ data class CommandMessage @JsonCreator constructor(
 )
 
 data class Context @JsonCreator constructor(
-        val operationId: String,
+        val operationId: String?,
         val requestId: String?,
         val cpid: String?,
         val ocid: String?,
@@ -52,14 +52,15 @@ enum class CommandType(private val value: String) {
     SET_TENDER_UNSUCCESSFUL("setTenderUnsuccessful"),
     SET_TENDER_PRECANCELLATION("setTenderPreCancellation"),
     SET_TENDER_CANCELLATION("setTenderCancellation"),
-    SET_TENDER_TENDERING("setTenderTendering"),
+    SET_TENDER_STATUS_DETAILS("setTenderStatusDetails"),
     START_NEW_STAGE("startNewStage"),
 
     GET_LOTS("getLots"),
-    SET_LOTS_SD_UNSUCCESSFUL("setStatusDetailsUnsuccessful"),
-    SET_LOTS_SD_AWARDED("setStatusDetailsAwarded"),
-    SET_LOTS_UNSUCCESSFUL("setStatusUnsuccessful"),
-    SET_LOTS_UNSUCCESSFUL_EV("setStatusUnsuccessfulEv"),
+    GET_LOTS_AUCTION("getLotsAuction"),
+    SET_LOTS_SD_UNSUCCESSFUL("setLotsStatusDetailsUnsuccessful"),
+    SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
+    SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
+    SET_LOTS_UNSUCCESSFUL_EV("setLotsStatusUnsuccessfulEv"),
 
     CHECK_LOTS_STATUS_DETAILS("checkLotsStatusDetails"),
     CHECK_LOTS_STATUS("checkLotsStatus"),

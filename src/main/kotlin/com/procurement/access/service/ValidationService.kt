@@ -5,6 +5,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.lots.CheckLotStatusDetailsRs
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Operation.*
@@ -12,23 +13,10 @@ import com.procurement.access.model.dto.validation.*
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
-interface ValidationService {
-
-    fun checkBid(cm: CommandMessage): ResponseDto
-
-    fun checkItems(cm: CommandMessage): ResponseDto
-
-    fun checkToken(cm: CommandMessage): ResponseDto
-
-    fun checkLotsStatusDetails(cm: CommandMessage): ResponseDto
-
-    fun checkLotsStatus(cm: CommandMessage): ResponseDto
-}
-
 @Service
-class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : ValidationService {
+class ValidationService(private val tenderProcessDao: TenderProcessDao) {
 
-    override fun checkBid(cm: CommandMessage): ResponseDto {
+    fun checkBid(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckBid::class.java, cm.data)
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
@@ -41,16 +29,16 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         if (!lotsId.containsAll(checkDto.bid.relatedLots)) throw ErrorException(ErrorType.LOT_NOT_FOUND)
         for (lot in process.tender.lots) {
             if (checkDto.bid.relatedLots.contains(lot.id)) {
-                if (!(lot.status == TenderStatus.ACTIVE && lot.statusDetails == TenderStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
-                checkDto.bid.value?.let {
-                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
-                }
+                if (!(lot.status == LotStatus.ACTIVE && lot.statusDetails == LotStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
+//                checkDto.bid.value?.let {
+//                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
+//                }
             }
         }
         return ResponseDto(data = "ok")
     }
 
-    override fun checkItems(cm: CommandMessage): ResponseDto {
+    fun checkItems(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckItemsRq::class.java, cm.data)
         val operationType = cm.context.operationType ?: throw ErrorException(ErrorType.CONTEXT)
         val operation = Operation.fromValue(operationType)
@@ -83,7 +71,7 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
                     mdmValidation = true,
                     itemsAdd = true,
                     tender = TenderCheck(classification = ClassificationCheck(id = classificationClass))))
-        } else if ((operation == UPDATE_CN) || (operation == UPDATE_PN)) {
+        } else if (operation == UPDATE_PN) {
             val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
             val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
             val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
@@ -109,6 +97,46 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
             return getNegativeResponse()
     }
 
+    fun checkToken(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+        return ResponseDto(data = "ok")
+    }
+
+
+    fun checkLotsStatusDetails(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+
+        val predicate = { lot: Lot -> lot.status == LotStatus.ACTIVE && lot.statusDetails != LotStatusDetails.AWARDED }
+        if (process.tender.lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
+        return ResponseDto(data = CheckLotStatusDetailsRs(process.tender.items))
+    }
+
+    fun checkLotsStatus(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+
+        val lot = process.tender.lots.asSequence().firstOrNull { it.id == lotDto.relatedLot }
+        if (lot != null) {
+            if (lot.status != LotStatus.ACTIVE || lot.statusDetails !== LotStatusDetails.EMPTY) {
+                throw ErrorException(ErrorType.INVALID_LOT_STATUS)
+            }
+        } else {
+            throw ErrorException(ErrorType.LOT_NOT_FOUND)
+        }
+        return ResponseDto(data = "Lot status valid.")
+    }
+
     private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: HashSet<ItemCheck>) {
         if (items.size != itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         val itemsIds = items.map { it.id }.toSet()
@@ -118,15 +146,6 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
 
     private fun validateTenderStatus(process: TenderProcess) {
         if (process.tender.status == TenderStatus.UNSUCCESSFUL) throw ErrorException(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS)
-    }
-
-    override fun checkToken(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
-        val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
-        return ResponseDto(data = "ok")
     }
 
     private fun calculateClassificationClass(checkDto: CheckItemsRq): String {
@@ -160,36 +179,4 @@ class ValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : Va
         }
         return commonChars
     }
-
-    override fun checkLotsStatusDetails(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-
-        val predicate = { lot: Lot -> lot.status == LotStatus.ACTIVE && lot.statusDetails != LotStatusDetails.AWARDED }
-        if (process.tender.lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
-        return ResponseDto(data = process.tender.items)
-    }
-
-    override fun checkLotsStatus(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
-        val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-
-        val lot = process.tender.lots.asSequence().firstOrNull { it.id == lotDto.relatedLot }
-        if (lot != null) {
-            if (lot.status != LotStatus.ACTIVE || lot.statusDetails !== LotStatusDetails.EMPTY) {
-                throw ErrorException(ErrorType.INVALID_LOT_STATUS)
-            }
-        } else {
-            throw ErrorException(ErrorType.LOT_NOT_FOUND)
-        }
-        return ResponseDto(data = "Lot status valid.")
-    }
-
-
 }
