@@ -107,12 +107,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-//        var itemsForCompiledLots: List<Item>? = null
         process.tender.apply {
             setLotsStatusEv(lots, lotsDto.unsuccessfulLots)
             if (isAnyCompleteLots(lots)) {
                 statusDetails = TenderStatusDetails.AWARDED_CONTRACT_PREPARATION
-//              itemsForCompiledLots = getItemsForCompiledLots(items, lots)
             } else {
                 status = TenderStatus.UNSUCCESSFUL
                 statusDetails = TenderStatusDetails.EMPTY
