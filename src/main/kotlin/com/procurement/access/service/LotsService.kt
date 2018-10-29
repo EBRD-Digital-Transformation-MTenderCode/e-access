@@ -100,7 +100,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
     }
 
-    fun awardedContractPreparation(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(AwardedContractPreparationRq::class.java, cm.data)
@@ -118,7 +118,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = AwardedContractPreparationRs(tender = process.tender))
+        return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
     }
 
     private fun getLotsDtoByStatus(lots: List<Lot>, status: LotStatus): List<LotDto> {
