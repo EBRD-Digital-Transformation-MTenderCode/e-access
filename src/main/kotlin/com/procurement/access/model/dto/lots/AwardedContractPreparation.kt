@@ -4,13 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.procurement.access.model.dto.ocds.*
 
-data class AwardedContractPreparationRq @JsonCreator constructor(
+data class UpdateLotsEvRq @JsonCreator constructor(
 
         val unsuccessfulLots: HashSet<UpdateLotDto>?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class AwardedContractPreparationRs @JsonCreator constructor(
+data class UpdateLotsEvRs @JsonCreator constructor(
 
-        val tender: Tender
+        val tenderStatus: TenderStatus?,
+
+        val tenderStatusDetails: TenderStatusDetails?,
+
+        val mainProcurementCategory: MainProcurementCategory?,
+
+        val lots: List<Lot>
 )

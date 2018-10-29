@@ -2,10 +2,7 @@ package com.procurement.access.model.dto.lots
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.procurement.access.model.dto.ocds.Item
-import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
+import com.procurement.access.model.dto.ocds.*
 
 data class UpdateLotsRq @JsonCreator constructor(
 

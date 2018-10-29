@@ -103,7 +103,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
     fun setLotsStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val lotsDto = toObject(AwardedContractPreparationRq::class.java, cm.data)
+        val lotsDto = toObject(UpdateLotsEvRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -118,7 +118,11 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
+        return ResponseDto(data = UpdateLotsEvRs(
+                process.tender.status,
+                process.tender.statusDetails,
+                process.tender.mainProcurementCategory,
+                process.tender.lots))
     }
 
     private fun getLotsDtoByStatus(lots: List<Lot>, status: LotStatus): List<LotDto> {
@@ -159,21 +163,6 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 ?.first()
                 ?.apply { statusDetails = lotStatusDetails }
                 ?: throw ErrorException(DATA_NOT_FOUND)
-    }
-
-    private fun checkLotStatusDetails(lots: List<Lot>) {
-        val predicate = { lot: Lot -> lot.status == LotStatus.ACTIVE && lot.statusDetails != LotStatusDetails.AWARDED }
-        if (lots.asSequence().any(predicate)) throw ErrorException(NOT_ALL_LOTS_AWARDED)
-    }
-
-    private fun getItemsForCompiledLots(items: List<Item>?, lots: List<Lot>): List<Item>? {
-        if (items != null) {
-            val lotsIds = lots.asSequence()
-                    .filter { it.status == LotStatus.COMPLETE && it.statusDetails == LotStatusDetails.EMPTY }
-                    .map { it.id }.toHashSet()
-            return items.asSequence().filter { lotsIds.contains(it.relatedLot) }.toList()
-        }
-        return null
     }
 
     private fun setLotsStatusEv(lots: List<Lot>, unsuccessfulLots: HashSet<UpdateLotDto>?) {
