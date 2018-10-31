@@ -518,7 +518,7 @@ enum class LotStatusDetails constructor(private val value: String) {
 }
 
 
-enum class DocumentType constructor(private val value: String) {
+enum class DocumentType (@JsonValue val value: String) {
 
     EVALUATION_CRITERIA("evaluationCriteria"),
     ELIGIBILITY_CRITERIA("eligibilityCriteria"),
@@ -546,32 +546,31 @@ enum class DocumentType constructor(private val value: String) {
     CONTRACT_ARRANGEMENTS("contractArrangements"),
     CONTRACT_GUARANTEES("contractGuarantees");
 
-
     override fun toString(): String {
         return this.value
     }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, DocumentType>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): DocumentType {
-            return CONSTANTS[value]
-                    ?: throw EnumException(DocumentType::class.java.name, value, Arrays.toString(values()))
-        }
-    }
+//
+//    @JsonValue
+//    fun value(): String {
+//        return this.value
+//    }
+//
+//    companion object {
+//
+//        private val CONSTANTS = HashMap<String, DocumentType>()
+//
+//        init {
+//            for (c in values()) {
+//                CONSTANTS[c.value] = c
+//            }
+//        }
+//
+//        @JsonCreator
+//        fun fromValue(value: String): DocumentType {
+//            return CONSTANTS[value]
+//                    ?: throw EnumException(DocumentType::class.java.name, value, Arrays.toString(values()))
+//        }
+//    }
 }
 
 enum class Operation(val value: String) {
