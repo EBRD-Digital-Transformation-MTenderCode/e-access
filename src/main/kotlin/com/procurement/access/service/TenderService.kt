@@ -31,8 +31,8 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(
-                process.tender.status.value(),
-                process.tender.statusDetails.value()))
+                process.tender.status.value,
+                process.tender.statusDetails.value))
     }
 
     fun setUnsuspended(cm: CommandMessage): ResponseDto {
@@ -49,8 +49,8 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UnsuspendedTenderRs(UnsuspendedTender(
-                process.tender.status.value(),
-                process.tender.statusDetails.value(),
+                process.tender.status.value,
+                process.tender.statusDetails.value,
                 process.tender.procurementMethodModalities,
                 process.tender.electronicAuctions)))
     }
@@ -143,7 +143,7 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value, process.tender.statusDetails.value))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {

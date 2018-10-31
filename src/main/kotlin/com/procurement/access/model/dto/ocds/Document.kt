@@ -11,7 +11,6 @@ data class Document @JsonCreator constructor(
 
         val id: String,
 
-//        @field:JsonDeserialize(using = StringsDeserializer::class)
         val documentType: DocumentType,
 
         var title: String?,

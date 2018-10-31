@@ -22,7 +22,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         return ResponseDto(data = GetLotsRs(
-                awardCriteria = process.tender.awardCriteria.value(),
+                awardCriteria = process.tender.awardCriteria.value,
                 lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))
         )
     }
@@ -37,7 +37,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                         id = process.tender.id!!,
                         title = process.tender.title,
                         description = process.tender.description,
-                        awardCriteria = process.tender.awardCriteria.value(),
+                        awardCriteria = process.tender.awardCriteria.value,
                         lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))))
     }
 

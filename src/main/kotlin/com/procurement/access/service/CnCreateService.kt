@@ -103,7 +103,7 @@ class CnCreateService(private val generationService: GenerationService,
     }
 
     private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnCreate) {
-        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory.value())) {
+        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory.value)) {
             cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
             if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
             cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
