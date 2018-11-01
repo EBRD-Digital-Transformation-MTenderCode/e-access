@@ -43,7 +43,7 @@ class CnOnPnService(private val generationService: GenerationService,
         validateAuctionsDto(country, pmd, cnDto, tenderProcess.tender.mainProcurementCategory)
         if (tenderProcess.tender.items.isEmpty()) {
             checkLotsCurrency(cnDto, tenderProcess.planning.budget.amount.currency)
-            checkLotsContractPeriod(cnDto)
+            checkLotsAndTenderContractPeriod(cnDto)
             validateDtoRelatedLots(tenderDto)
             setItemsId(tenderDto.items)
             setLotsId(tenderDto)
@@ -55,6 +55,7 @@ class CnOnPnService(private val generationService: GenerationService,
                 contractPeriod = getContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
             }
         } else {
+            checkLotsContractPeriod(cnDto)
             updatedLots(tenderProcess.tender.lots)
             tenderDto.electronicAuctions?.let { validateAuctions(tenderProcess.tender.lots, it) }
         }
@@ -108,11 +109,19 @@ class CnOnPnService(private val generationService: GenerationService,
         }
     }
 
-    private fun checkLotsContractPeriod(cn: CnUpdate) {
+    private fun checkLotsAndTenderContractPeriod(cn: CnUpdate) {
         cn.tender.lots.forEach { lot ->
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
+            if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
+                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            }
+        }
+    }
+
+    private fun checkLotsContractPeriod(cn: CnUpdate) {
+        cn.tender.lots.forEach { lot ->
             if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
