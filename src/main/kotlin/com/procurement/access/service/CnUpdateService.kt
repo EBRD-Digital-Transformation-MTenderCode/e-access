@@ -2,7 +2,6 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
@@ -15,7 +14,6 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
@@ -30,8 +28,6 @@ class CnUpdateService(private val generationService: GenerationService,
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val country = cm.context.country ?: throw ErrorException(CONTEXT)
-        val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
@@ -40,14 +36,13 @@ class CnUpdateService(private val generationService: GenerationService,
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         validateTenderStatus(tenderProcess)
-        validateAuctionsDto(country, pmd, cnDto, tenderProcess.tender.mainProcurementCategory)
         val lotsDto = cnDto.tender.lots
         val itemsDto = cnDto.tender.items
         val documentsDto = cnDto.tender.documents
         val lotsDb = tenderProcess.tender.lots
+        validateAuctionsDto(tenderProcess.tender, cnDto)
         checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
         checkLotsContractPeriod(cnDto)
-
         val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
         val lotsDbId = lotsDb.asSequence().map { it.id }.toSet()
         var newLotsId = lotsDtoId - lotsDbId
@@ -61,10 +56,6 @@ class CnUpdateService(private val generationService: GenerationService,
         val updatedItems: List<Item>
         newLotsId = setLotsId(cnDto.tender, newLotsId)
         activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
-        tenderProcess.tender.electronicAuctions?.let {
-            cnDto.tender.electronicAuctions ?: throw ErrorException(INVALID_AUCTION)
-        }
-        cnDto.tender.electronicAuctions?.let { validateAuctions(activeLots, it) }
         setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
         setTenderValueByActiveLots(tenderProcess.tender, activeLots)
         canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
@@ -96,6 +87,14 @@ class CnUpdateService(private val generationService: GenerationService,
         tenderProcess.isLotsChanged = (newLotsId.isNotEmpty() || newCanceledLots.isNotEmpty())
 
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun validateAuctionsDto(tender: Tender, cnDto: CnUpdate) {
+        if (tender.electronicAuctions != null) {
+            if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION)
+        } else {
+            if (cnDto.tender.electronicAuctions != null) throw ErrorException(INVALID_AUCTION)
+        }
     }
 
     private fun checkLotsCurrency(lotsDto: List<LotCnUpdate>, budgetCurrency: String) {
@@ -203,40 +202,6 @@ class CnUpdateService(private val generationService: GenerationService,
                 .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
             if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-        }
-    }
-
-    private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnUpdate, mainProcurementCategory: MainProcurementCategory) {
-        if (rulesService.isAuctionRequired(country, pmd, mainProcurementCategory.value)) {
-            cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
-            if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
-            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
-            cnDto.tender.electronicAuctions.validate()
-        }
-    }
-
-    private fun validateAuctions(activeLots: List<Lot>, auctions: ElectronicAuctions) {
-        val auctionIds = auctions.details.asSequence().map { it.id }.toHashSet()
-        if (auctionIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_ID)
-        val lotsIdSet = activeLots.asSequence().map { it.id }.toSet()
-        val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        activeLots.forEach { lot ->
-            auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
-                validateAuctionsMinimum(lot.value.amount, lot.value.currency, auction)
-            }
-        }
-    }
-
-    private fun validateAuctionsMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
-        val lotAmountMinimum = lotAmount.div(BigDecimal(10))
-        for (modality in auction.electronicAuctionModalities) {
-            if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
-                throw ErrorException(INVALID_AUCTION_MINIMUM)
-            if (modality.eligibleMinimumDifference.currency != lotCurrency)
-                throw ErrorException(INVALID_AUCTION_CURRENCY)
         }
     }
 
