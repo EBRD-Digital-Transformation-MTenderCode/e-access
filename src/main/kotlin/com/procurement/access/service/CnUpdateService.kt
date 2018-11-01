@@ -216,6 +216,8 @@ class CnUpdateService(private val generationService: GenerationService,
     }
 
     private fun validateAuctions(activeLots: List<Lot>, auctions: ElectronicAuctions) {
+        val auctionIds = auctions.details.asSequence().map { it.id }.toHashSet()
+        if (auctionIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_ID)
         val lotsIdSet = activeLots.asSequence().map { it.id }.toSet()
         val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
         if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)

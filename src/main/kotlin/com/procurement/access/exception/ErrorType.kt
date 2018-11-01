@@ -50,5 +50,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_AUCTION_MINIMUM("10.34", "Invalid auction minimum."),
     INVALID_AUCTION_CURRENCY("10.35", "Invalid auction currency."),
     RULES_NOT_FOUND("10.36", "Rules not found."),
+    INVALID_AUCTION_ID("10.37", "Invalid auctions ids."),
     CONTEXT("20.01", "Context parameter not found.");
 }

@@ -177,6 +177,8 @@ class CnCreateService(private val generationService: GenerationService,
             if (!lotsIdSet.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
         tender.electronicAuctions?.let { auctions ->
+            val auctionIds = auctions.details.asSequence().map { it.id }.toHashSet()
+            if (auctionIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_ID)
             val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
             if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
