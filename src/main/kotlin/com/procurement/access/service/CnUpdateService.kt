@@ -20,8 +20,7 @@ import java.time.LocalDateTime
 
 @Service
 class CnUpdateService(private val generationService: GenerationService,
-                      private val tenderProcessDao: TenderProcessDao,
-                      private val rulesService: RulesService) {
+                      private val tenderProcessDao: TenderProcessDao) {
 
     fun updateCn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -91,9 +90,9 @@ class CnUpdateService(private val generationService: GenerationService,
 
     private fun validateAuctionsDto(tender: Tender, cnDto: CnUpdate) {
         if (tender.electronicAuctions != null) {
-            if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION)
+            if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION_IS_EMPTY)
         } else {
-            if (cnDto.tender.electronicAuctions != null) throw ErrorException(INVALID_AUCTION)
+            if (cnDto.tender.electronicAuctions != null) throw ErrorException(INVALID_AUCTION_IS_NON_EMPTY)
         }
     }
 
