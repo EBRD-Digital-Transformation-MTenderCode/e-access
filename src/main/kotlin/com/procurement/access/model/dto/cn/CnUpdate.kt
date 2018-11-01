@@ -94,7 +94,7 @@ fun CnUpdate.validate(): CnUpdate {
     if (this.tender.lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
     if (this.tender.documents.isEmpty()) throw ErrorException(ErrorType.EMPTY_DOCS)
     this.tender.procurementMethodModalities?.let {
-        this.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+        this.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
         if (this.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
     }
     this.tender.electronicAuctions?.let {

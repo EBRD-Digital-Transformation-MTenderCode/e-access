@@ -82,7 +82,7 @@ class CnOnPnService(private val generationService: GenerationService,
         if (rulesService.isAuctionRequired(country, pmd, mainProcurementCategory.value)) {
             cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
             if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
-            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
             cnDto.tender.electronicAuctions.validate()
         }
     }
