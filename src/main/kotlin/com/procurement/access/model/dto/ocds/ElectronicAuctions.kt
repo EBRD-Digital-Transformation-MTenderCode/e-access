@@ -29,6 +29,6 @@ data class ElectronicAuctionModalities @JsonCreator constructor(
 )
 
 fun ElectronicAuctions.validate(): ElectronicAuctions {
-    if (this.details.isEmpty()) throw ErrorException(ErrorType.INVALID_AUCTION)
+    if (this.details.isEmpty()) throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
     return this
 }
