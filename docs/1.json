@@ -245,7 +245,7 @@
       ],
       "documents": [
         {
-          "documentType": "evaluationCriter",
+          "documentType": "evaluationCriteria",
           "id": "f33eeb0e-eb12-476c-a62c-b35cec612b9c-1540986374290",
           "relatedLots": [
             "1"
