@@ -3,7 +3,6 @@ package com.procurement.access.model.dto.ocds
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.util.*
-import javax.validation.Valid
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class OrganizationReference @JsonCreator constructor(

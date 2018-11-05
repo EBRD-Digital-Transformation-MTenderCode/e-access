@@ -137,6 +137,19 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = "Lot status valid.")
     }
 
+    fun checkBudgetSources(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val bsDto = toObject(CheckBSRq::class.java, cm.data)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val bbIds = process.planning.budget.budgetBreakdown.asSequence().map { it.id }.toHashSet()
+        val bsIds = bsDto.planning.budget.budgetSource.asSequence().map { it.budgetBreakdownID }.toHashSet()
+        if (!bbIds.containsAll(bsIds)) throw ErrorException(ErrorType.INVALID_BS)
+        return ResponseDto(data = "Budget sources are valid.")
+    }
+
     private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: HashSet<ItemCheck>) {
         if (items.size != itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         val itemsIds = items.map { it.id }.toSet()
@@ -179,4 +192,5 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         }
         return commonChars
     }
+
 }

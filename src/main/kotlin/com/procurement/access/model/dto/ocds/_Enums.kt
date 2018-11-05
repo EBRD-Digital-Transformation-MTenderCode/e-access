@@ -2,7 +2,6 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
 import java.util.*
 
 
@@ -95,7 +94,7 @@ enum class Scheme(@JsonValue val value: String) {
     }
 }
 
-enum class SubmissionLanguage(@JsonValue val value: String){
+enum class SubmissionLanguage(@JsonValue val value: String) {
     BG("bg"),
     ES("es"),
     CS("cs"),
@@ -163,7 +162,7 @@ enum class TenderStatus(@JsonValue val value: String) {
 }
 
 enum class TenderStatusDetails(@JsonValue val value: String) {
-//    UNSUCCESSFUL("unsuccessful"),
+    //    UNSUCCESSFUL("unsuccessful"),
 //    AWARDED("awarded"),
     PLANNING("planning"),
     PLANNED("planned"),
@@ -185,11 +184,13 @@ enum class TenderStatusDetails(@JsonValue val value: String) {
 
     companion object {
         private val CONSTANTS = HashMap<String, TenderStatusDetails>()
+
         init {
             for (c in TenderStatusDetails.values()) {
                 CONSTANTS[c.value] = c
             }
         }
+
         @JsonCreator
         fun fromValue(value: String): TenderStatusDetails {
             return CONSTANTS[value] ?: throw IllegalArgumentException(value)
@@ -267,11 +268,13 @@ enum class Operation(val value: String) {
 
     companion object {
         private val CONSTANTS = HashMap<String, Operation>()
+
         init {
             for (c in Operation.values()) {
                 CONSTANTS[c.value] = c
             }
         }
+
         @JsonCreator
         fun fromValue(value: String): Operation {
             return CONSTANTS[value] ?: throw IllegalArgumentException(value)

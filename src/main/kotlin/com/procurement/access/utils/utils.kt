@@ -54,7 +54,6 @@ private object JsonMapper {
                 .appendLiteral('Z')
                 .toFormatter()
     }
-
 }
 
 /*Date utils*/

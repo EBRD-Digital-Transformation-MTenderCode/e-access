@@ -3,9 +3,6 @@ package com.procurement.access.model.dto.pin
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.procurement.access.model.dto.ocds.*
-import javax.validation.Valid
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PinLot @JsonCreator constructor(
