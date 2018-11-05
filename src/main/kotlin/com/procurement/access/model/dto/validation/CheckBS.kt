@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.databinding.MoneyDeserializer
 import java.math.BigDecimal
 
-
 data class CheckBSRq @JsonCreator constructor(
 
         var planning: Planning
 )
-
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Planning @JsonCreator constructor(
@@ -28,10 +26,5 @@ data class Budget @JsonCreator constructor(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PlanningBudgetSource @JsonCreator constructor(
 
-        var budgetBreakdownID: String,
-
-        @field: JsonDeserialize(using = MoneyDeserializer::class)
-        val amount: BigDecimal?,
-
-        val currency: String?
+        var budgetBreakdownID: String
 )
