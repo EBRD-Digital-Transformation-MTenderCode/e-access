@@ -151,18 +151,15 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
     }
 
-    private fun isAnyActiveLots(lots: List<Lot>?): Boolean {
-        return lots?.asSequence()
-                ?.any { it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.EMPTY }
-                ?: false
+    private fun isAnyActiveLots(lots: List<Lot>): Boolean {
+        return lots.asSequence().any { it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.EMPTY }
     }
 
-    private fun setLotsStatusDetails(lots: List<Lot>?, lotId: String, lotStatusDetails: LotStatusDetails): Lot {
-        return lots?.asSequence()
-                ?.filter { it.id == lotId }
-                ?.first()
-                ?.apply { statusDetails = lotStatusDetails }
-                ?: throw ErrorException(DATA_NOT_FOUND)
+    private fun setLotsStatusDetails(lots: List<Lot>, lotId: String, lotStatusDetails: LotStatusDetails): Lot {
+        return lots.asSequence()
+                .filter { it.id == lotId }
+                .first()
+                .apply { statusDetails = lotStatusDetails }
     }
 
     private fun setLotsStatusEv(lots: List<Lot>, unsuccessfulLots: HashSet<UpdateLotDto>?) {
