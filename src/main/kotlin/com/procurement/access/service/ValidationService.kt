@@ -150,7 +150,7 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = "Budget sources are valid.")
     }
 
-    private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: HashSet<ItemCheck>) {
+    private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: List<ItemCheck>) {
         if (items.size != itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         val itemsIds = items.map { it.id }.toSet()
         val itemsDtoIds = itemsDto.map { it.id }.toSet()
@@ -175,12 +175,12 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
             throw ErrorException(ErrorType.INVALID_ITEMS)
     }
 
-    private fun checkItemCodes(items: HashSet<ItemCheck>, charCount: Int) {
+    private fun checkItemCodes(items: List<ItemCheck>, charCount: Int) {
         if (items.asSequence().map { it.classification.id.take(charCount) }.toSet().size > 1)
             throw ErrorException(ErrorType.INVALID_ITEMS)
     }
 
-    private fun getCommonChars(items: HashSet<ItemCheck>, countFrom: Int, countTo: Int): String {
+    private fun getCommonChars(items: List<ItemCheck>, countFrom: Int, countTo: Int): String {
         var commonChars = ""
         for (count in countFrom..countTo) {
             val itemClass = items.asSequence().map { it.classification.id.take(count) }.toSet()
