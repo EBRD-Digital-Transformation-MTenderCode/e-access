@@ -9,7 +9,7 @@ import com.procurement.access.exception.ErrorType
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ElectronicAuctions @JsonCreator constructor(
 
-        val details: Set<ElectronicAuctionsDetails>
+        val details: List<ElectronicAuctionsDetails>
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,7 +19,7 @@ data class ElectronicAuctionsDetails @JsonCreator constructor(
 
         var relatedLot: String,
 
-        val electronicAuctionModalities: Set<ElectronicAuctionModalities>
+        val electronicAuctionModalities: List<ElectronicAuctionModalities>
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
