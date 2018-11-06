@@ -74,7 +74,7 @@ class CnUpdateService(private val generationService: GenerationService,
             documents = updateDocuments(this, documentsDto)
             tenderPeriod = cnDto.tender.tenderPeriod
             enquiryPeriod = cnDto.tender.enquiryPeriod
-            if (cnDto.tender.electronicAuctions != null) {
+            if (electronicAuctions != null && cnDto.tender.electronicAuctions != null) {
                 procurementMethodModalities = cnDto.tender.procurementMethodModalities
                 electronicAuctions = cnDto.tender.electronicAuctions
             }
