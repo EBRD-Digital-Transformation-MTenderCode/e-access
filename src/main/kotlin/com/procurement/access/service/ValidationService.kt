@@ -173,6 +173,8 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun checkItemCodes(items: List<ItemCheck>, charCount: Int) {
+        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        if (itemsId.size != items.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         if (items.asSequence().map { it.classification.id.take(charCount) }.toSet().size > 1)
             throw ErrorException(ErrorType.INVALID_ITEMS)
     }
