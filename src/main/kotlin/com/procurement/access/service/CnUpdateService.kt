@@ -89,10 +89,10 @@ class CnUpdateService(private val generationService: GenerationService,
     }
 
     private fun validateAuctionsDto(tender: Tender, cnDto: CnUpdate) {
-        if (tender.electronicAuctions != null) {
-            if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION_IS_EMPTY)
-        } else {
+        if (tender.electronicAuctions == null) {
             if (cnDto.tender.electronicAuctions != null) throw ErrorException(INVALID_AUCTION_IS_NON_EMPTY)
+        } else {
+            if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION_IS_EMPTY)
         }
     }
 
