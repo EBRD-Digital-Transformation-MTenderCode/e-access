@@ -2,8 +2,6 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import javax.validation.Valid
-import javax.validation.constraints.NotEmpty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Lot @JsonCreator constructor(

@@ -52,13 +52,14 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
             CommandType.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
             CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setLotsStatusUnsuccessful(cm)
-            CommandType.CONTRACT_PREPARATION -> lotsService.awardedContractPreparation(cm)
+            CommandType.SET_LOTS_UNSUCCESSFUL_EV -> lotsService.setLotsStatusUnsuccessfulEv(cm)
 
             CommandType.CHECK_LOTS_STATUS_DETAILS -> validationService.checkLotsStatusDetails(cm)
             CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
             CommandType.CHECK_BID -> validationService.checkBid(cm)
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
+            CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)

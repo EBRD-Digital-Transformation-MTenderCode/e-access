@@ -30,9 +30,6 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         for (lot in process.tender.lots) {
             if (checkDto.bid.relatedLots.contains(lot.id)) {
                 if (!(lot.status == LotStatus.ACTIVE && lot.statusDetails == LotStatusDetails.EMPTY)) throw ErrorException(ErrorType.INVALID_LOT_STATUS)
-//                checkDto.bid.value?.let {
-//                    if (it.amount > lot.value.amount) throw ErrorException(ErrorType.BID_VALUE_MORE_THAN_SUM_LOT)
-//                }
             }
         }
         return ResponseDto(data = "ok")
@@ -137,7 +134,20 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = "Lot status valid.")
     }
 
-    private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: HashSet<ItemCheck>) {
+    fun checkBudgetSources(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val bsDto = toObject(CheckBSRq::class.java, cm.data)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val bbIds = process.planning.budget.budgetBreakdown.asSequence().map { it.id }.toHashSet()
+        val bsIds = bsDto.planning.budget.budgetSource.asSequence().map { it.budgetBreakdownID }.toHashSet()
+        if (!bbIds.containsAll(bsIds)) throw ErrorException(ErrorType.INVALID_BS)
+        return ResponseDto(data = "Budget sources are valid.")
+    }
+
+    private fun checkItemsSizeAndIds(items: List<Item>, itemsDto: List<ItemCheck>) {
         if (items.size != itemsDto.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         val itemsIds = items.map { it.id }.toSet()
         val itemsDtoIds = itemsDto.map { it.id }.toSet()
@@ -162,12 +172,14 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
             throw ErrorException(ErrorType.INVALID_ITEMS)
     }
 
-    private fun checkItemCodes(items: HashSet<ItemCheck>, charCount: Int) {
+    private fun checkItemCodes(items: List<ItemCheck>, charCount: Int) {
+        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        if (itemsId.size != items.size) throw ErrorException(ErrorType.INVALID_ITEMS)
         if (items.asSequence().map { it.classification.id.take(charCount) }.toSet().size > 1)
             throw ErrorException(ErrorType.INVALID_ITEMS)
     }
 
-    private fun getCommonChars(items: HashSet<ItemCheck>, countFrom: Int, countTo: Int): String {
+    private fun getCommonChars(items: List<ItemCheck>, countFrom: Int, countTo: Int): String {
         var commonChars = ""
         for (count in countFrom..countTo) {
             val itemClass = items.asSequence().map { it.classification.id.take(count) }.toSet()
@@ -179,4 +191,5 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         }
         return commonChars
     }
+
 }
