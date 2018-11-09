@@ -2,41 +2,18 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
 import java.util.*
 
 
-enum class ProcurementMethodModalities constructor(private val value: String) {
+enum class ProcurementMethodModalities(@JsonValue val value: String) {
     ELECTRONIC_AUCTION("electronicAuction");
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
 
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, ProcurementMethodModalities>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): ProcurementMethodModalities {
-            return CONSTANTS[value]
-                    ?: throw EnumException(ProcurementMethodModalities::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class AwardCriteria constructor(private val value: String) {
+enum class AwardCriteria(@JsonValue val value: String) {
     PRICE_ONLY("priceOnly"),
     COST_ONLY("costOnly"),
     QUALITY_ONLY("qualityOnly"),
@@ -46,67 +23,23 @@ enum class AwardCriteria constructor(private val value: String) {
     BEST_VALUE_TO_GOVERNMENT("bestValueToGovernment"),
     SINGLE_BID_ONLY("singleBidOnly");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, AwardCriteria>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): AwardCriteria {
-            return CONSTANTS[value]
-                    ?: throw EnumException(AwardCriteria::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class ExtendedProcurementCategory constructor(private val value: String) {
+enum class ExtendedProcurementCategory(@JsonValue val value: String) {
     GOODS("goods"),
     WORKS("works"),
     SERVICES("services"),
     CONSULTING_SERVICES("consultingServices");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, ExtendedProcurementCategory>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): ExtendedProcurementCategory {
-            return CONSTANTS[value]
-                    ?: throw EnumException(ExtendedProcurementCategory::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class LegalBasis constructor(private val value: String) {
+enum class LegalBasis(@JsonValue val value: String) {
     DIRECTIVE_2014_23_EU("DIRECTIVE_2014_23_EU"),
     DIRECTIVE_2014_24_EU("DIRECTIVE_2014_24_EU"),
     DIRECTIVE_2014_25_EU("DIRECTIVE_2014_25_EU"),
@@ -115,34 +48,12 @@ enum class LegalBasis constructor(private val value: String) {
     NATIONAL_PROCUREMENT_LAW("NATIONAL_PROCUREMENT_LAW"),
     NULL("NULL");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, LegalBasis>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): LegalBasis {
-            return CONSTANTS[value]
-                    ?: throw EnumException(LegalBasis::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class MainProcurementCategory constructor(private val value: String) {
+enum class MainProcurementCategory(@JsonValue val value: String) {
     GOODS("goods"),
     WORKS("works"),
     SERVICES("services");
@@ -150,32 +61,9 @@ enum class MainProcurementCategory constructor(private val value: String) {
     override fun toString(): String {
         return this.value
     }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, MainProcurementCategory>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): MainProcurementCategory {
-            return CONSTANTS[value]
-                    ?: throw EnumException(MainProcurementCategory::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class ProcurementMethod constructor(private val value: String) {
-
+enum class ProcurementMethod(@JsonValue val value: String) {
     MV("open"),
     OT("open"),
     RT("selective"),
@@ -187,34 +75,12 @@ enum class ProcurementMethod constructor(private val value: String) {
     TEST_SV("open"),
     TEST_RT("selective");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, ProcurementMethod>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): ProcurementMethod {
-            return CONSTANTS[value]
-                    ?: throw EnumException(ProcurementMethod::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class Scheme constructor(private val value: String) {
+enum class Scheme(@JsonValue val value: String) {
     CPV("CPV"),
     CPVS("CPVS"),
     GSIN("GSIN"),
@@ -226,30 +92,9 @@ enum class Scheme constructor(private val value: String) {
     override fun toString(): String {
         return this.value
     }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, Scheme>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): Scheme {
-            return CONSTANTS[value] ?: throw EnumException(Scheme::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class SubmissionLanguage constructor(private val value: String) {
+enum class SubmissionLanguage(@JsonValue val value: String) {
     BG("bg"),
     ES("es"),
     CS("cs"),
@@ -275,101 +120,35 @@ enum class SubmissionLanguage constructor(private val value: String) {
     FI("fi"),
     SV("sv");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, SubmissionLanguage>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): SubmissionLanguage {
-            return CONSTANTS[value]
-                    ?: throw EnumException(SubmissionLanguage::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class SubmissionMethod constructor(private val value: String) {
+enum class SubmissionMethod(@JsonValue val value: String) {
     ELECTRONIC_SUBMISSION("electronicSubmission"),
     ELECTRONIC_AUCTION("electronicAuction"),
     WRITTEN("written"),
     IN_PERSON("inPerson");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, SubmissionMethod>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): SubmissionMethod {
-            return CONSTANTS[value]
-                    ?: throw EnumException(SubmissionMethod::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class SubmissionMethodRationale constructor(private val value: String) {
+enum class SubmissionMethodRationale(@JsonValue val value: String) {
     TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE("TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"),
     IPR_ISSUES("IPR_ISSUES"),
     REQUIRES_SPECIALISED_EQUIPMENT("REQUIRES_SPECIALISED_EQUIPMENT"),
     PHYSICAL_MODEL("PHYSICAL_MODEL"),
     SENSITIVE_INFORMATION("SENSITIVE_INFORMATION");
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     override fun toString(): String {
         return this.value
     }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, SubmissionMethodRationale>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): SubmissionMethodRationale {
-            return CONSTANTS[value]
-                    ?: throw EnumException(SubmissionMethodRationale::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class TenderStatus constructor(private val value: String) {
+enum class TenderStatus(@JsonValue val value: String) {
     PLANNING("planning"),
     PLANNED("planned"),
     ACTIVE("active"),
@@ -380,34 +159,11 @@ enum class TenderStatus constructor(private val value: String) {
     override fun toString(): String {
         return this.value
     }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, TenderStatus>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): TenderStatus {
-            return CONSTANTS[value]
-                    ?: throw EnumException(TenderStatus::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class TenderStatusDetails constructor(private val value: String) {
+enum class TenderStatusDetails(@JsonValue val value: String) {
     //    UNSUCCESSFUL("unsuccessful"),
 //    AWARDED("awarded"),
-//    //**//
     PLANNING("planning"),
     PLANNED("planned"),
     CLARIFICATION("clarification"),
@@ -426,30 +182,24 @@ enum class TenderStatusDetails constructor(private val value: String) {
         return this.value
     }
 
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
     companion object {
-
         private val CONSTANTS = HashMap<String, TenderStatusDetails>()
 
         init {
-            for (c in values()) {
+            for (c in TenderStatusDetails.values()) {
                 CONSTANTS[c.value] = c
             }
         }
 
         @JsonCreator
         fun fromValue(value: String): TenderStatusDetails {
-            return CONSTANTS[value]
-                    ?: throw EnumException(TenderStatusDetails::class.java.name, value, Arrays.toString(values()))
+            return CONSTANTS[value] ?: throw IllegalArgumentException(value)
         }
     }
+
 }
 
-enum class LotStatus constructor(private val value: String) {
+enum class LotStatus(@JsonValue val value: String) {
     PLANNING("planning"),
     PLANNED("planned"),
     ACTIVE("active"),
@@ -460,31 +210,9 @@ enum class LotStatus constructor(private val value: String) {
     override fun toString(): String {
         return this.value
     }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, LotStatus>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): LotStatus {
-            return CONSTANTS[value]
-                    ?: throw EnumException(LotStatus::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-enum class LotStatusDetails constructor(private val value: String) {
+enum class LotStatusDetails(@JsonValue val value: String) {
     UNSUCCESSFUL("unsuccessful"),
     AWARDED("awarded"),
     CANCELLED("cancelled"),
@@ -493,32 +221,9 @@ enum class LotStatusDetails constructor(private val value: String) {
     override fun toString(): String {
         return this.value
     }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, LotStatusDetails>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): LotStatusDetails {
-            return CONSTANTS[value]
-                    ?: throw EnumException(LotStatusDetails::class.java.name, value, Arrays.toString(values()))
-        }
-    }
 }
 
-
-enum class DocumentType constructor(private val value: String) {
+enum class DocumentType(@JsonValue val value: String) {
 
     EVALUATION_CRITERIA("evaluationCriteria"),
     ELIGIBILITY_CRITERIA("eligibilityCriteria"),
@@ -546,31 +251,8 @@ enum class DocumentType constructor(private val value: String) {
     CONTRACT_ARRANGEMENTS("contractArrangements"),
     CONTRACT_GUARANTEES("contractGuarantees");
 
-
     override fun toString(): String {
         return this.value
-    }
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    companion object {
-
-        private val CONSTANTS = HashMap<String, DocumentType>()
-
-        init {
-            for (c in values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): DocumentType {
-            return CONSTANTS[value]
-                    ?: throw EnumException(DocumentType::class.java.name, value, Arrays.toString(values()))
-        }
     }
 }
 

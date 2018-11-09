@@ -73,7 +73,7 @@ data class TenderCnCreate @JsonCreator constructor(
 
         val documents: List<Document>,
 
-        val procurementMethodModalities: Set<String>?,
+        val procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
         val electronicAuctions: ElectronicAuctions?
 )
@@ -117,7 +117,7 @@ fun CnCreate.validate(): CnCreate {
     if (this.tender.lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
     if (this.tender.documents.isEmpty()) throw ErrorException(ErrorType.EMPTY_DOCS)
     this.tender.procurementMethodModalities?.let {
-        this.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+        this.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
         if (this.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
     }
     this.tender.electronicAuctions?.let {

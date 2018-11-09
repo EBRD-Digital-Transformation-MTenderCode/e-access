@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.math.BigDecimal
 import java.util.*
-import javax.validation.Valid
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Item @JsonCreator constructor(

@@ -43,12 +43,15 @@ enum class ErrorType constructor(val code: String, val message: String) {
     EMPTY_ITEMS("10.28", "Items must not be empty."),
     EMPTY_LOTS("10.29", "Lots must not be empty."),
     EMPTY_DOCS("10.30", "Documents must not be empty."),
-    EMPTY_BREAKDOWN("10.30", "Budget breakdowns must not be empty."),
     INVALID_AUCTION_RELATED_LOTS("10.31", "Invalid auctions related lots."),
-    INVALID_AUCTION("10.32", "Electronic auctions must not be empty."),
+    INVALID_AUCTION_IS_EMPTY("10.32", "Electronic auctions must not be empty."),
     INVALID_PMM("10.33", "Procurement method modalities must not be empty."),
     INVALID_AUCTION_MINIMUM("10.34", "Invalid auction minimum."),
     INVALID_AUCTION_CURRENCY("10.35", "Invalid auction currency."),
     RULES_NOT_FOUND("10.36", "Rules not found."),
+    INVALID_AUCTION_ID("10.37", "Invalid auctions ids."),
+    INVALID_BS("10.38", "Invalid budget sources."),
+    EMPTY_BREAKDOWN("10.39", "Budget breakdowns must not be empty."),
+    INVALID_AUCTION_IS_NON_EMPTY("10.40", "Electronic auctions must be empty."),
     CONTEXT("20.01", "Context parameter not found.");
 }

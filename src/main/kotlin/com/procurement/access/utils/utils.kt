@@ -37,6 +37,8 @@ private object JsonMapper {
         mapper.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
         mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true)
+
         mapper.nodeFactory = JsonNodeFactory.withExactBigDecimals(true)
 
         dateTimeFormatter = DateTimeFormatterBuilder()
@@ -52,7 +54,6 @@ private object JsonMapper {
                 .appendLiteral('Z')
                 .toFormatter()
     }
-
 }
 
 /*Date utils*/
