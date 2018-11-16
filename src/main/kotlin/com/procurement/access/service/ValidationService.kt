@@ -136,10 +136,9 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
 
     fun checkBudgetSources(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val bsDto = toObject(CheckBSRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, "EV") ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val bbIds = process.planning.budget.budgetBreakdown.asSequence().map { it.id }.toHashSet()
         val bsIds = bsDto.planning.budget.budgetSource.asSequence().map { it.budgetBreakdownID }.toHashSet()

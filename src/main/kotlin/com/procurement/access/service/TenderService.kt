@@ -9,6 +9,7 @@ import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.tender.GetTenderOwnerRs
 import com.procurement.access.model.dto.tender.UnsuspendedTender
 import com.procurement.access.model.dto.tender.UnsuspendedTenderRs
 import com.procurement.access.model.dto.tender.UpdateTenderStatusRs
@@ -144,6 +145,14 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value, process.tender.statusDetails.value))
+    }
+
+    fun getTenderOwner(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        return ResponseDto(data = GetTenderOwnerRs(entity.owner))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
