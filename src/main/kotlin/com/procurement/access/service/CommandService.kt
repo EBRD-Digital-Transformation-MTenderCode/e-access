@@ -45,6 +45,7 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.SET_TENDER_PRECANCELLATION -> tenderService.setPreCancellation(cm)
             CommandType.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
             CommandType.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
+            CommandType.GET_TENDER_OWNER -> tenderService.getTenderOwner(cm)
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_LOTS -> lotsService.getLots(cm)

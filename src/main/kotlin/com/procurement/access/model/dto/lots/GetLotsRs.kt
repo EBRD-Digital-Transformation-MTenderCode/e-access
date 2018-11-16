@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class GetLotsRs @JsonCreator constructor(
 
-        val awardCriteria: String?,
+        val awardCriteria: String,
 
         val lots: List<LotDto>?
 )
