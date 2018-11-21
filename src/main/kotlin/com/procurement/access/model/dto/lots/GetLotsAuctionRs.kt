@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class GetLotsAuctionRs @JsonCreator constructor(
 
+        val awardCriteria: String?,
+
         val tender: GetLotsAuctionTender
 )
 

@@ -33,6 +33,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         return ResponseDto(data = GetLotsAuctionRs(
+                awardCriteria = process.tender.awardCriteria.value,
                 tender = GetLotsAuctionTender(
                         id = process.tender.id!!,
                         title = process.tender.title,
