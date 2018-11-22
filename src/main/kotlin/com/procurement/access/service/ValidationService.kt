@@ -98,8 +98,10 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(ErrorType.CONTEXT)
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         return ResponseDto(data = "ok")
     }
 
