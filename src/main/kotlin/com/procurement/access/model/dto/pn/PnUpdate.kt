@@ -71,7 +71,7 @@ data class ItemPnUpdate @JsonCreator constructor(
 
         var id: String,
 
-        val description: String?,
+        val description: String,
 
         val classification: Classification,
 
