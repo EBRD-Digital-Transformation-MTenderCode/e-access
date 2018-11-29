@@ -104,6 +104,7 @@ class PnUpdateService(private val generationService: GenerationService,
         if (updatedDocuments.isNotEmpty()) {
             tenderProcess.tender.documents = updatedDocuments
         }
+        if (!tenderProcess.tender.lots.any { it.status == LotStatus.PLANNING }) throw ErrorException(NO_ACTIVE_LOTS)
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
     }
