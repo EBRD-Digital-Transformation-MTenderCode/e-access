@@ -79,6 +79,7 @@ class CnUpdateService(private val generationService: GenerationService,
                 electronicAuctions = cnDto.tender.electronicAuctions
             }
         }
+        if (!tenderProcess.tender.lots.any { it.status == LotStatus.ACTIVE }) throw ErrorException(NO_ACTIVE_LOTS)
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         if (newCanceledLots.isNotEmpty()) {
             tenderProcess.amendment = Amendment(relatedLots = newCanceledLots)
