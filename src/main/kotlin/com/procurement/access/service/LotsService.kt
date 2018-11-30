@@ -126,6 +126,19 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 process.tender.lots))
     }
 
+
+    fun getAwardCriteria(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        return ResponseDto(data = GetLotsRs(
+                awardCriteria = process.tender.awardCriteria.value,
+                lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))
+        )
+    }
+
     private fun getLotsDtoByStatus(lots: List<Lot>, status: LotStatus): List<LotDto> {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
         val lotsByStatus = lots.asSequence()
