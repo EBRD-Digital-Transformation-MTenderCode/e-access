@@ -154,7 +154,6 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         return ResponseDto(data = GetTenderOwnerRs(entity.owner))
     }
-
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
         return when (operationType) {
             "cancelTender", "cancellationStandstillPeriod" -> { lot: Lot ->
