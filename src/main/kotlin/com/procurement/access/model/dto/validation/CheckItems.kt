@@ -2,11 +2,10 @@ package com.procurement.access.model.dto.validation
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import java.util.*
 
 data class CheckItemsRq @JsonCreator constructor(
 
-        val items: HashSet<ItemCheck>
+        val items: List<ItemCheck>
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

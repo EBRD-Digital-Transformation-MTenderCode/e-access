@@ -9,6 +9,7 @@ import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.tender.GetTenderOwnerRs
 import com.procurement.access.model.dto.tender.UnsuspendedTender
 import com.procurement.access.model.dto.tender.UnsuspendedTenderRs
 import com.procurement.access.model.dto.tender.UpdateTenderStatusRs
@@ -31,8 +32,8 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(
-                process.tender.status.value(),
-                process.tender.statusDetails.value()))
+                process.tender.status.value,
+                process.tender.statusDetails.value))
     }
 
     fun setUnsuspended(cm: CommandMessage): ResponseDto {
@@ -49,8 +50,8 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UnsuspendedTenderRs(UnsuspendedTender(
-                process.tender.status.value(),
-                process.tender.statusDetails.value(),
+                process.tender.status.value,
+                process.tender.statusDetails.value,
                 process.tender.procurementMethodModalities,
                 process.tender.electronicAuctions)))
     }
@@ -143,7 +144,15 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value(), process.tender.statusDetails.value()))
+        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value, process.tender.statusDetails.value))
+    }
+
+    fun getTenderOwner(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        return ResponseDto(data = GetTenderOwnerRs(entity.owner))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {

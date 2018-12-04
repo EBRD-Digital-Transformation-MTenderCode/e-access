@@ -103,10 +103,10 @@ class CnCreateService(private val generationService: GenerationService,
     }
 
     private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnCreate) {
-        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory.value())) {
+        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory.value)) {
             cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
             if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
-            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION)
+            cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
             cnDto.tender.electronicAuctions.validate()
         }
     }
@@ -177,6 +177,8 @@ class CnCreateService(private val generationService: GenerationService,
             if (!lotsIdSet.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
         tender.electronicAuctions?.let { auctions ->
+            val auctionIds = auctions.details.asSequence().map { it.id }.toHashSet()
+            if (auctionIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_ID)
             val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
             if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)

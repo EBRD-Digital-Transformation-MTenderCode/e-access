@@ -1,14 +1,244 @@
-Serhii Olshanskiy
-
-
-
-
-```Caused by: com.mitchellbosecke.pebble.error.AttributeNotFoundException: Attribute [pmd] of [com.procurement.formsservice.model.cn.update.CnUpdateContext$Parameters] does not exist or can not be accessed and strict variables is set to true. (update-cn-template:999)```
-Untitled
-2018-10-26T10:09:07.549471483Z 10:09:07.548 [http-nio-8080-exec-1] ERROR c.p.f.controller.WebExceptionHandler - Error of evaluate template 'update-cn-template' with context '{"context":{"parameters":{"ocid":"ocds-t1s2t3-MD-1538148399284-PN-1538148399342"},"procuringEntity":{"name":"Name of CN pE","address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"oth123","id":"0101000","description":"hhh"},"streetAddress":"address of pe","postalCode":"00000"},"identifier":{"scheme":"MD-IDNO","id":"555-555","legalName":"legal name of pe","uri":"g"},"additionalIdentifiers":[{"scheme":"ert","id":"tre","legalName":"etr","uri":"ter"}],"contactPoint":{"name":"contact name","url":"d","telephone":"4521","email":"email","faxNumber":"45"},"uris":{"country":"/country/MD?lang=RO","region":"/region?lang=RO&country=MD","locality":"/locality?lang=RO&country=MD&region=0101000","registrationScheme":"/registration-scheme?lang=RO&country=MD"}},"tender":{"title":"TITLE","description":"d","documents":[],"lots":[{"id":"e5043741-c332-11e8-a3cf-159ba9e54647","title":"lot2","description":"2","value":{"amount":0.01,"currency":"USD"},"performance":{"placeOfPerformance":{"address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"675hhh","id":"0301000","description":""},"streetAddress":"Steet","postalCode":"5"},"description":"decr"},"deliveryPeriod":{"startDate":"2018-10-01T19:40:00Z","endDate":"2018-10-01T23:45:00Z"}},"items":[{"id":"e5043740-c332-11e8-a3cf-159ba9e54647","relatedLot":"e5043741-c332-11e8-a3cf-159ba9e54647","description":"p","quantity":{"quantity":1.0E7,"unitClass":{"id":"","description":""},"unit":{"id":"10","description":"Parsec"}},"classification":{"scheme":"CPV","id":"03117140-7","description":"Plante utilizate ca fungicide sau cu utilizare similară","title":"03117140-7 - Plante utilizate ca fungicide sau cu utilizare similară"},"additionalClassifications":null}],"documents":[{"id":"ea21a690-c256-11e8-8cbe-a1835757f77d","type":"hearingNotice","title":null,"description":null,"relatedLots":"e5043741-c332-11e8-a3cf-159ba9e54647"}]}],"procurementMethodModalities":null,"electronicAuctions":null,"procurementMethodDetails":"TEST Licitatia deschisa","legalBasis":"DIRECTIVE_2014_23_EU","enquiryPeriod":null,"tenderPeriod":null,"budgetBreakdown":[{"id":"ocds-t1s2t3-MD-1538144823950-FS-1538148191015","amount":{"amount":560.0,"currency":"USD"}}],"uris":{"country":"/country?lang=RO","region":"/region?lang=RO&country=$country$","locality":"/locality?lang=RO&country=$country$&region=$region$","unitClass":"/unit-class?lang=RO","unit":"/unit?lang=RO&unitClass=$unitClass$","cpv":"/cpv?lang=RO&code=03117140-7","cpvs":"/cpvs?lang=RO","pmd":"/pmd?lang=RO&country=MD"},"currency":"USD"},"parentEntity":"PN"}}'
-2018-10-26T10:09:07.549527284Z com.procurement.formsservice.exception.TemplateEvaluateException: Error of evaluate template 'update-cn-template' with context '{"context":{"parameters":{"ocid":"ocds-t1s2t3-MD-1538148399284-PN-1538148399342"},"procuringEntity":{"name":"Name of CN pE","address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"oth123","id":"0101000","description":"hhh"},"streetAddress":"address of pe","postalCode":"00000"},"identifier":{"scheme":"MD-IDNO","id":"555-555","legalName":"legal name of pe","uri":"g"},"additionalIdentifiers":[{"scheme":"ert","id":"tre","legalName":"etr","uri":"ter"}],"contactPoint":{"name":"contact name","url":"d","telephone":"4521","email":"email","faxNumber":"45"},"uris":{"country":"/country/MD?lang=RO","region":"/region?lang=RO&country=MD","locality":"/locality?lang=RO&country=MD&region=0101000","registrationScheme":"/registration-scheme?lang=RO&country=MD"}},"tender":{"title":"TITLE","description":"d","documents":[],"lots":[{"id":"e5043741-c332-11e8-a3cf-159ba9e54647","title":"lot2","description":"2","value":{"amount":0.01,"currency":"USD"},"performance":{"placeOfPerformance":{"address":{"country":{"id":"MD","description":"MOLDOVA"},"region":{"id":"0101000","description":"mun.Chişinău"},"locality":{"scheme":"675hhh","id":"0301000","description":""},"streetAddress":"Steet","postalCode":"5"},"description":"decr"},"deliveryPeriod":{"startDate":"2018-10-01T19:40:00Z","endDate":"2018-10-01T23:45:00Z"}},"items":[{"id":"e5043740-c332-11e8-a3cf-159ba9e54647","relatedLot":"e5043741-c332-11e8-a3cf-159ba9e54647","description":"p","quantity":{"quantity":1.0E7,"unitClass":{"id":"","description":""},"unit":{"id":"10","description":"Parsec"}},"classification":{"scheme":"CPV","id":"03117140-7","description":"Plante utilizate ca fungicide sau cu utilizare similară","title":"03117140-7 - Plante utilizate ca fungicide sau cu utilizare similară"},"additionalClassifications":null}],"documents":[{"id":"ea21a690-c256-11e8-8cbe-a1835757f77d","type":"hearingNotice","title":null,"description":null,"relatedLots":"e5043741-c332-11e8-a3cf-159ba9e54647"}]}],"procurementMethodModalities":null,"electronicAuctions":null,"procurementMethodDetails":"TEST Licitatia deschisa","legalBasis":"DIRECTIVE_2014_23_EU","enquiryPeriod":null,"tenderPeriod":null,"budgetBreakdown":[{"id":"ocds-t1s2t3-MD-1538144823950-FS-1538148191015","amount":{"amount":560.0,"currency":"USD"}}],"uris":{"country":"/country?lang=RO","region":"/region?lang=RO&country=$country$","locality":"/locality?lang=RO&country=$country$&region=$region$","unitClass":"/unit-class?lang=RO","unit":"/unit?lang=RO&unitClass=$unitClass$","cpv":"/cpv?lang=RO&code=03117140-7","cpvs":"/cpvs?lang=RO","pmd":"/pmd?lang=RO&country=MD"},"currency":"USD"},"parentEntity":"PN"}}'
-Collapse
-
-Message Input
-
-Message @oserhii
+{
+  "ocid": "ocds-b3wdp1-MD-1540195207462",
+  "planning": {
+    "budget": {
+      "amount": {
+        "amount": 2083385.00,
+        "currency": "MDL"
+      },
+      "isEuropeanUnionFunded": false,
+      "budgetBreakdown": [
+        {
+          "id": "ocds-b3wdp1-MD-1539931678793-FS-1540194918352",
+          "description": "REPARATIA CAPITALA A ACOPERISULUI  CU LOCATIA BALTI",
+          "amount": {
+            "amount": 2083385.00,
+            "currency": "MDL"
+          },
+          "period": {
+            "startDate": "2018-10-21T00:00:00Z",
+            "endDate": "2018-12-31T00:00:00Z"
+          },
+          "sourceParty": {
+            "id": "MD-IDNO-1006601004242",
+            "name": "Centrul Național de Transfuzie a Sîngelui"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "id": "ocds-b3wdp1-MD-1540195207462",
+    "title": "REPARATIA ACOPERISULUI",
+    "description": "REPARATIA ACOPERISULUI CU LOCATIA BALTI",
+    "status": "active",
+    "statusDetails": "awarding",
+    "classification": {
+      "scheme": "CPV",
+      "id": "45260000-7",
+      "description": "Lucrări de acoperire şi alte lucrări speciale de construcţii"
+    },
+    "mainProcurementCategory": "works",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Licitație deschisă",
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+    "submissionMethodRationale": [
+      "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+    ],
+    "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "procuringEntity": {
+      "id": "MD-IDNO-1006601004242",
+      "name": "Centrul Național de Transfuzie a Sîngelui",
+      "identifier": {
+        "id": "1006601004242",
+        "scheme": "MD-IDNO",
+        "legalName": "Centrul Național de Transfuzie a Sîngelui",
+        "uri": "http://www.cnts.md"
+      },
+      "address": {
+        "streetAddress": "Strada Academiei 11",
+        "postalCode": "MD-2028",
+        "addressDetails": {
+          "country": {
+            "scheme": "iso-alpha2",
+            "id": "MD",
+            "description": "MOLDOVA",
+            "uri": "http://reference.iatistandard.org"
+          },
+          "region": {
+            "scheme": "CUATM",
+            "id": "0101000",
+            "description": "mun.Chişinău",
+            "uri": "http://statistica.md"
+          },
+          "locality": {
+            "scheme": "UN/LOCODE",
+            "id": "0101000",
+            "description": "mun.Chişinău"
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "LIUBA CASIAN",
+        "email": "contabilitate.cnts@mail.ru",
+        "telephone": "022 10 90 70"
+      }
+    },
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "contractPeriod": {
+      "startDate": "2018-11-12T12:00:00Z",
+      "endDate": "2018-12-31T12:00:00Z"
+    },
+    "tenderPeriod": {
+      "startDate": "2018-10-31T06:05:11Z",
+      "endDate": "2018-11-07T06:05:11Z"
+    },
+    "enquiryPeriod": {
+      "startDate": "2018-10-23T09:06:02Z",
+      "endDate": "2018-10-31T06:05:11Z"
+    },
+    "value": {
+      "amount": 2083385.00,
+      "currency": "MDL"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "lots": [
+      {
+        "id": "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55",
+        "title": "REPARATIA ACOPERISULUI ",
+        "description": "REPARATIA ACOPERISULUI CNTS LOCATIA BALTI",
+        "status": "active",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 2083385.00,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-11-12T12:00:00Z",
+          "endDate": "2018-12-31T12:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "str. Decebal 113",
+            "postalCode": "MD-3101",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "0301000",
+                "description": "mun.Bălţi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "UN/LOCODE",
+                "id": "0301000",
+                "description": "mun.Bălţi"
+              }
+            }
+          },
+          "description": "Documentele trebuie prezentate conform specificatiilor"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "ddfe32b0-d6a2-11e8-99d8-67dbdbaf7b55",
+        "description": "Servicii de reparatie",
+        "classification": {
+          "scheme": "CPV",
+          "id": "45260000-7",
+          "description": "Lucrări de acoperire şi alte lucrări speciale de construcţii"
+        },
+        "quantity": 1.00,
+        "unit": {
+          "id": "924",
+          "name": "Simbol"
+        },
+        "relatedLot": "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55"
+      }
+    ],
+    "documents": [
+      {
+        "id": "6044fc67-aacb-43c0-85b5-fd984fad9d9b-1540285523648",
+        "documentType": "biddingDocuments",
+        "title": "CNTS_Acoperis(Balti)Cm2-1-10,10,13-caiet_sarcini.pdf",
+        "description": "Caiet de sarcini",
+        "relatedLots": [
+          "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55"
+        ]
+      },
+      {
+        "id": "d3d2185b-a536-42d1-835a-1c168bc57c71-1540285523616",
+        "documentType": "biddingDocuments",
+        "title": "CNTS_Acoperis(Balti)Cm2-1-10,10,13-lista_cantitati.pdf",
+        "description": "Lista de cantitati",
+        "relatedLots": [
+          "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55"
+        ]
+      },
+      {
+        "id": "85735876-c2d1-4de6-9247-4e03a38c987e-1540793066153",
+        "documentType": "biddingDocuments",
+        "title": "fda reparatie Balti.pdf",
+        "description": "Fisa de date a achizitiei"
+      }
+    ]
+  }
+}

@@ -45,10 +45,12 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.SET_TENDER_PRECANCELLATION -> tenderService.setPreCancellation(cm)
             CommandType.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
             CommandType.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
+            CommandType.GET_TENDER_OWNER -> tenderService.getTenderOwner(cm)
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_LOTS -> lotsService.getLots(cm)
             CommandType.GET_LOTS_AUCTION -> lotsService.getLotsAuction(cm)
+            CommandType.GET_AWARD_CRITERIA -> lotsService.getAwardCriteria(cm)
             CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
             CommandType.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
             CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setLotsStatusUnsuccessful(cm)
@@ -59,6 +61,7 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.CHECK_BID -> validationService.checkBid(cm)
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
+            CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
