@@ -71,7 +71,9 @@ enum class CommandType(private val value: String) {
     CHECK_TOKEN("checkToken"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),
 
-    COMPLETE_LOT("completeLot");
+    COMPLETE_LOT("completeLot"),
+
+    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
 
 
 

@@ -64,6 +64,8 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
 
             CommandType.COMPLETE_LOT->lotsService.completeLot(cm)
+
+            CommandType.VALIDATE_OWNER_AND_TOKEN->validationService.checkToken(cm)
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
