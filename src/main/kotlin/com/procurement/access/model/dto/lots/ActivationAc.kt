@@ -36,7 +36,7 @@ data class ActivationAcRsLot @JsonCreator constructor(
 
         val id: String,
 
-        var status: LotStatus? = null,
+        var status: LotStatus,
 
-        var statusDetails: LotStatusDetails?
+        var statusDetails: LotStatusDetails
 )

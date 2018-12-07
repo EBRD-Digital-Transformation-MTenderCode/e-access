@@ -169,8 +169,8 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 ),
                 lot = ActivationAcRsLot(
                         id = lot.id,
-                        status = lot.status,
-                        statusDetails = lot.statusDetails
+                        status = lot.status!!,
+                        statusDetails = lot.statusDetails!!
                 )
         ))
     }
