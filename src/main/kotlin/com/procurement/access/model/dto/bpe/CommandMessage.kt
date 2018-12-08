@@ -63,13 +63,16 @@ enum class CommandType(private val value: String) {
     SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
     SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
     SET_LOTS_UNSUCCESSFUL_EV("setLotsStatusUnsuccessfulEv"),
+    COMPLETE_LOT("completeLot"),
 
     CHECK_LOTS_STATUS_DETAILS("checkLotsStatusDetails"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
     CHECK_BID("checkBid"),
     CHECK_ITEMS("checkItems"),
     CHECK_TOKEN("checkToken"),
-    CHECK_BUDGET_SOURCES("checkBudgetSources");
+    CHECK_BUDGET_SOURCES("checkBudgetSources"),
+    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
+
 
     @JsonValue
     fun value(): String {
