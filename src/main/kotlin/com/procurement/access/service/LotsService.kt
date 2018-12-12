@@ -136,6 +136,39 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = GetAwardCriteriaRs(awardCriteria = process.tender.awardCriteria.value))
     }
 
+    fun completeLot(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = "EV"
+        val dto = toObject(ActivationAcRq::class.java, cm.data)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val lot = process.tender.lots.asSequence().filter { it.id == dto.lotId }.first()
+        lot.apply {
+            status = LotStatus.COMPLETE
+            statusDetails = LotStatusDetails.EMPTY
+        }
+        if (dto.stageEnd) {
+            process.tender.apply {
+                status = TenderStatus.COMPLETE
+                statusDetails = TenderStatusDetails.EMPTY
+            }
+        }
+        entity.jsonData = toJson(process)
+        tenderProcessDao.save(entity)
+        return ResponseDto(data = ActivationAcRs(
+                tender = ActivationAcRsTender(
+                        status = process.tender.status,
+                        statusDetails = process.tender.statusDetails
+                ),
+                lot = ActivationAcRsLot(
+                        id = lot.id,
+                        status = lot.status!!,
+                        statusDetails = lot.statusDetails!!
+                )
+        ))
+    }
+
     private fun getLotsDtoByStatus(lots: List<Lot>, status: LotStatus): List<LotDto> {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
         val lotsByStatus = lots.asSequence()
