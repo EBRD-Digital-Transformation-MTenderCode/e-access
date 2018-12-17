@@ -76,7 +76,6 @@ enum class CommandType(private val value: String) {
     VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
 
 
-
     @JsonValue
     fun value(): String {
         return this.value
