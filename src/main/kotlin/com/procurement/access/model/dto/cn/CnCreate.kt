@@ -67,8 +67,6 @@ data class TenderCnCreate @JsonCreator constructor(
 
         val procuringEntity: OrganizationReference,
 
-        val awardCriteria: AwardCriteria?,
-
         val lots: List<LotCnCreate>,
 
         val items: List<ItemCnCreate>,

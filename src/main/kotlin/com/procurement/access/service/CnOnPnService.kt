@@ -63,7 +63,6 @@ class CnOnPnService(private val generationService: GenerationService,
             documents = updateDocuments(tender = this, documentsDto = cnDto.tender.documents)
             status = TenderStatus.ACTIVE
             statusDetails = TenderStatusDetails.fromValue(phase)
-            awardCriteria = cnDto.tender.awardCriteria ?: AwardCriteria.PRICE_ONLY
             additionalProcurementCategories = null
             tenderPeriod = tenderDto.tenderPeriod
             enquiryPeriod = tenderDto.enquiryPeriod
