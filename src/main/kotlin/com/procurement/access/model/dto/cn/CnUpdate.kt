@@ -45,7 +45,7 @@ data class TenderCnUpdate @JsonCreator constructor(
 
         val enquiryPeriod: Period,
 
-        val awardCriteria: AwardCriteria,
+        val awardCriteria: AwardCriteria?,
 
         val lots: List<LotCnUpdate>,
 
