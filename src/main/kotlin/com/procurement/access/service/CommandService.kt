@@ -55,6 +55,7 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
             CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setLotsStatusUnsuccessful(cm)
             CommandType.SET_LOTS_UNSUCCESSFUL_EV -> lotsService.setLotsStatusUnsuccessfulEv(cm)
+            CommandType.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
 
             CommandType.CHECK_LOTS_STATUS_DETAILS -> validationService.checkLotsStatusDetails(cm)
             CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)

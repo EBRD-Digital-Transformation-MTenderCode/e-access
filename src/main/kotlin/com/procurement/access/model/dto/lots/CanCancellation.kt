@@ -1,0 +1,24 @@
+package com.procurement.access.model.dto.lots
+
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.procurement.access.model.dto.ocds.LotStatus
+import com.procurement.access.model.dto.ocds.LotStatusDetails
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class CanCancellationRq @JsonCreator constructor(
+
+    val lotId: String
+)
+
+data class CanCancellationRs @JsonCreator constructor(
+
+    val lot: CanCancellationLot
+)
+
+data class CanCancellationLot @JsonCreator constructor(
+    val id: String,
+    var status: LotStatus?,
+    var statusDetails: LotStatusDetails?
+
+)

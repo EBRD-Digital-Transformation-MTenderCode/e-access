@@ -63,6 +63,7 @@ enum class CommandType(private val value: String) {
     SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
     SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
     SET_LOTS_UNSUCCESSFUL_EV("setLotsStatusUnsuccessfulEv"),
+    SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),
 
     CHECK_LOTS_STATUS_DETAILS("checkLotsStatusDetails"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
