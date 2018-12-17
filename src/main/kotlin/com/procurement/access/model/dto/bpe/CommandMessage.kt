@@ -63,7 +63,7 @@ enum class CommandType(private val value: String) {
     SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
     SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
     SET_LOTS_UNSUCCESSFUL_EV("setLotsStatusUnsuccessfulEv"),
-    COMPLETE_LOT("completeLot"),
+    SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),
 
     CHECK_LOTS_STATUS_DETAILS("checkLotsStatusDetails"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
@@ -71,6 +71,9 @@ enum class CommandType(private val value: String) {
     CHECK_ITEMS("checkItems"),
     CHECK_TOKEN("checkToken"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),
+
+    COMPLETE_LOT("completeLot"),
+
     VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
 
 

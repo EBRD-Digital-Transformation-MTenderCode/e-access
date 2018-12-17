@@ -17,11 +17,7 @@ enum class AwardCriteria(@JsonValue val value: String) {
     PRICE_ONLY("priceOnly"),
     COST_ONLY("costOnly"),
     QUALITY_ONLY("qualityOnly"),
-    RATED_CRITERIA("ratedCriteria"),
-    LOWEST_COST("lowestCost"),
-    BEST_PROPOSAL("bestProposal"),
-    BEST_VALUE_TO_GOVERNMENT("bestValueToGovernment"),
-    SINGLE_BID_ONLY("singleBidOnly");
+    RATED_CRITERIA("ratedCriteria");
 
     override fun toString(): String {
         return this.value

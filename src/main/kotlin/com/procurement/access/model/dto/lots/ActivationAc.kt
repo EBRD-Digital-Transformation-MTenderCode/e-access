@@ -12,15 +12,15 @@ data class ActivationAcRq @JsonCreator constructor(
 
         val lotId: String,
 
-        val stageEnd:Boolean
+        val stageEnd: Boolean
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ActivationAcRs @JsonCreator constructor(
 
-        val tender:ActivationAcRsTender,
+        val tender: ActivationAcRsTender,
 
-        val lot:ActivationAcRsLot
+        val lot: ActivationAcRsLot
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
