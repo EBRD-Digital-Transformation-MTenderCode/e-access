@@ -56,6 +56,7 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setLotsStatusUnsuccessful(cm)
             CommandType.SET_LOTS_UNSUCCESSFUL_EV -> lotsService.setLotsStatusUnsuccessfulEv(cm)
             CommandType.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
+            CommandType.COMPLETE_LOT -> lotsService.completeLot(cm)
 
             CommandType.CHECK_LOTS_STATUS_DETAILS -> validationService.checkLotsStatusDetails(cm)
             CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
@@ -63,9 +64,6 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
             CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
-
-            CommandType.COMPLETE_LOT -> lotsService.completeLot(cm)
-
             CommandType.VALIDATE_OWNER_AND_TOKEN -> validationService.checkToken(cm)
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
