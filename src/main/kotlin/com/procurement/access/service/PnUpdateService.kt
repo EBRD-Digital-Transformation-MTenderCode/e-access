@@ -38,6 +38,7 @@ class PnUpdateService(private val generationService: GenerationService,
         var updatedLots: List<Lot>
         var updatedItems: List<Item> = listOf()
         var updatedDocuments: List<Document>
+        var isAnyLotInDb = false
         /*first insert*/
         if (tenderProcess.tender.lots.isEmpty() && pnDto.tender.lots != null) {
             val lotsDto = pnDto.tender.lots
@@ -58,6 +59,7 @@ class PnUpdateService(private val generationService: GenerationService,
         }
         /*update*/
         if (tenderProcess.tender.lots.isNotEmpty() && pnDto.tender.lots != null) {
+            isAnyLotInDb = true
             val lotsDto = pnDto.tender.lots
             val itemsDto = pnDto.tender.items!!
             checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
@@ -104,7 +106,9 @@ class PnUpdateService(private val generationService: GenerationService,
         if (updatedDocuments.isNotEmpty()) {
             tenderProcess.tender.documents = updatedDocuments
         }
-        if (!tenderProcess.tender.lots.any { it.status == LotStatus.PLANNING }) throw ErrorException(NO_ACTIVE_LOTS)
+        if (isAnyLotInDb) {
+            if (!tenderProcess.tender.lots.any { it.status == LotStatus.PLANNING }) throw ErrorException(NO_ACTIVE_LOTS)
+        }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
     }
