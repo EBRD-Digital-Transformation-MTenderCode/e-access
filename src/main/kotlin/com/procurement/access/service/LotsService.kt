@@ -126,40 +126,27 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 process.tender.lots))
     }
 
-    fun setLotInitialStatus(cm: CommandMessage):ResponseDto{
+    fun setLotInitialStatus(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = "EV"
+        val dto = toObject(CanCancellationRq::class.java, cm.data)
+
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val dto = toObject(CanCancellationRq::class.java,cm.data)
-
-        process.tender.lots.asSequence().filter {
-            it.id==dto.lotId
-        }.firstOrNull()?.apply {
-            status=LotStatus.ACTIVE
-            statusDetails=LotStatusDetails.EMPTY
-        }
-        entity.apply {
-            jsonData
+        val lot = process.tender.lots.first { it.id == dto.lotId }
+        lot.apply {
+            status = LotStatus.ACTIVE
+            statusDetails = LotStatusDetails.EMPTY
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-
-
-        val lot = process.tender.lots.filter {
-            it.id==dto.lotId
-        }.first()
-
-        return ResponseDto(
-            data = CanCancellationRs(
+        return ResponseDto(data = CanCancellationRs(
                 lot = CanCancellationLot(
-                    id=lot.id,
-                    status = lot.status,
-                    statusDetails = lot.statusDetails
+                        id = lot.id,
+                        status = lot.status!!,
+                        statusDetails = lot.statusDetails!!
                 )
-            )
-        )
-
+        ))
     }
 
     fun getAwardCriteria(cm: CommandMessage): ResponseDto {
