@@ -106,7 +106,7 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
     }
 
 
-    fun checkLotStatusDetails(cm: CommandMessage): ResponseDto {
+    fun checkLotStatusAndGetItems(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
