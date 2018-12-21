@@ -53,5 +53,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_BS("10.38", "Invalid budget sources."),
     EMPTY_BREAKDOWN("10.39", "Budget breakdowns must not be empty."),
     INVALID_AUCTION_IS_NON_EMPTY("10.40", "Electronic auctions must be empty."),
+    INVALID_LOTS_STATUS("10.41", "Invalid lots status."),
     CONTEXT("20.01", "Context parameter not found.");
 }

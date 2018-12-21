@@ -9,10 +9,7 @@ import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.*
-import com.procurement.access.model.dto.tender.GetTenderOwnerRs
-import com.procurement.access.model.dto.tender.UnsuspendedTender
-import com.procurement.access.model.dto.tender.UnsuspendedTenderRs
-import com.procurement.access.model.dto.tender.UpdateTenderStatusRs
+import com.procurement.access.model.dto.tender.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
@@ -153,6 +150,31 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         return ResponseDto(data = GetTenderOwnerRs(entity.owner))
+    }
+
+    fun getDataForAc(cm: CommandMessage): ResponseDto {
+
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val dto = toObject(GetDataForAcRq::class.java, cm.data)
+        val lotsIdsSet = dto.awards.asSequence().map { it.relatedLots[0] }.toSet()
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val lots = process.tender.lots.asSequence().filter { lotsIdsSet.contains(it.id) }.toList()
+        if (lots.asSequence().any { it.status == LotStatus.CANCELLED || it.status == LotStatus.UNSUCCESSFUL }) {
+            throw ErrorException(INVALID_LOTS_STATUS)
+        }
+        val items = process.tender.items.asSequence().filter { lotsIdsSet.contains(it.relatedLot) }.toList()
+        val contractedTender = GetDataForAcTender(
+                id = process.tender.id,
+                classification = process.tender.classification,
+                procurementMethod = process.tender.procurementMethod,
+                procurementMethodDetails = process.tender.procurementMethodDetails,
+                mainProcurementCategory = process.tender.mainProcurementCategory,
+                lots = lots,
+                items = items)
+        return ResponseDto(data = GetDataForAcRs(contractedTender))
     }
 
     private fun getLotStatusPredicateForPrepareCancellation(operationType: String): (Lot) -> Boolean {
