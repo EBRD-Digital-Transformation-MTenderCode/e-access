@@ -106,7 +106,7 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
     }
 
 
-    fun checkLotStatusAndGetItems(cm: CommandMessage): ResponseDto {
+    fun checkLotStatus(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
@@ -117,12 +117,10 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val lot = process.tender.lots.asSequence()
+        process.tender.lots.asSequence()
                 .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.AWARDED }
                 ?: throw ErrorException(ErrorType.NO_AWARDED_LOT)
-
-        val items = process.tender.items.asSequence().filter { it.relatedLot == lot.id }.toList()
-        return ResponseDto(data = CheckLotStatusDetailsRs(items))
+        return ResponseDto(data = "ok")
     }
 
     fun checkLotsStatus(cm: CommandMessage): ResponseDto {
