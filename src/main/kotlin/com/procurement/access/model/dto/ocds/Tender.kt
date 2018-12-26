@@ -61,7 +61,7 @@ data class Tender @JsonCreator constructor(
 
         val procuringEntity: OrganizationReference,
 
-        var awardCriteria: AwardCriteria,
+        var awardCriteria: AwardCriteria?,
 
         @get:JsonProperty("requiresElectronicCatalogue")
         @field:JsonDeserialize(using = BooleansDeserializer::class)

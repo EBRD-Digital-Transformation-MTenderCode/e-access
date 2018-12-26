@@ -75,7 +75,9 @@ data class TenderCnCreate @JsonCreator constructor(
 
         val procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
-        val electronicAuctions: ElectronicAuctions?
+        val electronicAuctions: ElectronicAuctions?,
+
+        val awardCriteria: AwardCriteria?
 )
 
 data class LotCnCreate @JsonCreator constructor(
