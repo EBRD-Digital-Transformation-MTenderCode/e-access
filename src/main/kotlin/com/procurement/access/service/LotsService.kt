@@ -264,28 +264,4 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 .first()
                 .apply { statusDetails = lotStatusDetails }
     }
-
-    private fun setLotsStatusEv(lots: List<Lot>, unsuccessfulLots: HashSet<UpdateLotDto>?) {
-        if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsIds = unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
-        lots.forEach { lot ->
-            if (lot.id in lotsIds) {
-                lot.status = LotStatus.UNSUCCESSFUL
-                lot.statusDetails = LotStatusDetails.EMPTY
-            }
-        }
-        lots.forEach { lot ->
-            if (lot.status == LotStatus.ACTIVE && lot.statusDetails == LotStatusDetails.AWARDED) {
-                lot.status = LotStatus.COMPLETE
-                lot.statusDetails = LotStatusDetails.EMPTY
-            }
-        }
-    }
-
-    private fun isAnyCompleteLots(lots: List<Lot>?): Boolean {
-        return if (lots != null && !lots.isEmpty()) {
-            lots.asSequence()
-                    .any { it.status == LotStatus.COMPLETE && it.statusDetails == LotStatusDetails.EMPTY }
-        } else false
-    }
 }
