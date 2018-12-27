@@ -173,14 +173,14 @@ class CnOnPnService(private val generationService: GenerationService,
     }
 
     private fun checkDocumentsRelatedLots(lots: List<Lot>, documentsDto: List<Document>) {
-        val lotsId = lots.asSequence().map { it.id }.toHashSet()
-        val lotsFromDocuments = documentsDto.asSequence()
-                .filter { it.relatedLots != null }
-                .flatMap { it.relatedLots!!.asSequence() }
-                .toHashSet()
-        if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsFromDocuments.containsAll(lotsId)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-        }
+//        val lotsId = lots.asSequence().map { it.id }.toHashSet()
+//        val lotsFromDocuments = documentsDto.asSequence()
+//                .filter { it.relatedLots != null }
+//                .flatMap { it.relatedLots!!.asSequence() }
+//                .toHashSet()
+//        if (lotsFromDocuments.isNotEmpty()) {
+//            if (!lotsFromDocuments.containsAll(lotsId)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+//        }
     }
 
     private fun checkAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
