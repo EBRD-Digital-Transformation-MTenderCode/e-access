@@ -69,8 +69,8 @@ class CnOnPnService(private val generationService: GenerationService,
                 lots = getLots(tenderDto.lots)
                 items = getItems(tenderDto.items)
                 tenderDto.classification?.let { classification = it }
-                value = getValueFromLots(tenderDto.lots, tenderProcess.planning.budget.amount)
-                contractPeriod = getContractPeriod(tenderDto.lots, tenderProcess.planning.budget)
+                value = getValueFromLots(tenderDto.lots)
+                contractPeriod = getContractPeriod(tenderDto.lots)
             }
         } else {
             updatedLots(tenderProcess.tender.lots)
@@ -163,21 +163,23 @@ class CnOnPnService(private val generationService: GenerationService,
     private fun checkDocuments(tender: Tender, documentsDto: List<Document>) {
         val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
         if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
-        checkDocumentsRelatedLots(tender.lots, documentsDto)
         if (tender.documents != null && tender.documents!!.isNotEmpty()) {
             val documentsDb = tender.documents!!
             val documentsDtoId = documentsDto.asSequence().map { it.id }.toSet()
             val documentsDbId = documentsDb.asSequence().map { it.id }.toSet()
             if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
         }
+        checkDocumentsRelatedLots(tender.lots, documentsDto)
     }
 
     private fun checkDocumentsRelatedLots(lots: List<Lot>, documentsDto: List<Document>) {
         val lotsId = lots.asSequence().map { it.id }.toHashSet()
         val lotsFromDocuments = documentsDto.asSequence()
-                .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+                .filter { it.relatedLots != null }
+                .flatMap { it.relatedLots!!.asSequence() }
+                .toHashSet()
         if (lotsFromDocuments.isNotEmpty()) {
-            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+            if (!lotsFromDocuments.containsAll(lotsId)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
     }
 
@@ -256,7 +258,7 @@ class CnOnPnService(private val generationService: GenerationService,
         }
     }
 
-    private fun getValueFromLots(lotsDto: List<LotCnUpdate>, budgetValue: Value): Value {
+    private fun getValueFromLots(lotsDto: List<LotCnUpdate>): Value {
         val currency = lotsDto.elementAt(0).value.currency
         val totalAmount = lotsDto.asSequence()
                 .sumByDouble { it.value.amount.toDouble() }
@@ -268,7 +270,7 @@ class CnOnPnService(private val generationService: GenerationService,
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun getContractPeriod(lotsDto: List<LotCnUpdate>, budget: Budget): ContractPeriod {
+    private fun getContractPeriod(lotsDto: List<LotCnUpdate>): ContractPeriod {
         val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
