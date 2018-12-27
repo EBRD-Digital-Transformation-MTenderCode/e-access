@@ -105,10 +105,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 null))
     }
 
-    fun finalizeUnsuccessfulLot(cm: CommandMessage): ResponseDto {
+    fun setFinalStatuses(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val dto = toObject(FinalizeUnsuccessfulLotRq::class.java, cm.data)
+        val dto = toObject(FinalStatusesRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -156,7 +156,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         tenderProcessDao.save(entity)
         val lotsRs = lots.asSequence().map { FinalLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
         val tenderRs = FinalTender(id = process.tender.id!!, status = process.tender.status, statusDetails = process.tender.statusDetails)
-        return ResponseDto(data = FinalizeUnsuccessfulLotRs(
+        return ResponseDto(data = FinalStatusesRs(
                 stageEnd = stageEnd,
                 cpSuccess = cpSuccess,
                 tender = tenderRs,

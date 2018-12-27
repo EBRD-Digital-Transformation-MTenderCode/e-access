@@ -7,13 +7,13 @@ import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 
-data class FinalizeUnsuccessfulLotRq @JsonCreator constructor(
+data class FinalStatusesRq @JsonCreator constructor(
 
         val lotId: String
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class FinalizeUnsuccessfulLotRs @JsonCreator constructor(
+data class FinalStatusesRs @JsonCreator constructor(
 
         val stageEnd: Boolean,
 
