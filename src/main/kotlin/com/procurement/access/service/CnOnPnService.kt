@@ -48,6 +48,7 @@ class CnOnPnService(private val generationService: GenerationService,
             tenderDto.electronicAuctions?.let { checkAuctions(tenderProcess.tender.lots, it) }
         }
         checkDocuments(tender = tenderProcess.tender, documentsDto = cnDto.tender.documents)
+        checkDocumentsRelatedLots(cnDto.tender)
         return ResponseDto(data = "ok")
     }
 
@@ -169,18 +170,17 @@ class CnOnPnService(private val generationService: GenerationService,
             val documentsDbId = documentsDb.asSequence().map { it.id }.toSet()
             if (!documentsDtoId.containsAll(documentsDbId)) throw ErrorException(INVALID_DOCS_ID)
         }
-        checkDocumentsRelatedLots(tender.lots, documentsDto)
     }
 
-    private fun checkDocumentsRelatedLots(lots: List<Lot>, documentsDto: List<Document>) {
-//        val lotsId = lots.asSequence().map { it.id }.toHashSet()
-//        val lotsFromDocuments = documentsDto.asSequence()
-//                .filter { it.relatedLots != null }
-//                .flatMap { it.relatedLots!!.asSequence() }
-//                .toHashSet()
-//        if (lotsFromDocuments.isNotEmpty()) {
-//            if (!lotsFromDocuments.containsAll(lotsId)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-//        }
+    private fun checkDocumentsRelatedLots(tender: TenderCnUpdate) {
+        val lotsId = tender.lots.asSequence().map { it.id }.toHashSet()
+        val lotsFromDocuments = tender.documents.asSequence()
+                .filter { it.relatedLots != null }
+                .flatMap { it.relatedLots!!.asSequence() }
+                .toHashSet()
+        if (lotsFromDocuments.isNotEmpty()) {
+            if (!lotsId.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
+        }
     }
 
     private fun checkAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
