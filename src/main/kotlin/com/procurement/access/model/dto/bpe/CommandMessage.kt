@@ -46,6 +46,7 @@ enum class CommandType(private val value: String) {
     CREATE_PIN_ON_PN("createPinOnPn"),
     CREATE_CN_ON_PIN("createCnOnPin"),
     CREATE_CN_ON_PN("createCnOnPn"),
+    CHECK_CN_ON_PN("checkCnOnPn"),
 
     SET_TENDER_SUSPENDED("setTenderSuspended"),
     SET_TENDER_UNSUSPENDED("setTenderUnsuspended"),
