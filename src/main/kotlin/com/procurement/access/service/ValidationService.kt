@@ -5,7 +5,6 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.lots.CheckLotStatusDetailsRs
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Operation.*
