@@ -133,23 +133,23 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             cpSuccess = false
 //      if at least one lot with lot.status == "active"
 //      stageEnd ==  FALSE; cpSuccess == TRUE
-        }
-        if (lots.asSequence().any { it.status == LotStatus.ACTIVE }) {
+        } else if (lots.asSequence().any { it.status == LotStatus.ACTIVE }) {
             stageEnd = false
             cpSuccess = true
-        }
 //      if at least one lot with lot.status == "complete" && all other lots have lot.status == "unsuccessful" || "cancelled"
 //      tender.status == "complete" && tender.statusDetails == "empty"
 //      stageEnd == TRUE; cpSuccess == TRUE
-        val completeLot = lots.asSequence().firstOrNull { it.status == LotStatus.COMPLETE }
-        if (completeLot != null) {
-            if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED }) {
-                process.tender.apply {
-                    status = TenderStatus.COMPLETE
-                    statusDetails = TenderStatusDetails.EMPTY
+        } else {
+            val completeLot = lots.asSequence().firstOrNull { it.status == LotStatus.COMPLETE }
+            if (completeLot != null) {
+                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED }) {
+                    process.tender.apply {
+                        status = TenderStatus.COMPLETE
+                        statusDetails = TenderStatusDetails.EMPTY
+                    }
+                    stageEnd = true
+                    cpSuccess = true
                 }
-                stageEnd = true
-                cpSuccess = true
             }
         }
         entity.jsonData = toJson(process)
