@@ -19,12 +19,12 @@ data class FinalizeUnsuccessfulLotRs @JsonCreator constructor(
 
         val cpSuccess: Boolean,
 
-        val tender: FinaleTender?,
+        val tender: FinalTender?,
 
-        val lots: List<FinaleLot>
+        val lots: List<FinalLot>
 )
 
-data class FinaleTender @JsonCreator constructor(
+data class FinalTender @JsonCreator constructor(
 
         val id: String,
 
@@ -33,7 +33,7 @@ data class FinaleTender @JsonCreator constructor(
         val statusDetails: TenderStatusDetails
 )
 
-data class FinaleLot @JsonCreator constructor(
+data class FinalLot @JsonCreator constructor(
 
         val id: String,
 
