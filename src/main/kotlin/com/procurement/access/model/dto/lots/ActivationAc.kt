@@ -10,21 +10,21 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ActivationAcRq @JsonCreator constructor(
 
-        val lotId: String,
-
-        val stageEnd: Boolean
+        val relatedLots: List<String>
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ActivationAcRs @JsonCreator constructor(
 
-        val tender: ActivationAcRsTender,
+        val tender: ActivationAcTender,
 
-        val lot: ActivationAcRsLot
+        val lots: List<ActivationAcLot>,
+
+        val stageEnd: Boolean
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class ActivationAcRsTender @JsonCreator constructor(
+data class ActivationAcTender @JsonCreator constructor(
 
         var status: TenderStatus,
 
@@ -32,7 +32,7 @@ data class ActivationAcRsTender @JsonCreator constructor(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class ActivationAcRsLot @JsonCreator constructor(
+data class ActivationAcLot @JsonCreator constructor(
 
         val id: String,
 
