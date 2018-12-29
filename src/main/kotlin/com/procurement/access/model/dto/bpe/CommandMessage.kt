@@ -46,6 +46,7 @@ enum class CommandType(private val value: String) {
     CREATE_PIN_ON_PN("createPinOnPn"),
     CREATE_CN_ON_PIN("createCnOnPin"),
     CREATE_CN_ON_PN("createCnOnPn"),
+    CHECK_CN_ON_PN("checkCnOnPn"),
 
     SET_TENDER_SUSPENDED("setTenderSuspended"),
     SET_TENDER_UNSUSPENDED("setTenderUnsuspended"),
@@ -59,23 +60,20 @@ enum class CommandType(private val value: String) {
     GET_LOTS("getLots"),
     GET_LOTS_AUCTION("getLotsAuction"),
     GET_AWARD_CRITERIA("getAwardCriteria"),
+    GET_DATA_FOR_AC("getDataForAc"),
     SET_LOTS_SD_UNSUCCESSFUL("setLotsStatusDetailsUnsuccessful"),
     SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
     SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
-    SET_LOTS_UNSUCCESSFUL_EV("setLotsStatusUnsuccessfulEv"),
+    SET_FINAL_STATUSES("setFinalStatuses"),
+    COMPLETE_LOTS("completeLots"),
     SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),
 
-    CHECK_LOTS_STATUS_DETAILS("checkLotsStatusDetails"),
+    CHECK_LOT_STATUS("checkLotStatus"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
     CHECK_BID("checkBid"),
     CHECK_ITEMS("checkItems"),
     CHECK_TOKEN("checkToken"),
-    CHECK_BUDGET_SOURCES("checkBudgetSources"),
-
-    COMPLETE_LOT("completeLot"),
-
-    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
-
+    CHECK_BUDGET_SOURCES("checkBudgetSources");
 
     @JsonValue
     fun value(): String {

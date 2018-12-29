@@ -22,7 +22,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         return ResponseDto(data = GetLotsRs(
-                awardCriteria = process.tender.awardCriteria.value,
+                awardCriteria = process.tender.awardCriteria!!.value,
                 lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))
         )
     }
@@ -33,12 +33,12 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         return ResponseDto(data = GetLotsAuctionRs(
-                awardCriteria = process.tender.awardCriteria.value,
+                awardCriteria = process.tender.awardCriteria!!.value,
                 tender = GetLotsAuctionTender(
                         id = process.tender.id!!,
                         title = process.tender.title,
                         description = process.tender.description,
-                        awardCriteria = process.tender.awardCriteria.value,
+                        awardCriteria = process.tender.awardCriteria!!.value,
                         lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))))
     }
 
@@ -98,68 +98,92 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = UpdateLotsRs(process.tender.status, process.tender.statusDetails, process.tender.lots, null))
+        return ResponseDto(data = UpdateLotsRs(
+                process.tender.status,
+                process.tender.statusDetails,
+                process.tender.lots,
+                null))
     }
 
-    fun setLotsStatusUnsuccessfulEv(cm: CommandMessage): ResponseDto {
+    fun setFinalStatuses(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val lotsDto = toObject(UpdateLotsEvRq::class.java, cm.data)
+        val dto = toObject(FinalStatusesRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.apply {
-            setLotsStatusEv(lots, lotsDto.unsuccessfulLots)
-            if (isAnyCompleteLots(lots)) {
-                statusDetails = TenderStatusDetails.AWARDED_CONTRACT_PREPARATION
-            } else {
+        val lots = process.tender.lots
+
+        var stageEnd = false
+        var cpSuccess = false
+        val lot = lots.asSequence().firstOrNull { it.id == dto.lotId }
+        if (lot != null) {
+            lot.status = LotStatus.UNSUCCESSFUL
+            lot.statusDetails = LotStatusDetails.EMPTY
+        }
+//      if all lots have lot.status == "unsuccessful" || "cancelled"
+//      tender.status == "unsuccessful" && tender.statusDetails == "empty"
+//      stageEnd == TRUE; cpSuccess == FALSE
+        if (lots.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED }) {
+            process.tender.apply {
                 status = TenderStatus.UNSUCCESSFUL
                 statusDetails = TenderStatusDetails.EMPTY
+            }
+            stageEnd = true
+            cpSuccess = false
+//      if at least one lot with lot.status == "active"
+//      stageEnd ==  FALSE; cpSuccess == TRUE
+        } else if (lots.asSequence().any { it.status == LotStatus.ACTIVE }) {
+            stageEnd = false
+            cpSuccess = true
+//      if at least one lot with lot.status == "complete" && all other lots have lot.status == "unsuccessful" || "cancelled"
+//      tender.status == "complete" && tender.statusDetails == "empty"
+//      stageEnd == TRUE; cpSuccess == TRUE
+        } else {
+            val completeLot = lots.asSequence().firstOrNull { it.status == LotStatus.COMPLETE }
+            if (completeLot != null) {
+                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED }) {
+                    process.tender.apply {
+                        status = TenderStatus.COMPLETE
+                        statusDetails = TenderStatusDetails.EMPTY
+                    }
+                    stageEnd = true
+                    cpSuccess = true
+                }
             }
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = UpdateLotsEvRs(
-                process.tender.status,
-                process.tender.statusDetails,
-                process.tender.mainProcurementCategory,
-                process.tender.lots))
+        val lotsRs = lots.asSequence().map { FinalLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
+        val tenderRs = FinalTender(id = process.tender.id!!, status = process.tender.status, statusDetails = process.tender.statusDetails)
+        return ResponseDto(data = FinalStatusesRs(
+                stageEnd = stageEnd,
+                cpSuccess = cpSuccess,
+                tender = tenderRs,
+                lots = lotsRs))
     }
 
-    fun setLotInitialStatus(cm: CommandMessage):ResponseDto{
+    fun setLotInitialStatus(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = "EV"
+        val dto = toObject(CanCancellationRq::class.java, cm.data)
+
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val dto = toObject(CanCancellationRq::class.java,cm.data)
-
-        process.tender.lots.asSequence().filter {
-            it.id==dto.lotId
-        }.firstOrNull()?.apply {
-            status=LotStatus.ACTIVE
-            statusDetails=LotStatusDetails.EMPTY
-        }
-        entity.apply {
-            jsonData
+        val lot = process.tender.lots.first { it.id == dto.lotId }
+        lot.apply {
+            status = LotStatus.ACTIVE
+            statusDetails = LotStatusDetails.EMPTY
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-
-
-        val lot = process.tender.lots.filter {
-            it.id==dto.lotId
-        }.first()
-
-        return ResponseDto(
-            data = CanCancellationRs(
+        return ResponseDto(data = CanCancellationRs(
                 lot = CanCancellationLot(
-                    id=lot.id,
-                    status = lot.status,
-                    statusDetails = lot.statusDetails
+                        id = lot.id,
+                        status = lot.status!!,
+                        statusDetails = lot.statusDetails!!
                 )
-            )
-        )
-
+        ))
     }
 
     fun getAwardCriteria(cm: CommandMessage): ResponseDto {
@@ -168,22 +192,25 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        return ResponseDto(data = GetAwardCriteriaRs(awardCriteria = process.tender.awardCriteria.value))
+        return ResponseDto(data = GetAwardCriteriaRs(awardCriteria = process.tender.awardCriteria!!.value))
     }
 
-    fun completeLot(cm: CommandMessage): ResponseDto {
+    fun completeLots(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = "EV"
         val dto = toObject(ActivationAcRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val lot = process.tender.lots.asSequence().filter { it.id == dto.lotId }.first()
-        lot.apply {
-            status = LotStatus.COMPLETE
-            statusDetails = LotStatusDetails.EMPTY
-        }
-        if (dto.stageEnd) {
+
+        process.tender.lots.asSequence().filter { dto.relatedLots.contains(it.id) }
+                .forEach {
+                    it.status = LotStatus.COMPLETE
+                    it.statusDetails = LotStatusDetails.EMPTY
+                }
+        val lotsRs = process.tender.lots.asSequence().map { ActivationAcLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
+        val stageEnd = process.tender.lots.asSequence().none { it.status == LotStatus.ACTIVE }
+        if (stageEnd) {
             process.tender.apply {
                 status = TenderStatus.COMPLETE
                 statusDetails = TenderStatusDetails.EMPTY
@@ -192,16 +219,13 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
         return ResponseDto(data = ActivationAcRs(
-                tender = ActivationAcRsTender(
+                tender = ActivationAcTender(
                         status = process.tender.status,
                         statusDetails = process.tender.statusDetails
                 ),
-                lot = ActivationAcRsLot(
-                        id = lot.id,
-                        status = lot.status!!,
-                        statusDetails = lot.statusDetails!!
-                )
-        ))
+                lots = lotsRs,
+                stageEnd = stageEnd)
+        )
     }
 
     private fun getLotsDtoByStatus(lots: List<Lot>, status: LotStatus): List<LotDto> {
@@ -239,29 +263,5 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 .filter { it.id == lotId }
                 .first()
                 .apply { statusDetails = lotStatusDetails }
-    }
-
-    private fun setLotsStatusEv(lots: List<Lot>, unsuccessfulLots: HashSet<UpdateLotDto>?) {
-        if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsIds = unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
-        lots.forEach { lot ->
-            if (lot.id in lotsIds) {
-                lot.status = LotStatus.UNSUCCESSFUL
-                lot.statusDetails = LotStatusDetails.EMPTY
-            }
-        }
-        lots.forEach { lot ->
-            if (lot.status == LotStatus.ACTIVE && lot.statusDetails == LotStatusDetails.AWARDED) {
-                lot.status = LotStatus.COMPLETE
-                lot.statusDetails = LotStatusDetails.EMPTY
-            }
-        }
-    }
-
-    private fun isAnyCompleteLots(lots: List<Lot>?): Boolean {
-        return if (lots != null && !lots.isEmpty()) {
-            lots.asSequence()
-                    .any { it.status == LotStatus.COMPLETE && it.statusDetails == LotStatusDetails.EMPTY }
-        } else false
     }
 }

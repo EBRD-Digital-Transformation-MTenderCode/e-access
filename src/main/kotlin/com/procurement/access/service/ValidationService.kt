@@ -5,7 +5,6 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.lots.CheckLotStatusDetailsRs
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.*
 import com.procurement.access.model.dto.ocds.Operation.*
@@ -106,15 +105,21 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
     }
 
 
-    fun checkLotsStatusDetails(cm: CommandMessage): ResponseDto {
+    fun checkLotStatus(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
+        val owner = cm.context.owner ?: throw ErrorException(ErrorType.CONTEXT)
+        val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
 
-        val predicate = { lot: Lot -> lot.status == LotStatus.ACTIVE && lot.statusDetails != LotStatusDetails.AWARDED }
-        if (process.tender.lots.asSequence().any(predicate)) throw ErrorException(ErrorType.NOT_ALL_LOTS_AWARDED)
-        return ResponseDto(data = CheckLotStatusDetailsRs(process.tender.items))
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
+        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        process.tender.lots.asSequence()
+                .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.AWARDED }
+                ?: throw ErrorException(ErrorType.NO_AWARDED_LOT)
+        return ResponseDto(data = "ok")
     }
 
     fun checkLotsStatus(cm: CommandMessage): ResponseDto {

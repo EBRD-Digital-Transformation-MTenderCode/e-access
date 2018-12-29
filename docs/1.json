@@ -1,46 +1,47 @@
 {
-  "ocid": "ocds-b3wdp1-MD-1540195207462",
+  "ocid": "ocds-t1s2t3-MD-1546021370687",
   "planning": {
     "budget": {
       "amount": {
-        "amount": 2083385.00,
+        "amount": 900.00,
         "currency": "MDL"
       },
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "ocds-b3wdp1-MD-1539931678793-FS-1540194918352",
-          "description": "REPARATIA CAPITALA A ACOPERISULUI  CU LOCATIA BALTI",
+          "id": "ocds-t1s2t3-MD-1545301873443-FS-1545302026838",
+          "description": "Hello world!",
           "amount": {
-            "amount": 2083385.00,
+            "amount": 900.00,
             "currency": "MDL"
           },
           "period": {
-            "startDate": "2018-10-21T00:00:00Z",
-            "endDate": "2018-12-31T00:00:00Z"
+            "startDate": "2018-05-25T22:00:00Z",
+            "endDate": "2019-12-27T21:00:00Z"
           },
           "sourceParty": {
-            "id": "MD-IDNO-1006601004242",
-            "name": "Centrul Național de Transfuzie a Sîngelui"
+            "id": "MD-IDNO-354-37-1072",
+            "name": "Burns-Davis222"
           }
         }
       ]
     }
   },
   "tender": {
-    "id": "ocds-b3wdp1-MD-1540195207462",
-    "title": "REPARATIA ACOPERISULUI",
-    "description": "REPARATIA ACOPERISULUI CU LOCATIA BALTI",
-    "status": "active",
-    "statusDetails": "awarding",
+    "id": "ocds-t1s2t3-MD-1546021370687",
+    "title": "gav",
+    "description": "gav gav",
+    "status": "complete",
+    "statusDetails": "empty",
     "classification": {
       "scheme": "CPV",
-      "id": "45260000-7",
-      "description": "Lucrări de acoperire şi alte lucrări speciale de construcţii"
+      "id": "66600000-6",
+      "description": "Servicii de trezorerie"
     },
-    "mainProcurementCategory": "works",
+    "mainProcurementCategory": "services",
     "procurementMethod": "open",
-    "procurementMethodDetails": "Licitație deschisă",
+    "procurementMethodDetails": "TEST Licitatia deschisa",
+    "procurementMethodAdditionalInfo": "fsdfsdf",
     "submissionMethod": [
       "electronicSubmission"
     ],
@@ -72,19 +73,18 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "NATIONAL_PROCUREMENT_LAW",
+    "legalBasis": "DIRECTIVE_2014_24_EU",
     "procuringEntity": {
-      "id": "MD-IDNO-1006601004242",
-      "name": "Centrul Național de Transfuzie a Sîngelui",
+      "id": "MD-IDNO-gggg",
+      "name": "Edward-Compan",
       "identifier": {
-        "id": "1006601004242",
+        "id": "gggg",
         "scheme": "MD-IDNO",
-        "legalName": "Centrul Național de Transfuzie a Sîngelui",
-        "uri": "http://www.cnts.md"
+        "legalName": "fff",
+        "uri": "hhh"
       },
       "address": {
-        "streetAddress": "Strada Academiei 11",
-        "postalCode": "MD-2028",
+        "streetAddress": "",
         "addressDetails": {
           "country": {
             "scheme": "iso-alpha2",
@@ -94,39 +94,42 @@
           },
           "region": {
             "scheme": "CUATM",
-            "id": "0101000",
-            "description": "mun.Chişinău",
+            "id": "1000000",
+            "description": "Anenii Noi",
             "uri": "http://statistica.md"
           },
           "locality": {
-            "scheme": "UN/LOCODE",
-            "id": "0101000",
-            "description": "mun.Chişinău"
+            "scheme": "CUATM",
+            "id": "1001000",
+            "description": "or.Anenii Noi",
+            "uri": "http://statistica.md"
           }
         }
       },
       "contactPoint": {
-        "name": "LIUBA CASIAN",
-        "email": "contabilitate.cnts@mail.ru",
-        "telephone": "022 10 90 70"
+        "name": "hgfh",
+        "email": "hfgh",
+        "telephone": "hgfhfh",
+        "faxNumber": "hgfh",
+        "url": "hgfhgf"
       }
     },
-    "awardCriteria": "priceOnly",
+    "awardCriteria": "qualityOnly",
     "requiresElectronicCatalogue": false,
     "contractPeriod": {
-      "startDate": "2018-11-12T12:00:00Z",
-      "endDate": "2018-12-31T12:00:00Z"
+      "startDate": "2018-12-29T16:02:00Z",
+      "endDate": "2019-12-30T16:00:00Z"
     },
     "tenderPeriod": {
-      "startDate": "2018-10-31T06:05:11Z",
-      "endDate": "2018-11-07T06:05:11Z"
+      "startDate": "2018-12-28T18:26:00Z",
+      "endDate": "2018-12-28T18:28:00Z"
     },
     "enquiryPeriod": {
-      "startDate": "2018-10-23T09:06:02Z",
-      "endDate": "2018-10-31T06:05:11Z"
+      "startDate": "2018-12-28T18:23:34Z",
+      "endDate": "2018-12-28T18:26:00Z"
     },
     "value": {
-      "amount": 2083385.00,
+      "amount": 600.00,
       "currency": "MDL"
     },
     "lotGroups": [
@@ -136,13 +139,13 @@
     ],
     "lots": [
       {
-        "id": "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55",
-        "title": "REPARATIA ACOPERISULUI ",
-        "description": "REPARATIA ACOPERISULUI CNTS LOCATIA BALTI",
-        "status": "active",
+        "id": "afcfdec2-0acd-11e9-a3ff-03157a44897b",
+        "title": "Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Вдали от всех живут они в буквенных домах на берегу Семантика большого языкового океана. Маленький ручеек Даль журчит по всей стране и обеспечивает ее всеми необходимыми правилами. Эта парадигматическая страна, в которой жаренные члены предложения залетают прямо в рот. Даже всемогущая пунктуация не имеет власти над рыбными текстами, ведущими безорфографичный образ жизни. Однажды одна маленькая строчка рыбного текста по имени Lorem ipsum решила выйти в большой мир грамматики. Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Вдали от всех живут они в буквенных домах на берегу Семантика большого языкового океана. Маленький ручеек Даль журчит по всей стране и обеспечивает ее всеми необходимыми правилами. Эта парадигматическая страна, в которой жаренные члены предложения залетают прямо в рот. Даже всемогущая пунктуация не имеет власти над рыбными текстами, ведущими безорфографичный образ жизни. Однажды одна маленькая строчка рыбного текста по имени Lorem ipsum решила выйти в большой мир грамматики. Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Вдали от всех живут они в буквенных домах на берегу Семантика большого языкового океана. Маленький ручеек Даль журчит по всей стране и обеспечивает ее всеми необходимыми правилами. Эта парадигматическая страна, в которой жаренные члены предложения залетают прямо в рот. Даже всемогущая пунктуация не имеет власти над рыбными текстами, ведущими безорфографичный образ жизни. Однажды одна маленькая строчка рыбного текста по имени Lorem ipsum решила выйти в большой мир грамматики.",
+        "description": "looot",
+        "status": "complete",
         "statusDetails": "empty",
         "value": {
-          "amount": 2083385.00,
+          "amount": 300.00,
           "currency": "MDL"
         },
         "options": [
@@ -166,13 +169,13 @@
           }
         ],
         "contractPeriod": {
-          "startDate": "2018-11-12T12:00:00Z",
-          "endDate": "2018-12-31T12:00:00Z"
+          "startDate": "2018-12-29T16:02:00Z",
+          "endDate": "2019-12-30T16:00:00Z"
         },
         "placeOfPerformance": {
           "address": {
-            "streetAddress": "str. Decebal 113",
-            "postalCode": "MD-3101",
+            "streetAddress": "6666",
+            "postalCode": "666",
             "addressDetails": {
               "country": {
                 "scheme": "iso-alpha2",
@@ -182,63 +185,166 @@
               },
               "region": {
                 "scheme": "CUATM",
-                "id": "0301000",
-                "description": "mun.Bălţi",
+                "id": "1000000",
+                "description": "Anenii Noi",
                 "uri": "http://statistica.md"
               },
               "locality": {
-                "scheme": "UN/LOCODE",
-                "id": "0301000",
-                "description": "mun.Bălţi"
+                "scheme": "666",
+                "id": "666",
+                "description": "666"
               }
             }
-          },
-          "description": "Documentele trebuie prezentate conform specificatiilor"
+          }
+        }
+      },
+      {
+        "id": "afcfdec3-0acd-11e9-a3ff-03157a44897b",
+        "title": "lot2",
+        "description": "looot2",
+        "status": "unsuccessful",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 300.00,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2018-12-29T17:02:00Z",
+          "endDate": "2019-12-30T16:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "6666",
+            "postalCode": "666",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "MOLDOVA",
+                "uri": "http://reference.iatistandard.org"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "Anenii Noi",
+                "uri": "http://statistica.md"
+              },
+              "locality": {
+                "scheme": "666",
+                "id": "666",
+                "description": "666"
+              }
+            }
+          }
         }
       }
     ],
     "items": [
       {
-        "id": "ddfe32b0-d6a2-11e8-99d8-67dbdbaf7b55",
-        "description": "Servicii de reparatie",
+        "id": "afcfdec0-0acd-11e9-a3ff-03157a44897b",
+        "description": "Душа моя озарена неземной радостью, как эти чудесные весенние утра, которыми я наслаждаюсь от всего сердца. Я совсем один и блаженствую в здешнем краю, словно созданном для таких, как я.",
         "classification": {
           "scheme": "CPV",
-          "id": "45260000-7",
-          "description": "Lucrări de acoperire şi alte lucrări speciale de construcţii"
+          "id": "66600000-6",
+          "description": "Servicii de trezorerie"
         },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "id": "AB06-7",
+            "description": "Plastic"
+          }
+        ],
         "quantity": 1.00,
         "unit": {
-          "id": "924",
-          "name": "Simbol"
+          "id": "86",
+          "name": "Milion metri patrati spatiu locativ"
         },
-        "relatedLot": "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55"
+        "relatedLot": "afcfdec2-0acd-11e9-a3ff-03157a44897b"
+      },
+      {
+        "id": "afcfdec1-0acd-11e9-a3ff-03157a44897b",
+        "description": "Проснувшись однажды утром после беспокойного сна, Грегор Замза обнаружил, что он у себя в постели превратился в страшное насекомое. Лежа на панцирнотвердой спине, он видел, стоило ему приподнять голову, свой коричневый, выпуклый, разделенный дугообразными чешуйками живот, на верхушке которого еле держалось готовое вот-вот окончательно сползти одеяло. Его многочисленные, убого тонкие по сравнению с остальным телом ножки беспомощно копошились у него перед глазами. «Что со мной случилось?» – подумал он. Это не было сном.",
+        "classification": {
+          "scheme": "CPV",
+          "id": "66600000-6",
+          "description": "Servicii de trezorerie"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "id": "AB06-7",
+            "description": "Plastic"
+          }
+        ],
+        "quantity": 2.00,
+        "unit": {
+          "id": "86",
+          "name": "Milion metri patrati spatiu locativ"
+        },
+        "relatedLot": "afcfdec3-0acd-11e9-a3ff-03157a44897b"
       }
     ],
     "documents": [
       {
-        "id": "6044fc67-aacb-43c0-85b5-fd984fad9d9b-1540285523648",
-        "documentType": "biddingDocuments",
-        "title": "CNTS_Acoperis(Balti)Cm2-1-10,10,13-caiet_sarcini.pdf",
-        "description": "Caiet de sarcini",
+        "id": "90024df5-2d42-4329-8485-9c560bb3cfad-1545841988189",
+        "documentType": "tenderNotice",
+        "title": "doc1т",
         "relatedLots": [
-          "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55"
+          "afcfdec2-0acd-11e9-a3ff-03157a44897b"
         ]
-      },
-      {
-        "id": "d3d2185b-a536-42d1-835a-1c168bc57c71-1540285523616",
-        "documentType": "biddingDocuments",
-        "title": "CNTS_Acoperis(Balti)Cm2-1-10,10,13-lista_cantitati.pdf",
-        "description": "Lista de cantitati",
-        "relatedLots": [
-          "ddfe32b1-d6a2-11e8-99d8-67dbdbaf7b55"
-        ]
-      },
-      {
-        "id": "85735876-c2d1-4de6-9247-4e03a38c987e-1540793066153",
-        "documentType": "biddingDocuments",
-        "title": "fda reparatie Balti.pdf",
-        "description": "Fisa de date a achizitiei"
       }
-    ]
+    ],
+    "procurementMethodModalities": [
+      "electronicAuction"
+    ],
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "1",
+          "relatedLot": "afcfdec2-0acd-11e9-a3ff-03157a44897b",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 5.00,
+                "currency": "MDL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "relatedLot": "afcfdec3-0acd-11e9-a3ff-03157a44897b",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 5.00,
+                "currency": "MDL"
+              }
+            }
+          ]
+        }
+      ]
+    }
   }
 }

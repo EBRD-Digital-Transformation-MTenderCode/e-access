@@ -22,7 +22,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     EL_CRITERIA_IS_NULL("10.07", "EligibilityCriteria must be presented!"),
     INVALID_START_DATE("10.08", "Invalid tender period start date."),
     INVALID_CURRENCY("10.09", "Invalid currency."),
-    NOT_ALL_LOTS_AWARDED("10.10", "Not all active lots are awarded."),
+    NO_AWARDED_LOT("10.10", "Awarding by lot is not completed."),
     INVALID_ITEMS("10.11", "Invalid items id."),
     INVALID_LOT_CONTRACT_PERIOD("10.12", "Invalid contract period of lot."),
     INVALID_PMD("10.13", "Invalid pmd."),
@@ -53,5 +53,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_BS("10.38", "Invalid budget sources."),
     EMPTY_BREAKDOWN("10.39", "Budget breakdowns must not be empty."),
     INVALID_AUCTION_IS_NON_EMPTY("10.40", "Electronic auctions must be empty."),
+    INVALID_LOTS_STATUS("10.41", "Invalid lots status."),
     CONTEXT("20.01", "Context parameter not found.");
 }

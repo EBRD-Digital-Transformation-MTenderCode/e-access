@@ -78,7 +78,6 @@ class PnService(private val generationService: GenerationService,
                         dynamicPurchasingSystem = DynamicPurchasingSystem(hasDynamicPurchasingSystem = false),
                         legalBasis = tenderDto.legalBasis,
                         procuringEntity = tenderDto.procuringEntity,
-                        awardCriteria = tenderDto.awardCriteria ?: AwardCriteria.PRICE_ONLY,
                         requiresElectronicCatalogue = false,
                         contractPeriod = setContractPeriod(tenderDto.lots, planningDto.budget),
                         tenderPeriod = Period(tenderDto.tenderPeriod.startDate, null),
@@ -88,7 +87,8 @@ class PnService(private val generationService: GenerationService,
                         items = setItems(tenderDto.items),
                         documents = setDocuments(tenderDto),
                         procurementMethodModalities = null,
-                        electronicAuctions = null
+                        electronicAuctions = null,
+                        awardCriteria = null
                 )
         )
         val entity = getEntity(tp, cpId, stage, dateTime, owner)
