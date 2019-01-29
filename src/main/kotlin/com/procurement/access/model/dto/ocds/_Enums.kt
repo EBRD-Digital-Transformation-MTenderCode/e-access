@@ -69,7 +69,8 @@ enum class ProcurementMethod(@JsonValue val value: String) {
     FA("limited"),
     TEST_OT("open"),
     TEST_SV("open"),
-    TEST_RT("selective");
+    TEST_RT("selective"),
+    TEST_MV("open");
 
     override fun toString(): String {
         return this.value

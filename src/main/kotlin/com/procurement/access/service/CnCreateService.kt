@@ -15,6 +15,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
+import java.lang.Exception
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDateTime
@@ -208,6 +209,7 @@ class CnCreateService(private val generationService: GenerationService,
             "TEST_OT" -> ProcurementMethod.TEST_OT
             "TEST_SV" -> ProcurementMethod.TEST_SV
             "TEST_RT" -> ProcurementMethod.TEST_RT
+            "TEST_MV" -> ProcurementMethod.TEST_MV
             else -> throw ErrorException(INVALID_PMD)
         }
     }
