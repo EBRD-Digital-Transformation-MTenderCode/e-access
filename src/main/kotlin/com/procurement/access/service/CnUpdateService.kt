@@ -103,7 +103,7 @@ class CnUpdateService(private val generationService: GenerationService,
                     throw ErrorException(DUPLICATE_TENDER_LOT_ID)
             }
             val auctionLotIds: Set<String> = cnDto.tender.electronicAuctions.details.fold(initial = HashSet()) { acc, item ->
-                if (acc.add(item.id))
+                if (acc.add(item.relatedLot))
                     acc
                 else
                     throw ErrorException(DUPLICATE_AUCTION_LOT_ID)
