@@ -54,5 +54,8 @@ enum class ErrorType constructor(val code: String, val message: String) {
     EMPTY_BREAKDOWN("10.39", "Budget breakdowns must not be empty."),
     INVALID_AUCTION_IS_NON_EMPTY("10.40", "Electronic auctions must be empty."),
     INVALID_LOTS_STATUS("10.41", "Invalid lots status."),
-    CONTEXT("20.01", "Context parameter not found.");
+    CONTEXT("20.01", "Context parameter not found."),
+    DUPLICATE_TENDER_LOT_ID("10.42", "Duplicate lot id in tender."),
+    DUPLICATE_AUCTION_LOT_ID("10.43", "Duplicate lot id in auction."),
+    NOT_MATCH_LOT_ID("10.44", "Lot IDs in the tender do not match lot IDs in the auction.");
 }

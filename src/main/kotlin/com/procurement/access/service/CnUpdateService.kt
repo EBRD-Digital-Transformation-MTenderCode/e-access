@@ -94,6 +94,22 @@ class CnUpdateService(private val generationService: GenerationService,
             if (cnDto.tender.electronicAuctions != null) throw ErrorException(INVALID_AUCTION_IS_NON_EMPTY)
         } else {
             if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION_IS_EMPTY)
+
+            //VR-3.7.15
+            val lotIds: Set<String> = cnDto.tender.lots.fold(initial = HashSet()) { acc, item ->
+                if (acc.add(item.id))
+                    acc
+                else
+                    throw ErrorException(DUPLICATE_TENDER_LOT_ID)
+            }
+            val auctionLotIds: Set<String> = cnDto.tender.electronicAuctions.details.fold(initial = HashSet()) { acc, item ->
+                if (acc.add(item.id))
+                    acc
+                else
+                    throw ErrorException(DUPLICATE_AUCTION_LOT_ID)
+            }
+            if(lotIds.size != auctionLotIds.size || !lotIds.all { auctionLotIds.contains(it) })
+                throw ErrorException(NOT_MATCH_LOT_ID)
         }
     }
 
