@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.procurement.access.databinding.JsonDateDeserializer
-import com.procurement.access.databinding.JsonDateSerializer
 import com.procurement.access.model.dto.databinding.IntDeserializer
+import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
+import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import com.procurement.access.model.dto.databinding.StringsDeserializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -18,8 +18,8 @@ class ObjectMapperConfig(@Autowired objectMapper: ObjectMapper) {
 
     init {
         val module = SimpleModule()
-        module.addSerializer(LocalDateTime::class.java, JsonDateSerializer())
-        module.addDeserializer(LocalDateTime::class.java, JsonDateDeserializer())
+        module.addSerializer(LocalDateTime::class.java, JsonDateTimeSerializer())
+        module.addDeserializer(LocalDateTime::class.java, JsonDateTimeDeserializer())
         module.addDeserializer(String::class.java, StringsDeserializer())
         module.addDeserializer(Int::class.java, IntDeserializer())
         objectMapper.registerModule(module)
