@@ -3,11 +3,50 @@ package com.procurement.access.service
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.exception.ErrorType.CONTEXT
+import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
+import com.procurement.access.exception.ErrorType.INVALID_AUCTION_CURRENCY
+import com.procurement.access.exception.ErrorType.INVALID_AUCTION_ID
+import com.procurement.access.exception.ErrorType.INVALID_AUCTION_MINIMUM
+import com.procurement.access.exception.ErrorType.INVALID_AUCTION_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_ITEMS
+import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
+import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
+import com.procurement.access.exception.ErrorType.INVALID_OWNER
+import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.*
-import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.cn.CnUpdate
+import com.procurement.access.model.dto.cn.ItemCnUpdate
+import com.procurement.access.model.dto.cn.LotCnUpdate
+import com.procurement.access.model.dto.cn.TenderCnUpdate
+import com.procurement.access.model.dto.cn.validate
+import com.procurement.access.model.dto.ocds.AwardCriteria
+import com.procurement.access.model.dto.ocds.Budget
+import com.procurement.access.model.dto.ocds.ContractPeriod
+import com.procurement.access.model.dto.ocds.Document
+import com.procurement.access.model.dto.ocds.ElectronicAuctions
+import com.procurement.access.model.dto.ocds.ElectronicAuctionsDetails
+import com.procurement.access.model.dto.ocds.Item
+import com.procurement.access.model.dto.ocds.Lot
+import com.procurement.access.model.dto.ocds.LotStatus
+import com.procurement.access.model.dto.ocds.LotStatusDetails
+import com.procurement.access.model.dto.ocds.MainProcurementCategory
+import com.procurement.access.model.dto.ocds.Option
+import com.procurement.access.model.dto.ocds.RecurrentProcurement
+import com.procurement.access.model.dto.ocds.Renewal
+import com.procurement.access.model.dto.ocds.Tender
+import com.procurement.access.model.dto.ocds.TenderProcess
+import com.procurement.access.model.dto.ocds.TenderStatus
+import com.procurement.access.model.dto.ocds.TenderStatusDetails
+import com.procurement.access.model.dto.ocds.Value
+import com.procurement.access.model.dto.ocds.Variant
+import com.procurement.access.model.dto.ocds.validate
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -43,9 +82,12 @@ class CnOnPnService(private val generationService: GenerationService,
             checkLotsValue(cnDto, tenderProcess.planning.budget)
             checkLotsAndTenderContractPeriod(cnDto, tenderProcess.planning.budget)
             checkDtoRelatedLots(tenderDto)
+            if (tenderDto.electronicAuctions != null)
+                checkAuctionsForLotsFromPlatform(tenderDto.lots, tenderDto.electronicAuctions)
         } else {
             checkLotsContractPeriod(cnDto)
-            tenderDto.electronicAuctions?.let { checkAuctions(tenderProcess.tender.lots, it) }
+            if (tenderDto.electronicAuctions != null)
+                checkAuctionsForLotsFromPN(tenderProcess.tender.lots, tenderDto.electronicAuctions)
         }
         checkDocuments(tender = tenderProcess.tender, documentsDto = cnDto.tender.documents)
         checkDocumentsRelatedLots(cnDto.tender)
@@ -183,26 +225,81 @@ class CnOnPnService(private val generationService: GenerationService,
         }
     }
 
-    private fun checkAuctions(lots: List<Lot>, auctions: ElectronicAuctions) {
-        val activeLots = lots.asSequence().filter { it.status == LotStatus.ACTIVE }.toList()
-        val activeLotsIdSet = activeLots.asSequence().map { it.id }.toSet()
-        val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
-        if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (lotsFromAuctions.size != activeLotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
-        if (!activeLotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+    private fun checkAuctionsForLotsFromPlatform(lotsFromPlatform: List<LotCnUpdate>, auctions: ElectronicAuctions) {
+        val activeLots: List<LotCnUpdate> = lotsFromPlatform
+        val activeLotsIds: Set<String> = activeLots.fold(initial = HashSet()) { set: HashSet<String>, item ->
+            set.apply { add(item.id) }
+        }
+
+        val auctionDetailsByLotId = getUniqueElectronicAuctionsDetailsByLotId(auctions)
+        checkEqualsLotsAndAuctionsByLotId(activeLotsIds = activeLotsIds, auctionLotsIds = auctionDetailsByLotId.keys)
+
         activeLots.forEach { lot ->
-            auctions.details.asSequence().filter { it.relatedLot == lot.id }.forEach { auction ->
-                checkAuctionMinimum(lot.value.amount, lot.value.currency, auction)
-            }
+            checkAuctionsMinimum(
+                lotId = lot.id,
+                amount = lot.value.amount,
+                currency = lot.value.currency,
+                auctionDetailsByLotId = auctionDetailsByLotId
+            )
         }
     }
 
-    private fun checkAuctionMinimum(lotAmount: BigDecimal, lotCurrency: String, auction: ElectronicAuctionsDetails) {
-        val lotAmountMinimum = lotAmount.div(BigDecimal(10))
-        for (modality in auction.electronicAuctionModalities) {
+    private fun checkAuctionsForLotsFromPN(lotsFromPN: List<Lot>, auctions: ElectronicAuctions) {
+        val activeLots: List<Lot> = lotsFromPN.filter { it.status == LotStatus.PLANNING }
+        val activeLotsIds: Set<String> = activeLots.fold(initial = HashSet()) { set: HashSet<String>, item ->
+            set.apply { add(item.id) }
+        }
+
+        val auctionDetailsByLotId = getUniqueElectronicAuctionsDetailsByLotId(auctions)
+        checkEqualsLotsAndAuctionsByLotId(activeLotsIds = activeLotsIds, auctionLotsIds = auctionDetailsByLotId.keys)
+
+        activeLots.forEach { lot ->
+            checkAuctionsMinimum(
+                lotId = lot.id,
+                amount = lot.value.amount,
+                currency = lot.value.currency,
+                auctionDetailsByLotId = auctionDetailsByLotId
+            )
+        }
+    }
+
+    private fun checkEqualsLotsAndAuctionsByLotId(activeLotsIds: Set<String>, auctionLotsIds: Set<String>) {
+        if (activeLotsIds.size != auctionLotsIds.size || !activeLotsIds.containsAll(auctionLotsIds))
+            throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+    }
+
+    private fun getUniqueElectronicAuctionsDetailsByLotId(auctions: ElectronicAuctions): Map<String, List<ElectronicAuctionsDetails>> {
+        return auctions.details
+            .groupBy {
+                it.relatedLot
+            }
+            .also {
+                checkDuplicateLotInAuctions(auctionLotsIds = it.keys, auctions = auctions)
+            }
+    }
+
+    private fun checkDuplicateLotInAuctions(auctionLotsIds: Set<String>, auctions: ElectronicAuctions) {
+        if (auctionLotsIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
+    }
+
+    private fun checkAuctionsMinimum(
+        lotId: String,
+        amount: BigDecimal,
+        currency: String,
+        auctionDetailsByLotId: Map<String, List<ElectronicAuctionsDetails>>
+    ) {
+        auctionDetailsByLotId.getValue(lotId)
+            .forEach {
+                checkAuctionMinimum(amount = amount, currency = currency, auctionDetails = it)
+            }
+    }
+
+    private fun checkAuctionMinimum(amount: BigDecimal, currency: String, auctionDetails: ElectronicAuctionsDetails) {
+        val lotAmountMinimum = amount.div(BigDecimal(10))
+        for (modality in auctionDetails.electronicAuctionModalities) {
             if (modality.eligibleMinimumDifference.amount > lotAmountMinimum)
                 throw ErrorException(INVALID_AUCTION_MINIMUM)
-            if (modality.eligibleMinimumDifference.currency != lotCurrency)
+            if (modality.eligibleMinimumDifference.currency != currency)
                 throw ErrorException(INVALID_AUCTION_CURRENCY)
         }
     }
