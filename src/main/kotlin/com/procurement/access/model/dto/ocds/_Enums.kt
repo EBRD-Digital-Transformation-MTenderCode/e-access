@@ -67,13 +67,15 @@ enum class ProcurementMethod(@JsonValue val value: String) {
     DA("limited"),
     NP("limited"),
     FA("limited"),
+    OTHER("selective"),
     TEST_OT("open"),
     TEST_SV("open"),
     TEST_RT("selective"),
     TEST_MV("open"),
     TEST_DA("limited"),
     TEST_NP("limited"),
-    TEST_FA("limited");
+    TEST_FA("limited"),
+    TEST_OTHER("selective");
 
     override fun toString(): String {
         return this.value
