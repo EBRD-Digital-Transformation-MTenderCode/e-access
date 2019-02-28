@@ -10,8 +10,8 @@ import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.IS_NOT_SUSPENDED
 import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs

@@ -17,8 +17,8 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
 import com.procurement.access.exception.ErrorType.INVALID_PMD
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.BudgetCnCreate
 import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.model.dto.cn.ItemCnCreate

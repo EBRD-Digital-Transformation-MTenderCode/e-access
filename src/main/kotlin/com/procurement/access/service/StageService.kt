@@ -1,8 +1,8 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,12 +1,11 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.HistoryDao
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.CommandType
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
-
 
 @Service
 class CommandService(private val historyDao: HistoryDao,

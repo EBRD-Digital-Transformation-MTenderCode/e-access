@@ -2,11 +2,11 @@ package com.procurement.access.controller
 
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.bpe.getEnumExceptionResponseDto
-import com.procurement.access.model.bpe.getErrorExceptionResponseDto
-import com.procurement.access.model.bpe.getExceptionResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.getEnumExceptionResponseDto
+import com.procurement.access.model.dto.bpe.getErrorExceptionResponseDto
+import com.procurement.access.model.dto.bpe.getExceptionResponseDto
 import com.procurement.access.service.CommandService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

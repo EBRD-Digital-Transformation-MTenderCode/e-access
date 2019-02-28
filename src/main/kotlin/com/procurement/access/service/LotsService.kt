@@ -5,8 +5,8 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.ActivationAcLot
 import com.procurement.access.model.dto.lots.ActivationAcRq
 import com.procurement.access.model.dto.lots.ActivationAcRs

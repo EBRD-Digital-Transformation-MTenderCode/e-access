@@ -16,8 +16,8 @@ import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.Document
