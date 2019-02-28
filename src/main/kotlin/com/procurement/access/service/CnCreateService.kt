@@ -72,7 +72,7 @@ class CnCreateService(private val generationService: GenerationService,
 
     fun createCn(cm: CommandMessage): ResponseDto {
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
-        val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
+        val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) } ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
@@ -110,7 +110,7 @@ class CnCreateService(private val generationService: GenerationService,
                         classification = tenderDto.classification,
                         mainProcurementCategory = tenderDto.mainProcurementCategory,
                         additionalProcurementCategories = null,
-                        procurementMethod = getPmd(pmd),
+                        procurementMethod = pmd,
                         procurementMethodDetails = tenderDto.procurementMethodDetails,
                         procurementMethodRationale = tenderDto.procurementMethodRationale,
                         procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo,
@@ -148,8 +148,8 @@ class CnCreateService(private val generationService: GenerationService,
         return ResponseDto(data = tp)
     }
 
-    private fun validateAuctionsDto(country: String, pmd: String, cnDto: CnCreate) {
-        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory.value)) {
+    private fun validateAuctionsDto(country: String, pmd: ProcurementMethod, cnDto: CnCreate) {
+        if (rulesService.isAuctionRequired(country, pmd, cnDto.tender.mainProcurementCategory)) {
             cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
             if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
             cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
@@ -176,7 +176,7 @@ class CnCreateService(private val generationService: GenerationService,
     }
 
     private fun getLots(lotsDto: List<LotCnCreate>): List<Lot> {
-        return lotsDto.asSequence().map { convertDtoLotToLot(it) }.toList()
+        return lotsDto.map { convertDtoLotToLot(it) }
     }
 
     private fun setItemsId(items: List<ItemCnCreate>) {
@@ -242,21 +242,8 @@ class CnCreateService(private val generationService: GenerationService,
         }
     }
 
-    private fun getPmd(pmd: String): ProcurementMethod {
-        return when (pmd) {
-            "MV" -> ProcurementMethod.MV
-            "OT" -> ProcurementMethod.OT
-            "RT" -> ProcurementMethod.RT
-            "SV" -> ProcurementMethod.SV
-            "DA" -> ProcurementMethod.DA
-            "NP" -> ProcurementMethod.NP
-            "FA" -> ProcurementMethod.FA
-            "TEST_OT" -> ProcurementMethod.TEST_OT
-            "TEST_SV" -> ProcurementMethod.TEST_SV
-            "TEST_RT" -> ProcurementMethod.TEST_RT
-            "TEST_MV" -> ProcurementMethod.TEST_MV
-            else -> throw ErrorException(INVALID_PMD)
-        }
+    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
+        ErrorException(INVALID_PMD)
     }
 
     private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetValue: Value): Value {

@@ -38,6 +38,7 @@ import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.MainProcurementCategory
 import com.procurement.access.model.dto.ocds.Option
+import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.model.dto.ocds.RecurrentProcurement
 import com.procurement.access.model.dto.ocds.Renewal
 import com.procurement.access.model.dto.ocds.Tender
@@ -69,7 +70,7 @@ class CnOnPnService(private val generationService: GenerationService,
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
-        val pmd = cm.context.pmd ?: throw ErrorException(CONTEXT)
+        val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) } ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
@@ -92,6 +93,10 @@ class CnOnPnService(private val generationService: GenerationService,
         checkDocuments(tender = tenderProcess.tender, documentsDto = cnDto.tender.documents)
         checkDocumentsRelatedLots(cnDto.tender)
         return ResponseDto(data = "ok")
+    }
+
+    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
+        ErrorException(ErrorType.INVALID_PMD)
     }
 
     fun createCnOnPn(cm: CommandMessage): ResponseDto {
@@ -142,8 +147,8 @@ class CnOnPnService(private val generationService: GenerationService,
         if (itemsId.size != items.size) throw ErrorException(INVALID_ITEMS)
     }
 
-    private fun checkAuctionsDto(country: String, pmd: String, cnDto: CnUpdate, mainProcurementCategory: MainProcurementCategory) {
-        if (rulesService.isAuctionRequired(country, pmd, mainProcurementCategory.value)) {
+    private fun checkAuctionsDto(country: String, pmd: ProcurementMethod, cnDto: CnUpdate, mainProcurementCategory: MainProcurementCategory) {
+        if (rulesService.isAuctionRequired(country, pmd, mainProcurementCategory)) {
             cnDto.tender.procurementMethodModalities ?: throw ErrorException(ErrorType.INVALID_PMM)
             if (cnDto.tender.procurementMethodModalities.isEmpty()) throw ErrorException(ErrorType.INVALID_PMM)
             cnDto.tender.electronicAuctions ?: throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)

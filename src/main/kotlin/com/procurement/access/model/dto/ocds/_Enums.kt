@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import java.util.*
 
-
 enum class ProcurementMethodModalities(@JsonValue val value: String) {
     ELECTRONIC_AUCTION("electronicAuction");
 
@@ -79,6 +78,14 @@ enum class ProcurementMethod(@JsonValue val value: String) {
 
     override fun toString(): String {
         return this.value
+    }
+
+    companion object {
+        fun <T : Exception> valueOrException(name: String, block: (Exception) -> T):ProcurementMethod = try {
+            valueOf(name)
+        } catch (exception: Exception) {
+            throw block(exception)
+        }
     }
 }
 
@@ -198,7 +205,6 @@ enum class TenderStatusDetails(@JsonValue val value: String) {
             return CONSTANTS[value] ?: throw IllegalArgumentException(value)
         }
     }
-
 }
 
 enum class LotStatus(@JsonValue val value: String) {
