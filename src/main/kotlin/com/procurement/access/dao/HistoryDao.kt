@@ -1,8 +1,10 @@
 package com.procurement.access.dao
 
 import com.datastax.driver.core.Session
-import com.datastax.driver.core.querybuilder.QueryBuilder.*
-import com.procurement.access.model.bpe.ResponseDto
+import com.datastax.driver.core.querybuilder.QueryBuilder.eq
+import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
+import com.datastax.driver.core.querybuilder.QueryBuilder.select
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.entity.HistoryEntity
 import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate

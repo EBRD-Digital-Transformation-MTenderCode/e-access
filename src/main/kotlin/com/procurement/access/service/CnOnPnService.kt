@@ -19,8 +19,8 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
-import com.procurement.access.model.bpe.CommandMessage
-import com.procurement.access.model.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.ItemCnUpdate
 import com.procurement.access.model.dto.cn.LotCnUpdate
