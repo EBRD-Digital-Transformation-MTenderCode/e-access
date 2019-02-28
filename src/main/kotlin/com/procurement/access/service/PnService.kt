@@ -184,10 +184,10 @@ class PnService(private val generationService: GenerationService,
     }
 
     private fun setItemsId(items: List<ItemPnCreate>?) {
-        items?.let {
-            val itemsId = it.asSequence().map { it.id }.toHashSet()
-            if (itemsId.size != it.size) throw ErrorException(INVALID_ITEMS)
-            it.forEach { it.id = generationService.getTimeBasedUUID() }
+        items?.let { listItems ->
+            val itemsId = listItems.asSequence().map { it.id }.toHashSet()
+            if (itemsId.size != listItems.size) throw ErrorException(INVALID_ITEMS)
+            listItems.forEach { it.id = generationService.getTimeBasedUUID() }
         }
     }
 
