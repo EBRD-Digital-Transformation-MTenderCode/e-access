@@ -5,7 +5,28 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
-import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.ocds.AcceleratedProcedure
+import com.procurement.access.model.dto.ocds.AwardCriteria
+import com.procurement.access.model.dto.ocds.Classification
+import com.procurement.access.model.dto.ocds.DesignContest
+import com.procurement.access.model.dto.ocds.Document
+import com.procurement.access.model.dto.ocds.DynamicPurchasingSystem
+import com.procurement.access.model.dto.ocds.ElectronicWorkflows
+import com.procurement.access.model.dto.ocds.ExtendedProcurementCategory
+import com.procurement.access.model.dto.ocds.Framework
+import com.procurement.access.model.dto.ocds.Item
+import com.procurement.access.model.dto.ocds.JointProcurement
+import com.procurement.access.model.dto.ocds.LegalBasis
+import com.procurement.access.model.dto.ocds.LotGroup
+import com.procurement.access.model.dto.ocds.OrganizationReference
+import com.procurement.access.model.dto.ocds.Period
+import com.procurement.access.model.dto.ocds.ProcedureOutsourcing
+import com.procurement.access.model.dto.ocds.ProcurementMethod
+import com.procurement.access.model.dto.ocds.SubmissionLanguage
+import com.procurement.access.model.dto.ocds.SubmissionMethod
+import com.procurement.access.model.dto.ocds.TenderStatus
+import com.procurement.access.model.dto.ocds.TenderStatusDetails
+import com.procurement.access.model.dto.ocds.Value
 import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

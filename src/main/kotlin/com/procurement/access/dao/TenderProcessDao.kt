@@ -1,7 +1,9 @@
 package com.procurement.access.dao
 
 import com.datastax.driver.core.Session
-import com.datastax.driver.core.querybuilder.QueryBuilder.*
+import com.datastax.driver.core.querybuilder.QueryBuilder.eq
+import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
+import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
 

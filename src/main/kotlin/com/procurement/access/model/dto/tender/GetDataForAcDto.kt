@@ -2,7 +2,11 @@ package com.procurement.access.model.dto.tender
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.ocds.Classification
+import com.procurement.access.model.dto.ocds.Item
+import com.procurement.access.model.dto.ocds.Lot
+import com.procurement.access.model.dto.ocds.MainProcurementCategory
+import com.procurement.access.model.dto.ocds.ProcurementMethod
 
 data class GetDataForAcRq @JsonCreator constructor(
 

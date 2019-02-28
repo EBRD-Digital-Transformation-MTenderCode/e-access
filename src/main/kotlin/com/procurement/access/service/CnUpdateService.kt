@@ -2,12 +2,46 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.exception.ErrorType.CONTEXT
+import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
+import com.procurement.access.exception.ErrorType.DUPLICATE_AUCTION_LOT_ID
+import com.procurement.access.exception.ErrorType.DUPLICATE_TENDER_LOT_ID
+import com.procurement.access.exception.ErrorType.INVALID_AUCTION_IS_EMPTY
+import com.procurement.access.exception.ErrorType.INVALID_AUCTION_IS_NON_EMPTY
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_ITEMS
+import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
+import com.procurement.access.exception.ErrorType.INVALID_OWNER
+import com.procurement.access.exception.ErrorType.INVALID_TOKEN
+import com.procurement.access.exception.ErrorType.IS_SUSPENDED
+import com.procurement.access.exception.ErrorType.NOT_MATCH_LOT_ID
+import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.model.bpe.CommandMessage
 import com.procurement.access.model.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.*
-import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.cn.CnUpdate
+import com.procurement.access.model.dto.cn.ItemCnUpdate
+import com.procurement.access.model.dto.cn.LotCnUpdate
+import com.procurement.access.model.dto.cn.TenderCnUpdate
+import com.procurement.access.model.dto.cn.validate
+import com.procurement.access.model.dto.ocds.Amendment
+import com.procurement.access.model.dto.ocds.Budget
+import com.procurement.access.model.dto.ocds.ContractPeriod
+import com.procurement.access.model.dto.ocds.Document
+import com.procurement.access.model.dto.ocds.Item
+import com.procurement.access.model.dto.ocds.Lot
+import com.procurement.access.model.dto.ocds.LotStatus
+import com.procurement.access.model.dto.ocds.LotStatusDetails
+import com.procurement.access.model.dto.ocds.Option
+import com.procurement.access.model.dto.ocds.RecurrentProcurement
+import com.procurement.access.model.dto.ocds.Renewal
+import com.procurement.access.model.dto.ocds.Tender
+import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
+import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -16,7 +50,6 @@ import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.RoundingMode
 import java.time.LocalDateTime
-
 
 @Service
 class CnUpdateService(private val generationService: GenerationService,

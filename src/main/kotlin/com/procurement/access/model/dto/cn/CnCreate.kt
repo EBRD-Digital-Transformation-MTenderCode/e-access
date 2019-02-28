@@ -6,8 +6,21 @@ import com.procurement.access.databinding.QuantityDeserializer
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
-import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.ocds.AwardCriteria
+import com.procurement.access.model.dto.ocds.BudgetBreakdown
+import com.procurement.access.model.dto.ocds.Classification
+import com.procurement.access.model.dto.ocds.ContractPeriod
+import com.procurement.access.model.dto.ocds.Document
+import com.procurement.access.model.dto.ocds.ElectronicAuctions
+import com.procurement.access.model.dto.ocds.LegalBasis
+import com.procurement.access.model.dto.ocds.MainProcurementCategory
+import com.procurement.access.model.dto.ocds.OrganizationReference
+import com.procurement.access.model.dto.ocds.Period
+import com.procurement.access.model.dto.ocds.PlaceOfPerformance
+import com.procurement.access.model.dto.ocds.ProcurementMethodModalities
 import com.procurement.access.model.dto.ocds.Unit
+import com.procurement.access.model.dto.ocds.Value
+import com.procurement.access.model.dto.ocds.validate
 import java.math.BigDecimal
 import java.util.*
 

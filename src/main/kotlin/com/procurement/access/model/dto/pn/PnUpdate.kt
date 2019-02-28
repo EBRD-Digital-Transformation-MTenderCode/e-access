@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.databinding.QuantityDeserializer
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.dto.ocds.*
+import com.procurement.access.model.dto.ocds.Classification
+import com.procurement.access.model.dto.ocds.ContractPeriod
+import com.procurement.access.model.dto.ocds.Document
+import com.procurement.access.model.dto.ocds.PlaceOfPerformance
 import com.procurement.access.model.dto.ocds.Unit
+import com.procurement.access.model.dto.ocds.Value
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
