@@ -1,4 +1,4 @@
-package com.procurement.access.databinding
+package com.procurement.access.model.dto.databinding
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
