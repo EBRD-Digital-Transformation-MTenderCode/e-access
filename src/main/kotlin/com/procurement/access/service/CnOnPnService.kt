@@ -18,6 +18,7 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
+import com.procurement.access.exception.ErrorType.INVALID_PMD
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -59,10 +60,11 @@ import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @Service
-class CnOnPnService(private val generationService: GenerationService,
-                    private val tenderProcessDao: TenderProcessDao,
-                    private val rulesService: RulesService) {
-
+class CnOnPnService(
+    private val generationService: GenerationService,
+    private val tenderProcessDao: TenderProcessDao,
+    private val rulesService: RulesService
+) {
 
     fun checkCnOnPn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -71,22 +73,27 @@ class CnOnPnService(private val generationService: GenerationService,
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val country = cm.context.country ?: throw ErrorException(CONTEXT)
         val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) } ?: throw ErrorException(CONTEXT)
+        val startDate: LocalDateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
-        val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
+        val tenderProcess: TenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
         val tenderDto = cnDto.tender
         checkAuctionsDto(country, pmd, cnDto, tenderProcess.tender.mainProcurementCategory)
         checkItems(cnDto.tender.items)
         if (tenderProcess.tender.items.isEmpty()) {
             checkLotsValue(cnDto, tenderProcess.planning.budget)
-            checkLotsAndTenderContractPeriod(cnDto, tenderProcess.planning.budget)
+            //VR-3.6.7
+            checkLotsContractPeriodFromRequest(pmd = pmd, tenderRequest = cnDto.tender, contextStartDate = startDate)
+            //VR-3.6.10
+            checkTenderContractPeriodFromRequest(tenderRequest = cnDto.tender, budget = tenderProcess.planning.budget)
             checkDtoRelatedLots(tenderDto)
             if (tenderDto.electronicAuctions != null)
                 checkAuctionsForLotsFromPlatform(tenderDto.lots, tenderDto.electronicAuctions)
         } else {
-            checkLotsContractPeriod(cnDto)
+            //VR-3.8.16
+            checkLotsContractPeriodFromDB(pmd = pmd, tenderRequest = tenderDto, tenderProcess = tenderProcess.tender, contextStartDate = startDate)
             if (tenderDto.electronicAuctions != null)
                 checkAuctionsForLotsFromPN(tenderProcess.tender.lots, tenderDto.electronicAuctions)
         }
@@ -118,7 +125,7 @@ class CnOnPnService(private val generationService: GenerationService,
                 items = getItems(tenderDto.items)
                 tenderDto.classification?.let { classification = it }
                 value = getValueFromLots(tenderDto.lots)
-                contractPeriod = getContractPeriod(tenderDto.lots)
+                contractPeriod = calculationTenderContractPeriod(lots = tenderDto.lots)
             }
         } else {
             updatedLots(tenderProcess.tender.lots)
@@ -182,29 +189,82 @@ class CnOnPnService(private val generationService: GenerationService,
         if (totalAmount > budget.amount.amount) throw ErrorException(INVALID_LOT_AMOUNT)
     }
 
-    private fun checkLotsAndTenderContractPeriod(cn: CnUpdate, budget: Budget) {
-        cn.tender.lots.forEach { lot ->
+    /**
+     * VR-3.6.7
+     */
+    private fun checkLotsContractPeriodFromRequest(
+        pmd: ProcurementMethod,
+        tenderRequest: TenderCnUpdate,
+        contextStartDate: LocalDateTime
+    ) {
+        tenderRequest.lots.forEach { lot ->
             if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate) {
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
-            if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
+            if (lot.contractPeriod.endDate <= lot.contractPeriod.startDate) {
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
             }
-        }
-        val contractPeriodSet = cn.tender.lots.asSequence().map { it.contractPeriod }.toSet()
-        val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
-        val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
-        budget.budgetBreakdown.forEach { bb ->
-            if (startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-            if (endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+
+            when (pmd) {
+                ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                    if (lot.contractPeriod.startDate <= tenderRequest.tenderPeriod.endDate)
+                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                }
+
+                ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> {
+                    if (lot.contractPeriod.startDate <= contextStartDate)
+                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                }
+
+                else -> throw ErrorException(INVALID_PMD)
+            }
         }
     }
 
-    private fun checkLotsContractPeriod(cn: CnUpdate) {
-        cn.tender.lots.forEach { lot ->
-            if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod.endDate) {
-                throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+    /**
+     * VR-3.6.10
+     */
+    private fun checkTenderContractPeriodFromRequest(tenderRequest: TenderCnUpdate, budget: Budget) {
+        val tenderContractPeriod = calculationTenderContractPeriod(tenderRequest.lots)
+        budget.budgetBreakdown.forEach { bb ->
+            if (tenderContractPeriod.startDate > bb.period.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+            if (tenderContractPeriod.endDate < bb.period.startDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+        }
+    }
+
+    /**
+     * VR-3.8.16
+     */
+    private fun checkLotsContractPeriodFromDB(
+        pmd: ProcurementMethod,
+        tenderRequest: TenderCnUpdate,
+        tenderProcess: Tender,
+        contextStartDate: LocalDateTime
+    ) {
+        when (pmd) {
+            ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+            ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+            ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                tenderProcess.lots.forEach { lot ->
+                    if (lot.contractPeriod!!.startDate <= tenderRequest.tenderPeriod.endDate)
+                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                }
             }
+
+            ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+            ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+            ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> {
+                tenderProcess.lots.forEach { lot ->
+                    if (lot.contractPeriod!!.startDate <= contextStartDate)
+                        throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+                }
+            }
+
+            else -> throw ErrorException(INVALID_PMD)
         }
     }
 
@@ -372,8 +432,8 @@ class CnOnPnService(private val generationService: GenerationService,
         return itemsDto.asSequence().map { convertDtoItemToCnItem(it) }.toList()
     }
 
-    private fun getContractPeriod(lotsDto: List<LotCnUpdate>): ContractPeriod {
-        val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
+    private fun calculationTenderContractPeriod(lots: List<LotCnUpdate>): ContractPeriod {
+        val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
         return ContractPeriod(startDate, endDate)
