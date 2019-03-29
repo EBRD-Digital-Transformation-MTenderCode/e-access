@@ -30,8 +30,15 @@ class GenerationService(private val ocdsProperties: OCDSProperties) {
         return generateTimeBasedUUID().toString()
     }
 
+    fun generatePermanentLotId(): String {
+        return UUID.randomUUID().toString()
+    }
+
+    fun generatePermanentItemId(): String {
+        return UUID.randomUUID().toString()
+    }
+
     fun generateOrganizationId(organizationReference: OrganizationReference): String {
         return organizationReference.identifier.scheme + "-" + organizationReference.identifier.id
     }
-
 }
