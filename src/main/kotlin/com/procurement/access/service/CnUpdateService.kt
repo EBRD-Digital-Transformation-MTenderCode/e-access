@@ -18,8 +18,8 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.IS_SUSPENDED
-import com.procurement.access.exception.ErrorType.NOT_MATCH_LOT_ID
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
+import com.procurement.access.exception.ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
@@ -142,7 +142,7 @@ class CnUpdateService(private val generationService: GenerationService,
                     throw ErrorException(DUPLICATE_AUCTION_LOT_ID)
             }
             if(lotIds.size != auctionLotIds.size || !lotIds.all { auctionLotIds.contains(it) })
-                throw ErrorException(NOT_MATCH_LOT_ID)
+                throw ErrorException(LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS)
         }
     }
 
