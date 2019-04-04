@@ -57,5 +57,13 @@ enum class ErrorType constructor(val code: String, val message: String) {
     CONTEXT("20.01", "Context parameter not found."),
     DUPLICATE_TENDER_LOT_ID("10.42", "Duplicate lot id in tender."),
     DUPLICATE_AUCTION_LOT_ID("10.43", "Duplicate lot id in auction."),
-    LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS("10.44", "Lot id in the tender do not match related lot in the auctions.");
+    LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS("10.44", "Lot id in the tender do not match related lot in the auctions."),
+    NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS("10.45", "The number of auctions does not match the number of lots."),
+    LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_ITEMS("10.46", "Lot id in the tender do not match related lot in the items."),
+    LOT_ID_DUPLICATED("10.47", "Lot id duplicated."),
+    AUCTION_ID_DUPLICATED("10.48", "Auction id duplicated."),
+    AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS("10.49", "Auctions contain a duplicate related lots."),
+    ITEM_ID_IS_DUPLICATED("10.50", "Item id duplicated."),
+    INVALID_ITEMS_QUANTITY("10.51", "Invalid quantity value in item."),
+    INVALID_TENDER_AMOUNT("10.52", "Invalid amount of the tender.");
 }

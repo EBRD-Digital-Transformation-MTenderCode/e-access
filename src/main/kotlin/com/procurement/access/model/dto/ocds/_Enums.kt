@@ -176,6 +176,7 @@ enum class TenderStatusDetails(@JsonValue val value: String) {
     PLANNING("planning"),
     PLANNED("planned"),
     CLARIFICATION("clarification"),
+    NEGOTIATION("negotiation"),
     TENDERING("tendering"),
     CANCELLATION("cancellation"),
     SUSPENDED("suspended"),
