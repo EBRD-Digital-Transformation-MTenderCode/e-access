@@ -4,6 +4,7 @@ import com.procurement.access.dao.HistoryDao
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
@@ -20,7 +21,8 @@ class CommandService(private val historyDao: HistoryDao,
                      private val tenderService: TenderService,
                      private val lotsService: LotsService,
                      private val stageService: StageService,
-                     private val validationService: ValidationService) {
+                     private val validationService: ValidationService
+) {
 
 
     fun execute(cm: CommandMessage): ResponseDto {

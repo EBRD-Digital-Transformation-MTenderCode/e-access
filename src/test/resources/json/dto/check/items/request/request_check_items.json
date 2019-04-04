@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "classification": {
+        "id": "12345670-1"
+      }
+    },
+    {
+      "classification": {
+        "id": "12345671-2"
+      }
+    },
+    {
+      "classification": {
+        "id": "12345672-3"
+      }
+    },
+    {
+      "classification": {
+        "id": "12345673-4"
+      }
+    }
+  ]
+}

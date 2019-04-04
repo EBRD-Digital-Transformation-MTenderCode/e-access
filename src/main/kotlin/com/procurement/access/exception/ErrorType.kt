@@ -65,5 +65,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS("10.49", "Auctions contain a duplicate related lots."),
     ITEM_ID_IS_DUPLICATED("10.50", "Item id duplicated."),
     INVALID_ITEMS_QUANTITY("10.51", "Invalid quantity value in item."),
-    INVALID_TENDER_AMOUNT("10.52", "Invalid amount of the tender.");
+    INVALID_TENDER_AMOUNT("10.52", "Invalid amount of the tender."),
+    ITEMS_CPV_CODES_NOT_CONSISTENT("10.53", "CPV codes of all items must have minimum 3 the same starting symbols."),
+    CALCULATED_CPV_CODE_NO_MATCH_TENDER_CPV_CODE("10.54", "The calculated CPV code does not match the CPV code in the tender.");
 }

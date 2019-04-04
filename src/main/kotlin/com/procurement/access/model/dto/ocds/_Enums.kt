@@ -273,7 +273,8 @@ enum class Operation(val value: String) {
     UPDATE_PN("updatePN"),
     CREATE_CN_ON_PN("createCNonPN"),
     CREATE_CN_ON_PIN("createCNonPIN"),
-    CREATE_PIN_ON_PN("createPINonPN");
+    CREATE_PIN_ON_PN("createPINonPN"),
+    CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn");
 
     companion object {
         private val CONSTANTS = HashMap<String, Operation>()
