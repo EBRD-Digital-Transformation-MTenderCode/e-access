@@ -27,27 +27,29 @@ class JsonPathParser {
 
                                 else -> {
                                     for (index in 0 until node.size()) {
-                                        val value: String = parseLeaf(node[index])
-                                        valueByPath["$prefix['$name'][$index]"] = value
+                                        val path = "$prefix['$name'][$index]"
+                                        val value: String = parseLeaf(node[index], path)
+                                        valueByPath[path] = value
                                     }
                                 }
                             }
                         }
                     }
                     else -> {
-                        val value: String = parseLeaf(node)
-                        valueByPath["$prefix['$name']"] = value
+                        val path = "$prefix['$name']"
+                        val value: String = parseLeaf(node, path)
+                        valueByPath[path] = value
                     }
                 }
             }
         }
 
-        private fun parseLeaf(node: JsonNode): String {
+        private fun parseLeaf(node: JsonNode, path: String): String {
             return when (node.nodeType) {
                 JsonNodeType.BOOLEAN -> if (node.asBoolean()) "true" else "false"
                 JsonNodeType.NUMBER -> node.numberValue().toString()
                 JsonNodeType.STRING -> "\"${node.asText()}\""
-                else -> throw IllegalArgumentException("Invalid node type.")
+                else -> throw IllegalArgumentException("Error of parsing. Invalid node type '${node.nodeType}' by path: '$path'.")
             }
         }
     }
