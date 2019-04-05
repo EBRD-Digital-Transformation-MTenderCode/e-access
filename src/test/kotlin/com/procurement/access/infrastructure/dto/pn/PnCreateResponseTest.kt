@@ -17,8 +17,7 @@ class PnCreateResponseTest : AbstractDTOTestBase<PnCreateResponse>(PnCreateRespo
 
             @Test
             fun test() {
-                val pathToJsonFile =
-                    JsonFilePathGenerator.Pn.response(hasItems = hasItems, hasDocuments = hasDocuments)
+                val pathToJsonFile = pathToJsonFile(hasItems = hasItems, hasDocuments = hasDocuments)
                 testBindingAndMapping(pathToJsonFile)
             }
         }
@@ -29,8 +28,7 @@ class PnCreateResponseTest : AbstractDTOTestBase<PnCreateResponse>(PnCreateRespo
 
             @Test
             fun test() {
-                val pathToJsonFile =
-                    JsonFilePathGenerator.Pn.response(hasItems = hasItems, hasDocuments = hasDocuments)
+                val pathToJsonFile = pathToJsonFile(hasItems = hasItems, hasDocuments = hasDocuments)
                 testBindingAndMapping(pathToJsonFile)
             }
         }
@@ -46,8 +44,7 @@ class PnCreateResponseTest : AbstractDTOTestBase<PnCreateResponse>(PnCreateRespo
 
             @Test
             fun test() {
-                val pathToJsonFile =
-                    JsonFilePathGenerator.Pn.response(hasItems = hasItems, hasDocuments = hasDocuments)
+                val pathToJsonFile = pathToJsonFile(hasItems = hasItems, hasDocuments = hasDocuments)
                 testBindingAndMapping(pathToJsonFile)
             }
         }
@@ -58,10 +55,12 @@ class PnCreateResponseTest : AbstractDTOTestBase<PnCreateResponse>(PnCreateRespo
 
             @Test
             fun test() {
-                val pathToJsonFile =
-                    JsonFilePathGenerator.Pn.response(hasItems = hasItems, hasDocuments = hasDocuments)
+                val pathToJsonFile = pathToJsonFile(hasItems = hasItems, hasDocuments = hasDocuments)
                 testBindingAndMapping(pathToJsonFile)
             }
         }
     }
+
+    private fun pathToJsonFile(hasItems: Boolean, hasDocuments: Boolean) =
+        JsonFilePathGenerator.Pn.response(hasItems = hasItems, hasDocuments = hasDocuments)
 }
