@@ -38,13 +38,13 @@ data class CnOnPnResponse(
 
     data class Planning(
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("rationale") @param:JsonProperty("rationale") val rationale: String? = null,
+        @field:JsonProperty("rationale") @param:JsonProperty("rationale") val rationale: String?,
         @field:JsonProperty("budget") @param:JsonProperty("budget") val budget: Budget
     ) {
 
         data class Budget(
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String? = null,
+            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
             @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: Amount,
             @get:JsonProperty("isEuropeanUnionFunded") @param:JsonProperty("isEuropeanUnionFunded") val isEuropeanUnionFunded: Boolean,
             @field:JsonProperty("budgetBreakdown") @param:JsonProperty("budgetBreakdown") val budgetBreakdowns: List<BudgetBreakdown>
@@ -62,13 +62,13 @@ data class CnOnPnResponse(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("description") @param:JsonProperty("description") val description: String? = null,
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
                 @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: Amount,
                 @field:JsonProperty("period") @param:JsonProperty("period") val period: Period,
                 @field:JsonProperty("sourceParty") @param:JsonProperty("sourceParty") val sourceParty: SourceParty,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("europeanUnionFunding") @param:JsonProperty("europeanUnionFunding") val europeanUnionFunding: EuropeanUnionFunding? = null
+                @field:JsonProperty("europeanUnionFunding") @param:JsonProperty("europeanUnionFunding") val europeanUnionFunding: EuropeanUnionFunding?
             ) {
 
                 data class Amount(
@@ -99,7 +99,7 @@ data class CnOnPnResponse(
                     @field:JsonProperty("projectName") @param:JsonProperty("projectName") val projectName: String,
 
                     @JsonInclude(JsonInclude.Include.NON_NULL)
-                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String? = null
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
                 )
             }
         }
@@ -272,14 +272,18 @@ data class CnOnPnResponse(
                 @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
-                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
             )
 
             data class AdditionalIdentifier(
                 @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
-                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
             )
 
             data class Address(
@@ -328,7 +332,9 @@ data class CnOnPnResponse(
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("faxNumber") @param:JsonProperty("faxNumber") val faxNumber: String?,
-                @field:JsonProperty("url") @param:JsonProperty("url") val url: String
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("url") @param:JsonProperty("url") val url: String?
             )
         }
 
