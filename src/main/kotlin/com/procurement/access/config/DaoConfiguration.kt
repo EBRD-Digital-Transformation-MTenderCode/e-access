@@ -15,9 +15,10 @@ class DaoConfiguration constructor(private val cassandraProperties: CassandraPro
 
     internal val cluster: Cluster
         get() = Cluster.builder()
-                .addContactPoints(*cassandraProperties.getContactPoints())
-                .withAuthProvider(PlainTextAuthProvider(cassandraProperties.username, cassandraProperties.password))
-                .build()
+            .addContactPoints(*cassandraProperties.getContactPoints())
+            .withoutJMXReporting()
+            .withAuthProvider(PlainTextAuthProvider(cassandraProperties.username, cassandraProperties.password))
+            .build()
 
     @Bean
     fun session(): Session {
