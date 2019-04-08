@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 
 abstract class AbstractDTOTestBase<T>(private val target: Class<T>) {
     fun testBindingAndMapping(pathToJsonFile: String) {
+        println("Path to JSON file: '$pathToJsonFile'.")
         val expected = loadJson(pathToJsonFile)
 
         val obj = expected.toObject(target)
