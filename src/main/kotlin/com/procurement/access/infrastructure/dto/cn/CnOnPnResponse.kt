@@ -457,9 +457,7 @@ data class CnOnPnResponse(
             @JsonSerialize(using = QuantitySerializer::class)
             @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal,
             @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+            @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
         ) {
 

@@ -102,6 +102,7 @@
     "items": [
       {
         "id": "item-1",
+        "description": "request.tender.item[0].description",
         "classification": {
           "scheme": "CPV",
           "id": "request.tender.item[0].classification.id",
@@ -116,6 +117,7 @@
       },
       {
         "id": "item-2",
+        "description": "request.tender.item[1].description",
         "classification": {
           "scheme": "CPV",
           "id": "request.tender.item[1].classification.id",
@@ -130,6 +132,7 @@
       },
       {
         "id": "item-3",
+        "description": "request.tender.item[2].description",
         "classification": {
           "scheme": "CPV",
           "id": "request.tender.item[2].classification.id",
@@ -151,6 +154,7 @@
       },
       {
         "id": "item-4",
+        "description": "request.tender.item[3].description",
         "classification": {
           "scheme": "CPV",
           "id": "request.tender.item[3].classification.id",

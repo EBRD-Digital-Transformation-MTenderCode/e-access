@@ -61,6 +61,18 @@ class PnCreateResponseTest : AbstractDTOTestBase<PnCreateResponse>(PnCreateRespo
         }
     }
 
+    @Test
+    fun required1() {
+        val pathToJsonFile = "json/dto/create/pn/response/response_pn_required_1.json"
+        testBindingAndMapping(pathToJsonFile)
+    }
+
+    @Test
+    fun required2() {
+        val pathToJsonFile = "json/dto/create/pn/response/response_pn_required_2.json"
+        testBindingAndMapping(pathToJsonFile)
+    }
+
     private fun pathToJsonFile(hasItems: Boolean, hasDocuments: Boolean) =
         JsonFilePathGenerator.Pn.response(hasItems = hasItems, hasDocuments = hasDocuments)
 }
