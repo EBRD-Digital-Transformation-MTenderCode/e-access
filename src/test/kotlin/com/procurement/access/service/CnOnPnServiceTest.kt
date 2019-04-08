@@ -37,6 +37,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.*
 
 class CnOnPnServiceTest {
 
@@ -1186,11 +1187,10 @@ class CnOnPnServiceTest {
                 @DisplayName("VR-3.8.11(CN on PN)")
                 @Test
                 fun vr3_8_11() {
-                    val items = requestNode.getObject("tender").getArray("items")
-                    val newItem = items.getObject(0).deepCopy {
-                        putAttribute("relatedLot", "UNKNOWN")
-                    }
-                    items.add(newItem)
+                    requestNode.getObject("tender")
+                        .getArray("items")
+                        .getObject(0)
+                        .putAttribute("relatedLot", UUID.randomUUID().toString())
 
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
@@ -2342,11 +2342,10 @@ class CnOnPnServiceTest {
                 @DisplayName("VR-3.8.11(CN on PN)")
                 @Test
                 fun vr3_8_11() {
-                    val items = requestNode.getObject("tender").getArray("items")
-                    val newItem = items.getObject(0).deepCopy {
-                        putAttribute("relatedLot", "UNKNOWN")
-                    }
-                    items.add(newItem)
+                    requestNode.getObject("tender")
+                        .getArray("items")
+                        .getObject(0)
+                        .putAttribute("relatedLot", UUID.randomUUID().toString())
 
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
