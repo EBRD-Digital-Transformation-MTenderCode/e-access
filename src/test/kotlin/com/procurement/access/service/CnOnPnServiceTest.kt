@@ -108,9 +108,8 @@ class CnOnPnServiceTest {
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    eq(TestDataGenerator.CPID), eq(
-                        TestDataGenerator.PREV_STAGE
-                    )
+                    eq(TestDataGenerator.CPID),
+                    eq(TestDataGenerator.PREV_STAGE)
                 )
             )
                 .thenReturn(null)
@@ -144,9 +143,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -168,9 +166,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -195,9 +192,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -230,9 +226,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -260,9 +255,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -296,9 +290,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -328,9 +321,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -358,9 +350,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -390,9 +381,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -423,9 +413,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -455,9 +444,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -494,9 +482,8 @@ class CnOnPnServiceTest {
                                 TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                             whenever(
                                 tenderProcessDao.getByCpIdAndStage(
-                                    eq(TestDataGenerator.CPID), eq(
-                                        TestDataGenerator.PREV_STAGE
-                                    )
+                                    eq(TestDataGenerator.CPID),
+                                    eq(TestDataGenerator.PREV_STAGE)
                                 )
                             )
                                 .thenReturn(tenderProcessEntity)
@@ -529,9 +516,8 @@ class CnOnPnServiceTest {
                                 TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                             whenever(
                                 tenderProcessDao.getByCpIdAndStage(
-                                    eq(TestDataGenerator.CPID), eq(
-                                        TestDataGenerator.PREV_STAGE
-                                    )
+                                    eq(TestDataGenerator.CPID),
+                                    eq(TestDataGenerator.PREV_STAGE)
                                 )
                             )
                                 .thenReturn(tenderProcessEntity)
@@ -564,9 +550,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -596,9 +581,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -625,9 +609,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -668,9 +651,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -692,9 +674,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -719,9 +700,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -755,9 +735,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -786,9 +765,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -815,9 +793,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -848,9 +825,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -915,9 +891,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -983,9 +958,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1017,9 +991,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1059,9 +1032,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1094,9 +1066,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1127,9 +1098,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1160,9 +1130,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1194,9 +1163,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1227,9 +1195,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1257,9 +1224,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1287,9 +1253,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1323,9 +1288,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1356,9 +1320,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1387,9 +1350,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1420,9 +1382,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1454,9 +1415,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1487,9 +1447,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1526,9 +1485,8 @@ class CnOnPnServiceTest {
                                 TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                             whenever(
                                 tenderProcessDao.getByCpIdAndStage(
-                                    eq(TestDataGenerator.CPID), eq(
-                                        TestDataGenerator.PREV_STAGE
-                                    )
+                                    eq(TestDataGenerator.CPID),
+                                    eq(TestDataGenerator.PREV_STAGE)
                                 )
                             )
                                 .thenReturn(tenderProcessEntity)
@@ -1561,9 +1519,8 @@ class CnOnPnServiceTest {
                                 TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                             whenever(
                                 tenderProcessDao.getByCpIdAndStage(
-                                    eq(TestDataGenerator.CPID), eq(
-                                        TestDataGenerator.PREV_STAGE
-                                    )
+                                    eq(TestDataGenerator.CPID),
+                                    eq(TestDataGenerator.PREV_STAGE)
                                 )
                             )
                                 .thenReturn(tenderProcessEntity)
@@ -1592,9 +1549,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1637,9 +1593,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1661,9 +1616,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1688,9 +1642,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1724,9 +1677,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1754,9 +1706,8 @@ class CnOnPnServiceTest {
                         val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1786,9 +1737,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1816,9 +1766,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1859,9 +1808,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1883,9 +1831,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1910,9 +1857,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -1947,9 +1893,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -1978,9 +1923,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2007,9 +1951,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2040,9 +1983,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2107,9 +2049,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2175,9 +2116,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2209,9 +2149,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2251,9 +2190,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2283,9 +2221,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2317,9 +2254,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2350,9 +2286,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2384,9 +2319,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2417,9 +2351,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2447,9 +2380,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2477,9 +2409,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2510,9 +2441,8 @@ class CnOnPnServiceTest {
                             TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                         whenever(
                             tenderProcessDao.getByCpIdAndStage(
-                                eq(TestDataGenerator.CPID), eq(
-                                    TestDataGenerator.PREV_STAGE
-                                )
+                                eq(TestDataGenerator.CPID),
+                                eq(TestDataGenerator.PREV_STAGE)
                             )
                         )
                             .thenReturn(tenderProcessEntity)
@@ -2540,9 +2470,8 @@ class CnOnPnServiceTest {
                     val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                     whenever(
                         tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID), eq(
-                                TestDataGenerator.PREV_STAGE
-                            )
+                            eq(TestDataGenerator.CPID),
+                            eq(TestDataGenerator.PREV_STAGE)
                         )
                     )
                         .thenReturn(tenderProcessEntity)
@@ -2599,9 +2528,8 @@ class CnOnPnServiceTest {
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    eq(TestDataGenerator.CPID), eq(
-                        TestDataGenerator.PREV_STAGE
-                    )
+                    eq(TestDataGenerator.CPID),
+                    eq(TestDataGenerator.PREV_STAGE)
                 )
             )
                 .thenReturn(null)
@@ -2910,9 +2838,8 @@ class CnOnPnServiceTest {
             .thenReturn(testData.isAuctionRequired)
         whenever(
             tenderProcessDao.getByCpIdAndStage(
-                eq(TestDataGenerator.CPID), eq(
-                    TestDataGenerator.PREV_STAGE
-                )
+                eq(TestDataGenerator.CPID),
+                eq(TestDataGenerator.PREV_STAGE)
             )
         )
             .thenReturn(tenderProcessEntity)
