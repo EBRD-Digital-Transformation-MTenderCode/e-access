@@ -476,7 +476,7 @@ class CnOnPnService(
      *      from Request, validation is successful;
      *      ELSE eAccess throws Exception;
      *
-     * IF (pmd == "DA" || "NP" || "OTHER") { eAccess checks lot.contractPeriod.startDate in every Lot object from Request:
+     * IF (pmd == "DA" || "NP" || "OP") { eAccess checks lot.contractPeriod.startDate in every Lot object from Request:
      *      IF value of lot.contractPeriod.startDate from Request > (later than) value of startDate from
      *      the context of Request, validation is successful;
      *      ELSE eAccess throws Exception;
@@ -501,7 +501,7 @@ class CnOnPnService(
             }
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-            ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> {
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
                 tenderFromRequest.lots.forEach { lot ->
                     checkRangeContractPeriodInLotFromRequest(lot)
                     if (lot.contractPeriod.startDate <= contextRequest.startDate)
@@ -750,7 +750,7 @@ class CnOnPnService(
 
                 ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                 ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER,
+                ProcurementMethod.OP, ProcurementMethod.TEST_OP,
                 ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                 ProcurementMethod.FA, ProcurementMethod.TEST_FA ->
                     throw ErrorException(INVALID_AUCTION_IS_NON_EMPTY)
@@ -887,7 +887,7 @@ class CnOnPnService(
      *   from Request, validation is successful;
      *   ELSE eAccess throws Exception;
      *
-     * IF (pmd == "DA" || "NP" || "OTHER") { eAccess checks lot.contractPeriod.startDate in every Lot object from DB:
+     * IF (pmd == "DA" || "NP" || "OP") { eAccess checks lot.contractPeriod.startDate in every Lot object from DB:
      *   IF value of lot.contractPeriod.startDate from DB > (later than) value of startDate
      *   from the context of Request, validation is successful;
      *   ELSE eAccess throws Exception;
@@ -912,7 +912,7 @@ class CnOnPnService(
             }
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-            ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> {
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
                 tenderFromRequest.lots.forEach { lot ->
                     if (lot.contractPeriod.startDate <= contextRequest.startDate)
                         throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
@@ -974,7 +974,7 @@ class CnOnPnService(
 
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-            ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> {
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
                 if (
                     request.tender.procurementMethodModalities != null ||
                     request.tender.electronicAuctions != null
@@ -1183,7 +1183,7 @@ class CnOnPnService(
 
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-            ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> TenderStatusDetails.NEGOTIATION
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> TenderStatusDetails.NEGOTIATION
 
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(INVALID_PMD)
@@ -1644,7 +1644,7 @@ class CnOnPnService(
 
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-            ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> null
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> null
 
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(INVALID_PMD)

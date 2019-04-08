@@ -226,10 +226,15 @@ class PnService(private val generationService: GenerationService,
             "DA" -> ProcurementMethod.DA
             "NP" -> ProcurementMethod.NP
             "FA" -> ProcurementMethod.FA
+            "OP" -> ProcurementMethod.OP
             "TEST_OT" -> ProcurementMethod.TEST_OT
             "TEST_SV" -> ProcurementMethod.TEST_SV
             "TEST_RT" -> ProcurementMethod.TEST_RT
             "TEST_MV" -> ProcurementMethod.TEST_MV
+            "TEST_DA" -> ProcurementMethod.TEST_DA
+            "TEST_NP" -> ProcurementMethod.TEST_NP
+            "TEST_FA" -> ProcurementMethod.TEST_FA
+            "TEST_OP" -> ProcurementMethod.TEST_OP
             else -> throw ErrorException(INVALID_PMD)
         }
     }
