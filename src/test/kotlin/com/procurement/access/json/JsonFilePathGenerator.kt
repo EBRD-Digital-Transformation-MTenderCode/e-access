@@ -75,7 +75,7 @@ object JsonFilePathGenerator {
 
         ProcurementMethod.DA, ProcurementMethod.TEST_DA,
         ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-        ProcurementMethod.OTHER, ProcurementMethod.TEST_OTHER -> "lp"
+        ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "lp"
 
         ProcurementMethod.RT, ProcurementMethod.TEST_RT,
         ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw IllegalArgumentException()
