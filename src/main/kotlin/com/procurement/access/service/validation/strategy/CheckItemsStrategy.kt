@@ -50,13 +50,15 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
      *    ELSE Items object in saved version of tender is presented, eAccess returns "mdmValidation" == TRUE && "itemsAdd" == FALSE;
      */
     fun check(cm: CommandMessage): CheckItemsResponse {
-        val contextRequest: CheckItemsContextRequest = getCheckItemsContext(cm)
+        val operationType = getOperation(cm)
         val request: CheckItemsRequest = toObject(CheckItemsRequest::class.java, cm.data)
-        return when (contextRequest.operationType) {
+        return when (operationType) {
             Operation.CREATE_CN_ON_PN,
             Operation.CREATE_PIN_ON_PN,
             Operation.CREATE_NEGOTIATION_CN_ON_PN -> {
-                val process: TenderProcess = loadTenderProcess(contextRequest.cpid, contextRequest.prevStage)
+                val cpid = getCPID(cm)
+                val prevStage = getPrevStage(cm)
+                val process: TenderProcess = loadTenderProcess(cpid, prevStage)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
                         .also {
@@ -106,7 +108,9 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             }
 
             Operation.UPDATE_PN -> {
-                val process: TenderProcess = loadTenderProcess(contextRequest.cpid, contextRequest.stage)
+                val cpid = getCPID(cm)
+                val stage = getStage(cm)
+                val process: TenderProcess = loadTenderProcess(cpid, stage)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
                         .also {
@@ -211,40 +215,35 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    private fun getCheckItemsContext(cm: CommandMessage): CheckItemsContextRequest {
-        val cpid: String = cm.context.cpid
+    private fun getCPID(cm: CommandMessage): String {
+        return cm.context.cpid
             ?: throw ErrorException(
                 error = ErrorType.CONTEXT,
                 message = "Missing the 'cpid' attribute in context."
             )
-        val stage = cm.context.stage
+    }
+
+    private fun getStage(cm: CommandMessage): String {
+        return cm.context.stage
             ?: throw ErrorException(
                 error = ErrorType.CONTEXT,
                 message = "Missing the 'prevStage' attribute in context."
             )
-        val prevStage = cm.context.prevStage
+    }
+
+    private fun getPrevStage(cm: CommandMessage): String {
+        return cm.context.prevStage
             ?: throw ErrorException(
                 error = ErrorType.CONTEXT,
                 message = "Missing the 'prevStage' attribute in context."
             )
-        val operationType = cm.context.operationType?.let { Operation.fromValue(it) }
+    }
+
+    private fun getOperation(cm: CommandMessage): Operation {
+        return cm.context.operationType?.let { Operation.fromValue(it) }
             ?: throw ErrorException(
                 error = ErrorType.CONTEXT,
                 message = "Missing the 'operationType' attribute in context."
             )
-
-        return CheckItemsContextRequest(
-            cpid = cpid,
-            stage = stage,
-            prevStage = prevStage,
-            operationType = operationType
-        )
     }
-
-    data class CheckItemsContextRequest(
-        val cpid: String,
-        val stage: String,
-        val prevStage: String,
-        val operationType: Operation
-    )
 }
