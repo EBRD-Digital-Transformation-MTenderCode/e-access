@@ -14,13 +14,12 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import com.procurement.access.model.dto.ocds.AwardCriteria
 import com.procurement.access.model.dto.ocds.DocumentType
-import com.procurement.access.model.dto.ocds.ProcurementMethodModalities
 import com.procurement.access.model.dto.ocds.Scheme
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class CnOnPnRequest(
+data class NegotiationCnOnPnRequest(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
 
@@ -37,15 +36,6 @@ data class CnOnPnRequest(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria?,
 
-        @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
-
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: Set<ProcurementMethodModalities>?,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
-
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
@@ -56,51 +46,6 @@ data class CnOnPnRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode
         )
-
-        data class TenderPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-        )
-
-        data class EnquiryPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-        )
-
-        data class ElectronicAuctions(
-            @field:JsonProperty("details") @param:JsonProperty("details") val details: List<Detail>
-        ) {
-
-            data class Detail(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String,
-                @field:JsonProperty("electronicAuctionModalities") @param:JsonProperty("electronicAuctionModalities") val electronicAuctionModalities: List<Modalities>
-            ) {
-
-                data class Modalities(
-                    @field:JsonProperty("eligibleMinimumDifference") @param:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: EligibleMinimumDifference
-                ) {
-
-                    data class EligibleMinimumDifference(
-                        @JsonDeserialize(using = AmountDeserializer::class)
-                        @JsonSerialize(using = AmountSerializer::class)
-                        @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                        @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-                    )
-                }
-            }
-        }
 
         data class Lot(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,

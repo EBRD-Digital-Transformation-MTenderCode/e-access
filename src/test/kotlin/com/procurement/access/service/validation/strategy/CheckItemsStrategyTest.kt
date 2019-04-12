@@ -11,7 +11,6 @@ import com.procurement.access.infrastructure.dto.CheckItemsRequest
 import com.procurement.access.infrastructure.dto.CheckItemsResponse
 import com.procurement.access.infrastructure.generator.TestDataGenerator
 import com.procurement.access.json.JSON
-import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
 import com.procurement.access.json.getObject
@@ -375,13 +374,6 @@ class CheckItemsStrategyTest {
         )
     }
 
-    private fun pathToPnJsonFile(hasItems: Boolean, hasDocuments: Boolean): String {
-        return JsonFilePathGenerator.Entites.pn(
-            hasItems = hasItems,
-            hasDocuments = hasDocuments
-        )
-    }
-
     private fun request(vararg ids: String): JsonNode {
         val items = ids.map { id ->
             CheckItemsRequest.Item(
@@ -421,14 +413,16 @@ class CheckItemsStrategyTest {
     }
 
     private fun tenderProcessEntityData(hasItems: Boolean, id: String = PN_TENDER_CPV_CODE): JSON {
-        val pathToPnJsonFile = pathToPnJsonFile(hasItems = hasItems, hasDocuments = true)
-        val json = loadJson(pathToPnJsonFile)
+        val json = if (hasItems)
+            loadJson("json/service/check/items/entity/pn/entity_pn_with_items.json")
+        else
+            loadJson("json/service/check/items/entity/pn/entity_pn_without_items.json")
+
         return if (!hasItems) {
             json.toNode()
                 .apply {
                     getObject("tender", "classification")
                         .setAttribute("id", id)
-
                 }
                 .toJson()
         } else

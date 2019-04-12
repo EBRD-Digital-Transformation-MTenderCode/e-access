@@ -6,76 +6,18 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class PNEntityTest : AbstractDTOTestBase<PNEntity>(PNEntity::class.java) {
-
-    @Nested
-    inner class WithItems {
-        private val hasItems = true
-
-        @Nested
-        inner class WithDocuments {
-            private val hasDocuments = true
-
-            @Test
-            fun test() {
-                val pathToJsonFile = pathToJsonFile(
-                    hasItems = hasItems,
-                    hasDocuments = hasDocuments
-                )
-                testBindingAndMapping(pathToJsonFile)
-            }
-        }
-
-        @Nested
-        inner class WithoutDocuments {
-            private val hasDocuments = false
-
-            @Test
-            fun test() {
-                val pathToJsonFile = pathToJsonFile(
-                    hasItems = hasItems,
-                    hasDocuments = hasDocuments
-                )
-                testBindingAndMapping(pathToJsonFile)
-            }
-        }
+    @Test
+    fun fully() {
+        testBindingAndMapping("json/entity/pn/entity_pn_full.json")
     }
 
-    @Nested
-    inner class WithoutItems {
-        private val hasItems = false
-
-        @Nested
-        inner class WithDocuments {
-            private val hasDocuments = true
-
-            @Test
-            fun test() {
-                val pathToJsonFile = pathToJsonFile(
-                    hasItems = hasItems,
-                    hasDocuments = hasDocuments
-                )
-                testBindingAndMapping(pathToJsonFile)
-            }
-        }
-
-        @Nested
-        inner class WithoutDocuments {
-            private val hasDocuments = false
-
-            @Test
-            fun test() {
-                val pathToJsonFile = pathToJsonFile(
-                    hasItems = hasItems,
-                    hasDocuments = hasDocuments
-                )
-                testBindingAndMapping(pathToJsonFile)
-            }
-        }
+    @Test
+    fun required1() {
+        testBindingAndMapping("json/entity/pn/entity_pn_required_1.json")
     }
 
-    private fun pathToJsonFile(hasItems: Boolean, hasDocuments: Boolean) =
-        JsonFilePathGenerator.Entites.pn(
-            hasItems = hasItems,
-            hasDocuments = hasDocuments
-        )
+    @Test
+    fun required2() {
+        testBindingAndMapping("json/entity/pn/entity_pn_required_2.json")
+    }
 }

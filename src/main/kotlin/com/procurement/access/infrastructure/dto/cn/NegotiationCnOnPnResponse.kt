@@ -1,6 +1,5 @@
 package com.procurement.access.infrastructure.dto.cn
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -28,7 +27,7 @@ import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class CnOnPnResponse(
+data class NegotiationCnOnPnResponse(
     @field:JsonProperty("token") @param:JsonProperty("token") val token: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning,
@@ -111,8 +110,6 @@ data class CnOnPnResponse(
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
-        @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
         @field:JsonProperty("acceleratedProcedure") @param:JsonProperty("acceleratedProcedure") val acceleratedProcedure: AcceleratedProcedure,
         @field:JsonProperty("designContest") @param:JsonProperty("designContest") val designContest: DesignContest,
         @field:JsonProperty("electronicWorkflows") @param:JsonProperty("electronicWorkflows") val electronicWorkflows: ElectronicWorkflows,
@@ -137,12 +134,6 @@ data class CnOnPnResponse(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
-
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: Set<ProcurementMethodModalities>?,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
 
         @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
         @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,

@@ -1,9 +1,12 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.HistoryDao
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -18,6 +21,7 @@ class CommandService(private val historyDao: HistoryDao,
                      private val cnUpdateService: CnUpdateService,
                      private val cnOnPinService: CnOnPinService,
                      private val cnOnPnService: CnOnPnService,
+                     private val negotiationCnOnPnService: NegotiationCnOnPnService,
                      private val tenderService: TenderService,
                      private val lotsService: LotsService,
                      private val stageService: StageService,
@@ -38,7 +42,24 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.UPDATE_CN -> cnUpdateService.updateCn(cm)
             CommandType.CREATE_PIN_ON_PN -> pinOnPnService.createPinOnPn(cm)
             CommandType.CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
-            CommandType.CREATE_CN_ON_PN -> cnOnPnService.createCnOnPn(cm)
+            CommandType.CREATE_CN_ON_PN -> {
+                val pmd = getPmd(cm)
+                when (pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV ->
+                        cnOnPnService.createCnOnPn(cm)
+
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP ->
+                        negotiationCnOnPnService.createNegotiationCnOnPn(cm)
+
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA ->
+                        throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
 
             CommandType.SET_TENDER_SUSPENDED -> tenderService.setSuspended(cm)
             CommandType.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
@@ -66,10 +87,36 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
             CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
-            CommandType.CHECK_CN_ON_PN -> cnOnPnService.checkCnOnPn(cm)
+            CommandType.CHECK_CN_ON_PN -> {
+                val pmd = getPmd(cm)
+                when (pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV ->
+                        cnOnPnService.checkCnOnPn(cm)
+
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP ->
+                        negotiationCnOnPnService.checkNegotiationCnOnPn(cm)
+
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA ->
+                        throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }
 
+    private fun getPmd(cm: CommandMessage): ProcurementMethod {
+        return cm.context.pmd
+            ?.let {
+                ProcurementMethod.valueOrException(it) {
+                    ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
+            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'pmd' attribute in context.")
+    }
 }
