@@ -10,6 +10,9 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.TestDataGenerator
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
@@ -21,6 +24,7 @@ import com.procurement.access.json.loadJson
 import com.procurement.access.json.putAttribute
 import com.procurement.access.json.putObject
 import com.procurement.access.json.setAttribute
+import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
@@ -1541,17 +1545,23 @@ class CnOnPnServiceTest {
     private fun testOfCreate(
         testData: WhenTestData
     ) {
-        val fileRequest = testData.requestJsonFile()
-        val filePN = testData.pnJsonFile()
-        val fileResponse = testData.responseJsonFile()
+        val pathToJsonFileOfRequest = testData.requestJsonFile().also {
+            testingBindingAndMapping<CnOnPnRequest>(it)
+        }
+        val pathToJsonFileOfPNEntity = testData.pnJsonFile().also {
+            testingBindingAndMapping<PNEntity>(it)
+        }
+        val pathToJsonFileOfResponse = testData.responseJsonFile().also {
+            testingBindingAndMapping<CnOnPnResponse>(it)
+        }
 
-        val data = loadJson(fileRequest).toNode()
+        val data = loadJson(pathToJsonFileOfRequest).toNode()
         val cm = commandMessage(
             command = CommandType.CREATE_CN_ON_PN,
             data = data
         )
 
-        val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = loadJson(filePN))
+        val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = loadJson(pathToJsonFileOfPNEntity))
 
         whenever(generationService.generatePermanentLotId())
             .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2)
@@ -1567,9 +1577,9 @@ class CnOnPnServiceTest {
         )
             .thenReturn(tenderProcessEntity)
 
-        val actualJson = service.createCnOnPn(cm).data.toJson()
+        val actualJson = service.createCnOnPn(cm).data!!.toJson()
 
-        val expectedJson = loadJson(fileResponse)
+        val expectedJson = loadJson(pathToJsonFileOfResponse)
 
         JsonValidator.equalsJsons(expectedJson, actualJson) {
             assert("$['tender']['lots'][0]['status']", LOT_STATUS)

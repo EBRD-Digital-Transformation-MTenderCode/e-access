@@ -8,6 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.procurement.access.json.exception.JsonBindingException
+import com.procurement.access.json.exception.JsonFileNotFoundException
+import com.procurement.access.json.exception.JsonMappingException
+import com.procurement.access.json.exception.JsonParsingException
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
@@ -22,11 +26,11 @@ import java.time.LocalDateTime
 typealias JSON = String
 
 fun loadJson(fileName: String): JSON {
-    return ClassPathResource.getFilePath(fileName).let { pathToFile ->
+    return ClassPathResource.getFilePath(fileName)?.let { pathToFile ->
         val path = Paths.get(pathToFile)
         val buffer = Files.readAllBytes(path)
         String(buffer, Charset.defaultCharset())
-    }
+    } ?: throw JsonFileNotFoundException("Error loading JSON. File by path: $fileName not found.")
 }
 
 fun JSON.compact(): JSON {
@@ -41,37 +45,36 @@ fun JSON.compact(): JSON {
     return out.buffer.toString()
 }
 
-inline fun <reified T> JsonNode.toObject(): T = try {
+inline fun <reified T : Any> JsonNode.toObject(): T = try {
     JsonMapper.mapper.treeToValue(this, T::class.java)
-} catch (e: IOException) {
-    throw IllegalArgumentException(e)
+} catch (exception: IOException) {
+    val className = this::class.java.canonicalName
+    throw JsonBindingException("Error binding JSON to an object of type '$className'.", exception)
 }
 
-inline fun <reified T> JSON.toObject(): T = this.toObject(T::class.java)
+inline fun <reified T : Any> JSON.toObject(): T = this.toObject(T::class.java)
 
-fun <T> JSON.toObject(target: Class<T>): T = try {
+fun <T : Any> JSON.toObject(target: Class<T>): T = try {
     JsonMapper.mapper.readValue(this, target)
 } catch (exception: Exception) {
-    throw RuntimeException(exception)
+    throw JsonBindingException("Error binding JSON to an object of type '${target.canonicalName}'.", exception)
 }
 
-fun <T> T.toJson(): JSON = try {
+fun <T : Any> T.toJson(): JSON = try {
     JsonMapper.mapper.writeValueAsString(this)
-} catch (e: JsonProcessingException) {
-    throw RuntimeException(e)
+} catch (exception: JsonProcessingException) {
+    val className = this::class.java.canonicalName
+    throw JsonMappingException("Error mapping an object of type '$className' to JSON.", exception)
 }
 
 fun JSON.toNode(): JsonNode = try {
     JsonMapper.mapper.readTree(this)
-} catch (e: JsonProcessingException) {
-    throw RuntimeException(e)
+} catch (exception: JsonProcessingException) {
+    throw JsonParsingException("Error parsing JSON to JsonNode.", exception)
 }
 
 private object ClassPathResource {
-    fun getFilePath(fileName: String): String {
-        return javaClass.classLoader.getResource(fileName)?.path
-            ?: throw IllegalArgumentException("File by path: $fileName not found.")
-    }
+    fun getFilePath(fileName: String): String? = javaClass.classLoader.getResource(fileName)?.path
 }
 
 object JsonMapper {

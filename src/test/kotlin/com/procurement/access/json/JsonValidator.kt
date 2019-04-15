@@ -1,9 +1,24 @@
 package com.procurement.access.json
 
+import com.procurement.access.json.exception.JsonCompareException
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.fail
+
+inline fun <reified T : Any> testingBindingAndMapping(pathToJsonFile: String) {
+    testingBindingAndMapping(pathToJsonFile, T::class.java)
+}
+
+fun <T : Any> testingBindingAndMapping(pathToJsonFile: String, target: Class<T>) {
+    val expected = loadJson(pathToJsonFile)
+    val obj = expected.toObject(target)
+    val actual = obj.toJson()
+
+    try {
+        JsonValidator.equalsJsons(expected, actual)
+    } catch (exception: JsonCompareException) {
+        fail<T>("Error testing binding and mapping JSON file by path: '$pathToJsonFile' to an object of type '${target.canonicalName}'.\n${exception.message}")
+    }
+}
 
 object JsonValidator {
     class JsonValues(private val valueByPaths: Map<String, String>) {
@@ -54,20 +69,32 @@ object JsonValidator {
                         appendln("ACTUAL JSON => path: $key, value: $value")
                 }
             }
-            fail<Unit>(message)
+            throw JsonCompareException(message)
         }
 
-        actualData.forEach { (path, value) ->
-            val expectedValue = expectedData[path]
-            assertNotNull(expectedValue, "Path $path not found in actual json.")
-            assertEquals(
-                expectedValue,
-                value,
-                "Actual value [$value] not equals expected value [$expectedValue] by path: $path."
-            )
+        val message = buildString() {
+            actualData.forEach { (path, value) ->
+                val expectedValue = expectedData[path]
+                if (expectedValue != null) {
+                    if (expectedValue != value)
+                        appendln("Actual value [$value] not equals expected value [$expectedValue] by path: $path.")
+                } else {
+                    appendln("Path $path not found in actual json.")
+                }
+            }
         }
 
-        if (additionalChecks != null) additionalChecks(JsonValues(actualData))
+        if (message.isNotBlank())
+            throw JsonCompareException(message)
+
+
+        if (additionalChecks != null) {
+            try {
+                additionalChecks(JsonValues(actualData))
+            } catch (exception: Exception) {
+                JsonCompareException(exception.message!!)
+            }
+        }
     }
 
     fun checkValueByPath(json: String, checks: JsonValues.() -> Unit) {
@@ -75,4 +102,3 @@ object JsonValidator {
         checks(JsonValues(actualData))
     }
 }
-
