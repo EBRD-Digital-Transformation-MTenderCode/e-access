@@ -44,7 +44,7 @@ object JsonValidator {
             val intersect = expectedData.keys.intersect(actualData.keys)
 
             val message = buildString {
-                appendln("Different number of attributes in Jsons (expected json: ${expectedData.size}, actual json: ${actualData.size})")
+                appendln("Error comparing JSONs. Different number of attributes (expected json: ${expectedData.size} attributes, actual json: ${actualData.size} attributes)")
                 for ((key, value) in expectedData) {
                     if (!intersect.contains(key))
                         appendln("EXPECTED JSON => path: $key, value: $value")
@@ -57,7 +57,7 @@ object JsonValidator {
             fail<Unit>(message)
         }
 
-        actualData.forEach { path, value ->
+        actualData.forEach { (path, value) ->
             val expectedValue = expectedData[path]
             assertNotNull(expectedValue, "Path $path not found in actual json.")
             assertEquals(
