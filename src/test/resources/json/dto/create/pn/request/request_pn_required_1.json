@@ -1,0 +1,156 @@
+{
+  "planning": {
+    "budget": {
+      "amount": {
+        "amount": 10000000.01,
+        "currency": "request.pn.planning.budget.amount.currency"
+      },
+      "isEuropeanUnionFunded": false,
+      "budgetBreakdown": [
+        {
+          "id": "request.pn.planning.budget.budgetBreakdown.id",
+          "amount": {
+            "amount": 10000000.01,
+            "currency": "request.pn.planning.budget.amount.currency"
+          },
+          "period": {
+            "startDate": "2019-01-01T10:00:00Z",
+            "endDate": "2019-12-31T10:00:00Z"
+          },
+          "sourceParty": {
+            "id": "request.pn.planning.budget.budgetBreakdown.sourceParty.id",
+            "name": "request.pn.planning.budget.budgetBreakdown.sourceParty.name"
+          },
+          "europeanUnionFunding": {
+            "projectIdentifier": "request.pn.planning.budget.europeanUnionFunding.projectIdentifier",
+            "projectName": "request.pn.planning.budget.europeanUnionFunding.projectName"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "title": "request.pn.tender.title",
+    "description": "request.pn.tender.description",
+    "classification": {
+      "scheme": "CPV",
+      "description": "request.pn.tender.classification.description",
+      "id": "request.pn.tender.classification.id"
+    },
+    "mainProcurementCategory": "services",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethodDetails": "request.pn.tender.procurementMethodDetails",
+    "eligibilityCriteria": "request.pn.tender.eligibilityCriteria",
+    "tenderPeriod": {
+      "startDate": "2019-02-01T01:01:01Z"
+    },
+    "procuringEntity": {
+      "name": "request.pn.tender.procuringEntity.name",
+      "identifier": {
+        "scheme": "request.pn.tender.procuringEntity.identifier.scheme",
+        "id": "request.pn.tender.procuringEntity.identifier.id",
+        "legalName": "request.pn.tender.procuringEntity.identifier.legalName"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "request.pn.tender.procuringEntity.additionalIdentifiers[0].id",
+          "id": "request.pn.tender.procuringEntity.additionalIdentifiers[0].id",
+          "legalName": "request.pn.tender.procuringEntity.additionalIdentifiers[0].legalName"
+        }
+      ],
+      "address": {
+        "streetAddress": "request.pn.tender.procuringEntity.address.streetAddress",
+        "addressDetails": {
+          "country": {
+            "scheme": "request.pn.tender.procuringEntity.address.addressDetails.country.scheme",
+            "id": "request.pn.tender.procuringEntity.address.addressDetails.country.id",
+            "description": "request.pn.tender.procuringEntity.address.addressDetails.country.description",
+            "uri": "request.pn.tender.procuringEntity.address.addressDetails.country.uri"
+          },
+          "region": {
+            "scheme": "request.pn.tender.procuringEntity.address.addressDetails.region.scheme",
+            "id": "request.pn.tender.procuringEntity.address.addressDetails.region.id",
+            "description": "request.pn.tender.procuringEntity.address.addressDetails.region.description",
+            "uri": "request.pn.tender.procuringEntity.address.addressDetails.region.uri"
+          },
+          "locality": {
+            "scheme": "request.pn.tender.procuringEntity.address.addressDetails.locality.scheme",
+            "id": "request.pn.tender.procuringEntity.address.addressDetails.locality.id",
+            "description": "request.pn.tender.procuringEntity.address.addressDetails.locality.description"
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "request.pn.tender.procuringEntity.contactPoint.name",
+        "email": "request.pn.tender.procuringEntity.contactPoint.email",
+        "telephone": "request.pn.tender.procuringEntity.contactPoint.telephone"
+      }
+    },
+    "lots": [
+      {
+        "id": "lot-1",
+        "title": "request.pn.tender.lot[0].title",
+        "description": "request.pn.tender.lot[0].description",
+        "value": {
+          "amount": 300.01,
+          "currency": "request.pn.planning.budget.amount.currency"
+        },
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "request.pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "addressDetails": {
+              "country": {
+                "scheme": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "request.pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "item-1",
+        "description": "request.pn.tender.item[0].description",
+        "classification": {
+          "scheme": "CPV",
+          "id": "request.pn.tender.item[0].classification.id",
+          "description": "request.pn.tender.item[0].classification.description"
+        },
+        "quantity": 10.01,
+        "unit": {
+          "id": "request.pn.tender.item[0].unit.id",
+          "name": "request.pn.tender.item[0].unit.name"
+        },
+        "relatedLot": "lot-1"
+      }
+    ],
+    "submissionMethodRationale": [
+      ""
+    ],
+    "submissionMethodDetails": "",
+    "documents": [
+      {
+        "id": "document-1",
+        "documentType": "tenderNotice"
+      }
+    ]
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "planning": {
+    "budget": {
+      "amount": {
+        "amount": 10000000.01,
+        "currency": "request.pn.planning.budget.amount.currency"
+      },
+      "isEuropeanUnionFunded": false,
+      "budgetBreakdown": [
+        {
+          "id": "request.pn.planning.budget.budgetBreakdown.id",
+          "amount": {
+            "amount": 10000000.01,
+            "currency": "request.pn.planning.budget.amount.currency"
+          },
+          "period": {
+            "startDate": "2019-01-01T10:00:00Z",
+            "endDate": "2019-12-31T10:00:00Z"
+          },
+          "sourceParty": {
+            "id": "request.pn.planning.budget.budgetBreakdown.sourceParty.id",
+            "name": "request.pn.planning.budget.budgetBreakdown.sourceParty.name"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "title": "request.pn.tender.title",
+    "description": "request.pn.tender.description",
+    "classification": {
+      "scheme": "CPV",
+      "description": "request.pn.tender.classification.description",
+      "id": "request.pn.tender.classification.id"
+    },
+    "mainProcurementCategory": "services",
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethodDetails": "request.pn.tender.procurementMethodDetails",
+    "eligibilityCriteria": "request.pn.tender.eligibilityCriteria",
+    "tenderPeriod": {
+      "startDate": "2019-02-01T01:01:01Z"
+    },
+    "procuringEntity": {
+      "name": "request.pn.tender.procuringEntity.name",
+      "identifier": {
+        "scheme": "request.pn.tender.procuringEntity.identifier.scheme",
+        "id": "request.pn.tender.procuringEntity.identifier.id",
+        "legalName": "request.pn.tender.procuringEntity.identifier.legalName"
+      },
+      "address": {
+        "streetAddress": "request.pn.tender.procuringEntity.address.streetAddress",
+        "addressDetails": {
+          "country": {
+            "scheme": "request.pn.tender.procuringEntity.address.addressDetails.country.scheme",
+            "id": "request.pn.tender.procuringEntity.address.addressDetails.country.id",
+            "description": "request.pn.tender.procuringEntity.address.addressDetails.country.description",
+            "uri": "request.pn.tender.procuringEntity.address.addressDetails.country.uri"
+          },
+          "region": {
+            "scheme": "request.pn.tender.procuringEntity.address.addressDetails.region.scheme",
+            "id": "request.pn.tender.procuringEntity.address.addressDetails.region.id",
+            "description": "request.pn.tender.procuringEntity.address.addressDetails.region.description",
+            "uri": "request.pn.tender.procuringEntity.address.addressDetails.region.uri"
+          },
+          "locality": {
+            "scheme": "request.pn.tender.procuringEntity.address.addressDetails.locality.scheme",
+            "id": "request.pn.tender.procuringEntity.address.addressDetails.locality.id",
+            "description": "request.pn.tender.procuringEntity.address.addressDetails.locality.description"
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "request.pn.tender.procuringEntity.contactPoint.name",
+        "email": "request.pn.tender.procuringEntity.contactPoint.email",
+        "telephone": "request.pn.tender.procuringEntity.contactPoint.telephone"
+      }
+    },
+    "submissionMethodRationale": [
+      ""
+    ],
+    "submissionMethodDetails": ""
+  }
+}
