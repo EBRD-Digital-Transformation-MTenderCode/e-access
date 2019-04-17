@@ -558,7 +558,7 @@ class NegotiationCnOnPnServiceTest {
                         }
 
                     val budgetBreakdownPeriodStartDate = maxStartDateOfContractPeriod.plusDays(1)
-                    val budgetBreakdownPeriodEndDate = maxStartDateOfContractPeriod.plusDays(10)
+                    val budgetBreakdownPeriodEndDate = maxStartDateOfContractPeriod.plusYears(1)
                     pnWithoutItems.getObject("planning", "budget")
                         .getArray("budgetBreakdown")
                         .getObject(0)
@@ -569,7 +569,7 @@ class NegotiationCnOnPnServiceTest {
                             )
                             putAttribute(
                                 "endDate",
-                                budgetBreakdownPeriodEndDate.plusYears(1).format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter)
                             )
                         }
 
