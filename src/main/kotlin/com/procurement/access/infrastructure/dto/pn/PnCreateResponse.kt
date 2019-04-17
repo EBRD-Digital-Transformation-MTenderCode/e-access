@@ -146,8 +146,8 @@ data class PnCreateResponse(
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>?,
         @field:JsonProperty("requiresElectronicCatalogue") @param:JsonProperty("requiresElectronicCatalogue") val requiresElectronicCatalogue: Boolean,
-        @field:JsonProperty("submissionMethod") @param:JsonProperty("submissionMethod") val submissionMethod: Set<SubmissionMethod>,
-        @field:JsonProperty("submissionMethodRationale") @param:JsonProperty("submissionMethodRationale") val submissionMethodRationale: Set<String>,
+        @field:JsonProperty("submissionMethod") @param:JsonProperty("submissionMethod") val submissionMethod: List<SubmissionMethod>,
+        @field:JsonProperty("submissionMethodRationale") @param:JsonProperty("submissionMethodRationale") val submissionMethodRationale: List<String>,
         @field:JsonProperty("submissionMethodDetails") @param:JsonProperty("submissionMethodDetails") val submissionMethodDetails: String,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
