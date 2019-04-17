@@ -23,6 +23,8 @@ import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -34,17 +36,24 @@ class PnService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
 ) {
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(PnService::class.java)
+    }
 
     fun createPn(cm: CommandMessage): ResponseDto {
         val contextRequest: ContextRequest = context(cm)
         val request: PnCreateRequest = toObject(PnCreateRequest::class.java, cm.data)
 
+        log.info("Validation a request '${cm.context.operationId}' by validation rules.")
         checkValidationRules(request)
+
+        log.info("Creation PN on a request '${cm.context.operationId}'.")
         val pnEntity: PNEntity = businessRules(contextRequest, request)
 
         val cpid = generationService.getCpId(contextRequest.country)
         val token = generationService.generateToken()
 
+        log.info("Saving PN on a request '${cm.context.operationId}' and a cpid '$cpid'.")
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = cpid,
@@ -55,6 +64,7 @@ class PnService(
                 jsonData = toJson(pnEntity)
             )
         )
+        log.info("A PN was saved by a request '${cm.context.operationId}' and a cpid '$cpid'.")
 
         val response = getResponse(pnEntity, token)
         return ResponseDto(data = response)
