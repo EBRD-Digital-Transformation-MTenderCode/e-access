@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
@@ -338,20 +336,3 @@ class PnCreateRequest(
         )
     }
 }
-
-//TODO Remove
-//fun PnCreateRequest.validate(): PnCreateRequest {
-//    this.tender.items?.let {
-//        if (it.isEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
-//        val lots = this.tender.lots ?: throw ErrorException(ErrorType.EMPTY_LOTS)
-//        if (lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
-//    }
-//    this.tender.lots?.let {
-//        if (it.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
-//        val items = this.tender.items ?: throw ErrorException(ErrorType.EMPTY_ITEMS)
-//        if (items.isEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
-//    }
-//    if (this.planning.budget.budgetBreakdowns.isEmpty()) throw ErrorException(ErrorType.EMPTY_BREAKDOWN)
-//    if (this.tender.documents?.isEmpty() == true) throw ErrorException(ErrorType.EMPTY_DOCS)
-//    return this
-//}
