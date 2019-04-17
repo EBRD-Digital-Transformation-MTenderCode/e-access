@@ -737,41 +737,24 @@ class CnOnPnServiceTest {
                 @DisplayName("check start date")
                 @Test
                 fun startDate() {
-                    val contractPeriodStartDate: LocalDateTime = requestNode.getObject("tender").let { tender ->
-                        val arrayLots = tender.getArray("lots") {
-                            assertEquals(2, this.size())
-                        }
-
-                        val lot1StartDate = arrayLots.getObject(0).let { lot1 ->
-                            lot1.getObject("contractPeriod")
-                                .getString("startDate")
-                                .asText()
-                                .let {
+                    val minStartDateOfContractPeriod: LocalDateTime =
+                        requestNode.getObject("tender").getArray("lots").let { lots ->
+                            lots.asSequence()
+                                .map {
+                                    it.getObject("contractPeriod").getString("startDate").asText()
+                                }
+                                .map {
                                     LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
                                 }
-                        }
-                        val lot2StartDate = arrayLots.getObject(1).let { lot2 ->
-                            lot2.getObject("contractPeriod")
-                                .getString("startDate")
-                                .asText()
-                                .let {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .min()!!
                         }
 
-                        val minStartDate = if (lot1StartDate.isBefore(lot2StartDate))
-                            lot1StartDate
-                        else
-                            lot2StartDate
-
-                        minStartDate.minusDays(1)
-                    }
-
+                    val budgetBreakdownPeriodEndDate = minStartDateOfContractPeriod.minusDays(1)
                     pnWithoutItems.getObject("planning", "budget")
                         .getArray("budgetBreakdown")
                         .getObject(0)
                         .getObject("period")
-                        .putAttribute("endDate", contractPeriodStartDate.format(JsonDateTimeFormatter.formatter))
+                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
 
                     val tenderProcessEntity =
                         TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
@@ -794,44 +777,32 @@ class CnOnPnServiceTest {
                 @DisplayName("check end date")
                 @Test
                 fun endDate() {
-                    val contractPeriodEndDate: LocalDateTime = requestNode.getObject("tender").let { tender ->
-                        val arrayLots = tender.getArray("lots") {
-                            assertEquals(2, this.size())
-                        }
-
-                        val lot1EndDate = arrayLots.getObject(0).let { lot1 ->
-                            lot1.getObject("contractPeriod")
-                                .getString("endDate")
-                                .asText()
-                                .let {
+                    val maxStartDateOfContractPeriod: LocalDateTime =
+                        requestNode.getObject("tender").getArray("lots").let { lots ->
+                            lots.asSequence()
+                                .map {
+                                    it.getObject("contractPeriod").getString("endDate").asText()
+                                }
+                                .map {
                                     LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
                                 }
-                        }
-                        val lot2EndDate = arrayLots.getObject(1).let { lot2 ->
-                            lot2.getObject("contractPeriod")
-                                .getString("endDate")
-                                .asText()
-                                .let {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .max()!!
                         }
 
-                        val maxEndDate = if (lot1EndDate.isAfter(lot2EndDate))
-                            lot1EndDate
-                        else
-                            lot2EndDate
-
-                        maxEndDate.plusDays(1)
-                    }
+                    val budgetBreakdownPeriodStartDate = maxStartDateOfContractPeriod.plusDays(1)
+                    val budgetBreakdownPeriodEndDate = maxStartDateOfContractPeriod.plusDays(10)
 
                     pnWithoutItems.getObject("planning", "budget")
                         .getArray("budgetBreakdown")
                         .getObject(0)
                         .getObject("period") {
-                            putAttribute("startDate", contractPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                            putAttribute(
+                                "startDate",
+                                budgetBreakdownPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                            )
                             putAttribute(
                                 "endDate",
-                                contractPeriodEndDate.plusYears(1).format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodEndDate.plusYears(1).format(JsonDateTimeFormatter.formatter)
                             )
                         }
 
