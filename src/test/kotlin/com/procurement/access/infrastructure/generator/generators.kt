@@ -28,13 +28,14 @@ object TestDataGenerator {
         command: CommandType,
         cpid: String = CPID,
         pmd: String,
-        token: String = TOKEN.toString(),
+        token: String? = TOKEN.toString(),
         owner: String = OWNER,
+        phase: String? = null,
         stage: String = STAGE,
         prevStage: String = PREV_STAGE,
         startDate: String = START_DATE,
         country: String = COUNTRY,
-        operationType: Operation,
+        operationType: Operation?,
         data: JsonNode
     ): CommandMessage {
         return CommandMessage(
@@ -45,11 +46,12 @@ object TestDataGenerator {
                 cpid = cpid,
                 token = token,
                 owner = owner,
+                phase = phase,
                 stage = stage,
                 prevStage = prevStage,
                 startDate = startDate,
                 country = country,
-                operationType = operationType.value,
+                operationType = operationType?.value,
                 pmd = pmd
             ),
             data = data
