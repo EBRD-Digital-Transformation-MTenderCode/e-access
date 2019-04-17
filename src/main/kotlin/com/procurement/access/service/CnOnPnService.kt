@@ -153,7 +153,10 @@ class CnOnPnService(
         } else {
             /** Begin check Lots*/
             //VR-3.8.16 "Contract Period" (Lot)
-            checkContractPeriodInLotsFromRequestWhenPNWithItems(tenderFromRequest = request.tender)
+            checkContractPeriodInLotsFromRequestWhenPNWithItems(
+                tenderPeriodEndDate = request.tender.tenderPeriod.endDate,
+                lotsFromPN = pnEntity.tender.lots
+            )
             /** End check Lots */
 
             /** Begin check Auctions*/
@@ -831,9 +834,11 @@ class CnOnPnService(
      *   from the context of Request, validation is successful;
      *   ELSE eAccess throws Exception;
      */
-    private fun checkContractPeriodInLotsFromRequestWhenPNWithItems(tenderFromRequest: CnOnPnRequest.Tender) {
-        val tenderPeriodEndDate = tenderFromRequest.tenderPeriod.endDate
-        tenderFromRequest.lots.forEach { lot ->
+    private fun checkContractPeriodInLotsFromRequestWhenPNWithItems(
+        tenderPeriodEndDate: LocalDateTime,
+        lotsFromPN: List<PNEntity.Tender.Lot>
+    ) {
+        lotsFromPN.forEach { lot ->
             if (lot.contractPeriod.startDate <= tenderPeriodEndDate)
                 throw ErrorException(
                     error = INVALID_LOT_CONTRACT_PERIOD,

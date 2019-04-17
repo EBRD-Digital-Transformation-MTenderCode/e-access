@@ -463,12 +463,29 @@ class CnOnPnServiceTest {
             @DisplayName("VR-3.8.16(CN on PN)")
             @Test
             fun vr3_8_16() {
-                requestNode.getObject("tender") {
-                    val tenderPeriod = getObject("tenderPeriod")
-                    val contractPeriod = getArray("lots").getObject(0).getObject("contractPeriod")
-                    val startDate = contractPeriod.getString("startDate").asText()
-                    tenderPeriod.setAttribute("endDate", startDate)
-                }
+                val minStartDateOfContractPeriod: LocalDateTime =
+                    pnWithItems.getObject("tender").getArray("lots").let { lots ->
+                        lots.asSequence()
+                            .map {
+                                it.getObject("contractPeriod").getString("startDate").asText()
+                            }
+                            .map {
+                                LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
+                            }
+                            .min()!!
+                    }
+
+                val tenderPeriodStartDate = minStartDateOfContractPeriod.plusDays(1)
+                val tenderPeriodEndDate = minStartDateOfContractPeriod.plusDays(2)
+                requestNode.getObject("tender", "tenderPeriod")
+                    .setAttribute(
+                        name = "startDate",
+                        value = tenderPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                    )
+                    .setAttribute(
+                        name = "endDate",
+                        value = tenderPeriodEndDate.format(JsonDateTimeFormatter.formatter)
+                    )
 
                 val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                 whenever(
@@ -1015,10 +1032,11 @@ class CnOnPnServiceTest {
             @DisplayName("VR-3.8.11(CN on PN)")
             @Test
             fun vr3_8_11() {
-                requestNode.getObject("tender")
-                    .getArray("items")
-                    .getObject(0)
-                    .putAttribute("relatedLot", UUID.randomUUID().toString())
+                val items = requestNode.getObject("tender").getArray("items")
+                val item = items.getObject(0).deepCopy {
+                    setAttribute("relatedLot", UUID.randomUUID().toString())
+                }
+                items.putObject(item)
 
                 val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
                 whenever(

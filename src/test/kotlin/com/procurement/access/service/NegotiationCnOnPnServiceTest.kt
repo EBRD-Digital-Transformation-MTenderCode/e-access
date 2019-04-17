@@ -240,10 +240,19 @@ class NegotiationCnOnPnServiceTest {
             @DisplayName("VR-3.8.16(CN on PN)")
             @Test
             fun vr3_8_16() {
-                val startDate = requestNode.getObject("tender")
-                    .getArray("lots").getObject(0)
-                    .getObject("contractPeriod")
-                    .getString("startDate").asText()
+                val minStartDateOfContractPeriod: LocalDateTime =
+                    pnWithItems.getObject("tender").getArray("lots").let { lots ->
+                        lots.asSequence()
+                            .map {
+                                it.getObject("contractPeriod").getString("startDate").asText()
+                            }
+                            .map {
+                                LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
+                            }
+                            .min()!!
+                    }
+
+                val startDate = minStartDateOfContractPeriod.plusDays(1).format(JsonDateTimeFormatter.formatter)
 
                 val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
                 whenever(

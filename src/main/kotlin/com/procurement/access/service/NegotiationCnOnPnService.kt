@@ -130,7 +130,7 @@ class NegotiationCnOnPnService(
             //VR-3.8.16 "Contract Period" (Lot)
             checkContractPeriodInLotsFromRequestWhenPNWithItems(
                 contextRequest = contextRequest,
-                tenderFromRequest = request.tender
+                lotsFromPN = pnEntity.tender.lots
             )
             /** End check Lots */
 
@@ -543,10 +543,9 @@ class NegotiationCnOnPnService(
      */
     private fun checkContractPeriodInLotsFromRequestWhenPNWithItems(
         contextRequest: ContextRequest,
-        tenderFromRequest: NegotiationCnOnPnRequest.Tender
+        lotsFromPN: List<PNEntity.Tender.Lot>
     ) {
-
-        tenderFromRequest.lots.forEach { lot ->
+        lotsFromPN.forEach { lot ->
             if (lot.contractPeriod.startDate <= contextRequest.startDate)
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
