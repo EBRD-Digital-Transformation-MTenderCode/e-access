@@ -31,7 +31,6 @@ import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.AwardCriteria
-import com.procurement.access.model.dto.ocds.ExtendedProcurementCategory
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.MainProcurementCategory
@@ -43,6 +42,8 @@ import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -55,13 +56,21 @@ class CnOnPnService(
     private val tenderProcessDao: TenderProcessDao,
     private val rulesService: RulesService
 ) {
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(CnOnPnService::class.java)
+    }
 
     fun checkCnOnPn(cm: CommandMessage): ResponseDto {
         val contextRequest = context(cm)
+
+        log.info("A request '${cm.context.operationId}' cpid '${contextRequest.cpid}'.")
+
         val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
+
+        log.info("Validation a request '${cm.context.operationId}' by validation rules.")
 
         //VR-3.8.1 identifier token
         checkToken(tokenFromRequest = contextRequest.token, entity = entity)
@@ -204,10 +213,15 @@ class CnOnPnService(
 
     fun createCnOnPn(cm: CommandMessage): ResponseDto {
         val contextRequest = context(cm)
+
+        log.info("A request '${cm.context.operationId}' cpid '${contextRequest.cpid}'.")
+
         val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
 
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
+
+        log.info("Creation CN on a request '${cm.context.operationId}'.")
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
