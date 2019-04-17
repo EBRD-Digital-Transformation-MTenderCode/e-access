@@ -80,7 +80,10 @@ class PnService(private val generationService: GenerationService,
         validateDtoRelatedLots(tenderDto)
         setItemsId(pnDto.tender.items)
         setLotsIdAndItemsAndDocumentsRelatedLots(pnDto.tender)
-        pnDto.tender.procuringEntity.id = generationService.generateOrganizationId(pnDto.tender.procuringEntity)
+        pnDto.tender.procuringEntity.id = generationService.generateOrganizationId(
+            identifierScheme = pnDto.tender.procuringEntity.identifier.scheme,
+            identifierId = pnDto.tender.procuringEntity.identifier.id
+        )
         val tp = TenderProcess(
                 ocid = cpId,
                 token = null,
@@ -187,7 +190,7 @@ class PnService(private val generationService: GenerationService,
         items?.let { listItems ->
             val itemsId = listItems.asSequence().map { it.id }.toHashSet()
             if (itemsId.size != listItems.size) throw ErrorException(INVALID_ITEMS)
-            listItems.forEach { it.id = generationService.getTimeBasedUUID() }
+            listItems.forEach { it.id = generationService.generatePermanentItemId() }
         }
     }
 
@@ -196,7 +199,7 @@ class PnService(private val generationService: GenerationService,
             val lotsId = tender.lots.asSequence().map { it.id }.toSet()
             if (lotsId.size < tender.lots.size) throw ErrorException(INVALID_LOT_ID)
             tender.lots.forEach { lot ->
-                val id = generationService.getTimeBasedUUID()
+                val id = generationService.generatePermanentLotId()
                 tender.items?.let { items ->
                     items.asSequence()
                             .filter { it.relatedLot == lot.id }
@@ -319,7 +322,7 @@ class PnService(private val generationService: GenerationService,
                           owner: String): TenderProcessEntity {
         return TenderProcessEntity(
                 cpId = cpId,
-                token = generationService.generateRandomUUID(),
+                token = generationService.generateToken(),
                 stage = stage,
                 owner = owner,
                 createdDate = dateTime.toDate(),
