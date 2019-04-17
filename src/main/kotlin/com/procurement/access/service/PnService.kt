@@ -50,7 +50,7 @@ class PnService(
         log.info("Creation PN on a request '${cm.context.operationId}'.")
         val pnEntity: PNEntity = businessRules(contextRequest, request)
 
-        val cpid = generationService.getCpId(contextRequest.country)
+        val cpid = pnEntity.ocid
         val token = generationService.generateToken()
 
         log.info("Saving PN on a request '${cm.context.operationId}' and a cpid '$cpid'.")
