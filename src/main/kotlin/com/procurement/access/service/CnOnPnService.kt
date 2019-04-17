@@ -928,8 +928,6 @@ class CnOnPnService(
         val value: CNEntity.Tender.Value = calculateTenderValueFromLots(request.tender.lots)
         //BR-3.8.15 -> BR-3.6.31
         val contractPeriod: CNEntity.Tender.ContractPeriod = calculationTenderContractPeriod(lots = request.tender.lots)
-        //BR-3.8.16 -> BR-3.6.29
-        val additionalProcurementCategories: Set<ExtendedProcurementCategory>? = null //BR-3.8.4
         /** End BR-3.8.4 */
 
         //BR-3.8.5 -> BR-3.6.5
@@ -954,7 +952,6 @@ class CnOnPnService(
             items = items,
             value = value,
             contractPeriod = contractPeriod,
-            additionalProcurementCategories = additionalProcurementCategories,
             electronicAuctions = electronicAuctions,
             updatedDocuments = updatedDocuments
         )
@@ -985,8 +982,6 @@ class CnOnPnService(
                 endDate = it.endDate
             )
         }
-        val additionalProcurementCategories: Set<ExtendedProcurementCategory>? =
-            pnEntity.tender.additionalProcurementCategories
         /** End BR-3.8.4 */
 
         //BR-3.8.5 -> BR-3.6.5
@@ -1010,7 +1005,6 @@ class CnOnPnService(
             items = items,
             value = value,
             contractPeriod = contractPeriod,
-            additionalProcurementCategories = additionalProcurementCategories,
             electronicAuctions = electronicAuctions,
             updatedDocuments = updatedDocuments
         )
@@ -1072,7 +1066,6 @@ class CnOnPnService(
         items: List<CNEntity.Tender.Item>,
         value: CNEntity.Tender.Value,
         contractPeriod: CNEntity.Tender.ContractPeriod,
-        additionalProcurementCategories: Set<ExtendedProcurementCategory>?,
         electronicAuctions: CNEntity.Tender.ElectronicAuctions?,
         updatedDocuments: List<CNEntity.Tender.Document>
     ): CNEntity.Tender {
@@ -1142,8 +1135,6 @@ class CnOnPnService(
             procurementMethodAdditionalInfo = request.tender.procurementMethodAdditionalInfo,
             mainProcurementCategory = pnEntity.tender.mainProcurementCategory, //BR-3.8.1
 
-            //BR-3.8.4; BR-3.8.16 -> BR-3.6.29
-            additionalProcurementCategories = additionalProcurementCategories, //BR-3.1.27, BR-3.6.29
             eligibilityCriteria = pnEntity.tender.eligibilityCriteria, //BR-3.8.1
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
@@ -1820,7 +1811,6 @@ class CnOnPnService(
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
                     mainProcurementCategory = tender.mainProcurementCategory,
-                    additionalProcurementCategories = tender.additionalProcurementCategories,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         CnOnPnResponse.Tender.ContractPeriod(

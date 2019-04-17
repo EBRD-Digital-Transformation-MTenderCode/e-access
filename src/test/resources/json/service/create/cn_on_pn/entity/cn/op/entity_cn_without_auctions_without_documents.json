@@ -46,9 +46,6 @@
       "id": "pn.tender.classification.id"
     },
     "mainProcurementCategory": "services",
-    "additionalProcurementCategories": [
-      "works"
-    ],
     "awardCriteria": "priceOnly",
     "procurementMethod": "open",
     "procurementMethodDetails": "pn.tender.procurementMethodDetails",

@@ -491,8 +491,6 @@ class PnService(
             procurementMethodRationale = tenderRequest.procurementMethodRationale,
             procurementMethodAdditionalInfo = tenderRequest.procurementMethodAdditionalInfo,
             mainProcurementCategory = tenderRequest.mainProcurementCategory,
-            //BR-3.1.27
-            additionalProcurementCategories = null,
             eligibilityCriteria = tenderRequest.eligibilityCriteria,
             tenderPeriod = tenderRequest.tenderPeriod.let { period ->
                 PNEntity.Tender.TenderPeriod(
@@ -928,7 +926,6 @@ class PnService(
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
                     mainProcurementCategory = tender.mainProcurementCategory,
-                    additionalProcurementCategories = tender.additionalProcurementCategories,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         PnCreateResponse.Tender.ContractPeriod(
