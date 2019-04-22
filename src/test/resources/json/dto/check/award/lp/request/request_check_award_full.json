@@ -1,0 +1,55 @@
+{
+  "award": {
+    "description": "request.awards.description",
+    "value": {
+      "amount": 10000000.01,
+      "currency": "request.awards.value.currency"
+    },
+    "suppliers": [
+      {
+        "name": "request.awards.suppliers.name",
+        "identifier": {
+          "scheme": "request.awards.suppliers.identifier.scheme",
+          "id": "request.awards.suppliers.identifier.id",
+          "legalName": "request.awards.suppliers.identifier.legalName",
+          "uri": "request.awards.suppliers.identifier.uri"
+        },
+        "additionalIdentifiers": [
+          {
+            "scheme": "request.awards.suppliers.additionalIdentifiers.scheme",
+            "id": "request.awards.suppliers.additionalIdentifiers.id",
+            "legalName": "request.awards.suppliers.additionalIdentifiers.legalName",
+            "uri": "request.awards.suppliers.additionalIdentifiers.uri"
+          }
+        ],
+        "address": {
+          "streetAddress": "request.awards.suppliers.address.streetAddress",
+          "postalCode": "request.awards.suppliers.address.postalCode",
+          "addressDetails": {
+            "country": {
+              "id": "request.awards.suppliers.address.addressDetails.country.id"
+            },
+            "region": {
+              "id": "request.awards.suppliers.address.addressDetails.region.id"
+            },
+            "locality": {
+              "scheme": "request.awards.suppliers.address.addressDetails.locality.scheme",
+              "id": "request.awards.suppliers.address.addressDetails.locality.id",
+              "description": "request.awards.suppliers.address.addressDetails.locality.description"
+            }
+          }
+        },
+        "contactPoint": {
+          "name": "request.awards.suppliers.contactPoint.name",
+          "email": "request.awards.suppliers.contactPoint.email",
+          "telephone": "request.awards.suppliers.contactPoint.telephone",
+          "faxNumber": "request.awards.suppliers.contactPoint.faxNumber",
+          "url": "request.awards.suppliers.contactPoint.url"
+        },
+        "details": {
+          "scale": "request.awards.suppliers.details.scale"
+        }
+      }
+    ]
+  }
+}

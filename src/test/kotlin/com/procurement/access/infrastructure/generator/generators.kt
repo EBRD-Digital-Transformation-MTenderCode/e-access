@@ -36,6 +36,7 @@ object TestDataGenerator {
         startDate: String = START_DATE,
         country: String = COUNTRY,
         operationType: Operation?,
+        idEntity: String? = null,
         data: JsonNode
     ): CommandMessage {
         return CommandMessage(
@@ -52,7 +53,8 @@ object TestDataGenerator {
                 startDate = startDate,
                 country = country,
                 operationType = operationType?.value,
-                pmd = pmd
+                pmd = pmd,
+                id = idEntity
             ),
             data = data
         )

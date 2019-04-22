@@ -67,5 +67,9 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_ITEMS_QUANTITY("10.51", "Invalid quantity value in item."),
     INVALID_TENDER_AMOUNT("10.52", "Invalid amount of the tender."),
     ITEMS_CPV_CODES_NOT_CONSISTENT("10.53", "CPV codes of all items must have minimum 3 the same starting symbols."),
-    CALCULATED_CPV_CODE_NO_MATCH_TENDER_CPV_CODE("10.54", "The calculated CPV code does not match the CPV code in the tender.");
+    CALCULATED_CPV_CODE_NO_MATCH_TENDER_CPV_CODE("10.54", "The calculated CPV code does not match the CPV code in the tender."),
+    AWARD_RELATED_TO_UNKNOWN_LOT("10.55", "The award related to an unknown lot."),
+    AWARD_ON_LOT_IN_INVALID_STATUS("10.56", "The lot related to an award has invalid status."),
+    AWARD_HAS_INVALID_AMOUNT_VALUE("10.57", "The award has an invalid amount value."),
+    AWARD_HAS_INVALID_CURRENCY_VALUE("10.58", "The award has an invalid currency value.");
 }

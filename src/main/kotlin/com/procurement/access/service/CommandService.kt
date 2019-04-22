@@ -81,6 +81,7 @@ class CommandService(private val historyDao: HistoryDao,
             CommandType.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
             CommandType.COMPLETE_LOTS -> lotsService.completeLots(cm)
 
+            CommandType.CHECK_AWARD -> validationService.checkAward(cm)
             CommandType.CHECK_LOT_STATUS -> validationService.checkLotStatus(cm)
             CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
             CommandType.CHECK_BID -> validationService.checkBid(cm)
