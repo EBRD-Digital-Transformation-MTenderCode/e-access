@@ -10,7 +10,8 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
 import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
-import com.procurement.access.infrastructure.generator.TestDataGenerator
+import com.procurement.access.infrastructure.generator.CommandMessageGenerator
+import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -68,11 +69,11 @@ class PnServiceTest {
         whenever(generationService.generateOrganizationId(any(), any()))
             .thenReturn(PERMANENT_TENDER_PROCURING_ENTITY_ID_1)
 
-        whenever(generationService.getCpId(TestDataGenerator.COUNTRY))
+        whenever(generationService.getCpId(ContextGenerator.COUNTRY))
             .thenReturn(PERMANENT_CPID)
 
         whenever(generationService.generateToken())
-            .thenReturn(TestDataGenerator.TOKEN)
+            .thenReturn(ContextGenerator.TOKEN)
 
         whenever(generationService.generatePermanentLotId())
             .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2, PERMANENT_LOT_ID_3)
@@ -513,19 +514,20 @@ class PnServiceTest {
     }
 
     fun commandMessage(
+        owner: String = ContextGenerator.OWNER,
         pmd: String,
-        owner: String = TestDataGenerator.OWNER,
-        startDate: String = TestDataGenerator.START_DATE,
+        startDate: String = ContextGenerator.START_DATE,
         data: JsonNode
     ): CommandMessage {
-        return TestDataGenerator.commandMessage(
-            pmd = pmd,
-            token = null,
+        val context = ContextGenerator.generate(
             owner = owner,
-            command = CommandType.CREATE_PN,
-            startDate = startDate,
-            operationType = null,
+            pmd = pmd,
             phase = "planning",
+            startDate = startDate
+        )
+        return CommandMessageGenerator.generate(
+            command = CommandType.CREATE_PN,
+            context = context,
             data = data
         )
     }

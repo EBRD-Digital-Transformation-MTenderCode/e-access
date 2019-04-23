@@ -10,7 +10,11 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.award.CheckAwardRequest
 import com.procurement.access.infrastructure.dto.award.CheckAwardResponse
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.infrastructure.generator.TestDataGenerator
+import com.procurement.access.infrastructure.generator.CommandMessageGenerator
+import com.procurement.access.infrastructure.generator.ContextGenerator
+import com.procurement.access.infrastructure.generator.ContextGenerator.OWNER
+import com.procurement.access.infrastructure.generator.ContextGenerator.TOKEN
+import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.JSON
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
@@ -63,11 +67,11 @@ class CheckAwardStrategyTest {
             val cm = commandMessage(data = dataRequest)
 
             val dataEntity = tenderProcessEntityData()
-            val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(TestDataGenerator.CPID),
-                    stage = eq(TestDataGenerator.STAGE)
+                    cpId = eq(ContextGenerator.CPID),
+                    stage = eq(ContextGenerator.STAGE)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -85,8 +89,8 @@ class CheckAwardStrategyTest {
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(TestDataGenerator.CPID),
-                    stage = eq(TestDataGenerator.PREV_STAGE)
+                    cpId = eq(ContextGenerator.CPID),
+                    stage = eq(ContextGenerator.PREV_STAGE)
                 )
             ).thenReturn(null)
 
@@ -107,11 +111,11 @@ class CheckAwardStrategyTest {
             val cm = commandMessage(token = "UNKNOWN", data = dataRequest)
 
             val dataEntity = tenderProcessEntityData()
-            val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(TestDataGenerator.CPID),
-                    stage = eq(TestDataGenerator.STAGE)
+                    cpId = eq(ContextGenerator.CPID),
+                    stage = eq(ContextGenerator.STAGE)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -131,11 +135,11 @@ class CheckAwardStrategyTest {
             val cm = commandMessage(owner = "UNKNOWN", data = dataRequest)
 
             val dataEntity = tenderProcessEntityData()
-            val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(TestDataGenerator.CPID),
-                    stage = eq(TestDataGenerator.STAGE)
+                    cpId = eq(ContextGenerator.CPID),
+                    stage = eq(ContextGenerator.STAGE)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -163,11 +167,11 @@ class CheckAwardStrategyTest {
                         .setAttribute("status", LotStatus.UNSUCCESSFUL.value)
                 }
                 .toJson()
-            val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(TestDataGenerator.CPID),
-                    stage = eq(TestDataGenerator.STAGE)
+                    cpId = eq(ContextGenerator.CPID),
+                    stage = eq(ContextGenerator.STAGE)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -192,11 +196,11 @@ class CheckAwardStrategyTest {
                 val cm = commandMessage(data = dataRequest)
 
                 val dataEntity = tenderProcessEntityData()
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+                val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                 whenever(
                     tenderProcessDao.getByCpIdAndStage(
-                        cpId = eq(TestDataGenerator.CPID),
-                        stage = eq(TestDataGenerator.STAGE)
+                        cpId = eq(ContextGenerator.CPID),
+                        stage = eq(ContextGenerator.STAGE)
                     )
                 ).thenReturn(tenderProcessEntity)
 
@@ -217,11 +221,11 @@ class CheckAwardStrategyTest {
                 val cm = commandMessage(data = dataRequest)
 
                 val dataEntity = tenderProcessEntityData()
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+                val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                 whenever(
                     tenderProcessDao.getByCpIdAndStage(
-                        cpId = eq(TestDataGenerator.CPID),
-                        stage = eq(TestDataGenerator.STAGE)
+                        cpId = eq(ContextGenerator.CPID),
+                        stage = eq(ContextGenerator.STAGE)
                     )
                 ).thenReturn(tenderProcessEntity)
 
@@ -242,11 +246,11 @@ class CheckAwardStrategyTest {
             val cm = commandMessage(lotId = "UNKNOWN", data = dataRequest)
 
             val dataEntity = tenderProcessEntityData()
-            val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = dataEntity)
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(TestDataGenerator.CPID),
-                    stage = eq(TestDataGenerator.STAGE)
+                    cpId = eq(ContextGenerator.CPID),
+                    stage = eq(ContextGenerator.STAGE)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -258,18 +262,19 @@ class CheckAwardStrategyTest {
     }
 
     private fun commandMessage(
-        token: String = TestDataGenerator.TOKEN.toString(),
-        owner: String = TestDataGenerator.OWNER,
+        token: String = TOKEN.toString(),
+        owner: String = OWNER,
         lotId: String = "lot-1",
         data: JsonNode
     ): CommandMessage {
-        return TestDataGenerator.commandMessage(
-            command = CommandType.CHECK_AWARD,
+        val context = ContextGenerator.generate(
             token = token,
             owner = owner,
-            pmd = "",
-            operationType = null,
-            idEntity = lotId,
+            id = lotId
+        )
+        return CommandMessageGenerator.generate(
+            command = CommandType.CHECK_AWARD,
+            context = context,
             data = data
         )
     }

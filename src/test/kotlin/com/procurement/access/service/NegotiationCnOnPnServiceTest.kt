@@ -12,7 +12,9 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.infrastructure.generator.TestDataGenerator
+import com.procurement.access.infrastructure.generator.CommandMessageGenerator
+import com.procurement.access.infrastructure.generator.ContextGenerator
+import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -99,8 +101,8 @@ class NegotiationCnOnPnServiceTest {
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    eq(TestDataGenerator.CPID),
-                    eq(TestDataGenerator.PREV_STAGE)
+                    eq(ContextGenerator.CPID),
+                    eq(ContextGenerator.PREV_STAGE)
                 )
             )
                 .thenReturn(null)
@@ -129,14 +131,11 @@ class NegotiationCnOnPnServiceTest {
 
             @Test
             fun success() {
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val response = service.checkNegotiationCnOnPn(cm)
@@ -146,14 +145,11 @@ class NegotiationCnOnPnServiceTest {
             @DisplayName("VR-3.8.1")
             @Test
             fun vr3_8_01() {
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(token = "UNKNOWN", data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -166,14 +162,11 @@ class NegotiationCnOnPnServiceTest {
             @DisplayName("VR-3.8.2")
             @Test
             fun vr3_8_02() {
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(owner = "UNKNOWN", data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -195,14 +188,11 @@ class NegotiationCnOnPnServiceTest {
                             val copyDocument = getObject(0).deepCopy()
                             putObject(copyDocument)
                         }
-                    val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -219,14 +209,11 @@ class NegotiationCnOnPnServiceTest {
                         .getArray("documents") {
                             remove(0)
                         }
-                    val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -254,14 +241,11 @@ class NegotiationCnOnPnServiceTest {
 
                 val startDate = minStartDateOfContractPeriod.plusDays(1).format(JsonDateTimeFormatter.formatter)
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(startDate = startDate, data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -280,14 +264,11 @@ class NegotiationCnOnPnServiceTest {
                     .getArray("relatedLots")
                     .add("UNKNOWN")
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -303,14 +284,11 @@ class NegotiationCnOnPnServiceTest {
                 pnWithItems.getObject("tender")
                     .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -339,14 +317,11 @@ class NegotiationCnOnPnServiceTest {
 
             @Test
             fun success() {
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val response = service.checkNegotiationCnOnPn(cm)
@@ -356,14 +331,11 @@ class NegotiationCnOnPnServiceTest {
             @DisplayName("VR-3.8.1")
             @Test
             fun vr3_8_01() {
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(token = "UNKNOWN", data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -376,14 +348,11 @@ class NegotiationCnOnPnServiceTest {
             @DisplayName("VR-3.8.2")
             @Test
             fun vr3_8_02() {
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(owner = "UNKNOWN", data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -405,15 +374,11 @@ class NegotiationCnOnPnServiceTest {
                             val copyDocument = getObject(0).deepCopy()
                             putObject(copyDocument)
                         }
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -430,15 +395,11 @@ class NegotiationCnOnPnServiceTest {
                         .getArray("documents") {
                             remove(0)
                         }
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -454,14 +415,11 @@ class NegotiationCnOnPnServiceTest {
             fun vr3_8_04() {
                 pnWithoutItems.getObject("planning", "budget", "amount")
                     .setAttribute("amount", BigDecimal(1))
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -481,14 +439,11 @@ class NegotiationCnOnPnServiceTest {
                     }
                 }
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -524,15 +479,11 @@ class NegotiationCnOnPnServiceTest {
                         .getObject("period")
                         .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
 
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -573,15 +524,11 @@ class NegotiationCnOnPnServiceTest {
                             )
                         }
 
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -602,14 +549,11 @@ class NegotiationCnOnPnServiceTest {
                     }
                 }
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -637,15 +581,11 @@ class NegotiationCnOnPnServiceTest {
                         }
                     }
 
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -663,15 +603,11 @@ class NegotiationCnOnPnServiceTest {
                         .getObject("contractPeriod")
                         .getString("startDate").asText()
 
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(startDate = startDate, data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -691,14 +627,11 @@ class NegotiationCnOnPnServiceTest {
                     }
                 }
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -717,15 +650,11 @@ class NegotiationCnOnPnServiceTest {
                 fun vr3_8_10_1() {
                     requestNode.getObject("tender").putArray("lots")
 
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -745,15 +674,11 @@ class NegotiationCnOnPnServiceTest {
                     }
                     lots.add(newLot)
 
-                    val tenderProcessEntity =
-                        TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                    whenever(
-                        tenderProcessDao.getByCpIdAndStage(
-                            eq(TestDataGenerator.CPID),
-                            eq(TestDataGenerator.PREV_STAGE)
-                        )
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
                     )
-                        .thenReturn(tenderProcessEntity)
 
                     val cm = commandMessage(data = requestNode)
                     val exception = assertThrows<ErrorException> {
@@ -772,14 +697,11 @@ class NegotiationCnOnPnServiceTest {
                     .getObject(0)
                     .putAttribute("relatedLot", UUID.randomUUID().toString())
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -796,14 +718,11 @@ class NegotiationCnOnPnServiceTest {
                 val duplicate = lots.getObject(0).deepCopy()
                 lots.putObject(duplicate)
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -820,14 +739,11 @@ class NegotiationCnOnPnServiceTest {
                 val duplicate = items.getObject(0).deepCopy()
                 items.putObject(duplicate)
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -843,14 +759,11 @@ class NegotiationCnOnPnServiceTest {
                 pnWithoutItems.getObject("tender")
                     .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
 
-                val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = pnWithoutItems.toString())
-                whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        eq(TestDataGenerator.CPID),
-                        eq(TestDataGenerator.PREV_STAGE)
-                    )
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnWithoutItems
                 )
-                    .thenReturn(tenderProcessEntity)
 
                 val cm = commandMessage(data = requestNode)
                 val exception = assertThrows<ErrorException> {
@@ -859,6 +772,12 @@ class NegotiationCnOnPnServiceTest {
 
                 assertEquals(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS, exception.error)
             }
+        }
+
+        private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
+            whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
+                .thenReturn(tenderProcessEntity)
         }
     }
 
@@ -885,8 +804,8 @@ class NegotiationCnOnPnServiceTest {
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
-                    eq(TestDataGenerator.CPID),
-                    eq(TestDataGenerator.PREV_STAGE)
+                    eq(ContextGenerator.CPID),
+                    eq(ContextGenerator.PREV_STAGE)
                 )
             )
                 .thenReturn(null)
@@ -898,8 +817,6 @@ class NegotiationCnOnPnServiceTest {
 
             assertEquals(ErrorType.DATA_NOT_FOUND, exception.error)
         }
-
-        private val pmd: ProcurementMethod = ProcurementMethod.DA
 
         @Nested
         inner class PNWithItems {
@@ -966,64 +883,68 @@ class NegotiationCnOnPnServiceTest {
                 }
             }
         }
-    }
 
-    private fun testOfCreate(testData: WhenTestData) {
-        val pathToJsonFileOfRequest = testData.requestJsonFile().also {
-            testingBindingAndMapping<NegotiationCnOnPnRequest>(it)
-        }
-        val pathToJsonFileOfPNEntity = testData.pnJsonFile().also {
-            testingBindingAndMapping<PNEntity>(it)
-        }
-        val pathToJsonFileOfResponse = testData.responseJsonFile().also {
-            testingBindingAndMapping<NegotiationCnOnPnResponse>(it)
-        }
+        private fun testOfCreate(testData: WhenTestData) {
+            val pathToJsonFileOfRequest = testData.requestJsonFile().also {
+                testingBindingAndMapping<NegotiationCnOnPnRequest>(it)
+            }
+            val pathToJsonFileOfPNEntity = testData.pnJsonFile().also {
+                testingBindingAndMapping<PNEntity>(it)
+            }
+            val pathToJsonFileOfResponse = testData.responseJsonFile().also {
+                testingBindingAndMapping<NegotiationCnOnPnResponse>(it)
+            }
 
-        val data = loadJson(pathToJsonFileOfRequest).toNode()
-        val cm = commandMessage(command = CommandType.CREATE_CN_ON_PN, data = data)
+            val data = loadJson(pathToJsonFileOfRequest).toNode()
+            val cm = commandMessage(command = CommandType.CREATE_CN_ON_PN, data = data)
 
-        val tenderProcessEntity = TestDataGenerator.tenderProcessEntity(data = loadJson(pathToJsonFileOfPNEntity))
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson(pathToJsonFileOfPNEntity))
 
-        whenever(generationService.generatePermanentLotId())
-            .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2)
-        whenever(generationService.generatePermanentItemId())
-            .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
-        whenever(
-            tenderProcessDao.getByCpIdAndStage(
-                eq(TestDataGenerator.CPID),
-                eq(TestDataGenerator.PREV_STAGE)
+            whenever(generationService.generatePermanentLotId())
+                .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2)
+            whenever(generationService.generatePermanentItemId())
+                .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
+            whenever(
+                tenderProcessDao.getByCpIdAndStage(
+                    eq(ContextGenerator.CPID),
+                    eq(ContextGenerator.PREV_STAGE)
+                )
             )
-        )
-            .thenReturn(tenderProcessEntity)
+                .thenReturn(tenderProcessEntity)
 
-        val actualJson = service.createNegotiationCnOnPn(cm).data!!.toJson()
+            val actualJson = service.createNegotiationCnOnPn(cm).data!!.toJson()
 
-        val expectedJson = loadJson(pathToJsonFileOfResponse)
+            val expectedJson = loadJson(pathToJsonFileOfResponse)
 
-        JsonValidator.equalsJsons(expectedJson, actualJson) {
-            assert("$['tender']['lots'][0]['status']", LOT_STATUS)
-            assert("$['tender']['lots'][1]['status']", LOT_STATUS)
-            assert("$['tender']['lots'][0]['statusDetails']", LOT_STATUS_DETAILS)
-            assert("$['tender']['lots'][1]['statusDetails']", LOT_STATUS_DETAILS)
+            JsonValidator.equalsJsons(expectedJson, actualJson) {
+                assert("$['tender']['lots'][0]['status']", LOT_STATUS)
+                assert("$['tender']['lots'][1]['status']", LOT_STATUS)
+                assert("$['tender']['lots'][0]['statusDetails']", LOT_STATUS_DETAILS)
+                assert("$['tender']['lots'][1]['statusDetails']", LOT_STATUS_DETAILS)
+            }
         }
     }
 
     fun commandMessage(
         pmd: String = ProcurementMethod.DA.name,
-        token: String = TestDataGenerator.TOKEN.toString(),
-        owner: String = TestDataGenerator.OWNER,
+        token: String = ContextGenerator.TOKEN.toString(),
+        owner: String = ContextGenerator.OWNER,
         command: CommandType = CommandType.CHECK_CN_ON_PN,
         operationType: Operation = Operation.CREATE_CN_ON_PN,
-        startDate: String = TestDataGenerator.START_DATE,
+        startDate: String = ContextGenerator.START_DATE,
         data: JsonNode
     ): CommandMessage {
-        return TestDataGenerator.commandMessage(
-            pmd = pmd,
+        val context = ContextGenerator.generate(
             token = token,
             owner = owner,
+            pmd = pmd,
+            operationType = operationType.value,
+            startDate = startDate
+        )
+
+        return CommandMessageGenerator.generate(
             command = command,
-            startDate = startDate,
-            operationType = operationType,
+            context = context,
             data = data
         )
     }
