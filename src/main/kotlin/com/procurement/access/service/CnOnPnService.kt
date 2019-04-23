@@ -1769,14 +1769,12 @@ class CnOnPnService(
                         )
                     },
                     tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
-                        //TODO
                         CnOnPnResponse.Tender.TenderPeriod(
                             startDate = tenderPeriod!!.startDate,
                             endDate = tenderPeriod!!.endDate
                         )
                     },
                     enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
-                        //TODO
                         CnOnPnResponse.Tender.EnquiryPeriod(
                             startDate = enquiryPeriod!!.startDate,
                             endDate = enquiryPeriod!!.endDate

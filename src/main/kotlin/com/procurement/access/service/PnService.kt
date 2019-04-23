@@ -1033,25 +1033,21 @@ class PnService(
                                     currency = value.currency
                                 )
                             },
-                            //TODO lot.options?
                             options = lot.options?.map { option ->
                                 PnCreateResponse.Tender.Lot.Option(
                                     hasOptions = option.hasOptions
                                 )
                             },
-                            //TODO lot.variants?
                             variants = lot.variants?.map { variant ->
                                 PnCreateResponse.Tender.Lot.Variant(
                                     hasVariants = variant.hasVariants
                                 )
                             },
-                            //TODO lot.renewals?
                             renewals = lot.renewals?.map { renewal ->
                                 PnCreateResponse.Tender.Lot.Renewal(
                                     hasRenewals = renewal.hasRenewals
                                 )
                             },
-                            //TODO lot.recurrentProcurement?
                             recurrentProcurement = lot.recurrentProcurement?.map { recurrentProcurement ->
                                 PnCreateResponse.Tender.Lot.RecurrentProcurement(
                                     isRecurrent = recurrentProcurement.isRecurrent
