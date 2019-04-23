@@ -1394,15 +1394,9 @@ class CnOnPnServiceTest {
         }
 
         private fun testOfCreate(testData: WhenTestData) {
-            val pathToJsonFileOfRequest = testData.requestJsonFile().also {
-                testingBindingAndMapping<CnOnPnRequest>(it)
-            }
-            val pathToJsonFileOfPNEntity = testData.pnJsonFile().also {
-                testingBindingAndMapping<PNEntity>(it)
-            }
-            val pathToJsonFileOfResponse = testData.responseJsonFile().also {
-                testingBindingAndMapping<CnOnPnResponse>(it)
-            }
+            val pathToJsonFileOfRequest = testData.requestJsonFile()
+            val pathToJsonFileOfPNEntity = testData.pnJsonFile()
+            val pathToJsonFileOfResponse = testData.responseJsonFile()
 
             val data = loadJson(pathToJsonFileOfRequest).toNode()
             val cm = commandMessage(
@@ -1472,12 +1466,18 @@ class CnOnPnServiceTest {
         fun requestJsonFile(): String {
             val auctionsSegment = JsonFilePathGenerator.auctionSegment(hasAuctionsInRequest)
             return "json/service/create/cn_on_pn/request/op/request_cn_${auctionsSegment}_on_pn.json"
+                .also {
+                    testingBindingAndMapping<CnOnPnRequest>(it)
+                }
         }
 
         fun pnJsonFile(): String {
             val itemsSegment = JsonFilePathGenerator.itemsSegment(hasItemsInPN)
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInPN)
             return "json/service/create/cn_on_pn/entity/pn/entity_pn_${itemsSegment}_${segmentDocuments}.json"
+                .also {
+                    testingBindingAndMapping<PNEntity>(it)
+                }
         }
 
         fun responseJsonFile(): String {
@@ -1485,6 +1485,9 @@ class CnOnPnServiceTest {
             val itemsSegment = JsonFilePathGenerator.itemsSegment(hasItemsInPN)
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInPN)
             return "json/service/create/cn_on_pn/response/op/response_cn_${auctionsSegment}_on_pn_${itemsSegment}_${segmentDocuments}.json"
+                .also {
+                    testingBindingAndMapping<CnOnPnResponse>(it)
+                }
         }
     }
 }

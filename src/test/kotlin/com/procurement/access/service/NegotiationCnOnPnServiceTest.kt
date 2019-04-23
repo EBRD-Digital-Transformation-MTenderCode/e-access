@@ -885,15 +885,9 @@ class NegotiationCnOnPnServiceTest {
         }
 
         private fun testOfCreate(testData: WhenTestData) {
-            val pathToJsonFileOfRequest = testData.requestJsonFile().also {
-                testingBindingAndMapping<NegotiationCnOnPnRequest>(it)
-            }
-            val pathToJsonFileOfPNEntity = testData.pnJsonFile().also {
-                testingBindingAndMapping<PNEntity>(it)
-            }
-            val pathToJsonFileOfResponse = testData.responseJsonFile().also {
-                testingBindingAndMapping<NegotiationCnOnPnResponse>(it)
-            }
+            val pathToJsonFileOfRequest = testData.requestJsonFile()
+            val pathToJsonFileOfPNEntity = testData.pnJsonFile()
+            val pathToJsonFileOfResponse = testData.responseJsonFile()
 
             val data = loadJson(pathToJsonFileOfRequest).toNode()
             val cm = commandMessage(command = CommandType.CREATE_CN_ON_PN, data = data)
@@ -953,18 +947,27 @@ class NegotiationCnOnPnServiceTest {
 
         fun requestJsonFile(): String {
             return "json/service/create/cn_on_pn/request/lp/request_cn_on_pn.json"
+                .also {
+                    testingBindingAndMapping<NegotiationCnOnPnRequest>(it)
+                }
         }
 
         fun pnJsonFile(): String {
             val itemsSegment = JsonFilePathGenerator.itemsSegment(hasItemsInPN)
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInPN)
             return "json/service/create/cn_on_pn/entity/pn/entity_pn_${itemsSegment}_${segmentDocuments}.json"
+                .also {
+                    testingBindingAndMapping<PNEntity>(it)
+                }
         }
 
         fun responseJsonFile(): String {
             val itemsSegment = JsonFilePathGenerator.itemsSegment(hasItemsInPN)
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInPN)
             return "json/service/create/cn_on_pn/response/lp/response_cn_on_pn_${itemsSegment}_${segmentDocuments}.json"
+                .also {
+                    testingBindingAndMapping<NegotiationCnOnPnResponse>(it)
+                }
         }
     }
 }

@@ -490,12 +490,8 @@ class PnServiceTest {
             pmd: ProcurementMethod,
             testData: WhenTestData
         ) {
-            val pathToJsonFileOfRequest = testData.requestJsonFile().also {
-                testingBindingAndMapping<PnCreateRequest>(it)
-            }
-            val pathToJsonFileOfResponse = testData.responseJsonFile().also {
-                testingBindingAndMapping<PnCreateResponse>(it)
-            }
+            val pathToJsonFileOfRequest = testData.requestJsonFile()
+            val pathToJsonFileOfResponse = testData.responseJsonFile()
 
             val data = loadJson(pathToJsonFileOfRequest).toNode()
             val cm = commandMessage(pmd = pmd.name, data = data)
@@ -541,12 +537,18 @@ class PnServiceTest {
             val itemsSegment = JsonFilePathGenerator.itemsSegment(hasItemsInRequest)
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInRequest)
             return "json/service/create/pn/request/request_pn_${itemsSegment}_${segmentDocuments}.json"
+                .also {
+                    testingBindingAndMapping<PnCreateRequest>(it)
+                }
         }
 
         fun responseJsonFile(): String {
             val itemsSegment = JsonFilePathGenerator.itemsSegment(hasItemsInRequest)
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInRequest)
             return "json/service/create/pn/response/response_pn_${itemsSegment}_${segmentDocuments}.json"
+                .also {
+                    testingBindingAndMapping<PnCreateResponse>(it)
+                }
         }
     }
 }
