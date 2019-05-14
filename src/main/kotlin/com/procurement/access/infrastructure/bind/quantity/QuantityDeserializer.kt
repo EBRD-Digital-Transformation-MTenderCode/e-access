@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
-import com.procurement.access.infrastructure.exception.AmountValueException
+import com.procurement.access.infrastructure.exception.QuantityValueException
 import java.io.IOException
 import java.math.BigDecimal
 
@@ -13,7 +13,7 @@ class QuantityDeserializer : JsonDeserializer<BigDecimal>() {
         fun deserialize(text: String): BigDecimal = try {
             BigDecimal(text)
         } catch (exception: Exception) {
-            throw AmountValueException(text, exception.message ?: "")
+            throw QuantityValueException(quantity = text, description = exception.message ?: "")
         }
     }
 
