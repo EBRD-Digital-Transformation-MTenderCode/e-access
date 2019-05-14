@@ -12,22 +12,22 @@ import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
 @Service
-class CommandService(private val historyDao: HistoryDao,
-                     private val pinService: PinService,
-                     private val pinOnPnService: PinOnPnService,
-                     private val pnService: PnService,
-                     private val pnUpdateService: PnUpdateService,
-                     private val cnCreateService: CnCreateService,
-                     private val cnUpdateService: CnUpdateService,
-                     private val cnOnPinService: CnOnPinService,
-                     private val cnOnPnService: CnOnPnService,
-                     private val negotiationCnOnPnService: NegotiationCnOnPnService,
-                     private val tenderService: TenderService,
-                     private val lotsService: LotsService,
-                     private val stageService: StageService,
-                     private val validationService: ValidationService
+class CommandService(
+    private val historyDao: HistoryDao,
+    private val pinService: PinService,
+    private val pinOnPnService: PinOnPnService,
+    private val pnService: PnService,
+    private val pnUpdateService: PnUpdateService,
+    private val cnCreateService: CnCreateService,
+    private val cnUpdateService: CnUpdateService,
+    private val cnOnPinService: CnOnPinService,
+    private val cnOnPnService: CnOnPnService,
+    private val negotiationCnOnPnService: NegotiationCnOnPnService,
+    private val tenderService: TenderService,
+    private val lotsService: LotsService,
+    private val stageService: StageService,
+    private val validationService: ValidationService
 ) {
-
 
     fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
@@ -106,6 +106,8 @@ class CommandService(private val historyDao: HistoryDao,
                         throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
+
+            CommandType.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)

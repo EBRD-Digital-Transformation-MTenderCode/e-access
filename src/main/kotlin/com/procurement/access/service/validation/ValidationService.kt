@@ -12,6 +12,7 @@ import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.validation.CheckBSRq
 import com.procurement.access.model.dto.validation.CheckBid
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy
+import com.procurement.access.service.validation.strategy.CheckOwnerAndTokenStrategy
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -21,6 +22,7 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
 
     private val checkItemsStrategy = CheckItemsStrategy(tenderProcessDao)
     private val checkAwardStrategy = CheckAwardStrategy(tenderProcessDao)
+    private val checkOwnerAndTokenStrategy = CheckOwnerAndTokenStrategy(tenderProcessDao)
 
     fun checkBid(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckBid::class.java, cm.data)
@@ -49,13 +51,12 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
     }
 
     fun checkToken(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
-        val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(ErrorType.CONTEXT)
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
-        if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
+        checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
+        return ResponseDto(data = "ok")
+    }
+
+    fun checkOwnerAndToken(cm: CommandMessage): ResponseDto {
+        checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
         return ResponseDto(data = "ok")
     }
 
