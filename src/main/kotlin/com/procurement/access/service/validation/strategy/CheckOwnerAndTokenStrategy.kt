@@ -16,16 +16,11 @@ class CheckOwnerAndTokenStrategy(private val tenderProcessDao: TenderProcessDao)
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        //VR-3.11.6
+        //VR-3.12.3
         checkOwner(ownerFromRequest = owner, entity = entity)
 
-        //VR-3.11.5
+        //VR-3.12.4
         checkToken(tokenFromRequest = token, entity = entity)
-
-        if (entity.token.toString() != token)
-            throw ErrorException(ErrorType.INVALID_TOKEN)
-        if (entity.owner != owner)
-            throw ErrorException(ErrorType.INVALID_OWNER)
     }
 
     /**
