@@ -204,6 +204,31 @@ class CnOnPnServiceTest {
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
                 }
 
+                @DisplayName("VR-3.8.3(CN on PN) -> VR-3.6.1(CNEntity) PN without documents")
+                @Test
+                fun vr3_8_03_vr_3_6_1_PN_without_documents() {
+                    requestNode.getObject("tender")
+                        .getArray("documents") {
+                            val copyDocument = getObject(0).deepCopy()
+                            putObject(copyDocument)
+                        }
+                    pnWithItems.getObject("tender")
+                        .remove("documents")
+
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithItems
+                    )
+
+                    val cm = commandMessage(command = command, data = requestNode)
+                    val exception = assertThrows<ErrorException> {
+                        service.checkCnOnPn(cm)
+                    }
+
+                    assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
+                }
+
                 @DisplayName("VR-3.8.3(CN on PN) -> VR-3.7.3(CNEntity)")
                 @Test
                 fun vr3_8_3_vr_3_7_3() {
@@ -581,6 +606,31 @@ class CnOnPnServiceTest {
                             val copyDocument = getObject(0).deepCopy()
                             putObject(copyDocument)
                         }
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
+                    )
+
+                    val cm = commandMessage(command = command, data = requestNode)
+                    val exception = assertThrows<ErrorException> {
+                        service.checkCnOnPn(cm)
+                    }
+
+                    assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
+                }
+
+                @DisplayName("VR-3.8.3(CN on PN) -> VR-3.6.1(CNEntity) PN without documents")
+                @Test
+                fun vr3_8_03_vr_3_6_1_PN_without_documents() {
+                    requestNode.getObject("tender")
+                        .getArray("documents") {
+                            val copyDocument = getObject(0).deepCopy()
+                            putObject(copyDocument)
+                        }
+                    pnWithoutItems.getObject("tender")
+                        .remove("documents")
+
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
                         stage = ContextGenerator.PREV_STAGE,
