@@ -24,7 +24,6 @@ import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.AwardCriteria
-import com.procurement.access.model.dto.ocds.ExtendedProcurementCategory
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.ProcurementMethod
@@ -64,6 +63,9 @@ class NegotiationCnOnPnService(
 
         //VR-3.8.18 Tender status
         checkTenderStatus(pnEntity)
+
+        //VR-3.8.3 Documents (duplicate)
+        checkDocuments(documentsFromRequest = request.tender.documents, documentsFromPN = pnEntity.tender.documents)
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = request.tender.lots.asSequence()
@@ -144,15 +146,6 @@ class NegotiationCnOnPnService(
             /** End check Documents */
         }
 
-        /** Begin check Documents*/
-        //VR-3.8.3 Documents (duplicate)
-        if (pnEntity.tender.documents != null) {
-            checkDocuments(
-                documentsFromRequest = request.tender.documents,
-                documentsFromPN = pnEntity.tender.documents
-            )
-        }
-        /** End check Documents */
         return ResponseDto(data = "ok")
     }
 
@@ -266,14 +259,14 @@ class NegotiationCnOnPnService(
      */
     private fun checkDocuments(
         documentsFromRequest: List<NegotiationCnOnPnRequest.Tender.Document>,
-        documentsFromPN: List<PNEntity.Tender.Document>
+        documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
         val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSetBy { it.id }
         if (uniqueIdsDocumentsFromRequest.size != documentsFromRequest.size)
             throw ErrorException(INVALID_DOCS_ID)
 
-        documentsFromPN.toSetBy { it.id }
-            .forEach { id ->
+        documentsFromPN?.toSetBy { it.id }
+            ?.forEach { id ->
                 if (id !in uniqueIdsDocumentsFromRequest) {
                     throw ErrorException(
                         error = INVALID_DOCS_ID,
