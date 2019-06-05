@@ -48,6 +48,8 @@
         <junit-platform.version>1.4.0</junit-platform.version>
         <mockito-kotlin.version>1.6.0</mockito-kotlin.version>
         <mockito.version>2.25.1</mockito.version>
+        <pitest-maven.version>1.4.8</pitest-maven.version>
+        <pitest-junit5-plugin.version>0.8</pitest-junit5-plugin.version>
 
         <!--Plugins-->
         <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
@@ -58,6 +60,56 @@
         <versions-maven-plugin.version>2.7</versions-maven-plugin.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>mutation-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>${pitest-maven.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>${pitest-junit5-plugin.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <mutators>
+                                <mutator>STRONGER</mutator>
+                            </mutators>
+                            <targetClasses>
+                                <param>com.procurement.access.service.*</param>
+                                <param>com.procurement.access.application.service.*</param>
+                            </targetClasses>
+                            <targetTests>
+                                <param>com.procurement.access.service.*</param>
+                                <param>com.procurement.access.application.service.*</param>
+                            </targetTests>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-integration-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <dependencyManagement>
         <dependencies>
             <dependency>
