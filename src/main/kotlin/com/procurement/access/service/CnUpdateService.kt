@@ -2,10 +2,11 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.AUCTION_LOT_HAS_INVALID_AMOUNT_VALUE
+import com.procurement.access.exception.ErrorType.AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
-import com.procurement.access.exception.ErrorType.DUPLICATE_AUCTION_LOT_ID
-import com.procurement.access.exception.ErrorType.DUPLICATE_TENDER_LOT_ID
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_IS_EMPTY
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_IS_NON_EMPTY
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
@@ -18,8 +19,9 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.IS_SUSPENDED
-import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.exception.ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS
+import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
+import com.procurement.access.exception.ErrorType.TENDER_CONTAIN_DUPLICATE_LOT_ID
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
@@ -31,6 +33,8 @@ import com.procurement.access.model.dto.ocds.Amendment
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.Document
+import com.procurement.access.model.dto.ocds.ElectronicAuctions
+import com.procurement.access.model.dto.ocds.ElectronicAuctionsDetails
 import com.procurement.access.model.dto.ocds.Item
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.LotStatus
@@ -48,12 +52,17 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @Service
 class CnUpdateService(private val generationService: GenerationService,
                       private val tenderProcessDao: TenderProcessDao) {
+
+    companion object{
+        private val persentEligibleMinimumDifferenceAmount = BigDecimal(0.1)
+    }
 
     fun updateCn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -129,22 +138,51 @@ class CnUpdateService(private val generationService: GenerationService,
             if (cnDto.tender.electronicAuctions == null) throw ErrorException(INVALID_AUCTION_IS_EMPTY)
 
             //VR-3.7.15
-            val lotIds: Set<String> = cnDto.tender.lots.fold(initial = HashSet()) { acc, item ->
-                if (acc.add(item.id))
-                    acc
-                else
-                    throw ErrorException(DUPLICATE_TENDER_LOT_ID)
-            }
-            val auctionLotIds: Set<String> = cnDto.tender.electronicAuctions.details.fold(initial = HashSet()) { acc, item ->
-                if (acc.add(item.relatedLot))
-                    acc
-                else
-                    throw ErrorException(DUPLICATE_AUCTION_LOT_ID)
-            }
-            if(lotIds.size != auctionLotIds.size || !lotIds.all { auctionLotIds.contains(it) })
+            val tenderLotsIds = getTenderLotsIds(cnDto.tender)
+            val auctionLotsByRelatedLot = getAuctionLotsByRelatedLot(cnDto.tender.electronicAuctions)
+
+            val auctionLotsIds: Set<String> = auctionLotsByRelatedLot.keys
+            if (tenderLotsIds.size != auctionLotsIds.size || !tenderLotsIds.all { auctionLotsIds.contains(it) })
                 throw ErrorException(LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS)
+
+            cnDto.tender.lots.forEach { lot ->
+                val auctionLot = auctionLotsByRelatedLot.getValue(lot.id)
+
+                auctionLot.electronicAuctionModalities.forEach {
+                    val acceptableEligibleMinimumDifferenceAmount =
+                        lot.value.amount.times(persentEligibleMinimumDifferenceAmount)
+                            .setScale(2, RoundingMode.HALF_UP)
+
+                    if (it.eligibleMinimumDifference.amount <= BigDecimal.ZERO
+                        || it.eligibleMinimumDifference.amount > acceptableEligibleMinimumDifferenceAmount
+                    )
+                        throw ErrorException(error = AUCTION_LOT_HAS_INVALID_AMOUNT_VALUE)
+
+                    if (it.eligibleMinimumDifference.currency != lot.value.currency)
+                        throw ErrorException(error = AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE)
+                }
+            }
         }
     }
+
+    private fun getTenderLotsIds(tender: TenderCnUpdate): Set<String> = mutableSetOf<String>()
+        .apply {
+            tender.lots.forEach {
+                if (add(it.id) == false)
+                    throw ErrorException(TENDER_CONTAIN_DUPLICATE_LOT_ID)
+
+            }
+        }
+
+    private fun getAuctionLotsByRelatedLot(
+        electronicAuctions: ElectronicAuctions
+    ): Map<String, ElectronicAuctionsDetails> = mutableMapOf<String, ElectronicAuctionsDetails>()
+        .apply {
+            electronicAuctions.details.forEach {
+                if (put(it.relatedLot, it) != null)
+                    throw ErrorException(AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS)
+            }
+        }
 
     private fun checkLotsCurrency(lotsDto: List<LotCnUpdate>, budgetCurrency: String) {
         lotsDto.asSequence().firstOrNull { it.value.currency != budgetCurrency }?.let {

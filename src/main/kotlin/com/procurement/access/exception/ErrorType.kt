@@ -55,8 +55,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_AUCTION_IS_NON_EMPTY("10.40", "Electronic auctions must be empty."),
     INVALID_LOTS_STATUS("10.41", "Invalid lots status."),
     CONTEXT("20.01", "Context parameter not found."),
-    DUPLICATE_TENDER_LOT_ID("10.42", "Duplicate lot id in tender."),
-    DUPLICATE_AUCTION_LOT_ID("10.43", "Duplicate lot id in auction."),
+    TENDER_CONTAIN_DUPLICATE_LOT_ID("10.42", "The tender contain a duplicate lot id."),
     LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS("10.44", "Lot id in the tender do not match related lot in the auctions."),
     NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS("10.45", "The number of auctions does not match the number of lots."),
     LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_ITEMS("10.46", "Lot id in the tender do not match related lot in the items."),
@@ -71,5 +70,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     AWARD_RELATED_TO_UNKNOWN_LOT("10.55", "The award related to an unknown lot."),
     AWARD_ON_LOT_IN_INVALID_STATUS("10.56", "The lot related to an award has invalid status."),
     AWARD_HAS_INVALID_AMOUNT_VALUE("10.57", "The award has an invalid amount value."),
-    AWARD_HAS_INVALID_CURRENCY_VALUE("10.58", "The award has an invalid currency value.");
+    AWARD_HAS_INVALID_CURRENCY_VALUE("10.58", "The award has an invalid currency value."),
+    AUCTION_LOT_HAS_INVALID_AMOUNT_VALUE("10.59", "The lot in auction has an invalid amount value."),
+    AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE("10.60", "The lot in auction has an invalid currency value.");
 }
