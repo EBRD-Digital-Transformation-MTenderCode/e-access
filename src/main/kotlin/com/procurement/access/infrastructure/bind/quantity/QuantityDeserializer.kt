@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.bind.quantity
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.procurement.access.infrastructure.exception.QuantityValueException
@@ -18,6 +19,13 @@ class QuantityDeserializer : JsonDeserializer<BigDecimal>() {
     }
 
     @Throws(IOException::class, JsonProcessingException::class)
-    override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): BigDecimal =
-        deserialize(jsonParser.text)
+    override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): BigDecimal {
+        if (jsonParser.currentToken == JsonToken.VALUE_NUMBER_FLOAT) {
+            throw QuantityValueException(
+                quantity = "\"${jsonParser.text}\"",
+                description = "The value must be a real number."
+            )
+        }
+        return deserialize(jsonParser.text)
+    }
 }
