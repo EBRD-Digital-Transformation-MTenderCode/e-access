@@ -190,7 +190,7 @@ class CheckAwardStrategyTest {
             fun vr_3_11_9_1() {
                 val dataRequest = request().apply {
                     getObject("award", "value")
-                        .setAttribute("amount", Long.MAX_VALUE)
+                        .setAttribute("amount", Long.MAX_VALUE.toDouble())
                 }
 
                 val cm = commandMessage(data = dataRequest)

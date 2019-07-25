@@ -464,7 +464,7 @@ class NegotiationCnOnPnServiceTest {
             @Test
             fun vr3_8_04() {
                 pnWithoutItems.getObject("planning", "budget", "amount")
-                    .setAttribute("amount", BigDecimal(1))
+                    .setAttribute("amount", BigDecimal(1.0))
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
                     stage = ContextGenerator.PREV_STAGE,
@@ -673,7 +673,7 @@ class NegotiationCnOnPnServiceTest {
             fun vr3_8_09() {
                 requestNode.getObject("tender").getArray("items") {
                     getObject(0) {
-                        setAttribute("quantity", 0)
+                        setAttribute("quantity", 0.0)
                     }
                 }
 

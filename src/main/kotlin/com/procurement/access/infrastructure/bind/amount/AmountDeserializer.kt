@@ -26,7 +26,7 @@ class AmountDeserializer : JsonDeserializer<BigDecimal>() {
 
     @Throws(IOException::class, JsonProcessingException::class)
     override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): BigDecimal {
-        if (jsonParser.currentToken != JsonToken.VALUE_NUMBER_FLOAT) {
+        if (jsonParser.currentToken != JsonToken.VALUE_NUMBER_FLOAT && jsonParser.currentToken != JsonToken.VALUE_NUMBER_INT) {
             throw AmountValueException(
                 amount = "\"${jsonParser.text}\"",
                 description = "The value must be a real number."

@@ -404,7 +404,7 @@ class CnOnPnServiceTest {
                             .getArray("electronicAuctionModalities")
                             .getObject(0)
                             .getObject("eligibleMinimumDifference")
-                            .setAttribute("amount", 1000)
+                            .setAttribute("amount", 1000.0)
 
                         mockGetByCpIdAndStage(
                             cpid = ContextGenerator.CPID,
@@ -671,7 +671,7 @@ class CnOnPnServiceTest {
             @Test
             fun vr3_8_04() {
                 pnWithoutItems.getObject("planning", "budget", "amount")
-                    .setAttribute("amount", BigDecimal(1))
+                    .setAttribute("amount", BigDecimal(1.0))
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
                     stage = ContextGenerator.PREV_STAGE,
@@ -884,7 +884,7 @@ class CnOnPnServiceTest {
             fun vr3_8_09() {
                 requestNode.getObject("tender").getArray("items") {
                     getObject(0) {
-                        setAttribute("quantity", 0)
+                        setAttribute("quantity", 0.0)
                     }
                 }
 
@@ -1168,7 +1168,7 @@ class CnOnPnServiceTest {
                             .getArray("electronicAuctionModalities")
                             .getObject(0)
                             .getObject("eligibleMinimumDifference")
-                            .setAttribute("amount", 1000)
+                            .setAttribute("amount", 1000.0)
 
                         mockGetByCpIdAndStage(
                             cpid = ContextGenerator.CPID,
