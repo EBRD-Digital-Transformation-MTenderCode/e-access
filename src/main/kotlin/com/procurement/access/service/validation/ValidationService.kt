@@ -12,6 +12,7 @@ import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.validation.CheckBSRq
 import com.procurement.access.model.dto.validation.CheckBid
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy
+import com.procurement.access.service.validation.strategy.CheckLotStrategy
 import com.procurement.access.service.validation.strategy.CheckOwnerAndTokenStrategy
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import com.procurement.access.utils.toObject
@@ -23,6 +24,7 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
     private val checkItemsStrategy = CheckItemsStrategy(tenderProcessDao)
     private val checkAwardStrategy = CheckAwardStrategy(tenderProcessDao)
     private val checkOwnerAndTokenStrategy = CheckOwnerAndTokenStrategy(tenderProcessDao)
+    private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
 
     fun checkBid(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckBid::class.java, cm.data)
@@ -96,6 +98,11 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = "Lot status valid.")
     }
 
+    fun checkLotAwarded(cm: CommandMessage): ResponseDto {
+        checkLotStrategy.check(cm)
+        return ResponseDto(data = "ok")
+    }
+
     fun checkBudgetSources(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val bsDto = toObject(CheckBSRq::class.java, cm.data)
@@ -110,6 +117,6 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
 
     fun checkAward(cm: CommandMessage): ResponseDto {
         val response = checkAwardStrategy.check(cm)
-        return ResponseDto(id = cm.id,  data = response)
+        return ResponseDto(id = cm.id, data = response)
     }
 }
