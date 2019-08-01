@@ -71,6 +71,7 @@ enum class CommandType(private val value: String) {
     CHECK_AWARD("checkAward"),
     CHECK_LOT_STATUS("checkLotStatus"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
+    CHECK_LOT_AWARDED("checkLotAwarded"),
     CHECK_BID("checkBid"),
     CHECK_ITEMS("checkItems"),
     CHECK_TOKEN("checkToken"),
