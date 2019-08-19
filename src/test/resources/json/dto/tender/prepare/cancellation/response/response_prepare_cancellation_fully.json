@@ -1,0 +1,12 @@
+{
+  "lots": [
+    {
+      "id": "ce4eca42-47fb-4e7c-b016-85b7da65b600",
+      "status": "active",
+      "statusDetails": "empty"
+    }
+  ],
+  "tender": {
+    "statusDetails": "awarding"
+  }
+}
