@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import java.util.*
 
 data class CommandMessage @JsonCreator constructor(
 
@@ -15,6 +17,34 @@ data class CommandMessage @JsonCreator constructor(
     val data: JsonNode,
     val version: ApiVersion
 )
+
+val CommandMessage.cpid: String
+    get() = this.context.cpid
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context.")
+
+val CommandMessage.token: UUID
+    get() = this.context.token?.let { id ->
+        try {
+            UUID.fromString(id)
+        } catch (exception: Exception) {
+            throw ErrorException(error = ErrorType.INVALID_FORMAT_TOKEN)
+        }
+    } ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
+
+val CommandMessage.owner: String
+    get() = this.context.owner
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
+
+val CommandMessage.stage: String
+    get() = this.context.stage
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
+
+val CommandMessage.operationType: String
+    get() = this.context.operationType
+        ?: throw ErrorException(
+            error = ErrorType.CONTEXT,
+            message = "Missing the 'operationType' attribute in context."
+        )
 
 data class Context @JsonCreator constructor(
     val operationId: String?,
