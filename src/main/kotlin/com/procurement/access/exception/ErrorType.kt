@@ -34,7 +34,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_LOT_STATUS("10.19", "Invalid lot status."),
     LOT_NOT_FOUND("10.20", "Lot not found"),
     TENDER_IN_UNSUCCESSFUL_STATUS("10.21", "Invalid tender status for cancellation."),
-    INVALID_TENDER_STATUS("10.22", "Invalid Tender status."),
+    INVALID_TENDER_STATUS("10.22", "Invalid tender status."),
     INVALID_OPERATION_TYPE("10.23", "Invalid operation type."),
     INVALID_CPV_CODE("10.24", "Invalid cpv code."),
     INVALID_DOCS_ID("10.25", "Invalid documents ids."),
@@ -74,5 +74,8 @@ enum class ErrorType constructor(val code: String, val message: String) {
     AUCTION_LOT_HAS_INVALID_AMOUNT_VALUE("10.59", "The lot in auction has an invalid amount value."),
     AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE("10.60", "The lot in auction has an invalid currency value."),
     INVALID_FORMAT_LOT_ID("10.61", "Invalid format the lot id."),
-    INVALID_LOT_STATUS_DETAILS("10.62", "Invalid lot status details.");
+    INVALID_LOT_STATUS_DETAILS("10.62", "Invalid lot status details."),
+    INVALID_FORMAT_TOKEN("10.63", "Invalid format the award id."),
+    INVALID_TENDER_STATUS_DETAILS("10.64", "Invalid tender status details."),
+    INVALID_DOCUMENT_TYPE("10.65", "Invalid document type.");
 }

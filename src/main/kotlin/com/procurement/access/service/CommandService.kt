@@ -1,14 +1,26 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.tender.ExtendTenderService
+import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
+import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
+import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.cpid
+import com.procurement.access.model.dto.bpe.operationType
+import com.procurement.access.model.dto.bpe.owner
+import com.procurement.access.model.dto.bpe.stage
+import com.procurement.access.model.dto.bpe.token
 import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.service.validation.ValidationService
+import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -26,8 +38,12 @@ class CommandService(
     private val tenderService: TenderService,
     private val lotsService: LotsService,
     private val stageService: StageService,
-    private val validationService: ValidationService
+    private val validationService: ValidationService,
+    private val extendTenderService: ExtendTenderService
 ) {
+    companion object {
+        private val log = LoggerFactory.getLogger(CommandService::class.java)
+    }
 
     fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
@@ -64,7 +80,52 @@ class CommandService(
             CommandType.SET_TENDER_SUSPENDED -> tenderService.setSuspended(cm)
             CommandType.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
             CommandType.SET_TENDER_UNSUCCESSFUL -> tenderService.setUnsuccessful(cm)
-            CommandType.SET_TENDER_PRECANCELLATION -> tenderService.setPreCancellation(cm)
+            CommandType.SET_TENDER_PRECANCELLATION -> {
+                val context = PrepareCancellationContext(
+                    cpid = cm.cpid,
+                    token = cm.token,
+                    owner = cm.owner,
+                    stage = cm.stage,
+                    operationType = cm.operationType
+                )
+                val request = toObject(PrepareCancellationRequest::class.java, cm.data)
+                val data = PrepareCancellationData(
+                    amendment = request.amendment.let { amendment ->
+                        PrepareCancellationData.Amendment(
+                            rationale = amendment.rationale,
+                            description = amendment.description,
+                            documents = amendment.documents?.map { document ->
+                                PrepareCancellationData.Amendment.Document(
+                                    documentType = document.documentType,
+                                    id = document.id,
+                                    title = document.title,
+                                    description = document.description
+                                )
+                            }
+                        )
+                    }
+                )
+                val result = extendTenderService.prepareCancellation(context = context, data = data)
+                if (log.isDebugEnabled)
+                    log.debug("Award was evaluate. Result: ${toJson(result)}")
+
+                val dataResponse =
+                    PrepareCancellationResponse(
+                        lots = result.lots.map { lot ->
+                            PrepareCancellationResponse.Lot(
+                                id = lot.id,
+                                status = lot.status,
+                                statusDetails = lot.statusDetails
+                            )
+                        },
+                        tender = PrepareCancellationResponse.Tender(
+                            statusDetails = result.tender.statusDetails
+                        )
+                    )
+                if (log.isDebugEnabled)
+                    log.debug("Award was evaluate. Response: ${toJson(dataResponse)}")
+                ResponseDto(data = dataResponse)
+            }
             CommandType.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
             CommandType.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
             CommandType.GET_TENDER_OWNER -> tenderService.getTenderOwner(cm)
