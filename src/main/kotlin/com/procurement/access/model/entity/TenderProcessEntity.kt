@@ -3,7 +3,7 @@ package com.procurement.access.model.entity
 import java.util.*
 
 
-class TenderProcessEntity(
+data class TenderProcessEntity(
 
         var cpId: String,
 
