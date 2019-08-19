@@ -1,0 +1,12 @@
+{
+  "amendment": {
+    "rationale": "amendment.rationale",
+    "documents": [
+      {
+        "documentType": "cancellationDetails",
+        "id": "amendment.documents[0].id",
+        "title": "amendment.documents[0].title"
+      }
+    ]
+  }
+}
