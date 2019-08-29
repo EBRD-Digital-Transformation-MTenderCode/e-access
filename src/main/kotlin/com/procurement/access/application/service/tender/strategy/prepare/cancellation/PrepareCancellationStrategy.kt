@@ -153,7 +153,6 @@ class PrepareCancellationStrategy(
     private fun isValidDocumentType(document: PrepareCancellationData.Amendment.Document): Boolean =
         when (document.documentType) {
             DocumentType.CANCELLATION_DETAILS -> true
-            DocumentType.CONFLICT_OF_INTEREST -> true
             else -> false
         }
 
