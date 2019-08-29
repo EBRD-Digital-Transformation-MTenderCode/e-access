@@ -1,14 +1,16 @@
 {
-  "amendment": {
-    "rationale": "amendment.rationale",
-    "description": "amendment.description",
-    "documents": [
-      {
-        "documentType": "cancellationDetails",
-        "id": "amendment.documents[0].id",
-        "title": "amendment.documents[0].title",
-        "description": "amendment.documents[0].description"
-      }
-    ]
-  }
+  "amendments": [
+    {
+      "rationale": "amendment.rationale",
+      "description": "amendment.description",
+      "documents": [
+        {
+          "documentType": "cancellationDetails",
+          "id": "amendment.documents[0].id",
+          "title": "amendment.documents[0].title",
+          "description": "amendment.documents[0].description"
+        }
+      ]
+    }
+  ]
 }

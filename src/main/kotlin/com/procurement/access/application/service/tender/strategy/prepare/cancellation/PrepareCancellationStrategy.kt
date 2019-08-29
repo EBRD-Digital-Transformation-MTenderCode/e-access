@@ -9,9 +9,6 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_STATUS
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_STATUS_DETAILS
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.model.dto.ocds.DocumentType
-import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
@@ -20,15 +17,13 @@ import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
-import java.util.*
 
 class PrepareCancellationStrategy(
     private val tenderProcessDao: TenderProcessDao
 ) {
     fun execute(context: PrepareCancellationContext, data: PrepareCancellationData): PreparedCancellationData {
         //VR-3.16.10
-        if (data.amendment.documents != null)
-            checkDocumentType(data.amendment.documents)
+        checkDocumentType(data.amendments)
 
         val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
@@ -44,17 +39,10 @@ class PrepareCancellationStrategy(
         //VR-3.16.4
         checkTenderStatuses(tenderProcess)
 
-        val updatedLots = updateLots(tenderProcess.tender.lots)
-        val updatedLotsById = updatedLots.associateBy { it.id }
         val updatedTenderProcess = tenderProcess.copy(
             tender = tenderProcess.tender.copy(
                 //BR-3.16.1
-                statusDetails = TenderStatusDetails.CANCELLATION,
-
-                //BR-3.16.2
-                lots = tenderProcess.tender.lots.map { lot ->
-                    updatedLotsById[lot.id] ?: lot
-                }
+                statusDetails = TenderStatusDetails.CANCELLATION
             )
         )
 
@@ -68,14 +56,7 @@ class PrepareCancellationStrategy(
         return PreparedCancellationData(
             tender = PreparedCancellationData.Tender(
                 statusDetails = updatedTenderProcess.tender.statusDetails
-            ),
-            lots = updatedLots.map { lot ->
-                PreparedCancellationData.Lot(
-                    id = UUID.fromString(lot.id),
-                    status = lot.status!!,
-                    statusDetails = lot.statusDetails!!
-                )
-            }
+            )
         )
     }
 
@@ -138,10 +119,15 @@ class PrepareCancellationStrategy(
      * ELSE
      *    eAccess throws Exception: "Invalid document type";
      */
-    private fun checkDocumentType(documents: List<PrepareCancellationData.Amendment.Document>) {
-        val isValid = documents.all { document ->
-            isValidDocumentType(document)
-        }
+    private fun checkDocumentType(amendments: List<PrepareCancellationData.Amendment>) {
+        val isValid = amendments.asSequence()
+            .flatMap {
+                it.documents?.asSequence() ?: emptySequence()
+            }
+            .all { document ->
+                isValidDocumentType(document)
+            }
+
 
         if (!isValid) throw ErrorException(error = INVALID_DOCUMENT_TYPE)
     }
@@ -149,26 +135,6 @@ class PrepareCancellationStrategy(
     private fun isValidDocumentType(document: PrepareCancellationData.Amendment.Document): Boolean =
         when (document.documentType) {
             DocumentType.CANCELLATION_DETAILS -> true
-            DocumentType.CONFLICT_OF_INTEREST -> true
             else -> false
         }
-
-    /**
-     * BR-3.16.2 Status Status Details (lot)
-     */
-    private fun updateLots(lots: Collection<Lot>): List<Lot> = lots.asSequence()
-        .filter { lot ->
-            when (lot.status) {
-                LotStatus.ACTIVE -> when (lot.statusDetails) {
-                    LotStatusDetails.EMPTY,
-                    LotStatusDetails.AWARDED -> true
-                    else -> false
-                }
-                else -> false
-            }
-        }
-        .map { lot ->
-            lot.copy(statusDetails = LotStatusDetails.CANCELLED)
-        }
-        .toList()
 }

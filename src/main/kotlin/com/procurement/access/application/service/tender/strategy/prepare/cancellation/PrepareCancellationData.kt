@@ -3,7 +3,7 @@ package com.procurement.access.application.service.tender.strategy.prepare.cance
 import com.procurement.access.model.dto.ocds.DocumentType
 
 data class PrepareCancellationData(
-    val amendment: Amendment
+    val amendments: List<Amendment>
 ) {
 
     data class Amendment(
