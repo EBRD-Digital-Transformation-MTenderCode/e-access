@@ -111,13 +111,6 @@ class CommandService(
 
                 val dataResponse =
                     PrepareCancellationResponse(
-                        lots = result.lots.map { lot ->
-                            PrepareCancellationResponse.Lot(
-                                id = lot.id,
-                                status = lot.status,
-                                statusDetails = lot.statusDetails
-                            )
-                        },
                         tender = PrepareCancellationResponse.Tender(
                             statusDetails = result.tender.statusDetails
                         )
