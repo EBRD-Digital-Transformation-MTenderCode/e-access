@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.model.dto.ocds.DocumentType
 
 data class PrepareCancellationRequest(
-    @field:JsonProperty("amendment") @param:JsonProperty("amendment") val amendment: Amendment
+    @field:JsonProperty("amendments") @param:JsonProperty("amendments") val amendments: List<Amendment>
 ) {
 
     data class Amendment(

@@ -90,7 +90,7 @@ class CommandService(
                 )
                 val request = toObject(PrepareCancellationRequest::class.java, cm.data)
                 val data = PrepareCancellationData(
-                    amendment = request.amendment.let { amendment ->
+                    amendments = request.amendments.map { amendment ->
                         PrepareCancellationData.Amendment(
                             rationale = amendment.rationale,
                             description = amendment.description,

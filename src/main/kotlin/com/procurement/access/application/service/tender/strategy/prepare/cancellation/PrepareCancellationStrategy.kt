@@ -27,8 +27,7 @@ class PrepareCancellationStrategy(
 ) {
     fun execute(context: PrepareCancellationContext, data: PrepareCancellationData): PreparedCancellationData {
         //VR-3.16.10
-        if (data.amendment.documents != null)
-            checkDocumentType(data.amendment.documents)
+        checkDocumentType(data.amendments)
 
         val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
@@ -138,10 +137,15 @@ class PrepareCancellationStrategy(
      * ELSE
      *    eAccess throws Exception: "Invalid document type";
      */
-    private fun checkDocumentType(documents: List<PrepareCancellationData.Amendment.Document>) {
-        val isValid = documents.all { document ->
-            isValidDocumentType(document)
-        }
+    private fun checkDocumentType(amendments: List<PrepareCancellationData.Amendment>) {
+        val isValid = amendments.asSequence()
+            .flatMap {
+                it.documents?.asSequence() ?: emptySequence()
+            }
+            .all { document ->
+                isValidDocumentType(document)
+            }
+
 
         if (!isValid) throw ErrorException(error = INVALID_DOCUMENT_TYPE)
     }

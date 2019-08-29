@@ -1,5 +1,7 @@
 {
-  "amendment": {
-    "rationale": "amendment.rationale"
-  }
+  "amendments": [
+    {
+      "rationale": "amendment.rationale"
+    }
+  ]
 }
