@@ -215,7 +215,6 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         return when (operationType) {
             "cancelTender", "cancelTenderEv" -> { lot: Lot ->
                 (lot.status == LotStatus.ACTIVE)
-                        && (lot.statusDetails == LotStatusDetails.CANCELLED)
             }
             "cancelPlan" -> { lot: Lot ->
                 (lot.status == LotStatus.PLANNING || lot.status == LotStatus.PLANNED)
