@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.model.dto.ocds.ProcurementMethod
 import java.util.*
 
 data class CommandMessage @JsonCreator constructor(
@@ -38,6 +39,13 @@ val CommandMessage.owner: String
 val CommandMessage.stage: String
     get() = this.context.stage
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
+
+val CommandMessage.pmd: ProcurementMethod
+    get() = this.context.pmd?.let {
+        ProcurementMethod.valueOrException(it) {
+            ErrorException(ErrorType.INVALID_PMD)
+        }
+    } ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'pmd' attribute in context.")
 
 val CommandMessage.operationType: String
     get() = this.context.operationType

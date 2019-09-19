@@ -2,12 +2,13 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.bpe.stage
+import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.lots.ActivationAcLot
 import com.procurement.access.model.dto.lots.ActivationAcRq
 import com.procurement.access.model.dto.lots.ActivationAcRs
@@ -31,6 +32,7 @@ import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
+import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
@@ -224,7 +226,18 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
     fun completeLots(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.stage
+        val stage = when (cm.pmd) {
+            ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+            ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+            ProcurementMethod.MV, ProcurementMethod.TEST_MV -> "EV"
+
+            ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+            ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "NP"
+
+            ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+            ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
+        }
         val dto = toObject(ActivationAcRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
