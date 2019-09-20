@@ -155,11 +155,8 @@ class CnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(command = command, token = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_TOKEN, exception.error)
+                val response = service.checkCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @DisplayName("VR-3.8.2(CN on PN)")
@@ -172,11 +169,8 @@ class CnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(command = command, owner = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_OWNER, exception.error)
+                val response = service.checkCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @Nested
@@ -571,11 +565,8 @@ class CnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(command = command, token = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_TOKEN, exception.error)
+                val response = service.checkCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @DisplayName("VR-3.8.2(CN on PN)")
@@ -588,11 +579,8 @@ class CnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(command = command, owner = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_OWNER, exception.error)
+                val response = service.checkCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @Nested
