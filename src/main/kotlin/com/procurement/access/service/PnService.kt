@@ -12,6 +12,7 @@ import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.ProcurementMethod
@@ -349,7 +350,7 @@ class PnService(
      */
     private fun businessRules(contextRequest: ContextRequest, request: PnCreateRequest): PNEntity {
         //BR-3.1.3
-        val id = generationService.getCpId(contextRequest.country)
+        val id = generationService.getCpId(country = contextRequest.country, testMode = contextRequest.testMode)
         val contractPeriod: PNEntity.Tender.ContractPeriod?
         val value: PNEntity.Tender.Value
         val lots: List<PNEntity.Tender.Lot>
@@ -808,13 +809,15 @@ class PnService(
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
         val startDate: LocalDateTime = cm.context.startDate?.toLocal()
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
+        val testMode: Boolean = cm.testMode
 
         return ContextRequest(
             stage = stage,
             owner = owner,
             country = country,
             pmd = pmd,
-            startDate = startDate
+            startDate = startDate,
+            testMode = testMode
         )
     }
 
@@ -1152,6 +1155,7 @@ class PnService(
         val owner: String,
         val country: String,
         val pmd: ProcurementMethod,
-        val startDate: LocalDateTime
+        val startDate: LocalDateTime,
+        val testMode: Boolean
     )
 }

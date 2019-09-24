@@ -70,7 +70,8 @@ object ContextGenerator {
             pmd = pmd,
             token = token,
             startDate = startDate,
-            endDate = endDate
+            endDate = endDate,
+            testMode = false
         )
     }
 }
