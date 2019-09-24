@@ -171,7 +171,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         } else {
             val completeLot = lots.asSequence().firstOrNull { it.status == LotStatus.COMPLETE }
             if (completeLot != null) {
-                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED }) {
+                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED || it.status == LotStatus.COMPLETE }) {
                     process.tender.apply {
                         status = TenderStatus.COMPLETE
                         statusDetails = TenderStatusDetails.EMPTY
