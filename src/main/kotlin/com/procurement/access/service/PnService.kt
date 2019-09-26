@@ -77,7 +77,7 @@ class PnService(
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
-        if (request.tender.lots.isNullOrEmpty()) return
+        if (request.tender.lots.isNullOrEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
         val lots: List<PnCreateRequest.Tender.Lot> = request.tender.lots
 
         //VR-3.1.14
