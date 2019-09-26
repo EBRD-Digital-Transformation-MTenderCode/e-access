@@ -466,7 +466,11 @@ class PnServiceTest {
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
                     )
-                    testOfCreate(pmd = pmd, testData = testData)
+                    val exception = assertThrows<ErrorException> {
+                        testOfCreate(pmd = pmd, testData = testData)
+                    }
+
+                    assertEquals(ErrorType.EMPTY_LOTS, exception.error)
                 }
             }
 
@@ -481,7 +485,11 @@ class PnServiceTest {
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
                     )
-                    testOfCreate(pmd = pmd, testData = testData)
+                    val exception = assertThrows<ErrorException> {
+                        testOfCreate(pmd = pmd, testData = testData)
+                    }
+
+                    assertEquals(ErrorType.EMPTY_LOTS, exception.error)
                 }
             }
         }
