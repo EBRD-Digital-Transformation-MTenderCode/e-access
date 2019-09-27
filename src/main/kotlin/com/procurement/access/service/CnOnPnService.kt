@@ -1,6 +1,8 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.infrastructure.dto.cn.criteria.Period
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
@@ -922,14 +924,33 @@ class CnOnPnService(
     ): CNEntity.Tender {
         //BR-3.6.5
         val relatedTemporalWithPermanentLotId: Map<String, String> = generatePermanentLotId(request.tender.lots)
+        val relatedTemporalWithPermanentItemId: Map<String, String> = generatePermanentItemId(request.tender.items)
 
         /** Begin BR-3.8.3 */
         val classification: CNEntity.Tender.Classification =
             classificationFromRequest(classificationFromRequest = request.tender.classification!!)
         val lots: List<CNEntity.Tender.Lot> = convertRequestLots(request.tender, relatedTemporalWithPermanentLotId)
         val items: List<CNEntity.Tender.Item> =
-            convertRequestItems(request.tender.items, relatedTemporalWithPermanentLotId)
+            convertRequestItems(
+                request.tender.items,
+                relatedTemporalWithPermanentLotId,
+                relatedTemporalWithPermanentItemId
+            )
         /** End BR-3.8.3 */
+
+        val rawCriteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
+        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
+        if ((rawCriteria == null) && (conversions != null))
+            throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+
+
+        val criteria = rawCriteria?.let {
+            convertRequestCriteria(
+                tender = request.tender,
+                relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
+                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+            )
+        }
 
         /** Begin BR-3.8.4 */
         //BR-3.8.14 -> BR-3.6.30
@@ -956,6 +977,8 @@ class CnOnPnService(
             request = request,
             pnEntity = pnEntity,
             classification = classification,
+            criteria = criteria,
+            conversions = conversions,
             lots = lots,
             items = items,
             value = value,
@@ -976,6 +999,10 @@ class CnOnPnService(
         val lots: List<CNEntity.Tender.Lot> = lotsFromPNToCN(lotsFromPN = pnEntity.tender.lots)
         val items: List<CNEntity.Tender.Item> = itemsFromPNToCN(itemsFromPN = pnEntity.tender.items)
         /** End BR-3.8.3 */
+
+        val criteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
+        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
+        if ((criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
 
         /** Begin BR-3.8.4 */
         val value: CNEntity.Tender.Value = pnEntity.tender.value.let {
@@ -1009,6 +1036,8 @@ class CnOnPnService(
             request = request,
             pnEntity = pnEntity,
             classification = classification,
+            criteria = criteria,
+            conversions = conversions,
             lots = lots,
             items = items,
             value = value,
@@ -1070,6 +1099,8 @@ class CnOnPnService(
         request: CnOnPnRequest,
         pnEntity: PNEntity,
         classification: CNEntity.Tender.Classification,
+        criteria: List<CNEntity.Tender.Criteria>?,
+        conversions: List<CNEntity.Tender.Conversion>?,
         lots: List<CNEntity.Tender.Lot>,
         items: List<CNEntity.Tender.Item>,
         value: CNEntity.Tender.Value,
@@ -1235,9 +1266,11 @@ class CnOnPnService(
                     optionToCombine = it.optionToCombine
                 )
             },
+            requiresElectronicCatalogue = pnEntity.tender.requiresElectronicCatalogue,
+            criteria = criteria,
+            conversions = conversions,
             lots = lots, //BR-3.8.3
             items = items, //BR-3.8.3
-            requiresElectronicCatalogue = pnEntity.tender.requiresElectronicCatalogue, //BR-3.8.1
             submissionMethod = pnEntity.tender.submissionMethod, //BR-3.8.1
             submissionMethodRationale = pnEntity.tender.submissionMethodRationale, //BR-3.8.1
             submissionMethodDetails = pnEntity.tender.submissionMethodDetails, //BR-3.8.1
@@ -1257,6 +1290,15 @@ class CnOnPnService(
             .map { lot ->
                 val permanentId = generationService.generatePermanentLotId() //BR-3.8.6
                 lot.id to permanentId
+            }
+            .toMap()
+    }
+
+    private fun generatePermanentItemId(itemsFromRequest: List<CnOnPnRequest.Tender.Item>): Map<String, String> {
+        return itemsFromRequest.asSequence()
+            .map { item ->
+                val permanentId = generationService.generatePermanentItemId()
+                item.id to permanentId
             }
             .toMap()
     }
@@ -1376,12 +1418,13 @@ class CnOnPnService(
 
     private fun convertRequestItems(
         itemsFromRequest: List<CnOnPnRequest.Tender.Item>,
-        relatedTemporalWithPermanentLotId: Map<String, String>
+        relatedTemporalWithPermanentLotId: Map<String, String>,
+        relatedTemporalWithPermanentItemId: Map<String, String>
     ): List<CNEntity.Tender.Item> {
         return itemsFromRequest.map { item ->
             CNEntity.Tender.Item(
                 //BR-3.8.6(CN on PN) item id (tender.items.id) -> BR-3.6.6
-                id = generationService.generatePermanentItemId(),
+                id = relatedTemporalWithPermanentItemId.getValue(item.id),
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
@@ -1410,6 +1453,47 @@ class CnOnPnService(
         }
     }
 
+    private fun convertRequestCriteria(
+        tender: CnOnPnRequest.Tender,
+        relatedTemporalWithPermanentLotId: Map<String, String>,
+        relatedTemporalWithPermanentItemId: Map<String, String>
+    ): List<CNEntity.Tender.Criteria> {
+        return tender.criteria!!.map { criteria ->
+            CNEntity.Tender.Criteria(
+                id = criteria.id,
+                title = criteria.title,
+                description = criteria.description,
+                requirementGroups = criteria.requirementGroups.map {
+                    CNEntity.Tender.Criteria.RequirementGroup(
+                        id = it.id,
+                        description = it.description,
+                        requirements = it.requirements.map {
+                            Requirement(
+                                id = it.id,
+                                description = it.description,
+                                title = it.title,
+                                period = it.period?.let {
+                                    Period(
+                                        startDate = it.startDate,
+                                        endDate = it.endDate
+                                    )
+                                },
+                                dataType = it.dataType,
+                                value = it.value
+                            )
+                        }
+                    )
+                },
+                relatesTo = criteria.relatesTo,
+                relatedItem = when (criteria.relatesTo) {
+                    "lot" -> relatedTemporalWithPermanentLotId.getValue(criteria.relatedItem!!)
+                    "item" -> relatedTemporalWithPermanentItemId.getValue(criteria.relatedItem!!)
+                    else -> criteria.relatedItem
+                }
+            )
+        }
+    }
+
     /**
      * BR-3.8.3
      */
@@ -1434,6 +1518,7 @@ class CnOnPnService(
                         currency = value.currency
                     )
                 },
+
                 /** Begin BR-3.8.4 */
                 //BR-3.8.9 -> BR-3.6.17
                 options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.4; BR-3.8.9 -> BR-3.6.17
@@ -1560,6 +1645,63 @@ class CnOnPnService(
                 scheme = it.scheme,
                 id = it.id,
                 description = it.description
+            )
+        }
+    }
+
+    private fun criteriaFromRequest(
+        criteriaFromRequest: List<CnOnPnRequest.Tender.Criteria>?
+    ): List<CNEntity.Tender.Criteria>? {
+        return criteriaFromRequest?.map {
+            CNEntity.Tender.Criteria(
+                id = it.id,
+                title = it.title,
+                description = it.description,
+                requirementGroups = it.requirementGroups.map {
+                    CNEntity.Tender.Criteria.RequirementGroup(
+                        id = it.id,
+                        description = it.description,
+                        requirements = it.requirements.map {
+                            Requirement(
+                                id = it.id,
+                                description = it.description,
+                                title = it.title,
+                                period = it.period?.let {
+                                    Period(
+                                        startDate = it.startDate,
+                                        endDate = it.endDate
+                                    )
+                                },
+                                dataType = it.dataType,
+                                value = it.value
+                            )
+                        }
+                    )
+                },
+                relatesTo = it.relatesTo,
+                relatedItem = it.relatedItem
+            )
+        }
+    }
+
+    private fun conversionsFromRequest(
+        conversionsFromRequest: List<CnOnPnRequest.Tender.Conversion>?
+    ): List<CNEntity.Tender.Conversion>? {
+        return conversionsFromRequest?.map {
+            CNEntity.Tender.Conversion(
+                id = it.id,
+                relatedItem = it.relatedItem,
+                relatesTo = it.relatesTo,
+                rationale = it.rationale,
+                description = it.description,
+                coefficients = it.coefficients.map {
+                    CNEntity.Tender.Conversion.Coefficient(
+                        id = it.id,
+                        value = it.value,
+                        coefficient = it.coefficient
+                    )
+                }
+
             )
         }
     }
@@ -1762,16 +1904,17 @@ class CnOnPnService(
                             description = classification.description
                         )
                     },
+                    requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
                     tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
                         CnOnPnResponse.Tender.TenderPeriod(
                             startDate = tenderPeriod!!.startDate,
-                            endDate = tenderPeriod!!.endDate
+                            endDate = tenderPeriod.endDate
                         )
                     },
                     enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
                         CnOnPnResponse.Tender.EnquiryPeriod(
                             startDate = enquiryPeriod!!.startDate,
-                            endDate = enquiryPeriod!!.endDate
+                            endDate = enquiryPeriod.endDate
                         )
                     },
                     acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
@@ -1922,6 +2065,53 @@ class CnOnPnService(
                             optionToCombine = lotGroup.optionToCombine
                         )
                     },
+                    criteria = tender.criteria?.map { criteria ->
+                        CnOnPnResponse.Tender.Criteria(
+                            id = criteria.id,
+                            title = criteria.title,
+                            description = criteria.description,
+                            requirementGroups = criteria.requirementGroups.map {
+                                CnOnPnResponse.Tender.Criteria.RequirementGroup(
+                                    id = it.id,
+                                    description = it.description,
+                                    requirements = it.requirements.map { requirement ->
+                                        Requirement(
+                                            id = requirement.id,
+                                            description = requirement.description,
+                                            title = requirement.title,
+                                            period = requirement.period?.let { period ->
+                                                Period(
+                                                    startDate = period.startDate,
+                                                    endDate = period.endDate
+                                                )
+                                            },
+                                            dataType = requirement.dataType,
+                                            value = requirement.value
+                                        )
+                                    }
+                                )
+                            },
+                            relatesTo = criteria.relatesTo,
+                            relatedItem = criteria.relatedItem
+                        )
+                    },
+                    conversions = tender.conversions?.map {
+                        CnOnPnResponse.Tender.Conversion(
+                            id = it.id,
+                            relatedItem = it.relatedItem,
+                            relatesTo = it.relatesTo,
+                            rationale = it.rationale,
+                            description = it.description,
+                            coefficients = it.coefficients.map {
+                                CnOnPnResponse.Tender.Conversion.Coefficient(
+                                    id = it.id,
+                                    value = it.value,
+                                    coefficient = it.coefficient
+                                )
+                            }
+
+                        )
+                    },
                     lots = tender.lots.map { lot ->
                         CnOnPnResponse.Tender.Lot(
                             id = lot.id,
@@ -2032,7 +2222,6 @@ class CnOnPnService(
                         )
                     },
                     awardCriteria = tender.awardCriteria,
-                    requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
                     submissionMethod = tender.submissionMethod,
                     submissionMethodRationale = tender.submissionMethodRationale,
                     submissionMethodDetails = tender.submissionMethodDetails,
