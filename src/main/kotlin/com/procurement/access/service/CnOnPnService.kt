@@ -1146,7 +1146,7 @@ class CnOnPnService(
             eligibilityCriteria = pnEntity.tender.eligibilityCriteria, //BR-3.8.1
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
-            awardCriteria = request.tender.awardCriteria ?: AwardCriteria.PRICE_ONLY,
+            awardCriteria = request.tender.awardCriteria,
             tenderPeriod = request.tender.tenderPeriod.let { period ->
                 CNEntity.Tender.TenderPeriod(
                     startDate = period.startDate,
