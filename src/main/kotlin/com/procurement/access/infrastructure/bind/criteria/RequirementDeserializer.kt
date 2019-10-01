@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MaxValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
@@ -81,8 +83,10 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                     RequirementDataType.INTEGER -> MinValue.of(requirementNode.get("minValue").longValue())
                     RequirementDataType.BOOLEAN, RequirementDataType.STRING -> throw RuntimeException()
                 }
-            } else {
+            } else if (isNotBounded(requirementNode)){
                 null
+            } else {
+                throw ErrorException(ErrorType.INVALID_REQUIREMENT_VALUE, message = "Expected value cannot exists with Min/MaxVale")
             }
         }
 
@@ -94,6 +98,9 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
 
         private fun isOnlyMax(requirementNode: JsonNode) = requirementNode.has("maxValue")
         private fun isOnlyMin(requirementNode: JsonNode) = requirementNode.has("minValue")
+
+        private fun isNotBounded(requirementNode: JsonNode) = !requirementNode.has("expectedValue")
+            && !requirementNode.has("minValue") && !requirementNode.has("maxValue")
     }
 
     @Throws(IOException::class, JsonProcessingException::class)
