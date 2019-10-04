@@ -74,6 +74,20 @@ class PnService(
      * Validation rules
      */
     private fun checkValidationRules(request: PnCreateRequest) {
+        //VR-3.1.16
+        if (request.tender.title.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.title' is empty or blank."
+            )
+
+        //VR-3.1.17
+        if (request.tender.description.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.description' is empty or blank."
+            )
+
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
