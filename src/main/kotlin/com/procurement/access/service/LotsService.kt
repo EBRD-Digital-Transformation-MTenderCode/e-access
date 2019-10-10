@@ -145,11 +145,16 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
         var stageEnd = false
         var cpSuccess = false
-        val lot = lots.asSequence().firstOrNull { it.id == dto.lotId }
-        if (lot != null) {
-            lot.status = LotStatus.UNSUCCESSFUL
-            lot.statusDetails = LotStatusDetails.EMPTY
-        }
+        val lot = lots.asSequence()
+            .firstOrNull { it.id == dto.lotId }
+            ?: throw ErrorException(
+                error = ErrorType.INVALID_LOT_ID,
+                message = "Lot by id: '${dto.lotId}' is not found."
+            )
+
+        lot.status = LotStatus.UNSUCCESSFUL
+        lot.statusDetails = LotStatusDetails.EMPTY
+
 //      if all lots have lot.status == "unsuccessful" || "cancelled"
 //      tender.status == "unsuccessful" && tender.statusDetails == "empty"
 //      stageEnd == TRUE; cpSuccess == FALSE
@@ -183,13 +188,22 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        val lotsRs = lots.asSequence().map { FinalLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
-        val tenderRs = FinalTender(id = process.tender.id!!, status = process.tender.status, statusDetails = process.tender.statusDetails)
-        return ResponseDto(data = FinalStatusesRs(
+        val tenderRs =
+            FinalTender(
+                id = process.tender.id!!,
+                status = process.tender.status,
+                statusDetails = process.tender.statusDetails
+            )
+        return ResponseDto(
+            data = FinalStatusesRs(
                 stageEnd = stageEnd,
                 cpSuccess = cpSuccess,
                 tender = tenderRs,
-                lots = lotsRs))
+                lots = listOf(
+                    FinalLot(id = lot.id, status = lot.status!!, statusDetails = lot.statusDetails!!)
+                )
+            )
+        )
     }
 
     fun setLotInitialStatus(cm: CommandMessage): ResponseDto {
