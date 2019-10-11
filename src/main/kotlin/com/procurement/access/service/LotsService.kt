@@ -257,12 +257,16 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
 
-        process.tender.lots.asSequence().filter { dto.relatedLots.contains(it.id) }
-                .forEach {
-                    it.status = LotStatus.COMPLETE
-                    it.statusDetails = LotStatusDetails.EMPTY
-                }
-        val lotsRs = process.tender.lots.asSequence().map { ActivationAcLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
+        val updatedLots = process.tender.lots
+            .asSequence()
+            .filter { dto.relatedLots.contains(it.id) }
+            .map { lot ->
+                lot.status = LotStatus.COMPLETE
+                lot.statusDetails = LotStatusDetails.EMPTY
+                lot
+            }
+            .toList()
+
         val stageEnd = process.tender.lots.asSequence().none { it.status == LotStatus.ACTIVE }
         if (stageEnd) {
             process.tender.apply {
@@ -272,13 +276,17 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = ActivationAcRs(
+        return ResponseDto(
+            data = ActivationAcRs(
                 tender = ActivationAcTender(
-                        status = process.tender.status,
-                        statusDetails = process.tender.statusDetails
+                    status = process.tender.status,
+                    statusDetails = process.tender.statusDetails
                 ),
-                lots = lotsRs,
-                stageEnd = stageEnd)
+                lots = updatedLots.map {
+                    ActivationAcLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!)
+                },
+                stageEnd = stageEnd
+            )
         )
     }
 
