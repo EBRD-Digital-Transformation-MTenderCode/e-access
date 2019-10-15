@@ -189,6 +189,7 @@
     "lots": [
       {
         "id": "lot-1",
+        "internalId": "some-internal-lot-id-0",
         "title": "pn.tender.lot[0].title",
         "description": "pn.tender.lot[0].description",
         "status": "active",
@@ -253,6 +254,7 @@
     "items": [
       {
         "id": "item-1",
+        "internalId": "some-internal-item-id-0",
         "description": "pn.tender.item[0].description",
         "classification": {
           "scheme": "CPV",

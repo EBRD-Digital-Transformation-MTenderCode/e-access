@@ -348,6 +348,10 @@ data class CNEntity(
 
         data class Lot(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
+
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
@@ -445,6 +449,10 @@ data class CNEntity(
 
         data class Item(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
+
             @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)

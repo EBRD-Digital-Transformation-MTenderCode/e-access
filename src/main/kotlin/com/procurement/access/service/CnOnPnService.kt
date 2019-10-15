@@ -1382,6 +1382,7 @@ class CnOnPnService(
             CNEntity.Tender.Item(
                 //BR-3.8.6(CN on PN) item id (tender.items.id) -> BR-3.6.6
                 id = generationService.generatePermanentItemId(),
+                internalId = item.internalId,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
@@ -1420,6 +1421,7 @@ class CnOnPnService(
         return tender.lots.map { lot ->
             CNEntity.Tender.Lot(
                 id = relatedTemporalWithPermanentLotId.getValue(lot.id), //BR-3.8.5
+                internalId = lot.internalId,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.8.7 -> BR-3.6.1 */
@@ -1595,6 +1597,7 @@ class CnOnPnService(
                 //BR-3.8.5
                 id = lot.id,
 
+                internalId = null,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.8.7 */
@@ -1668,6 +1671,7 @@ class CnOnPnService(
             CNEntity.Tender.Item(
                 //BR-3.8.6
                 id = item.id,
+                internalId = null,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
@@ -1925,6 +1929,7 @@ class CnOnPnService(
                     lots = tender.lots.map { lot ->
                         CnOnPnResponse.Tender.Lot(
                             id = lot.id,
+                            internalId = lot.internalId,
                             title = lot.title,
                             description = lot.description,
                             status = lot.status,
@@ -2006,6 +2011,7 @@ class CnOnPnService(
                     items = tender.items.map { item ->
                         CnOnPnResponse.Tender.Item(
                             id = item.id,
+                            internalId = item.internalId,
                             classification = item.classification.let { classification ->
                                 CnOnPnResponse.Tender.Item.Classification(
                                     scheme = classification.scheme,

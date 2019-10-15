@@ -150,6 +150,7 @@
     "lots": [
       {
         "id": "lot-1",
+        "internalId": "some-internal-lot-id-0",
         "title": "pn.tender.lot[0].title",
         "description": "pn.tender.lot[0].description",
         "status": "active",
@@ -212,6 +213,7 @@
       },
       {
         "id": "lot-2",
+        "internalId": "some-internal-item-id-0",
         "title": "pn.tender.lot[1].title",
         "description": "pn.tender.lot[1].description",
         "status": "active",
