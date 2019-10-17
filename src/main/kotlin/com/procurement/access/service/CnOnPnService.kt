@@ -1421,6 +1421,37 @@ class CnOnPnService(
                             faxNumber = contactPoint.faxNumber,
                             url = contactPoint.url
                         )
+                    },
+                    persones = request.tender.procuringEntity?.let { _procuringEntity ->
+                        _procuringEntity.persones.map { person ->
+                            CNEntity.Tender.ProcuringEntity.Persone(
+                                title = person.title,
+                                name = person.name,
+                                identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
+                                    scheme = person.identifier.scheme,
+                                    id = person.identifier.id,
+                                    uri = person.identifier.uri
+                                ),
+                                businessFunctions = person.businessFunctions.map { businessFunction ->
+                                    CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                        id = businessFunction.id,
+                                        jobTitle = businessFunction.jobTitle,
+                                        type = businessFunction.type,
+                                        period = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                            startDate = businessFunction.period.startDate
+                                        ),
+                                        documents = businessFunction.documents?.map { document ->
+                                            CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                id = document.id,
+                                                documentType = document.documentType,
+                                                title = document.title,
+                                                description = document.description
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
                     }
                 )
             },
@@ -2103,6 +2134,36 @@ class CnOnPnService(
                                     telephone = contactPoint.telephone,
                                     faxNumber = contactPoint.faxNumber,
                                     url = contactPoint.url
+                                )
+                            },
+                            persones = procuringEntity.persones?.map { persone ->
+                                CnOnPnResponse.Tender.ProcuringEntity.Persone(
+                                    name = persone.name,
+                                    title = persone.title,
+                                    identifier = CnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
+                                        id = persone.identifier.id,
+                                        scheme = persone.identifier.scheme,
+                                        uri = persone.identifier.uri
+                                    ),
+                                    businessFunctions = persone.businessFunctions.map { businessFunction ->
+                                        CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                            id = businessFunction.id,
+                                            type = businessFunction.type,
+                                            jobTitle = businessFunction.jobTitle,
+                                            period = CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                                startDate = businessFunction.period.startDate
+                                            ),
+                                            documents = businessFunction.documents?.map { document ->
+                                                CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                    id = document.id,
+                                                    documentType = document.documentType,
+                                                    title = document.title,
+                                                    description = document.description
+                                                )
+                                            }
+
+                                        )
+                                    }
                                 )
                             }
                         )
