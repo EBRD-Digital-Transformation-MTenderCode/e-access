@@ -16,6 +16,7 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_PMM
+import com.procurement.access.exception.ErrorType.INVALID_PROCURING_ENTITY
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
@@ -31,6 +32,8 @@ import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.AwardCriteria
+import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
+import com.procurement.access.model.dto.ocds.BusinessFunctionType
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.MainProcurementCategory
@@ -85,6 +88,24 @@ class CnOnPnService(
 
         //VR-3.8.3 Documents (duplicate)
         checkDocuments(documentsFromRequest = request.tender.documents, documentsFromPN = pnEntity.tender.documents)
+
+        request.tender.procuringEntity?.let { requestProcuringEntity ->
+            //VR-1.0.1.10.1
+            checkProcuringEntityIdentifier(requestProcuringEntity, pnEntity.tender.procuringEntity)
+
+            // VR-1.0.1.10.2, VR-1.0.1.10.3, VR-1.0.1.10.6
+            checkProcuringEntityPersones(requestProcuringEntity)
+
+            // VR-1.0.1.10.4, VR-1.0.1.10.5
+            checkPersonesBusinessFunctions(requestProcuringEntity)
+
+            // VR-1.0.1.10.7
+            checkBusinessFunctionPeriod(requestProcuringEntity, contextRequest)
+
+            // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
+            checkBusinessFunctionDocuments(requestProcuringEntity)
+
+        }
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = request.tender.lots.asSequence()
@@ -335,6 +356,181 @@ class CnOnPnService(
                     )
                 }
             }
+    }
+
+    /**
+     * VR-1.0.1.10.1
+     *
+     * eAccess compares procuringEntity.ID related to saved PN || CN from DB and procuringEntity.ID from Request:
+     * IF [procuringEntity.ID value in DB ==  (equal to) procuringEntity.ID from Request] then: validation is successful; }
+     * else {  eAccess throws Exception: "Invalid identifier of procuring entity";}
+     *
+     */
+    private fun checkProcuringEntityIdentifier(
+        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
+        procuringEntityDB: PNEntity.Tender.ProcuringEntity
+    ) {
+        if (procuringEntityDB.id != procuringEntityRequest.id) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Invalid identifier of procuring entity. " +
+                "Request.procuringEntity.id (=${procuringEntityRequest.id})  != " +
+                "DB.procuringEntity.id (=${procuringEntityRequest}). "
+        )
+    }
+
+    /**
+     * VR-1.0.1.10.2
+     *
+     * eAccess checks the avaliability of at least one procuringEntity.Persones object in array  from Request:
+     * IF [there is at least one Persones object in Request] then validation is successful; }
+     * else { eAccess throws Exception: "At least one Person should be added"; }
+     *
+     *
+     * VR-1.0.1.10.3
+     * eAccess checks the uniqueness of all Persones.identifier.ID values from every object of Persones array of Request:
+     * IF [there is NO repeated values of identifier.ID in Request] then validation is successful; }
+     * else { eAccess throws Exception: "Persones objects should be unique in Request"; }
+     *
+     *
+     * VR-1.0.1.10.6
+     *
+     * eAccess checks the availability of one Persones object with one businessFunctions object
+     * where persones.businessFunctions.type == "authority" in Persones array from Request:
+     * IF [there is Persones object with businessFunctions object where type == "authority"] then validation is successful; }
+     * else { eAccess throws Exception: "Authority person shoud be specified in Request"; }
+     *
+     */
+    private fun checkProcuringEntityPersones(
+        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
+    ) {
+        if (procuringEntityRequest.persones.size < 1) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "At least one Person should be added. "
+        )
+
+        val personesIdentifier = procuringEntityRequest.persones.map { it.identifier.id }
+        val personesIdentifierUnique = personesIdentifier.toSet()
+        if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Persones objects should be unique in Request. "
+        )
+
+        val authorityPersones = procuringEntityRequest.persones.asSequence()
+            .flatMap { it.businessFunctions.asSequence() }
+            .filter { it.type == BusinessFunctionType.AUTHORITY }
+            .count()
+        if (authorityPersones != 1) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Authority person should be specified in Request. "
+        )
+    }
+
+    /**
+     * VR-1.0.1.10.4
+     *
+     * eAccess checks the avaliability of at least one persones.businessFunctions object in businessFunctions array  from Request:
+     * IF [there is at least one businessFunctions object in appropriate Persones object] then validation is successful; }
+     * else { eAccess throws Exception: "At least one businessFunctions detaluzation should be added"; }
+     *
+     *
+     * VR-1.0.1.10.5
+     *
+     * eAccess checks the uniqueness of all Persones.businessFunctions.ID values from every object of businessFunctions array of Request:
+     * IF [there is NO repeated values of businessFunctions.ID] then validation is successful; }
+     * else { eAccess throws Exception: "businessFunctions objects should be unique in every Person from Request"; }
+     *
+     */
+    private fun checkPersonesBusinessFunctions(
+        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
+    ) {
+        fun detalizationError(): Nothing = throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "At least one businessFunctions detalization should be added. "
+        )
+
+        fun uniquenessError(): Nothing = throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "businessFunctions objects should be unique in every Person from Request. "
+        )
+
+        procuringEntityRequest.persones.map { it.businessFunctions }
+            .forEach { businessfunctions ->
+                if (businessfunctions.size < 1) detalizationError()
+                if (businessfunctions.toSet().size != businessfunctions.size) uniquenessError()
+            }
+    }
+
+    /**
+     * VR-1.0.1.10.7
+     *
+     * eAccess compares businessFunctions.period.startDate and startDate from the context of Request:
+     * IF [businessFunctions.period.startDate <= (less || equal to) startDate from Request] then: validation is successful; }
+     * else {  eAccess throws Exception: "Invalid period in bussiness function specification"; }
+     *
+     */
+    private fun checkBusinessFunctionPeriod(
+        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
+        contextRequest: ContextRequest
+    ) {
+        fun dateError(): Nothing = throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Invalid period in bussiness function specification. "
+        )
+
+        procuringEntityRequest.persones.flatMap { it.businessFunctions }
+            .forEach { if (it.period.startDate > contextRequest.startDate) dateError() }
+    }
+
+    /**
+     * VR-1.0.1.2.1
+     *
+     * eAccess compares businessFunctions.period.startDate and startDate from the context of Request:
+     * IF [businessFunctions.period.startDate <= (less || equal to) startDate from Request] then: validation is successful; }
+     * else {  eAccess throws Exception: "Invalid period in bussiness function specification"; }
+     *
+     *
+     * VR-1.0.1.2.7
+     *
+     * eAccess checks the avaliability of at least one tender.documents || bussinessFunctions.documents object in array from Request:
+     * IF [there is at least one Document object in Request] then validation is successful; }
+     * else { eAccess throws Exception: "At least one document should be added"; }
+     *
+     *
+     * VR-1.0.1.2.8
+     *
+     * eAccess checks documents.documentType values in all Documents object from Request;
+     * IF document.documentType == oneOf bussinesFunctionsDocumentTupeEnum value (link), validation is successful; }
+     * else {  eAccess throws Exception: "Invalid document type"; }
+     */
+    private fun checkBusinessFunctionDocuments(
+        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
+    ) {
+
+        val documents = procuringEntityRequest.persones.flatMap { it.businessFunctions }
+            .filter { it.documents != null }
+            .flatMap { it.documents!! }
+
+        if (documents.size < 1) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "At least one document should be added. "
+        )
+
+        val actualIds = documents.map { it.id }
+        val uniqueIds = actualIds.toSet()
+        if (actualIds.size != uniqueIds.size) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
+        )
+
+        documents.forEach {
+            when (it.documentType) {
+                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+                else                                             -> throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "Invalid document type. "
+                )
+            }
+        }
     }
 
     /**
