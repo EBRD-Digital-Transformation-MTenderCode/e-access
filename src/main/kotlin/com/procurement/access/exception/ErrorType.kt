@@ -78,8 +78,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_FORMAT_TOKEN("10.63", "Invalid format the award id."),
     INVALID_TENDER_STATUS_DETAILS("10.64", "Invalid tender status details."),
     INVALID_DOCUMENT_TYPE("10.65", "Invalid document type."),
-    INCORRECT_VALUE_ATTRIBUTE("10.66", "Incorrect an attribute value.");
-    INVALID_DOCUMENT_TYPE("10.65", "Invalid document type."),
-    CONVERSIONS_IS_EMPTY("10.66", "Conversion cannot exists without criteria."),
-    INVALID_REQUIREMENT_VALUE("10.67", "Invalid requirement value.");
+    INCORRECT_VALUE_ATTRIBUTE("10.66", "Incorrect an attribute value."),
+    CONVERSIONS_IS_EMPTY("10.67", "Conversion cannot exists without criteria."),
+    INVALID_REQUIREMENT_VALUE("10.68", "Invalid requirement value.");
 }
