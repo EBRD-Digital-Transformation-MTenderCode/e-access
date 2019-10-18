@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.AUCTION_LOT_HAS_INVALID_AMOUNT_VALUE
 import com.procurement.access.exception.ErrorType.AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE
@@ -71,6 +72,20 @@ class CnUpdateService(private val generationService: GenerationService,
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
+
+        //VR-3.20.17
+        if (cnDto.tender.title.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.title' is empty or blank."
+            )
+
+        //VR-3.20.18
+        if (cnDto.tender.description.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.description' is empty or blank."
+            )
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
