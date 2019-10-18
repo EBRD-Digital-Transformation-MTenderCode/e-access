@@ -10,8 +10,9 @@ import java.util.*
 @Service
 class GenerationService(private val ocdsProperties: OCDSProperties) {
 
-    fun getCpId(country: String): String {
-        return ocdsProperties.prefix + "-" + country + "-" + milliNowUTC()
+    fun getCpId(country: String, testMode: Boolean): String {
+        val prefix = if(testMode) "test" else ocdsProperties.prefix
+        return prefix + "-" + country + "-" + milliNowUTC()
     }
 
     fun generateRandomUUID(): UUID {
