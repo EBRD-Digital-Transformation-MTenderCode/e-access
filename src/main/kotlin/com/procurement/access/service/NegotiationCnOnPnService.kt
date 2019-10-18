@@ -53,12 +53,6 @@ class NegotiationCnOnPnService(
             tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
-        //VR-3.8.1 identifier token
-        checkToken(tokenFromRequest = contextRequest.token, entity = entity)
-
-        //VR-3.8.2 owner
-        checkOwner(ownerFromRequest = contextRequest.owner, entity = entity)
-
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
 
         //VR-3.8.18 Tender status

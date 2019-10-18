@@ -8,9 +8,10 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 class JsonDateTimeSerializer : JsonSerializer<LocalDateTime>() {
-
-    @Throws(IOException::class, JsonProcessingException::class)
-    override fun serialize(date: LocalDateTime, jsonGenerator: JsonGenerator, provider: SerializerProvider) {
-        jsonGenerator.writeString(date.format(JsonDateTimeFormatter.formatter))
+    companion object {
+        fun serialize(date: LocalDateTime): String = date.format(JsonDateTimeFormatter.formatter)
     }
+
+    override fun serialize(date: LocalDateTime, jsonGenerator: JsonGenerator, provider: SerializerProvider) =
+        jsonGenerator.writeString(serialize(date))
 }

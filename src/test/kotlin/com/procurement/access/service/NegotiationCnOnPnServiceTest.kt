@@ -152,11 +152,8 @@ class NegotiationCnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(token = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkNegotiationCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_TOKEN, exception.error)
+                val response = service.checkNegotiationCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @DisplayName("VR-3.8.2")
@@ -169,11 +166,8 @@ class NegotiationCnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(owner = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkNegotiationCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_OWNER, exception.error)
+                val response = service.checkNegotiationCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @Nested
@@ -363,11 +357,8 @@ class NegotiationCnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(token = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkNegotiationCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_TOKEN, exception.error)
+                val response = service.checkNegotiationCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @DisplayName("VR-3.8.2")
@@ -380,11 +371,8 @@ class NegotiationCnOnPnServiceTest {
                 )
 
                 val cm = commandMessage(owner = "UNKNOWN", data = requestNode)
-                val exception = assertThrows<ErrorException> {
-                    service.checkNegotiationCnOnPn(cm)
-                }
-
-                assertEquals(ErrorType.INVALID_OWNER, exception.error)
+                val response = service.checkNegotiationCnOnPn(cm)
+                assertEquals("ok", response.data)
             }
 
             @Nested

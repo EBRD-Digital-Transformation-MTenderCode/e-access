@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
@@ -69,7 +70,7 @@ class PnServiceTest {
         whenever(generationService.generateOrganizationId(any(), any()))
             .thenReturn(PERMANENT_TENDER_PROCURING_ENTITY_ID_1)
 
-        whenever(generationService.getCpId(ContextGenerator.COUNTRY))
+        whenever(generationService.getCpId(eq(ContextGenerator.COUNTRY), any()))
             .thenReturn(PERMANENT_CPID)
 
         whenever(generationService.generateToken())
