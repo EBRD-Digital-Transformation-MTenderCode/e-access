@@ -10,7 +10,12 @@ class CnOnPnRequestTest : AbstractDTOTestBase<CnOnPnRequest>(CnOnPnRequest::clas
     }
 
     @Test
-    fun required() {
-        testBindingAndMapping("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_required.json")
+    fun required_1() {
+        testBindingAndMapping("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_required_1.json")
+    }
+
+    @Test
+    fun required_2() {
+        testBindingAndMapping("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_required_2.json")
     }
 }

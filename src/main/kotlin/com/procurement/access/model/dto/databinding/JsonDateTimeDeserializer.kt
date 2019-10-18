@@ -8,8 +8,10 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 class JsonDateTimeDeserializer : JsonDeserializer<LocalDateTime>() {
+    companion object {
+        fun deserialize(value: String): LocalDateTime = LocalDateTime.parse(value, JsonDateTimeFormatter.formatter)
+    }
 
-    @Throws(IOException::class, JsonProcessingException::class)
     override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): LocalDateTime =
-        LocalDateTime.parse(jsonParser.text, JsonDateTimeFormatter.formatter)
+        deserialize(jsonParser.text)
 }

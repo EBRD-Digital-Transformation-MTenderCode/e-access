@@ -9,6 +9,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckItemsRequest
 import com.procurement.access.infrastructure.dto.CheckItemsResponse
+import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
@@ -21,8 +22,11 @@ import com.procurement.access.json.loadJson
 import com.procurement.access.json.setAttribute
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
+import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.ocds.MainProcurementCategory
+import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -83,7 +87,14 @@ class CheckItemsStrategyTest {
                         )
 
                         val actual = strategy.check(cm).toJson()
-                        val expected = response(mdmValidation = true, itemsAdd = true, id = RESPONSE_TENDER_CPV_CODE)
+                        val expectedItems = dataRequest.toObject<CheckItemsRequest>().items
+                        val expected = response(
+                            mdmValidation = true,
+                            itemsAdd = true,
+                            id = RESPONSE_TENDER_CPV_CODE,
+                            mainProcurementCategory = MainProcurementCategory.SERVICES,
+                            items = expectedItems.map { CheckItemsResponse.Item(id = it.id, relatedLot = it.relatedLot) }
+                        )
 
                         JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
                     }
@@ -192,7 +203,13 @@ class CheckItemsStrategyTest {
                         )
 
                         val actual = strategy.check(cm).toJson()
-                        val expected = response(mdmValidation = false, itemsAdd = true)
+                        val expectedItems = toObject(clazz = PNEntity::class.java, json = dataEntity).tender.items
+                        val expected = response(
+                            mdmValidation = false,
+                            itemsAdd = true,
+                            mainProcurementCategory = MainProcurementCategory.SERVICES,
+                            items = expectedItems.map { CheckItemsResponse.Item(id = it.id, relatedLot = it.relatedLot) }
+                        )
                         JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
                     }
                 }
@@ -349,7 +366,7 @@ class CheckItemsStrategyTest {
         }
 
         private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JSON) {
-            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data)
             whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
                 .thenReturn(tenderProcessEntity)
         }
@@ -371,7 +388,9 @@ class CheckItemsStrategyTest {
             CheckItemsRequest.Item(
                 classification = CheckItemsRequest.Item.Classification(
                     id = id
-                )
+                ),
+                id = "id-${id}",
+                relatedLot = "relatedLot-${id}"
             )
         }
 
@@ -421,7 +440,13 @@ class CheckItemsStrategyTest {
             json
     }
 
-    private fun response(mdmValidation: Boolean, itemsAdd: Boolean, id: String? = null): JSON {
+    private fun response(
+        mdmValidation: Boolean,
+        itemsAdd: Boolean,
+        id: String? = null,
+        mainProcurementCategory: MainProcurementCategory? = null,
+        items: List<CheckItemsResponse.Item>? = emptyList()
+    ): JSON {
         return CheckItemsResponse(
             mdmValidation = mdmValidation,
             itemsAdd = itemsAdd,
@@ -431,7 +456,9 @@ class CheckItemsStrategyTest {
                         id = id
                     )
                 )
-            }
+            },
+            mainProcurementCategory = mainProcurementCategory?.value,
+            items = items
         ).toJson()
     }
 }
