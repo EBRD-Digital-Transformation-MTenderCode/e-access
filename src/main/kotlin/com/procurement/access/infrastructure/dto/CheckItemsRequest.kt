@@ -10,7 +10,9 @@ data class CheckItemsRequest(
 ) {
 
     data class Item(
-        @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification
+        @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+        @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
     ) {
 
         data class Classification(

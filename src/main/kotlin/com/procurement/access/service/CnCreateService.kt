@@ -19,6 +19,7 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
 import com.procurement.access.exception.ErrorType.INVALID_PMD
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.cn.BudgetCnCreate
 import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.model.dto.cn.ItemCnCreate
@@ -77,12 +78,13 @@ class CnCreateService(private val generationService: GenerationService,
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
+        val testMode = cm.testMode
         val cnDto = toObject(CnCreate::class.java, cm.data).validate()
         validateAuctionsDto(country, pmd, cnDto)
 
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
-        val cpId = generationService.getCpId(country)
+        val cpId = generationService.getCpId(country = country, testMode = testMode)
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
         validateDtoRelatedLots(tenderDto)
