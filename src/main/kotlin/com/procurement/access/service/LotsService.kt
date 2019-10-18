@@ -145,11 +145,16 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
         var stageEnd = false
         var cpSuccess = false
-        val lot = lots.asSequence().firstOrNull { it.id == dto.lotId }
-        if (lot != null) {
-            lot.status = LotStatus.UNSUCCESSFUL
-            lot.statusDetails = LotStatusDetails.EMPTY
-        }
+        val lot = lots.asSequence()
+            .firstOrNull { it.id == dto.lotId }
+            ?: throw ErrorException(
+                error = ErrorType.INVALID_LOT_ID,
+                message = "Lot by id: '${dto.lotId}' is not found."
+            )
+
+        lot.status = LotStatus.UNSUCCESSFUL
+        lot.statusDetails = LotStatusDetails.EMPTY
+
 //      if all lots have lot.status == "unsuccessful" || "cancelled"
 //      tender.status == "unsuccessful" && tender.statusDetails == "empty"
 //      stageEnd == TRUE; cpSuccess == FALSE
@@ -171,7 +176,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         } else {
             val completeLot = lots.asSequence().firstOrNull { it.status == LotStatus.COMPLETE }
             if (completeLot != null) {
-                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED }) {
+                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED || it.status == LotStatus.COMPLETE }) {
                     process.tender.apply {
                         status = TenderStatus.COMPLETE
                         statusDetails = TenderStatusDetails.EMPTY
@@ -183,13 +188,22 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        val lotsRs = lots.asSequence().map { FinalLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
-        val tenderRs = FinalTender(id = process.tender.id!!, status = process.tender.status, statusDetails = process.tender.statusDetails)
-        return ResponseDto(data = FinalStatusesRs(
+        val tenderRs =
+            FinalTender(
+                id = process.tender.id!!,
+                status = process.tender.status,
+                statusDetails = process.tender.statusDetails
+            )
+        return ResponseDto(
+            data = FinalStatusesRs(
                 stageEnd = stageEnd,
                 cpSuccess = cpSuccess,
                 tender = tenderRs,
-                lots = lotsRs))
+                lots = listOf(
+                    FinalLot(id = lot.id, status = lot.status!!, statusDetails = lot.statusDetails!!)
+                )
+            )
+        )
     }
 
     fun setLotInitialStatus(cm: CommandMessage): ResponseDto {
@@ -243,12 +257,16 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
 
-        process.tender.lots.asSequence().filter { dto.relatedLots.contains(it.id) }
-                .forEach {
-                    it.status = LotStatus.COMPLETE
-                    it.statusDetails = LotStatusDetails.EMPTY
-                }
-        val lotsRs = process.tender.lots.asSequence().map { ActivationAcLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!) }.toList()
+        val updatedLots = process.tender.lots
+            .asSequence()
+            .filter { dto.relatedLots.contains(it.id) }
+            .map { lot ->
+                lot.status = LotStatus.COMPLETE
+                lot.statusDetails = LotStatusDetails.EMPTY
+                lot
+            }
+            .toList()
+
         val stageEnd = process.tender.lots.asSequence().none { it.status == LotStatus.ACTIVE }
         if (stageEnd) {
             process.tender.apply {
@@ -258,13 +276,17 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = ActivationAcRs(
+        return ResponseDto(
+            data = ActivationAcRs(
                 tender = ActivationAcTender(
-                        status = process.tender.status,
-                        statusDetails = process.tender.statusDetails
+                    status = process.tender.status,
+                    statusDetails = process.tender.statusDetails
                 ),
-                lots = lotsRs,
-                stageEnd = stageEnd)
+                lots = updatedLots.map {
+                    ActivationAcLot(id = it.id, status = it.status!!, statusDetails = it.statusDetails!!)
+                },
+                stageEnd = stageEnd
+            )
         )
     }
 

@@ -54,6 +54,9 @@ val CommandMessage.operationType: String
             message = "Missing the 'operationType' attribute in context."
         )
 
+val CommandMessage.testMode: Boolean
+    get() = this.context.testMode?.let { it } ?: false
+
 data class Context @JsonCreator constructor(
     val operationId: String?,
     val requestId: String?,
@@ -71,7 +74,8 @@ data class Context @JsonCreator constructor(
     val token: String?,
     val startDate: String?,
     val endDate: String?,
-    val id: String?
+    val id: String?,
+    val testMode: Boolean?
 )
 
 enum class CommandType(private val value: String) {
