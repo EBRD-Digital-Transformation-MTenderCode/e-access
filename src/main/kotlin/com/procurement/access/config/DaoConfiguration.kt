@@ -3,6 +3,7 @@ package com.procurement.access.config
 import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.Session
+import com.procurement.access.config.properties.CassandraProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
