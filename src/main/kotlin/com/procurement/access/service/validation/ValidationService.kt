@@ -79,6 +79,22 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         return ResponseDto(data = "ok")
     }
 
+    fun checkLotActive(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        process.tender.lots.asSequence()
+            .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.EMPTY }
+            ?: throw ErrorException(
+                error = ErrorType.NO_ACTIVE_LOTS,
+                message = "There is no lot with 'status' == ACTIVE & 'statusDetails' == EMPTY by id ${lotId}"
+                )
+        return ResponseDto(data = "ok")
+    }
+
     fun checkLotsStatus(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
