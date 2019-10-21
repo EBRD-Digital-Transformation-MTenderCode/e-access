@@ -53,12 +53,6 @@ class NegotiationCnOnPnService(
             tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
-        //VR-3.8.1 identifier token
-        checkToken(tokenFromRequest = contextRequest.token, entity = entity)
-
-        //VR-3.8.2 owner
-        checkOwner(ownerFromRequest = contextRequest.owner, entity = entity)
-
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
 
         //VR-3.8.18 Tender status
@@ -1017,6 +1011,7 @@ class NegotiationCnOnPnService(
             CNEntity.Tender.Item(
                 //BR-3.8.6(CN on PN) item id (tender.items.id) -> BR-3.6.6
                 id = generationService.generatePermanentItemId(),
+                internalId = item.internalId,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
@@ -1055,6 +1050,7 @@ class NegotiationCnOnPnService(
         return tender.lots.map { lot ->
             CNEntity.Tender.Lot(
                 id = relatedTemporalWithPermanentLotId.getValue(lot.id), //BR-3.8.5
+                internalId = lot.internalId,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.8.7 -> BR-3.6.1 */
@@ -1199,6 +1195,7 @@ class NegotiationCnOnPnService(
                 //BR-3.8.5
                 id = lot.id,
 
+                internalId = null,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.8.7 */
@@ -1272,6 +1269,7 @@ class NegotiationCnOnPnService(
             CNEntity.Tender.Item(
                 //BR-3.8.6
                 id = item.id,
+                internalId = null,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
@@ -1496,6 +1494,7 @@ class NegotiationCnOnPnService(
                     lots = tender.lots.map { lot ->
                         NegotiationCnOnPnResponse.Tender.Lot(
                             id = lot.id,
+                            internalId = lot.internalId,
                             title = lot.title,
                             description = lot.description,
                             status = lot.status,
@@ -1577,6 +1576,7 @@ class NegotiationCnOnPnService(
                     items = tender.items.map { item ->
                         NegotiationCnOnPnResponse.Tender.Item(
                             id = item.id,
+                            internalId = item.internalId,
                             classification = item.classification.let { classification ->
                                 NegotiationCnOnPnResponse.Tender.Item.Classification(
                                     scheme = classification.scheme,

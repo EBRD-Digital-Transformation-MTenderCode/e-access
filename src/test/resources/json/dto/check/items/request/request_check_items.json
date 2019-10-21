@@ -1,24 +1,32 @@
 {
   "items": [
     {
+      "id":"de534900-f419-11e8-aef4-abd25667749b",
       "classification": {
         "id": "12345670-1"
-      }
+      },
+      "relatedLot":"afcfdec3-0acd-11e9-a3ff-03157a44897b"
     },
     {
+      "id":"de534900-f419-11e8-aef4-abd25667749b",
       "classification": {
         "id": "12345671-2"
-      }
+      },
+      "relatedLot":"afcfdec2-0acd-11e9-a3ff-03157a44897b"
     },
     {
+      "id":"25b5ab30-f41a-11e8-aef4-abd25667749b",
       "classification": {
         "id": "12345672-3"
-      }
+      },
+      "relatedLot":"afcfdec3-0acd-11e9-a3ff-03157a44897b"
     },
     {
+      "id":"de534900-f419-11e8-aef4-abd25667749b",
       "classification": {
         "id": "12345673-4"
-      }
+      },
+      "relatedLot":"25b5ab30-f41a-11e8-aef4-abd25667749b"
     }
   ]
 }

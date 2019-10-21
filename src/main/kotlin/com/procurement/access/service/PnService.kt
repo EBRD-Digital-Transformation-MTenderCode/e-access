@@ -12,6 +12,7 @@ import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.ProcurementMethod
@@ -74,12 +75,35 @@ class PnService(
      * Validation rules
      */
     private fun checkValidationRules(request: PnCreateRequest) {
+        //VR-3.1.16
+        if (request.tender.title.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.title' is empty or blank."
+            )
+
+        //VR-3.1.17
+        if (request.tender.description.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.description' is empty or blank."
+            )
+
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
-        if (request.tender.items.isNullOrEmpty()) return
+        if(request.tender.items.isNullOrEmpty()) {
+            if(request.tender.lots.isNullOrEmpty())
+                return
+            else
+                throw ErrorException(ErrorType.EMPTY_ITEMS)
+        } else {
+            if(request.tender.lots.isNullOrEmpty())
+                throw ErrorException(ErrorType.EMPTY_LOTS)
+        }
 
-        val lots: List<PnCreateRequest.Tender.Lot> = request.tender.lots ?: emptyList()
+        if (request.tender.lots.isNullOrEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
+        val lots: List<PnCreateRequest.Tender.Lot> = request.tender.lots
 
         //VR-3.1.14
         checkLotIdFromRequest(lots = lots)
@@ -349,7 +373,7 @@ class PnService(
      */
     private fun businessRules(contextRequest: ContextRequest, request: PnCreateRequest): PNEntity {
         //BR-3.1.3
-        val id = generationService.getCpId(contextRequest.country)
+        val id = generationService.getCpId(country = contextRequest.country, testMode = contextRequest.testMode)
         val contractPeriod: PNEntity.Tender.ContractPeriod?
         val value: PNEntity.Tender.Value
         val lots: List<PNEntity.Tender.Lot>
@@ -808,13 +832,15 @@ class PnService(
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
         val startDate: LocalDateTime = cm.context.startDate?.toLocal()
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
+        val testMode: Boolean = cm.testMode
 
         return ContextRequest(
             stage = stage,
             owner = owner,
             country = country,
             pmd = pmd,
-            startDate = startDate
+            startDate = startDate,
+            testMode = testMode
         )
     }
 
@@ -1152,6 +1178,7 @@ class PnService(
         val owner: String,
         val country: String,
         val pmd: ProcurementMethod,
-        val startDate: LocalDateTime
+        val startDate: LocalDateTime,
+        val testMode: Boolean
     )
 }
