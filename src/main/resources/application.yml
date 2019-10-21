@@ -12,4 +12,7 @@ cassandra:
   username: caclient
   password: 6AH7vbrkMWnfK
 
-ocds.prefix: ocds-t1s2t3
+ocds:
+  prefixes:
+    main: ocds-t1s2t3
+    test: test-t1s2t3
