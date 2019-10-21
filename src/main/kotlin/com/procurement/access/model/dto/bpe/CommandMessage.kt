@@ -111,6 +111,7 @@ enum class CommandType(private val value: String) {
     SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),
 
     CHECK_AWARD("checkAward"),
+    CHECK_LOT_ACTIVE("checkLotActive"),
     CHECK_LOT_STATUS("checkLotStatus"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
     CHECK_LOT_AWARDED("checkLotAwarded"),
