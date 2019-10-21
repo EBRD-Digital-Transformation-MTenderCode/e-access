@@ -11,6 +11,7 @@
     "lots": [
       {
         "id": "lot-1",
+        "internalId": "some-internal-lot-id-0",
         "title": "request.tender.lot[0].title",
         "description": "request.tender.lot[0].description",
         "value": {
@@ -51,6 +52,7 @@
       },
       {
         "id": "lot-2",
+        "internalId": "some-internal-item-id-0",
         "title": "request.tender.lot[1].title",
         "description": "request.tender.lot[1].description",
         "value": {
