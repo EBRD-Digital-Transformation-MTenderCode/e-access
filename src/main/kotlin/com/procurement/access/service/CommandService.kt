@@ -136,6 +136,7 @@ class CommandService(
             CommandType.COMPLETE_LOTS -> lotsService.completeLots(cm)
 
             CommandType.CHECK_AWARD -> validationService.checkAward(cm)
+            CommandType.CHECK_LOT_ACTIVE -> validationService.checkLotActive(cm)
             CommandType.CHECK_LOT_STATUS -> validationService.checkLotStatus(cm)
             CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
             CommandType.CHECK_LOT_AWARDED -> validationService.checkLotAwarded(cm)
