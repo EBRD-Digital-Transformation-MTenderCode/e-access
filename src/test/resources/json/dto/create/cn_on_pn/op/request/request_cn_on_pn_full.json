@@ -185,6 +185,38 @@
         ]
       }
     ],
+    "procuringEntity": {
+      "id": "procuringEntity.id",
+      "persones": [
+        {
+          "title": "procuringEntity.persones[0].title",
+          "name": "procuringEntity.persones[0].name",
+          "identifier": {
+            "scheme": "procuringEntity.persones[0].identifier.scheme",
+            "id": "procuringEntity.persones[0].identifier.id",
+            "uri": "procuringEntity.persones[0].identifier.uri"
+          },
+          "businessFunctions": [
+            {
+              "id": "procuringEntity.persones[0].businessFunctions[0].id",
+              "type": "authority",
+              "jobTitle": "Chief Executive Officer",
+              "period": {
+                "startDate": "2019-10-16T11:45:56Z"
+              },
+              "documents": [
+                {
+                  "id": "procuringEntity.persones[0].businessFunctions[0].documents[0].id",
+                  "documentType": "regulatoryDocument",
+                  "title": "procuringEntity.persones[0].businessFunctions[0].documents[0].title",
+                  "description": "procuringEntity.persones[0].businessFunctions[0].documents[0].description"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "lots": [
       {
         "id": "lot-1",

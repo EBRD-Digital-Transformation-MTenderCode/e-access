@@ -14,10 +14,13 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializ
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
+import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import com.procurement.access.model.dto.ocds.AwardCriteria
+import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
+import com.procurement.access.model.dto.ocds.BusinessFunctionType
 import com.procurement.access.model.dto.ocds.DocumentType
 import com.procurement.access.model.dto.ocds.LegalBasis
 import com.procurement.access.model.dto.ocds.LotStatus
@@ -313,7 +316,10 @@ data class CnOnPnResponse(
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier>?,
             @field:JsonProperty("address") @param:JsonProperty("address") val address: Address,
-            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint
+            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone>?
         ) {
 
             data class Identifier(
@@ -384,6 +390,46 @@ data class CnOnPnResponse(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("url") @param:JsonProperty("url") val url: String?
             )
+
+            data class Persone(
+                @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+                @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
+                @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
+                @field:JsonProperty("businessFunctions") @param:JsonProperty("businessFunctions") val businessFunctions: List<BusinessFunction>
+            ) {
+                data class Identifier(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+                )
+
+                data class BusinessFunction(
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("type") @param:JsonProperty("type") val type: BusinessFunctionType,
+                    @field:JsonProperty("jobTitle") @param:JsonProperty("jobTitle") val jobTitle: String,
+                    @field:JsonProperty("period") @param:JsonProperty("period") val period: Period,
+
+                    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+                    @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
+                ) {
+                    data class Document(
+                        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                        @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: BusinessFunctionDocumentType,
+                        @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+
+                        @JsonInclude(JsonInclude.Include.NON_NULL)
+                        @field:JsonProperty("description") @param:JsonProperty("description") val description: String?
+                    )
+
+                    data class Period(
+                        @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+                        @JsonSerialize(using = JsonDateTimeSerializer::class)
+                        @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
+                    )
+                }
+            }
         }
 
         data class Value(

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.clearInvocations
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
@@ -35,7 +36,11 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.model.dto.ocds.Operation
 import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.model.dto.ocds.TenderStatus
+import com.procurement.access.utils.toObject
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -1220,10 +1225,314 @@ class CnOnPnServiceTest {
             }
         }
 
-        private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
-            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-            whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
-                .thenReturn(tenderProcessEntity)
+        @Nested
+        inner class ProcuringEntity {
+
+            private val CHECK_REQUEST_JSON = "json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json"
+            private lateinit var requestNode: ObjectNode
+            private lateinit var pnEntity: ObjectNode
+
+            @BeforeEach
+            fun setup() {
+                requestNode = loadJson(CHECK_REQUEST_JSON).toNode() as ObjectNode
+                pnEntity = loadJson(PATH_PN_JSON).toNode() as ObjectNode
+
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnEntity
+                )
+
+                val expectedId = pnEntity.getObject("tender").getObject("procuringEntity").get("id").asText()
+                requestNode.getObject("tender").getObject("procuringEntity").setAttribute("id", expectedId)
+            }
+
+            @AfterEach
+            fun clear() {
+                clearInvocations(tenderProcessDao)
+            }
+
+            @Test
+            fun `without procuring entity`() {
+                requestNode.getObject("tender").remove("procuringEntity")
+                val cm = commandMessage(command = command, data = requestNode)
+
+                assertDoesNotThrow { service.checkCnOnPn(cm) }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_1 {
+
+                @Test
+                fun `Request_procuringentity_Id == DB_procuringentity_Id`() {
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    assertDoesNotThrow { service.checkCnOnPn(cm) }
+                }
+
+                @Test
+                fun `Request_procuringEntity_Id != DB_procuringEntity_Id`() {
+
+                    requestNode.getObject("tender").getObject("procuringEntity").setAttribute("id", "UNKNOWN_ID")
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertTrue(exception.message!!.contains("Invalid identifier of procuring entity"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_2 {
+                @Test
+                fun `no persones`() {
+                    requestNode.getObject("tender").getObject("procuringEntity").putArray("persones")
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertTrue(exception.message!!.contains("At least one Person should be added"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_3 {
+
+                @Test
+                fun `not unique persones id`() {
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .putArray("persones")
+                        .putObject(person)
+                        .putObject(person)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertTrue(exception.message!!.contains("Persones objects should be unique in Request"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_6 {
+
+                @Test
+                fun `two authority person`() {
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val newPerson = person.deepCopy().also {
+                        it.getObject("identifier").setAttribute("id", "NEW_UNIQUE_ID")
+                        val businessFunction = it.getArray("businessFunctions").get(0) as ObjectNode
+                        businessFunction.setAttribute("type", "authority")
+                    }
+
+                    requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .putArray("persones")
+                        .putObject(person)
+                        .putObject(newPerson)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertTrue(exception.message!!.contains("Authority person should be specified in Request"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_4 {
+
+                @Test
+                fun `no businessFunctions`() {
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val newPerson = person.deepCopy().also {
+                        it.getObject("identifier").setAttribute("id", "NEW_UNIQUE_ID")
+                        println(it)
+                        val businessFunction = it.getArray("businessFunctions").get(0) as ObjectNode
+                        businessFunction.setAttribute("type", "authority")
+                    }
+                    person.putArray("businessFunctions")
+
+                    requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .putArray("persones")
+                        .putObject(person)
+                        .putObject(newPerson)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertTrue(exception.message!!.contains("At least one businessFunctions detalization should be added"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_5 {
+
+                @Test
+                fun `not unique businessFunction id in person`() {
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    val duplicatedBusinessFunction = businessFunction.deepCopy()
+
+                    person.putArray("businessFunctions")
+                        .add(businessFunction)
+                        .add(duplicatedBusinessFunction)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+
+                    // TODO uncomment when BussinesFunctionType enum will have at least 2 value
+                    //assertTrue(exception.message!!.contains("businessFunctions objects should be unique in every Person from Request"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_10_7 {
+
+                @Test
+                fun `startDate in request greater than in context`() {
+                    val REQUEST_START_DATE = "2012-06-05T17:59:00Z"
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    businessFunction.getObject("period").putAttribute("startDate", REQUEST_START_DATE)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+
+                    assertTrue(exception.message!!.contains("Invalid period in bussiness function specification"))
+                }
+
+                @Test
+                fun `startDate in request == startDate context`() {
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    assertDoesNotThrow { service.checkCnOnPn(cm) }
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_2_1 {
+
+                @Test
+                fun `not unique document id`() {
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
+
+                    val document = businessFunction.getArray("documents").get(0) as ObjectNode
+                    businessFunction.putArray("documents")
+                        .add(document)
+                        .add(document)
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+
+                    assertTrue(exception.message!!.contains("Invalid documents IDs"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_2_7 {
+
+                @Test
+                fun `no document passed`() {
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
+
+                    businessFunction.putArray("documents")
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+
+                    assertTrue(exception.message!!.contains("At least one document should be added"))
+                }
+            }
+
+            @Nested
+            inner class VR_1_0_1_2_8 {
+
+                @Test
+                fun `invalid document type`() {
+
+                    val person = requestNode.getObject("tender")
+                        .getObject("procuringEntity")
+                        .getArray("persones")
+                        .get(0) as ObjectNode
+
+                    val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
+                    businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
+
+                    val document = businessFunction.getArray("documents").get(0) as ObjectNode
+                    document.setAttribute("documentType", "ANOTHER_DOCUMENT_TYPE")
+
+                    val cm = commandMessage(command = command, data = requestNode)
+
+                    assertThrows<Exception> { service.checkCnOnPn(cm) }
+                }
+            }
         }
     }
 
@@ -1431,6 +1740,163 @@ class CnOnPnServiceTest {
             }
         }
 
+        @Nested
+        inner class ProcuringEntity {
+
+            private val CHECK_REQUEST_JSON = "json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json"
+            private lateinit var requestNode: ObjectNode
+            private lateinit var pnEntity: ObjectNode
+
+            @BeforeEach
+            fun setup() {
+                requestNode = loadJson(CHECK_REQUEST_JSON).toNode() as ObjectNode
+                pnEntity = loadJson(PATH_PN_JSON).toNode() as ObjectNode
+
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.PREV_STAGE,
+                    data = pnEntity
+                )
+
+                val expectedId = pnEntity.getObject("tender").getObject("procuringEntity").get("id").asText()
+                requestNode.getObject("tender").getObject("procuringEntity").setAttribute("id", expectedId)
+            }
+
+            @AfterEach
+            fun clear() {
+                clearInvocations(tenderProcessDao)
+            }
+
+            @Test
+            fun `without procuringEntity`() {
+
+                requestNode.getObject("tender")
+                    .remove("procuringEntity")
+
+                val cm = commandMessage(command = command, data = requestNode)
+
+                val response = service.createCnOnPn(cm)
+                val responseData = response.data as CnOnPnResponse
+
+                val actualProcuringEntity = responseData.tender.procuringEntity.toJson()
+                val expectedProcuringEntity = pnEntity.getObject("tender").getObject("procuringEntity").toString()
+
+                val expectedPn = toObject(PNEntity.Tender.ProcuringEntity::class.java, expectedProcuringEntity)
+                val expectedCn = expectedPn.toProcuringEntityResponse()
+                val actualCn = toObject(CnOnPnResponse.Tender.ProcuringEntity::class.java, actualProcuringEntity)
+
+                assertEquals(expectedCn, actualCn)
+            }
+
+            @Test
+            fun `with procuringEntity`() {
+
+                val jsonProcuringEntity = requestNode.getObject("tender").getObject("procuringEntity")
+                val requestProcuringEntity = toObject(
+                    CnOnPnRequest.Tender.ProcuringEntity::class.java,
+                    jsonProcuringEntity
+                )
+
+                val cm = commandMessage(command = command, data = requestNode)
+
+                val response = service.createCnOnPn(cm)
+                val responseData = response.data as CnOnPnResponse
+
+                val actualProcuringEntityJson = responseData.tender.procuringEntity.toJson()
+                val expectedProcuringEntityJson = pnEntity.getObject("tender").getObject("procuringEntity").toString()
+
+                val expectedPn = toObject(PNEntity.Tender.ProcuringEntity::class.java, expectedProcuringEntityJson)
+                val expectedCn = expectedPn.toProcuringEntityResponse(requestProcuringEntity)
+                val actualCn = toObject(CnOnPnResponse.Tender.ProcuringEntity::class.java, actualProcuringEntityJson)
+
+                assertEquals(expectedCn, actualCn)
+            }
+
+            private fun PNEntity.Tender.ProcuringEntity.toProcuringEntityResponse(
+                requestProcuringEntity: CnOnPnRequest.Tender.ProcuringEntity? = null
+            ): CnOnPnResponse.Tender.ProcuringEntity {
+                return CnOnPnResponse.Tender.ProcuringEntity(
+                    id = this.id,
+                    name = this.name,
+                    identifier = CnOnPnResponse.Tender.ProcuringEntity.Identifier(
+                        id = this.identifier.id,
+                        scheme = this.identifier.scheme,
+                        legalName = this.identifier.legalName,
+                        uri = this.identifier.uri
+                    ),
+                    additionalIdentifiers = this.additionalIdentifiers?.map { identifier ->
+                        CnOnPnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                            id = identifier.id,
+                            scheme = identifier.scheme,
+                            legalName = identifier.legalName,
+                            uri = identifier.uri
+                        )
+                    },
+                    address = CnOnPnResponse.Tender.ProcuringEntity.Address(
+                        streetAddress = this.address.streetAddress,
+                        postalCode = this.address.postalCode,
+                        addressDetails = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                            country = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                id = this.address.addressDetails.country.id,
+                                scheme = this.address.addressDetails.country.scheme,
+                                description = this.address.addressDetails.country.description,
+                                uri = this.address.addressDetails.country.uri
+                            ),
+                            region = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                id = this.address.addressDetails.region.id,
+                                scheme = this.address.addressDetails.region.scheme,
+                                description = this.address.addressDetails.region.description,
+                                uri = this.address.addressDetails.region.uri
+                            ),
+                            locality = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                id = this.address.addressDetails.locality.id,
+                                scheme = this.address.addressDetails.locality.scheme,
+                                description = this.address.addressDetails.locality.description,
+                                uri = this.address.addressDetails.locality.uri
+                            )
+                        )
+                    ),
+                    contactPoint = CnOnPnResponse.Tender.ProcuringEntity.ContactPoint(
+                        name = this.contactPoint.name,
+                        email = this.contactPoint.email,
+                        telephone = this.contactPoint.telephone,
+                        faxNumber = this.contactPoint.faxNumber,
+                        url = this.contactPoint.url
+                    ),
+                    persones = requestProcuringEntity?.persones?.map { person ->
+                        CnOnPnResponse.Tender.ProcuringEntity.Persone(
+                            title = person.title,
+                            name = person.name,
+                            identifier = CnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
+                                scheme = person.identifier.scheme,
+                                id = person.identifier.id,
+                                uri = person.identifier.uri
+                            ),
+                            businessFunctions = person.businessFunctions.map { businessFunction ->
+                                CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                    id = businessFunction.id,
+                                    jobTitle = businessFunction.jobTitle,
+                                    type = businessFunction.type,
+                                    period = CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                        startDate = businessFunction.period.startDate
+                                    ),
+                                    documents = businessFunction.documents?.map { document ->
+                                        CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                            id = document.id,
+                                            documentType = document.documentType,
+                                            title = document.title,
+                                            description = document.description
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    }
+
+                )
+            }
+        }
+
         private fun testOfCreate(testData: WhenTestData) {
             val pathToJsonFileOfRequest = testData.requestJsonFile()
             val pathToJsonFileOfPNEntity = testData.pnJsonFile()
@@ -1469,6 +1935,12 @@ class CnOnPnServiceTest {
                 assert("$['tender']['lots'][1]['statusDetails']", LOT_STATUS_DETAILS)
             }
         }
+    }
+
+    private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
+        val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
+        whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
+            .thenReturn(tenderProcessEntity)
     }
 
     fun commandMessage(

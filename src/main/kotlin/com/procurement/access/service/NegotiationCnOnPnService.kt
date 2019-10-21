@@ -853,7 +853,8 @@ class NegotiationCnOnPnService(
                             faxNumber = contactPoint.faxNumber,
                             url = contactPoint.url
                         )
-                    }
+                    },
+                    persones = null
                 )
             },
             value = value,
