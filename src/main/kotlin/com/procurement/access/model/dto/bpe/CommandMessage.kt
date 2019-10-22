@@ -99,6 +99,7 @@ enum class CommandType(private val value: String) {
     GET_TENDER_OWNER("getTenderOwner"),
     START_NEW_STAGE("startNewStage"),
 
+    GET_ITEMS_BY_LOT("getItemsByLot"),
     GET_LOTS("getLots"),
     GET_LOTS_AUCTION("getLotsAuction"),
     GET_AWARD_CRITERIA("getAwardCriteria"),

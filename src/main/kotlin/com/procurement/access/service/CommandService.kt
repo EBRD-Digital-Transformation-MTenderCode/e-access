@@ -125,6 +125,7 @@ class CommandService(
             CommandType.GET_DATA_FOR_AC -> tenderService.getDataForAc(cm)
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
+            CommandType.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
             CommandType.GET_LOTS -> lotsService.getLots(cm)
             CommandType.GET_LOTS_AUCTION -> lotsService.getLotsAuction(cm)
             CommandType.GET_AWARD_CRITERIA -> lotsService.getAwardCriteria(cm)
