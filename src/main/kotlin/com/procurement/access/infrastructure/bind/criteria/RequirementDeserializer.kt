@@ -18,6 +18,7 @@ import com.procurement.access.infrastructure.dto.cn.criteria.RequirementDataType
 import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import java.io.IOException
+import java.math.BigDecimal
 
 class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
     companion object {
@@ -56,14 +57,14 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                 when (dataType) {
                     RequirementDataType.BOOLEAN -> ExpectedValue.of(requirementNode.get("expectedValue").booleanValue())
                     RequirementDataType.STRING -> ExpectedValue.of(requirementNode.get("expectedValue").textValue())
-                    RequirementDataType.NUMBER -> ExpectedValue.of(requirementNode.get("expectedValue").decimalValue())
+                    RequirementDataType.NUMBER -> ExpectedValue.of(BigDecimal(requirementNode.get("expectedValue").asText()))
                     RequirementDataType.INTEGER -> ExpectedValue.of(requirementNode.get("expectedValue").longValue())
                 }
             } else if (isRange(requirementNode)) {
                 when (dataType) {
-                    RequirementDataType.NUMBER -> RangeValue.of(
-                        requirementNode.get("minValue").decimalValue(),
-                        requirementNode.get("maxValue").decimalValue()
+                    RequirementDataType.NUMBER ->  RangeValue.of(
+                        BigDecimal(requirementNode.get("minValue").asText()),
+                        BigDecimal(requirementNode.get("maxValue").asText())
                     )
                     RequirementDataType.INTEGER -> RangeValue.of(
                         requirementNode.get("minValue").decimalValue(),
@@ -73,13 +74,13 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                 }
             } else if (isOnlyMax(requirementNode)) {
                 when (dataType) {
-                    RequirementDataType.NUMBER -> MaxValue.of(requirementNode.get("maxValue").decimalValue())
+                    RequirementDataType.NUMBER ->  MaxValue.of(BigDecimal(requirementNode.get("maxValue").asText()))
                     RequirementDataType.INTEGER -> MaxValue.of(requirementNode.get("maxValue").longValue())
                     RequirementDataType.BOOLEAN, RequirementDataType.STRING -> throw RuntimeException()
                 }
             } else if (isOnlyMin(requirementNode)) {
                 when (dataType) {
-                    RequirementDataType.NUMBER -> MinValue.of(requirementNode.get("minValue").decimalValue())
+                    RequirementDataType.NUMBER -> MinValue.of(BigDecimal(requirementNode.get("minValue").asText()))
                     RequirementDataType.INTEGER -> MinValue.of(requirementNode.get("minValue").longValue())
                     RequirementDataType.BOOLEAN, RequirementDataType.STRING -> throw RuntimeException()
                 }

@@ -13,10 +13,12 @@ import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.io.IOException
+import java.math.BigDecimal
 
 class RequirementSerializer : JsonSerializer<List<Requirement>>() {
     companion object {
         fun serialize(requirements: List<Requirement>): ArrayNode {
+            fun BigDecimal.jsonFormat() = BigDecimal("%.2f".format(this))
             val serializedRequirements = JsonNodeFactory.instance.arrayNode()
 
             requirements.map { requirement ->
@@ -44,7 +46,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                                 requirementNode.put("expectedValue", requirement.value.value)
                             }
                             is ExpectedValue.AsNumber -> {
-                                requirementNode.put("expectedValue", requirement.value.value)
+                                requirementNode.put("expectedValue", requirement.value.value.jsonFormat())
                             }
                             is ExpectedValue.AsInteger -> {
                                 requirementNode.put("expectedValue", requirement.value.value)
@@ -53,8 +55,8 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                     }
                     is RangeValue -> when (requirement.value) {
                         is RangeValue.AsNumber -> {
-                            requirementNode.put("minValue", requirement.value.minValue)
-                            requirementNode.put("maxValue", requirement.value.maxValue)
+                            requirementNode.put("minValue", requirement.value.minValue.jsonFormat())
+                            requirementNode.put("maxValue", requirement.value.maxValue.jsonFormat())
                         }
                         is RangeValue.AsInteger -> {
                             requirementNode.put("minValue", requirement.value.minValue)
@@ -63,7 +65,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                     }
                     is MinValue -> when (requirement.value) {
                         is MinValue.AsNumber -> {
-                            requirementNode.put("minValue", requirement.value.value)
+                            requirementNode.put("minValue", requirement.value.value.jsonFormat())
                         }
                         is MinValue.AsInteger -> {
                             requirementNode.put("minValue", requirement.value.value)
@@ -71,7 +73,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                     }
                     is MaxValue -> when (requirement.value) {
                         is MaxValue.AsNumber -> {
-                            requirementNode.put("maxValue", requirement.value.value)
+                            requirementNode.put("maxValue", requirement.value.value.jsonFormat())
                         }
                         is MaxValue.AsInteger -> {
                             requirementNode.put("maxValue", requirement.value.value)
