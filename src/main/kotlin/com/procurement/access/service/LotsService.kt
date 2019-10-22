@@ -21,9 +21,11 @@ import com.procurement.access.model.dto.lots.FinalStatusesRq
 import com.procurement.access.model.dto.lots.FinalStatusesRs
 import com.procurement.access.model.dto.lots.FinalTender
 import com.procurement.access.model.dto.lots.GetAwardCriteriaRs
+import com.procurement.access.model.dto.lots.GetItemsByLotRs
 import com.procurement.access.model.dto.lots.GetLotsAuctionRs
 import com.procurement.access.model.dto.lots.GetLotsAuctionTender
 import com.procurement.access.model.dto.lots.GetLotsRs
+import com.procurement.access.model.dto.lots.ItemDto
 import com.procurement.access.model.dto.lots.LotDto
 import com.procurement.access.model.dto.lots.UpdateLotByBidRq
 import com.procurement.access.model.dto.lots.UpdateLotByBidRs
@@ -236,6 +238,18 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         return ResponseDto(data = GetAwardCriteriaRs(awardCriteria = process.tender.awardCriteria!!.value))
+    }
+
+    fun getItemsByLot(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val lotId = cm.context.id ?: throw ErrorException(CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val items = process.tender.items.filter { it.relatedLot == lotId }
+            .map { ItemDto(id = it.id) }
+        return ResponseDto(data = GetItemsByLotRs(items = items))
     }
 
     fun completeLots(cm: CommandMessage): ResponseDto {
