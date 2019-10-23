@@ -19,7 +19,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
     companion object {
         fun serialize(requirements: List<Requirement>): ArrayNode {
             fun BigDecimal.jsonFormat() = BigDecimal("%.2f".format(this))
-            val serializedRequirements = JsonNodeFactory.instance.arrayNode()
+            val serializedRequirements = JsonNodeFactory.withExactBigDecimals(true).arrayNode()
 
             requirements.map { requirement ->
                 val requirementNode = JsonNodeFactory.instance.objectNode()
