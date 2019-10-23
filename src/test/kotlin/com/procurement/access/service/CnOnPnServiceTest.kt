@@ -72,7 +72,6 @@ class CnOnPnServiceTest {
 
     private lateinit var generationService: GenerationService
     private lateinit var tenderProcessDao: TenderProcessDao
-    private lateinit var rulesService: RulesService
 
     private lateinit var service: CnOnPnService
 
@@ -80,9 +79,8 @@ class CnOnPnServiceTest {
     fun init() {
         generationService = mock()
         tenderProcessDao = mock()
-        rulesService = mock()
 
-        service = CnOnPnService(generationService, tenderProcessDao, rulesService)
+        service = CnOnPnService(generationService, tenderProcessDao)
     }
 
     @DisplayName("Check Endpoint")
@@ -247,202 +245,6 @@ class CnOnPnServiceTest {
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
-                }
-            }
-
-            @Nested
-            @DisplayName("VR-3.8.15(CN on PN)")
-            inner class VR3_8_15 {
-                @DisplayName("Checks procurementMethodModalities in required auction.")
-                @Test
-                fun vr3_8_15_01() {
-                    requestNode.getObject("tender")
-                        .putArray("procurementMethodModalities")
-
-                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
-                        .thenReturn(true)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.INVALID_PMM, exception.error)
-                }
-
-                @DisplayName("Checks electronicAuctions in required auction.")
-                @Test
-                fun vr3_8_15_02() {
-                    requestNode.getObject("tender")
-                        .remove("electronicAuctions")
-
-                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
-                        .thenReturn(true)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.INVALID_AUCTION_IS_EMPTY, exception.error)
-                }
-
-                @DisplayName("3. Checks the uniqueness of all electronicAuctions.details.ID from Request")
-                @Test
-                fun vr3_8_15_3() {
-                    val auctions = requestNode.getObject("tender", "electronicAuctions").getArray("details")
-                    val duplicate = auctions.getObject(0).deepCopy()
-                    auctions.putObject(duplicate)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.AUCTION_ID_DUPLICATED, exception.error)
-                }
-
-                @DisplayName("4. Checks the uniqueness of all electronicAuctions.details.relatedLot values from Request")
-                @Test
-                fun vr3_8_15_4() {
-                    val auctions = requestNode.getObject("tender", "electronicAuctions").getArray("details")
-                    val newAuction = auctions.getObject(0).deepCopy {
-                        putAttribute("id", "new-auction-id")
-                    }
-                    auctions.putObject(newAuction)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS, exception.error)
-                }
-
-                @DisplayName("5. Compares Lots list from DB and electronicAuctions.details list from Request")
-                @Test
-                fun vr3_8_15_5() {
-                    val auctions = requestNode.getObject("tender", "electronicAuctions").getArray("details")
-                    val newAuction = auctions.getObject(0).deepCopy {
-                        putAttribute("id", "new-auction-id")
-                        putAttribute("relatedLot", "UNKNOWN")
-                    }
-                    auctions.putObject(newAuction)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS, exception.error)
-                }
-
-                @DisplayName("6. eAccess analyzes the values of electronicAuctions.details.relatedLot from Request")
-                @Test
-                fun vr3_8_15_6() {
-                    requestNode.getObject("tender", "electronicAuctions")
-                        .getArray("details")
-                        .getObject(0) {
-                            putAttribute("relatedLot", "UNKNOWN")
-                        }
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS, exception.error)
-                }
-
-                @Nested
-                @DisplayName("5. eAccess checks eligibleMinimumDifference by rule VR-15.1.2(Auction)")
-                inner class VR3_8_15_7 {
-
-                    @DisplayName("Check amount of the eligible minimum difference auction.")
-                    @Test
-                    fun vr3_8_15_7_1() {
-                        requestNode.getObject("tender", "electronicAuctions")
-                            .getArray("details")
-                            .getObject(0)
-                            .getArray("electronicAuctionModalities")
-                            .getObject(0)
-                            .getObject("eligibleMinimumDifference")
-                            .setAttribute("amount", 1000.0)
-
-                        mockGetByCpIdAndStage(
-                            cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
-                            data = pnWithItems
-                        )
-
-                        val cm = commandMessage(command = command, data = requestNode)
-                        val exception = assertThrows<ErrorException> {
-                            service.checkCnOnPn(cm)
-                        }
-
-                        assertEquals(ErrorType.INVALID_AUCTION_MINIMUM, exception.error)
-                    }
-
-                    @DisplayName("Check currency of the eligible minimum difference auction.")
-                    @Test
-                    fun vr3_8_15_7_2() {
-                        requestNode.getObject("tender", "electronicAuctions")
-                            .getArray("details")
-                            .getObject(0)
-                            .getArray("electronicAuctionModalities")
-                            .getObject(0)
-                            .getObject("eligibleMinimumDifference")
-                            .setAttribute("currency", "UNKNOWN")
-
-                        mockGetByCpIdAndStage(
-                            cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
-                            data = pnWithItems
-                        )
-
-                        val cm = commandMessage(command = command, data = requestNode)
-                        val exception = assertThrows<ErrorException> {
-                            service.checkCnOnPn(cm)
-                        }
-
-                        assertEquals(ErrorType.INVALID_AUCTION_CURRENCY, exception.error)
-                    }
                 }
             }
 
@@ -1008,202 +810,6 @@ class CnOnPnServiceTest {
                 assertEquals(ErrorType.ITEM_ID_IS_DUPLICATED, exception.error)
             }
 
-            @Nested
-            @DisplayName("VR-3.8.14(CN on PN)")
-            inner class VR3_8_14 {
-                @DisplayName("Checks procurementMethodModalities in required auction.")
-                @Test
-                fun vr3_8_14_01() {
-                    requestNode.getObject("tender")
-                        .putArray("procurementMethodModalities")
-
-                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
-                        .thenReturn(true)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithoutItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.INVALID_PMM, exception.error)
-                }
-
-                @DisplayName("Checks electronicAuctions in required auction.")
-                @Test
-                fun vr3_8_14_02() {
-                    requestNode.getObject("tender")
-                        .remove("electronicAuctions")
-
-                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
-                        .thenReturn(true)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithoutItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.INVALID_AUCTION_IS_EMPTY, exception.error)
-                }
-
-                @DisplayName("1. Checks the uniqueness of all electronicAuctions.details.ID from Request")
-                @Test
-                fun vr3_8_14_1() {
-                    val auctions = requestNode.getObject("tender", "electronicAuctions").getArray("details")
-                    val duplicate = auctions.getObject(0).deepCopy()
-                    auctions.putObject(duplicate)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithoutItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.AUCTION_ID_DUPLICATED, exception.error)
-                }
-
-                @DisplayName("2. Checks the uniqueness of all electronicAuctions.details.relatedLot values from Request")
-                @Test
-                fun vr3_8_14_2() {
-                    val auctions = requestNode.getObject("tender", "electronicAuctions").getArray("details")
-                    val newAuction = auctions.getObject(0).deepCopy {
-                        putAttribute("id", "new-auction-id")
-                    }
-                    auctions.putObject(newAuction)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithoutItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS, exception.error)
-                }
-
-                @DisplayName("3. eAccess compares Lots list from Request and electronicAuctions.details list from Request")
-                @Test
-                fun vr3_8_14_3() {
-                    val auctions = requestNode.getObject("tender", "electronicAuctions").getArray("details")
-                    val newAuction = auctions.getObject(0).deepCopy {
-                        putAttribute("id", "new-auction-id")
-                        putAttribute("relatedLot", "UNKNOWN")
-                    }
-                    auctions.putObject(newAuction)
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithoutItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS, exception.error)
-                }
-
-                @DisplayName("4. eAccess analyzes the values of electronicAuctions.details.relatedLot from Request")
-                @Test
-                fun vr3_8_14_4() {
-                    requestNode.getObject("tender", "electronicAuctions")
-                        .getArray("details")
-                        .getObject(0) {
-                            putAttribute("relatedLot", "UNKNOWN")
-                        }
-
-                    mockGetByCpIdAndStage(
-                        cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
-                        data = pnWithoutItems
-                    )
-
-                    val cm = commandMessage(command = command, data = requestNode)
-                    val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
-                    }
-
-                    assertEquals(ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS, exception.error)
-                }
-
-                @Nested
-                @DisplayName("5. eAccess checks eligibleMinimumDifference by rule VR-15.1.2(Auction)")
-                inner class VR3_8_14_5 {
-
-                    @DisplayName("Check amount of the eligible minimum difference auction.")
-                    @Test
-                    fun vr3_8_14_5_1() {
-                        requestNode.getObject("tender", "electronicAuctions")
-                            .getArray("details")
-                            .getObject(0)
-                            .getArray("electronicAuctionModalities")
-                            .getObject(0)
-                            .getObject("eligibleMinimumDifference")
-                            .setAttribute("amount", 1000.0)
-
-                        mockGetByCpIdAndStage(
-                            cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
-                            data = pnWithoutItems
-                        )
-
-                        val cm = commandMessage(command = command, data = requestNode)
-                        val exception = assertThrows<ErrorException> {
-                            service.checkCnOnPn(cm)
-                        }
-
-                        assertEquals(ErrorType.INVALID_AUCTION_MINIMUM, exception.error)
-                    }
-
-                    @DisplayName("Check currency of the eligible minimum difference auction.")
-                    @Test
-                    fun vr3_8_14_5_2() {
-                        requestNode.getObject("tender", "electronicAuctions")
-                            .getArray("details")
-                            .getObject(0)
-                            .getArray("electronicAuctionModalities")
-                            .getObject(0)
-                            .getObject("eligibleMinimumDifference")
-                            .setAttribute("currency", "UNKNOWN")
-
-                        mockGetByCpIdAndStage(
-                            cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
-                            data = pnWithoutItems
-                        )
-
-                        val cm = commandMessage(command = command, data = requestNode)
-                        val exception = assertThrows<ErrorException> {
-                            service.checkCnOnPn(cm)
-                        }
-
-                        assertEquals(ErrorType.INVALID_AUCTION_CURRENCY, exception.error)
-                    }
-                }
-            }
-
             @DisplayName("VR-3.8.18 Check error when tender is unsuccessful status.")
             @Test
             fun vr_3_8_18() {
@@ -1586,11 +1192,9 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1603,11 +1207,9 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1625,11 +1227,9 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1642,11 +1242,9 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1669,11 +1267,9 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1686,11 +1282,9 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1708,11 +1302,9 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1725,11 +1317,9 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
-                    @CsvSource(value = ["true", "false"])
-                    fun test(isAuctionRequired: Boolean) {
+                    @Test
+                    fun test() {
                         val testData = WhenTestData(
-                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1914,8 +1504,6 @@ class CnOnPnServiceTest {
                 .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2)
             whenever(generationService.generatePermanentItemId())
                 .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
-            whenever(rulesService.isAuctionRequired(any(), any(), any()))
-                .thenReturn(testData.isAuctionRequired)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
                     eq(ContextGenerator.CPID),
@@ -1967,7 +1555,6 @@ class CnOnPnServiceTest {
     }
 
     class WhenTestData(
-        val isAuctionRequired: Boolean,
         val hasAuctionsInRequest: Boolean,
         val hasItemsInPN: Boolean,
         val hasDocumentsInPN: Boolean

@@ -58,8 +58,7 @@ import java.util.*
 @Service
 class CnOnPnService(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao,
-    private val rulesService: RulesService
+    private val tenderProcessDao: TenderProcessDao
 ) {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(CnOnPnService::class.java)
@@ -153,25 +152,6 @@ class CnOnPnService(
             )
             /** End check Tender */
 
-            /** Begin check Auctions */
-            //VR-3.8.14(CN on PN) electronicAuctions.details -> VR-3.7.15(CN)
-            checkAuctionsAreRequired(
-                contextRequest = contextRequest,
-                request = request,
-                mainProcurementCategory = pnEntity.tender.mainProcurementCategory
-            )
-            if (request.tender.electronicAuctions != null) {
-                //BR-15.1.2(Auction) % of lot.value.amount
-                val percentEligibleMinimumDifference: BigDecimal = percentEligibleMinimumDifference()
-
-                checkAuctionsWhenPNWithoutItems(
-                    lotsFromRequest = request.tender.lots,
-                    electronicAuctions = request.tender.electronicAuctions,
-                    percentEligibleMinimumDifference = percentEligibleMinimumDifference
-                )
-            }
-            /** End check Auctions */
-
             /** Begin check Documents*/
             //VR-3.8.7(CN on PN)  "Related Lots"(documents) -> VR-3.6.12(CN)
             checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
@@ -187,27 +167,6 @@ class CnOnPnService(
                 lotsFromPN = pnEntity.tender.lots
             )
             /** End check Lots */
-
-            /** Begin check Auctions*/
-            //VR-3.8.15 electronicAuctions.details
-            checkAuctionsAreRequired(
-                contextRequest = contextRequest,
-                request = request,
-                mainProcurementCategory = pnEntity.tender.mainProcurementCategory
-            )
-
-            if (request.tender.electronicAuctions != null) {
-                //BR-15.1.2(Auction) % of lot.value.amount
-                val percentEligibleMinimumDifference: BigDecimal = percentEligibleMinimumDifference()
-
-                //VR-3.8.15 electronicAuctions.details
-                checkAuctionsWhenPNWithItems(
-                    lotsFromPN = pnEntity.tender.lots,
-                    electronicAuctionsDetails = request.tender.electronicAuctions.details,
-                    percentEligibleMinimumDifference = percentEligibleMinimumDifference
-                )
-            }
-            /** End check Auctions */
 
             /** Begin check Documents*/
             //VR-3.8.17(CN on PN)  "Related Lots"(documents) -> VR-3.7.13(Update CNEntity)
@@ -773,253 +732,6 @@ class CnOnPnService(
     }
 
     /**
-     * VR-3.8.14(CN on PN) electronicAuctions.details -> VR-3.7.15(CN)
-     *
-     * VR-3.7.15	electronicAuctions.details
-     *
-     * 1. Checks the uniqueness of all electronicAuctions.details.ID from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.ID values from Request,
-     *      validation is successful;
-     *      ELSE  eAccess throws Exception: "Invalid electronicAuctions IDs";
-     * 2. Checks the uniqueness of all electronicAuctions.details.relatedLot values from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.relatedLot from Request,
-     *      validation is successful;
-     *      ELSE eAccess throws Exception: "Invalid lot IDs"
-     * 3. eAccess compares Lots list from Request and electronicAuctions.details list from Request:
-     *      IF Quantity of Lots objects from Request == (equal to) quantity of electronicAuctions.details objects
-     *      from Request, validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 4. eAccess analyzes the values of electronicAuctions.details.relatedLot from Request:
-     *      IF set of electronicAuctions.details.relatedLot values from Request containsAll set of Lot.ID from Request,
-     *      validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 5. eAccess checks eligibleMinimumDifference by rule VR-15.1.2(Auction);
-     */
-    private fun checkAuctionsWhenPNWithoutItems(
-        lotsFromRequest: List<CnOnPnRequest.Tender.Lot>,
-        electronicAuctions: CnOnPnRequest.Tender.ElectronicAuctions,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        //1
-        val idsAuctionsIsUnique = electronicAuctions.details.uniqueBy { it.id }
-        if (idsAuctionsIsUnique.not())
-            throw ErrorException(AUCTION_ID_DUPLICATED)
-        //2
-        val auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail> =
-            electronicAuctions.details.associateBy { it.relatedLot }
-        if (auctionDetailsByRelatedLot.size != electronicAuctions.details.size)
-            throw ErrorException(
-                error = AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS,
-                message = "The auctions in request contains not unique related lots."
-            )
-        //3
-        val lotsFromRequestById: Map<String, CnOnPnRequest.Tender.Lot> = lotsFromRequest.associateBy { it.id }
-        val idsLotsFromRequest = lotsFromRequestById.keys
-        val idsRelatedLotsFromAuctions = auctionDetailsByRelatedLot.keys
-        if (idsLotsFromRequest.size != idsRelatedLotsFromAuctions.size)
-            throw ErrorException(
-                error = NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS,
-                message = "The number of auctions does not match the number of lots. (lots ids: $idsLotsFromRequest, related lots: $idsRelatedLotsFromAuctions)."
-            )
-        //4
-        idsRelatedLotsFromAuctions.forEach { relatedLot ->
-            if (relatedLot !in idsLotsFromRequest)
-                throw ErrorException(
-                    error = LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS,
-                    message = "The auctions contains unknown related lots (lots ids: $idsLotsFromRequest, related lots: $idsRelatedLotsFromAuctions)."
-                )
-        }
-        //5
-        checkEligibleMinimumDifferenceWhenPNWithoutItems(
-            lotsFromRequestById = lotsFromRequestById,
-            auctionDetailsByRelatedLot = auctionDetailsByRelatedLot,
-            percentEligibleMinimumDifference = percentEligibleMinimumDifference
-        )
-    }
-
-    /**
-     * VR-15.1.2(Auction) eligibleMinimumDifference (electronicAuctions.details)
-     *
-     * eAuction proceeds every electronicAuctions.details object from Request in the following order:
-     * 1. Get.electronicAuctions.details.relatedLot value from one object and finds appropriate Lot object
-     * with Lot.ID == electronicAuctions.details.relatedLot;
-     * 2. Get.lot.value.amount from Lot (found on step 1);
-     * 3. Determines the permitted percent's value (N % of lot.value.amount) by rule BR-15.1.2;
-     * 4. Compares lot.value.amount (got on step 2) with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.amount from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.amount != 0 && <= (less || equal to) N % (got on step 3)
-     *      of lot.value.amount, validation is successful;
-     *      ELSE eAuction throws Exception;
-     * 5. Get.lot.value.currency from Lot (found on step 1);
-     * 6. Compares lot.value.currency determined previously with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.currency from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.currency == (equal to) value of lot.value.currency,
-     *      validation is successful;
-     *      ELSE eAuction throws Exception;
-     */
-    private fun checkEligibleMinimumDifferenceWhenPNWithoutItems(
-        lotsFromRequestById: Map<String, CnOnPnRequest.Tender.Lot>,
-        auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail>,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        auctionDetailsByRelatedLot.forEach { relatedLot, detail ->
-            //1
-            val lot: CnOnPnRequest.Tender.Lot = lotsFromRequestById.getValue(relatedLot)
-            //2
-            val lotAmount = lot.value.amount
-            //4
-            val eligibleMinimum = (lotAmount * percentEligibleMinimumDifference).setScale(2, RoundingMode.HALF_UP)
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.amount > eligibleMinimum)
-                    throw ErrorException(
-                        error = INVALID_AUCTION_MINIMUM,
-                        message = "The amount [${modalities.eligibleMinimumDifference.amount}] of the eligibleMinimumDifference in lot [${lot.id}] more that minimum [$eligibleMinimum]."
-                    )
-            }
-
-            //5
-            val currency = lot.value.currency
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.currency != currency)
-                    throw ErrorException(
-                        error = INVALID_AUCTION_CURRENCY,
-                        message = "The currency [${modalities.eligibleMinimumDifference.amount}] of the eligibleMinimumDifference in lot [${lot.id}] not eq that currency [$currency] in lot."
-                    )
-            }
-        }
-    }
-
-    /**
-     * BR-15.1.2(Auction) % of lot.value.amount
-     *
-     * eAuction finds permitted value of percent of lot.value.amount for eligibleMinimumDifference validation
-     * by values of pmd && country parameters:
-     * IF value of pmd == OT || SV || MV && value of country == MD, N == 10 %;
-     * ELSE eAuction throws Exception;
-     */
-    private fun percentEligibleMinimumDifference(): BigDecimal = BigDecimal(0.1).setScale(2, RoundingMode.HALF_UP)
-
-    /**
-     * VR-3.8.15 electronicAuctions.details
-     *
-     * 1. eAccess finds saved Lots object in DB by transferred value of CPID parameter from Request;
-     * 2. Selects Lots object in DB with lot.status == "planning" and put Lot.Id to list;
-     * 3. Checks the uniqueness of all electronicAuctions.details.ID from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.ID values from Request,
-     *      validation is successful;
-     *      ELSE  eAccess throws Exception: "Invalid electronicAuctions IDs";
-     * 4. Checks the uniqueness of all electronicAuctions.details.relatedLot values from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.relatedLot from Request,
-     *      validation is successful;
-     *      ELSE  eAccess throws Exception: "Invalid lot IDs";
-     * 5. Compares Lots list from DB (found on step 2) and electronicAuctions.details list from Request:
-     *      IF Quantity of Lots objects from DB == (equal to) quantity of electronicAuctions.details objects
-     *      from Request, validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 6. eAccess analyzes the values of electronicAuctions.details.relatedLot from Request:
-     *      IF set of electronicAuctions.details.relatedLot values from Request containsAll set of Lot.ID values
-     *      from DB (found on step 2), validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 7. eAccess checks eligibleMinimumDifference by rule VR-15.1.2;
-     */
-    private fun checkAuctionsWhenPNWithItems(
-        lotsFromPN: List<PNEntity.Tender.Lot>,
-        electronicAuctionsDetails: List<CnOnPnRequest.Tender.ElectronicAuctions.Detail>,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        //3
-        val idAuctionIsUnique = electronicAuctionsDetails.uniqueBy { it.id }
-        if (idAuctionIsUnique.not())
-            throw ErrorException(AUCTION_ID_DUPLICATED)
-
-        //4
-        val auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail> =
-            electronicAuctionsDetails.associateBy { it.relatedLot }
-        if (auctionDetailsByRelatedLot.size != electronicAuctionsDetails.size)
-            throw ErrorException(AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS)
-
-        //2
-        val lotsInPlanningStatusById: Map<String, PNEntity.Tender.Lot> = lotsFromPN.asSequence()
-            .filter { lot -> lot.status == LotStatus.PLANNING }
-            .associateBy { it.id }
-        //5
-        val idsLotsFromDB = lotsInPlanningStatusById.keys
-        val idsRelatedLotsFromAuctions = auctionDetailsByRelatedLot.keys
-        if (idsLotsFromDB.size != auctionDetailsByRelatedLot.size)
-            throw ErrorException(
-                error = NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS,
-                message = "The number of auctions does not match the number of lots. (lots ids: $idsLotsFromDB, related lots: $idsRelatedLotsFromAuctions)."
-            )
-        //6
-        idsRelatedLotsFromAuctions.forEach { relatedLot ->
-            if (relatedLot !in idsLotsFromDB)
-                throw ErrorException(
-                    error = LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS,
-                    message = "The auctions contains unknown related lots (lots ids: $idsLotsFromDB, related lots: $idsRelatedLotsFromAuctions)."
-                )
-        }
-        //7
-        checkEligibleMinimumDifferenceWhenPNWithItems(
-            lotsFromPNById = lotsInPlanningStatusById,
-            auctionDetailsByRelatedLot = auctionDetailsByRelatedLot,
-            percentEligibleMinimumDifference = percentEligibleMinimumDifference
-        )
-    }
-
-    /**
-     * VR-15.1.2 eligibleMinimumDifference (electronicAuctions.details)
-     *
-     * eAuction proceeds every electronicAuctions.details object from Request in the following order:
-     * 1. Get.electronicAuctions.details.relatedLot value from one object and finds appropriate Lot object
-     * with Lot.ID == electronicAuctions.details.relatedLot;
-     * 2. Get.lot.value.amount from Lot (found on step 1);
-     * 3. Determines the permitted percent's value (N % of lot.value.amount) by rule BR-15.1.2;
-     * 4. Compares lot.value.amount (got on step 2) with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.amount from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.amount != 0 && <= (less || equal to) N % (got on step 3)
-     *      of lot.value.amount, validation is successful;
-     *      ELSE eAuction throws Exception;
-     * 5. Get.lot.value.currency from Lot (found on step 1);
-     * 6. Compares lot.value.currency determined previously with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.currency from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.currency == (equal to) value of lot.value.currency,
-     *      validation is successful;
-     *      ELSE eAuction throws Exception;
-     */
-    private fun checkEligibleMinimumDifferenceWhenPNWithItems(
-        lotsFromPNById: Map<String, PNEntity.Tender.Lot>,
-        auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail>,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        auctionDetailsByRelatedLot.forEach { relatedLot, detail ->
-            //1
-            val lot: PNEntity.Tender.Lot = lotsFromPNById.getValue(relatedLot)
-            //2
-            val lotAmount = lot.value.amount
-            //4
-            val eligibleMinimum = lotAmount * percentEligibleMinimumDifference
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.amount > eligibleMinimum)
-                    throw ErrorException(error = INVALID_AUCTION_MINIMUM)
-            }
-            //5
-            val currency = lot.value.currency
-            //6
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.currency != currency)
-                    throw ErrorException(
-                        error = INVALID_AUCTION_CURRENCY,
-                        message = "Auction with id '${detail.id}' contains invalid currency in the eligible minimum difference (lot value currency: '$currency', eligible minimum difference currency: '${modalities.eligibleMinimumDifference.currency}')."
-                    )
-            }
-        }
-    }
-
-    /**
      * VR-3.8.16(CN on PN) "Contract Period" (Lot)
      *
      * eAccess analyzes pmd value from Request:
@@ -1066,28 +778,6 @@ class CnOnPnService(
                         message = "The document from request with id '${document.id}' contains invalid related lot '$relatedLot'. Valid lot ids: $lotsIdsFromPN."
                     )
             }
-        }
-    }
-
-    private fun checkAuctionsAreRequired(
-        contextRequest: ContextRequest,
-        request: CnOnPnRequest,
-        mainProcurementCategory: MainProcurementCategory
-    ) {
-        val isAuctionRequired = rulesService.isAuctionRequired(
-            contextRequest.country,
-            contextRequest.pmd,
-            mainProcurementCategory
-        )
-
-        if (isAuctionRequired) {
-            val procurementMethodModalities = request.tender.procurementMethodModalities
-            if (procurementMethodModalities == null || procurementMethodModalities.isEmpty())
-                throw ErrorException(INVALID_PMM)
-
-            val electronicAuctions = request.tender.electronicAuctions
-            if (electronicAuctions == null || electronicAuctions.details.isEmpty())
-                throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
         }
     }
 

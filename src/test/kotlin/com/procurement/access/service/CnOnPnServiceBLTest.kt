@@ -42,7 +42,7 @@ class CnOnPnServiceBLTest {
 
     @BeforeAll
     fun init() {
-        cnOnPnService = CnOnPnService(generationService, tenderProcessDao, rulesService)
+        cnOnPnService = CnOnPnService(generationService, tenderProcessDao)
     }
 
     @AfterEach
