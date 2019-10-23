@@ -1,11 +1,16 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.lot.LotService
+import com.procurement.access.application.service.lot.LotsForAuctionContext
+import com.procurement.access.application.service.lot.LotsForAuctionData
 import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
+import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
@@ -37,6 +42,7 @@ class CommandService(
     private val negotiationCnOnPnService: NegotiationCnOnPnService,
     private val tenderService: TenderService,
     private val lotsService: LotsService,
+    private val lotService: LotService,
     private val stageService: StageService,
     private val validationService: ValidationService,
     private val extendTenderService: ExtendTenderService
@@ -163,6 +169,49 @@ class CommandService(
             }
 
             CommandType.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
+
+            CommandType.GET_LOTS_FOR_AUCTION -> {
+                val context = LotsForAuctionContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage
+                )
+                val request = toObject(LotsForAuctionRequest::class.java, cm.data)
+                val data = LotsForAuctionData(
+                    lots = request.lots.map { lot ->
+                        LotsForAuctionData.Lot(
+                            id = lot.id,
+                            value = lot.value.let { value ->
+                                LotsForAuctionData.Lot.Value(
+                                    amount = value.amount,
+                                    currency = value.currency
+                                )
+                            }
+                        )
+
+                    }
+                )
+                val result = lotService.getLotsForAuction(context = context, data = data)
+                if (log.isDebugEnabled)
+                    log.debug("Lots for auction. Result: ${toJson(result)}")
+
+                val dataResponse = LotsForAuctionResponse(
+                    lots = result.lots.map { lot ->
+                        LotsForAuctionResponse.Lot(
+                            id = lot.id,
+                            value = lot.value.let { value ->
+                                LotsForAuctionResponse.Lot.Value(
+                                    amount = value.amount,
+                                    currency = value.currency
+                                )
+                            }
+                        )
+
+                    }
+                )
+                if (log.isDebugEnabled)
+                    log.debug("Lots for auction. Response: ${toJson(dataResponse)}")
+                ResponseDto(data = dataResponse)
+            }
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)

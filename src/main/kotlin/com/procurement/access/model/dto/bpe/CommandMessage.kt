@@ -119,7 +119,8 @@ enum class CommandType(private val value: String) {
     CHECK_TOKEN("checkToken"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),
 
-    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
+    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken"),
+    GET_LOTS_FOR_AUCTION("getLotsForAuction");
 
     @JsonValue
     fun value(): String {
