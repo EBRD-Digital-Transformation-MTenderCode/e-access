@@ -1,0 +1,11 @@
+{
+  "auctionLots": [
+    {
+      "id": "de151294-9a9e-4ea1-8a12-55a8c19b6bdd",
+      "value": {
+        "amount": 100.01,
+        "currency": "MDL"
+      }
+    }
+  ]
+}
