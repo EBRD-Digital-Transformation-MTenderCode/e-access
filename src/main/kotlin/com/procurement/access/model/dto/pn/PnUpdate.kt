@@ -60,6 +60,8 @@ data class LotPnUpdate @JsonCreator constructor(
 
         var id: String,
 
+        val internalId: String?,
+
         val title: String,
 
         val description: String,
@@ -74,6 +76,8 @@ data class LotPnUpdate @JsonCreator constructor(
 data class ItemPnUpdate @JsonCreator constructor(
 
         var id: String,
+
+        val internalId: String?,
 
         val description: String,
 

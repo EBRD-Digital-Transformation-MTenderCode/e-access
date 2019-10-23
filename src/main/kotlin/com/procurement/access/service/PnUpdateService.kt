@@ -343,6 +343,7 @@ class PnUpdateService(private val generationService: GenerationService,
     private fun convertDtoLotToLot(lotDto: LotPnUpdate): Lot {
         return Lot(
                 id = lotDto.id,
+                internalId = lotDto.internalId,
                 title = lotDto.title,
                 description = lotDto.description,
                 status = LotStatus.PLANNING,
@@ -367,6 +368,7 @@ class PnUpdateService(private val generationService: GenerationService,
     private fun convertDtoItemToItem(itemDto: ItemPnUpdate): Item {
         return Item(
                 id = itemDto.id,
+                internalId = itemDto.internalId,
                 description = itemDto.description,
                 classification = itemDto.classification,
                 additionalClassifications = itemDto.additionalClassifications,

@@ -97,6 +97,8 @@ data class LotCnCreate @JsonCreator constructor(
 
         var id: String,
 
+        val internalId: String?,
+
         val title: String,
 
         val description: String,
@@ -111,6 +113,8 @@ data class LotCnCreate @JsonCreator constructor(
 data class ItemCnCreate @JsonCreator constructor(
 
         var id: String,
+
+        val internalId: String?,
 
         val description: String,
 

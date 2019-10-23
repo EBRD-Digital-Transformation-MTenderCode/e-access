@@ -8,6 +8,8 @@ data class Lot @JsonCreator constructor(
 
         val id: String,
 
+        val internalId: String?,
+
         var title: String?,
 
         var description: String?,

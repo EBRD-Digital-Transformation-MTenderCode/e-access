@@ -281,6 +281,7 @@ class CnCreateService(private val generationService: GenerationService,
     private fun convertDtoLotToLot(lotDto: LotCnCreate): Lot {
         return Lot(
                 id = lotDto.id,
+                internalId = lotDto.internalId,
                 title = lotDto.title,
                 description = lotDto.description,
                 status = LotStatus.ACTIVE,
@@ -298,6 +299,7 @@ class CnCreateService(private val generationService: GenerationService,
     private fun convertDtoItemToItem(itemDto: ItemCnCreate): Item {
         return Item(
                 id = itemDto.id,
+                internalId = itemDto.internalId,
                 description = itemDto.description,
                 classification = itemDto.classification,
                 additionalClassifications = itemDto.additionalClassifications,

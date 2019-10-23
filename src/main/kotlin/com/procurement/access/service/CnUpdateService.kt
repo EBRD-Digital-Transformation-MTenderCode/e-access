@@ -310,6 +310,7 @@ class CnUpdateService(private val generationService: GenerationService,
     private fun convertDtoLotToLot(lotDto: LotCnUpdate): Lot {
         return Lot(
                 id = lotDto.id,
+                internalId = lotDto.internalId,
                 title = lotDto.title,
                 description = lotDto.description,
                 status = LotStatus.ACTIVE,
