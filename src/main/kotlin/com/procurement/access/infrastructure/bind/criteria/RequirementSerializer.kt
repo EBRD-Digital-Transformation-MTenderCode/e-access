@@ -22,7 +22,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
             val serializedRequirements = JsonNodeFactory.withExactBigDecimals(true).arrayNode()
 
             requirements.map { requirement ->
-                val requirementNode = JsonNodeFactory.instance.objectNode()
+                val requirementNode = JsonNodeFactory.withExactBigDecimals(true).objectNode()
 
                 requirementNode.put("id", requirement.id)
                 requirementNode.put("title", requirement.title)
