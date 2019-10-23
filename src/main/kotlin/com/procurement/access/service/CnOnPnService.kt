@@ -1,16 +1,10 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.infrastructure.dto.cn.criteria.Period
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
-import com.procurement.access.exception.ErrorType.AUCTION_ID_DUPLICATED
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
-import com.procurement.access.exception.ErrorType.INVALID_AUCTION_CURRENCY
-import com.procurement.access.exception.ErrorType.INVALID_AUCTION_MINIMUM
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
@@ -23,17 +17,16 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.exception.ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS
-import com.procurement.access.exception.ErrorType.NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.criteria.Period
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.ocds.AwardCriteria
 import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
 import com.procurement.access.model.dto.ocds.BusinessFunctionType
 import com.procurement.access.model.dto.ocds.LotStatus
@@ -58,7 +51,8 @@ import java.util.*
 @Service
 class CnOnPnService(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderProcessDao: TenderProcessDao,
+    private val rulesService: RulesService
 ) {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(CnOnPnService::class.java)
@@ -152,6 +146,14 @@ class CnOnPnService(
             )
             /** End check Tender */
 
+            /** Begin check Auctions */
+            checkAuctionsAreRequired(
+                contextRequest = contextRequest,
+                request = request,
+                mainProcurementCategory = pnEntity.tender.mainProcurementCategory
+            )
+            /** End check Auctions */
+
             /** Begin check Documents*/
             //VR-3.8.7(CN on PN)  "Related Lots"(documents) -> VR-3.6.12(CN)
             checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
@@ -167,6 +169,15 @@ class CnOnPnService(
                 lotsFromPN = pnEntity.tender.lots
             )
             /** End check Lots */
+
+            /** Begin check Auctions*/
+            //VR-3.8.15 electronicAuctions.details
+            checkAuctionsAreRequired(
+                contextRequest = contextRequest,
+                request = request,
+                mainProcurementCategory = pnEntity.tender.mainProcurementCategory
+            )
+            /** End check Auctions */
 
             /** Begin check Documents*/
             //VR-3.8.17(CN on PN)  "Related Lots"(documents) -> VR-3.7.13(Update CNEntity)
@@ -480,10 +491,6 @@ class CnOnPnService(
         documents.forEach {
             when (it.documentType) {
                 BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
-                else                                             -> throw ErrorException(
-                    error = INVALID_PROCURING_ENTITY,
-                    message = "Invalid document type. "
-                )
             }
         }
     }
@@ -781,6 +788,28 @@ class CnOnPnService(
         }
     }
 
+    private fun checkAuctionsAreRequired(
+        contextRequest: ContextRequest,
+        request: CnOnPnRequest,
+        mainProcurementCategory: MainProcurementCategory
+    ) {
+        val isAuctionRequired = rulesService.isAuctionRequired(
+            contextRequest.country,
+            contextRequest.pmd,
+            mainProcurementCategory
+        )
+
+        if (isAuctionRequired) {
+            val procurementMethodModalities = request.tender.procurementMethodModalities
+            if (procurementMethodModalities == null || procurementMethodModalities.isEmpty())
+                throw ErrorException(INVALID_PMM)
+
+            val electronicAuctions = request.tender.electronicAuctions
+            if (electronicAuctions == null || electronicAuctions.details.isEmpty())
+                throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
+        }
+    }
+
     /**
      * VR-3.8.18 Status (tender)
      *
@@ -822,7 +851,6 @@ class CnOnPnService(
         val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
         if ((rawCriteria == null) && (conversions != null))
             throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
-
 
         val criteria = rawCriteria?.let {
             convertRequestCriteria(

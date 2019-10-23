@@ -72,6 +72,7 @@ class CnOnPnServiceTest {
 
     private lateinit var generationService: GenerationService
     private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var rulesService: RulesService
 
     private lateinit var service: CnOnPnService
 
@@ -79,8 +80,9 @@ class CnOnPnServiceTest {
     fun init() {
         generationService = mock()
         tenderProcessDao = mock()
+        rulesService = mock()
 
-        service = CnOnPnService(generationService, tenderProcessDao)
+        service = CnOnPnService(generationService, tenderProcessDao, rulesService)
     }
 
     @DisplayName("Check Endpoint")
@@ -245,6 +247,56 @@ class CnOnPnServiceTest {
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
+                }
+            }
+
+            @Nested
+            @DisplayName("VR-3.8.15(CN on PN)")
+            inner class VR3_8_15 {
+                @DisplayName("Checks procurementMethodModalities in required auction.")
+                @Test
+                fun vr3_8_15_01() {
+                    requestNode.getObject("tender")
+                        .putArray("procurementMethodModalities")
+
+                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
+                        .thenReturn(true)
+
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithItems
+                    )
+
+                    val cm = commandMessage(command = command, data = requestNode)
+                    val exception = assertThrows<ErrorException> {
+                        service.checkCnOnPn(cm)
+                    }
+
+                    assertEquals(ErrorType.INVALID_PMM, exception.error)
+                }
+
+                @DisplayName("Checks electronicAuctions in required auction.")
+                @Test
+                fun vr3_8_15_02() {
+                    requestNode.getObject("tender")
+                        .remove("electronicAuctions")
+
+                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
+                        .thenReturn(true)
+
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithItems
+                    )
+
+                    val cm = commandMessage(command = command, data = requestNode)
+                    val exception = assertThrows<ErrorException> {
+                        service.checkCnOnPn(cm)
+                    }
+
+                    assertEquals(ErrorType.INVALID_AUCTION_IS_EMPTY, exception.error)
                 }
             }
 
@@ -810,6 +862,56 @@ class CnOnPnServiceTest {
                 assertEquals(ErrorType.ITEM_ID_IS_DUPLICATED, exception.error)
             }
 
+            @Nested
+            @DisplayName("VR-3.8.14(CN on PN)")
+            inner class VR3_8_14 {
+                @DisplayName("Checks procurementMethodModalities in required auction.")
+                @Test
+                fun vr3_8_14_01() {
+                    requestNode.getObject("tender")
+                        .putArray("procurementMethodModalities")
+
+                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
+                        .thenReturn(true)
+
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
+                    )
+
+                    val cm = commandMessage(command = command, data = requestNode)
+                    val exception = assertThrows<ErrorException> {
+                        service.checkCnOnPn(cm)
+                    }
+
+                    assertEquals(ErrorType.INVALID_PMM, exception.error)
+                }
+
+                @DisplayName("Checks electronicAuctions in required auction.")
+                @Test
+                fun vr3_8_14_02() {
+                    requestNode.getObject("tender")
+                        .remove("electronicAuctions")
+
+                    whenever(rulesService.isAuctionRequired(any(), any(), any()))
+                        .thenReturn(true)
+
+                    mockGetByCpIdAndStage(
+                        cpid = ContextGenerator.CPID,
+                        stage = ContextGenerator.PREV_STAGE,
+                        data = pnWithoutItems
+                    )
+
+                    val cm = commandMessage(command = command, data = requestNode)
+                    val exception = assertThrows<ErrorException> {
+                        service.checkCnOnPn(cm)
+                    }
+
+                    assertEquals(ErrorType.INVALID_AUCTION_IS_EMPTY, exception.error)
+                }
+            }
+
             @DisplayName("VR-3.8.18 Check error when tender is unsuccessful status.")
             @Test
             fun vr_3_8_18() {
@@ -1192,9 +1294,11 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1207,9 +1311,11 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1227,9 +1333,11 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1242,9 +1350,11 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1267,9 +1377,11 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1282,9 +1394,11 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1302,9 +1416,11 @@ class CnOnPnServiceTest {
                 inner class WithDocuments {
                     private val hasDocumentsInPN = true
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1317,9 +1433,11 @@ class CnOnPnServiceTest {
                 inner class WithoutDocuments {
                     private val hasDocumentsInPN = false
 
-                    @Test
-                    fun test() {
+                    @ParameterizedTest(name = "{index} => auctions are required: {0}")
+                    @CsvSource(value = ["true", "false"])
+                    fun test(isAuctionRequired: Boolean) {
                         val testData = WhenTestData(
+                            isAuctionRequired = isAuctionRequired,
                             hasAuctionsInRequest = hasAuctionsInRequest,
                             hasItemsInPN = hasItemsInPN,
                             hasDocumentsInPN = hasDocumentsInPN
@@ -1504,6 +1622,8 @@ class CnOnPnServiceTest {
                 .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2)
             whenever(generationService.generatePermanentItemId())
                 .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
+            whenever(rulesService.isAuctionRequired(any(), any(), any()))
+                .thenReturn(testData.isAuctionRequired)
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
                     eq(ContextGenerator.CPID),
@@ -1555,6 +1675,7 @@ class CnOnPnServiceTest {
     }
 
     class WhenTestData(
+        val isAuctionRequired: Boolean,
         val hasAuctionsInRequest: Boolean,
         val hasItemsInPN: Boolean,
         val hasDocumentsInPN: Boolean
