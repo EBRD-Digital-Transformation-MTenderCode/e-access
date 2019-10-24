@@ -1,20 +1,21 @@
 package com.procurement.access.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.clearInvocations
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.service.CheckedCnOnPn
+import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.JsonFilePathGenerator
@@ -30,10 +31,9 @@ import com.procurement.access.json.setAttribute
 import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
-import com.procurement.access.model.dto.ocds.Operation
+import com.procurement.access.model.dto.databinding.toLocalDateTime
 import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.utils.toObject
@@ -88,24 +88,13 @@ class CnOnPnServiceTest {
     @DisplayName("Check Endpoint")
     @Nested
     inner class Check {
-        private val command = CommandType.CHECK_CN_ON_PN
-
-        @DisplayName("Check pmd in command.")
-        @Test
-        fun checkPMD() {
-            val cm = commandMessage(command = command, pmd = "UNKNOWN", data = NullNode.instance)
-            val exception = assertThrows<ErrorException> {
-                service.checkCnOnPn(cm)
-            }
-
-            assertEquals(ErrorType.INVALID_PMD, exception.error)
-        }
 
         @DisplayName("Check error when tender by cpid and prev stage not found.")
         @Test
         fun tenderNotFound() {
-            val data =
-                loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json").toNode()
+            val data: CnOnPnRequest =
+                loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json")
+                    .toObject()
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
@@ -115,9 +104,9 @@ class CnOnPnServiceTest {
             )
                 .thenReturn(null)
 
-            val cm = commandMessage(command = command, data = data)
+            val context: CheckCnOnPnContext = checkContext()
             val exception = assertThrows<ErrorException> {
-                service.checkCnOnPn(cm)
+                service.checkCnOnPn(context = context, data = data)
             }
 
             assertEquals(ErrorType.DATA_NOT_FOUND, exception.error)
@@ -145,37 +134,9 @@ class CnOnPnServiceTest {
                     data = pnWithItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
-                val response = service.checkCnOnPn(cm)
-                assertEquals("ok", response.data)
-            }
-
-            @DisplayName("VR-3.8.1(CNEntity on PNEntity)")
-            @Test
-            fun vr3_8_01() {
-                mockGetByCpIdAndStage(
-                    cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
-                    data = pnWithItems
-                )
-
-                val cm = commandMessage(command = command, token = "UNKNOWN", data = requestNode)
-                val response = service.checkCnOnPn(cm)
-                assertEquals("ok", response.data)
-            }
-
-            @DisplayName("VR-3.8.2(CN on PN)")
-            @Test
-            fun vr3_8_02() {
-                mockGetByCpIdAndStage(
-                    cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
-                    data = pnWithItems
-                )
-
-                val cm = commandMessage(command = command, owner = "UNKNOWN", data = requestNode)
-                val response = service.checkCnOnPn(cm)
-                assertEquals("ok", response.data)
+                val context: CheckCnOnPnContext = checkContext()
+                val response = service.checkCnOnPn(context = context, data = requestNode.toObject())
+                assertTrue(response.requireAuction)
             }
 
             @Nested
@@ -195,9 +156,9 @@ class CnOnPnServiceTest {
                         data = pnWithItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
@@ -220,9 +181,9 @@ class CnOnPnServiceTest {
                         data = pnWithItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
@@ -241,9 +202,9 @@ class CnOnPnServiceTest {
                         data = pnWithItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
@@ -268,9 +229,9 @@ class CnOnPnServiceTest {
                         data = pnWithItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_PMM, exception.error)
@@ -291,9 +252,9 @@ class CnOnPnServiceTest {
                         data = pnWithItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_AUCTION_IS_EMPTY, exception.error)
@@ -333,9 +294,9 @@ class CnOnPnServiceTest {
                     data = pnWithItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -356,9 +317,9 @@ class CnOnPnServiceTest {
                     data = pnWithItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_DOCS_RELATED_LOTS, exception.error)
@@ -376,9 +337,9 @@ class CnOnPnServiceTest {
                     data = pnWithItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS, exception.error)
@@ -409,37 +370,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
-                val response = service.checkCnOnPn(cm)
-                assertEquals("ok", response.data)
-            }
-
-            @DisplayName("VR-3.8.1(CN on PN)")
-            @Test
-            fun vr3_8_01() {
-                mockGetByCpIdAndStage(
-                    cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
-                    data = pnWithoutItems
-                )
-
-                val cm = commandMessage(command = command, token = "UNKNOWN", data = requestNode)
-                val response = service.checkCnOnPn(cm)
-                assertEquals("ok", response.data)
-            }
-
-            @DisplayName("VR-3.8.2(CN on PN)")
-            @Test
-            fun vr3_8_02() {
-                mockGetByCpIdAndStage(
-                    cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
-                    data = pnWithoutItems
-                )
-
-                val cm = commandMessage(command = command, owner = "UNKNOWN", data = requestNode)
-                val response = service.checkCnOnPn(cm)
-                assertEquals("ok", response.data)
+                val context: CheckCnOnPnContext = checkContext()
+                val response: CheckedCnOnPn = service.checkCnOnPn(context = context, data = requestNode.toObject())
+                assertTrue(response.requireAuction)
             }
 
             @Nested
@@ -459,9 +392,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
@@ -484,9 +417,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
@@ -505,9 +438,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
@@ -525,9 +458,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_TENDER_AMOUNT, exception.error)
@@ -549,9 +482,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_LOT_CURRENCY, exception.error)
@@ -589,9 +522,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -635,9 +568,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -660,9 +593,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_DOCS_RELATED_LOTS, exception.error)
@@ -692,9 +625,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -717,9 +650,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -741,9 +674,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_ITEMS_QUANTITY, exception.error)
@@ -764,9 +697,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.EMPTY_LOTS, exception.error)
@@ -788,9 +721,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_ITEMS, exception.error)
@@ -812,9 +745,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.INVALID_ITEMS_RELATED_LOTS, exception.error)
@@ -833,9 +766,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.LOT_ID_DUPLICATED, exception.error)
@@ -854,9 +787,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.ITEM_ID_IS_DUPLICATED, exception.error)
@@ -880,9 +813,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_PMM, exception.error)
@@ -903,9 +836,9 @@ class CnOnPnServiceTest {
                         data = pnWithoutItems
                     )
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
                     val exception = assertThrows<ErrorException> {
-                        service.checkCnOnPn(cm)
+                        service.checkCnOnPn(context = context, data = requestNode.toObject())
                     }
 
                     assertEquals(ErrorType.INVALID_AUCTION_IS_EMPTY, exception.error)
@@ -924,9 +857,9 @@ class CnOnPnServiceTest {
                     data = pnWithoutItems
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
                 val exception = assertThrows<ErrorException> {
-                    service.checkCnOnPn(cm)
+                    service.checkCnOnPn(context = context, data = requestNode.toObject())
                 }
 
                 assertEquals(ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS, exception.error)
@@ -963,9 +896,9 @@ class CnOnPnServiceTest {
             @Test
             fun `without procuring entity`() {
                 requestNode.getObject("tender").remove("procuringEntity")
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CheckCnOnPnContext = checkContext()
 
-                assertDoesNotThrow { service.checkCnOnPn(cm) }
+                assertDoesNotThrow { service.checkCnOnPn(context = context, data = requestNode.toObject()) }
             }
 
             @Nested
@@ -982,18 +915,24 @@ class CnOnPnServiceTest {
                     val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
                     businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    assertDoesNotThrow { service.checkCnOnPn(cm) }
+                    assertDoesNotThrow { service.checkCnOnPn(context = context, data = requestNode.toObject()) }
                 }
 
                 @Test
                 fun `Request_procuringEntity_Id != DB_procuringEntity_Id`() {
 
                     requestNode.getObject("tender").getObject("procuringEntity").setAttribute("id", "UNKNOWN_ID")
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
                     assertTrue(exception.message!!.contains("Invalid identifier of procuring entity"))
                 }
@@ -1004,9 +943,15 @@ class CnOnPnServiceTest {
                 @Test
                 fun `no persones`() {
                     requestNode.getObject("tender").getObject("procuringEntity").putArray("persones")
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
                     assertTrue(exception.message!!.contains("At least one Person should be added"))
                 }
@@ -1028,9 +973,15 @@ class CnOnPnServiceTest {
                         .putObject(person)
                         .putObject(person)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
                     assertTrue(exception.message!!.contains("Persones objects should be unique in Request"))
                 }
@@ -1059,9 +1010,15 @@ class CnOnPnServiceTest {
                         .putObject(person)
                         .putObject(newPerson)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
                     assertTrue(exception.message!!.contains("Authority person should be specified in Request"))
                 }
@@ -1092,9 +1049,15 @@ class CnOnPnServiceTest {
                         .putObject(person)
                         .putObject(newPerson)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
                     assertTrue(exception.message!!.contains("At least one businessFunctions detalization should be added"))
                 }
@@ -1117,9 +1080,15 @@ class CnOnPnServiceTest {
                         .add(businessFunction)
                         .add(duplicatedBusinessFunction)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
 
                     // TODO uncomment when BussinesFunctionType enum will have at least 2 value
@@ -1142,9 +1111,15 @@ class CnOnPnServiceTest {
                     val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
                     businessFunction.getObject("period").putAttribute("startDate", REQUEST_START_DATE)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
 
                     assertTrue(exception.message!!.contains("Invalid period in bussiness function specification"))
@@ -1160,9 +1135,9 @@ class CnOnPnServiceTest {
                     val businessFunction = person.getArray("businessFunctions").get(0) as ObjectNode
                     businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    assertDoesNotThrow { service.checkCnOnPn(cm) }
+                    assertDoesNotThrow { service.checkCnOnPn(context = context, data = requestNode.toObject()) }
                 }
             }
 
@@ -1185,9 +1160,15 @@ class CnOnPnServiceTest {
                         .add(document)
                         .add(document)
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
 
                     assertTrue(exception.message!!.contains("Invalid documents IDs"))
@@ -1210,9 +1191,15 @@ class CnOnPnServiceTest {
 
                     businessFunction.putArray("documents")
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    val exception = assertThrows<ErrorException> { service.checkCnOnPn(cm) }
+                    val exception =
+                        assertThrows<ErrorException> {
+                            service.checkCnOnPn(
+                                context = context,
+                                data = requestNode.toObject()
+                            )
+                        }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
 
                     assertTrue(exception.message!!.contains("At least one document should be added"))
@@ -1236,9 +1223,9 @@ class CnOnPnServiceTest {
                     val document = businessFunction.getArray("documents").get(0) as ObjectNode
                     document.setAttribute("documentType", "ANOTHER_DOCUMENT_TYPE")
 
-                    val cm = commandMessage(command = command, data = requestNode)
+                    val context: CheckCnOnPnContext = checkContext()
 
-                    assertThrows<Exception> { service.checkCnOnPn(cm) }
+                    assertThrows<Exception> { service.checkCnOnPn(context = context, data = requestNode.toObject()) }
                 }
             }
         }
@@ -1247,24 +1234,13 @@ class CnOnPnServiceTest {
     @DisplayName("Create Endpoint")
     @Nested
     inner class Create {
-        private val command = CommandType.CREATE_CN_ON_PN
-
-        @DisplayName("Check pmd in command.")
-        @Test
-        fun checkPMD() {
-            val cm = commandMessage(command = command, pmd = "UNKNOWN", data = NullNode.instance)
-            val exception = assertThrows<ErrorException> {
-                service.checkCnOnPn(cm)
-            }
-
-            assertEquals(ErrorType.INVALID_PMD, exception.error)
-        }
 
         @DisplayName("Check error when tender by cpid and prev stage not found.")
         @Test
         fun tenderNotFound() {
-            val data =
-                loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json").toNode()
+            val data: CnOnPnRequest =
+                loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json")
+                    .toObject()
 
             whenever(
                 tenderProcessDao.getByCpIdAndStage(
@@ -1274,9 +1250,9 @@ class CnOnPnServiceTest {
             )
                 .thenReturn(null)
 
-            val cm = commandMessage(command = command, data = data)
+            val context: CreateCnOnPnContext = createContext()
             val exception = assertThrows<ErrorException> {
-                service.checkCnOnPn(cm)
+                service.createCnOnPn(context = context, data = data)
             }
 
             assertEquals(ErrorType.DATA_NOT_FOUND, exception.error)
@@ -1481,12 +1457,10 @@ class CnOnPnServiceTest {
                 requestNode.getObject("tender")
                     .remove("procuringEntity")
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CreateCnOnPnContext = createContext()
+                val response: CnOnPnResponse = service.createCnOnPn(context = context, data = requestNode.toObject())
 
-                val response = service.createCnOnPn(cm)
-                val responseData = response.data as CnOnPnResponse
-
-                val actualProcuringEntity = responseData.tender.procuringEntity.toJson()
+                val actualProcuringEntity = response.tender.procuringEntity.toJson()
                 val expectedProcuringEntity = pnEntity.getObject("tender").getObject("procuringEntity").toString()
 
                 val expectedPn = toObject(PNEntity.Tender.ProcuringEntity::class.java, expectedProcuringEntity)
@@ -1505,12 +1479,10 @@ class CnOnPnServiceTest {
                     jsonProcuringEntity
                 )
 
-                val cm = commandMessage(command = command, data = requestNode)
+                val context: CreateCnOnPnContext = createContext()
+                val response: CnOnPnResponse = service.createCnOnPn(context = context, data = requestNode.toObject())
 
-                val response = service.createCnOnPn(cm)
-                val responseData = response.data as CnOnPnResponse
-
-                val actualProcuringEntityJson = responseData.tender.procuringEntity.toJson()
+                val actualProcuringEntityJson = response.tender.procuringEntity.toJson()
                 val expectedProcuringEntityJson = pnEntity.getObject("tender").getObject("procuringEntity").toString()
 
                 val expectedPn = toObject(PNEntity.Tender.ProcuringEntity::class.java, expectedProcuringEntityJson)
@@ -1610,11 +1582,8 @@ class CnOnPnServiceTest {
             val pathToJsonFileOfPNEntity = testData.pnJsonFile()
             val pathToJsonFileOfResponse = testData.responseJsonFile()
 
-            val data = loadJson(pathToJsonFileOfRequest).toNode()
-            val cm = commandMessage(
-                command = command,
-                data = data
-            )
+            val data: CnOnPnRequest = loadJson(pathToJsonFileOfRequest).toObject()
+            val context: CreateCnOnPnContext = createContext()
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson(pathToJsonFileOfPNEntity))
 
@@ -1632,7 +1601,7 @@ class CnOnPnServiceTest {
             )
                 .thenReturn(tenderProcessEntity)
 
-            val actualJson = service.createCnOnPn(cm).data!!.toJson()
+            val actualJson = service.createCnOnPn(context = context, data = data).toJson()
 
             val expectedJson = loadJson(pathToJsonFileOfResponse)
 
@@ -1651,28 +1620,26 @@ class CnOnPnServiceTest {
             .thenReturn(tenderProcessEntity)
     }
 
-    fun commandMessage(
-        command: CommandType,
-        token: String = ContextGenerator.TOKEN.toString(),
-        owner: String = ContextGenerator.OWNER,
-        pmd: String = ProcurementMethod.OT.name,
-        startDate: String = ContextGenerator.START_DATE,
-        data: JsonNode
-    ): CommandMessage {
-        val context = ContextGenerator.generate(
-            token = token,
-            owner = owner,
-            pmd = pmd,
-            operationType = Operation.CREATE_CN_ON_PN.value,
-            startDate = startDate
-        )
+    fun checkContext(
+        startDate: String = ContextGenerator.START_DATE
+    ): CheckCnOnPnContext = CheckCnOnPnContext(
+        cpid = ContextGenerator.CPID,
+        previousStage = ContextGenerator.PREV_STAGE,
+        country = ContextGenerator.COUNTRY,
+        pmd = ProcurementMethod.SV,
+        startDate = startDate.toLocalDateTime()
+    )
 
-        return CommandMessageGenerator.generate(
-            command = command,
-            context = context,
-            data = data
-        )
-    }
+    fun createContext(
+        startDate: String = ContextGenerator.START_DATE
+    ): CreateCnOnPnContext = CreateCnOnPnContext(
+        cpid = ContextGenerator.CPID,
+        previousStage = ContextGenerator.PREV_STAGE,
+        stage = ContextGenerator.STAGE,
+        country = ContextGenerator.COUNTRY,
+        pmd = ProcurementMethod.SV,
+        startDate = startDate.toLocalDateTime()
+    )
 
     class WhenTestData(
         val isAuctionRequired: Boolean,
@@ -1709,4 +1676,3 @@ class CnOnPnServiceTest {
         }
     }
 }
-

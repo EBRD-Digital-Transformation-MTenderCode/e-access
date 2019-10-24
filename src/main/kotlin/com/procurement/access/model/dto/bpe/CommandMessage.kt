@@ -8,6 +8,8 @@ import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.ProcurementMethod
+import com.procurement.access.utils.toLocal
+import java.time.LocalDateTime
 import java.util.*
 
 data class CommandMessage @JsonCreator constructor(
@@ -40,6 +42,14 @@ val CommandMessage.stage: String
     get() = this.context.stage
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
 
+val CommandMessage.prevStage: String
+    get() = this.context.prevStage
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'prevStage' attribute in context.")
+
+val CommandMessage.country: String
+    get() = this.context.country
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'country' attribute in context.")
+
 val CommandMessage.pmd: ProcurementMethod
     get() = this.context.pmd?.let {
         ProcurementMethod.valueOrException(it) {
@@ -53,6 +63,10 @@ val CommandMessage.operationType: String
             error = ErrorType.CONTEXT,
             message = "Missing the 'operationType' attribute in context."
         )
+
+val CommandMessage.startDate: LocalDateTime
+    get() = this.context.startDate?.toLocal()
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'startDate' attribute in context.")
 
 val CommandMessage.testMode: Boolean
     get() = this.context.testMode?.let { it } ?: false
@@ -197,4 +211,3 @@ fun getEnumExceptionResponseDto(error: EnumException, id: String? = null): Respo
         id = id
     )
 }
-

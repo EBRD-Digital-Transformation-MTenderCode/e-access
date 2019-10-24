@@ -1,9 +1,11 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.service.CheckedCnOnPn
+import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
@@ -25,23 +27,17 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
 import com.procurement.access.model.dto.ocds.BusinessFunctionType
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.MainProcurementCategory
-import com.procurement.access.model.dto.ocds.ProcurementMethod
 import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -54,21 +50,11 @@ class CnOnPnService(
     private val tenderProcessDao: TenderProcessDao,
     private val rulesService: RulesService
 ) {
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(CnOnPnService::class.java)
-    }
 
-    fun checkCnOnPn(cm: CommandMessage): ResponseDto {
-        val contextRequest = context(cm)
-
-        log.info("A request '${cm.context.operationId}' cpid '${contextRequest.cpid}'.")
-
-        val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
+    fun checkCnOnPn(context: CheckCnOnPnContext, data: CnOnPnRequest): CheckedCnOnPn {
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
+            tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
-
-        log.info("Validation a request '${cm.context.operationId}' by validation rules.")
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
 
@@ -76,9 +62,9 @@ class CnOnPnService(
         checkTenderStatus(pnEntity)
 
         //VR-3.8.3 Documents (duplicate)
-        checkDocuments(documentsFromRequest = request.tender.documents, documentsFromPN = pnEntity.tender.documents)
+        checkDocuments(documentsFromRequest = data.tender.documents, documentsFromPN = pnEntity.tender.documents)
 
-        request.tender.procuringEntity?.let { requestProcuringEntity ->
+        data.tender.procuringEntity?.also { requestProcuringEntity ->
             //VR-1.0.1.10.1
             checkProcuringEntityIdentifier(requestProcuringEntity, pnEntity.tender.procuringEntity)
 
@@ -89,7 +75,7 @@ class CnOnPnService(
             checkPersonesBusinessFunctions(requestProcuringEntity)
 
             // VR-1.0.1.10.7
-            checkBusinessFunctionPeriod(requestProcuringEntity, contextRequest)
+            checkBusinessFunctionPeriod(requestProcuringEntity, context)
 
             // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
             checkBusinessFunctionDocuments(requestProcuringEntity)
@@ -97,59 +83,60 @@ class CnOnPnService(
         }
 
         if (pnEntity.tender.items.isEmpty()) {
-            val lotsIdsFromRequest = request.tender.lots.asSequence()
+            val lotsIdsFromRequest = data.tender.lots.asSequence()
                 .map { it.id }
                 .toSet()
 
             /** Begin check Lots */
             //VR-3.8.5(CN on PN)  "Currency" (lot)
             checkCurrencyInLotsFromRequest(
-                lotsFromRequest = request.tender.lots,
+                lotsFromRequest = data.tender.lots,
                 budgetFromPN = pnEntity.planning.budget
             )
 
             //VR-3.8.8(CN on PN)  "Contract Period" (Lot) -> VR-3.6.7(CN)
-            checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest = request.tender)
+            checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest = data.tender)
 
             //VR-3.8.10(CN on PN) Lots (tender.lots) -> VR-3.6.9(CN)
             checkLotIdsAsRelatedLotInItems(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                itemsFromRequest = request.tender.items
+                itemsFromRequest = data.tender.items
             )
             //VR-3.8.12(CN on PN) Lot.ID -> VR-3.1.14(CN)
-            checkLotIdFromRequest(lotsFromRequest = request.tender.lots)
+            checkLotIdFromRequest(lotsFromRequest = data.tender.lots)
             /** End check Lots */
 
             /** Begin check Items */
             //VR-3.8.9(CN on PN) "Quantity" (item) -> VR-3.6.11(CN)
-            checkQuantityInItems(itemsFromRequest = request.tender.items)
+            checkQuantityInItems(itemsFromRequest = data.tender.items)
 
             //VR-3.8.11(CN on PN) Items (tender.Items) -> VR-3.6.8(CN)
             checkRelatedLotInItemsFromRequest(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                itemsFromRequest = request.tender.items
+                itemsFromRequest = data.tender.items
             )
 
             //VR-3.8.13(CN on PN) Item.ID -> VR-3.1.15(CN)
-            checkItemIdFromRequest(itemsFromRequest = request.tender.items)
+            checkItemIdFromRequest(itemsFromRequest = data.tender.items)
             /** End check Items */
 
             /** Begin check Tender */
             //VR-3.8.4(CN on PN) "Value" (tender)
-            val tenderValue = calculateTenderValueFromLots(lotsFromRequest = request.tender.lots)
+            val tenderValue = calculateTenderValueFromLots(lotsFromRequest = data.tender.lots)
             checkTenderValue(tenderValue.amount, pnEntity.planning.budget)
 
             //VR-3.8.6(CN on PN)  "Contract Period"(Tender) -> VR-3.6.10(CN)
             checkContractPeriodInTender(
-                lotsFromRequest = request.tender.lots,
+                lotsFromRequest = data.tender.lots,
                 budgetBreakdownsFromPN = pnEntity.planning.budget.budgetBreakdowns
             )
             /** End check Tender */
 
             /** Begin check Auctions */
+            //VR-1.0.1.7.7
             checkAuctionsAreRequired(
-                contextRequest = contextRequest,
-                request = request,
+                context = context,
+                data = data,
                 mainProcurementCategory = pnEntity.tender.mainProcurementCategory
             )
             /** End check Auctions */
@@ -158,14 +145,14 @@ class CnOnPnService(
             //VR-3.8.7(CN on PN)  "Related Lots"(documents) -> VR-3.6.12(CN)
             checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                documentsFromRequest = request.tender.documents
+                documentsFromRequest = data.tender.documents
             )
             /** End check Documents */
         } else {
             /** Begin check Lots*/
             //VR-3.8.16 "Contract Period" (Lot)
             checkContractPeriodInLotsFromRequestWhenPNWithItems(
-                tenderPeriodEndDate = request.tender.tenderPeriod.endDate,
+                tenderPeriodEndDate = data.tender.tenderPeriod.endDate,
                 lotsFromPN = pnEntity.tender.lots
             )
             /** End check Lots */
@@ -173,8 +160,8 @@ class CnOnPnService(
             /** Begin check Auctions*/
             //VR-3.8.15 electronicAuctions.details
             checkAuctionsAreRequired(
-                contextRequest = contextRequest,
-                request = request,
+                context = context,
+                data = data,
                 mainProcurementCategory = pnEntity.tender.mainProcurementCategory
             )
             /** End check Auctions */
@@ -184,32 +171,24 @@ class CnOnPnService(
             val lotsIdsFromPN = pnEntity.tender.lots.toSetBy { it.id }
             checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
                 lotsIdsFromPN = lotsIdsFromPN,
-                documentsFromRequest = request.tender.documents
+                documentsFromRequest = data.tender.documents
             )
             /** End check Documents */
         }
 
-        return ResponseDto(data = "ok")
+        return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun createCnOnPn(cm: CommandMessage): ResponseDto {
-        val contextRequest = context(cm)
-
-        log.info("A request '${cm.context.operationId}' cpid '${contextRequest.cpid}'.")
-
-        val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
-
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
+    fun createCnOnPn(context: CreateCnOnPnContext, data: CnOnPnRequest): CnOnPnResponse {
+        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
-
-        log.info("Creation CN on a request '${cm.context.operationId}'.")
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
         val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
-            createTenderBasedPNWithoutItems(contextRequest = contextRequest, request = request, pnEntity = pnEntity)
+            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
         else
-            createTenderBasedPNWithItems(contextRequest = contextRequest, request = request, pnEntity = pnEntity)
+            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
 
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
@@ -219,51 +198,16 @@ class CnOnPnService(
 
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = contextRequest.cpid,
+                cpId = context.cpid,
                 token = tenderProcessEntity.token,
-                stage = contextRequest.stage,
+                stage = context.stage,
                 owner = tenderProcessEntity.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = context.startDate.toDate(),
                 jsonData = toJson(cnEntity)
             )
         )
 
-        val response = getResponse(cnEntity, tenderProcessEntity.token)
-        return ResponseDto(data = response)
-    }
-
-    private fun context(cm: CommandMessage): ContextRequest {
-        val cpid: String = cm.context.cpid
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'cpid' attribute in context..")
-        val token = cm.context.token
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'token' attribute in context.")
-        val previousStage = cm.context.prevStage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'prevStage' attribute in context.")
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'stage' attribute in context.")
-        val owner = cm.context.owner
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val country = cm.context.country
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'country' attribute in context.")
-        val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) }
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
-        val startDate: LocalDateTime = cm.context.startDate?.toLocal()
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
-
-        return ContextRequest(
-            cpid = cpid,
-            token = token,
-            previousStage = previousStage,
-            stage = stage,
-            owner = owner,
-            country = country,
-            pmd = pmd,
-            startDate = startDate
-        )
-    }
-
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
-        ErrorException(ErrorType.INVALID_PMD)
+        return getResponse(cnEntity, tenderProcessEntity.token)
     }
 
     /**
@@ -369,7 +313,7 @@ class CnOnPnService(
     private fun checkProcuringEntityPersones(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
-        if (procuringEntityRequest.persones.size < 1) throw ErrorException(
+        if (procuringEntityRequest.persones.isEmpty()) throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
             message = "At least one Person should be added. "
         )
@@ -421,7 +365,7 @@ class CnOnPnService(
 
         procuringEntityRequest.persones.map { it.businessFunctions }
             .forEach { businessfunctions ->
-                if (businessfunctions.size < 1) detalizationError()
+                if (businessfunctions.isEmpty()) detalizationError()
                 if (businessfunctions.toSet().size != businessfunctions.size) uniquenessError()
             }
     }
@@ -436,7 +380,7 @@ class CnOnPnService(
      */
     private fun checkBusinessFunctionPeriod(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
-        contextRequest: ContextRequest
+        context: CheckCnOnPnContext
     ) {
         fun dateError(): Nothing = throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
@@ -444,7 +388,7 @@ class CnOnPnService(
         )
 
         procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach { if (it.period.startDate > contextRequest.startDate) dateError() }
+            .forEach { if (it.period.startDate > context.startDate) dateError() }
     }
 
     /**
@@ -476,7 +420,7 @@ class CnOnPnService(
             .filter { it.documents != null }
             .flatMap { it.documents!! }
 
-        if (documents.size < 1) throw ErrorException(
+        if (documents.isEmpty()) throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
             message = "At least one document should be added. "
         )
@@ -788,23 +732,26 @@ class CnOnPnService(
         }
     }
 
+    /**
+     * VR-1.0.1.7.7
+     */
     private fun checkAuctionsAreRequired(
-        contextRequest: ContextRequest,
-        request: CnOnPnRequest,
+        context: CheckCnOnPnContext,
+        data: CnOnPnRequest,
         mainProcurementCategory: MainProcurementCategory
     ) {
         val isAuctionRequired = rulesService.isAuctionRequired(
-            contextRequest.country,
-            contextRequest.pmd,
+            context.country,
+            context.pmd,
             mainProcurementCategory
         )
 
         if (isAuctionRequired) {
-            val procurementMethodModalities = request.tender.procurementMethodModalities
+            val procurementMethodModalities = data.tender.procurementMethodModalities
             if (procurementMethodModalities == null || procurementMethodModalities.isEmpty())
                 throw ErrorException(INVALID_PMM)
 
-            val electronicAuctions = request.tender.electronicAuctions
+            val electronicAuctions = data.tender.electronicAuctions
             if (electronicAuctions == null || electronicAuctions.details.isEmpty())
                 throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
         }
@@ -827,7 +774,6 @@ class CnOnPnService(
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
-        contextRequest: ContextRequest,
         request: CnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -881,7 +827,6 @@ class CnOnPnService(
         )
 
         return tender(
-            contextRequest = contextRequest,
             request = request,
             pnEntity = pnEntity,
             classification = classification,
@@ -897,7 +842,6 @@ class CnOnPnService(
     }
 
     private fun createTenderBasedPNWithItems(
-        contextRequest: ContextRequest,
         request: CnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -940,7 +884,6 @@ class CnOnPnService(
         )
 
         return tender(
-            contextRequest = contextRequest,
             request = request,
             pnEntity = pnEntity,
             classification = classification,
@@ -1003,7 +946,6 @@ class CnOnPnService(
     }
 
     private fun tender(
-        contextRequest: ContextRequest,
         request: CnOnPnRequest,
         pnEntity: PNEntity,
         classification: CNEntity.Tender.Classification,
@@ -1403,23 +1345,23 @@ class CnOnPnService(
                 id = criteria.id,
                 title = criteria.title,
                 description = criteria.description,
-                requirementGroups = criteria.requirementGroups.map {
+                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = it.id,
-                        description = it.description,
-                        requirements = it.requirements.map {
+                        id = requirementGroup.id,
+                        description = requirementGroup.description,
+                        requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
-                                id = it.id,
-                                description = it.description,
-                                title = it.title,
-                                period = it.period?.let {
+                                id = requirement.id,
+                                description = requirement.description,
+                                title = requirement.title,
+                                period = requirement.period?.let { period ->
                                     Period(
-                                        startDate = it.startDate,
-                                        endDate = it.endDate
+                                        startDate = period.startDate,
+                                        endDate = period.endDate
                                     )
                                 },
-                                dataType = it.dataType,
-                                value = it.value
+                                dataType = requirement.dataType,
+                                value = requirement.value
                             )
                         }
                     )
@@ -1593,34 +1535,34 @@ class CnOnPnService(
     private fun criteriaFromRequest(
         criteriaFromRequest: List<CnOnPnRequest.Tender.Criteria>?
     ): List<CNEntity.Tender.Criteria>? {
-        return criteriaFromRequest?.map {
+        return criteriaFromRequest?.map { criteria ->
             CNEntity.Tender.Criteria(
-                id = it.id,
-                title = it.title,
-                description = it.description,
-                requirementGroups = it.requirementGroups.map {
+                id = criteria.id,
+                title = criteria.title,
+                description = criteria.description,
+                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = it.id,
-                        description = it.description,
-                        requirements = it.requirements.map {
+                        id = requirementGroup.id,
+                        description = requirementGroup.description,
+                        requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
-                                id = it.id,
-                                description = it.description,
-                                title = it.title,
-                                period = it.period?.let {
+                                id = requirement.id,
+                                description = requirement.description,
+                                title = requirement.title,
+                                period = requirement.period?.let { period ->
                                     Period(
-                                        startDate = it.startDate,
-                                        endDate = it.endDate
+                                        startDate = period.startDate,
+                                        endDate = period.endDate
                                     )
                                 },
-                                dataType = it.dataType,
-                                value = it.value
+                                dataType = requirement.dataType,
+                                value = requirement.value
                             )
                         }
                     )
                 },
-                relatesTo = it.relatesTo,
-                relatedItem = it.relatedItem
+                relatesTo = criteria.relatesTo,
+                relatedItem = criteria.relatedItem
             )
         }
     }
@@ -1628,21 +1570,20 @@ class CnOnPnService(
     private fun conversionsFromRequest(
         conversionsFromRequest: List<CnOnPnRequest.Tender.Conversion>?
     ): List<CNEntity.Tender.Conversion>? {
-        return conversionsFromRequest?.map {
+        return conversionsFromRequest?.map { conversion ->
             CNEntity.Tender.Conversion(
-                id = it.id,
-                relatedItem = it.relatedItem,
-                relatesTo = it.relatesTo,
-                rationale = it.rationale,
-                description = it.description,
-                coefficients = it.coefficients.map {
+                id = conversion.id,
+                relatedItem = conversion.relatedItem,
+                relatesTo = conversion.relatesTo,
+                rationale = conversion.rationale,
+                description = conversion.description,
+                coefficients = conversion.coefficients.map { coefficient ->
                     CNEntity.Tender.Conversion.Coefficient(
-                        id = it.id,
-                        value = it.value,
-                        coefficient = it.coefficient
+                        id = coefficient.id,
+                        value = coefficient.value,
+                        coefficient = coefficient.coefficient
                     )
                 }
-
             )
         }
     }
@@ -2068,21 +2009,20 @@ class CnOnPnService(
                             relatedItem = criteria.relatedItem
                         )
                     },
-                    conversions = tender.conversions?.map {
+                    conversions = tender.conversions?.map { conversion ->
                         CnOnPnResponse.Tender.Conversion(
-                            id = it.id,
-                            relatedItem = it.relatedItem,
-                            relatesTo = it.relatesTo,
-                            rationale = it.rationale,
-                            description = it.description,
-                            coefficients = it.coefficients.map {
+                            id = conversion.id,
+                            relatedItem = conversion.relatedItem,
+                            relatesTo = conversion.relatesTo,
+                            rationale = conversion.rationale,
+                            description = conversion.description,
+                            coefficients = conversion.coefficients.map { coefficient ->
                                 CnOnPnResponse.Tender.Conversion.Coefficient(
-                                    id = it.id,
-                                    value = it.value,
-                                    coefficient = it.coefficient
+                                    id = coefficient.id,
+                                    value = coefficient.value,
+                                    coefficient = coefficient.coefficient
                                 )
                             }
-
                         )
                     },
                     lots = tender.lots.map { lot ->
@@ -2213,15 +2153,5 @@ class CnOnPnService(
             }
         )
     }
-
-    data class ContextRequest(
-        val cpid: String,
-        val token: String,
-        val previousStage: String,
-        val stage: String,
-        val owner: String,
-        val country: String,
-        val pmd: ProcurementMethod,
-        val startDate: LocalDateTime
-    )
 }
+

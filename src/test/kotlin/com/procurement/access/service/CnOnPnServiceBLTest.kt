@@ -8,17 +8,17 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
-import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.getObject
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
-import com.procurement.access.model.dto.ocds.Operation
+import com.procurement.access.json.toObject
+import com.procurement.access.model.dto.databinding.toLocalDateTime
 import com.procurement.access.model.dto.ocds.ProcurementMethod
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -82,10 +82,11 @@ class CnOnPnServiceBLTest {
                 data = pnWithoutItems
             )
 
-            val requestNode = loadJson("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json").toNode()
-            val cm = commandMessage(command = CommandType.CREATE_CN_ON_PN, data = requestNode)
+            val data: CnOnPnRequest =
+                loadJson("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json").toObject()
+            val context = createContext()
 
-            val response = cnOnPnService.createCnOnPn(cm).data as CnOnPnResponse
+            val response: CnOnPnResponse = cnOnPnService.createCnOnPn(context = context, data = data)
 
             assertEquals(firstLotIdExcepted, response.tender.lots[0].id)
             assertEquals(secondLotIdExcepted, response.tender.lots[1].id)
@@ -112,27 +113,13 @@ class CnOnPnServiceBLTest {
     }
 }
 
-fun commandMessage(
-    command: CommandType,
-    token: String = ContextGenerator.TOKEN.toString(),
-    owner: String = ContextGenerator.OWNER,
-    pmd: String = ProcurementMethod.OT.name,
-    startDate: String = ContextGenerator.START_DATE,
-    data: JsonNode
-): CommandMessage {
-    val context = ContextGenerator.generate(
-        token = token,
-        owner = owner,
-        pmd = pmd,
-        operationType = Operation.CREATE_CN_ON_PN.value,
-        startDate = startDate
-    )
-
-    return CommandMessageGenerator.generate(
-        command = command,
-        context = context,
-        data = data
-    )
-}
-
-
+fun createContext(
+    startDate: String = ContextGenerator.START_DATE
+): CreateCnOnPnContext = CreateCnOnPnContext(
+    cpid = ContextGenerator.CPID,
+    previousStage = ContextGenerator.PREV_STAGE,
+    stage = ContextGenerator.STAGE,
+    country = ContextGenerator.COUNTRY,
+    pmd = ProcurementMethod.SV,
+    startDate = startDate.toLocalDateTime()
+)

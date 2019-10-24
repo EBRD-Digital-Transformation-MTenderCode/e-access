@@ -14,7 +14,6 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializ
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
-import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
