@@ -1,8 +1,6 @@
 package com.procurement.access.application.service.lot
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.TenderProcess
@@ -18,15 +16,12 @@ class LotServiceImpl(
     private val tenderProcessDao: TenderProcessDao
 ) : LotService {
     override fun getLotsForAuction(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
-            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-
-
-        return if (process.tender.lots.isEmpty())
-            getLotFromRequest(lots = data.lots)
-        else
-            getLotFromTender(lots = process.tender.lots)
+        return tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+            ?.let { entity ->
+                val process = toObject(TenderProcess::class.java, entity.jsonData)
+                getLotFromTender(lots = process.tender.lots)
+            }
+            ?: getLotFromRequest(lots = data.lots)
     }
 
     private fun getLotFromRequest(lots: List<LotsForAuctionData.Lot>): LotsForAuction = LotsForAuction(
