@@ -50,6 +50,7 @@
         <mockito.version>2.25.1</mockito.version>
         <pitest-maven.version>1.4.8</pitest-maven.version>
         <pitest-junit5-plugin.version>0.8</pitest-junit5-plugin.version>
+        <testcontainer-cassandra.version>1.11.2</testcontainer-cassandra.version>
 
         <!--Plugins-->
         <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
@@ -278,6 +279,13 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${json-path.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>cassandra</artifactId>
+            <version>${testcontainer-cassandra.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
