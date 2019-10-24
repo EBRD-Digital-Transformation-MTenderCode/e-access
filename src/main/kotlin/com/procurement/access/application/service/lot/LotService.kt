@@ -8,7 +8,6 @@ import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
-import java.util.*
 
 interface LotService {
     fun getLotsForAuction(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction
@@ -49,7 +48,7 @@ class LotServiceImpl(
             .filter { it.status == LotStatus.PLANNED }
             .map { lot ->
                 LotsForAuction.Lot(
-                    id = UUID.fromString(lot.id),
+                    id = lot.id,
                     value = lot.value.let { value ->
                         LotsForAuction.Lot.Value(
                             amount = value.amount,
