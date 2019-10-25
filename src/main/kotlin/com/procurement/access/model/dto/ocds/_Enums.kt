@@ -4,20 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import java.util.*
 
-enum class Scheme(@JsonValue val value: String) {
-    CPV("CPV"),
-    CPVS("CPVS"),
-    GSIN("GSIN"),
-    UNSPSC("UNSPSC"),
-    CPC("CPC"),
-    OKDP("OKDP"),
-    OKPD("OKPD");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class SubmissionLanguage(@JsonValue val value: String) {
     BG("bg"),
     ES("es"),
