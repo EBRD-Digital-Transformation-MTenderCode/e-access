@@ -1,6 +1,6 @@
 package com.procurement.access.application.service
 
-import com.procurement.access.model.dto.ocds.ProcurementMethod
+import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
 import java.time.LocalDateTime
 
 data class CheckCnOnPnContext(

@@ -47,37 +47,6 @@ enum class MainProcurementCategory(@JsonValue val value: String) {
     }
 }
 
-enum class ProcurementMethod(@JsonValue val value: String) {
-    MV("open"),
-    OT("open"),
-    RT("selective"),
-    SV("open"),
-    DA("limited"),
-    NP("limited"),
-    FA("limited"),
-    OP("selective"),
-    TEST_OT("open"),
-    TEST_SV("open"),
-    TEST_RT("selective"),
-    TEST_MV("open"),
-    TEST_DA("limited"),
-    TEST_NP("limited"),
-    TEST_FA("limited"),
-    TEST_OP("selective");
-
-    override fun toString(): String {
-        return this.value
-    }
-
-    companion object {
-        fun <T : Exception> valueOrException(name: String, block: (Exception) -> T):ProcurementMethod = try {
-            valueOf(name)
-        } catch (exception: Exception) {
-            throw block(exception)
-        }
-    }
-}
-
 enum class Scheme(@JsonValue val value: String) {
     CPV("CPV"),
     CPVS("CPVS"),

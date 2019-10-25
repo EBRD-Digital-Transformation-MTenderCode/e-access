@@ -1,10 +1,10 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.RulesDao
+import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.MainProcurementCategory
-import com.procurement.access.model.dto.ocds.ProcurementMethod
 import org.springframework.stereotype.Service
 
 @Service

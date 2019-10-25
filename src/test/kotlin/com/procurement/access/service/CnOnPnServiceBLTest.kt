@@ -10,6 +10,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
 import com.procurement.access.infrastructure.generator.ContextGenerator
@@ -19,7 +20,6 @@ import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.databinding.toLocalDateTime
-import com.procurement.access.model.dto.ocds.ProcurementMethod
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll

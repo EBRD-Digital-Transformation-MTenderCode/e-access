@@ -1,6 +1,6 @@
 package com.procurement.access.json
 
-import com.procurement.access.model.dto.ocds.ProcurementMethod
+import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
 
 object JsonFilePathGenerator {
 
