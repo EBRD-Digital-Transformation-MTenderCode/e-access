@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.criteria.AwardCriteria
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -27,7 +28,6 @@ import com.procurement.access.model.dto.cn.LotCnCreate
 import com.procurement.access.model.dto.cn.TenderCnCreate
 import com.procurement.access.model.dto.cn.validate
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
-import com.procurement.access.model.dto.ocds.AwardCriteria
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.DesignContest

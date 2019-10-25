@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.domain.model.criteria.AwardCriteria
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
-import com.procurement.access.model.dto.ocds.AwardCriteria
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.DesignContest
 import com.procurement.access.model.dto.ocds.Document

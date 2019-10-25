@@ -12,17 +12,6 @@ enum class ProcurementMethodModalities(@JsonValue val value: String) {
     }
 }
 
-enum class AwardCriteria(@JsonValue val value: String) {
-    PRICE_ONLY("priceOnly"),
-    COST_ONLY("costOnly"),
-    QUALITY_ONLY("qualityOnly"),
-    RATED_CRITERIA("ratedCriteria");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class ExtendedProcurementCategory(@JsonValue val value: String) {
     GOODS("goods"),
     WORKS("works"),
