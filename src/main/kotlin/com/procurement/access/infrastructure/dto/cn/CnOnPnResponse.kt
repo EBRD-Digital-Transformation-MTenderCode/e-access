@@ -10,6 +10,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
@@ -29,7 +30,7 @@ import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
-import com.procurement.access.model.dto.ocds.LegalBasis
+
 import com.procurement.access.model.dto.ocds.Scheme
 import java.math.BigDecimal
 import java.time.LocalDateTime
