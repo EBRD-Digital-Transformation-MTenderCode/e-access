@@ -4,14 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import java.util.*
 
-enum class ProcurementMethodModalities(@JsonValue val value: String) {
-    ELECTRONIC_AUCTION("electronicAuction");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class ExtendedProcurementCategory(@JsonValue val value: String) {
     GOODS("goods"),
     WORKS("works"),
