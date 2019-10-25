@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
@@ -20,7 +21,6 @@ import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
-import com.procurement.access.model.dto.ocds.BusinessFunctionType
 import com.procurement.access.model.dto.ocds.DocumentType
 import com.procurement.access.model.dto.ocds.ProcurementMethodModalities
 import com.procurement.access.model.dto.ocds.Scheme
