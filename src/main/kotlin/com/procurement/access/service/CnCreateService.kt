@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -48,7 +49,6 @@ import com.procurement.access.model.dto.ocds.Planning
 import com.procurement.access.model.dto.ocds.ProcedureOutsourcing
 import com.procurement.access.model.dto.ocds.RecurrentProcurement
 import com.procurement.access.model.dto.ocds.Renewal
-import com.procurement.access.model.dto.ocds.SubmissionMethod
 import com.procurement.access.model.dto.ocds.Tender
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.TenderStatus.ACTIVE

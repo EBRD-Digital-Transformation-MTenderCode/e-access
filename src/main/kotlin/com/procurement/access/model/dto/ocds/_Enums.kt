@@ -84,16 +84,7 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
     }
 }
 
-enum class SubmissionMethod(@JsonValue val value: String) {
-    ELECTRONIC_SUBMISSION("electronicSubmission"),
-    ELECTRONIC_AUCTION("electronicAuction"),
-    WRITTEN("written"),
-    IN_PERSON("inPerson");
 
-    override fun toString(): String {
-        return this.value
-    }
-}
 
 enum class SubmissionMethodRationale(@JsonValue val value: String) {
     TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE("TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"),
