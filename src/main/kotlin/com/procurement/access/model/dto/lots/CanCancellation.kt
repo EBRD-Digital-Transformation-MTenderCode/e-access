@@ -2,7 +2,7 @@ package com.procurement.access.model.dto.lots
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.procurement.access.model.dto.ocds.LotStatus
+import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 
 data class CanCancellationRq @JsonCreator constructor(

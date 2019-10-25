@@ -84,19 +84,6 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
     }
 }
 
-enum class LotStatus(@JsonValue val value: String) {
-    PLANNING("planning"),
-    PLANNED("planned"),
-    ACTIVE("active"),
-    CANCELLED("cancelled"),
-    UNSUCCESSFUL("unsuccessful"),
-    COMPLETE("complete");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class LotStatusDetails(@JsonValue val value: String) {
     UNSUCCESSFUL("unsuccessful"),
     AWARDED("awarded"),

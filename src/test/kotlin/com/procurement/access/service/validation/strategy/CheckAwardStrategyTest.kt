@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.award.CheckAwardRequest
@@ -26,7 +27,6 @@ import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
-import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

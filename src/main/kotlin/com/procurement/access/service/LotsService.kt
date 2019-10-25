@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -33,7 +34,6 @@ import com.procurement.access.model.dto.lots.UpdateLotByBidRs
 import com.procurement.access.model.dto.lots.UpdateLotsRq
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toJson

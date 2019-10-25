@@ -1,8 +1,8 @@
 package com.procurement.access.application.service.lot
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
