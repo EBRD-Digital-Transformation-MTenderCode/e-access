@@ -3,6 +3,7 @@ package com.procurement.access.service.validation.strategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.CPVCodePattern
+import com.procurement.access.domain.model.enums.Operation
 import com.procurement.access.domain.model.patternBySymbols
 import com.procurement.access.domain.model.patternOfGroups
 import com.procurement.access.domain.model.startsWithPattern
@@ -12,7 +13,6 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckItemsRequest
 import com.procurement.access.infrastructure.dto.CheckItemsResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.ocds.Operation
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 
@@ -246,7 +246,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun getOperation(cm: CommandMessage): Operation {
-        return cm.context.operationType?.let { Operation.fromValue(it) }
+        return cm.context.operationType?.let { Operation.fromString(it) }
             ?: throw ErrorException(
                 error = ErrorType.CONTEXT,
                 message = "Missing the 'operationType' attribute in context."
