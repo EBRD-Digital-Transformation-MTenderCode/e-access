@@ -1,39 +1,7 @@
 package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
 import java.util.*
-
-enum class SubmissionLanguage(@JsonValue val value: String) {
-    BG("bg"),
-    ES("es"),
-    CS("cs"),
-    DA("da"),
-    DE("de"),
-    ET("et"),
-    EL("el"),
-    EN("en"),
-    FR("fr"),
-    GA("ga"),
-    HR("hr"),
-    IT("it"),
-    LV("lv"),
-    LT("lt"),
-    HU("hu"),
-    MT("mt"),
-    NL("nl"),
-    PL("pl"),
-    PT("pt"),
-    RO("ro"),
-    SK("sk"),
-    SL("sl"),
-    FI("fi"),
-    SV("sv");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
 
 enum class Operation(val value: String) {
     CREATE_CN("createCN"),
