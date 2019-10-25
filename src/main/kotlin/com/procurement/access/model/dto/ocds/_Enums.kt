@@ -84,16 +84,6 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
     }
 }
 
-
-
-enum class BusinessFunctionDocumentType(@JsonValue val value: String) {
-    REGULATORY_DOCUMENT("regulatoryDocument");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class DocumentType(@JsonValue val value: String) {
 
     EVALUATION_CRITERIA("evaluationCriteria"),

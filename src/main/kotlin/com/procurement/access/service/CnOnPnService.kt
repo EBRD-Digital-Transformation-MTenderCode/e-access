@@ -4,6 +4,7 @@ import com.procurement.access.application.service.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -33,7 +34,6 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
-import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
