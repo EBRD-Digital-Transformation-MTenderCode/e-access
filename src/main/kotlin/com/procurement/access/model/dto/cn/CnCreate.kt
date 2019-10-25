@@ -3,6 +3,7 @@ package com.procurement.access.model.dto.cn
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.domain.model.criteria.AwardCriteria
+import com.procurement.access.domain.model.mainProcurementCategory.MainProcurementCategory
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
@@ -13,7 +14,6 @@ import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.Document
 import com.procurement.access.model.dto.ocds.ElectronicAuctions
 import com.procurement.access.model.dto.ocds.LegalBasis
-import com.procurement.access.model.dto.ocds.MainProcurementCategory
 import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.model.dto.ocds.Period
 import com.procurement.access.model.dto.ocds.PlaceOfPerformance

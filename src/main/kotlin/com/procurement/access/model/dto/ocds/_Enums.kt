@@ -37,15 +37,7 @@ enum class LegalBasis(@JsonValue val value: String) {
     }
 }
 
-enum class MainProcurementCategory(@JsonValue val value: String) {
-    GOODS("goods"),
-    WORKS("works"),
-    SERVICES("services");
 
-    override fun toString(): String {
-        return this.value
-    }
-}
 
 enum class Scheme(@JsonValue val value: String) {
     CPV("CPV"),

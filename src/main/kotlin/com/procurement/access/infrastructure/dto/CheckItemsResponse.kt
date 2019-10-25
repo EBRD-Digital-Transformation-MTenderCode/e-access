@@ -3,7 +3,6 @@ package com.procurement.access.infrastructure.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.domain.model.CPVCode
-import com.procurement.access.model.dto.ocds.MainProcurementCategory
 
 data class CheckItemsResponse(
     @field:JsonProperty("mdmValidation") @param:JsonProperty("mdmValidation") val mdmValidation: Boolean,

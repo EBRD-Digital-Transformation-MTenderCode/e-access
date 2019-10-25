@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.mainProcurementCategory.MainProcurementCategory
 import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
@@ -17,7 +18,6 @@ import com.procurement.access.model.dto.ocds.DocumentType
 import com.procurement.access.model.dto.ocds.LegalBasis
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
-import com.procurement.access.model.dto.ocds.MainProcurementCategory
 import com.procurement.access.model.dto.ocds.Scheme
 import com.procurement.access.model.dto.ocds.SubmissionMethod
 import com.procurement.access.model.dto.ocds.TenderStatus
