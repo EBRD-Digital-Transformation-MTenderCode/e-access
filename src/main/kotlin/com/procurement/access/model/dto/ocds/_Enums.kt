@@ -84,44 +84,6 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
     }
 }
 
-enum class TenderStatusDetails(@JsonValue val value: String) {
-    //    UNSUCCESSFUL("unsuccessful"),
-//    AWARDED("awarded"),
-    PLANNING("planning"),
-    PLANNED("planned"),
-    CLARIFICATION("clarification"),
-    NEGOTIATION("negotiation"),
-    TENDERING("tendering"),
-    CANCELLATION("cancellation"),
-    SUSPENDED("suspended"),
-    AWARDING("awarding"),
-    AUCTION("auction"),
-    AWARDED_STANDSTILL("awardedStandStill"),
-    AWARDED_SUSPENDED("awardedSuspended"),
-    AWARDED_CONTRACT_PREPARATION("awardedContractPreparation"),
-    COMPLETE("complete"),
-    EMPTY("empty");
-
-    override fun toString(): String {
-        return this.value
-    }
-
-    companion object {
-        private val CONSTANTS = HashMap<String, TenderStatusDetails>()
-
-        init {
-            for (c in TenderStatusDetails.values()) {
-                CONSTANTS[c.value] = c
-            }
-        }
-
-        @JsonCreator
-        fun fromValue(value: String): TenderStatusDetails {
-            return CONSTANTS[value] ?: throw IllegalArgumentException(value)
-        }
-    }
-}
-
 enum class LotStatus(@JsonValue val value: String) {
     PLANNING("planning"),
     PLANNED("planned"),

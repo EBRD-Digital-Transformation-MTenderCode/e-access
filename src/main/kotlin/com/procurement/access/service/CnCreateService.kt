@@ -5,6 +5,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus.ACTIVE
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -52,7 +53,6 @@ import com.procurement.access.model.dto.ocds.RecurrentProcurement
 import com.procurement.access.model.dto.ocds.Renewal
 import com.procurement.access.model.dto.ocds.Tender
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.ocds.Value
 import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.dto.ocds.validate
@@ -108,7 +108,7 @@ class CnCreateService(private val generationService: GenerationService,
                     title = tenderDto.title,
                     description = tenderDto.description,
                     status = ACTIVE,
-                    statusDetails = TenderStatusDetails.fromValue(phase),
+                    statusDetails = TenderStatusDetails.fromString(phase),
                     classification = tenderDto.classification,
                     mainProcurementCategory = tenderDto.mainProcurementCategory,
                     additionalProcurementCategories = null,

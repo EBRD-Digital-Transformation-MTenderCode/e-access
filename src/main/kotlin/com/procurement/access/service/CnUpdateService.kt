@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.TenderStatusDetails.SUSPENDED
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
@@ -45,7 +46,6 @@ import com.procurement.access.model.dto.ocds.RecurrentProcurement
 import com.procurement.access.model.dto.ocds.Renewal
 import com.procurement.access.model.dto.ocds.Tender
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
 import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate

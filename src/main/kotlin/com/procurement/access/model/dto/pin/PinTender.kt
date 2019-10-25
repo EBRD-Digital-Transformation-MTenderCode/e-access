@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
 import com.procurement.access.model.dto.ocds.Classification
@@ -25,7 +26,6 @@ import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.model.dto.ocds.Period
 import com.procurement.access.model.dto.ocds.ProcedureOutsourcing
 import com.procurement.access.model.dto.ocds.SubmissionLanguage
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.ocds.Value
 import java.util.*
 

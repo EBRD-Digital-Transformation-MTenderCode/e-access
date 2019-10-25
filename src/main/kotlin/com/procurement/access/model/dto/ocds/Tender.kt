@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

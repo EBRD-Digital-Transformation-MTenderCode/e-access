@@ -6,6 +6,7 @@ import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -33,7 +34,6 @@ import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
 import com.procurement.access.model.dto.ocds.BusinessFunctionType
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
