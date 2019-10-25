@@ -4,17 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import java.util.*
 
-enum class ExtendedProcurementCategory(@JsonValue val value: String) {
-    GOODS("goods"),
-    WORKS("works"),
-    SERVICES("services"),
-    CONSULTING_SERVICES("consultingServices");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class LegalBasis(@JsonValue val value: String) {
     DIRECTIVE_2014_23_EU("DIRECTIVE_2014_23_EU"),
     DIRECTIVE_2014_24_EU("DIRECTIVE_2014_24_EU"),

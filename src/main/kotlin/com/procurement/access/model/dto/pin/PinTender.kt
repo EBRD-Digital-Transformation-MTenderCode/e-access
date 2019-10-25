@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.ExtendedProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -16,7 +17,6 @@ import com.procurement.access.model.dto.ocds.DesignContest
 import com.procurement.access.model.dto.ocds.Document
 import com.procurement.access.model.dto.ocds.DynamicPurchasingSystem
 import com.procurement.access.model.dto.ocds.ElectronicWorkflows
-import com.procurement.access.model.dto.ocds.ExtendedProcurementCategory
 import com.procurement.access.model.dto.ocds.Framework
 import com.procurement.access.model.dto.ocds.Item
 import com.procurement.access.model.dto.ocds.JointProcurement
