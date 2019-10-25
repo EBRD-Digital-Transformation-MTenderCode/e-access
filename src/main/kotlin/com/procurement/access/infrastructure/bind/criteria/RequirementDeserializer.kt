@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
@@ -14,7 +15,6 @@ import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Period
 import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.infrastructure.dto.cn.criteria.RequirementDataType
 import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import java.io.IOException

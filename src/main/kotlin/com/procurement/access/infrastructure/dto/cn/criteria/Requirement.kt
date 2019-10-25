@@ -1,5 +1,6 @@
 package com.procurement.access.infrastructure.dto.cn.criteria
 
+import com.procurement.access.domain.model.enums.RequirementDataType
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
