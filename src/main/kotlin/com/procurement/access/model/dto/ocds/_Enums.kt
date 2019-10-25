@@ -84,17 +84,6 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
     }
 }
 
-enum class LotStatusDetails(@JsonValue val value: String) {
-    UNSUCCESSFUL("unsuccessful"),
-    AWARDED("awarded"),
-    CANCELLED("cancelled"),
-    EMPTY("empty");
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
 enum class BusinessFunctionType(@JsonValue val value: String) {
     AUTHORITY("authority");
 

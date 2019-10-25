@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus.ACTIVE
@@ -45,7 +46,6 @@ import com.procurement.access.model.dto.ocds.Item
 import com.procurement.access.model.dto.ocds.JointProcurement
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.LotGroup
-import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.Option
 import com.procurement.access.model.dto.ocds.Planning
 import com.procurement.access.model.dto.ocds.ProcedureOutsourcing
