@@ -1,8 +1,8 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.RulesDao
-import com.procurement.access.domain.model.mainProcurementCategory.MainProcurementCategory
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import org.springframework.stereotype.Service

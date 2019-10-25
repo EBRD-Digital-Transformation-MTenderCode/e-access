@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType

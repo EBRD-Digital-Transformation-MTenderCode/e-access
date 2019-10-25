@@ -10,7 +10,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
 import com.procurement.access.infrastructure.generator.ContextGenerator

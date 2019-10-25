@@ -2,7 +2,7 @@ package com.procurement.access.model.dto.pn
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.procurement.access.domain.model.mainProcurementCategory.MainProcurementCategory
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
@@ -49,37 +49,37 @@ data class BudgetPnCreate @JsonCreator constructor(
 
 data class TenderPnCreate @JsonCreator constructor(
 
-        val title: String,
+    val title: String,
 
-        val description: String,
+    val description: String,
 
-        val classification: Classification,
+    val classification: Classification,
 
-        val mainProcurementCategory: MainProcurementCategory,
+    val mainProcurementCategory: MainProcurementCategory,
 
-        val procurementMethodDetails: String,
+    val procurementMethodDetails: String,
 
-        val procurementMethodRationale: String?,
+    val procurementMethodRationale: String?,
 
-        val procurementMethodAdditionalInfo: String?,
+    val procurementMethodAdditionalInfo: String?,
 
-        val submissionMethodRationale: List<String>,
+    val submissionMethodRationale: List<String>,
 
-        val submissionMethodDetails: String,
+    val submissionMethodDetails: String,
 
-        val eligibilityCriteria: String,
+    val eligibilityCriteria: String,
 
-        val legalBasis: LegalBasis,
+    val legalBasis: LegalBasis,
 
-        val tenderPeriod: TenderPeriodPnCreate,
+    val tenderPeriod: TenderPeriodPnCreate,
 
-        val procuringEntity: OrganizationReference,
+    val procuringEntity: OrganizationReference,
 
-        val lots: List<LotPnCreate>?,
+    val lots: List<LotPnCreate>?,
 
-        val items: List<ItemPnCreate>?,
+    val items: List<ItemPnCreate>?,
 
-        val documents: List<Document>?
+    val documents: List<Document>?
 )
 
 data class LotPnCreate @JsonCreator constructor(

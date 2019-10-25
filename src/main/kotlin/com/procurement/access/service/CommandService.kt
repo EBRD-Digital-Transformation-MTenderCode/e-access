@@ -13,7 +13,7 @@ import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.dao.HistoryDao
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse

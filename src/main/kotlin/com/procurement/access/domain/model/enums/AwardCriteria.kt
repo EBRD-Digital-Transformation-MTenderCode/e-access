@@ -1,4 +1,4 @@
-package com.procurement.access.domain.model.criteria
+package com.procurement.access.domain.model.enums
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.exception.EnumException

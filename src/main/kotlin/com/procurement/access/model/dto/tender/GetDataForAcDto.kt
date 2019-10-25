@@ -2,8 +2,8 @@ package com.procurement.access.model.dto.tender
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.procurement.access.domain.model.mainProcurementCategory.MainProcurementCategory
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.Item
 import com.procurement.access.model.dto.ocds.Lot
@@ -27,17 +27,17 @@ data class GetDataForAcRs @JsonCreator constructor(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class GetDataForAcTender @JsonCreator constructor(
 
-        val id: String?,
+    val id: String?,
 
-        var classification: Classification,
+    var classification: Classification,
 
-        val procurementMethod: ProcurementMethod,
+    val procurementMethod: ProcurementMethod,
 
-        val procurementMethodDetails: String,
+    val procurementMethodDetails: String,
 
-        val mainProcurementCategory: MainProcurementCategory,
+    val mainProcurementCategory: MainProcurementCategory,
 
-        var lots: List<Lot>,
+    var lots: List<Lot>,
 
-        var items: List<Item>
+    var items: List<Item>
 )

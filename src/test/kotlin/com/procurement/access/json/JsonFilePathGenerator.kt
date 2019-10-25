@@ -1,6 +1,6 @@
 package com.procurement.access.json
 
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.ProcurementMethod
 
 object JsonFilePathGenerator {
 

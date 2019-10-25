@@ -1,8 +1,8 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.criteria.AwardCriteria
-import com.procurement.access.domain.model.procurementMethod.ProcurementMethod
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -104,44 +104,44 @@ class CnCreateService(private val generationService: GenerationService,
                         rationale = planningDto.rationale
                 ),
                 tender = Tender(
-                        id = cpId,
-                        title = tenderDto.title,
-                        description = tenderDto.description,
-                        status = ACTIVE,
-                        statusDetails = TenderStatusDetails.fromValue(phase),
-                        classification = tenderDto.classification,
-                        mainProcurementCategory = tenderDto.mainProcurementCategory,
-                        additionalProcurementCategories = null,
-                        procurementMethod = pmd,
-                        procurementMethodDetails = tenderDto.procurementMethodDetails,
-                        procurementMethodRationale = tenderDto.procurementMethodRationale,
-                        procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo,
-                        submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
-                        submissionMethodDetails = tenderDto.submissionMethodDetails,
-                        submissionMethodRationale = tenderDto.submissionMethodRationale,
-                        submissionLanguages = null,
-                        eligibilityCriteria = tenderDto.eligibilityCriteria,
-                        acceleratedProcedure = AcceleratedProcedure(isAcceleratedProcedure = false),
-                        designContest = DesignContest(serviceContractAward = false),
-                        electronicWorkflows = ElectronicWorkflows(useOrdering = false, acceptInvoicing = false, usePayment = false),
-                        jointProcurement = JointProcurement(isJointProcurement = false),
-                        procedureOutsourcing = ProcedureOutsourcing(procedureOutsourced = false),
-                        framework = Framework(isAFramework = false),
-                        dynamicPurchasingSystem = DynamicPurchasingSystem(hasDynamicPurchasingSystem = false),
-                        legalBasis = tenderDto.legalBasis,
-                        procuringEntity = tenderDto.procuringEntity,
-                        awardCriteria = tenderDto.awardCriteria ?: AwardCriteria.PRICE_ONLY,
-                        requiresElectronicCatalogue = false,
-                        contractPeriod = getContractPeriod(tenderDto.lots, planningDto.budget),
-                        tenderPeriod = tenderDto.tenderPeriod,
-                        enquiryPeriod = tenderDto.enquiryPeriod,
-                        value = getValueFromLots(tenderDto.lots, planningDto.budget.amount),
-                        lotGroups = listOf(LotGroup(optionToCombine = false)),
-                        lots = getLots(tenderDto.lots),
-                        items = getItems(tenderDto.items),
-                        documents = getDocuments(tenderDto.documents),
-                        procurementMethodModalities = tenderDto.procurementMethodModalities,
-                        electronicAuctions = tenderDto.electronicAuctions
+                    id = cpId,
+                    title = tenderDto.title,
+                    description = tenderDto.description,
+                    status = ACTIVE,
+                    statusDetails = TenderStatusDetails.fromValue(phase),
+                    classification = tenderDto.classification,
+                    mainProcurementCategory = tenderDto.mainProcurementCategory,
+                    additionalProcurementCategories = null,
+                    procurementMethod = pmd,
+                    procurementMethodDetails = tenderDto.procurementMethodDetails,
+                    procurementMethodRationale = tenderDto.procurementMethodRationale,
+                    procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo,
+                    submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
+                    submissionMethodDetails = tenderDto.submissionMethodDetails,
+                    submissionMethodRationale = tenderDto.submissionMethodRationale,
+                    submissionLanguages = null,
+                    eligibilityCriteria = tenderDto.eligibilityCriteria,
+                    acceleratedProcedure = AcceleratedProcedure(isAcceleratedProcedure = false),
+                    designContest = DesignContest(serviceContractAward = false),
+                    electronicWorkflows = ElectronicWorkflows(useOrdering = false, acceptInvoicing = false, usePayment = false),
+                    jointProcurement = JointProcurement(isJointProcurement = false),
+                    procedureOutsourcing = ProcedureOutsourcing(procedureOutsourced = false),
+                    framework = Framework(isAFramework = false),
+                    dynamicPurchasingSystem = DynamicPurchasingSystem(hasDynamicPurchasingSystem = false),
+                    legalBasis = tenderDto.legalBasis,
+                    procuringEntity = tenderDto.procuringEntity,
+                    awardCriteria = tenderDto.awardCriteria ?: AwardCriteria.PRICE_ONLY,
+                    requiresElectronicCatalogue = false,
+                    contractPeriod = getContractPeriod(tenderDto.lots, planningDto.budget),
+                    tenderPeriod = tenderDto.tenderPeriod,
+                    enquiryPeriod = tenderDto.enquiryPeriod,
+                    value = getValueFromLots(tenderDto.lots, planningDto.budget.amount),
+                    lotGroups = listOf(LotGroup(optionToCombine = false)),
+                    lots = getLots(tenderDto.lots),
+                    items = getItems(tenderDto.items),
+                    documents = getDocuments(tenderDto.documents),
+                    procurementMethodModalities = tenderDto.procurementMethodModalities,
+                    electronicAuctions = tenderDto.electronicAuctions
                 )
         )
         val entity = getEntity(tp, cpId, stage, dateTime, owner)

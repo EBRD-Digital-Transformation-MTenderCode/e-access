@@ -4,7 +4,7 @@ import com.procurement.access.application.service.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.mainProcurementCategory.MainProcurementCategory
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
