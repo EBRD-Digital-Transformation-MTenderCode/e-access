@@ -86,17 +86,7 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
 
 
 
-enum class SubmissionMethodRationale(@JsonValue val value: String) {
-    TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE("TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"),
-    IPR_ISSUES("IPR_ISSUES"),
-    REQUIRES_SPECIALISED_EQUIPMENT("REQUIRES_SPECIALISED_EQUIPMENT"),
-    PHYSICAL_MODEL("PHYSICAL_MODEL"),
-    SENSITIVE_INFORMATION("SENSITIVE_INFORMATION");
 
-    override fun toString(): String {
-        return this.value
-    }
-}
 
 enum class TenderStatus(@JsonValue val value: String) {
     PLANNING("planning"),
