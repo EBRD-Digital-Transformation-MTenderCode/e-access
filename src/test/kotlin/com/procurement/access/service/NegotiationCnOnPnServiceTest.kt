@@ -8,6 +8,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
@@ -31,7 +32,6 @@ import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.model.dto.databinding.toLocalDateTime
-import com.procurement.access.model.dto.ocds.TenderStatus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach

@@ -1,6 +1,7 @@
 package com.procurement.access.application.service.tender.strategy.prepare.cancellation
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.INVALID_DOCUMENT_TYPE
@@ -10,7 +11,6 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_STATUS_DETAILS
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.model.dto.ocds.DocumentType
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.localNowUTC

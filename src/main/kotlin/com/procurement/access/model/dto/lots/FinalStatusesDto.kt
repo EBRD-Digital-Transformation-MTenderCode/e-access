@@ -2,9 +2,9 @@ package com.procurement.access.model.dto.lots
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.dto.ocds.LotStatusDetails
-import com.procurement.access.model.dto.ocds.TenderStatus
 import com.procurement.access.model.dto.ocds.TenderStatusDetails
 
 data class FinalStatusesRq @JsonCreator constructor(
