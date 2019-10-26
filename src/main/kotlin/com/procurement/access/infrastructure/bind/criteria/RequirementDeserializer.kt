@@ -67,8 +67,8 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                         BigDecimal(requirementNode.get("maxValue").asText())
                     )
                     RequirementDataType.INTEGER -> RangeValue.of(
-                        requirementNode.get("minValue").decimalValue(),
-                        requirementNode.get("maxValue").decimalValue()
+                        requirementNode.get("minValue").longValue(),
+                        requirementNode.get("maxValue").longValue()
                     )
                     RequirementDataType.BOOLEAN, RequirementDataType.STRING -> throw RuntimeException()
                 }
