@@ -8,12 +8,13 @@ import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
+import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueSerializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
+import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
+import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
@@ -109,17 +110,10 @@ data class UpdateCnRequest(
             ) {
 
                 data class ElectronicAuctionModality(
-                    @field:JsonProperty("eligibleMinimumDifference") @param:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: EligibleMinimumDifference
-                ) {
-
-                    data class EligibleMinimumDifference(
-                        @JsonDeserialize(using = AmountDeserializer::class)
-                        @JsonSerialize(using = AmountSerializer::class)
-                        @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                        @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-                    )
-                }
+                    @JsonDeserialize(using = MoneyDeserializer::class)
+                    @JsonSerialize(using = MoneySerializer::class)
+                    @field:JsonProperty("eligibleMinimumDifference") @param:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: Money
+                )
             }
         }
 
@@ -230,19 +224,14 @@ data class UpdateCnRequest(
 
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
+
+            @JsonDeserialize(using = MoneyDeserializer::class)
+            @JsonSerialize(using = MoneySerializer::class)
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
+
             @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance
         ) {
-
-            data class Value(
-
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
-                @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-            )
 
             data class ContractPeriod(
                 @JsonDeserialize(using = JsonDateTimeDeserializer::class)
