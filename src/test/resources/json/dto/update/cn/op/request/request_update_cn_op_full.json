@@ -63,7 +63,7 @@
     ],
     "documents": [
       {
-        "documentType": "",
+        "documentType": "illustration",
         "id": "tender.documents[0].documentType",
         "title": "tender.documents[0].title",
         "description": "tender.documents[0].description",
