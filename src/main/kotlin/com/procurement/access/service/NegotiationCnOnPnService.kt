@@ -747,6 +747,7 @@ class NegotiationCnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria ?: AwardCriteria.PRICE_ONLY,
+            awardCriteriaDetails = null,
             tenderPeriod = null,
             contractPeriod = contractPeriod,
             enquiryPeriod = null,

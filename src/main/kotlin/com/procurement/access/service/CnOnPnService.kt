@@ -1028,6 +1028,7 @@ class CnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria,
+            awardCriteriaDetails = request.tender.awardCriteriaDetails,
             tenderPeriod = request.tender.tenderPeriod.let { period ->
                 CNEntity.Tender.TenderPeriod(
                     startDate = period.startDate,
@@ -2137,6 +2138,7 @@ class CnOnPnService(
                         )
                     },
                     awardCriteria = tender.awardCriteria,
+                    awardCriteriaDetails = tender.awardCriteriaDetails,
                     submissionMethod = tender.submissionMethod,
                     submissionMethodRationale = tender.submissionMethodRationale,
                     submissionMethodDetails = tender.submissionMethodDetails,
