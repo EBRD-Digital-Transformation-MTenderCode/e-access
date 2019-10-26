@@ -16,6 +16,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_DOCUMENT_TYPE
 import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
@@ -416,27 +417,33 @@ class CnOnPnService(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
 
-        val documents = procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .filter { it.documents != null }
-            .flatMap { it.documents!! }
+        procuringEntityRequest.persones.flatMap { it.businessFunctions }
+            .forEach {
+                it.documents?.let { documents ->
+                    if (documents.isEmpty() ) throw ErrorException(
+                        error = INVALID_PROCURING_ENTITY,
+                        message = "At least one document should be added. "
+                    )
 
-        if (documents.isEmpty()) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "At least one document should be added. "
-        )
+                    val actualIds = documents.map { it.id }
+                    val uniqueIds = actualIds.toSet()
 
-        val actualIds = documents.map { it.id }
-        val uniqueIds = actualIds.toSet()
-        if (actualIds.size != uniqueIds.size) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
-        )
+                    if (actualIds.size != uniqueIds.size) throw ErrorException(
+                        error = INVALID_PROCURING_ENTITY,
+                        message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
+                    )
 
-        documents.forEach {
-            when (it.documentType) {
-                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+                    documents.forEach {
+                        when (it.documentType) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+                            else -> throw ErrorException(
+                                error = INVALID_DOCUMENT_TYPE,
+                                message = "BusinessFucntion type ${it.documentType.value} is not allowed for this operation. "
+                            )
+                        }
+                    }
+                }
             }
-        }
     }
 
     /**
