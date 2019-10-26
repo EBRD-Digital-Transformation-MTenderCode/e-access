@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueSerializer
@@ -299,7 +300,7 @@ data class UpdateCnRequest(
         )
 
         data class Document(
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: TenderDocumentType,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
