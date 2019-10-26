@@ -1,0 +1,62 @@
+{
+  "planning": {
+    "rationale": "planning.rationale"
+  },
+  "tender": {
+    "title": "tender.title",
+    "description": "tender.description",
+    "awardCriteria": "costOnly",
+    "lots": [
+      {
+        "id": "tender.lots[0].id",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "value": {
+          "amount": 100.01,
+          "currency": "MDL"
+        },
+        "contractPeriod": {
+          "startDate": "2019-03-16T12:40:11Z",
+          "endDate": "2019-03-15T11:54:13Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "tender.lots[0].placeOfPerformance.address",
+            "addressDetails": {
+              "country": {
+                "scheme": "tender.lots[0].placeOfPerformance.addressDetails.country.scheme",
+                "id": "tender.lots[0].placeOfPerformance.addressDetails.country.id",
+                "description": "tender.lots[0].placeOfPerformance.addressDetails.country.description",
+                "uri": "tender.lots[0].placeOfPerformance.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "tender.lots[0].placeOfPerformance.addressDetails.region.scheme",
+                "id": "tender.lots[0].placeOfPerformance.addressDetails.region.id",
+                "description": "tender.lots[0].placeOfPerformance.addressDetails.region.description",
+                "uri": "tender.lots[0].placeOfPerformance.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "tender.lots[0].placeOfPerformance.addressDetails.locality.scheme",
+                "id": "tender.lots[0].placeOfPerformance.addressDetails.locality.id",
+                "description": "tender.lots[0].placeOfPerformance.addressDetails.locality.description"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "tender.items[0].id",
+        "description": "tender.items[].description",
+        "relatedLot": "tender.lots[0].id"
+      }
+    ],
+    "documents": [
+      {
+        "documentType": "",
+        "id": "tender.documents[0].documentType"
+      }
+    ]
+  }
+}
