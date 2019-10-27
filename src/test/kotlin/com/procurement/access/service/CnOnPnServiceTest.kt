@@ -1020,7 +1020,7 @@ class CnOnPnServiceTest {
                             )
                         }
                     assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
-                    assertTrue(exception.message!!.contains("Authority person should be specified in Request"))
+                    assertTrue(exception.message!!.contains("Only one person should be specified as authority."))
                 }
             }
 

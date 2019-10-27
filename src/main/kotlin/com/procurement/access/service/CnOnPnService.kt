@@ -329,10 +329,15 @@ class CnOnPnService(
         val authorityPersones = procuringEntityRequest.persones.asSequence()
             .flatMap { it.businessFunctions.asSequence() }
             .filter { it.type == BusinessFunctionType.AUTHORITY }
-            .count()
-        if (authorityPersones != 1) throw ErrorException(
+            .toList()
+
+        if (authorityPersones.isEmpty()) throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
             message = "Authority person should be specified in Request. "
+        )
+        if (authorityPersones.size > 1) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Only one person should be specified as authority. "
         )
     }
 
