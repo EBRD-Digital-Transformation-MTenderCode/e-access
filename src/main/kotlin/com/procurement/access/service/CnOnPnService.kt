@@ -372,7 +372,7 @@ class CnOnPnService(
         procuringEntityRequest.persones.map { it.businessFunctions }
             .forEach { businessfunctions ->
                 if (businessfunctions.isEmpty()) detalizationError()
-                if (businessfunctions.toSet().size != businessfunctions.size) uniquenessError()
+                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) uniquenessError()
             }
     }
 
