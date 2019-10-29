@@ -2,11 +2,15 @@ package com.procurement.access.model.dto.ocds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Lot @JsonCreator constructor(
 
         val id: String,
+
+        val internalId: String?,
 
         var title: String?,
 

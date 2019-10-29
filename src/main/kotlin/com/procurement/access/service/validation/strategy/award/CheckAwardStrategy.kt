@@ -1,13 +1,13 @@
 package com.procurement.access.service.validation.strategy.award
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.award.CheckAwardRequest
 import com.procurement.access.infrastructure.dto.award.CheckAwardResponse
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.ocds.LotStatus
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toObject
 import java.math.BigDecimal

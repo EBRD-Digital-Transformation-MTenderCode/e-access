@@ -47,6 +47,7 @@ class CommandController(private val commandService: CommandService) {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception::class)
     fun exception(ex: Exception): ResponseDto {
+        log.error("Error.", ex)
         return when (ex) {
             is ErrorException -> getErrorExceptionResponseDto(ex)
             is EnumException -> getEnumExceptionResponseDto(ex)

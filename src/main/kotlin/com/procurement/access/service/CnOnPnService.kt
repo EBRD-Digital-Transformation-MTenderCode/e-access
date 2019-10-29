@@ -1,18 +1,22 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.service.CheckedCnOnPn
+import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.infrastructure.dto.cn.criteria.Period
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
-import com.procurement.access.exception.ErrorType.AUCTION_ID_DUPLICATED
-import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
-import com.procurement.access.exception.ErrorType.INVALID_AUCTION_CURRENCY
-import com.procurement.access.exception.ErrorType.INVALID_AUCTION_MINIMUM
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_DOCUMENT_TYPE
 import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
@@ -23,32 +27,18 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.exception.ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS
-import com.procurement.access.exception.ErrorType.NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.criteria.Period
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.ocds.AwardCriteria
-import com.procurement.access.model.dto.ocds.BusinessFunctionDocumentType
-import com.procurement.access.model.dto.ocds.BusinessFunctionType
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
-import com.procurement.access.model.dto.ocds.MainProcurementCategory
-import com.procurement.access.model.dto.ocds.ProcurementMethod
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -61,21 +51,11 @@ class CnOnPnService(
     private val tenderProcessDao: TenderProcessDao,
     private val rulesService: RulesService
 ) {
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(CnOnPnService::class.java)
-    }
 
-    fun checkCnOnPn(cm: CommandMessage): ResponseDto {
-        val contextRequest = context(cm)
-
-        log.info("A request '${cm.context.operationId}' cpid '${contextRequest.cpid}'.")
-
-        val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
+    fun checkCnOnPn(context: CheckCnOnPnContext, data: CnOnPnRequest): CheckedCnOnPn {
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
+            tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
-
-        log.info("Validation a request '${cm.context.operationId}' by validation rules.")
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
 
@@ -83,9 +63,9 @@ class CnOnPnService(
         checkTenderStatus(pnEntity)
 
         //VR-3.8.3 Documents (duplicate)
-        checkDocuments(documentsFromRequest = request.tender.documents, documentsFromPN = pnEntity.tender.documents)
+        checkDocuments(documentsFromRequest = data.tender.documents, documentsFromPN = pnEntity.tender.documents)
 
-        request.tender.procuringEntity?.let { requestProcuringEntity ->
+        data.tender.procuringEntity?.also { requestProcuringEntity ->
             //VR-1.0.1.10.1
             checkProcuringEntityIdentifier(requestProcuringEntity, pnEntity.tender.procuringEntity)
 
@@ -96,7 +76,7 @@ class CnOnPnService(
             checkPersonesBusinessFunctions(requestProcuringEntity)
 
             // VR-1.0.1.10.7
-            checkBusinessFunctionPeriod(requestProcuringEntity, contextRequest)
+            checkBusinessFunctionPeriod(requestProcuringEntity, context)
 
             // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
             checkBusinessFunctionDocuments(requestProcuringEntity)
@@ -104,86 +84,76 @@ class CnOnPnService(
         }
 
         if (pnEntity.tender.items.isEmpty()) {
-            val lotsIdsFromRequest = request.tender.lots.asSequence()
+            val lotsIdsFromRequest = data.tender.lots.asSequence()
                 .map { it.id }
                 .toSet()
 
             /** Begin check Lots */
             //VR-3.8.5(CN on PN)  "Currency" (lot)
             checkCurrencyInLotsFromRequest(
-                lotsFromRequest = request.tender.lots,
+                lotsFromRequest = data.tender.lots,
                 budgetFromPN = pnEntity.planning.budget
             )
 
             //VR-3.8.8(CN on PN)  "Contract Period" (Lot) -> VR-3.6.7(CN)
-            checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest = request.tender)
+            checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest = data.tender)
 
             //VR-3.8.10(CN on PN) Lots (tender.lots) -> VR-3.6.9(CN)
             checkLotIdsAsRelatedLotInItems(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                itemsFromRequest = request.tender.items
+                itemsFromRequest = data.tender.items
             )
             //VR-3.8.12(CN on PN) Lot.ID -> VR-3.1.14(CN)
-            checkLotIdFromRequest(lotsFromRequest = request.tender.lots)
+            checkLotIdFromRequest(lotsFromRequest = data.tender.lots)
             /** End check Lots */
 
             /** Begin check Items */
             //VR-3.8.9(CN on PN) "Quantity" (item) -> VR-3.6.11(CN)
-            checkQuantityInItems(itemsFromRequest = request.tender.items)
+            checkQuantityInItems(itemsFromRequest = data.tender.items)
 
             //VR-3.8.11(CN on PN) Items (tender.Items) -> VR-3.6.8(CN)
             checkRelatedLotInItemsFromRequest(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                itemsFromRequest = request.tender.items
+                itemsFromRequest = data.tender.items
             )
 
             //VR-3.8.13(CN on PN) Item.ID -> VR-3.1.15(CN)
-            checkItemIdFromRequest(itemsFromRequest = request.tender.items)
+            checkItemIdFromRequest(itemsFromRequest = data.tender.items)
             /** End check Items */
 
             /** Begin check Tender */
             //VR-3.8.4(CN on PN) "Value" (tender)
-            val tenderValue = calculateTenderValueFromLots(lotsFromRequest = request.tender.lots)
+            val tenderValue = calculateTenderValueFromLots(lotsFromRequest = data.tender.lots)
             checkTenderValue(tenderValue.amount, pnEntity.planning.budget)
 
             //VR-3.8.6(CN on PN)  "Contract Period"(Tender) -> VR-3.6.10(CN)
             checkContractPeriodInTender(
-                lotsFromRequest = request.tender.lots,
+                lotsFromRequest = data.tender.lots,
                 budgetBreakdownsFromPN = pnEntity.planning.budget.budgetBreakdowns
             )
             /** End check Tender */
 
             /** Begin check Auctions */
-            //VR-3.8.14(CN on PN) electronicAuctions.details -> VR-3.7.15(CN)
+            //VR-1.0.1.7.7
             checkAuctionsAreRequired(
-                contextRequest = contextRequest,
-                request = request,
+                context = context,
+                data = data,
                 mainProcurementCategory = pnEntity.tender.mainProcurementCategory
             )
-            if (request.tender.electronicAuctions != null) {
-                //BR-15.1.2(Auction) % of lot.value.amount
-                val percentEligibleMinimumDifference: BigDecimal = percentEligibleMinimumDifference()
-
-                checkAuctionsWhenPNWithoutItems(
-                    lotsFromRequest = request.tender.lots,
-                    electronicAuctions = request.tender.electronicAuctions,
-                    percentEligibleMinimumDifference = percentEligibleMinimumDifference
-                )
-            }
             /** End check Auctions */
 
             /** Begin check Documents*/
             //VR-3.8.7(CN on PN)  "Related Lots"(documents) -> VR-3.6.12(CN)
             checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                documentsFromRequest = request.tender.documents
+                documentsFromRequest = data.tender.documents
             )
             /** End check Documents */
         } else {
             /** Begin check Lots*/
             //VR-3.8.16 "Contract Period" (Lot)
             checkContractPeriodInLotsFromRequestWhenPNWithItems(
-                tenderPeriodEndDate = request.tender.tenderPeriod.endDate,
+                tenderPeriodEndDate = data.tender.tenderPeriod.endDate,
                 lotsFromPN = pnEntity.tender.lots
             )
             /** End check Lots */
@@ -191,22 +161,10 @@ class CnOnPnService(
             /** Begin check Auctions*/
             //VR-3.8.15 electronicAuctions.details
             checkAuctionsAreRequired(
-                contextRequest = contextRequest,
-                request = request,
+                context = context,
+                data = data,
                 mainProcurementCategory = pnEntity.tender.mainProcurementCategory
             )
-
-            if (request.tender.electronicAuctions != null) {
-                //BR-15.1.2(Auction) % of lot.value.amount
-                val percentEligibleMinimumDifference: BigDecimal = percentEligibleMinimumDifference()
-
-                //VR-3.8.15 electronicAuctions.details
-                checkAuctionsWhenPNWithItems(
-                    lotsFromPN = pnEntity.tender.lots,
-                    electronicAuctionsDetails = request.tender.electronicAuctions.details,
-                    percentEligibleMinimumDifference = percentEligibleMinimumDifference
-                )
-            }
             /** End check Auctions */
 
             /** Begin check Documents*/
@@ -214,32 +172,24 @@ class CnOnPnService(
             val lotsIdsFromPN = pnEntity.tender.lots.toSetBy { it.id }
             checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
                 lotsIdsFromPN = lotsIdsFromPN,
-                documentsFromRequest = request.tender.documents
+                documentsFromRequest = data.tender.documents
             )
             /** End check Documents */
         }
 
-        return ResponseDto(data = "ok")
+        return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun createCnOnPn(cm: CommandMessage): ResponseDto {
-        val contextRequest = context(cm)
-
-        log.info("A request '${cm.context.operationId}' cpid '${contextRequest.cpid}'.")
-
-        val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
-
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
+    fun createCnOnPn(context: CreateCnOnPnContext, data: CnOnPnRequest): CnOnPnResponse {
+        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
-
-        log.info("Creation CN on a request '${cm.context.operationId}'.")
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
         val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
-            createTenderBasedPNWithoutItems(contextRequest = contextRequest, request = request, pnEntity = pnEntity)
+            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
         else
-            createTenderBasedPNWithItems(contextRequest = contextRequest, request = request, pnEntity = pnEntity)
+            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
 
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
@@ -249,51 +199,16 @@ class CnOnPnService(
 
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = contextRequest.cpid,
+                cpId = context.cpid,
                 token = tenderProcessEntity.token,
-                stage = contextRequest.stage,
+                stage = context.stage,
                 owner = tenderProcessEntity.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = context.startDate.toDate(),
                 jsonData = toJson(cnEntity)
             )
         )
 
-        val response = getResponse(cnEntity, tenderProcessEntity.token)
-        return ResponseDto(data = response)
-    }
-
-    private fun context(cm: CommandMessage): ContextRequest {
-        val cpid: String = cm.context.cpid
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'cpid' attribute in context..")
-        val token = cm.context.token
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'token' attribute in context.")
-        val previousStage = cm.context.prevStage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'prevStage' attribute in context.")
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'stage' attribute in context.")
-        val owner = cm.context.owner
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val country = cm.context.country
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'country' attribute in context.")
-        val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) }
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
-        val startDate: LocalDateTime = cm.context.startDate?.toLocal()
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
-
-        return ContextRequest(
-            cpid = cpid,
-            token = token,
-            previousStage = previousStage,
-            stage = stage,
-            owner = owner,
-            country = country,
-            pmd = pmd,
-            startDate = startDate
-        )
-    }
-
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
-        ErrorException(ErrorType.INVALID_PMD)
+        return getResponse(cnEntity, tenderProcessEntity.token)
     }
 
     /**
@@ -399,7 +314,7 @@ class CnOnPnService(
     private fun checkProcuringEntityPersones(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
-        if (procuringEntityRequest.persones.size < 1) throw ErrorException(
+        if (procuringEntityRequest.persones.isEmpty()) throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
             message = "At least one Person should be added. "
         )
@@ -414,10 +329,15 @@ class CnOnPnService(
         val authorityPersones = procuringEntityRequest.persones.asSequence()
             .flatMap { it.businessFunctions.asSequence() }
             .filter { it.type == BusinessFunctionType.AUTHORITY }
-            .count()
-        if (authorityPersones != 1) throw ErrorException(
+            .toList()
+
+        if (authorityPersones.isEmpty()) throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
             message = "Authority person should be specified in Request. "
+        )
+        if (authorityPersones.size > 1) throw ErrorException(
+            error = INVALID_PROCURING_ENTITY,
+            message = "Only one person should be specified as authority. "
         )
     }
 
@@ -451,8 +371,8 @@ class CnOnPnService(
 
         procuringEntityRequest.persones.map { it.businessFunctions }
             .forEach { businessfunctions ->
-                if (businessfunctions.size < 1) detalizationError()
-                if (businessfunctions.toSet().size != businessfunctions.size) uniquenessError()
+                if (businessfunctions.isEmpty()) detalizationError()
+                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) uniquenessError()
             }
     }
 
@@ -466,7 +386,7 @@ class CnOnPnService(
      */
     private fun checkBusinessFunctionPeriod(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
-        contextRequest: ContextRequest
+        context: CheckCnOnPnContext
     ) {
         fun dateError(): Nothing = throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
@@ -474,7 +394,7 @@ class CnOnPnService(
         )
 
         procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach { if (it.period.startDate > contextRequest.startDate) dateError() }
+            .forEach { if (it.period.startDate > context.startDate) dateError() }
     }
 
     /**
@@ -502,31 +422,33 @@ class CnOnPnService(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
 
-        val documents = procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .filter { it.documents != null }
-            .flatMap { it.documents!! }
+        procuringEntityRequest.persones.flatMap { it.businessFunctions }
+            .forEach {
+                it.documents?.let { documents ->
+                    if (documents.isEmpty() ) throw ErrorException(
+                        error = INVALID_PROCURING_ENTITY,
+                        message = "At least one document should be added. "
+                    )
 
-        if (documents.size < 1) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "At least one document should be added. "
-        )
+                    val actualIds = documents.map { it.id }
+                    val uniqueIds = actualIds.toSet()
 
-        val actualIds = documents.map { it.id }
-        val uniqueIds = actualIds.toSet()
-        if (actualIds.size != uniqueIds.size) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
-        )
+                    if (actualIds.size != uniqueIds.size) throw ErrorException(
+                        error = INVALID_PROCURING_ENTITY,
+                        message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
+                    )
 
-        documents.forEach {
-            when (it.documentType) {
-                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
-                else                                             -> throw ErrorException(
-                    error = INVALID_PROCURING_ENTITY,
-                    message = "Invalid document type. "
-                )
+                    documents.forEach {
+                        when (it.documentType) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+                            else -> throw ErrorException(
+                                error = INVALID_DOCUMENT_TYPE,
+                                message = "BusinessFucntion type ${it.documentType.value} is not allowed for this operation. "
+                            )
+                        }
+                    }
+                }
             }
-        }
     }
 
     /**
@@ -773,253 +695,6 @@ class CnOnPnService(
     }
 
     /**
-     * VR-3.8.14(CN on PN) electronicAuctions.details -> VR-3.7.15(CN)
-     *
-     * VR-3.7.15	electronicAuctions.details
-     *
-     * 1. Checks the uniqueness of all electronicAuctions.details.ID from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.ID values from Request,
-     *      validation is successful;
-     *      ELSE  eAccess throws Exception: "Invalid electronicAuctions IDs";
-     * 2. Checks the uniqueness of all electronicAuctions.details.relatedLot values from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.relatedLot from Request,
-     *      validation is successful;
-     *      ELSE eAccess throws Exception: "Invalid lot IDs"
-     * 3. eAccess compares Lots list from Request and electronicAuctions.details list from Request:
-     *      IF Quantity of Lots objects from Request == (equal to) quantity of electronicAuctions.details objects
-     *      from Request, validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 4. eAccess analyzes the values of electronicAuctions.details.relatedLot from Request:
-     *      IF set of electronicAuctions.details.relatedLot values from Request containsAll set of Lot.ID from Request,
-     *      validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 5. eAccess checks eligibleMinimumDifference by rule VR-15.1.2(Auction);
-     */
-    private fun checkAuctionsWhenPNWithoutItems(
-        lotsFromRequest: List<CnOnPnRequest.Tender.Lot>,
-        electronicAuctions: CnOnPnRequest.Tender.ElectronicAuctions,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        //1
-        val idsAuctionsIsUnique = electronicAuctions.details.uniqueBy { it.id }
-        if (idsAuctionsIsUnique.not())
-            throw ErrorException(AUCTION_ID_DUPLICATED)
-        //2
-        val auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail> =
-            electronicAuctions.details.associateBy { it.relatedLot }
-        if (auctionDetailsByRelatedLot.size != electronicAuctions.details.size)
-            throw ErrorException(
-                error = AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS,
-                message = "The auctions in request contains not unique related lots."
-            )
-        //3
-        val lotsFromRequestById: Map<String, CnOnPnRequest.Tender.Lot> = lotsFromRequest.associateBy { it.id }
-        val idsLotsFromRequest = lotsFromRequestById.keys
-        val idsRelatedLotsFromAuctions = auctionDetailsByRelatedLot.keys
-        if (idsLotsFromRequest.size != idsRelatedLotsFromAuctions.size)
-            throw ErrorException(
-                error = NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS,
-                message = "The number of auctions does not match the number of lots. (lots ids: $idsLotsFromRequest, related lots: $idsRelatedLotsFromAuctions)."
-            )
-        //4
-        idsRelatedLotsFromAuctions.forEach { relatedLot ->
-            if (relatedLot !in idsLotsFromRequest)
-                throw ErrorException(
-                    error = LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS,
-                    message = "The auctions contains unknown related lots (lots ids: $idsLotsFromRequest, related lots: $idsRelatedLotsFromAuctions)."
-                )
-        }
-        //5
-        checkEligibleMinimumDifferenceWhenPNWithoutItems(
-            lotsFromRequestById = lotsFromRequestById,
-            auctionDetailsByRelatedLot = auctionDetailsByRelatedLot,
-            percentEligibleMinimumDifference = percentEligibleMinimumDifference
-        )
-    }
-
-    /**
-     * VR-15.1.2(Auction) eligibleMinimumDifference (electronicAuctions.details)
-     *
-     * eAuction proceeds every electronicAuctions.details object from Request in the following order:
-     * 1. Get.electronicAuctions.details.relatedLot value from one object and finds appropriate Lot object
-     * with Lot.ID == electronicAuctions.details.relatedLot;
-     * 2. Get.lot.value.amount from Lot (found on step 1);
-     * 3. Determines the permitted percent's value (N % of lot.value.amount) by rule BR-15.1.2;
-     * 4. Compares lot.value.amount (got on step 2) with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.amount from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.amount != 0 && <= (less || equal to) N % (got on step 3)
-     *      of lot.value.amount, validation is successful;
-     *      ELSE eAuction throws Exception;
-     * 5. Get.lot.value.currency from Lot (found on step 1);
-     * 6. Compares lot.value.currency determined previously with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.currency from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.currency == (equal to) value of lot.value.currency,
-     *      validation is successful;
-     *      ELSE eAuction throws Exception;
-     */
-    private fun checkEligibleMinimumDifferenceWhenPNWithoutItems(
-        lotsFromRequestById: Map<String, CnOnPnRequest.Tender.Lot>,
-        auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail>,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        auctionDetailsByRelatedLot.forEach { relatedLot, detail ->
-            //1
-            val lot: CnOnPnRequest.Tender.Lot = lotsFromRequestById.getValue(relatedLot)
-            //2
-            val lotAmount = lot.value.amount
-            //4
-            val eligibleMinimum = (lotAmount * percentEligibleMinimumDifference).setScale(2, RoundingMode.HALF_UP)
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.amount > eligibleMinimum)
-                    throw ErrorException(
-                        error = INVALID_AUCTION_MINIMUM,
-                        message = "The amount [${modalities.eligibleMinimumDifference.amount}] of the eligibleMinimumDifference in lot [${lot.id}] more that minimum [$eligibleMinimum]."
-                    )
-            }
-
-            //5
-            val currency = lot.value.currency
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.currency != currency)
-                    throw ErrorException(
-                        error = INVALID_AUCTION_CURRENCY,
-                        message = "The currency [${modalities.eligibleMinimumDifference.amount}] of the eligibleMinimumDifference in lot [${lot.id}] not eq that currency [$currency] in lot."
-                    )
-            }
-        }
-    }
-
-    /**
-     * BR-15.1.2(Auction) % of lot.value.amount
-     *
-     * eAuction finds permitted value of percent of lot.value.amount for eligibleMinimumDifference validation
-     * by values of pmd && country parameters:
-     * IF value of pmd == OT || SV || MV && value of country == MD, N == 10 %;
-     * ELSE eAuction throws Exception;
-     */
-    private fun percentEligibleMinimumDifference(): BigDecimal = BigDecimal(0.1).setScale(2, RoundingMode.HALF_UP)
-
-    /**
-     * VR-3.8.15 electronicAuctions.details
-     *
-     * 1. eAccess finds saved Lots object in DB by transferred value of CPID parameter from Request;
-     * 2. Selects Lots object in DB with lot.status == "planning" and put Lot.Id to list;
-     * 3. Checks the uniqueness of all electronicAuctions.details.ID from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.ID values from Request,
-     *      validation is successful;
-     *      ELSE  eAccess throws Exception: "Invalid electronicAuctions IDs";
-     * 4. Checks the uniqueness of all electronicAuctions.details.relatedLot values from Request;
-     *      IF there is NO repeated value in list of electronicAuctions.details.relatedLot from Request,
-     *      validation is successful;
-     *      ELSE  eAccess throws Exception: "Invalid lot IDs";
-     * 5. Compares Lots list from DB (found on step 2) and electronicAuctions.details list from Request:
-     *      IF Quantity of Lots objects from DB == (equal to) quantity of electronicAuctions.details objects
-     *      from Request, validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 6. eAccess analyzes the values of electronicAuctions.details.relatedLot from Request:
-     *      IF set of electronicAuctions.details.relatedLot values from Request containsAll set of Lot.ID values
-     *      from DB (found on step 2), validation is successful;
-     *      ELSE eAccess throws Exception;
-     * 7. eAccess checks eligibleMinimumDifference by rule VR-15.1.2;
-     */
-    private fun checkAuctionsWhenPNWithItems(
-        lotsFromPN: List<PNEntity.Tender.Lot>,
-        electronicAuctionsDetails: List<CnOnPnRequest.Tender.ElectronicAuctions.Detail>,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        //3
-        val idAuctionIsUnique = electronicAuctionsDetails.uniqueBy { it.id }
-        if (idAuctionIsUnique.not())
-            throw ErrorException(AUCTION_ID_DUPLICATED)
-
-        //4
-        val auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail> =
-            electronicAuctionsDetails.associateBy { it.relatedLot }
-        if (auctionDetailsByRelatedLot.size != electronicAuctionsDetails.size)
-            throw ErrorException(AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS)
-
-        //2
-        val lotsInPlanningStatusById: Map<String, PNEntity.Tender.Lot> = lotsFromPN.asSequence()
-            .filter { lot -> lot.status == LotStatus.PLANNING }
-            .associateBy { it.id }
-        //5
-        val idsLotsFromDB = lotsInPlanningStatusById.keys
-        val idsRelatedLotsFromAuctions = auctionDetailsByRelatedLot.keys
-        if (idsLotsFromDB.size != auctionDetailsByRelatedLot.size)
-            throw ErrorException(
-                error = NUMBER_AUCTIONS_NOT_MATCH_TO_LOTS,
-                message = "The number of auctions does not match the number of lots. (lots ids: $idsLotsFromDB, related lots: $idsRelatedLotsFromAuctions)."
-            )
-        //6
-        idsRelatedLotsFromAuctions.forEach { relatedLot ->
-            if (relatedLot !in idsLotsFromDB)
-                throw ErrorException(
-                    error = LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS,
-                    message = "The auctions contains unknown related lots (lots ids: $idsLotsFromDB, related lots: $idsRelatedLotsFromAuctions)."
-                )
-        }
-        //7
-        checkEligibleMinimumDifferenceWhenPNWithItems(
-            lotsFromPNById = lotsInPlanningStatusById,
-            auctionDetailsByRelatedLot = auctionDetailsByRelatedLot,
-            percentEligibleMinimumDifference = percentEligibleMinimumDifference
-        )
-    }
-
-    /**
-     * VR-15.1.2 eligibleMinimumDifference (electronicAuctions.details)
-     *
-     * eAuction proceeds every electronicAuctions.details object from Request in the following order:
-     * 1. Get.electronicAuctions.details.relatedLot value from one object and finds appropriate Lot object
-     * with Lot.ID == electronicAuctions.details.relatedLot;
-     * 2. Get.lot.value.amount from Lot (found on step 1);
-     * 3. Determines the permitted percent's value (N % of lot.value.amount) by rule BR-15.1.2;
-     * 4. Compares lot.value.amount (got on step 2) with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.amount from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.amount != 0 && <= (less || equal to) N % (got on step 3)
-     *      of lot.value.amount, validation is successful;
-     *      ELSE eAuction throws Exception;
-     * 5. Get.lot.value.currency from Lot (found on step 1);
-     * 6. Compares lot.value.currency determined previously with
-     * electronicAuctions.details.electronicAuctionModalities.eligibleMinimumDifference.currency from object
-     * chosen on step 1:
-     *      IF value of eligibleMinimumDifference.currency == (equal to) value of lot.value.currency,
-     *      validation is successful;
-     *      ELSE eAuction throws Exception;
-     */
-    private fun checkEligibleMinimumDifferenceWhenPNWithItems(
-        lotsFromPNById: Map<String, PNEntity.Tender.Lot>,
-        auctionDetailsByRelatedLot: Map<String, CnOnPnRequest.Tender.ElectronicAuctions.Detail>,
-        percentEligibleMinimumDifference: BigDecimal
-    ) {
-        auctionDetailsByRelatedLot.forEach { relatedLot, detail ->
-            //1
-            val lot: PNEntity.Tender.Lot = lotsFromPNById.getValue(relatedLot)
-            //2
-            val lotAmount = lot.value.amount
-            //4
-            val eligibleMinimum = lotAmount * percentEligibleMinimumDifference
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.amount > eligibleMinimum)
-                    throw ErrorException(error = INVALID_AUCTION_MINIMUM)
-            }
-            //5
-            val currency = lot.value.currency
-            //6
-            detail.electronicAuctionModalities.forEach { modalities ->
-                if (modalities.eligibleMinimumDifference.currency != currency)
-                    throw ErrorException(
-                        error = INVALID_AUCTION_CURRENCY,
-                        message = "Auction with id '${detail.id}' contains invalid currency in the eligible minimum difference (lot value currency: '$currency', eligible minimum difference currency: '${modalities.eligibleMinimumDifference.currency}')."
-                    )
-            }
-        }
-    }
-
-    /**
      * VR-3.8.16(CN on PN) "Contract Period" (Lot)
      *
      * eAccess analyzes pmd value from Request:
@@ -1069,23 +744,26 @@ class CnOnPnService(
         }
     }
 
+    /**
+     * VR-1.0.1.7.7
+     */
     private fun checkAuctionsAreRequired(
-        contextRequest: ContextRequest,
-        request: CnOnPnRequest,
+        context: CheckCnOnPnContext,
+        data: CnOnPnRequest,
         mainProcurementCategory: MainProcurementCategory
     ) {
         val isAuctionRequired = rulesService.isAuctionRequired(
-            contextRequest.country,
-            contextRequest.pmd,
+            context.country,
+            context.pmd,
             mainProcurementCategory
         )
 
         if (isAuctionRequired) {
-            val procurementMethodModalities = request.tender.procurementMethodModalities
+            val procurementMethodModalities = data.tender.procurementMethodModalities
             if (procurementMethodModalities == null || procurementMethodModalities.isEmpty())
                 throw ErrorException(INVALID_PMM)
 
-            val electronicAuctions = request.tender.electronicAuctions
+            val electronicAuctions = data.tender.electronicAuctions
             if (electronicAuctions == null || electronicAuctions.details.isEmpty())
                 throw ErrorException(ErrorType.INVALID_AUCTION_IS_EMPTY)
         }
@@ -1108,7 +786,6 @@ class CnOnPnService(
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
-        contextRequest: ContextRequest,
         request: CnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -1132,7 +809,6 @@ class CnOnPnService(
         val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
         if ((rawCriteria == null) && (conversions != null))
             throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
-
 
         val criteria = rawCriteria?.let {
             convertRequestCriteria(
@@ -1163,7 +839,6 @@ class CnOnPnService(
         )
 
         return tender(
-            contextRequest = contextRequest,
             request = request,
             pnEntity = pnEntity,
             classification = classification,
@@ -1179,7 +854,6 @@ class CnOnPnService(
     }
 
     private fun createTenderBasedPNWithItems(
-        contextRequest: ContextRequest,
         request: CnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -1222,7 +896,6 @@ class CnOnPnService(
         )
 
         return tender(
-            contextRequest = contextRequest,
             request = request,
             pnEntity = pnEntity,
             classification = classification,
@@ -1285,7 +958,6 @@ class CnOnPnService(
     }
 
     private fun tender(
-        contextRequest: ContextRequest,
         request: CnOnPnRequest,
         pnEntity: PNEntity,
         classification: CNEntity.Tender.Classification,
@@ -1368,6 +1040,7 @@ class CnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria,
+            awardCriteriaDetails = request.tender.awardCriteriaDetails,
             tenderPeriod = request.tender.tenderPeriod.let { period ->
                 CNEntity.Tender.TenderPeriod(
                     startDate = period.startDate,
@@ -1685,23 +1358,23 @@ class CnOnPnService(
                 id = criteria.id,
                 title = criteria.title,
                 description = criteria.description,
-                requirementGroups = criteria.requirementGroups.map {
+                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = it.id,
-                        description = it.description,
-                        requirements = it.requirements.map {
+                        id = requirementGroup.id,
+                        description = requirementGroup.description,
+                        requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
-                                id = it.id,
-                                description = it.description,
-                                title = it.title,
-                                period = it.period?.let {
+                                id = requirement.id,
+                                description = requirement.description,
+                                title = requirement.title,
+                                period = requirement.period?.let { period ->
                                     Period(
-                                        startDate = it.startDate,
-                                        endDate = it.endDate
+                                        startDate = period.startDate,
+                                        endDate = period.endDate
                                     )
                                 },
-                                dataType = it.dataType,
-                                value = it.value
+                                dataType = requirement.dataType,
+                                value = requirement.value
                             )
                         }
                     )
@@ -1875,34 +1548,34 @@ class CnOnPnService(
     private fun criteriaFromRequest(
         criteriaFromRequest: List<CnOnPnRequest.Tender.Criteria>?
     ): List<CNEntity.Tender.Criteria>? {
-        return criteriaFromRequest?.map {
+        return criteriaFromRequest?.map { criteria ->
             CNEntity.Tender.Criteria(
-                id = it.id,
-                title = it.title,
-                description = it.description,
-                requirementGroups = it.requirementGroups.map {
+                id = criteria.id,
+                title = criteria.title,
+                description = criteria.description,
+                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = it.id,
-                        description = it.description,
-                        requirements = it.requirements.map {
+                        id = requirementGroup.id,
+                        description = requirementGroup.description,
+                        requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
-                                id = it.id,
-                                description = it.description,
-                                title = it.title,
-                                period = it.period?.let {
+                                id = requirement.id,
+                                description = requirement.description,
+                                title = requirement.title,
+                                period = requirement.period?.let { period ->
                                     Period(
-                                        startDate = it.startDate,
-                                        endDate = it.endDate
+                                        startDate = period.startDate,
+                                        endDate = period.endDate
                                     )
                                 },
-                                dataType = it.dataType,
-                                value = it.value
+                                dataType = requirement.dataType,
+                                value = requirement.value
                             )
                         }
                     )
                 },
-                relatesTo = it.relatesTo,
-                relatedItem = it.relatedItem
+                relatesTo = criteria.relatesTo,
+                relatedItem = criteria.relatedItem
             )
         }
     }
@@ -1910,21 +1583,20 @@ class CnOnPnService(
     private fun conversionsFromRequest(
         conversionsFromRequest: List<CnOnPnRequest.Tender.Conversion>?
     ): List<CNEntity.Tender.Conversion>? {
-        return conversionsFromRequest?.map {
+        return conversionsFromRequest?.map { conversion ->
             CNEntity.Tender.Conversion(
-                id = it.id,
-                relatedItem = it.relatedItem,
-                relatesTo = it.relatesTo,
-                rationale = it.rationale,
-                description = it.description,
-                coefficients = it.coefficients.map {
+                id = conversion.id,
+                relatedItem = conversion.relatedItem,
+                relatesTo = conversion.relatesTo,
+                rationale = conversion.rationale,
+                description = conversion.description,
+                coefficients = conversion.coefficients.map { coefficient ->
                     CNEntity.Tender.Conversion.Coefficient(
-                        id = it.id,
-                        value = it.value,
-                        coefficient = it.coefficient
+                        id = coefficient.id,
+                        value = coefficient.value,
+                        coefficient = coefficient.coefficient
                     )
                 }
-
             )
         }
     }
@@ -2350,21 +2022,20 @@ class CnOnPnService(
                             relatedItem = criteria.relatedItem
                         )
                     },
-                    conversions = tender.conversions?.map {
+                    conversions = tender.conversions?.map { conversion ->
                         CnOnPnResponse.Tender.Conversion(
-                            id = it.id,
-                            relatedItem = it.relatedItem,
-                            relatesTo = it.relatesTo,
-                            rationale = it.rationale,
-                            description = it.description,
-                            coefficients = it.coefficients.map {
+                            id = conversion.id,
+                            relatedItem = conversion.relatedItem,
+                            relatesTo = conversion.relatesTo,
+                            rationale = conversion.rationale,
+                            description = conversion.description,
+                            coefficients = conversion.coefficients.map { coefficient ->
                                 CnOnPnResponse.Tender.Conversion.Coefficient(
-                                    id = it.id,
-                                    value = it.value,
-                                    coefficient = it.coefficient
+                                    id = coefficient.id,
+                                    value = coefficient.value,
+                                    coefficient = coefficient.coefficient
                                 )
                             }
-
                         )
                     },
                     lots = tender.lots.map { lot ->
@@ -2479,6 +2150,7 @@ class CnOnPnService(
                         )
                     },
                     awardCriteria = tender.awardCriteria,
+                    awardCriteriaDetails = tender.awardCriteriaDetails,
                     submissionMethod = tender.submissionMethod,
                     submissionMethodRationale = tender.submissionMethodRationale,
                     submissionMethodDetails = tender.submissionMethodDetails,
@@ -2495,15 +2167,5 @@ class CnOnPnService(
             }
         )
     }
-
-    data class ContextRequest(
-        val cpid: String,
-        val token: String,
-        val previousStage: String,
-        val stage: String,
-        val owner: String,
-        val country: String,
-        val pmd: ProcurementMethod,
-        val startDate: LocalDateTime
-    )
 }
+

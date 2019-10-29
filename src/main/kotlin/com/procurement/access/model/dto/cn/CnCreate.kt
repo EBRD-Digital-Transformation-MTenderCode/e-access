@@ -2,22 +2,22 @@ package com.procurement.access.model.dto.cn
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.LegalBasis
+import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 import com.procurement.access.model.dto.databinding.QuantityDeserializer
-import com.procurement.access.model.dto.ocds.AwardCriteria
 import com.procurement.access.model.dto.ocds.BudgetBreakdown
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.Document
 import com.procurement.access.model.dto.ocds.ElectronicAuctions
-import com.procurement.access.model.dto.ocds.LegalBasis
-import com.procurement.access.model.dto.ocds.MainProcurementCategory
 import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.model.dto.ocds.Period
 import com.procurement.access.model.dto.ocds.PlaceOfPerformance
-import com.procurement.access.model.dto.ocds.ProcurementMethodModalities
 import com.procurement.access.model.dto.ocds.Unit
 import com.procurement.access.model.dto.ocds.Value
 import com.procurement.access.model.dto.ocds.validate
@@ -52,50 +52,52 @@ data class BudgetCnCreate @JsonCreator constructor(
 
 data class TenderCnCreate @JsonCreator constructor(
 
-        val title: String,
+    val title: String,
 
-        val description: String,
+    val description: String,
 
-        val classification: Classification,
+    val classification: Classification,
 
-        val mainProcurementCategory: MainProcurementCategory,
+    val mainProcurementCategory: MainProcurementCategory,
 
-        val procurementMethodDetails: String,
+    val procurementMethodDetails: String,
 
-        val procurementMethodRationale: String?,
+    val procurementMethodRationale: String?,
 
-        val procurementMethodAdditionalInfo: String?,
+    val procurementMethodAdditionalInfo: String?,
 
-        val submissionMethodRationale: List<String>,
+    val submissionMethodRationale: List<String>,
 
-        val submissionMethodDetails: String,
+    val submissionMethodDetails: String,
 
-        val eligibilityCriteria: String,
+    val eligibilityCriteria: String,
 
-        val legalBasis: LegalBasis,
+    val legalBasis: LegalBasis,
 
-        val tenderPeriod: Period,
+    val tenderPeriod: Period,
 
-        val enquiryPeriod: Period,
+    val enquiryPeriod: Period,
 
-        val procuringEntity: OrganizationReference,
+    val procuringEntity: OrganizationReference,
 
-        val lots: List<LotCnCreate>,
+    val lots: List<LotCnCreate>,
 
-        val items: List<ItemCnCreate>,
+    val items: List<ItemCnCreate>,
 
-        val documents: List<Document>,
+    val documents: List<Document>,
 
-        val procurementMethodModalities: Set<ProcurementMethodModalities>?,
+    val procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
-        val electronicAuctions: ElectronicAuctions?,
+    val electronicAuctions: ElectronicAuctions?,
 
-        val awardCriteria: AwardCriteria?
+    val awardCriteria: AwardCriteria?
 )
 
 data class LotCnCreate @JsonCreator constructor(
 
         var id: String,
+
+        val internalId: String?,
 
         val title: String,
 
@@ -111,6 +113,8 @@ data class LotCnCreate @JsonCreator constructor(
 data class ItemCnCreate @JsonCreator constructor(
 
         var id: String,
+
+        val internalId: String?,
 
         val description: String,
 

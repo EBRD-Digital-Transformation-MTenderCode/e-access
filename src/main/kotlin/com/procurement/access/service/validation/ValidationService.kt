@@ -1,13 +1,13 @@
 package com.procurement.access.service.validation
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.validation.CheckBSRq
 import com.procurement.access.model.dto.validation.CheckBid
@@ -76,6 +76,22 @@ class ValidationService(private val tenderProcessDao: TenderProcessDao) {
         process.tender.lots.asSequence()
             .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.AWARDED }
             ?: throw ErrorException(ErrorType.NO_AWARDED_LOT)
+        return ResponseDto(data = "ok")
+    }
+
+    fun checkLotActive(cm: CommandMessage): ResponseDto {
+        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
+        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
+        val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
+
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val process = toObject(TenderProcess::class.java, entity.jsonData)
+        process.tender.lots.asSequence()
+            .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.EMPTY }
+            ?: throw ErrorException(
+                error = ErrorType.NO_ACTIVE_LOTS,
+                message = "There is no lot with 'status' == ACTIVE & 'statusDetails' == EMPTY by id ${lotId}"
+                )
         return ResponseDto(data = "ok")
     }
 

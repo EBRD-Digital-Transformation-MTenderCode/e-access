@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.dto.ocds.ProcurementMethod
+import com.procurement.access.utils.toLocal
+import java.time.LocalDateTime
 import java.util.*
 
 data class CommandMessage @JsonCreator constructor(
@@ -40,6 +42,14 @@ val CommandMessage.stage: String
     get() = this.context.stage
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
 
+val CommandMessage.prevStage: String
+    get() = this.context.prevStage
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'prevStage' attribute in context.")
+
+val CommandMessage.country: String
+    get() = this.context.country
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'country' attribute in context.")
+
 val CommandMessage.pmd: ProcurementMethod
     get() = this.context.pmd?.let {
         ProcurementMethod.valueOrException(it) {
@@ -53,6 +63,10 @@ val CommandMessage.operationType: String
             error = ErrorType.CONTEXT,
             message = "Missing the 'operationType' attribute in context."
         )
+
+val CommandMessage.startDate: LocalDateTime
+    get() = this.context.startDate?.toLocal()
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'startDate' attribute in context.")
 
 val CommandMessage.testMode: Boolean
     get() = this.context.testMode?.let { it } ?: false
@@ -112,6 +126,7 @@ enum class CommandType(private val value: String) {
     SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),
 
     CHECK_AWARD("checkAward"),
+    CHECK_LOT_ACTIVE("checkLotActive"),
     CHECK_LOT_STATUS("checkLotStatus"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
     CHECK_LOT_AWARDED("checkLotAwarded"),
@@ -120,7 +135,8 @@ enum class CommandType(private val value: String) {
     CHECK_TOKEN("checkToken"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),
 
-    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
+    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken"),
+    GET_LOTS_FOR_AUCTION("getLotsForAuction");
 
     @JsonValue
     fun value(): String {
@@ -197,4 +213,3 @@ fun getEnumExceptionResponseDto(error: EnumException, id: String? = null): Respo
         id = id
     )
 }
-
