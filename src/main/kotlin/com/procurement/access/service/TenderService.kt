@@ -1,6 +1,10 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -16,11 +20,7 @@ import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.dto.tender.GetDataForAcRq
 import com.procurement.access.model.dto.tender.GetDataForAcRs
 import com.procurement.access.model.dto.tender.GetDataForAcTender
@@ -59,7 +59,7 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
-            process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
+            process.tender.statusDetails = TenderStatusDetails.fromString(phase)
         } else {
             throw ErrorException(IS_NOT_SUSPENDED)
         }
@@ -157,7 +157,7 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.statusDetails = TenderStatusDetails.fromValue(phase)
+        process.tender.statusDetails = TenderStatusDetails.fromString(phase)
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value, process.tender.statusDetails.value))
     }

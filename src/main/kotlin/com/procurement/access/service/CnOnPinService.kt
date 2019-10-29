@@ -1,6 +1,10 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -13,12 +17,8 @@ import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.cn.validate
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.Tender
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson

@@ -1,6 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.TenderStatusDetails.SUSPENDED
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
@@ -38,14 +41,11 @@ import com.procurement.access.model.dto.ocds.ElectronicAuctions
 import com.procurement.access.model.dto.ocds.ElectronicAuctionsDetails
 import com.procurement.access.model.dto.ocds.Item
 import com.procurement.access.model.dto.ocds.Lot
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
 import com.procurement.access.model.dto.ocds.Option
 import com.procurement.access.model.dto.ocds.RecurrentProcurement
 import com.procurement.access.model.dto.ocds.Renewal
 import com.procurement.access.model.dto.ocds.Tender
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.TenderStatusDetails.SUSPENDED
 import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -310,6 +310,7 @@ class CnUpdateService(private val generationService: GenerationService,
     private fun convertDtoLotToLot(lotDto: LotCnUpdate): Lot {
         return Lot(
                 id = lotDto.id,
+                internalId = lotDto.internalId,
                 title = lotDto.title,
                 description = lotDto.description,
                 status = LotStatus.ACTIVE,

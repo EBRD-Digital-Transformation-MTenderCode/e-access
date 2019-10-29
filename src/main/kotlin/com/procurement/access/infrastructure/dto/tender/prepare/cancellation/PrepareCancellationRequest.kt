@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.tender.prepare.cancellation
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.access.model.dto.ocds.DocumentType
+import com.procurement.access.domain.model.enums.DocumentType
 
 data class PrepareCancellationRequest(
     @field:JsonProperty("amendments") @param:JsonProperty("amendments") val amendments: List<Amendment>

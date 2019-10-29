@@ -3,7 +3,7 @@ package com.procurement.access.dao
 import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder.eq
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
-import com.procurement.access.model.dto.ocds.ProcurementMethod
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import org.springframework.stereotype.Service
 
 @Service

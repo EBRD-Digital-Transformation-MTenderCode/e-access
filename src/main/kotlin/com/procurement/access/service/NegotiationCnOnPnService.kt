@@ -1,9 +1,16 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.service.CheckedNegotiationCnOnPn
+import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
@@ -21,23 +28,13 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.ocds.AwardCriteria
-import com.procurement.access.model.dto.ocds.LotStatus
-import com.procurement.access.model.dto.ocds.LotStatusDetails
-import com.procurement.access.model.dto.ocds.ProcurementMethod
-import com.procurement.access.model.dto.ocds.TenderStatus
-import com.procurement.access.model.dto.ocds.TenderStatusDetails
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -46,11 +43,12 @@ class NegotiationCnOnPnService(
     private val tenderProcessDao: TenderProcessDao
 ) {
 
-    fun checkNegotiationCnOnPn(cm: CommandMessage): ResponseDto {
-        val contextRequest = context(cm)
-        val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
+    fun checkNegotiationCnOnPn(
+        context: CheckNegotiationCnOnPnContext,
+        data: NegotiationCnOnPnRequest
+    ): CheckedNegotiationCnOnPn {
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
+            tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
@@ -59,57 +57,57 @@ class NegotiationCnOnPnService(
         checkTenderStatus(pnEntity)
 
         //VR-3.8.3 Documents (duplicate)
-        checkDocuments(documentsFromRequest = request.tender.documents, documentsFromPN = pnEntity.tender.documents)
+        checkDocuments(documentsFromRequest = data.tender.documents, documentsFromPN = pnEntity.tender.documents)
 
         if (pnEntity.tender.items.isEmpty()) {
-            val lotsIdsFromRequest = request.tender.lots.asSequence()
+            val lotsIdsFromRequest = data.tender.lots.asSequence()
                 .map { it.id }
                 .toSet()
 
             /** Begin check Lots */
             //VR-3.8.5(CN on PN)  "Currency" (lot)
             checkCurrencyInLotsFromRequest(
-                lotsFromRequest = request.tender.lots,
+                lotsFromRequest = data.tender.lots,
                 budgetFromPN = pnEntity.planning.budget
             )
 
             //VR-3.8.8(CN on PN)  "Contract Period" (Lot) -> VR-3.6.7(CN)
             checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(
-                contextRequest = contextRequest,
-                tenderFromRequest = request.tender
+                context = context,
+                tenderFromRequest = data.tender
             )
 
             //VR-3.8.10(CN on PN) Lots (tender.lots) -> VR-3.6.9(CN)
             checkLotIdsAsRelatedLotInItems(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                itemsFromRequest = request.tender.items
+                itemsFromRequest = data.tender.items
             )
             //VR-3.8.12(CN on PN) Lot.ID -> VR-3.1.14(CN)
-            checkLotIdFromRequest(lotsFromRequest = request.tender.lots)
+            checkLotIdFromRequest(lotsFromRequest = data.tender.lots)
             /** End check Lots */
 
             /** Begin check Items */
             //VR-3.8.9(CN on PN) "Quantity" (item) -> VR-3.6.11(CN)
-            checkQuantityInItems(itemsFromRequest = request.tender.items)
+            checkQuantityInItems(itemsFromRequest = data.tender.items)
 
             //VR-3.8.11(CN on PN) Items (tender.Items) -> VR-3.6.8(CN)
             checkRelatedLotInItemsFromRequest(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                itemsFromRequest = request.tender.items
+                itemsFromRequest = data.tender.items
             )
 
             //VR-3.8.13(CN on PN) Item.ID -> VR-3.1.15(CN)
-            checkItemIdFromRequest(itemsFromRequest = request.tender.items)
+            checkItemIdFromRequest(itemsFromRequest = data.tender.items)
             /** End check Items */
 
             /** Begin check Tender */
             //VR-3.8.4(CN on PN) "Value" (tender)
-            val tenderValue = calculateTenderValueFromLots(lotsFromRequest = request.tender.lots)
+            val tenderValue = calculateTenderValueFromLots(lotsFromRequest = data.tender.lots)
             checkTenderValue(tenderValue.amount, pnEntity.planning.budget)
 
             //VR-3.8.6(CN on PN)  "Contract Period"(Tender) -> VR-3.6.10(CN)
             checkContractPeriodInTender(
-                lotsFromRequest = request.tender.lots,
+                lotsFromRequest = data.tender.lots,
                 budgetBreakdownsFromPN = pnEntity.planning.budget.budgetBreakdowns
             )
             /** End check Tender */
@@ -118,14 +116,14 @@ class NegotiationCnOnPnService(
             //VR-3.8.7(CN on PN)  "Related Lots"(documents) -> VR-3.6.12(CN)
             checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
                 lotsIdsFromRequest = lotsIdsFromRequest,
-                documentsFromRequest = request.tender.documents
+                documentsFromRequest = data.tender.documents
             )
             /** End check Documents */
         } else {
             /** Begin check Lots*/
             //VR-3.8.16 "Contract Period" (Lot)
             checkContractPeriodInLotsFromRequestWhenPNWithItems(
-                contextRequest = contextRequest,
+                context = context,
                 lotsFromPN = pnEntity.tender.lots
             )
             /** End check Lots */
@@ -135,27 +133,26 @@ class NegotiationCnOnPnService(
             val lotsIdsFromPN = pnEntity.tender.lots.toSetBy { it.id }
             checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
                 lotsIdsFromPN = lotsIdsFromPN,
-                documentsFromRequest = request.tender.documents
+                documentsFromRequest = data.tender.documents
             )
             /** End check Documents */
         }
-
-        return ResponseDto(data = "ok")
+        return CheckedNegotiationCnOnPn(requireAuction = false)
     }
 
-    fun createNegotiationCnOnPn(cm: CommandMessage): ResponseDto {
-        val contextRequest = context(cm)
-        val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
-
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(contextRequest.cpid, contextRequest.previousStage)
+    fun createNegotiationCnOnPn(
+        context: CreateNegotiationCnOnPnContext,
+        data: NegotiationCnOnPnRequest
+    ): NegotiationCnOnPnResponse {
+        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
         val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
-            createTenderBasedPNWithoutItems(request = request, pnEntity = pnEntity)
+            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
         else
-            createTenderBasedPNWithItems(request = request, pnEntity = pnEntity)
+            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
 
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
@@ -165,51 +162,16 @@ class NegotiationCnOnPnService(
 
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = contextRequest.cpid,
+                cpId = context.cpid,
                 token = tenderProcessEntity.token,
-                stage = contextRequest.stage,
+                stage = context.stage,
                 owner = tenderProcessEntity.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = context.startDate.toDate(),
                 jsonData = toJson(cnEntity)
             )
         )
 
-        val response = getResponse(cnEntity, tenderProcessEntity.token)
-        return ResponseDto(data = response)
-    }
-
-    private fun context(cm: CommandMessage): ContextRequest {
-        val cpid: String = cm.context.cpid
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'cpid' attribute in context..")
-        val token = cm.context.token
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'token' attribute in context.")
-        val previousStage = cm.context.prevStage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'prevStage' attribute in context.")
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'stage' attribute in context.")
-        val owner = cm.context.owner
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val country = cm.context.country
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'country' attribute in context.")
-        val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) }
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
-        val startDate: LocalDateTime = cm.context.startDate?.toLocal()
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
-
-        return ContextRequest(
-            cpid = cpid,
-            token = token,
-            previousStage = previousStage,
-            stage = stage,
-            owner = owner,
-            country = country,
-            pmd = pmd,
-            startDate = startDate
-        )
-    }
-
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
-        ErrorException(ErrorType.INVALID_PMD)
+        return getResponse(cnEntity, tenderProcessEntity.token)
     }
 
     /**
@@ -405,13 +367,13 @@ class NegotiationCnOnPnService(
      *      ELSE eAccess throws Exception;
      */
     private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(
-        contextRequest: ContextRequest,
+        context: CheckNegotiationCnOnPnContext,
         tenderFromRequest: NegotiationCnOnPnRequest.Tender
     ) {
 
         tenderFromRequest.lots.forEach { lot ->
             checkRangeContractPeriodInLotFromRequest(lot)
-            if (lot.contractPeriod.startDate <= contextRequest.startDate)
+            if (lot.contractPeriod.startDate <= context.startDate)
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
     }
@@ -529,11 +491,11 @@ class NegotiationCnOnPnService(
      *   ELSE eAccess throws Exception;
      */
     private fun checkContractPeriodInLotsFromRequestWhenPNWithItems(
-        contextRequest: ContextRequest,
+        context: CheckNegotiationCnOnPnContext,
         lotsFromPN: List<PNEntity.Tender.Lot>
     ) {
         lotsFromPN.forEach { lot ->
-            if (lot.contractPeriod.startDate <= contextRequest.startDate)
+            if (lot.contractPeriod.startDate <= context.startDate)
                 throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
         }
     }
@@ -785,6 +747,7 @@ class NegotiationCnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria ?: AwardCriteria.PRICE_ONLY,
+            awardCriteriaDetails = null,
             tenderPeriod = null,
             contractPeriod = contractPeriod,
             enquiryPeriod = null,
@@ -1620,15 +1583,4 @@ class NegotiationCnOnPnService(
             }
         )
     }
-
-    data class ContextRequest(
-        val cpid: String,
-        val token: String,
-        val previousStage: String,
-        val stage: String,
-        val owner: String,
-        val country: String,
-        val pmd: ProcurementMethod,
-        val startDate: LocalDateTime
-    )
 }
