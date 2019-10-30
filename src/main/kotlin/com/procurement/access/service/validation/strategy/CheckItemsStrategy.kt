@@ -16,6 +16,8 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.cpid
+import com.procurement.access.model.dto.bpe.operationType
+import com.procurement.access.model.dto.bpe.prevStage
 import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
@@ -54,14 +56,14 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
      *    ELSE Items object in saved version of tender is presented, eAccess returns "mdmValidation" == TRUE && "itemsAdd" == FALSE;
      */
     fun check(cm: CommandMessage): CheckItemsResponse {
-        val operationType = getOperation(cm)
+        val operationType = Operation.fromString(cm.operationType)
         val request: CheckItemsRequest = toObject(CheckItemsRequest::class.java, cm.data)
         return when (operationType) {
             Operation.CREATE_CN_ON_PN,
             Operation.CREATE_PIN_ON_PN,
             Operation.CREATE_NEGOTIATION_CN_ON_PN -> {
-                val cpid = getCPID(cm)
-                val prevStage = getPrevStage(cm)
+                val cpid = cm.cpid
+                val prevStage = cm.prevStage
                 val process: TenderProcess = loadTenderProcess(cpid, prevStage)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
@@ -86,14 +88,25 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                             )
                         ),
                         mainProcurementCategory = process.tender.mainProcurementCategory,
-                        items = request.items.map { item -> CheckItemsResponse.Item(id = item.id, relatedLot = item.relatedLot) }
+                        items = request.items.map { item ->
+                            CheckItemsResponse.Item(
+                                id = item.id,
+                                relatedLot = item.relatedLot
+                            )
+                        }
                     )
                 } else {
                     CheckItemsResponse(
                         mdmValidation = false,
                         itemsAdd = true,
                         mainProcurementCategory = process.tender.mainProcurementCategory,
-                        items = process.tender.items.map { item -> CheckItemsResponse.Item(id = item.id!!, relatedLot = item.relatedLot) })
+                        items = process.tender.items.map { item ->
+                            CheckItemsResponse.Item(
+                                id = item.id!!,
+                                relatedLot = item.relatedLot
+                            )
+                        }
+                    )
                 }
             }
 
@@ -118,8 +131,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             }
 
             Operation.UPDATE_PN -> {
-                val cpid = getCPID(cm)
-                val stage = getStage(cm)
+                val cpid = cm.cpid
+                val stage = cm.stage
                 val process: TenderProcess = loadTenderProcess(cpid, stage)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
@@ -154,10 +167,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 val stage = cm.stage
                 val cn: CNEntity = loadCN(cpid, stage)
 
-                val idsSavedItems = cn.tender.items.toSetBy { it.id }
-                val idsReceivedItems = request.items.toSetBy { it.id }
-                if (!idsSavedItems.containsAll(idsReceivedItems))
-                    throw ErrorException(error = ErrorType.INVALID_ITEMS, message = "Incorrect Items list.")
+                checkItems(request = request, cn = cn)
 
                 CheckItemsResponse(
                     mdmValidation = false,
@@ -253,35 +263,17 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    private fun getCPID(cm: CommandMessage): String {
-        return cm.context.cpid
-            ?: throw ErrorException(
-                error = ErrorType.CONTEXT,
-                message = "Missing the 'cpid' attribute in context."
-            )
-    }
-
-    private fun getStage(cm: CommandMessage): String {
-        return cm.context.stage
-            ?: throw ErrorException(
-                error = ErrorType.CONTEXT,
-                message = "Missing the 'prevStage' attribute in context."
-            )
-    }
-
-    private fun getPrevStage(cm: CommandMessage): String {
-        return cm.context.prevStage
-            ?: throw ErrorException(
-                error = ErrorType.CONTEXT,
-                message = "Missing the 'prevStage' attribute in context."
-            )
-    }
-
-    private fun getOperation(cm: CommandMessage): Operation {
-        return cm.context.operationType?.let { Operation.fromString(it) }
-            ?: throw ErrorException(
-                error = ErrorType.CONTEXT,
-                message = "Missing the 'operationType' attribute in context."
-            )
+    /**
+     * VR-1.0.1.5.5
+     * eAccess compares Items list from Request and Items list from DB:
+     *   a. IF number of Items objects from Request == (equal to) number of Items objects from DB by delivered cpid
+     *         && all Items.ID from Request can be included entirely in set of Items.ID from DB, validation is successful;
+     *   b. ELSE eAccess throws Exception: "Incorrect Items list";
+     */
+    private fun checkItems(request: CheckItemsRequest, cn: CNEntity) {
+        val idsSavedItems = cn.tender.items.toSetBy { it.id }
+        val idsReceivedItems = request.items.toSetBy { it.id }
+        if (!idsSavedItems.containsAll(idsReceivedItems))
+            throw ErrorException(error = ErrorType.INVALID_ITEMS, message = "Incorrect Items list.")
     }
 }
