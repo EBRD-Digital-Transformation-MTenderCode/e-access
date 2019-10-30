@@ -87,7 +87,7 @@ class CNServiceImpl(
         val idsUpdateLots = getElementsForUpdate(receivedLotsIds, savedLotsIds)
         val idsCancelLots = getElementsForRemove(receivedLotsIds, savedLotsIds)
 
-        val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId{
+        val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId {
             LotId.fromString(generationService.generatePermanentLotId())
         }
         val dataWithPermanentId: UpdateCnWithPermanentId = data.replaceTemplateLotIds(permanentLotsIdsByTemporalIds)
@@ -1394,11 +1394,14 @@ class CNServiceImpl(
             )
         },
         amendment = cn.amendment?.let { amendment ->
-            UpdatedCn.Amendment(
-                relatedLots = amendment.relatedLots.mapOrEmpty { relatedLot ->
-                    LotId.fromString(relatedLot)
-                }
-            )
+            if (amendment.relatedLots.isNotEmpty())
+                UpdatedCn.Amendment(
+                    relatedLots = amendment.relatedLots.mapOrEmpty { relatedLot ->
+                        LotId.fromString(relatedLot)
+                    }
+                )
+            else
+                null
         }
     )
 }
