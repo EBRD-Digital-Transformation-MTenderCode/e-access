@@ -81,7 +81,7 @@ class CnOnPnService(
 
             // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
             checkBusinessFunctionDocuments(requestProcuringEntity)
-
+            checkTenderDocumentsNotEmpty(data.tender)
         }
 
         if (pnEntity.tender.items.isEmpty()) {
@@ -401,9 +401,9 @@ class CnOnPnService(
     /**
      * VR-1.0.1.2.1
      *
-     * eAccess compares businessFunctions.period.startDate and startDate from the context of Request:
-     * IF [businessFunctions.period.startDate <= (less || equal to) startDate from Request] then: validation is successful; }
-     * else {  eAccess throws Exception: "Invalid period in bussiness function specification"; }
+     * eAccess checks the uniqueness of all documents.ID from Request;
+     * if there is NO repeated value in list of documents.ID values from Request, validation is successful;
+     * else {  eAccess throws Exception: "Invalid documents IDs";
      *
      *
      * VR-1.0.1.2.7
@@ -424,32 +424,37 @@ class CnOnPnService(
     ) {
 
         procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach {
-                it.documents?.let { documents ->
-                    if (documents.isEmpty() ) throw ErrorException(
-                        error = INVALID_PROCURING_ENTITY,
-                        message = "At least one document should be added. "
+            .forEach { businessFunction ->
+                businessFunction.documents?.let { documents ->
+                    if (documents.isEmpty()) throw ErrorException(
+                        error = ErrorType.EMPTY_DOCS,
+                        message = "At least one document should be added to businessFunction documents. "
                     )
 
                     val actualIds = documents.map { it.id }
                     val uniqueIds = actualIds.toSet()
 
                     if (actualIds.size != uniqueIds.size) throw ErrorException(
-                        error = INVALID_PROCURING_ENTITY,
+                        error = INVALID_DOCS_ID,
                         message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
                     )
 
                     documents.forEach {
                         when (it.documentType) {
                             BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
-                            else -> throw ErrorException(
-                                error = INVALID_DOCUMENT_TYPE,
-                                message = "BusinessFucntion type ${it.documentType.value} is not allowed for this operation. "
-                            )
                         }
                     }
                 }
             }
+    }
+
+    private fun checkTenderDocumentsNotEmpty(
+        tender: CnOnPnRequest.Tender
+    ) {
+        if (tender.documents.isEmpty()) throw ErrorException(
+            error = ErrorType.EMPTY_DOCS,
+            message = "At least one document should be added to tenders documents. "
+        )
     }
 
     /**
