@@ -36,6 +36,10 @@ import org.junit.jupiter.params.provider.CsvSource
 
 class CheckItemsStrategyTest {
     companion object {
+        private const val ITEM_ID_1 = "item-1"
+        private const val UNKNOWN_ITEM_ID_1 = "unknown"
+        private const val RELATED_LOT_1 = "lot-1"
+
         private val REQUEST_ITEM_COMMON_PARTY_CPV_CODE = "12345"
         private val PN_TENDER_CPV_CODE = "12300458"
         private val INVALID_PN_TENDER_CPV_CODE = "17500458"
@@ -93,7 +97,12 @@ class CheckItemsStrategyTest {
                             itemsAdd = true,
                             id = RESPONSE_TENDER_CPV_CODE,
                             mainProcurementCategory = MainProcurementCategory.SERVICES,
-                            items = expectedItems.map { CheckItemsResponse.Item(id = it.id, relatedLot = it.relatedLot) }
+                            items = expectedItems.map {
+                                CheckItemsResponse.Item(
+                                    id = it.id,
+                                    relatedLot = it.relatedLot
+                                )
+                            }
                         )
 
                         JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
@@ -208,7 +217,12 @@ class CheckItemsStrategyTest {
                             mdmValidation = false,
                             itemsAdd = true,
                             mainProcurementCategory = MainProcurementCategory.SERVICES,
-                            items = expectedItems.map { CheckItemsResponse.Item(id = it.id, relatedLot = it.relatedLot) }
+                            items = expectedItems.map {
+                                CheckItemsResponse.Item(
+                                    id = it.id,
+                                    relatedLot = it.relatedLot
+                                )
+                            }
                         )
                         JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
                     }
@@ -350,7 +364,6 @@ class CheckItemsStrategyTest {
             @ParameterizedTest
             @CsvSource(
                 value = [
-                    "updateCN",
                     "createCNonPIN"
                 ]
             )
@@ -362,6 +375,82 @@ class CheckItemsStrategyTest {
                 val expected = response(mdmValidation = false, itemsAdd = false)
 
                 JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
+            }
+        }
+
+        @Nested
+        inner class UpdateCN {
+            @ParameterizedTest
+            @CsvSource(
+                value = [
+                    "updateCN"
+                ]
+            )
+            fun success(operationName: String) {
+                val dataRequest = CheckItemsRequest(
+                    items = listOf(
+                        CheckItemsRequest.Item(
+                            classification = CheckItemsRequest.Item.Classification(
+                                id = REQUEST_ITEM_COMMON_PARTY_CPV_CODE + "123"
+                            ),
+                            id = ITEM_ID_1,
+                            relatedLot = RELATED_LOT_1
+                        )
+                    )
+                )
+
+                val cm = commandMessage(operationName = operationName, data = dataRequest.toJson().toNode())
+
+                val dataEntity = loadJson("json/service/check/items/entity/pn/entity_cn.json")
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.STAGE,
+                    data = dataEntity
+                )
+
+                val actual = strategy.check(cm).toJson()
+                val expected = response(
+                    mdmValidation = false,
+                    itemsAdd = false,
+                    mainProcurementCategory = MainProcurementCategory.SERVICES,
+                    items = dataRequest.items.map { CheckItemsResponse.Item(id = it.id, relatedLot = it.relatedLot) }
+                )
+                JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
+            }
+
+            @ParameterizedTest
+            @CsvSource(
+                value = [
+                    "updateCN"
+                ]
+            )
+            fun failure(operationName: String) {
+                val dataRequest = CheckItemsRequest(
+                    items = listOf(
+                        CheckItemsRequest.Item(
+                            classification = CheckItemsRequest.Item.Classification(
+                                id = REQUEST_ITEM_COMMON_PARTY_CPV_CODE + "123"
+                            ),
+                            id = UNKNOWN_ITEM_ID_1,
+                            relatedLot = RELATED_LOT_1
+                        )
+                    )
+                )
+
+                val cm = commandMessage(operationName = operationName, data = dataRequest.toJson().toNode())
+
+                val dataEntity = loadJson("json/service/check/items/entity/pn/entity_cn.json")
+                mockGetByCpIdAndStage(
+                    cpid = ContextGenerator.CPID,
+                    stage = ContextGenerator.STAGE,
+                    data = dataEntity
+                )
+
+                val exception = assertThrows<ErrorException> {
+                    strategy.check(cm)
+                }
+
+                assertEquals("Invalid items id. Incorrect Items list.", exception.message)
             }
         }
 
@@ -439,6 +528,8 @@ class CheckItemsStrategyTest {
         } else
             json
     }
+
+    private fun cnData(): JSON = loadJson("json/service/check/items/entity/pn/entity_pn_with_items.json")
 
     private fun response(
         mdmValidation: Boolean,
