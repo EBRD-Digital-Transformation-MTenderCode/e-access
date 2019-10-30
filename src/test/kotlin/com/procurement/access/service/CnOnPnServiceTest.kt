@@ -1169,7 +1169,7 @@ class CnOnPnServiceTest {
                                 data = requestNode.toObject()
                             )
                         }
-                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertEquals(ErrorType.INVALID_DOCS_ID, exception.error)
 
                     assertTrue(exception.message!!.contains("Invalid documents IDs"))
                 }
@@ -1200,7 +1200,7 @@ class CnOnPnServiceTest {
                                 data = requestNode.toObject()
                             )
                         }
-                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
+                    assertEquals(ErrorType.EMPTY_DOCS, exception.error)
 
                     assertTrue(exception.message!!.contains("At least one document should be added"))
                 }
