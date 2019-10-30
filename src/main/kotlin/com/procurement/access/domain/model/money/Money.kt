@@ -9,3 +9,21 @@ data class Money(val amount: BigDecimal, val currency: String) {
         else
             null
 }
+
+inline fun <E : RuntimeException> Sequence<Money>.sum(notCompatibleCurrencyExceptionBuilder: () -> E): Money? =
+    this.iterator().sum(notCompatibleCurrencyExceptionBuilder)
+
+inline fun <E : RuntimeException> Iterable<Money>.sum(notCompatibleCurrencyExceptionBuilder: () -> E): Money? =
+    this.iterator().sum(notCompatibleCurrencyExceptionBuilder)
+
+inline fun <E : RuntimeException> Iterator<Money>.sum(notCompatibleCurrencyExceptionBuilder: () -> E): Money? {
+    if (!this.hasNext()) return null
+    val first: Money = this.next()
+    var accumulator: BigDecimal = first.amount
+    while (this.hasNext()) {
+        val next: Money = this.next()
+        if (first.currency != next.currency) throw notCompatibleCurrencyExceptionBuilder()
+        accumulator += next.amount
+    }
+    return Money(amount = accumulator, currency = first.currency)
+}
