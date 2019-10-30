@@ -3,6 +3,7 @@ package com.procurement.access.infrastructure.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 
 data class CheckItemsResponse(
     @field:JsonProperty("mdmValidation") @param:JsonProperty("mdmValidation") val mdmValidation: Boolean,
@@ -12,7 +13,7 @@ data class CheckItemsResponse(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender? = null,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: String? = null,
+    @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory? = null,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>? = emptyList()

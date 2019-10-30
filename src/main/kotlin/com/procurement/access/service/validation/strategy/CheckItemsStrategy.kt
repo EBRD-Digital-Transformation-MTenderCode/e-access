@@ -81,14 +81,14 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                                 id = calculatedCPVCode
                             )
                         ),
-                        mainProcurementCategory = process.tender.mainProcurementCategory.value,
+                        mainProcurementCategory = process.tender.mainProcurementCategory,
                         items = request.items.map { item -> CheckItemsResponse.Item(id = item.id, relatedLot = item.relatedLot) }
                     )
                 } else {
                     CheckItemsResponse(
                         mdmValidation = false,
                         itemsAdd = true,
-                        mainProcurementCategory = process.tender.mainProcurementCategory.value,
+                        mainProcurementCategory = process.tender.mainProcurementCategory,
                         items = process.tender.items.map { item -> CheckItemsResponse.Item(id = item.id!!, relatedLot = item.relatedLot) })
                 }
             }

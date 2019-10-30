@@ -457,7 +457,7 @@ class CheckItemsStrategyTest {
                     )
                 )
             },
-            mainProcurementCategory = mainProcurementCategory?.value,
+            mainProcurementCategory = mainProcurementCategory,
             items = items
         ).toJson()
     }
