@@ -64,6 +64,12 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         endDate = tenderPeriod.endDate
                     )
                 },
+                enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
+                    UpdateCnResponse.Tender.EnquiryPeriod(
+                        startDate = enquiryPeriod.startDate,
+                        endDate = enquiryPeriod.endDate
+                    )
+                },
                 acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
                     UpdateCnResponse.Tender.AcceleratedProcedure(
                         isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure

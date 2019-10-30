@@ -49,6 +49,10 @@
       "startDate": "2019-04-01T10:00:00Z",
       "endDate": "2019-04-29T10:00:00Z"
     },
+    "enquiryPeriod": {
+      "startDate": "2019-04-01T10:00:00Z",
+      "endDate": "2019-04-29T10:00:00Z"
+    },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
     },

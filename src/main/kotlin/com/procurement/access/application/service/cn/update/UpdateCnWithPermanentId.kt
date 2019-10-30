@@ -39,6 +39,7 @@ data class UpdateCnWithPermanentId(
         val awardCriteria: AwardCriteria,
         val awardCriteriaDetails: AwardCriteriaDetails?,
         val tenderPeriod: TenderPeriod,
+        val enquiryPeriod: EnquiryPeriod,
         val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val electronicAuctions: ElectronicAuctions?,
         val criteria: List<Criteria>,
@@ -50,6 +51,11 @@ data class UpdateCnWithPermanentId(
     ) {
 
         data class TenderPeriod(
+            val startDate: LocalDateTime,
+            val endDate: LocalDateTime
+        )
+
+        data class EnquiryPeriod(
             val startDate: LocalDateTime,
             val endDate: LocalDateTime
         )

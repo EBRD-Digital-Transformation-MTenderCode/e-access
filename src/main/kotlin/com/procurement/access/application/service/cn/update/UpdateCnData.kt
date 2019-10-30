@@ -39,6 +39,7 @@ data class UpdateCnData(
         val awardCriteria: AwardCriteria,
         val awardCriteriaDetails: AwardCriteriaDetails?,
         val tenderPeriod: TenderPeriod,
+        val enquiryPeriod: EnquiryPeriod,
         val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val electronicAuctions: ElectronicAuctions?,
         val criteria: List<Criteria>,
@@ -50,6 +51,11 @@ data class UpdateCnData(
     ) {
 
         data class TenderPeriod(
+            val startDate: LocalDateTime,
+            val endDate: LocalDateTime
+        )
+
+        data class EnquiryPeriod(
             val startDate: LocalDateTime,
             val endDate: LocalDateTime
         )
@@ -239,6 +245,12 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, LotId>) = UpdateCnWithPerm
                 UpdateCnWithPermanentId.Tender.TenderPeriod(
                     startDate = tenderPeriod.startDate,
                     endDate = tenderPeriod.endDate
+                )
+            },
+            enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
+                UpdateCnWithPermanentId.Tender.EnquiryPeriod(
+                    startDate = enquiryPeriod.startDate,
+                    endDate = enquiryPeriod.endDate
                 )
             },
             procurementMethodModalities = tender.procurementMethodModalities,
