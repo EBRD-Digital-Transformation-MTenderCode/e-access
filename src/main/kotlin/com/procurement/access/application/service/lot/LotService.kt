@@ -40,7 +40,7 @@ class LotServiceImpl(
 
     private fun getLotFromTender(lots: List<Lot>): LotsForAuction = LotsForAuction(
         lots = lots.asSequence()
-            .filter { it.status == LotStatus.PLANNED }
+            .filter { it.status == LotStatus.PLANNING }
             .map { lot ->
                 LotsForAuction.Lot(
                     id = lot.id,
