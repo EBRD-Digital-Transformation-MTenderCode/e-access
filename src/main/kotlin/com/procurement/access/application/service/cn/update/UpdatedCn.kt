@@ -30,7 +30,7 @@ data class UpdatedCn(
     val lotsChanged: Boolean,
     val planning: Planning,
     val tender: Tender,
-    val amendment: Amendment
+    val amendment: Amendment?
 ) {
 
     data class Planning(

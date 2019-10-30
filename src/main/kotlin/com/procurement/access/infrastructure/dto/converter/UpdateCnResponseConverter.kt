@@ -388,7 +388,9 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                 }
             )
         },
-        amendment = UpdateCnResponse.Amendment(
-            relatedLots = this.amendment.relatedLots.toList()
-        )
+        amendment = amendment?.let { amendment ->
+            UpdateCnResponse.Amendment(
+                relatedLots = amendment.relatedLots.toList()
+            )
+        }
     )

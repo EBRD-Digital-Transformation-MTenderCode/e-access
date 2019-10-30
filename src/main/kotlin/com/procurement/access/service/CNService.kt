@@ -1388,9 +1388,9 @@ class CNServiceImpl(
                 }
             )
         },
-        amendment = cn.amendment.let { amendment ->
+        amendment = cn.amendment?.let { amendment ->
             UpdatedCn.Amendment(
-                relatedLots = amendment?.relatedLots.mapOrEmpty { relatedLot ->
+                relatedLots = amendment.relatedLots.mapOrEmpty { relatedLot ->
                     LotId.fromString(relatedLot)
                 }
             )
