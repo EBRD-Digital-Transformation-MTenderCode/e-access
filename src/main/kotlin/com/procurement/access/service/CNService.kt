@@ -87,17 +87,22 @@ class CNServiceImpl(
         val idsUpdateLots = getElementsForUpdate(receivedLotsIds, savedLotsIds)
         val idsCancelLots = getElementsForRemove(receivedLotsIds, savedLotsIds)
 
-        val permanentLotsIdsByTemporalIds = idsNewLots.generatePermanentId(generationService::generatePermanentLotId)
+        val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId{
+            LotId.fromString(generationService.generatePermanentLotId())
+        }
         val dataWithPermanentId: UpdateCnWithPermanentId = data.replaceTemplateLotIds(permanentLotsIdsByTemporalIds)
         val receivedLotsByPermanentIds = dataWithPermanentId.tender.lots.associateBy { it.id }
 
         val newLots: List<CNEntity.Tender.Lot> = idsNewLots.map { id ->
-            val permanentLotId = permanentLotsIdsByTemporalIds.getValue(id)
+            val permanentLotId: LotId = permanentLotsIdsByTemporalIds.getValue(id)
             createNewLot(receivedLotsByPermanentIds.getValue(permanentLotId))
         }
 
         val updatedLots = idsUpdateLots.map { id ->
-            updateLot(src = receivedLotsByPermanentIds.getValue(id), dst = savedLotsByIds.getValue(id))
+            updateLot(
+                src = receivedLotsByPermanentIds.getValue(LotId.fromString(id)),
+                dst = savedLotsByIds.getValue(id)
+            )
         }
 
         val removedLots = idsCancelLots.map { id ->
@@ -840,7 +845,7 @@ class CNServiceImpl(
         return this.tender.items.update(sources = data.tender.items) { dst, src ->
             dst.copy(
                 description = src.description,
-                relatedLot = src.relatedLot
+                relatedLot = src.relatedLot.toString()
             )
         }
     }
@@ -942,14 +947,14 @@ class CNServiceImpl(
                         ?.copy(
                             title = document.title,
                             description = document.description,
-                            relatedLots = document.relatedLots.toList()
+                            relatedLots = document.relatedLots.map { it.toString() }
                         )
                         ?: CNEntity.Tender.Document(
                             id = document.id,
                             documentType = DocumentType.fromString(document.documentType.value),
                             title = document.title,
                             description = document.description,
-                            relatedLots = document.relatedLots.toList()
+                            relatedLots = document.relatedLots.map { it.toString() }
                         )
                 }
                 ?: documentsById.getValue(id)
@@ -1093,7 +1098,7 @@ class CNServiceImpl(
                         details = electronicAuctions.details.map { detail ->
                             UpdatedCn.Tender.ElectronicAuctions.Detail(
                                 id = detail.id,
-                                relatedLot = LotId.fromString(detail.relatedLot),
+                                relatedLot = detail.relatedLot,
                                 electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
                                     UpdatedCn.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
                                         eligibleMinimumDifference = modality.eligibleMinimumDifference.let { emd ->

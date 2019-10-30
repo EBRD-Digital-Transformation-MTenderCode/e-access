@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderDocumentType
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
@@ -59,9 +60,9 @@ data class UpdateCnWithPermanentId(
 
             data class Detail(
                 override val id: String,
-                override val relatedLot: String,
+                override val relatedLot: LotId,
                 val electronicAuctionModalities: List<ElectronicAuctionModality>
-            ) : EntityBase<String>(), RelatedLot<String> {
+            ) : EntityBase<String>(), RelatedLot<LotId> {
 
                 data class ElectronicAuctionModality(
                     val eligibleMinimumDifference: Money
@@ -143,14 +144,14 @@ data class UpdateCnWithPermanentId(
         }
 
         data class Lot(
-            override val id: String,
+            override val id: LotId,
             val internalId: String?,
             val title: String,
             val description: String,
             val value: Money,
             val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance
-        ) : EntityBase<String>() {
+        ) : EntityBase<LotId>() {
 
             data class ContractPeriod(
                 val startDate: LocalDateTime,
@@ -202,15 +203,15 @@ data class UpdateCnWithPermanentId(
         data class Item(
             override val id: String,
             val description: String,
-            override val relatedLot: String
-        ) : EntityBase<String>(), RelatedLot<String>
+            override val relatedLot: LotId
+        ) : EntityBase<String>(), RelatedLot<LotId>
 
         data class Document(
             val documentType: TenderDocumentType,
             override val id: String,
             val title: String?,
             val description: String?,
-            override val relatedLots: List<String>
-        ) : EntityBase<String>(), RelatedLots<String>
+            override val relatedLots: List<LotId>
+        ) : EntityBase<String>(), RelatedLots<LotId>
     }
 }

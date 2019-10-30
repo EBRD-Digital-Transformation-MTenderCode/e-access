@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderDocumentType
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
@@ -215,7 +216,7 @@ data class UpdateCnData(
     }
 }
 
-fun UpdateCnData.replaceTemplateLotIds(r: Map<String, String>) = UpdateCnWithPermanentId(
+fun UpdateCnData.replaceTemplateLotIds(r: Map<String, LotId>) = UpdateCnWithPermanentId(
     planning = this.planning?.let { planning ->
         UpdateCnWithPermanentId.Planning(
             rationale = planning.rationale,
@@ -246,7 +247,7 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, String>) = UpdateCnWithPer
                     details = electronicAuctions.details.map { detail ->
                         UpdateCnWithPermanentId.Tender.ElectronicAuctions.Detail(
                             id = detail.id,
-                            relatedLot = r[detail.relatedLot] ?: detail.relatedLot,
+                            relatedLot = r[detail.relatedLot] ?: LotId.fromString(detail.relatedLot),
                             electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
                                 UpdateCnWithPermanentId.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
                                     eligibleMinimumDifference = modality.eligibleMinimumDifference
@@ -262,7 +263,7 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, String>) = UpdateCnWithPer
                     title = criteria.title,
                     description = criteria.description,
                     relatesTo = criteria.relatesTo,
-                    relatedItem = r[criteria.relatedItem] ?: criteria.relatedItem,
+                    relatedItem = r[criteria.relatedItem]?.toString() ?: criteria.relatedItem,
                     requirementGroups = criteria.requirementGroups.map { requirementGroup ->
                         UpdateCnWithPermanentId.Tender.Criteria.RequirementGroup(
                             id = requirementGroup.id,
@@ -330,7 +331,7 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, String>) = UpdateCnWithPer
             },
             lots = tender.lots.map { lot ->
                 UpdateCnWithPermanentId.Tender.Lot(
-                    id = r[lot.id] ?: lot.id,
+                    id = r[lot.id] ?: LotId.fromString(lot.id),
                     internalId = lot.internalId,
                     title = lot.title,
                     description = lot.description,
@@ -386,7 +387,7 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, String>) = UpdateCnWithPer
                 UpdateCnWithPermanentId.Tender.Item(
                     id = item.id,
                     description = item.description,
-                    relatedLot = r[item.relatedLot] ?: item.relatedLot
+                    relatedLot = r[item.relatedLot] ?: LotId.fromString(item.relatedLot)
                 )
             },
             documents = tender.documents
@@ -397,7 +398,7 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, String>) = UpdateCnWithPer
                         title = document.title,
                         description = document.description,
                         relatedLots = document.relatedLots.map { relatedLot ->
-                            r[relatedLot] ?: relatedLot
+                            r[relatedLot] ?: LotId.fromString(relatedLot)
                         }
                     )
                 }
