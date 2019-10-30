@@ -15,3 +15,23 @@ inline fun <T, V> Collection<T>.toSetBy(selector: (T) -> V): Set<V> {
     }
     return collections
 }
+
+inline fun <T, R> Collection<T>.mapIfNotEmpty(transform: (T) -> R): List<R>? =
+    if (this.isNotEmpty())
+        this.map(transform)
+    else
+        null
+
+inline fun <T, R> Collection<T>?.mapOrEmpty(transform: (T) -> R): List<R> = this?.map(transform) ?: emptyList()
+
+inline fun <T, C : Collection<T>, E : RuntimeException> C?.errorIfEmpty(exceptionBuilder: () -> E): C? =
+    if (this != null && this.isEmpty())
+        throw exceptionBuilder()
+    else
+        this
+
+inline fun <T, reified C : Collection<T>, E : RuntimeException> C?.orThrow(exceptionBuilder: () -> E): C =
+    this ?: throw exceptionBuilder()
+
+inline fun <reified T, E : RuntimeException> T?.orThrow(exceptionBuilder: () -> E): T =
+    this ?: throw exceptionBuilder()

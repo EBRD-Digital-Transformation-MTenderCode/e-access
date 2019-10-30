@@ -81,5 +81,9 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_PROCURING_ENTITY("10.66", "Invalid procuring entity."),
     INCORRECT_VALUE_ATTRIBUTE("10.67", "Incorrect an attribute value."),
     CONVERSIONS_IS_EMPTY("10.68", "Conversion cannot exists without criteria."),
-    INVALID_REQUIREMENT_VALUE("10.69", "Invalid requirement value.");
+    INVALID_REQUIREMENT_VALUE("10.69", "Invalid requirement value."),
+    IS_EMPTY("10.70", "List is empty."),
+    INVALID_TENDER("10.71", "Invalid tender."),
+    INVALID_PERSON("10.72", "Invalid person."),
+    INVALID_BUSINESS_FUNCTION("10.73", "Invalid business function.");
 }

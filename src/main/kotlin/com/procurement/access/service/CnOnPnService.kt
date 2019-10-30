@@ -6,6 +6,7 @@ import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
@@ -1040,7 +1041,7 @@ class CnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria,
-            awardCriteriaDetails = request.tender.awardCriteriaDetails,
+            awardCriteriaDetails = request.tender.AwardCriteriaDetails,
             tenderPeriod = request.tender.tenderPeriod.let { period ->
                 CNEntity.Tender.TenderPeriod(
                     startDate = period.startDate,
@@ -1381,8 +1382,8 @@ class CnOnPnService(
                 },
                 relatesTo = criteria.relatesTo,
                 relatedItem = when (criteria.relatesTo) {
-                    "lot" -> relatedTemporalWithPermanentLotId.getValue(criteria.relatedItem!!)
-                    "item" -> relatedTemporalWithPermanentItemId.getValue(criteria.relatedItem!!)
+                    CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(criteria.relatedItem!!)
+                    CriteriaRelatesToEnum.ITEM  -> relatedTemporalWithPermanentItemId.getValue(criteria.relatedItem!!)
                     else -> criteria.relatedItem
                 }
             )

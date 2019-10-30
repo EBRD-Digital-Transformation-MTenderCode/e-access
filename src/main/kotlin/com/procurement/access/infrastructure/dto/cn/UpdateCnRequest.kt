@@ -7,13 +7,18 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
+import com.procurement.access.domain.model.enums.TenderDocumentType
+import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueSerializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
+import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
+import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
@@ -57,8 +62,8 @@ data class UpdateCnRequest(
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
         @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: ProcurementMethodModalities?,
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
@@ -109,17 +114,10 @@ data class UpdateCnRequest(
             ) {
 
                 data class ElectronicAuctionModality(
-                    @field:JsonProperty("eligibleMinimumDifference") @param:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: EligibleMinimumDifference
-                ) {
-
-                    data class EligibleMinimumDifference(
-                        @JsonDeserialize(using = AmountDeserializer::class)
-                        @JsonSerialize(using = AmountSerializer::class)
-                        @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                        @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-                    )
-                }
+                    @JsonDeserialize(using = MoneyDeserializer::class)
+                    @JsonSerialize(using = MoneySerializer::class)
+                    @field:JsonProperty("eligibleMinimumDifference") @param:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: Money
+                )
             }
         }
 
@@ -131,7 +129,7 @@ data class UpdateCnRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String?,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,
@@ -176,10 +174,10 @@ data class UpdateCnRequest(
 
         data class ProcuringEntity(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone>
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>
         ) {
 
-            data class Persone(
+            data class Person(
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
                 @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
                 @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
@@ -196,7 +194,7 @@ data class UpdateCnRequest(
 
                 data class BusinessFunction(
                     @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                    @field:JsonProperty("type") @param:JsonProperty("type") val type: String,
+                    @field:JsonProperty("type") @param:JsonProperty("type") val type: BusinessFunctionType,
                     @field:JsonProperty("jobTitle") @param:JsonProperty("jobTitle") val jobTitle: String,
                     @field:JsonProperty("period") @param:JsonProperty("period") val period: Period,
 
@@ -212,7 +210,7 @@ data class UpdateCnRequest(
 
                     data class Document(
                         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                        @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
+                        @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: BusinessFunctionDocumentType,
                         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
 
                         @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -230,19 +228,14 @@ data class UpdateCnRequest(
 
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
+
+            @JsonDeserialize(using = MoneyDeserializer::class)
+            @JsonSerialize(using = MoneySerializer::class)
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
+
             @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance
         ) {
-
-            data class Value(
-
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
-                @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-            )
 
             data class ContractPeriod(
                 @JsonDeserialize(using = JsonDateTimeDeserializer::class)
@@ -310,7 +303,7 @@ data class UpdateCnRequest(
         )
 
         data class Document(
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: TenderDocumentType,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)

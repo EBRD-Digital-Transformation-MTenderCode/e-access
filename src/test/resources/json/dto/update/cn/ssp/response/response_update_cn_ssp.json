@@ -1,0 +1,258 @@
+{
+  "lotsChanged": false,
+  "planning": {
+    "rationale": "planning.rationale",
+    "budget": {
+      "description": "planning.rationale.budget.description",
+      "amount": {
+        "amount": 150.25,
+        "currency": "MDL"
+      },
+      "isEuropeanUnionFunded": false,
+      "budgetBreakdown": [
+        {
+          "id": "ocid-1",
+          "description": "planning.rationale.budget.budgetBreakdown[0].description",
+          "amount": {
+            "amount": 120.89,
+            "currency": "MDL"
+          },
+          "period": {
+            "startDate": "2019-04-01T10:00:00Z",
+            "endDate": "2019-04-29T10:00:00Z"
+          },
+          "sourceParty": {
+            "id": "planning.budget.budgetBreakdown.sourceParty.id",
+            "name": "planning.budget.budgetBreakdown.sourceParty.name"
+          },
+          "europeanUnionFunding": {
+            "projectIdentifier": "planning.budget.europeanUnionFunding.projectIdentifier",
+            "projectName": "planning.budget.europeanUnionFunding.projectName",
+            "uri": "planning.budget.europeanUnionFunding.uri"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "id": "ocid-1",
+    "status": "planning",
+    "statusDetails": "tendering",
+    "title": "tender.title",
+    "description": "tender.description",
+    "classification": {
+      "scheme": "CPV",
+      "description": "tender.classification.description",
+      "id": "tender.classification.id"
+    },
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethod": "tender.procurementMethod",
+    "procurementMethodDetails": "tender.procurementMethodDetails",
+    "procurementMethodRationale": "tender.procurementMethodRationale",
+    "procurementMethodAdditionalInfo": "tender.procurementMethodAdditionalInfo",
+    "mainProcurementCategory": "services",
+    "eligibilityCriteria": "tender.eligibilityCriteria",
+    "contractPeriod": {
+      "startDate": "2019-03-16T12:40:11Z",
+      "endDate": "2019-03-15T11:54:13Z"
+    },
+    "amendments": [
+      {
+        "relatedLots": [
+          "bb78e2ed-c325-49ef-bc21-4603173cf6cc"
+        ]
+      }
+    ],
+    "procuringEntity": {
+      "id": "tender.procuringEntity.id",
+      "name": "tender.procuringEntity.name",
+      "identifier": {
+        "scheme": "tender.procuringEntity.identifier.scheme",
+        "id": "tender.procuringEntity.identifier.id",
+        "legalName": "tender.procuringEntity.identifier.legalName",
+        "uri": "tender.procuringEntity.identifier.uri"
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "tender.procuringEntity.additionalIdentifiers.scheme",
+          "id": "tender.procuringEntity.additionalIdentifiers.id",
+          "legalName": "tender.procuringEntity.additionalIdentifiers.legalName",
+          "uri": "tender.procuringEntity.additionalIdentifiers.uri"
+        }
+      ],
+      "address": {
+        "streetAddress": "tender.procuringEntity.address.streetAddress",
+        "postalCode": "tender.procuringEntity.address.postalCode",
+        "addressDetails": {
+          "country": {
+            "scheme": "tender.procuringEntity.address.addressDetails.country.scheme",
+            "id": "tender.procuringEntity.address.addressDetails.country.id",
+            "description": "tender.procuringEntity.address.addressDetails.country.description",
+            "uri": "tender.procuringEntity.address.addressDetails.country.uri"
+          },
+          "region": {
+            "scheme": "tender.procuringEntity.address.addressDetails.region.scheme",
+            "id": "tender.procuringEntity.address.addressDetails.region.id",
+            "description": "tender.procuringEntity.address.addressDetails.region.description",
+            "uri": "tender.procuringEntity.address.addressDetails.region.uri"
+          },
+          "locality": {
+            "scheme": "tender.procuringEntity.address.addressDetails.locality.scheme",
+            "id": "tender.procuringEntity.address.addressDetails.locality.id",
+            "description": "tender.procuringEntity.address.addressDetails.locality.description",
+            "uri": "tender.procuringEntity.address.addressDetails.locality.uri"
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "tender.procuringEntity.contactPoint.name",
+        "email": "tender.procuringEntity.contactPoint.email",
+        "telephone": "tender.procuringEntity.contactPoint.telephone",
+        "faxNumber": "tender.procuringEntity.contactPoint.faxNumber",
+        "url": "tender.procuringEntity.contactPoint.url"
+      }
+    },
+    "value": {
+      "amount": 210.53,
+      "currency": "MDL"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "lots": [
+      {
+        "id": "bb78e2ed-c325-49ef-bc21-4603173cf6cc",
+        "internalId": "tender.lots[0].internalId",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "status": "active",
+        "statusDetails": "unsuccessful",
+        "value": {
+          "amount": 256.78,
+          "currency": "MDL"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "tender.lot[0].placeOfPerformance.description"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "374d3831-c728-4cea-b3e2-6838e4b4f580",
+        "internalId": "tender.items[0].internalId",
+        "classification": {
+          "scheme": "CPV",
+          "description": "tender.items[0].classification.description",
+          "id": "tender.items[0].classification.id"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVs",
+            "description": "tender.items[0].additionalClassifications[0].description",
+            "id": "tender.items[0].additionalClassifications[0].id"
+          }
+        ],
+        "quantity": 100.001,
+        "unit": {
+          "id": "tender.items[0].unit.id",
+          "name": "tender.items[0].unit.name"
+        },
+        "description": "tender.items[0].description",
+        "relatedLot": "bb78e2ed-c325-49ef-bc21-4603173cf6cc"
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "requiresElectronicCatalogue": false,
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodRationale": [
+      "tender.submissionMethodRationale[0]"
+    ],
+    "submissionMethodDetails": "tender.submissionMethodDetails",
+    "documents": [
+      {
+        "documentType": "illustration",
+        "id": "tender.documents[0].documentType",
+        "title": "tender.documents[0].title",
+        "description": "tender.documents[0].description",
+        "relatedLots": [
+          "bb78e2ed-c325-49ef-bc21-4603173cf6cc"
+        ]
+      }
+    ]
+  }
+}

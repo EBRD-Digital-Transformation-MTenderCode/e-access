@@ -10,6 +10,8 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.ConversionsRelatesTo
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
@@ -184,7 +186,7 @@ data class CnOnPnResponse(
             @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String?,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
@@ -203,7 +205,7 @@ data class CnOnPnResponse(
 
         data class Conversion(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: ConversionsRelatesTo,
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String,
             @field:JsonProperty("rationale") @param:JsonProperty("rationale") val rationale: String,
 
