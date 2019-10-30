@@ -75,8 +75,7 @@ class CNServiceImpl(
             .checkRelatedLotsOfDocuments(allLotsIds) //VR-1.0.1.2.6
             .checkIdsProcuringEntity(cn) //VR-1.0.1.10.1
 
-        val calculateLotsAmount = calculateLotsAmount(savedLotsByIds, receivedLotsByIds)
-        cn.checkTenderAmount(calculateLotsAmount) //VR-1.0.1.3.2
+        cn.checkTenderAmount(savedLotsByIds, receivedLotsByIds) //VR-1.0.1.3.2
 
         //BR-1.0.1.2.1
         val calculatedTenderContractPeriod = data.calculateTenderContractPeriod()
@@ -105,16 +104,21 @@ class CNServiceImpl(
             removeLot(savedLotsByIds.getValue(id))
         }
 
+        val allModifiedLots = (updatedLots + removedLots + newLots).also {
+            //VR-1.0.1.4.7
+            if (!it.any { lot -> lot.status == LotStatus.ACTIVE })
+                throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
+        }
+
         val updatedItems = cn.updateItems(dataWithPermanentId)
 
         //BR-1.0.1.5.2
         val updatedTenderDocuments = cn.updateTenderDocuments(dataWithPermanentId.tender.documents)
 
         //BR-1.0.1.1.2
-        val updatedValue = CNEntity.Tender.Value(
-            amount = calculateLotsAmount.amount,
-            currency = calculateLotsAmount.currency
-        )
+        val updatedValue = calculateTenderAmount(allModifiedLots).let {
+            CNEntity.Tender.Value(amount = it.amount, currency = it.currency)
+        }
 
         //BR-1.0.1.15.3
         val updatedProcuringEntity = if (dataWithPermanentId.tender.procuringEntity != null)
@@ -158,7 +162,7 @@ class CNServiceImpl(
                     .takeIfNotNullOrDefault(cn.tender.awardCriteriaDetails),
                 procuringEntity = updatedProcuringEntity, //BR-1.0.1.15.3
                 value = updatedValue, //BR-1.0.1.1.2
-                lots = updatedLots + removedLots + newLots,
+                lots = allModifiedLots,
                 items = updatedItems,
                 documents = updatedTenderDocuments //BR-1.0.1.5.2
             ),
@@ -173,9 +177,7 @@ class CNServiceImpl(
                 )
         )
 
-        //VR-1.0.1.4.7
-        if (!updatedCN.tender.lots.any { it.status == LotStatus.ACTIVE })
-            throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
+
 
         tenderProcessDao.save(
             TenderProcessEntity(
@@ -293,15 +295,18 @@ class CNServiceImpl(
     /**
      * VR-1.0.1.3.2 amount (tender)
      */
-    private fun CNEntity.checkTenderAmount(calculatedLotsAmount: Money): CNEntity {
+    private fun CNEntity.checkTenderAmount(
+        savedLotsByIds: Map<String, CNEntity.Tender.Lot>,
+        receivedLotsByIds: Map<String, UpdateCnData.Tender.Lot>
+    ): CNEntity {
+        val amount = calculateLotsAmount(savedLotsByIds, receivedLotsByIds)
         val tenderValue = this.tender.value
-        if (tenderValue.currency != calculatedLotsAmount.currency)
+        if (tenderValue.currency != amount.currency)
             throw ErrorException(
                 error = ErrorType.INVALID_CURRENCY,
                 message = "The currency of tender not compatible with the currency of lots."
             )
-
-        if (tenderValue.amount > calculatedLotsAmount.amount)
+        if (tenderValue.amount > amount.amount)
             throw ErrorException(
                 error = ErrorType.INVALID_TENDER,
                 message = "The amount of tender greater than the amount of lots."
@@ -316,6 +321,13 @@ class CNServiceImpl(
         val allLotsIds: Set<String> = receivedLotsByIds.keys + savedLotsByIds.keys
 
         return allLotsIds.asSequence()
+            .filter { id ->
+                savedLotsByIds[id]
+                    ?.let {
+                        it.status == LotStatus.ACTIVE
+                    }
+                    ?: true
+            }
             .map { id ->
                 savedLotsByIds[id]
                     ?.let { lot ->
@@ -331,6 +343,21 @@ class CNServiceImpl(
                 throw ErrorException(error = ErrorType.INVALID_LOT_AMOUNT)
             }
     }
+
+    private fun calculateTenderAmount(lots: Collection<CNEntity.Tender.Lot>): Money = lots.asSequence()
+        .filter { lot ->
+            lot.status == LotStatus.ACTIVE
+        }
+        .map { lot ->
+            val value = lot.value
+            Money(amount = value.amount, currency = value.currency)
+        }
+        .sum {
+            ErrorException(error = ErrorType.INVALID_LOT_CURRENCY)
+        }
+        .orThrow {
+            throw ErrorException(error = ErrorType.INVALID_LOT_AMOUNT)
+        }
 
     /**
      * VR-1.0.1.4.1 id (lot)
