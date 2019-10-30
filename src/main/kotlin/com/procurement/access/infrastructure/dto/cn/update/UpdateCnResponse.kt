@@ -43,8 +43,8 @@ data class UpdateCnResponse(
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("amendment") @param:JsonProperty("amendment") val amendment: Amendment?
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("amendment") @param:JsonProperty("amendment") val amendment: Amendment
 ) {
 
     data class Planning(
