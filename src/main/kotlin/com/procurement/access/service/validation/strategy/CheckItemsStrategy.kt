@@ -12,7 +12,11 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckItemsRequest
 import com.procurement.access.infrastructure.dto.CheckItemsResponse
+import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.cpid
+import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 
@@ -145,7 +149,29 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 }
             }
 
-            Operation.UPDATE_CN,
+            Operation.UPDATE_CN -> {
+                val cpid = cm.cpid
+                val stage = cm.stage
+                val cn: CNEntity = loadCN(cpid, stage)
+
+                val idsSavedItems = cn.tender.items.toSetBy { it.id }
+                val idsReceivedItems = request.items.toSetBy { it.id }
+                if (!idsSavedItems.containsAll(idsReceivedItems))
+                    throw ErrorException(error = ErrorType.INVALID_ITEMS, message = "Incorrect Items list.")
+
+                CheckItemsResponse(
+                    mdmValidation = false,
+                    itemsAdd = false,
+                    mainProcurementCategory = cn.tender.mainProcurementCategory,
+                    items = request.items.map { item ->
+                        CheckItemsResponse.Item(
+                            id = item.id,
+                            relatedLot = item.relatedLot
+                        )
+                    }
+                )
+            }
+
             Operation.CREATE_CN_ON_PIN -> CheckItemsResponse.resultUndefined()
         }
     }
@@ -154,6 +180,12 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(TenderProcess::class.java, entity.jsonData)
+    }
+
+    private fun loadCN(cpid: String, stage: String): CNEntity {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
+            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        return toObject(CNEntity::class.java, entity.jsonData)
     }
 
     private fun getCPVCodes(request: CheckItemsRequest): List<CPVCode> = request.items.map { it.classification.id }
