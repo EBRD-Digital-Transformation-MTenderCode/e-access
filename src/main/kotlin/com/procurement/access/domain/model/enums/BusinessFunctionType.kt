@@ -4,7 +4,13 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.exception.EnumException
 
 enum class BusinessFunctionType(@JsonValue val value: String) {
-    AUTHORITY("authority");
+    AUTHORITY("authority"),
+    PROCURMENT_OFFICER("procurmentOfficer"),
+    CONTACT_POINT("contactPoint"),
+    TECHNICAL_EVALUATOR("technicalEvaluator"),
+    TECHNICAL_OPENER("technicalOpener"),
+    PRICE_OPENER("priceOpener"),
+    PRICE_EVALUATOR("priceEvaluator");
 
     override fun toString(): String {
         return this.value
