@@ -6,6 +6,8 @@ import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
+import com.procurement.access.application.service.cn.update.UpdateCnContext
+import com.procurement.access.application.service.cn.update.UpdateCnData
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.application.service.lot.LotsForAuctionContext
 import com.procurement.access.application.service.lot.LotsForAuctionData
@@ -21,6 +23,9 @@ import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
+import com.procurement.access.infrastructure.dto.cn.update.UpdateCnResponse
+import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
@@ -51,7 +56,7 @@ class CommandService(
     private val pnService: PnService,
     private val pnUpdateService: PnUpdateService,
     private val cnCreateService: CnCreateService,
-    private val cnUpdateService: CnUpdateService,
+    private val cnService: CNService,
     private val cnOnPinService: CnOnPinService,
     private val cnOnPnService: CnOnPnService,
     private val negotiationCnOnPnService: NegotiationCnOnPnService,
@@ -76,7 +81,39 @@ class CommandService(
             CommandType.CREATE_PN -> pnService.createPn(cm)
             CommandType.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandType.CREATE_CN -> cnCreateService.createCn(cm)
-            CommandType.UPDATE_CN -> cnUpdateService.updateCn(cm)
+            CommandType.UPDATE_CN -> {
+                when (cm.pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                        val context = UpdateCnContext(
+                            cpid = cm.cpid,
+                            token = cm.token,
+                            stage = cm.stage,
+                            owner = cm.owner,
+                            pmd = cm.pmd,
+                            startDate = cm.startDate
+                        )
+                        val request = toObject(UpdateCnRequest::class.java, cm.data)
+                        val data: UpdateCnData = request.convert()
+                        val result = cnService.update(context, data)
+                        if (log.isDebugEnabled)
+                            log.debug("Update CN. Result: ${toJson(result)}")
+
+                        val response: UpdateCnResponse = result.convert()
+                        if (log.isDebugEnabled)
+                            log.debug("Update CN. Response: ${toJson(response)}")
+
+                        ResponseDto(data = response)
+                    }
+
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
             CommandType.CREATE_PIN_ON_PN -> pinOnPnService.createPinOnPn(cm)
             CommandType.CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
             CommandType.CREATE_CN_ON_PN -> {
