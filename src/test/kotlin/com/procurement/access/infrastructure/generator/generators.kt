@@ -71,7 +71,8 @@ object ContextGenerator {
             token = token,
             startDate = startDate,
             endDate = endDate,
-            testMode = false
+            testMode = false,
+            isAuction = false
         )
     }
 }

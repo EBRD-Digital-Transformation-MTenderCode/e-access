@@ -2,6 +2,7 @@ package com.procurement.access.model.dto.bpe
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -71,6 +72,9 @@ val CommandMessage.startDate: LocalDateTime
 val CommandMessage.testMode: Boolean
     get() = this.context.testMode?.let { it } ?: false
 
+val CommandMessage.isAuction: Boolean
+    get() = this.context.isAuction?.let { it } ?: false
+
 data class Context @JsonCreator constructor(
     val operationId: String?,
     val requestId: String?,
@@ -88,6 +92,7 @@ data class Context @JsonCreator constructor(
     val token: String?,
     val startDate: String?,
     val endDate: String?,
+    @get:JsonProperty("isAuction") @param:JsonProperty("isAuction") val isAuction: Boolean?,
     val id: String?,
     val testMode: Boolean?
 )
