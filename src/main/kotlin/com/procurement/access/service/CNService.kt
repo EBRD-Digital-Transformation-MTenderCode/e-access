@@ -472,10 +472,10 @@ class CNServiceImpl(
 
     private fun UpdateCnData.checkRelatedLotItems(allLotsIds: Set<String>): UpdateCnData {
         this.tender.items.forEach { item ->
-            if (item.validation(allLotsIds)) {
+            item.validation(allLotsIds) { relatedLot ->
                 throw ErrorException(
-                    error = ErrorType.INVALID_LOT_ID,
-                    message = "The list lots of tender contain duplicates."
+                    error = ErrorType.INVALID_RELATED_LOT,
+                    message = "Unknown relatedLot '$relatedLot' in item '${item.id}'."
                 )
             }
         }
