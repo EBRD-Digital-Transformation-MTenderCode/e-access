@@ -20,6 +20,10 @@ class LotServiceImpl(
             ?.let { entity ->
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 getLotFromTender(lots = process.tender.lots)
+                    .takeIf {
+                        it.lots.isNotEmpty()
+                    }
+                    ?: getLotFromRequest(lots = data.lots)
             }
             ?: getLotFromRequest(lots = data.lots)
     }
