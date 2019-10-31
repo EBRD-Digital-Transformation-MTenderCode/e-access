@@ -47,7 +47,8 @@ class CNServiceImpl(
     private val tenderProcessDao: TenderProcessDao
 ) : CNService {
     override fun update(context: UpdateCnContext, data: UpdateCnData): UpdatedCn {
-        data.checkLotsIds() //VR-1.0.1.4.1
+        data.checkElectronicAuction(context) //VR-1.0.1.7.8
+            .checkLotsIds() //VR-1.0.1.4.1
             .checkUniqueIdsItems() // VR-1.0.1.5.1
             .checkIdsPersons() //VR-1.0.1.10.3
             .checkBusinessFunctions(context.startDate) //VR-1.0.1.10.5, VR-1.0.1.10.6, VR-1.0.1.10.7, VR-1.0.1.2.1, VR-1.0.1.2.8
@@ -181,8 +182,6 @@ class CNServiceImpl(
                     relatedLots = idsCancelLots.toList()
                 )
         )
-
-
 
         tenderProcessDao.save(
             TenderProcessEntity(
@@ -363,6 +362,22 @@ class CNServiceImpl(
         .orThrow {
             throw ErrorException(error = ErrorType.INVALID_LOT_AMOUNT)
         }
+
+    /**
+     * VR-1.0.1.7.8 electronicAuction
+     *
+     * eAccess checks isAuction value from the context of Request:
+     * IF [isAuction == FALSE && tender.electronicAuctions != null]
+     *      then: eAccess throws Exception: "Auction should not be launched";
+     */
+    private fun UpdateCnData.checkElectronicAuction(context: UpdateCnContext): UpdateCnData {
+        if (context.isAuction && this.tender.electronicAuctions != null)
+            throw ErrorException(
+                error = ErrorType.INVALID_AUCTION_IS_NON_EMPTY,
+                message = "The process does not allow electronic auctions."
+            )
+        return this
+    }
 
     /**
      * VR-1.0.1.4.1 id (lot)
@@ -635,74 +650,6 @@ class CNServiceImpl(
 
         return this
     }
-
-/*    private fun UpdateCnData.checkBusinessFunctions(startDate: LocalDateTime): UpdateCnData {
-
-        data class CheckContext(
-            val containAuthority: Boolean = false,
-            val uniqueDocumentId: Set<String> = emptySet(),
-            val uniqueBusinessFunctionId: Set<String> = emptySet()
-        )
-
-        this.businessFunctions()
-            ?.check(context = CheckContext()) { ctx, businessFunction ->
-                if (businessFunction.id in ctx.uniqueBusinessFunctionId)
-                    throw ErrorException(
-                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                        message = "Ids of business function are not unique."
-                    )
-                ctx.copy(uniqueBusinessFunctionId = ctx.uniqueBusinessFunctionId + businessFunction.id)
-            }
-
-        var containAuthority = false
-        val uniqueBusinessFunctionId = mutableSetOf<String>()
-        var uniqueDocumentId: Set<String> = emptySet()
-        this.businessFunctions()
-            ?.forEach { businessFunction ->
-                if (!uniqueBusinessFunctionId.add(businessFunction.id))
-                    throw ErrorException(
-                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                        message = "Ids of business function are not unique."
-                    )
-
-                when (businessFunction.type) {
-                    BusinessFunctionType.AUTHORITY,
-                    BusinessFunctionType.PROCURMENT_OFFICER,
-                    BusinessFunctionType.CONTACT_POINT,
-                    BusinessFunctionType.TECHNICAL_EVALUATOR,
-                    BusinessFunctionType.TECHNICAL_OPENER,
-                    BusinessFunctionType.PRICE_OPENER,
-                    BusinessFunctionType.PRICE_EVALUATOR -> Unit
-                }
-
-                if (businessFunction.type == BusinessFunctionType.AUTHORITY) {
-                    if (containAuthority)
-                        throw ErrorException(
-                            error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                            message = "More than one business function with type 'AUTHORITY'."
-                        )
-                    else
-                        containAuthority = true
-                }
-
-                if (businessFunction.period.startDate > startDate)
-                    throw ErrorException(
-                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                        message = "Start date of business function more than start date from request."
-                    )
-
-                uniqueDocumentId = businessFunction.documents.isNotUniqueIds(uniqueDocumentId) {
-                    throw ErrorException(
-                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                        message = "Ids of documents in business function are not unique."
-                    )
-                }
-
-                businessFunction.checkDocuments()
-            }
-
-        return this
-    }*/
 
     private fun UpdateCnData.businessFunctions() =
         this.tender.procuringEntity?.persons

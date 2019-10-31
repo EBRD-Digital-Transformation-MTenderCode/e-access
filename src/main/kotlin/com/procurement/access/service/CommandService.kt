@@ -35,6 +35,7 @@ import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.cpid
+import com.procurement.access.model.dto.bpe.isAuction
 import com.procurement.access.model.dto.bpe.operationType
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
@@ -92,7 +93,8 @@ class CommandService(
                             stage = cm.stage,
                             owner = cm.owner,
                             pmd = cm.pmd,
-                            startDate = cm.startDate
+                            startDate = cm.startDate,
+                            isAuction = cm.isAuction
                         )
                         val request = toObject(UpdateCnRequest::class.java, cm.data)
                         val data: UpdateCnData = request.convert()

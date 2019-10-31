@@ -10,5 +10,6 @@ data class UpdateCnContext(
     val stage: String,
     val owner: String,
     val pmd: ProcurementMethod,
-    val startDate: LocalDateTime
+    val startDate: LocalDateTime,
+    val isAuction: Boolean
 )
