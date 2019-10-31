@@ -275,6 +275,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                 .mapIfNotEmpty { item ->
                     UpdateCnData.Tender.Item(
                         id = item.id,
+                        internalId = item.internalId,
                         description = item.description,
                         relatedLot = item.relatedLot
                     )

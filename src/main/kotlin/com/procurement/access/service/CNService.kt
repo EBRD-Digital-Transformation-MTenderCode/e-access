@@ -792,7 +792,8 @@ class CNServiceImpl(
         return this.tender.items.update(sources = data.tender.items) { dst, src ->
             dst.copy(
                 description = src.description,
-                relatedLot = src.relatedLot.toString()
+                relatedLot = src.relatedLot.toString(),
+                internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId)
             )
         }
     }

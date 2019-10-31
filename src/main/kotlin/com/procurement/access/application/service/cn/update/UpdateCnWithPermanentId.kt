@@ -208,6 +208,7 @@ data class UpdateCnWithPermanentId(
 
         data class Item(
             override val id: String,
+            val internalId: String?,
             val description: String,
             override val relatedLot: LotId
         ) : EntityBase<String>(), RelatedLot<LotId>

@@ -298,6 +298,10 @@ data class UpdateCnRequest(
 
         data class Item(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
+
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
         )

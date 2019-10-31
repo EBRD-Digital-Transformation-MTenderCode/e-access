@@ -208,6 +208,7 @@ data class UpdateCnData(
 
         data class Item(
             override val id: String,
+            val internalId: String?,
             val description: String,
             override val relatedLot: String
         ) : EntityBase<String>(), RelatedLot<String>
@@ -398,6 +399,7 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, LotId>) = UpdateCnWithPerm
             items = tender.items.map { item ->
                 UpdateCnWithPermanentId.Tender.Item(
                     id = item.id,
+                    internalId = item.internalId,
                     description = item.description,
                     relatedLot = r[item.relatedLot] ?: LotId.fromString(item.relatedLot)
                 )
