@@ -16,7 +16,7 @@ class LotServiceImpl(
     private val tenderProcessDao: TenderProcessDao
 ) : LotService {
     override fun getLotsForAuction(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
-        return tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        return tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
             ?.let { entity ->
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 getLotFromTender(lots = process.tender.lots)

@@ -292,7 +292,7 @@ class CommandService(
             CommandType.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
                     cpid = cm.cpid,
-                    stage = cm.stage
+                    prevStage = cm.prevStage
                 )
                 val request = toObject(LotsForAuctionRequest::class.java, cm.data)
                 val data = LotsForAuctionData(
