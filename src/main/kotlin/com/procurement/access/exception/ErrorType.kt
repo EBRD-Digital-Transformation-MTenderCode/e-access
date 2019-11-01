@@ -86,5 +86,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_TENDER("10.71", "Invalid tender."),
     INVALID_PERSON("10.72", "Invalid person."),
     INVALID_BUSINESS_FUNCTION("10.73", "Invalid business function."),
-    INVALID_RELATED_LOT("10.74", "Invalid related lot.");
+    INVALID_RELATED_LOT("10.74", "Invalid related lot."),
+    INVALID_LOT("10.75", "Invalid lot.");
 }

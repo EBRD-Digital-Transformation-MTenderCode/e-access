@@ -114,6 +114,9 @@ class CNServiceImpl(
             //VR-1.0.1.4.7
             if (!it.any { lot -> lot.status == LotStatus.ACTIVE })
                 throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
+
+            //VR-1.0.1.4.8
+            dataWithPermanentId.checkRelatedLotItems(it)
         }
 
         val updatedItems = cn.updateItems(dataWithPermanentId)
@@ -362,6 +365,31 @@ class CNServiceImpl(
         .orThrow {
             throw ErrorException(error = ErrorType.INVALID_LOT_AMOUNT)
         }
+
+    /**
+     * VR-1.0.1.4.8 Lot Item (lot)
+     *
+     * eAccess compares item.relatedLot values in all Items object from Request and lots.ID with lots.status == "active":
+     * IF [Item.relatedLot from Request containsAll lot.ID from Lot with lots.status == "active"] validation is successful;
+     * ELSE eAccess throws Exception: "Active lot should be connected to at least one item";
+     */
+    private fun UpdateCnWithPermanentId.checkRelatedLotItems(allModifiedLots: List<CNEntity.Tender.Lot>) {
+        val allActiveLotsIds: Set<LotId> = allModifiedLots.asSequence()
+            .filter { lot -> lot.status == LotStatus.ACTIVE }
+            .map { lot -> LotId.fromString(lot.id) }
+            .toSet()
+
+        val itemsRelatedLots: Set<LotId> = this.tender.items
+            .toSetBy { item ->
+                item.relatedLot
+            }
+
+        if (allActiveLotsIds.any { it !in itemsRelatedLots })
+            throw ErrorException(
+                error = ErrorType.INVALID_LOT,
+                message = "Active lot should be connected to at least one item."
+            )
+    }
 
     /**
      * VR-1.0.1.7.8 electronicAuction
