@@ -193,7 +193,7 @@ class CNServiceImpl(
                 stage = context.stage,
                 owner = entity.owner,
                 createdDate = context.startDate.toDate(),
-                jsonData = toJson(cn)
+                jsonData = toJson(updatedCN)
             )
         )
 
