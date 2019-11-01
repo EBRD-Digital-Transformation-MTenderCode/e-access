@@ -775,7 +775,7 @@ class CNServiceImpl(
 
     private fun updateLot(src: UpdateCnWithPermanentId.Tender.Lot, dst: CNEntity.Tender.Lot): CNEntity.Tender.Lot =
         dst.copy(
-            internalId = src.internalId,
+            internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId),
             title = src.title,
             description = src.description,
             placeOfPerformance = dst.placeOfPerformance.copy(
