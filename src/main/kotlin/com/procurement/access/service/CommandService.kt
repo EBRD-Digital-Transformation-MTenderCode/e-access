@@ -8,6 +8,7 @@ import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.cn.update.UpdateCnContext
 import com.procurement.access.application.service.cn.update.UpdateCnData
+import com.procurement.access.application.service.lot.GetLotContext
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.application.service.lot.LotsForAuctionContext
 import com.procurement.access.application.service.lot.LotsForAuctionData
@@ -26,6 +27,7 @@ import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
 import com.procurement.access.infrastructure.dto.cn.update.UpdateCnResponse
 import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.dto.lot.GetLotResponse
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
@@ -36,6 +38,7 @@ import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.cpid
 import com.procurement.access.model.dto.bpe.isAuction
+import com.procurement.access.model.dto.bpe.lotId
 import com.procurement.access.model.dto.bpe.operationType
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
@@ -215,6 +218,99 @@ class CommandService(
 
             CommandType.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
             CommandType.GET_LOTS -> lotsService.getLots(cm)
+
+            CommandType.GET_LOT -> {
+                val context = GetLotContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage,
+                    lotId = cm.lotId
+                )
+                val result = lotService.getLot(context = context)
+                if (log.isDebugEnabled)
+                    log.debug("Lot was found. Result: ${toJson(result)}")
+
+                val dataResponse = result.let { lot ->
+                    GetLotResponse.Lot(
+                        id = lot.id,
+                        internalId = lot.internalId,
+                        title = lot.title,
+                        description = lot.description,
+                        status = lot.status,
+                        statusDetails = lot.statusDetails,
+                        value = lot.value,
+                        options = lot.options.map { option ->
+                            GetLotResponse.Lot.Option(
+                                hasOptions = option.hasOptions
+                            )
+                        },
+                        variants = lot.variants.map { variant ->
+                            GetLotResponse.Lot.Variant(
+                                hasVariants = variant.hasVariants
+                            )
+                        },
+                        renewals = lot.renewals.map { renewal ->
+                            GetLotResponse.Lot.Renewal(
+                                hasRenewals = renewal.hasRenewals
+                            )
+                        },
+                        recurrentProcurement = lot.recurrentProcurement.map { recurrentProcurement ->
+                            GetLotResponse.Lot.RecurrentProcurement(
+                                isRecurrent = recurrentProcurement.isRecurrent
+                            )
+                        },
+                        contractPeriod = lot.contractPeriod.let { contractPeriod ->
+                            GetLotResponse.Lot.ContractPeriod(
+                                startDate = contractPeriod.startDate,
+                                endDate = contractPeriod.endDate
+                            )
+                        },
+                        placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                            GetLotResponse.Lot.PlaceOfPerformance(
+                                description = placeOfPerformance.description,
+                                address = placeOfPerformance.address.let { address ->
+                                    GetLotResponse.Lot.PlaceOfPerformance.Address(
+                                        streetAddress = address.streetAddress,
+                                        postalCode = address.postalCode,
+                                        addressDetails = address.addressDetails.let { addressDetails ->
+                                            GetLotResponse.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                country = addressDetails.country.let { country ->
+                                                    GetLotResponse.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                        scheme = country.scheme,
+                                                        id = country.id,
+                                                        description = country.description,
+                                                        uri = country.uri
+                                                    )
+                                                },
+                                                region = addressDetails.region.let { region ->
+                                                    GetLotResponse.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                        scheme = region.scheme,
+                                                        id = region.id,
+                                                        description = region.description,
+                                                        uri = region.uri
+                                                    )
+                                                },
+                                                locality = addressDetails.locality.let { locality ->
+                                                    GetLotResponse.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                        scheme = locality.scheme,
+                                                        id = locality.id,
+                                                        description = locality.description,
+                                                        uri = locality.uri
+                                                    )
+                                                }
+
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+                if (log.isDebugEnabled)
+                    log.debug("Lot was found. Response: ${toJson(dataResponse)}")
+                ResponseDto(data = dataResponse)
+            }
+
             CommandType.GET_LOTS_AUCTION -> lotsService.getLotsAuction(cm)
             CommandType.GET_AWARD_CRITERIA -> lotsService.getAwardCriteria(cm)
             CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)

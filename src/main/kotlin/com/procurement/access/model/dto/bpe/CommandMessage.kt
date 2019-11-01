@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -75,6 +76,15 @@ val CommandMessage.testMode: Boolean
 val CommandMessage.isAuction: Boolean
     get() = this.context.isAuction?.let { it } ?: false
 
+val CommandMessage.lotId: LotId
+    get() = this.context.id?.let { id ->
+        try {
+            LotId.fromString(id)
+        } catch (exception: Exception) {
+            throw ErrorException(error = ErrorType.INVALID_FORMAT_LOT_ID)
+        }
+    } ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'id' attribute in context.")
+
 data class Context @JsonCreator constructor(
     val operationId: String?,
     val requestId: String?,
@@ -120,6 +130,7 @@ enum class CommandType(private val value: String) {
 
     GET_ITEMS_BY_LOT("getItemsByLot"),
     GET_LOTS("getLots"),
+    GET_LOT("getLot"),
     GET_LOTS_AUCTION("getLotsAuction"),
     GET_AWARD_CRITERIA("getAwardCriteria"),
     GET_DATA_FOR_AC("getDataForAc"),
