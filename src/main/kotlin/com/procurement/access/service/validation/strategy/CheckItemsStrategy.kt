@@ -3,7 +3,7 @@ package com.procurement.access.service.validation.strategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.CPVCodePattern
-import com.procurement.access.domain.model.enums.Operation
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.patternBySymbols
 import com.procurement.access.domain.model.patternOfGroups
 import com.procurement.access.domain.model.startsWithPattern
@@ -56,12 +56,12 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
      *    ELSE Items object in saved version of tender is presented, eAccess returns "mdmValidation" == TRUE && "itemsAdd" == FALSE;
      */
     fun check(cm: CommandMessage): CheckItemsResponse {
-        val operationType = Operation.fromString(cm.operationType)
+        val operationType = OperationType.fromString(cm.operationType)
         val request: CheckItemsRequest = toObject(CheckItemsRequest::class.java, cm.data)
         return when (operationType) {
-            Operation.CREATE_CN_ON_PN,
-            Operation.CREATE_PIN_ON_PN,
-            Operation.CREATE_NEGOTIATION_CN_ON_PN -> {
+            OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN -> {
                 val cpid = cm.cpid
                 val prevStage = cm.prevStage
                 val process: TenderProcess = loadTenderProcess(cpid, prevStage)
@@ -110,9 +110,9 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 }
             }
 
-            Operation.CREATE_CN,
-            Operation.CREATE_PN,
-            Operation.CREATE_PIN -> {
+            OperationType.CREATE_CN,
+            OperationType.CREATE_PN,
+            OperationType.CREATE_PIN -> {
                 val cpvCodes = getCPVCodes(request)
                     .also {
                         checkItemsCPVCodes(it)
@@ -130,7 +130,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 )
             }
 
-            Operation.UPDATE_PN -> {
+            OperationType.UPDATE_PN -> {
                 val cpid = cm.cpid
                 val stage = cm.stage
                 val process: TenderProcess = loadTenderProcess(cpid, stage)
@@ -162,7 +162,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 }
             }
 
-            Operation.UPDATE_CN -> {
+            OperationType.UPDATE_CN -> {
                 val cpid = cm.cpid
                 val stage = cm.stage
                 val cn: CNEntity = loadCN(cpid, stage)
@@ -182,7 +182,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 )
             }
 
-            Operation.CREATE_CN_ON_PIN -> CheckItemsResponse.resultUndefined()
+            OperationType.CREATE_CN_ON_PIN -> CheckItemsResponse.resultUndefined()
         }
     }
 
