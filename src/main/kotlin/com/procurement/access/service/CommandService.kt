@@ -397,14 +397,8 @@ class CommandService(
                     lots = request.lots.map { lot ->
                         LotsForAuctionData.Lot(
                             id = lot.id,
-                            value = lot.value.let { value ->
-                                LotsForAuctionData.Lot.Value(
-                                    amount = value.amount,
-                                    currency = value.currency
-                                )
-                            }
+                            value = lot.value
                         )
-
                     }
                 )
                 val result = lotService.getLotsForAuction(context = context, data = data)
@@ -415,14 +409,8 @@ class CommandService(
                     lots = result.lots.map { lot ->
                         LotsForAuctionResponse.Lot(
                             id = lot.id,
-                            value = lot.value.let { value ->
-                                LotsForAuctionResponse.Lot.Value(
-                                    amount = value.amount,
-                                    currency = value.currency
-                                )
-                            }
+                            value = lot.value
                         )
-
                     }
                 )
                 if (log.isDebugEnabled)

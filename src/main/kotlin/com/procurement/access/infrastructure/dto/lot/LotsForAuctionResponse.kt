@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.lot.TemporalLotId
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
-import java.math.BigDecimal
+import com.procurement.access.domain.model.money.Money
+import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
+import com.procurement.access.infrastructure.bind.money.MoneySerializer
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class LotsForAuctionResponse(
@@ -16,15 +16,9 @@ data class LotsForAuctionResponse(
 
     data class Lot(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: TemporalLotId,
-        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value
-    ) {
 
-        data class Value(
-            @JsonDeserialize(using = AmountDeserializer::class)
-            @JsonSerialize(using = AmountSerializer::class)
-            @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-            @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-        )
-    }
+        @JsonDeserialize(using = MoneyDeserializer::class)
+        @JsonSerialize(using = MoneySerializer::class)
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Money
+    )
 }

@@ -1,7 +1,7 @@
 package com.procurement.access.application.service.lot
 
 import com.procurement.access.domain.model.lot.TemporalLotId
-import java.math.BigDecimal
+import com.procurement.access.domain.model.money.Money
 
 class LotsForAuction(
     val lots: List<Lot>
@@ -9,12 +9,6 @@ class LotsForAuction(
 
     data class Lot(
         val id: TemporalLotId,
-        val value: Value
-    ) {
-
-        data class Value(
-            val amount: BigDecimal,
-            val currency: String
-        )
-    }
+        val value: Money
+    )
 }

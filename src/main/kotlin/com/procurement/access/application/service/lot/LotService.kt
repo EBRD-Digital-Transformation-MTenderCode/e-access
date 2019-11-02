@@ -136,12 +136,7 @@ class LotServiceImpl(
         lots = lots.map { lot ->
             LotsForAuction.Lot(
                 id = lot.id,
-                value = lot.value.let { value ->
-                    LotsForAuction.Lot.Value(
-                        amount = value.amount,
-                        currency = value.currency
-                    )
-                }
+                value = lot.value
             )
         }
     )
@@ -153,7 +148,7 @@ class LotServiceImpl(
                 LotsForAuction.Lot(
                     id = lot.id,
                     value = lot.value.let { value ->
-                        LotsForAuction.Lot.Value(
+                        Money(
                             amount = value.amount,
                             currency = value.currency
                         )
