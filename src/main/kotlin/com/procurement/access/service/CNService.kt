@@ -399,7 +399,7 @@ class CNServiceImpl(
      *      then: eAccess throws Exception: "Auction should not be launched";
      */
     private fun UpdateCnData.checkElectronicAuction(context: UpdateCnContext): UpdateCnData {
-        if (context.isAuction && this.tender.electronicAuctions != null)
+        if (!context.isAuction && this.tender.electronicAuctions != null)
             throw ErrorException(
                 error = ErrorType.INVALID_AUCTION_IS_NON_EMPTY,
                 message = "The process does not allow electronic auctions."
