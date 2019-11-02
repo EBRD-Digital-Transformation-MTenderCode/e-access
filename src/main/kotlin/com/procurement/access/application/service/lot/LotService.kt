@@ -2,7 +2,9 @@ package com.procurement.access.application.service.lot
 
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.lot.LotId
+import com.procurement.access.domain.model.lot.TemporalLotId
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -120,7 +122,27 @@ class LotServiceImpl(
     }
 
     override fun getLotsForAuction(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
-        return tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
+        return when (context.operationType) {
+            OperationType.CREATE_CN_ON_PN -> getLotsForCnOnPn(context, data)
+
+            OperationType.UPDATE_CN -> getLotsForUpdateCn(context, data)
+
+            OperationType.CREATE_CN,
+            OperationType.CREATE_PN,
+            OperationType.CREATE_PIN,
+            OperationType.UPDATE_PN,
+            OperationType.CREATE_CN_ON_PIN,
+            OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN ->
+                throw ErrorException(
+                    error = ErrorType.INVALID_OPERATION_TYPE,
+                    message = "The 'getLotsForAuction' command does not apply for '${context.operationType.value}' operation type."
+                )
+        }
+    }
+
+    private fun getLotsForCnOnPn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction =
+        tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
             ?.let { entity ->
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 getLotFromTender(lots = process.tender.lots)
@@ -130,7 +152,6 @@ class LotServiceImpl(
                     ?: getLotFromRequest(lots = data.lots)
             }
             ?: getLotFromRequest(lots = data.lots)
-    }
 
     private fun getLotFromRequest(lots: List<LotsForAuctionData.Lot>): LotsForAuction = LotsForAuction(
         lots = lots.map { lot ->
@@ -157,4 +178,66 @@ class LotServiceImpl(
             }
             .toList()
     )
+
+    private fun getLotsForUpdateCn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
+        val receivedLotsByIds: Map<TemporalLotId, LotsForAuctionData.Lot> = data.lots.associateBy { it.id }
+        val savedLotsByIds: Map<String, CNEntity.Tender.Lot> =
+            tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
+                ?.let { entity ->
+                    val cn = toObject(CNEntity::class.java, entity.jsonData)
+                    cn.tender.lots
+                        .associateBy { lot ->
+                            lot.id
+                        }
+                }
+                ?: emptyMap()
+
+        val receivedLotsIds = receivedLotsByIds.keys
+        val savedLotsIds = savedLotsByIds.keys
+        val idsNewLots: Set<TemporalLotId> = getNewElements(receivedLotsIds, savedLotsIds)
+        val idsUpdatingLots: Set<TemporalLotId> = getElementsForUpdate(receivedLotsIds, savedLotsIds)
+
+        val newLots = getNewLots(idsNewLots, receivedLotsByIds)
+        val updatingLots = getUpdatingActiveLots(idsUpdatingLots, savedLotsByIds)
+
+        return LotsForAuction(lots = (newLots + updatingLots).toList())
+    }
+
+    private fun getNewLots(
+        idsNewLots: Set<TemporalLotId>,
+        receivedLotsByIds: Map<TemporalLotId, LotsForAuctionData.Lot>
+    ): Sequence<LotsForAuction.Lot> = idsNewLots.asSequence()
+        .map { id ->
+            receivedLotsByIds.getValue(id)
+                .let { lot ->
+                    LotsForAuction.Lot(
+                        id = id,
+                        value = lot.value
+                    )
+                }
+        }
+
+    private fun getUpdatingActiveLots(
+        idsUpdatingLots: Set<TemporalLotId>,
+        savedLotsByIds: Map<String, CNEntity.Tender.Lot>
+    ): Sequence<LotsForAuction.Lot> = idsUpdatingLots.asSequence()
+        .map { id ->
+            savedLotsByIds.getValue(id)
+        }
+        .filter { lot ->
+            lot.status == LotStatus.ACTIVE
+        }
+        .map { lot ->
+            LotsForAuction.Lot(
+                id = lot.id,
+                value = Money(
+                    amount = lot.value.amount,
+                    currency = lot.value.currency
+                )
+            )
+        }
+
+    fun <T> getNewElements(received: Set<T>, saved: Set<T>) = received.subtract(saved)
+
+    private fun <T> getElementsForUpdate(received: Set<T>, saved: Set<T>) = saved.intersect(received)
 }
