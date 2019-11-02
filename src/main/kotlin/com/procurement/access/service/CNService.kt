@@ -710,7 +710,7 @@ class CNServiceImpl(
             .toMap()
 
     private fun createNewLot(lot: UpdateCnWithPermanentId.Tender.Lot): CNEntity.Tender.Lot = CNEntity.Tender.Lot(
-        id = generationService.generatePermanentLotId(),
+        id = lot.id.toString(),
         internalId = lot.internalId,
         title = lot.title,
         description = lot.description,
