@@ -56,7 +56,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
      *    ELSE Items object in saved version of tender is presented, eAccess returns "mdmValidation" == TRUE && "itemsAdd" == FALSE;
      */
     fun check(cm: CommandMessage): CheckItemsResponse {
-        val operationType = OperationType.fromString(cm.operationType)
+        val operationType = cm.operationType
         val request: CheckItemsRequest = toObject(CheckItemsRequest::class.java, cm.data)
         return when (operationType) {
             OperationType.CREATE_CN_ON_PN,

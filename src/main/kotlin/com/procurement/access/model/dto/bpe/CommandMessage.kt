@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.exception.EnumException
@@ -59,8 +60,8 @@ val CommandMessage.pmd: ProcurementMethod
         }
     } ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'pmd' attribute in context.")
 
-val CommandMessage.operationType: String
-    get() = this.context.operationType
+val CommandMessage.operationType: OperationType
+    get() = this.context.operationType?.let { OperationType.fromString(it) }
         ?: throw ErrorException(
             error = ErrorType.CONTEXT,
             message = "Missing the 'operationType' attribute in context."
