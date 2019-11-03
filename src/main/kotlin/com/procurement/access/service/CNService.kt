@@ -85,8 +85,31 @@ class CNServiceImpl(
         val receivedLotsIds = receivedLotsByIds.keys
         val savedLotsIds = savedLotsByIds.keys
         val idsNewLots = getNewElements(receivedLotsIds, savedLotsIds)
+
         val idsUpdateLots = getElementsForUpdate(receivedLotsIds, savedLotsIds)
+            .also { ids ->
+                ids.forEach { id ->
+                    val lot = savedLotsByIds.getValue(id)
+                    when (lot.status) {
+                        LotStatus.COMPLETE,
+                        LotStatus.CANCELLED,
+                        LotStatus.UNSUCCESSFUL -> throw ErrorException(
+                            error = ErrorType.INVALID_LOT_STATUS,
+                            message = "Unable to update lot that is in the status '${lot.status.value}'."
+                        )
+
+                        LotStatus.PLANNING,
+                        LotStatus.PLANNED,
+                        LotStatus.ACTIVE -> Unit
+                    }
+                }
+            }
+
         val idsCancelLots = getElementsForRemove(receivedLotsIds, savedLotsIds)
+            .filter { id ->
+                val lot = savedLotsByIds.getValue(id)
+                lot.status != LotStatus.CANCELLED
+            }
 
         val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId {
             LotId.fromString(generationService.generatePermanentLotId())
@@ -106,11 +129,11 @@ class CNServiceImpl(
             )
         }
 
-        val removedLots = idsCancelLots.map { id ->
-            removeLot(savedLotsByIds.getValue(id))
+        val cancelledLots = idsCancelLots.map { id ->
+            cancelLot(savedLotsByIds.getValue(id))
         }
 
-        val allModifiedLots = (updatedLots + removedLots + newLots).also {
+        val allModifiedLots = (updatedLots + cancelledLots + newLots).also {
             //VR-1.0.1.4.7
             if (!it.any { lot -> lot.status == LotStatus.ACTIVE })
                 throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
@@ -811,7 +834,7 @@ class CNServiceImpl(
             )
         )
 
-    private fun removeLot(lot: CNEntity.Tender.Lot): CNEntity.Tender.Lot = lot.copy(
+    private fun cancelLot(lot: CNEntity.Tender.Lot): CNEntity.Tender.Lot = lot.copy(
         status = LotStatus.CANCELLED,
         statusDetails = LotStatusDetails.EMPTY
     )
