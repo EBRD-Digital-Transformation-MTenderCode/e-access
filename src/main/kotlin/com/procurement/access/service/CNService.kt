@@ -828,17 +828,18 @@ class CNServiceImpl(
         statusDetails = LotStatusDetails.EMPTY
     )
 
-    fun CNEntity.updateItems(data: UpdateCnWithPermanentId): List<CNEntity.Tender.Item> {
-        return this.tender.items.update(sources = data.tender.items) { dst, src ->
+    fun CNEntity.updateItems(data: UpdateCnWithPermanentId): List<CNEntity.Tender.Item> =
+        this.tender.items.update(sources = data.tender.items) { dst, src ->
             dst.copy(
                 description = src.description,
                 relatedLot = src.relatedLot.toString(),
                 internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId)
             )
         }
-    }
 
-    private fun CNEntity.Tender.ProcuringEntity.update(persons: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person>): CNEntity.Tender.ProcuringEntity {
+    private fun CNEntity.Tender.ProcuringEntity.update(
+        persons: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person>
+    ): CNEntity.Tender.ProcuringEntity {
         val receivedPersonsById = persons.associateBy { it.identifier.id }
         val savedPersonsById = this.persones?.associateBy { it.identifier.id } ?: emptyMap()
 
@@ -866,41 +867,149 @@ class CNServiceImpl(
         return this.copy(persones = updatedPersons)
     }
 
-    private fun createPerson(person: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person): CNEntity.Tender.ProcuringEntity.Persone =
-        CNEntity.Tender.ProcuringEntity.Persone(
-            title = person.title,
-            name = person.name,
-            identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
-                scheme = person.identifier.scheme,
-                id = person.identifier.id,
-                uri = person.identifier.uri
-            ),
-            businessFunctions = person.businessFunctions.map { businessFunction ->
-                CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
-                    id = businessFunction.id,
-                    jobTitle = businessFunction.jobTitle,
-                    type = businessFunction.type,
-                    period = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
-                        startDate = businessFunction.period.startDate
-                    ),
-                    documents = businessFunction.documents.map { document ->
-                        CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
-                            id = document.id,
-                            documentType = document.documentType,
-                            title = document.title,
-                            description = document.description
-                        )
-                    }
-                )
-            }
-        )
+    private fun createPerson(
+        person: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person
+    ) = CNEntity.Tender.ProcuringEntity.Persone(
+        title = person.title,
+        name = person.name,
+        identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
+            scheme = person.identifier.scheme,
+            id = person.identifier.id,
+            uri = person.identifier.uri
+        ),
+        businessFunctions = person.businessFunctions.map { businessFunction ->
+            CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
+                id = businessFunction.id,
+                jobTitle = businessFunction.jobTitle,
+                type = businessFunction.type,
+                period = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                    startDate = businessFunction.period.startDate
+                ),
+                documents = businessFunction.documents.map { document ->
+                    CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                        id = document.id,
+                        documentType = document.documentType,
+                        title = document.title,
+                        description = document.description
+                    )
+                }
+            )
+        }
+    )
 
-    private fun CNEntity.Tender.ProcuringEntity.Persone.update(person: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person): CNEntity.Tender.ProcuringEntity.Persone {
-        return this.copy(
-            title = person.title,
-            name = person.name
-        )
+    private fun CNEntity.Tender.ProcuringEntity.Persone.update(
+        person: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person
+    ) = this.copy(
+        title = person.title,
+        name = person.name,
+        businessFunctions = updateBusinessFunctions(person.businessFunctions, this.businessFunctions)
+    )
+
+    /**
+     * BR-1.0.1.15.4
+     */
+    private fun updateBusinessFunctions(
+        receivedBusinessFunctions: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction>,
+        savedBusinessFunctions: List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction>
+    ): List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction> {
+        val receivedBusinessFunctionsByIds = receivedBusinessFunctions.associateBy { it.id }
+        val savedBusinessFunctionsByIds = savedBusinessFunctions.associateBy { it.id }
+
+        val receivedBusinessFunctionsIds = receivedBusinessFunctionsByIds.keys
+        val savedBusinessFunctionsIds = savedBusinessFunctionsByIds.keys
+
+        val idsAllPersons = receivedBusinessFunctionsIds.union(savedBusinessFunctionsIds)
+        val idsNewBusinessFunctions = getNewElements(receivedBusinessFunctionsIds, savedBusinessFunctionsIds)
+        val idsUpdateBusinessFunctions = getElementsForUpdate(receivedBusinessFunctionsIds, savedBusinessFunctionsIds)
+
+        return idsAllPersons.asSequence()
+            .map { id ->
+                when (id) {
+                    in idsNewBusinessFunctions -> createBusinessFunction(receivedBusinessFunctionsByIds.getValue(id))
+                    in idsUpdateBusinessFunctions ->
+                        savedBusinessFunctionsByIds.getValue(id)
+                            .update(receivedBusinessFunctionsByIds.getValue(id))
+                    else -> savedBusinessFunctionsByIds.getValue(id)
+                }
+            }
+            .toList()
     }
+
+    private fun createBusinessFunction(
+        businessFunction: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction
+    ) = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
+        id = businessFunction.id,
+        type = businessFunction.type,
+        jobTitle = businessFunction.jobTitle,
+        period = businessFunction.period.let { period ->
+            CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                startDate = period.startDate
+            )
+        },
+        documents = businessFunction.documents.map { document ->
+            CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                documentType = document.documentType,
+                id = document.id,
+                title = document.title,
+                description = document.description
+            )
+        }
+    )
+
+    private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(
+        businessFunction: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction
+    ) = this.copy(
+        type = businessFunction.type,
+        jobTitle = businessFunction.jobTitle,
+        period = this.period.copy(startDate = businessFunction.period.startDate),
+        documents = updateBusinessFunctionDocuments(businessFunction.documents, this.documents ?: emptyList())
+    )
+
+    /**
+     * BR-1.0.1.5.1
+     */
+    private fun updateBusinessFunctionDocuments(
+        receivedDocuments: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document>,
+        savedDocuments: List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document>
+    ): List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document> {
+        val receivedDocumentsByIds = receivedDocuments.associateBy { it.id }
+        val savedDocumentsByIds = savedDocuments.associateBy { it.id }
+
+        val receivedBusinessFunctionsIds = receivedDocumentsByIds.keys
+        val savedBusinessFunctionsIds = savedDocumentsByIds.keys
+
+        val idsAllPersons = receivedBusinessFunctionsIds.union(savedBusinessFunctionsIds)
+        val idsNewBusinessFunctions = getNewElements(receivedBusinessFunctionsIds, savedBusinessFunctionsIds)
+        val idsUpdateBusinessFunctions = getElementsForUpdate(receivedBusinessFunctionsIds, savedBusinessFunctionsIds)
+
+        return idsAllPersons.asSequence()
+            .map { id ->
+                when (id) {
+                    in idsNewBusinessFunctions -> createBusinessFunctionDocument(receivedDocumentsByIds.getValue(id))
+                    in idsUpdateBusinessFunctions ->
+                        savedDocumentsByIds.getValue(id)
+                            .update(receivedDocumentsByIds.getValue(id))
+                    else -> savedDocumentsByIds.getValue(id)
+                }
+            }
+            .toList()
+    }
+
+    private fun createBusinessFunctionDocument(
+        document: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document
+    ) = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+        documentType = document.documentType,
+        id = document.id,
+        title = document.title,
+        description = document.description
+    )
+
+    private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(
+        document: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document
+    ) = this.copy(
+        title = document.title,
+        description = document.description.takeIfNotNullOrDefault(this.description)
+    )
 
     /**
      * BR-1.0.1.5.2 documents (tender)
