@@ -4,25 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.access.domain.model.coefficient.CoefficientValue
-import com.procurement.access.domain.model.enums.AwardCriteria
-import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
-import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueSerializer
-import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
-import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class UpdateCnRequest(
@@ -54,11 +44,6 @@ data class UpdateCnRequest(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodAdditionalInfo") @param:JsonProperty("procurementMethodAdditionalInfo") val procurementMethodAdditionalInfo: String?,
 
-        @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,
-
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
         @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
 
@@ -67,12 +52,6 @@ data class UpdateCnRequest(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
-
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>?,
-
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
@@ -119,57 +98,6 @@ data class UpdateCnRequest(
                     @field:JsonProperty("eligibleMinimumDifference") @param:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: Money
                 )
             }
-        }
-
-        data class Criteria(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum?,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,
-
-            @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>
-
-        ) {
-
-            data class RequirementGroup(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-
-                @JsonDeserialize(using = RequirementDeserializer::class)
-                @JsonSerialize(using = RequirementSerializer::class)
-                @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
-            )
-        }
-
-        data class Conversion(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String,
-            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String,
-            @field:JsonProperty("rationale") @param:JsonProperty("rationale") val rationale: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-            @field:JsonProperty("coefficients") @param:JsonProperty("coefficients") val coefficients: List<Coefficient>
-        ) {
-
-            data class Coefficient(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-
-                @JsonDeserialize(using = CoefficientValueDeserializer::class)
-                @JsonSerialize(using = CoefficientValueSerializer::class)
-                @field:JsonProperty("value") @param:JsonProperty("value") val value: CoefficientValue,
-
-                @field:JsonProperty("coefficient") @param:JsonProperty("coefficient") val coefficient: BigDecimal
-            )
         }
 
         data class ProcuringEntity(

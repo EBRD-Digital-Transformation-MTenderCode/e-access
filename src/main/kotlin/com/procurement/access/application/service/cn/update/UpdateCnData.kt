@@ -1,20 +1,14 @@
 package com.procurement.access.application.service.cn.update
 
 import com.procurement.access.domain.model.EntityBase
-import com.procurement.access.domain.model.coefficient.CoefficientValue
-import com.procurement.access.domain.model.enums.AwardCriteria
-import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class UpdateCnData(
@@ -36,14 +30,10 @@ data class UpdateCnData(
         val description: String,
         val procurementMethodRationale: String?,
         val procurementMethodAdditionalInfo: String?,
-        val awardCriteria: AwardCriteria,
-        val awardCriteriaDetails: AwardCriteriaDetails?,
         val tenderPeriod: TenderPeriod,
         val enquiryPeriod: EnquiryPeriod,
         val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val electronicAuctions: ElectronicAuctions?,
-        val criteria: List<Criteria>,
-        val conversions: List<Conversion>,
         val procuringEntity: ProcuringEntity?,
         val lots: List<Lot>,
         val items: List<Item>,
@@ -74,39 +64,6 @@ data class UpdateCnData(
                     val eligibleMinimumDifference: Money
                 )
             }
-        }
-
-        data class Criteria(
-            override val id: String,
-            val title: String,
-            val description: String?,
-            val relatesTo: CriteriaRelatesToEnum?,
-            val relatedItem: String?,
-            val requirementGroups: List<RequirementGroup>
-
-        ) : EntityBase<String>() {
-
-            data class RequirementGroup(
-                override val id: String,
-                val description: String?,
-                val requirements: List<Requirement>
-            ) : EntityBase<String>()
-        }
-
-        data class Conversion(
-            override val id: String,
-            val relatesTo: String,
-            val relatedItem: String,
-            val rationale: String,
-            val description: String?,
-            val coefficients: List<Coefficient>
-        ) : EntityBase<String>() {
-
-            data class Coefficient(
-                override val id: String,
-                val value: CoefficientValue,
-                val coefficient: BigDecimal
-            ) : EntityBase<String>()
         }
 
         data class ProcuringEntity(
@@ -240,8 +197,6 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, LotId>) = UpdateCnWithPerm
             description = tender.description,
             procurementMethodRationale = tender.procurementMethodRationale,
             procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-            awardCriteria = tender.awardCriteria,
-            awardCriteriaDetails = tender.awardCriteriaDetails,
             tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
                 UpdateCnWithPermanentId.Tender.TenderPeriod(
                     startDate = tenderPeriod.startDate,
@@ -266,38 +221,6 @@ fun UpdateCnData.replaceTemplateLotIds(r: Map<String, LotId>) = UpdateCnWithPerm
                                     eligibleMinimumDifference = modality.eligibleMinimumDifference
                                 )
                             }
-                        )
-                    }
-                )
-            },
-            criteria = tender.criteria.map { criteria ->
-                UpdateCnWithPermanentId.Tender.Criteria(
-                    id = criteria.id,
-                    title = criteria.title,
-                    description = criteria.description,
-                    relatesTo = criteria.relatesTo,
-                    relatedItem = r[criteria.relatedItem]?.toString() ?: criteria.relatedItem,
-                    requirementGroups = criteria.requirementGroups.map { requirementGroup ->
-                        UpdateCnWithPermanentId.Tender.Criteria.RequirementGroup(
-                            id = requirementGroup.id,
-                            description = requirementGroup.description,
-                            requirements = requirementGroup.requirements.toList()
-                        )
-                    }
-                )
-            },
-            conversions = tender.conversions.map { conversion ->
-                UpdateCnWithPermanentId.Tender.Conversion(
-                    id = conversion.id,
-                    relatesTo = conversion.relatesTo,
-                    relatedItem = conversion.relatedItem,
-                    rationale = conversion.rationale,
-                    description = conversion.description,
-                    coefficients = conversion.coefficients.map { coefficient ->
-                        UpdateCnWithPermanentId.Tender.Conversion.Coefficient(
-                            id = coefficient.id,
-                            value = coefficient.value,
-                            coefficient = coefficient.coefficient
                         )
                     }
                 )

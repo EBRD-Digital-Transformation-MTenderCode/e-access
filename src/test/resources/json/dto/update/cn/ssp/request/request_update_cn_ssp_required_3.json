@@ -2,7 +2,6 @@
   "tender": {
     "title": "tender.title",
     "description": "tender.description",
-    "awardCriteria": "costOnly",
     "tenderPeriod": {
       "startDate": "2019-04-01T10:00:00Z",
       "endDate": "2019-04-29T10:00:00Z"

@@ -136,38 +136,6 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         }
                     )
                 },
-                criteria = tender.criteria.map { criteria ->
-                    UpdateCnResponse.Tender.Criteria(
-                        id = criteria.id,
-                        title = criteria.title,
-                        description = criteria.description,
-                        relatesTo = criteria.relatesTo,
-                        relatedItem = criteria.relatedItem,
-                        requirementGroups = criteria.requirementGroups.map { requirementGroup ->
-                            UpdateCnResponse.Tender.Criteria.RequirementGroup(
-                                id = requirementGroup.id,
-                                description = requirementGroup.description,
-                                requirements = requirementGroup.requirements.toList()
-                            )
-                        }
-                    )
-                },
-                conversions = tender.conversions.map { conversion ->
-                    UpdateCnResponse.Tender.Conversion(
-                        id = conversion.id,
-                        relatesTo = conversion.relatesTo,
-                        relatedItem = conversion.relatedItem,
-                        rationale = conversion.rationale,
-                        description = conversion.description,
-                        coefficients = conversion.coefficients.map { coefficient ->
-                            UpdateCnResponse.Tender.Conversion.Coefficient(
-                                id = coefficient.id,
-                                value = coefficient.value,
-                                coefficient = coefficient.coefficient
-                            )
-                        }
-                    )
-                },
                 procuringEntity = tender.procuringEntity.let { procuringEntity ->
                     UpdateCnResponse.Tender.ProcuringEntity(
                         id = procuringEntity.id,
@@ -222,7 +190,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                                 }
                             )
                         },
-                        persons = procuringEntity.persones.map { person ->
+                        persons = procuringEntity.persons.map { person ->
                             UpdateCnResponse.Tender.ProcuringEntity.Person(
                                 title = person.title,
                                 name = person.name,
@@ -377,8 +345,6 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         relatedLot = item.relatedLot
                     )
                 },
-                awardCriteria = tender.awardCriteria,
-                awardCriteriaDetails = tender.awardCriteriaDetails,
                 requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
                 submissionMethod = tender.submissionMethod.toList(),
                 submissionMethodRationale = tender.submissionMethodRationale.toList(),

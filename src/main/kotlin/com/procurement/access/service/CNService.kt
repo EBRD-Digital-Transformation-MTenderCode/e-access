@@ -22,8 +22,6 @@ import com.procurement.access.domain.model.uniqueIds
 import com.procurement.access.domain.model.update
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.criteria.Period
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.lib.mapOrEmpty
 import com.procurement.access.lib.orThrow
@@ -182,10 +180,6 @@ class CNServiceImpl(
                     .takeIfNotNullOrDefault(
                         cn.tender.procurementMethodModalities
                     ),
-                awardCriteria = dataWithPermanentId.tender.awardCriteria
-                    .takeIfNotNullOrDefault(cn.tender.awardCriteria),
-                awardCriteriaDetails = dataWithPermanentId.tender.awardCriteriaDetails
-                    .takeIfNotNullOrDefault(cn.tender.awardCriteriaDetails),
                 procuringEntity = updatedProcuringEntity, //BR-1.0.1.15.3
                 value = updatedValue, //BR-1.0.1.1.2
                 lots = allModifiedLots + unmodifiedLots,
@@ -1285,7 +1279,7 @@ class CNServiceImpl(
                                 url = contactPoint.url
                             )
                         },
-                        persones = procuringEntity.persones.mapOrEmpty { person ->
+                        persons = procuringEntity.persones.mapOrEmpty { person ->
                             UpdatedCn.Tender.ProcuringEntity.Person(
                                 name = person.name,
                                 title = person.title,
@@ -1326,52 +1320,6 @@ class CNServiceImpl(
                 lotGroups = tender.lotGroups.map { lotGroup ->
                     UpdatedCn.Tender.LotGroup(
                         optionToCombine = lotGroup.optionToCombine
-                    )
-                },
-                criteria = data.tender.criteria.mapOrEmpty { criteria ->
-                    UpdatedCn.Tender.Criteria(
-                        id = criteria.id,
-                        title = criteria.title,
-                        description = criteria.description,
-                        requirementGroups = criteria.requirementGroups.map {
-                            UpdatedCn.Tender.Criteria.RequirementGroup(
-                                id = it.id,
-                                description = it.description,
-                                requirements = it.requirements.map { requirement ->
-                                    Requirement(
-                                        id = requirement.id,
-                                        description = requirement.description,
-                                        title = requirement.title,
-                                        period = requirement.period?.let { period ->
-                                            Period(
-                                                startDate = period.startDate,
-                                                endDate = period.endDate
-                                            )
-                                        },
-                                        dataType = requirement.dataType,
-                                        value = requirement.value
-                                    )
-                                }
-                            )
-                        },
-                        relatesTo = criteria.relatesTo,
-                        relatedItem = criteria.relatedItem
-                    )
-                },
-                conversions = tender.conversions.mapOrEmpty { conversion ->
-                    UpdatedCn.Tender.Conversion(
-                        id = conversion.id,
-                        relatedItem = conversion.relatedItem,
-                        relatesTo = conversion.relatesTo,
-                        rationale = conversion.rationale,
-                        description = conversion.description,
-                        coefficients = conversion.coefficients.map { coefficient ->
-                            UpdatedCn.Tender.Conversion.Coefficient(
-                                id = coefficient.id,
-                                value = coefficient.value,
-                                coefficient = coefficient.coefficient
-                            )
-                        }
                     )
                 },
                 lots = tender.lots.map { lot ->
@@ -1485,8 +1433,6 @@ class CNServiceImpl(
                         relatedLot = LotId.fromString(item.relatedLot)
                     )
                 },
-                awardCriteria = data.tender.awardCriteria,
-                awardCriteriaDetails = data.tender.awardCriteriaDetails,
                 submissionMethod = tender.submissionMethod,
                 submissionMethodRationale = tender.submissionMethodRationale,
                 submissionMethodDetails = tender.submissionMethodDetails,

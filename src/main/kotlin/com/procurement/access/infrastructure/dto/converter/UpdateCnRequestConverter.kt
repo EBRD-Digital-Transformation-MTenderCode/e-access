@@ -36,8 +36,6 @@ fun UpdateCnRequest.convert() = UpdateCnData(
             },
             procurementMethodRationale = tender.procurementMethodRationale,
             procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-            awardCriteria = tender.awardCriteria,
-            awardCriteriaDetails = tender.awardCriteriaDetails,
             tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
                 UpdateCnData.Tender.TenderPeriod(
                     startDate = tenderPeriod.startDate,
@@ -88,68 +86,6 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                         }
                 )
             },
-            criteria = tender.criteria
-                .errorIfEmpty {
-                    ErrorException(
-                        error = ErrorType.IS_EMPTY,
-                        message = "The tender contain empty list of the criteria."
-                    )
-                }
-                ?.map { criteria ->
-                    UpdateCnData.Tender.Criteria(
-                        id = criteria.id,
-                        title = criteria.title,
-                        description = criteria.description,
-                        relatesTo = criteria.relatesTo,
-                        relatedItem = criteria.relatedItem,
-                        requirementGroups = criteria.requirementGroups
-                            .mapIfNotEmpty { requirementGroup ->
-                                UpdateCnData.Tender.Criteria.RequirementGroup(
-                                    id = requirementGroup.id,
-                                    description = requirementGroup.description,
-                                    requirements = requirementGroup.requirements.toList()
-                                )
-                            }
-                            .orThrow {
-                                ErrorException(
-                                    error = ErrorType.IS_EMPTY,
-                                    message = "The criteria with id: '${criteria.id}' contain empty list of the requirement groups."
-                                )
-                            }
-                    )
-                }
-                .orEmpty(),
-            conversions = tender.conversions
-                .errorIfEmpty {
-                    ErrorException(
-                        error = ErrorType.IS_EMPTY,
-                        message = "The tender contain empty list of the conversions."
-                    )
-                }
-                ?.map { conversion ->
-                    UpdateCnData.Tender.Conversion(
-                        id = conversion.id,
-                        relatesTo = conversion.relatesTo,
-                        relatedItem = conversion.relatedItem,
-                        rationale = conversion.rationale,
-                        description = conversion.description,
-                        coefficients = conversion.coefficients
-                            .mapIfNotEmpty { coefficient ->
-                                UpdateCnData.Tender.Conversion.Coefficient(
-                                    id = coefficient.id,
-                                    value = coefficient.value,
-                                    coefficient = coefficient.coefficient
-                                )
-                            }
-                            .orThrow {
-                                ErrorException(
-                                    error = ErrorType.IS_EMPTY,
-                                    message = "The conversion with id: '${conversion.id}' contain empty list of the coefficients."
-                                )
-                            }
-                    )
-                }
-                .orEmpty(),
             procuringEntity = tender.procuringEntity?.let { procuringEntity ->
                 UpdateCnData.Tender.ProcuringEntity(
                     id = procuringEntity.id,
@@ -197,7 +133,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                                     .orThrow {
                                         ErrorException(
                                             error = ErrorType.IS_EMPTY,
-                                            message = "The persone contain empty list of the business functions."
+                                            message = "The person contain empty list of the business functions."
                                         )
                                     }
                             )
@@ -205,7 +141,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                         .orThrow {
                             ErrorException(
                                 error = ErrorType.IS_EMPTY,
-                                message = "The procuring entity contain empty list of the persones."
+                                message = "The procuring entity contain empty list of the persons."
                             )
                         }
                 )

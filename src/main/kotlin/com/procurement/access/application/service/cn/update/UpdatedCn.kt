@@ -1,12 +1,7 @@
 package com.procurement.access.application.service.cn.update
 
-import com.procurement.access.domain.model.coefficient.CoefficientValue
-import com.procurement.access.domain.model.enums.AwardCriteria
-import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.ConversionsRelatesTo
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -22,7 +17,6 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -98,15 +92,11 @@ data class UpdatedCn(
         val contractPeriod: ContractPeriod,
         val procurementMethodModalities: List<ProcurementMethodModalities>,
         val electronicAuctions: ElectronicAuctions?,
-        val criteria: List<Criteria>,
-        val conversions: List<Conversion>,
         val procuringEntity: ProcuringEntity,
         val value: Money,
         val lotGroups: List<LotGroup>,
         val lots: List<Lot>,
         val items: List<Item>,
-        val awardCriteria: AwardCriteria,
-        val awardCriteriaDetails: AwardCriteriaDetails?,
         val requiresElectronicCatalogue: Boolean,
         val submissionMethod: List<SubmissionMethod>,
         val submissionMethodRationale: List<String>,
@@ -181,45 +171,13 @@ data class UpdatedCn(
             }
         }
 
-        data class Criteria(
-            val id: String,
-            val title: String,
-            val description: String?,
-            val relatesTo: CriteriaRelatesToEnum?,
-            val relatedItem: String?,
-            val requirementGroups: List<RequirementGroup>
-        ) {
-
-            data class RequirementGroup(
-                val id: String,
-                val description: String?,
-                val requirements: List<Requirement>
-            )
-        }
-
-        data class Conversion(
-            val id: String,
-            val relatesTo: ConversionsRelatesTo,
-            val relatedItem: String,
-            val rationale: String,
-            val description: String?,
-            val coefficients: List<Coefficient>
-        ) {
-
-            data class Coefficient(
-                val id: String,
-                val value: CoefficientValue,
-                val coefficient: BigDecimal
-            )
-        }
-
         data class ProcuringEntity(
             val id: String,
             val name: String,
             val identifier: Identifier,
             val additionalIdentifiers: List<AdditionalIdentifier>,
             val address: Address,
-            val persones: List<Person>,
+            val persons: List<Person>,
             val contactPoint: ContactPoint
         ) {
 
