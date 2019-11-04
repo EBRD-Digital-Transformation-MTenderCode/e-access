@@ -85,30 +85,19 @@ class CNServiceImpl(
         val receivedLotsIds = receivedLotsByIds.keys
         val savedLotsIds = savedLotsByIds.keys
         val idsNewLots = getNewElements(receivedLotsIds, savedLotsIds)
-
         val idsUpdateLots = getElementsForUpdate(receivedLotsIds, savedLotsIds)
-            .also { ids ->
-                ids.forEach { id ->
-                    val lot = savedLotsByIds.getValue(id)
-                    when (lot.status) {
-                        LotStatus.COMPLETE,
-                        LotStatus.CANCELLED,
-                        LotStatus.UNSUCCESSFUL -> throw ErrorException(
-                            error = ErrorType.INVALID_LOT_STATUS,
-                            message = "Unable to update lot that is in the status '${lot.status.value}'."
-                        )
-
-                        LotStatus.PLANNING,
-                        LotStatus.PLANNED,
-                        LotStatus.ACTIVE -> Unit
-                    }
-                }
-            }
-
         val idsCancelLots = getElementsForRemove(receivedLotsIds, savedLotsIds)
             .filter { id ->
                 val lot = savedLotsByIds.getValue(id)
-                lot.status != LotStatus.CANCELLED
+                when (lot.status) {
+                    LotStatus.COMPLETE,
+                    LotStatus.CANCELLED,
+                    LotStatus.UNSUCCESSFUL -> false
+
+                    LotStatus.PLANNING,
+                    LotStatus.PLANNED,
+                    LotStatus.ACTIVE -> true
+                }
             }
 
         val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId {
