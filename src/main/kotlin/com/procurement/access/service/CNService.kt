@@ -99,6 +99,7 @@ class CNServiceImpl(
                     LotStatus.ACTIVE -> true
                 }
             }
+        val idsUnmodifiedLots = savedLotsIds - idsUpdateLots - idsCancelLots
 
         val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId {
             LotId.fromString(generationService.generatePermanentLotId())
@@ -120,6 +121,10 @@ class CNServiceImpl(
 
         val cancelledLots = idsCancelLots.map { id ->
             cancelLot(savedLotsByIds.getValue(id))
+        }
+
+        val unmodifiedLots = idsUnmodifiedLots.map { id ->
+            savedLotsByIds.getValue(id)
         }
 
         val allModifiedLots = (updatedLots + cancelledLots + newLots).also {
@@ -183,7 +188,7 @@ class CNServiceImpl(
                     .takeIfNotNullOrDefault(cn.tender.awardCriteriaDetails),
                 procuringEntity = updatedProcuringEntity, //BR-1.0.1.15.3
                 value = updatedValue, //BR-1.0.1.1.2
-                lots = allModifiedLots,
+                lots = allModifiedLots + unmodifiedLots,
                 items = updatedItems,
                 documents = updatedTenderDocuments //BR-1.0.1.5.2
             ),
