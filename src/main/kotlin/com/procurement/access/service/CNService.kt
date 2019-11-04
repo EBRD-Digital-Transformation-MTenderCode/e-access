@@ -147,6 +147,9 @@ class CNServiceImpl(
         //BR-1.0.1.15.3
         val updatedProcuringEntity = if (dataWithPermanentId.tender.procuringEntity != null)
             cn.tender.procuringEntity.update(dataWithPermanentId.tender.procuringEntity.persons)
+                .also { procuringEntity ->
+                    procuringEntity.checkBusinessFunctionsType()
+                }
         else
             cn.tender.procuringEntity
 
@@ -622,14 +625,10 @@ class CNServiceImpl(
      * a. IF [there is NO repeated values of businessFunctions.ID] then validation is successful;
      * b. ELSE eAccess throws Exception: "businessFunctions objects should be unique in every Person from Request";
      *
-     * VR-1.0.1.10.6
-     * 1. eAccess checks the availability in procurinfEntity from request of one Persones object with
-     *    one businessFunctions object where persones.businessFunctions.type == "authority" in Persones array from Request:
-     *   a. IF [there is Persones object with businessFunctions object where type == "authority"] then validation is successful;
-     *   b. ELSE eAccess throws Exception: "Authority person shoud be specified in Request";
-     * 2. eAccess checks persones.businessFunctions.type values in all businessFuctions object from Request;
+     * VR-1.0.1.10.8 (1)
+     * 1. eAccess checks persones.businessFunctions.type values in all businessFuctions object from Request;
      *   a. IF businessFunctions.type == oneOf procuringEntityBusinessFuncTypeEnum value (link), validation is successful;
-     *   b. ELSE eAccess throws Exception: "Invalid business functions type";
+     *   b. ELSE  eAccess throws Exception: "Invalid business functions type";
      *
      * VR-1.0.1.10.7 startDate (businessFunctions.period)
      * eAccess compares businessFunctions.period.startDate and startDate from the context of Request:
@@ -640,10 +639,13 @@ class CNServiceImpl(
      * VR-1.0.1.2.8
      */
     private fun UpdateCnData.checkBusinessFunctions(startDate: LocalDateTime): UpdateCnData {
-        var containAuthority = false
         val uniqueBusinessFunctionId = mutableSetOf<String>()
         var uniqueDocumentId: Set<String> = emptySet()
-        this.businessFunctions()
+        this.tender.procuringEntity?.persons
+            ?.asSequence()
+            ?.flatMap { person ->
+                person.businessFunctions.asSequence()
+            }
             ?.forEach { businessFunction ->
                 if (!uniqueBusinessFunctionId.add(businessFunction.id))
                     throw ErrorException(
@@ -651,6 +653,7 @@ class CNServiceImpl(
                         message = "Ids of business function are not unique."
                     )
 
+                //VR-1.0.1.10.8 (1)
                 when (businessFunction.type) {
                     BusinessFunctionType.AUTHORITY,
                     BusinessFunctionType.PROCURMENT_OFFICER,
@@ -659,16 +662,6 @@ class CNServiceImpl(
                     BusinessFunctionType.TECHNICAL_OPENER,
                     BusinessFunctionType.PRICE_OPENER,
                     BusinessFunctionType.PRICE_EVALUATOR -> Unit
-                }
-
-                if (businessFunction.type == BusinessFunctionType.AUTHORITY) {
-                    if (containAuthority)
-                        throw ErrorException(
-                            error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                            message = "More than one business function with type 'AUTHORITY'."
-                        )
-                    else
-                        containAuthority = true
                 }
 
                 if (businessFunction.period.startDate > startDate)
@@ -690,12 +683,32 @@ class CNServiceImpl(
         return this
     }
 
-    private fun UpdateCnData.businessFunctions() =
-        this.tender.procuringEntity?.persons
+    /**
+     * VR-1.0.1.10.8 (2)
+     * 2. eAccess checks the availability of one Persones object with one businessFunctions object
+     *    where persones.businessFunctions.type == "authority" in Persones array after updating (adding new person to DB from request):
+     *   a. IF [there is one Persones object with one businessFunctions object where type == "authority"] then validation is successful;
+     *   b. ELSE eAccess throws Exception: "Authority person shoud be specified in procuring entity";
+     */
+    private fun CNEntity.Tender.ProcuringEntity.checkBusinessFunctionsType() {
+        var containAuthority = false
+        this.persones
             ?.asSequence()
             ?.flatMap { person ->
                 person.businessFunctions.asSequence()
             }
+            ?.forEach { businessFunction ->
+                if (businessFunction.type == BusinessFunctionType.AUTHORITY) {
+                    if (containAuthority)
+                        throw ErrorException(
+                            error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                            message = "More than one business function with type 'AUTHORITY'."
+                        )
+                    else
+                        containAuthority = true
+                }
+            }
+    }
 
     /**
      *
