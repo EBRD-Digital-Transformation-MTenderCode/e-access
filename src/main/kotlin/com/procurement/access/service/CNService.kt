@@ -189,15 +189,12 @@ class CNServiceImpl(
                 items = updatedItems,
                 documents = updatedTenderDocuments //BR-1.0.1.5.2
             ),
-            amendment = cn.amendment
-                ?.let { amendment ->
-                    amendment.copy(
-                        relatedLots = amendment.relatedLots + idsCancelLots
+            amendment = idsCancelLots.takeIf { it.isNotEmpty() }
+                ?.let {
+                    CNEntity.Amendment(
+                        relatedLots = idsCancelLots.toList()
                     )
                 }
-                ?: CNEntity.Amendment(
-                    relatedLots = idsCancelLots.toList()
-                )
         )
 
         tenderProcessDao.save(
@@ -1463,7 +1460,7 @@ class CNServiceImpl(
         amendment = cn.amendment?.let { amendment ->
             if (amendment.relatedLots.isNotEmpty())
                 UpdatedCn.Amendment(
-                    relatedLots = amendment.relatedLots.mapOrEmpty { relatedLot ->
+                    relatedLots = amendment.relatedLots.map { relatedLot ->
                         LotId.fromString(relatedLot)
                     }
                 )
