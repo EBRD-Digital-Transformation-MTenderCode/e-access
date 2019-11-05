@@ -31,6 +31,8 @@ class MoneyDeserializer : JsonDeserializer<Money>() {
             val scale = amount.scale()
             if (scale > AVAILABLE_SCALE)
                 throw MoneyParseException("Attribute 'amount' is an invalid scale '$scale', the maximum scale: '$AVAILABLE_SCALE'.")
+            if (amount < BigDecimal.ZERO)
+                throw MoneyParseException("The amount must not be negative.")
 
             val currency: String = currencyNode.asText()
             return Money(amount = amount.setScale(AVAILABLE_SCALE, RoundingMode.HALF_UP), currency = currency)

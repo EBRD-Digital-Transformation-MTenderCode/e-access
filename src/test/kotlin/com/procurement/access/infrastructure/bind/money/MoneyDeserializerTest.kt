@@ -42,6 +42,7 @@ class MoneyDeserializerTest {
     @CsvSource(
         value = [
             """{ "currency": "MDL" };                     The attribute 'amount' is missing.""",
+            """{ "amount": -100.01, "currency": "MDL" };  The amount must not be negative.""",
             """{ "amount": 100.015, "currency": "MDL" };  Attribute 'amount' is an invalid scale '3', the maximum scale: '2'.""",
             """{ "amount": "100.01", "currency": "MDL" }; Attribute 'amount' is an invalid type 'STRING', the required type is number.""",
             """{ "amount": true, "currency": "MDL" };     Attribute 'amount' is an invalid type 'BOOLEAN', the required type is number.""",
