@@ -176,8 +176,7 @@ class CommandService(
                     cpid = cm.cpid,
                     token = cm.token,
                     owner = cm.owner,
-                    stage = cm.stage,
-                    operationType = cm.operationType
+                    stage = cm.stage
                 )
                 val request = toObject(PrepareCancellationRequest::class.java, cm.data)
                 val data = PrepareCancellationData(
