@@ -185,7 +185,7 @@
     "documents": [
       {
         "id": "document-1",
-        "documentType": "projectPlan",
+        "documentType": "billOfQuantity",
         "title": "request.tender.document[0].title",
         "description": "request.tender.document[0].description",
         "relatedLots": [

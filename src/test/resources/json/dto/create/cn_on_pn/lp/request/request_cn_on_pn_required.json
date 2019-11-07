@@ -53,7 +53,7 @@
     "documents": [
       {
         "id": "document-1",
-        "documentType": "projectPlan"
+        "documentType": "billOfQuantity"
       }
     ]
   }
