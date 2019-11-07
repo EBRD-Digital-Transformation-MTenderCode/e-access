@@ -1,10 +1,12 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
+import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -732,7 +734,7 @@ class PnService(
     private fun convertRequestDocument(documentFromRequest: PnCreateRequest.Tender.Document): PNEntity.Tender.Document {
         return PNEntity.Tender.Document(
             id = documentFromRequest.id,
-            documentType = documentFromRequest.documentType,
+            documentType = DocumentType.fromString(documentFromRequest.documentType.value),
             title = documentFromRequest.title,
             description = documentFromRequest.description,
             relatedLots = documentFromRequest.relatedLots?.toSet()
@@ -749,7 +751,7 @@ class PnService(
 
         return PNEntity.Tender.Document(
             id = documentFromRequest.id,
-            documentType = documentFromRequest.documentType,
+            documentType = DocumentType.fromString(documentFromRequest.documentType.value),
             title = documentFromRequest.title,
             description = documentFromRequest.description,
             relatedLots = relatedLots?.toSet()
@@ -1161,7 +1163,7 @@ class PnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents?.map { document ->
                         PnCreateResponse.Tender.Document(
-                            documentType = document.documentType,
+                            documentType = TenderDocumentType.fromString(document.documentType.value),
                             id = document.id,
                             title = document.title,
                             description = document.description,
