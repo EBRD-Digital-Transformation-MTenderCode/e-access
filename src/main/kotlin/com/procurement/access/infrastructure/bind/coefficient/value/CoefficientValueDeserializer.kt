@@ -15,7 +15,7 @@ class CoefficientValueDeserializer : JsonDeserializer<CoefficientValue>() {
         fun deserialize(value: String): CoefficientValue = CoefficientValue.AsString(value)
         fun deserialize(value: Boolean): CoefficientValue = CoefficientValue.AsBoolean(value)
         fun deserialize(value: BigDecimal): CoefficientValue = CoefficientValue.AsNumber(value)
-        fun deserialize(value: Int): CoefficientValue = CoefficientValue.AsInteger(value)
+        fun deserialize(value: Long): CoefficientValue = CoefficientValue.AsInteger(value)
     }
 
     @Throws(IOException::class, JsonProcessingException::class)
@@ -24,8 +24,8 @@ class CoefficientValueDeserializer : JsonDeserializer<CoefficientValue>() {
             JsonToken.VALUE_STRING -> deserialize(jsonParser.text)
             JsonToken.VALUE_FALSE -> deserialize(false)
             JsonToken.VALUE_TRUE -> deserialize(true)
-            JsonToken.VALUE_NUMBER_INT -> deserialize(jsonParser.intValue.toBigDecimal())
-            JsonToken.VALUE_NUMBER_FLOAT -> deserialize(jsonParser.decimalValue)
+            JsonToken.VALUE_NUMBER_INT -> deserialize(jsonParser.longValue)
+            JsonToken.VALUE_NUMBER_FLOAT -> deserialize(BigDecimal(jsonParser.text))
             else -> throw CoefficientValueException(coefficientValue = jsonParser.text, description = "Incorrect type")
         }
     }

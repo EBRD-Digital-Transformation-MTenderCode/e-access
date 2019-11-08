@@ -12,7 +12,7 @@ class CoefficientValueSerializer : JsonSerializer<CoefficientValue>() {
         fun serialize(coefficientValue: CoefficientValue.AsString): String = coefficientValue.value
         fun serialize(coefficientValue: CoefficientValue.AsBoolean): Boolean = coefficientValue.value
         fun serialize(coefficientValue: CoefficientValue.AsNumber): String = "%.3f".format(coefficientValue.value)
-        fun serialize(coefficientValue: CoefficientValue.AsInteger): Int = coefficientValue.value
+        fun serialize(coefficientValue: CoefficientValue.AsInteger): Long = coefficientValue.value
     }
 
     @Throws(IOException::class, JsonProcessingException::class)
