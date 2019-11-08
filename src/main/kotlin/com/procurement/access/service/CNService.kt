@@ -33,6 +33,7 @@ import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 interface CNService {
@@ -68,7 +69,7 @@ class CNServiceImpl(
         val documentsIds: Set<String> = cn.tender.documents.toSetBy { it.id }
 
         data.checkDocuments(documentsIds) //VR-1.0.1.2.1, VR-1.0.1.2.2, VR-1.0.1.2.9
-            .checkLotsCurrency(budgetCurrency = cn.planning.budget.amount.currency) //VR-1.0.1.4.2
+            .checkLotsValue(budgetCurrency = cn.planning.budget.amount.currency) //VR-1.0.1.4.2
             .checkLotsContractPeriod(pmd = context.pmd, cn = cn) //VR-1.0.1.4.3
             .checkRelatedLotItems(allLotsIds) //VR-1.0.1.5.4
             .checkRelatedLotsOfDocuments(allLotsIds) //VR-1.0.1.2.6
@@ -440,8 +441,13 @@ class CNServiceImpl(
      * a. IF lot.value.currency value == (equal to) budget.amount.currency value, validation is successful;
      * b. ELSE eAccess throws Exception: "Lot contains currency that is different from announced currency in budget";
      */
-    private fun UpdateCnData.checkLotsCurrency(budgetCurrency: String): UpdateCnData {
+    private fun UpdateCnData.checkLotsValue(budgetCurrency: String): UpdateCnData {
         this.tender.lots.forEach { lot ->
+            if (lot.value.amount == BigDecimal.ZERO)
+                throw ErrorException(
+                    error = ErrorType.INVALID_LOT_AMOUNT,
+                    message = "The lot with id: ${lot.id} contain invalid amount."
+                )
             if (lot.value.currency != budgetCurrency)
                 throw ErrorException(
                     error = ErrorType.INVALID_LOT_CURRENCY,
