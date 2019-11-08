@@ -17,6 +17,7 @@ import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.get.awardCriteria.GetAwardCriteriaContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
+import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
@@ -37,6 +38,7 @@ import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulRe
 import com.procurement.access.infrastructure.dto.tender.get.awardCriteria.GetAwardCriteriaResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
+import com.procurement.access.infrastructure.dto.tender.set.tenderUnsuccessful.SetTenderUnsuccessfulResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -175,7 +177,23 @@ class CommandService(
 
             CommandType.SET_TENDER_SUSPENDED -> tenderService.setSuspended(cm)
             CommandType.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
-            CommandType.SET_TENDER_UNSUCCESSFUL -> tenderService.setUnsuccessful(cm)
+            CommandType.SET_TENDER_UNSUCCESSFUL -> {
+                val context = SetTenderUnsuccessfulContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage,
+                    startDate = cm.startDate
+                )
+
+                val result = extendTenderService.setTenderUnsuccessful(context = context)
+                if (log.isDebugEnabled)
+                    log.debug("Tender status have been changed. Result: ${toJson(result)}")
+
+                val dataResponse: SetTenderUnsuccessfulResponse = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Tender status have been changed. Response: ${toJson(dataResponse)}")
+                ResponseDto(data = dataResponse)
+//                tenderService.setUnsuccessful(cm)
+            }
             CommandType.SET_TENDER_PRECANCELLATION -> {
                 val context = PrepareCancellationContext(
                     cpid = cm.cpid,
