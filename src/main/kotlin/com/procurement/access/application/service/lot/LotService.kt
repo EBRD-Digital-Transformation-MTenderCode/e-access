@@ -3,6 +3,8 @@ package com.procurement.access.application.service.lot
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.TemporalLotId
 import com.procurement.access.domain.model.money.Money
@@ -10,8 +12,12 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.lib.orThrow
+import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
+import com.procurement.access.model.entity.TenderProcessEntity
+import com.procurement.access.utils.toDate
+import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
@@ -19,6 +25,11 @@ interface LotService {
     fun getLot(context: GetLotContext): GettedLot
 
     fun getLotsForAuction(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction
+
+    fun setStatusUnsuccessful(
+        context: SetLotsStatusUnsuccessfulContext,
+        data: SetLotsStatusUnsuccessfulData
+    ): SettedLotsStatusUnsuccessful
 }
 
 @Service
@@ -141,6 +152,52 @@ class LotServiceImpl(
         }
     }
 
+    override fun setStatusUnsuccessful(
+        context: SetLotsStatusUnsuccessfulContext,
+        data: SetLotsStatusUnsuccessfulData
+    ): SettedLotsStatusUnsuccessful {
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+
+        val cn: CNEntity = toObject(CNEntity::class.java, entity.jsonData)
+
+        val idsUnsuccessfulLots: Set<LotId> = data.lots.toSetBy { it.id }
+        val updatedLots: List<CNEntity.Tender.Lot> = cn.tender.lots.setUnsuccessfulStatus(ids = idsUnsuccessfulLots)
+        val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
+
+        val updatedCN = cn.copy(
+            tender = cn.tender.copy(
+                status = if (activeLotsIsPresent) cn.tender.status else TenderStatus.UNSUCCESSFUL,
+                statusDetails = if (activeLotsIsPresent) cn.tender.statusDetails else TenderStatusDetails.EMPTY,
+                lots = updatedLots
+            )
+        )
+
+        tenderProcessDao.save(
+            TenderProcessEntity(
+                cpId = context.cpid,
+                token = entity.token,
+                stage = context.stage,
+                owner = entity.owner,
+                createdDate = context.startDate.toDate(),
+                jsonData = toJson(updatedCN)
+            )
+        )
+
+        return SettedLotsStatusUnsuccessful(
+            tender = SettedLotsStatusUnsuccessful.Tender(
+                status = updatedCN.tender.status,
+                statusDetails = updatedCN.tender.statusDetails
+            ),
+            lots = data.lots.map { lot ->
+                SettedLotsStatusUnsuccessful.Lot(
+                    id = lot.id,
+                    status = LotStatus.UNSUCCESSFUL
+                )
+            }
+        )
+    }
+
     private fun getLotsForCnOnPn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction =
         tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
             ?.let { entity ->
@@ -240,4 +297,15 @@ class LotServiceImpl(
     fun <T> getNewElements(received: Set<T>, saved: Set<T>) = received.subtract(saved)
 
     private fun <T> getElementsForUpdate(received: Set<T>, saved: Set<T>) = saved.intersect(received)
+
+    private fun List<CNEntity.Tender.Lot>.setUnsuccessfulStatus(
+        ids: Set<LotId>
+    ) = this.map { lot ->
+        if (LotId.fromString(lot.id) in ids) {
+            lot.copy(
+                status = LotStatus.UNSUCCESSFUL
+            )
+        } else
+            lot
+    }
 }

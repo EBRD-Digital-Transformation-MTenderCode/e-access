@@ -12,6 +12,7 @@ import com.procurement.access.application.service.lot.GetLotContext
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.application.service.lot.LotsForAuctionContext
 import com.procurement.access.application.service.lot.LotsForAuctionData
+import com.procurement.access.application.service.lot.SetLotsStatusUnsuccessfulContext
 import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
@@ -30,6 +31,8 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.lot.GetLotResponse
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
+import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulRequest
+import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
@@ -314,7 +317,26 @@ class CommandService(
             CommandType.GET_AWARD_CRITERIA -> lotsService.getAwardCriteria(cm)
             CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
             CommandType.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
-            CommandType.SET_LOTS_UNSUCCESSFUL -> lotsService.setLotsStatusUnsuccessful(cm)
+            CommandType.SET_LOTS_UNSUCCESSFUL -> {
+                val context = SetLotsStatusUnsuccessfulContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage,
+                    startDate = cm.startDate
+                )
+                val request: SetLotsStatusUnsuccessfulRequest =
+                    toObject(SetLotsStatusUnsuccessfulRequest::class.java, cm.data)
+                val result = lotService.setStatusUnsuccessful(
+                    context = context,
+                    data = request.convert()
+                )
+                if (log.isDebugEnabled)
+                    log.debug("Lots statuses have been changed. Result: ${toJson(result)}")
+
+                val dataResponse: SetLotsStatusUnsuccessfulResponse = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Lots statuses have been changed. Response: ${toJson(dataResponse)}")
+                ResponseDto(data = dataResponse)
+            }
             CommandType.SET_FINAL_STATUSES -> lotsService.setFinalStatuses(cm)
             CommandType.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
             CommandType.COMPLETE_LOTS -> lotsService.completeLots(cm)
