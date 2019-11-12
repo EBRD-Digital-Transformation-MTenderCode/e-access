@@ -108,7 +108,7 @@
             "description": "request.tender.item[0].additionalClassifications[0].description"
           }
         ],
-        "quantity": 100.01,
+        "quantity": 100.010,
         "unit": {
           "id": "request.tender.item[0].unit.id",
           "name": "request.tender.item[0].unit.name"
@@ -130,7 +130,7 @@
             "description": "request.tender.item[1].additionalClassifications[0].description"
           }
         ],
-        "quantity": 101.01,
+        "quantity": 101.010,
         "unit": {
           "id": "request.tender.item[1].unit.id",
           "name": "request.tender.item[1].unit.name"
@@ -152,7 +152,7 @@
             "description": "request.tender.item[2].additionalClassifications[0].description"
           }
         ],
-        "quantity": 102.01,
+        "quantity": 102.010,
         "unit": {
           "id": "request.tender.item[2].unit.id",
           "name": "request.tender.item[2].unit.name"
@@ -174,7 +174,7 @@
             "description": "request.tender.item[3].additionalClassifications[0].description"
           }
         ],
-        "quantity": 103.01,
+        "quantity": 103.010,
         "unit": {
           "id": "request.tender.item[3].unit.id",
           "name": "request.tender.item[3].unit.name"

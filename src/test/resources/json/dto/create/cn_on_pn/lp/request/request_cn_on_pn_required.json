@@ -42,7 +42,7 @@
           "id": "request.tender.item[0].classification.id",
           "description": "request.tender.item[0].classification.description"
         },
-        "quantity": 100.01,
+        "quantity": 100.010,
         "unit": {
           "id": "request.tender.item[0].unit.id",
           "name": "request.tender.item[0].unit.name"

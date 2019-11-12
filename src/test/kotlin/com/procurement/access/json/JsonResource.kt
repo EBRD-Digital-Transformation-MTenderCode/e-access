@@ -2,26 +2,18 @@ package com.procurement.access.json
 
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.procurement.access.infrastructure.bind.jackson.configuration
 import com.procurement.access.json.exception.JsonBindingException
 import com.procurement.access.json.exception.JsonFileNotFoundException
 import com.procurement.access.json.exception.JsonMappingException
 import com.procurement.access.json.exception.JsonParsingException
-import com.procurement.access.model.dto.databinding.IntDeserializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
-import com.procurement.access.model.dto.databinding.StringsDeserializer
 import java.io.IOException
 import java.io.StringWriter
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.time.LocalDateTime
 
 typealias JSON = String
 
@@ -79,23 +71,6 @@ private object ClassPathResource {
 
 object JsonMapper {
     val mapper = ObjectMapper().apply {
-        //TODO Refactoring here and utils.kt
-        registerKotlinModule()
-        registerModule(extendModule())
-
-        configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
-        configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
-        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        //TODO added ZERO to last !!!
-//        nodeFactory = JsonNodeFactory.withExactBigDecimals(true)
+        configuration()
     }
-
-    private fun extendModule() =
-        SimpleModule().apply {
-            addSerializer(LocalDateTime::class.java, JsonDateTimeSerializer())
-            addDeserializer(LocalDateTime::class.java, JsonDateTimeDeserializer())
-            addDeserializer(String::class.java, StringsDeserializer())
-            addDeserializer(Int::class.java, IntDeserializer())
-        }
 }

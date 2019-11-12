@@ -158,7 +158,7 @@
         "status": "active",
         "statusDetails": "empty",
         "value": {
-          "amount": 300.0,
+          "amount": 300.00,
           "currency": "cn.planning.budget.amount.currency"
         },
         "options": [
@@ -230,7 +230,7 @@
             "description": "cn.tender.item[0].additionalClassifications[0].description"
           }
         ],
-        "quantity": 10.01,
+        "quantity": 10.010,
         "unit": {
           "id": "cn.tender.item[0].unit.id",
           "name": "cn.tender.item[0].unit.name"
