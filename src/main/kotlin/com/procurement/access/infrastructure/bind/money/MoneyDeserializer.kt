@@ -7,11 +7,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.exception.MoneyParseException
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 class MoneyDeserializer : JsonDeserializer<Money>() {
     companion object {
-        private const val AVAILABLE_SCALE = 2
         fun deserialize(node: ObjectNode): Money {
             if (!node.has("amount"))
                 throw MoneyParseException("The attribute 'amount' is missing.")
@@ -29,13 +27,13 @@ class MoneyDeserializer : JsonDeserializer<Money>() {
 
             val amount: BigDecimal = amountNode.decimalValue()
             val scale = amount.scale()
-            if (scale > AVAILABLE_SCALE)
-                throw MoneyParseException("Attribute 'amount' is an invalid scale '$scale', the maximum scale: '$AVAILABLE_SCALE'.")
+            if (scale > Money.AVAILABLE_SCALE)
+                throw MoneyParseException("Attribute 'amount' is an invalid scale '$scale', the maximum scale: '${Money.AVAILABLE_SCALE}'.")
             if (amount < BigDecimal.ZERO)
                 throw MoneyParseException("The amount must not be negative.")
 
             val currency: String = currencyNode.asText()
-            return Money(amount = amount.setScale(AVAILABLE_SCALE, RoundingMode.HALF_UP), currency = currency)
+            return Money(amount = amount, currency = currency)
         }
     }
 
