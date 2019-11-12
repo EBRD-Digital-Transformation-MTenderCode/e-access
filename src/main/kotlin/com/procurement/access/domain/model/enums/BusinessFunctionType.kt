@@ -5,7 +5,7 @@ import com.procurement.access.exception.EnumException
 
 enum class BusinessFunctionType(@JsonValue val value: String) {
     AUTHORITY("authority"),
-    PROCURMENT_OFFICER("procurmentOfficer"),
+    PROCURMENT_OFFICER("procurementOfficer"),
     CONTACT_POINT("contactPoint"),
     TECHNICAL_EVALUATOR("technicalEvaluator"),
     TECHNICAL_OPENER("technicalOpener"),
