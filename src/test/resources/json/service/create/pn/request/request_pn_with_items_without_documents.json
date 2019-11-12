@@ -236,7 +236,7 @@
             "description": "request.pn.tender.item[0].additionalClassifications[0].description"
           }
         ],
-        "quantity": 10.01,
+        "quantity": 10.010,
         "unit": {
           "id": "request.pn.tender.item[0].unit.id",
           "name": "request.pn.tender.item[0].unit.name"
@@ -258,7 +258,7 @@
             "description": "request.pn.tender.item[1].additionalClassifications[0].description"
           }
         ],
-        "quantity": 11.01,
+        "quantity": 11.010,
         "unit": {
           "id": "request.pn.tender.item[1].unit.id",
           "name": "request.pn.tender.item[1].unit.name"
@@ -280,7 +280,7 @@
             "description": "request.pn.tender.item[2].additionalClassifications[0].description"
           }
         ],
-        "quantity": 12.01,
+        "quantity": 12.010,
         "unit": {
           "id": "request.pn.tender.item[2].unit.id",
           "name": "request.pn.tender.item[2].unit.name"
@@ -302,7 +302,7 @@
             "description": "request.pn.tender.item[3].additionalClassifications[0].description"
           }
         ],
-        "quantity": 13.01,
+        "quantity": 13.010,
         "unit": {
           "id": "request.pn.tender.item[3].unit.id",
           "name": "request.pn.tender.item[3].unit.name"

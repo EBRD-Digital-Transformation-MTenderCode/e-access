@@ -220,7 +220,7 @@
           "id": "pn.tender.item[0].classification.id",
           "description": "pn.tender.item[0].classification.description"
         },
-        "quantity": 10.01,
+        "quantity": 10.010,
         "unit": {
           "id": "pn.tender.item[0].unit.id",
           "name": "pn.tender.item[0].unit.name"

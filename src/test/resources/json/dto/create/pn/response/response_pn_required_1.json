@@ -263,7 +263,7 @@
           "id": "pn.tender.item[0].classification.id",
           "description": "pn.tender.item[0].classification.description"
         },
-        "quantity": 10.01,
+        "quantity": 10.010,
         "unit": {
           "id": "pn.tender.item[0].unit.id",
           "name": "pn.tender.item[0].unit.name"
@@ -278,7 +278,7 @@
           "id": "pn.tender.item[1].classification.id",
           "description": "pn.tender.item[1].classification.description"
         },
-        "quantity": 11.01,
+        "quantity": 11.010,
         "unit": {
           "id": "pn.tender.item[1].unit.id",
           "name": "pn.tender.item[1].unit.name"
@@ -293,7 +293,7 @@
           "id": "pn.tender.item[2].classification.id",
           "description": "pn.tender.item[2].classification.description"
         },
-        "quantity": 12.01,
+        "quantity": 12.010,
         "unit": {
           "id": "pn.tender.item[2].unit.id",
           "name": "pn.tender.item[2].unit.name"
@@ -308,7 +308,7 @@
           "id": "pn.tender.item[3].classification.id",
           "description": "pn.tender.item[3].classification.description"
         },
-        "quantity": 13.01,
+        "quantity": 13.010,
         "unit": {
           "id": "pn.tender.item[3].unit.id",
           "name": "pn.tender.item[3].unit.name"

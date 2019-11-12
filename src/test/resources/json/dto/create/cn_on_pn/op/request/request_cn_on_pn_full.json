@@ -108,8 +108,8 @@
                 "id": "002-1-2",
                 "title": "The number of years for proposed product warranty",
                 "dataType": "number",
-                "minValue": 1,
-                "maxValue": 3,
+                "minValue": 1.000,
+                "maxValue": 3.000,
                 "period": {
                   "startDate": "2019-01-01T10:00:00Z",
                   "endDate": "2019-12-31T10:00:00Z"
@@ -317,7 +317,7 @@
             "description": "request.tender.item[0].additionalClassifications[0].description"
           }
         ],
-        "quantity": 100.01,
+        "quantity": 100.010,
         "unit": {
           "id": "request.tender.item[0].unit.id",
           "name": "request.tender.item[0].unit.name"
@@ -339,7 +339,7 @@
             "description": "request.tender.item[1].additionalClassifications[0].description"
           }
         ],
-        "quantity": 100.01,
+        "quantity": 100.010,
         "unit": {
           "id": "request.tender.item[1].unit.id",
           "name": "request.tender.item[1].unit.name"
