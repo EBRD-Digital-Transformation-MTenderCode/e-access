@@ -3,20 +3,26 @@ package com.procurement.access.infrastructure.bind.money
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.infrastructure.exception.MoneyParseException
 
 class MoneySerializer : JsonSerializer<Money>() {
     companion object {
-        fun serialize(money: Money): ObjectNode = JsonNodeFactory.withExactBigDecimals(true)
-            .objectNode()
-            .apply {
-                put("amount", money.amount)
-                put("currency", money.currency)
-            }
+        private const val AMOUNT_PATTERN = "%.${Money.AVAILABLE_SCALE}f"
+
+        private fun serialize(money: Money, jsonGenerator: JsonGenerator) {
+            val scale = money.amount.scale()
+            if (scale > Money.AVAILABLE_SCALE)
+                throw MoneyParseException("Attribute 'amount' is an invalid scale '$scale', the maximum scale: '${Money.AVAILABLE_SCALE}'.")
+
+            jsonGenerator.writeStartObject()
+            jsonGenerator.writeFieldName("amount")
+            jsonGenerator.writeNumber(AMOUNT_PATTERN.format(money.amount))
+            jsonGenerator.writeStringField("currency", money.currency)
+            jsonGenerator.writeEndObject()
+        }
     }
 
     override fun serialize(money: Money, jsonGenerator: JsonGenerator, provider: SerializerProvider) =
-        jsonGenerator.writeTree(serialize(money))
+        serialize(money, jsonGenerator)
 }

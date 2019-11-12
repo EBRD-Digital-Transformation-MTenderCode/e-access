@@ -1,9 +1,8 @@
 package com.procurement.access.infrastructure.bind.money
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.infrastructure.bind.jackson.configuration
 import com.procurement.access.infrastructure.exception.MoneyParseException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
@@ -14,28 +13,31 @@ import java.math.BigDecimal
 class MoneyDeserializerTest {
     companion object {
         private val mapper = ObjectMapper()
+            .apply {
+                this.configuration()
+            }
     }
 
     @ParameterizedTest
     @CsvSource(
         value = [
-            """{ "amount": 0, "currency": "MDL" };      0.00""",
-            """{ "amount": 0.0, "currency": "MDL" };    0.00""",
+            """{ "amount": 0, "currency": "MDL" };      0""",
+            """{ "amount": 0.0, "currency": "MDL" };    0.0""",
             """{ "amount": 0.00, "currency": "MDL" };   0.00""",
-            """{ "amount": 100, "currency": "MDL" };    100.00""",
-            """{ "amount": 100.0, "currency": "MDL" };  100.00""",
+            """{ "amount": 100, "currency": "MDL" };    100""",
+            """{ "amount": 100.0, "currency": "MDL" };  100.0""",
             """{ "amount": 100.00, "currency": "MDL" }; 100.00""",
-            """{ "amount": 100.1, "currency": "MDL" };  100.10""",
+            """{ "amount": 100.1, "currency": "MDL" };  100.1""",
             """{ "amount": 100.15, "currency": "MDL" }; 100.15""",
             """{ "amount": 100.05, "currency": "MDL" }; 100.05"""
         ],
         delimiter = ';'
     )
-    fun success(json: String, value: String) {
-        val result = mapper.readValue(json, TestValue::class.java)
+    fun success(json: String, expected: String) {
+        val money: Money = mapper.readValue(json, Money::class.java)
 
-        assertEquals(BigDecimal(value), result.value.amount)
-        assertEquals("MDL", result.value.currency)
+        assertEquals(BigDecimal(expected), money.amount)
+        assertEquals("MDL", money.currency)
     }
 
     @ParameterizedTest(name = "{1}")
@@ -51,8 +53,8 @@ class MoneyDeserializerTest {
         delimiter = ';'
     )
     fun amount(json: String, textError: String) {
-        val exception = assertThrows<MoneyParseException> {
-            mapper.readValue(json, TestValue::class.java)
+        val exception: MoneyParseException = assertThrows {
+            mapper.readValue(json, Money::class.java)
         }
 
         assertEquals(textError, exception.message)
@@ -69,14 +71,9 @@ class MoneyDeserializerTest {
         delimiter = ';'
     )
     fun currency(json: String, textError: String) {
-        val exception = assertThrows<MoneyParseException> {
-            mapper.readValue(json, TestValue::class.java)
+        val exception: MoneyParseException = assertThrows {
+            mapper.readValue(json, Money::class.java)
         }
         assertEquals(textError, exception.message)
     }
 }
-
-data class TestValue @JsonCreator constructor(
-    @JsonDeserialize(using = MoneyDeserializer::class)
-    val value: Money
-)
