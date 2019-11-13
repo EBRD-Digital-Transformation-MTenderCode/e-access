@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.procurement.access.domain.model.coefficient.CoefficientRate
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
@@ -22,6 +23,8 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
+import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateSerializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueSerializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
@@ -312,7 +315,9 @@ data class UpdateCnResponse(
                 @JsonSerialize(using = CoefficientValueSerializer::class)
                 @field:JsonProperty("value") @param:JsonProperty("value") val value: CoefficientValue,
 
-                @field:JsonProperty("coefficient") @param:JsonProperty("coefficient") val coefficient: BigDecimal
+                @JsonDeserialize(using = CoefficientRateDeserializer::class)
+                @JsonSerialize(using = CoefficientRateSerializer::class)
+                @field:JsonProperty("coefficient") @param:JsonProperty("coefficient") val coefficient: CoefficientRate
             )
         }
 
