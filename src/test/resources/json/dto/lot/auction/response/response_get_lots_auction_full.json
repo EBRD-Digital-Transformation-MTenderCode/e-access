@@ -1,0 +1,18 @@
+{
+  "tender": {
+    "id": "7eaabe05-a5f1-4705-bc89-1d3a272115ef",
+    "title": "tender.title",
+    "description": "tender.description",
+    "lots": [
+      {
+        "id": "388d27a6-b20a-450f-a4e9-c756ad6c305f",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "value": {
+          "amount": 123.23,
+          "currency": "MDL"
+        }
+      }
+    ]
+  }
+}
