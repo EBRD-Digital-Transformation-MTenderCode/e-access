@@ -18,7 +18,6 @@ import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CancellationRs
 import com.procurement.access.model.dto.lots.LotCancellation
-import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.tender.GetDataForAcRq
@@ -69,28 +68,6 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
                 process.tender.statusDetails.value,
                 process.tender.procurementMethodModalities,
                 process.tender.electronicAuctions)))
-    }
-
-    fun setUnsuccessful(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.apply {
-            status = TenderStatus.UNSUCCESSFUL
-            statusDetails = TenderStatusDetails.EMPTY
-            lots.forEach { lot ->
-                lot.status = LotStatus.UNSUCCESSFUL
-                lot.statusDetails = LotStatusDetails.EMPTY
-
-            }
-        }
-        tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateLotsRs(
-                process.tender.status,
-                process.tender.statusDetails,
-                process.tender.lots, null))
     }
 
     fun setPreCancellation(cm: CommandMessage): ResponseDto {

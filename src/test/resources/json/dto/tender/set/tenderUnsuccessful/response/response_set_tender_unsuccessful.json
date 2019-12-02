@@ -1,0 +1,12 @@
+{
+  "tender": {
+    "status": "unsuccessful",
+    "statusDetails": "empty"
+  },
+  "unsuccessfulLots": [
+    {
+      "id": "78227cc3-b8d2-45b8-998f-0ff4f8033abd",
+      "status": "unsuccessful"
+    }
+  ]
+}

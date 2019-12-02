@@ -25,7 +25,6 @@ import com.procurement.access.model.dto.lots.FinalLot
 import com.procurement.access.model.dto.lots.FinalStatusesRq
 import com.procurement.access.model.dto.lots.FinalStatusesRs
 import com.procurement.access.model.dto.lots.FinalTender
-import com.procurement.access.model.dto.lots.GetAwardCriteriaRs
 import com.procurement.access.model.dto.lots.GetItemsByLotRs
 import com.procurement.access.model.dto.lots.GetLotsAuctionRs
 import com.procurement.access.model.dto.lots.GetLotsAuctionTender
@@ -108,32 +107,6 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
         return ResponseDto(data = UpdateLotByBidRs(updatedLot))
-    }
-
-    fun setLotsStatusUnsuccessful(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.apply {
-            setLotsStatus(lots, lotsDto)
-            if (!isAnyActiveLots(lots)) {
-                status = TenderStatus.UNSUCCESSFUL
-                statusDetails = TenderStatusDetails.EMPTY
-            } else {
-                statusDetails = TenderStatusDetails.fromString(phase)
-            }
-        }
-        entity.jsonData = toJson(process)
-        tenderProcessDao.save(entity)
-        return ResponseDto(data = UpdateLotsRs(
-                process.tender.status,
-                process.tender.statusDetails,
-                process.tender.lots,
-                null))
     }
 
     fun setFinalStatuses(cm: CommandMessage): ResponseDto {
@@ -231,15 +204,6 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         ))
     }
 
-    fun getAwardCriteria(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        return ResponseDto(data = GetAwardCriteriaRs(awardCriteria = process.tender.awardCriteria!!.value))
-    }
-
     fun getItemsByLot(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
@@ -313,25 +277,12 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         return lotsByStatus
     }
 
-    private fun setLotsStatus(lots: List<Lot>, updateLotsDto: UpdateLotsRq) {
-        if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsIds = updateLotsDto.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
-        lots.forEach { lot ->
-            if (lot.id in lotsIds) lot.status = LotStatus.UNSUCCESSFUL
-            if (lot.statusDetails == LotStatusDetails.UNSUCCESSFUL) lot.statusDetails = LotStatusDetails.EMPTY
-        }
-    }
-
     private fun setLotsStatusDetails(lots: List<Lot>, updateLotsDto: UpdateLotsRq, statusDetails: LotStatusDetails) {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
         val lotsIds = updateLotsDto.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
         lots.forEach { lot ->
             if (lot.id in lotsIds) lot.statusDetails = statusDetails
         }
-    }
-
-    private fun isAnyActiveLots(lots: List<Lot>): Boolean {
-        return lots.asSequence().any { it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.EMPTY }
     }
 
     private fun setLotsStatusDetails(lots: List<Lot>, lotId: String, lotStatusDetails: LotStatusDetails): Lot {
