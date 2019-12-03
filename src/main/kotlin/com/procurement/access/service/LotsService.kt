@@ -48,9 +48,8 @@ import java.util.*
 class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage) ?: throw ErrorException(
-            DATA_NOT_FOUND
-        )
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+            ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val activeLots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE)
         return GetActiveLotsResult(
