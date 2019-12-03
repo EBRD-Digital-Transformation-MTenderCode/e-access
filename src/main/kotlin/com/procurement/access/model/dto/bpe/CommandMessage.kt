@@ -130,7 +130,7 @@ enum class CommandType(private val value: String) {
     START_NEW_STAGE("startNewStage"),
 
     GET_ITEMS_BY_LOT("getItemsByLot"),
-    GET_LOTS("getLots"),
+    GET_ACTIVE_LOTS("getActiveLots"),
     GET_LOT("getLot"),
     GET_LOTS_AUCTION("getLotsAuction"),
     GET_AWARD_CRITERIA("getAwardCriteria"),

@@ -8,6 +8,7 @@ import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.cn.update.UpdateCnContext
 import com.procurement.access.application.service.cn.update.UpdateCnData
+import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.lot.GetLotContext
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.application.service.lot.LotsForAuctionContext
@@ -239,7 +240,30 @@ class CommandService(
             CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
 
             CommandType.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
-            CommandType.GET_LOTS -> lotsService.getLots(cm)
+            CommandType.GET_ACTIVE_LOTS -> {
+                when (cm.pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                        val context = GetActiveLotsContext(
+                            cpid = cm.cpid,
+                            stage = cm.stage
+                        )
+                        val serviceResponse = lotsService.getActiveLots(context = context)
+                        val response = serviceResponse.convert()
+                        ResponseDto(data = response)
+                    }
+
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
+                        throw ErrorException(ErrorType.INVALID_PMD)
+                    }
+
+                }
+            }
 
             CommandType.GET_LOT -> {
                 val context = GetLotContext(
