@@ -59,14 +59,27 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
     }
 
     fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+            ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
+        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE).toList()
+            .takeIf { it.isNotEmpty() }
+            ?.map {
+                GetLotsAuctionResponseData.Tender.Lot(
+                    id = it.id,
+                    title = it.title!!,
+                    description = it.description!!,
+                    value = it.value.let { Money(amount = it.amount, currency = it.currency) })
+            } ?: throw ErrorException(NO_ACTIVE_LOTS)
+
         return GetLotsAuctionResponseData(
-                tender = GetLotsAuctionResponseData.Tender(
-                        id = process.tender.id!!,
-                        title = process.tender.title,
-                        description = process.tender.description,
-                        lots = getLotsForAuctionByStatus(process.tender.lots, LotStatus.ACTIVE)))
+            tender = GetLotsAuctionResponseData.Tender(
+                id = process.tender.id!!,
+                title = process.tender.title,
+                description = process.tender.description,
+                lots = activeLots
+            )
+        )
     }
 
     fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
@@ -274,19 +287,8 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         return lotsByStatus
     }
 
-    private fun getLotsForAuctionByStatus(lots: List<Lot>, status: LotStatus): List<GetLotsAuctionResponseData.Tender.Lot> {
-        if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsByStatus = lots.asSequence()
-                .filter { it.status == status }
-                .map {
-                    GetLotsAuctionResponseData.Tender.Lot(
-                        id = it.id,
-                        title = it.title!!,
-                        description = it.description!!,
-                        value = it.value.let { Money(amount = it.amount, currency = it.currency) })
-                }.toList()
-        if (lotsByStatus.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        return lotsByStatus
+    private fun getLotsByStatus(lots: List<Lot>, status: LotStatus) : Sequence<Lot> {
+        return lots.asSequence().filter { it.status == status }
     }
 
 
