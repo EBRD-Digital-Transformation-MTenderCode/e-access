@@ -1,11 +1,14 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.lot.GetActiveLotsContext
+import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -28,7 +31,6 @@ import com.procurement.access.model.dto.lots.FinalTender
 import com.procurement.access.model.dto.lots.GetItemsByLotRs
 import com.procurement.access.model.dto.lots.GetLotsAuctionRs
 import com.procurement.access.model.dto.lots.GetLotsAuctionTender
-import com.procurement.access.model.dto.lots.GetLotsRs
 import com.procurement.access.model.dto.lots.ItemDto
 import com.procurement.access.model.dto.lots.LotDto
 import com.procurement.access.model.dto.lots.UpdateLotByBidRq
@@ -45,15 +47,18 @@ import java.util.*
 @Service
 class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
-    fun getLots(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+    fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage) ?: throw ErrorException(
+            DATA_NOT_FOUND
+        )
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        return ResponseDto(data = GetLotsRs(
-                awardCriteria = process.tender.awardCriteria!!.value,
-                lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))
+        val activeLots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE)
+        return GetActiveLotsResult(
+            lots = activeLots.map { activeLot ->
+                GetActiveLotsResult.Lot(
+                    id = LotId.fromString(activeLot.id)
+                )
+            }
         )
     }
 
