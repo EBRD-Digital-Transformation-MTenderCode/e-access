@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -38,6 +39,7 @@ import com.procurement.access.model.dto.lots.UpdateLotsRq
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
+import com.procurement.access.model.dto.ocds.asMoney
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -66,10 +68,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             .takeIf { it.isNotEmpty() }
             ?.map {
                 GetLotsAuctionResponseData.Tender.Lot(
-                    id = it.id,
+                    id = LotId.fromString(it.id),
                     title = it.title!!,
                     description = it.description!!,
-                    value = it.value.let { Money(amount = it.amount, currency = it.currency) })
+                    value = it.value.asMoney)
             } ?: throw ErrorException(NO_ACTIVE_LOTS)
 
         return GetLotsAuctionResponseData(

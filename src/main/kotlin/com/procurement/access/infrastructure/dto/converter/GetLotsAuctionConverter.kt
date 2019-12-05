@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.dto.converter
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.model.dto.response.GetLotsAuctionResponse
 
-fun GetLotsAuctionResponseData.toResponseDto() : GetLotsAuctionResponse{
+fun GetLotsAuctionResponseData.toResponseDto(): GetLotsAuctionResponse {
     return GetLotsAuctionResponse(
         tender = GetLotsAuctionResponse.Tender(
             id = this.tender.id,

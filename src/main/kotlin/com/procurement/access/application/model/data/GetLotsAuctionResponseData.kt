@@ -1,5 +1,6 @@
 package com.procurement.access.application.model.data
 
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
 
 data class GetLotsAuctionResponseData(
@@ -12,7 +13,7 @@ data class GetLotsAuctionResponseData(
         val lots: List<Lot>
     ) {
         data class Lot(
-            val id: String,
+            val id: LotId,
             val title: String,
             val description: String,
             val value: Money
