@@ -1,11 +1,15 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.context.GetLotsAuctionContext
+import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.lot.LotId
+import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -26,8 +30,6 @@ import com.procurement.access.model.dto.lots.FinalStatusesRq
 import com.procurement.access.model.dto.lots.FinalStatusesRs
 import com.procurement.access.model.dto.lots.FinalTender
 import com.procurement.access.model.dto.lots.GetItemsByLotRs
-import com.procurement.access.model.dto.lots.GetLotsAuctionRs
-import com.procurement.access.model.dto.lots.GetLotsAuctionTender
 import com.procurement.access.model.dto.lots.GetLotsRs
 import com.procurement.access.model.dto.lots.ItemDto
 import com.procurement.access.model.dto.lots.LotDto
@@ -37,6 +39,7 @@ import com.procurement.access.model.dto.lots.UpdateLotsRq
 import com.procurement.access.model.dto.lots.UpdateLotsRs
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
+import com.procurement.access.model.dto.ocds.asMoney
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -57,19 +60,29 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    fun getLotsAuction(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+    fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+            ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        return ResponseDto(data = GetLotsAuctionRs(
-                awardCriteria = process.tender.awardCriteria!!.value,
-                tender = GetLotsAuctionTender(
-                        id = process.tender.id!!,
-                        title = process.tender.title,
-                        description = process.tender.description,
-                        awardCriteria = process.tender.awardCriteria!!.value,
-                        lots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE))))
+        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE)
+            .toList()
+            .takeIf { it.isNotEmpty() }
+            ?.map {
+                GetLotsAuctionResponseData.Tender.Lot(
+                    id = LotId.fromString(it.id),
+                    title = it.title!!,
+                    description = it.description!!,
+                    value = it.value.asMoney)
+            } ?: throw ErrorException(NO_ACTIVE_LOTS)
+
+        return GetLotsAuctionResponseData(
+            tender = GetLotsAuctionResponseData.Tender(
+                id = process.tender.id!!,
+                title = process.tender.title,
+                description = process.tender.description,
+                lots = activeLots
+            )
+        )
     }
 
     fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
@@ -276,6 +289,12 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         if (lotsByStatus.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
         return lotsByStatus
     }
+
+    private fun getLotsByStatus(lots: List<Lot>, status: LotStatus) : Sequence<Lot> {
+        return lots.asSequence().filter { it.status == status }
+    }
+
+
 
     private fun setLotsStatusDetails(lots: List<Lot>, updateLotsDto: UpdateLotsRq, statusDetails: LotStatusDetails) {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
