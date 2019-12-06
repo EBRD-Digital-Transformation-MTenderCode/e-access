@@ -25,9 +25,9 @@ val Money.asValue: Value
     }
 
 val Value.asMoney: Money
-    get() = this.let { money ->
+    get() = this.let { value ->
         Money(
-            amount = money.amount,
-            currency = money.currency
+            amount = value.amount,
+            currency = value.currency
         )
     }
