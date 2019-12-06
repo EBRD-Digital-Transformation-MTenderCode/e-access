@@ -32,7 +32,6 @@ import com.procurement.access.model.dto.lots.FinalStatusesRs
 import com.procurement.access.model.dto.lots.FinalTender
 import com.procurement.access.model.dto.lots.GetItemsByLotRs
 import com.procurement.access.model.dto.lots.ItemDto
-import com.procurement.access.model.dto.lots.LotDto
 import com.procurement.access.model.dto.lots.UpdateLotByBidRq
 import com.procurement.access.model.dto.lots.UpdateLotByBidRs
 import com.procurement.access.model.dto.lots.UpdateLotsRq
@@ -52,14 +51,14 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val activeLots = getLotsDtoByStatus(process.tender.lots, LotStatus.ACTIVE)
-        return GetActiveLotsResult(
-            lots = activeLots.map { activeLot ->
+        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE)
+            .map { activeLot ->
                 GetActiveLotsResult.Lot(
                     id = LotId.fromString(activeLot.id)
                 )
             }
-        )
+            .toList()
+        return GetActiveLotsResult(lots = activeLots)
     }
 
     fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
@@ -287,15 +286,6 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 stageEnd = stageEnd
             )
         )
-    }
-
-    private fun getLotsDtoByStatus(lots: List<Lot>, status: LotStatus): List<LotDto> {
-        if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsByStatus = lots.asSequence()
-            .filter { it.status == status }
-            .map { LotDto(id = it.id, title = it.title, description = it.description, value = it.value) }.toList()
-        if (lotsByStatus.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        return lotsByStatus
     }
 
     private fun getLotsByStatus(lots: List<Lot>, status: LotStatus): Sequence<Lot> {
