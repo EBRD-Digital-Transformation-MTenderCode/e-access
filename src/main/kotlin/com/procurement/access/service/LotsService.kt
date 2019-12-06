@@ -64,7 +64,8 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE).toList()
+        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE)
+            .toList()
             .takeIf { it.isNotEmpty() }
             ?.map {
                 GetLotsAuctionResponseData.Tender.Lot(
