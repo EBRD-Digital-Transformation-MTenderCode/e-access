@@ -443,7 +443,7 @@ class CNServiceImpl(
      */
     private fun UpdateCnData.checkLotsValue(budgetCurrency: String): UpdateCnData {
         this.tender.lots.forEach { lot ->
-            if (lot.value.amount == BigDecimal.ZERO)
+            if (lot.value.amount.compareTo(BigDecimal.ZERO) == 0)
                 throw ErrorException(
                     error = ErrorType.INVALID_LOT_AMOUNT,
                     message = "The lot with id: ${lot.id} contain invalid amount."

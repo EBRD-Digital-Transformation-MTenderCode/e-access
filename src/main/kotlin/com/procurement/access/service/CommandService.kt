@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.service.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
@@ -31,6 +32,7 @@ import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
 import com.procurement.access.infrastructure.dto.cn.update.UpdateCnResponse
 import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.dto.converter.toResponseDto
 import com.procurement.access.infrastructure.dto.lot.GetLotResponse
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
@@ -357,7 +359,30 @@ class CommandService(
                 ResponseDto(data = dataResponse)
             }
 
-            CommandType.GET_LOTS_AUCTION -> lotsService.getLotsAuction(cm)
+            CommandType.GET_LOTS_AUCTION -> {
+                when (cm.pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                        val context = GetLotsAuctionContext(
+                            cpid = cm.cpid,
+                            stage = cm.stage
+                        )
+                        val serviceResponse = lotsService.getLotsAuction(context = context)
+                        val response = serviceResponse.toResponseDto()
+                        ResponseDto(data = response)
+                    }
+
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
+                        throw ErrorException(ErrorType.INVALID_PMD)
+                    }
+
+                }
+            }
             CommandType.GET_AWARD_CRITERIA -> {
                 val context =
                     GetAwardCriteriaContext(
