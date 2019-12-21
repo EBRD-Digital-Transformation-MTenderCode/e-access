@@ -6,12 +6,16 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import com.procurement.access.application.model.MainMode
+import com.procurement.access.application.service.pn.create.CreatePnContext
+import com.procurement.access.application.service.pn.create.PnCreateRequestData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
 import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
+import com.procurement.access.infrastructure.dto.pn.converter.convert
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.json.JsonFilePathGenerator
@@ -29,7 +33,14 @@ import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.country
+import com.procurement.access.model.dto.bpe.operationId
+import com.procurement.access.model.dto.bpe.owner
+import com.procurement.access.model.dto.bpe.pmd
+import com.procurement.access.model.dto.bpe.stage
+import com.procurement.access.model.dto.bpe.startDate
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
+import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -53,6 +64,8 @@ class PnServiceTest {
         private const val PERMANENT_ITEM_ID_2 = "permanent-item-2"
         private const val PERMANENT_ITEM_ID_3 = "permanent-item-3"
         private const val PERMANENT_ITEM_ID_4 = "permanent-item-4"
+
+        private val PATTERN_MODE = "ocds-t1s2t3".toRegex()
     }
 
     private lateinit var generationService: GenerationService
@@ -101,8 +114,9 @@ class PnServiceTest {
                 .setAttribute("startDate", "2019-02-10T01:01:01Z")
 
             val cm = commandMessage(pmd = pmd.name, data = requestNode)
+            val payload = getCreatePnPayload(cm)
             val exception = assertThrows<ErrorException> {
-                service.createPn(cm)
+                service.createPn(payload.context, payload.data)
             }
 
             assertEquals(ErrorType.INVALID_START_DATE, exception.error)
@@ -119,8 +133,9 @@ class PnServiceTest {
                     .setAttribute("amount", 1.01)
 
                 val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
-                    service.createPn(cm)
+                    service.createPn(payload.context, payload.data)
                 }
 
                 assertEquals(ErrorType.INVALID_TENDER_AMOUNT, exception.error)
@@ -134,8 +149,9 @@ class PnServiceTest {
                     .setAttribute("currency", "UNKNOWN")
 
                 val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
-                    service.createPn(cm)
+                    service.createPn(payload.context, payload.data)
                 }
 
                 assertEquals(ErrorType.INVALID_LOT_CURRENCY, exception.error)
@@ -195,8 +211,9 @@ class PnServiceTest {
                         .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                    val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
-                        service.createPn(cm)
+                        service.createPn(payload.context, payload.data)
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -233,8 +250,9 @@ class PnServiceTest {
                         }
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                    val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
-                        service.createPn(cm)
+                        service.createPn(payload.context, payload.data)
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -253,8 +271,9 @@ class PnServiceTest {
                 }
 
                 val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
-                    service.createPn(cm)
+                    service.createPn(payload.context, payload.data)
                 }
 
                 assertEquals(ErrorType.INVALID_DOCS_RELATED_LOTS, exception.error)
@@ -280,8 +299,9 @@ class PnServiceTest {
                     }
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                    val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
-                        service.createPn(cm)
+                        service.createPn(payload.context, payload.data)
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -314,8 +334,9 @@ class PnServiceTest {
                         .setAttribute("startDate", tenderPeriodEndDate.format(JsonDateTimeFormatter.formatter))
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                    val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
-                        service.createPn(cm)
+                        service.createPn(payload.context, payload.data)
                     }
 
                     assertEquals(ErrorType.INVALID_LOT_CONTRACT_PERIOD, exception.error)
@@ -333,12 +354,15 @@ class PnServiceTest {
                     requestNode.getObject("tender").putArray("lots")
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                    println(requestNode)
+
                     val exception = assertThrows<ErrorException> {
-                        service.createPn(cm)
+                        val payload = getCreatePnPayload(cm)
+                        service.createPn(payload.context, payload.data)
                     }
 
-                    assertEquals(ErrorType.EMPTY_LOTS, exception.error)
-                }
+                    assertEquals(ErrorType.IS_EMPTY, exception.error)
+            }
 
                 @DisplayName("The lots ids are presented in a list of values the relatedLot of the items.")
                 @ParameterizedTest
@@ -349,8 +373,9 @@ class PnServiceTest {
                         .setAttribute("id", UUID.randomUUID().toString())
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                    val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
-                        service.createPn(cm)
+                        service.createPn(payload.context, payload.data)
                     }
 
                     assertEquals(ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_ITEMS, exception.error)
@@ -369,8 +394,9 @@ class PnServiceTest {
                 items.putObject(item)
 
                 val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
-                    service.createPn(cm)
+                    service.createPn(payload.context, payload.data)
                 }
 
                 assertEquals(ErrorType.INVALID_ITEMS_RELATED_LOTS, exception.error)
@@ -387,8 +413,9 @@ class PnServiceTest {
                         getObject(1).setAttribute("id", id)
                     }
                 val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
-                    service.createPn(cm)
+                    service.createPn(payload.context, payload.data)
                 }
 
                 assertEquals(ErrorType.LOT_ID_DUPLICATED, exception.error)
@@ -405,8 +432,9 @@ class PnServiceTest {
                         getObject(1).setAttribute("id", id)
                     }
                 val cm = commandMessage(pmd = pmd.name, data = requestNode)
+                val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
-                    service.createPn(cm)
+                    service.createPn(payload.context, payload.data)
                 }
 
                 assertEquals(ErrorType.ITEM_ID_IS_DUPLICATED, exception.error)
@@ -497,7 +525,9 @@ class PnServiceTest {
             val data = loadJson(pathToJsonFileOfRequest).toNode()
             val cm = commandMessage(pmd = pmd.name, data = data)
 
-            val actualJson = service.createPn(cm).data!!.toJson()
+            val payload = getCreatePnPayload(cm)
+
+            val actualJson = service.createPn(payload.context, payload.data).convert().toJson()
 
             val expectedJson = loadJson(pathToJsonFileOfResponse).let { json ->
                 val node = json.toNode()
@@ -520,7 +550,8 @@ class PnServiceTest {
             owner = owner,
             pmd = pmd,
             phase = "planning",
-            startDate = startDate
+            startDate = startDate,
+            operationId = "124124"
         )
         return CommandMessageGenerator.generate(
             command = CommandType.CREATE_PN,
@@ -551,5 +582,25 @@ class PnServiceTest {
                     testingBindingAndMapping<PnCreateResponse>(it)
                 }
         }
+    }
+
+    private data class CreatePnPayload(
+        val context: CreatePnContext,
+        val data: PnCreateRequestData
+    )
+
+    private fun getCreatePnPayload(cm: CommandMessage): CreatePnPayload {
+        val context = CreatePnContext(
+            stage = cm.stage,
+            owner = cm.owner,
+            pmd = cm.pmd,
+            country = cm.country,
+            startDate = cm.startDate,
+            mode = MainMode(PATTERN_MODE),
+            operationId = cm.operationId
+        )
+        val request: PnCreateRequest = toObject(PnCreateRequest::class.java, cm.data)
+        val data: PnCreateRequestData = request.convert()
+        return CreatePnPayload(context = context, data = data)
     }
 }

@@ -1,5 +1,8 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.MainMode
+import com.procurement.access.application.model.Mode
+import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.service.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
@@ -15,11 +18,14 @@ import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.application.service.lot.LotsForAuctionContext
 import com.procurement.access.application.service.lot.LotsForAuctionData
 import com.procurement.access.application.service.lot.SetLotsStatusUnsuccessfulContext
+import com.procurement.access.application.service.pn.create.CreatePnContext
+import com.procurement.access.application.service.pn.create.PnCreateRequestData
 import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.get.awardCriteria.GetAwardCriteriaContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
+import com.procurement.access.config.properties.OCDSProperties
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
@@ -38,6 +44,9 @@ import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
 import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulRequest
 import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulResponse
+import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
+import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
+import com.procurement.access.infrastructure.dto.pn.converter.convert
 import com.procurement.access.infrastructure.dto.tender.get.awardCriteria.GetAwardCriteriaResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
@@ -49,12 +58,14 @@ import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.cpid
 import com.procurement.access.model.dto.bpe.isAuction
 import com.procurement.access.model.dto.bpe.lotId
+import com.procurement.access.model.dto.bpe.operationId
 import com.procurement.access.model.dto.bpe.operationType
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.prevStage
 import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.bpe.startDate
+import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.bpe.token
 import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toJson
@@ -79,7 +90,8 @@ class CommandService(
     private val lotService: LotService,
     private val stageService: StageService,
     private val validationService: ValidationService,
-    private val extendTenderService: ExtendTenderService
+    private val extendTenderService: ExtendTenderService,
+    private val ocdsProperties: OCDSProperties
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(CommandService::class.java)
@@ -92,7 +104,28 @@ class CommandService(
         }
         val response = when (cm.command) {
             CommandType.CREATE_PIN -> pinService.createPin(cm)
-            CommandType.CREATE_PN -> pnService.createPn(cm)
+            CommandType.CREATE_PN -> {
+                val context = CreatePnContext(
+                    stage = cm.stage,
+                    owner = cm.owner,
+                    pmd = cm.pmd,
+                    country = cm.country,
+                    startDate = cm.startDate,
+                    mode = getMode(cm.testMode),
+                    operationId = cm.operationId
+                )
+                val request: PnCreateRequest = toObject(PnCreateRequest::class.java, cm.data)
+                val data: PnCreateRequestData = request.convert()
+                val result = pnService.createPn(context, data)
+                if (log.isDebugEnabled)
+                    log.debug("Update CN. Result: ${toJson(result)}")
+
+                val response: PnCreateResponse = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Update CN. Response: ${toJson(response)}")
+
+                return ResponseDto(data = response)
+            }
             CommandType.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandType.CREATE_CN -> cnCreateService.createCn(cm)
             CommandType.UPDATE_CN -> {
@@ -528,4 +561,10 @@ class CommandService(
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }
+
+    fun getMode(isTestMode: Boolean): Mode =
+        if (isTestMode)
+            TestMode(ocdsProperties.prefixes!!.test!!.toRegex())
+        else
+            MainMode(ocdsProperties.prefixes!!.main!!.toRegex())
 }
