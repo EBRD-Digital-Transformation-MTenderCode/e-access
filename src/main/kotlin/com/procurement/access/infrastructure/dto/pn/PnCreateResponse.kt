@@ -16,8 +16,11 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
+import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
+import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
@@ -134,7 +137,11 @@ data class PnCreateResponse(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
         @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
-        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
+
+        @JsonDeserialize(using = MoneyDeserializer::class)
+        @JsonSerialize(using = MoneySerializer::class)
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
+
         @field:JsonProperty("lotGroups") @param:JsonProperty("lotGroups") val lotGroups: List<LotGroup>,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -301,7 +308,10 @@ data class PnCreateResponse(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
             @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails,
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
+
+            @JsonDeserialize(using = MoneyDeserializer::class)
+            @JsonSerialize(using = MoneySerializer::class)
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option>?,
@@ -444,7 +454,7 @@ data class PnCreateResponse(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: Set<String>?
+            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
         )
     }
 }
