@@ -97,6 +97,9 @@ class CommandService(
         private val log = LoggerFactory.getLogger(CommandService::class.java)
     }
 
+    private val testModeRegex = ocdsProperties.prefixes!!.test!!.toRegex()
+    private val mainModeRegex = ocdsProperties.prefixes!!.main!!.toRegex()
+
     fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
         if (historyEntity != null) {
@@ -564,7 +567,7 @@ class CommandService(
 
     fun getMode(isTestMode: Boolean): Mode =
         if (isTestMode)
-            TestMode(ocdsProperties.prefixes!!.test!!.toRegex())
+            TestMode(testModeRegex)
         else
-            MainMode(ocdsProperties.prefixes!!.main!!.toRegex())
+            MainMode(mainModeRegex)
 }
