@@ -9,7 +9,7 @@ import com.procurement.access.domain.model.money.Money
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-class PnCreateRequestData(
+class PnCreateData(
     val planning: Planning,
     val tender: Tender
 ) {
@@ -21,7 +21,7 @@ class PnCreateRequestData(
 
         data class Budget(
             val description: String?,
-            val amount: Amount,
+            val amount: Money,
             val isEuropeanUnionFunded: Boolean,
             val budgetBreakdowns: List<BudgetBreakdown>
         ) {
@@ -34,16 +34,11 @@ class PnCreateRequestData(
             data class BudgetBreakdown(
                 val id: String,
                 val description: String?,
-                val amount: Amount,
+                val amount: Money,
                 val period: Period,
                 val sourceParty: SourceParty,
                 val europeanUnionFunding: EuropeanUnionFunding?
             ) {
-
-                data class Amount(
-                    val amount: BigDecimal,
-                    val currency: String
-                )
 
                 data class Period(
                     val startDate: LocalDateTime,
@@ -165,11 +160,6 @@ class PnCreateRequestData(
             val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance
         ) {
-
-            data class Value(
-                val amount: BigDecimal,
-                val currency: String
-            )
 
             data class ContractPeriod(
                 val startDate: LocalDateTime,
