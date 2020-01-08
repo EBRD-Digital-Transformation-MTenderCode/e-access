@@ -10,6 +10,5 @@ data class CreatePnContext(
     val country: String,
     val pmd: ProcurementMethod,
     val startDate: LocalDateTime,
-    val mode: Mode,
-    val operationId: String
+    val mode: Mode
 )
