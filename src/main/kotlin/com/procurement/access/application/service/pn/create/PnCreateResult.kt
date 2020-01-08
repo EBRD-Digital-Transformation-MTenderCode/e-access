@@ -28,30 +28,19 @@ data class PnCreateResult(
 
         data class Budget(
             val description: String?,
-            val amount: Amount,
+            val amount: Money,
             val isEuropeanUnionFunded: Boolean,
             val budgetBreakdowns: List<BudgetBreakdown>
         ) {
 
-            data class Amount(
-                val amount: BigDecimal,
-                val currency: String
-            )
-
             data class BudgetBreakdown(
                 val id: String,
                 val description: String?,
-                val amount: Amount,
+                val amount: Money,
                 val period: Period,
                 val sourceParty: SourceParty,
                 val europeanUnionFunding: EuropeanUnionFunding?
             ) {
-
-                data class Amount(
-                    val amount: BigDecimal,
-                    val currency: String
-                )
-
                 data class Period(
                     val startDate: LocalDateTime,
                     val endDate: LocalDateTime
@@ -99,13 +88,13 @@ data class PnCreateResult(
         val procuringEntity: ProcuringEntity,
         val value: Money,
         val lotGroups: List<LotGroup>,
-        val lots: List<Lot>?,
-        val items: List<Item>?,
+        val lots: List<Lot>,
+        val items: List<Item>,
         val requiresElectronicCatalogue: Boolean,
         val submissionMethod: List<SubmissionMethod>,
         val submissionMethodRationale: List<String>,
         val submissionMethodDetails: String,
-        val documents: List<Document>?
+        val documents: List<Document>
     ) {
 
         data class Classification(
@@ -157,7 +146,7 @@ data class PnCreateResult(
             val id: String,
             val name: String,
             val identifier: Identifier,
-            val additionalIdentifiers: List<AdditionalIdentifier>?,
+            val additionalIdentifiers: List<AdditionalIdentifier>,
             val address: Address,
             val contactPoint: ContactPoint
         ) {
@@ -220,11 +209,6 @@ data class PnCreateResult(
             )
         }
 
-        data class Value(
-            val amount: BigDecimal,
-            val currency: String
-        )
-
         data class LotGroup(
             val optionToCombine: Boolean
         )
@@ -236,19 +220,13 @@ data class PnCreateResult(
             val status: LotStatus,
             val statusDetails: LotStatusDetails,
             val value: Money,
-            val options: List<Option>?,
-            val variants: List<Variant>?,
-            val renewals: List<Renewal>?,
-            val recurrentProcurement: List<RecurrentProcurement>?,
+            val options: List<Option>,
+            val variants: List<Variant>,
+            val renewals: List<Renewal>,
+            val recurrentProcurement: List<RecurrentProcurement>,
             val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance
         ) {
-
-            data class Value(
-                val amount: BigDecimal,
-                val currency: String
-            )
-
             data class Option(
                 val hasOptions: Boolean
             )
@@ -315,7 +293,7 @@ data class PnCreateResult(
         data class Item(
             val id: String,
             val classification: Classification,
-            val additionalClassifications: List<AdditionalClassification>?,
+            val additionalClassifications: List<AdditionalClassification>,
             val quantity: BigDecimal,
             val unit: Unit,
             val description: String,
@@ -345,7 +323,7 @@ data class PnCreateResult(
             val documentType: TenderDocumentType,
             val title: String?,
             val description: String?,
-            val relatedLots: Set<String>?
+            val relatedLots: List<String>
         )
     }
 }

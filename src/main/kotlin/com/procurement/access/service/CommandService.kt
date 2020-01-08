@@ -10,6 +10,7 @@ import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
+import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.application.service.cn.update.UpdateCnContext
 import com.procurement.access.application.service.cn.update.UpdateCnData
 import com.procurement.access.application.service.lot.GetActiveLotsContext
@@ -19,7 +20,7 @@ import com.procurement.access.application.service.lot.LotsForAuctionContext
 import com.procurement.access.application.service.lot.LotsForAuctionData
 import com.procurement.access.application.service.lot.SetLotsStatusUnsuccessfulContext
 import com.procurement.access.application.service.pn.create.CreatePnContext
-import com.procurement.access.application.service.pn.create.PnCreateRequestData
+import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.get.awardCriteria.GetAwardCriteriaContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
@@ -58,9 +59,9 @@ import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.cpid
 import com.procurement.access.model.dto.bpe.isAuction
 import com.procurement.access.model.dto.bpe.lotId
-import com.procurement.access.model.dto.bpe.operationId
 import com.procurement.access.model.dto.bpe.operationType
 import com.procurement.access.model.dto.bpe.owner
+import com.procurement.access.model.dto.bpe.phase
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.prevStage
 import com.procurement.access.model.dto.bpe.stage
@@ -97,8 +98,16 @@ class CommandService(
         private val log = LoggerFactory.getLogger(CommandService::class.java)
     }
 
-    private val testModeRegex = ocdsProperties.prefixes!!.test!!.toRegex()
-    private val mainModeRegex = ocdsProperties.prefixes!!.main!!.toRegex()
+    private val testMode = ocdsProperties.prefixes!!.test!!
+        .let { prefix ->
+            TestMode(prefix = prefix, pattern = prefix.toRegex())
+        }
+
+    private val mainMode = ocdsProperties.prefixes!!.main!!
+        .let { prefix ->
+            MainMode(prefix = prefix, pattern = prefix.toRegex())
+        }
+
 
     fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
@@ -114,11 +123,10 @@ class CommandService(
                     pmd = cm.pmd,
                     country = cm.country,
                     startDate = cm.startDate,
-                    mode = getMode(cm.testMode),
-                    operationId = cm.operationId
+                    mode = getMode(cm.testMode)
                 )
                 val request: PnCreateRequest = toObject(PnCreateRequest::class.java, cm.data)
-                val data: PnCreateRequestData = request.convert()
+                val data: PnCreateData = request.convert()
                 val result = pnService.createPn(context, data)
                 if (log.isDebugEnabled)
                     log.debug("Update CN. Result: ${toJson(result)}")
@@ -130,7 +138,19 @@ class CommandService(
                 return ResponseDto(data = response)
             }
             CommandType.UPDATE_PN -> pnUpdateService.updatePn(cm)
-            CommandType.CREATE_CN -> cnCreateService.createCn(cm)
+            CommandType.CREATE_CN -> {
+                val context = CnCreateContext(
+                    stage = cm.stage,
+                    owner = cm.owner,
+                    pmd = cm.pmd,
+                    startDate = cm.startDate,
+                    phase = cm.phase,
+                    country = cm.country,
+                    mode = getMode(cm.testMode)
+                )
+
+                cnCreateService.createCn(cm, context)
+            }
             CommandType.UPDATE_CN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -565,9 +585,5 @@ class CommandService(
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }
 
-    fun getMode(isTestMode: Boolean): Mode =
-        if (isTestMode)
-            TestMode(testModeRegex)
-        else
-            MainMode(mainModeRegex)
+    fun getMode(isTestMode: Boolean): Mode = if (isTestMode) testMode else mainMode
 }

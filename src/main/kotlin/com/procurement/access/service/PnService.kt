@@ -3,7 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.service.pn.create.CreatePnContext
-import com.procurement.access.application.service.pn.create.PnCreateRequestData
+import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
@@ -45,17 +45,11 @@ class PnService(
         private val log: Logger = LoggerFactory.getLogger(PnService::class.java)
     }
 
-    fun createPn(contextRequest: CreatePnContext, request: PnCreateRequestData): PnCreateResult {
-        log.info("Validation a request '${contextRequest.operationId}' by validation rules.")
+    fun createPn(contextRequest: CreatePnContext, request: PnCreateData): PnCreateResult {
         checkValidationRules(request)
-
-        log.info("Creation PN on a request '${contextRequest.operationId}'.")
         val pnEntity: PNEntity = businessRules(contextRequest, request)
-
         val cpid = pnEntity.ocid
         val token = generationService.generateToken()
-
-        log.info("Saving PN on a request '${contextRequest.operationId}' and a cpid '$cpid'.")
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = cpid,
@@ -66,16 +60,13 @@ class PnService(
                 jsonData = toJson(pnEntity)
             )
         )
-        log.info("A PN was saved by a request '${contextRequest.operationId}' and a cpid '$cpid'.")
-
         return getResponse(pnEntity, token)
-
     }
 
     /**
      * Validation rules
      */
-    private fun checkValidationRules(request: PnCreateRequestData) {
+    private fun checkValidationRules(request: PnCreateData) {
         //VR-3.1.16
         if (request.tender.title.isBlank())
             throw ErrorException(
@@ -104,12 +95,12 @@ class PnService(
         }
 
         if (request.tender.lots.isNullOrEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
-        val lots: List<PnCreateRequestData.Tender.Lot> = request.tender.lots
+        val lots: List<PnCreateData.Tender.Lot> = request.tender.lots
 
         //VR-3.1.14
         checkLotIdFromRequest(lots = lots)
 
-        val items: List<PnCreateRequestData.Tender.Item> = request.tender.items
+        val items: List<PnCreateData.Tender.Item> = request.tender.items
 
         //VR-3.1.15
         checkItemIdFromRequest(items = items)
@@ -160,7 +151,7 @@ class PnService(
      * IF 11 месяц, tenderPeriod.startDate == "YYYY-11-01Thh:mm:ssZ"
      * IF 12 месяц, tenderPeriod.startDate == "YYYY-12-01Thh:mm:ssZ"
      */
-    private fun checkTenderPeriod(tenderPeriod: PnCreateRequestData.Tender.TenderPeriod) {
+    private fun checkTenderPeriod(tenderPeriod: PnCreateData.Tender.TenderPeriod) {
         if (tenderPeriod.startDate.dayOfMonth != 1)
             throw ErrorException(ErrorType.INVALID_START_DATE)
     }
@@ -171,7 +162,7 @@ class PnService(
      * eAccess проверяет, что "Value" (tender/value/amount), рассчитанное по правилу BR-3.6.30,  меньше / ровно значения
      * поля «Budget Value» (budget/amount/amount) запроса.
      */
-    private fun checkTenderValue(tenderAmount: BigDecimal, budgetAmount: PnCreateRequestData.Planning.Budget.Amount) {
+    private fun checkTenderValue(tenderAmount: BigDecimal, budgetAmount: Money) {
         if (tenderAmount > budgetAmount.amount)
             throw ErrorException(
                 error = ErrorType.INVALID_TENDER_AMOUNT,
@@ -186,8 +177,8 @@ class PnService(
      * (budget.amount.currency) from Request.
      */
     private fun checkCurrencyInLotsFromRequest(
-        lots: List<PnCreateRequestData.Tender.Lot>,
-        budget: PnCreateRequestData.Planning.Budget
+        lots: List<PnCreateData.Tender.Lot>,
+        budget: PnCreateData.Planning.Budget
     ) {
         lots.forEach { lot ->
             if (lot.value.currency != budget.amount.currency)
@@ -217,8 +208,8 @@ class PnService(
      * Period of budgetBreakdown4 [03.03.2017 - 10.06.2017] - budgetBreakdown is OK
      */
     private fun checkContractPeriodInTender(
-        lots: List<PnCreateRequestData.Tender.Lot>,
-        budgetBreakdowns: List<PnCreateRequestData.Planning.Budget.BudgetBreakdown>
+        lots: List<PnCreateData.Tender.Lot>,
+        budgetBreakdowns: List<PnCreateData.Planning.Budget.BudgetBreakdown>
     ) {
         val contractPeriod = contractPeriod(lots)
         budgetBreakdowns.forEach { budgetBreakdown ->
@@ -241,7 +232,7 @@ class PnService(
      * Access проверяет, что значения указанные в поле relatedLots (document.relatedLots) каждого объекта
      * секции Documents имеют соответствие в списке значений tender.lots.id.
      */
-    private fun checkRelatedLotsInDocuments(lotsIds: Set<String>, documents: List<PnCreateRequestData.Tender.Document>) {
+    private fun checkRelatedLotsInDocuments(lotsIds: Set<String>, documents: List<PnCreateData.Tender.Document>) {
         documents.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
                 if (relatedLot !in lotsIds)
@@ -266,7 +257,7 @@ class PnService(
      *   IF startDate && endDate value are present in calendar of current year, validation is successful;
      *   ELSE (startDate && endDate value are not found in calendar) { eAccess throws Exception: "Date is not exist";
      */
-    private fun checkContractPeriodInLots(tender: PnCreateRequestData.Tender) {
+    private fun checkContractPeriodInLots(tender: PnCreateData.Tender) {
         val tenderPeriodStartDate = tender.tenderPeriod.startDate
         tender.lots.forEach { lot ->
             checkRangeContractPeriodInLot(lot)
@@ -279,7 +270,7 @@ class PnService(
         }
     }
 
-    private fun checkRangeContractPeriodInLot(lot: PnCreateRequestData.Tender.Lot) {
+    private fun checkRangeContractPeriodInLot(lot: PnCreateData.Tender.Lot) {
         if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate)
             throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
     }
@@ -304,8 +295,8 @@ class PnService(
      *      ELSE eAccess throws Exception;
      */
     private fun checkLotIdsAsRelatedLotInItems(
-        lots: List<PnCreateRequestData.Tender.Lot>,
-        items: List<PnCreateRequestData.Tender.Item>
+        lots: List<PnCreateData.Tender.Lot>,
+        items: List<PnCreateData.Tender.Item>
     ) {
         if (lots.isEmpty())
             throw ErrorException(ErrorType.EMPTY_LOTS)
@@ -335,7 +326,7 @@ class PnService(
      * 3. eAccess проверяет, что значению "Related Lot" (tender/items/relatedLot) каждого объекта секции Items запроса
      *    соответствует объект секции Lots из запроса по полю "Id" (tender/lots/id).
      */
-    private fun checkRelatedLotInItems(lotsIds: Set<String>, items: List<PnCreateRequestData.Tender.Item>) {
+    private fun checkRelatedLotInItems(lotsIds: Set<String>, items: List<PnCreateData.Tender.Item>) {
         items.forEach { item ->
             val relatedLot = item.relatedLot
             if (relatedLot !in lotsIds)
@@ -350,7 +341,7 @@ class PnService(
      * IF every lot.ID from Request is included once in list from Request, validation is successful;
      * ELSE eAccess throws Exception;
      */
-    private fun checkLotIdFromRequest(lots: List<PnCreateRequestData.Tender.Lot>) {
+    private fun checkLotIdFromRequest(lots: List<PnCreateData.Tender.Lot>) {
         val idsAreUniques = lots.uniqueBy { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ErrorType.LOT_ID_DUPLICATED)
@@ -363,7 +354,7 @@ class PnService(
      * IF every item.ID from Request is included once in list from Request, validation is successful;
      * ELSE eAccess throws Exception;
      */
-    private fun checkItemIdFromRequest(items: List<PnCreateRequestData.Tender.Item>) {
+    private fun checkItemIdFromRequest(items: List<PnCreateData.Tender.Item>) {
         val idsAreUniques = items.uniqueBy { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ErrorType.ITEM_ID_IS_DUPLICATED)
@@ -372,32 +363,27 @@ class PnService(
     /**
      * Business rules
      */
-    private fun businessRules(contextRequest: CreatePnContext, request: PnCreateRequestData): PNEntity {
-        fun invalidFsError(message: String, ids: List<String>, invalidIds: List<String>): Nothing {
-            throw ErrorException(
-                error = ErrorType.INVALID_FS,
-                message = message +
-                    "All ids: ${ids}. " +
-                    "Invalid ids: ${invalidIds}}. "
-            )
-        }
-        val invalidFSs = request.planning.budget.budgetBreakdowns
-            .filter { !contextRequest.mode.pattern.containsMatchIn(it.id) }
-        if (invalidFSs.isNotEmpty()) {
-            val allIds = request.planning.budget.budgetBreakdowns.map { it.id }
-            val invalidIds = invalidFSs.map { it.id }
+    private fun businessRules(contextRequest: CreatePnContext, request: PnCreateData): PNEntity {
+        val invalidIds = request.planning.budget.budgetBreakdowns
+            .asSequence()
+            .map { it.id }
+            .filter { !contextRequest.mode.pattern.containsMatchIn(it) }
+            .toList()
+
+        if (invalidIds.isNotEmpty()) {
             when (contextRequest.mode) {
-                is TestMode -> invalidFsError(message = "Cannot create test PN based on non test FS. ", ids = allIds, invalidIds = invalidIds )
-                is MainMode -> invalidFsError(message = "Cannot create PN based on test FS. ", ids = allIds, invalidIds = invalidIds)
+                is TestMode -> throw ErrorException(
+                    error = ErrorType.INVALID_FS,
+                    message = """Cannot create test PN based on non test FS. Invalid ids: ${invalidIds}}. """
+                )
+                is MainMode -> throw ErrorException(
+                    error = ErrorType.INVALID_FS,
+                    message = """Cannot create PN based on test FS. Invalid ids: ${invalidIds}}. """
+                )
             }
         }
 
-        //BR-3.1.3
-        val isTestMode = when (contextRequest.mode) {
-            is TestMode -> true
-            is MainMode -> false
-        }
-        val id = generationService.getCpId(country = contextRequest.country, testMode = isTestMode)
+        val id = generationService.getCpId(country = contextRequest.country, mode = contextRequest.mode)
         val contractPeriod: PNEntity.Tender.ContractPeriod?
         val value: PNEntity.Tender.Value
         val lots: List<PNEntity.Tender.Lot>
@@ -447,7 +433,7 @@ class PnService(
         )
     }
 
-    private fun planning(request: PnCreateRequestData): PNEntity.Planning {
+    private fun planning(request: PnCreateData): PNEntity.Planning {
         return request.planning.let { planning ->
             PNEntity.Planning(
                 rationale = planning.rationale,
@@ -506,7 +492,7 @@ class PnService(
         items: List<PNEntity.Tender.Item>,
         contractPeriod: PNEntity.Tender.ContractPeriod?,
         documents: List<PNEntity.Tender.Document>?,
-        tenderRequest: PnCreateRequestData.Tender
+        tenderRequest: PnCreateData.Tender
     ): PNEntity.Tender {
         return PNEntity.Tender(
             //BR-3.1.4
@@ -642,7 +628,7 @@ class PnService(
     }
 
     private fun convertRequestLots(
-        lots: List<PnCreateRequestData.Tender.Lot>,
+        lots: List<PnCreateData.Tender.Lot>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<PNEntity.Tender.Lot> {
         return lots.map { lot ->
@@ -719,7 +705,7 @@ class PnService(
     }
 
     private fun convertRequestItems(
-        itemsFromRequest: List<PnCreateRequestData.Tender.Item>,
+        itemsFromRequest: List<PnCreateData.Tender.Item>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<PNEntity.Tender.Item> {
         return itemsFromRequest.map { item ->
@@ -753,7 +739,7 @@ class PnService(
         }
     }
 
-    private fun convertRequestDocument(documentFromRequest: PnCreateRequestData.Tender.Document): PNEntity.Tender.Document {
+    private fun convertRequestDocument(documentFromRequest: PnCreateData.Tender.Document): PNEntity.Tender.Document {
         return PNEntity.Tender.Document(
             id = documentFromRequest.id,
             documentType = DocumentType.fromString(documentFromRequest.documentType.value),
@@ -764,7 +750,7 @@ class PnService(
     }
 
     private fun convertRequestDocument(
-        documentFromRequest: PnCreateRequestData.Tender.Document,
+        documentFromRequest: PnCreateData.Tender.Document,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): PNEntity.Tender.Document {
         val relatedLots = documentFromRequest.relatedLots?.map { relatedLot ->
@@ -787,7 +773,7 @@ class PnService(
      * Постоянные "ID" (tender/lot/id) лотов формируются как уникальные для данного контрактного процесса
      * 32-символьные идентификаторы.
      */
-    private fun generatePermanentLotId(lots: List<PnCreateRequestData.Tender.Lot>): Map<String, String> {
+    private fun generatePermanentLotId(lots: List<PnCreateData.Tender.Lot>): Map<String, String> {
         return lots.asSequence()
             .map { lot ->
                 val permanentId = generationService.generatePermanentLotId()
@@ -804,7 +790,7 @@ class PnService(
      *      of all lot objects from Request.
      *   - eAccess sets "Currency" (tender.value.currency) == "Currency" (tender.lot.value.currency) from Request.
      */
-    private fun calculateTenderValueFromLots(lots: List<PnCreateRequestData.Tender.Lot>): PNEntity.Tender.Value {
+    private fun calculateTenderValueFromLots(lots: List<PnCreateData.Tender.Lot>): PNEntity.Tender.Value {
         val currency = lots.elementAt(0).value.currency
         val totalAmount = lots.fold(BigDecimal.ZERO) { acc, lot ->
             acc.plus(lot.value.amount)
@@ -822,7 +808,7 @@ class PnService(
      *   значению из полей "Contract Period: End Date" (tender/lots/contractPeriod/endDate)
      *   всех добавленных объектов секции Lots запроса.
      */
-    private fun contractPeriod(lots: List<PnCreateRequestData.Tender.Lot>): PNEntity.Tender.ContractPeriod {
+    private fun contractPeriod(lots: List<PnCreateData.Tender.Lot>): PNEntity.Tender.ContractPeriod {
         val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
@@ -836,7 +822,7 @@ class PnService(
      * Sets "Amount" (tender.value.amount) == "Amount" (budget.amount.amount) from Request.
      * Sets "Currency" (tender.value.currency) == "Currency" (budget.amount.currency) from Request.
      */
-    private fun calculateTenderValueFromBudget(budget: PnCreateRequestData.Planning.Budget): PNEntity.Tender.Value {
+    private fun calculateTenderValueFromBudget(budget: PnCreateData.Planning.Budget): PNEntity.Tender.Value {
         return budget.amount.let { value ->
             PNEntity.Tender.Value(
                 amount = value.amount,
@@ -883,7 +869,7 @@ class PnService(
                         PnCreateResult.Planning.Budget(
                             description = budget.description,
                             amount = budget.amount.let { amount ->
-                                PnCreateResult.Planning.Budget.Amount(
+                                Money(
                                     amount = amount.amount,
                                     currency = amount.currency
                                 )
@@ -894,7 +880,7 @@ class PnService(
                                     id = budgetBreakdown.id,
                                     description = budgetBreakdown.description,
                                     amount = budgetBreakdown.amount.let { amount ->
-                                        PnCreateResult.Planning.Budget.BudgetBreakdown.Amount(
+                                        Money(
                                             amount = amount.amount,
                                             currency = amount.currency
                                         )
@@ -1012,7 +998,8 @@ class PnService(
                                     legalName = additionalIdentifier.legalName,
                                     uri = additionalIdentifier.uri
                                 )
-                            },
+                            }
+                                .orEmpty(),
                             address = procuringEntity.address.let { address ->
                                 PnCreateResult.Tender.ProcuringEntity.Address(
                                     streetAddress = address.streetAddress,
@@ -1087,22 +1074,26 @@ class PnService(
                                 PnCreateResult.Tender.Lot.Option(
                                     hasOptions = option.hasOptions
                                 )
-                            },
+                            }
+                                .orEmpty(),
                             variants = lot.variants?.map { variant ->
                                 PnCreateResult.Tender.Lot.Variant(
                                     hasVariants = variant.hasVariants
                                 )
-                            },
+                            }
+                                .orEmpty(),
                             renewals = lot.renewals?.map { renewal ->
                                 PnCreateResult.Tender.Lot.Renewal(
                                     hasRenewals = renewal.hasRenewals
                                 )
-                            },
+                            }
+                                .orEmpty(),
                             recurrentProcurement = lot.recurrentProcurement?.map { recurrentProcurement ->
                                 PnCreateResult.Tender.Lot.RecurrentProcurement(
                                     isRecurrent = recurrentProcurement.isRecurrent
                                 )
-                            },
+                            }
+                                .orEmpty(),
                             contractPeriod = lot.contractPeriod.let { contractPeriod ->
                                 PnCreateResult.Tender.Lot.ContractPeriod(
                                     startDate = contractPeriod.startDate,
@@ -1167,7 +1158,8 @@ class PnService(
                                     id = additionalClassification.id,
                                     description = additionalClassification.description
                                 )
-                            },
+                            }
+                                .orEmpty(),
                             quantity = item.quantity,
                             unit = item.unit.let { unit ->
                                 PnCreateResult.Tender.Item.Unit(
@@ -1189,9 +1181,10 @@ class PnService(
                             id = document.id,
                             title = document.title,
                             description = document.description,
-                            relatedLots = document.relatedLots
+                            relatedLots = document.relatedLots?.toList() ?: emptyList()
                         )
                     }
+                        .orEmpty()
                 )
             }
         )

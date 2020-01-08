@@ -158,7 +158,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                                         )
                                     },
                                 additionalIdentifiers = procuringEntity.additionalIdentifiers
-                                    ?.map { additionalIdentifier ->
+                                    .map { additionalIdentifier ->
                                         PnCreateResponse.Tender.ProcuringEntity.AdditionalIdentifier(
                                             scheme = additionalIdentifier.scheme,
                                             id = additionalIdentifier.id,
@@ -225,7 +225,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                             )
                         },
                     lots = tender.lots
-                        ?.map { lot ->
+                        .map { lot ->
                             PnCreateResponse.Tender.Lot(
                                 id = lot.id,
                                 title = lot.title,
@@ -234,19 +234,19 @@ fun PnCreateResult.convert(): PnCreateResponse =
                                 statusDetails = lot.statusDetails,
                                 value = lot.value,
                                 options = lot.options
-                                    ?.map { option ->
+                                    .map { option ->
                                         PnCreateResponse.Tender.Lot.Option(
                                             hasOptions = option.hasOptions
                                         )
                                     },
                                 variants = lot.variants
-                                    ?.map { variant ->
+                                    .map { variant ->
                                         PnCreateResponse.Tender.Lot.Variant(
                                             hasVariants = variant.hasVariants
                                         )
                                     },
                                 renewals = lot.renewals
-                                    ?.map { renewal ->
+                                    .map { renewal ->
                                         PnCreateResponse.Tender.Lot.Renewal(
                                             hasRenewals = renewal.hasRenewals
                                         )
@@ -304,7 +304,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                                         )
                                     },
                                 recurrentProcurement = lot.recurrentProcurement
-                                    ?.map { recurrentProcurement ->
+                                    .map { recurrentProcurement ->
                                         PnCreateResponse.Tender.Lot.RecurrentProcurement(
                                             isRecurrent = recurrentProcurement.isRecurrent
                                         )
@@ -312,7 +312,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                             )
                         },
                     items = tender.items
-                        ?.map { item ->
+                        .map { item ->
                             PnCreateResponse.Tender.Item(
                                 id = item.id,
                                 classification = item.classification
@@ -324,7 +324,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                                         )
                                     },
                                 additionalClassifications = item.additionalClassifications
-                                    ?.map { additionalClassification ->
+                                    .map { additionalClassification ->
                                         PnCreateResponse.Tender.Item.AdditionalClassification(
                                             scheme = additionalClassification.scheme,
                                             id = additionalClassification.id,
@@ -348,13 +348,13 @@ fun PnCreateResult.convert(): PnCreateResponse =
                     submissionMethodRationale = tender.submissionMethodRationale.toList(),
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents
-                        ?.map { document ->
+                        .map { document ->
                             PnCreateResponse.Tender.Document(
                                 documentType = document.documentType,
                                 id = document.id,
                                 title = document.title,
                                 description = document.description,
-                                relatedLots = document.relatedLots?.toList()
+                                relatedLots = document.relatedLots.toList()
                             )
                         }
                 )

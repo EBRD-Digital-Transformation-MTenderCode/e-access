@@ -145,17 +145,18 @@ data class PnCreateResponse(
         @field:JsonProperty("lotGroups") @param:JsonProperty("lotGroups") val lotGroups: List<LotGroup>,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,
+        @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot> = emptyList(),
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>?,
+        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item> = emptyList(),
+
         @field:JsonProperty("requiresElectronicCatalogue") @param:JsonProperty("requiresElectronicCatalogue") val requiresElectronicCatalogue: Boolean,
         @field:JsonProperty("submissionMethod") @param:JsonProperty("submissionMethod") val submissionMethod: List<SubmissionMethod>,
         @field:JsonProperty("submissionMethodRationale") @param:JsonProperty("submissionMethodRationale") val submissionMethodRationale: List<String>,
         @field:JsonProperty("submissionMethodDetails") @param:JsonProperty("submissionMethodDetails") val submissionMethodDetails: String,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document> = emptyList()
     ) {
 
         data class Classification(
@@ -216,7 +217,8 @@ data class PnCreateResponse(
             @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier>?,
+            @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier> = emptyList(),
+
             @field:JsonProperty("address") @param:JsonProperty("address") val address: Address,
             @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint
         ) {
@@ -314,16 +316,17 @@ data class PnCreateResponse(
             @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option>?,
+            @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option> = emptyList(),
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant>?,
+            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant> = emptyList(),
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("renewals") @param:JsonProperty("renewals") val renewals: List<Renewal>?,
+            @field:JsonProperty("renewals") @param:JsonProperty("renewals") val renewals: List<Renewal> = emptyList(),
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("recurrentProcurement") @param:JsonProperty("recurrentProcurement") val recurrentProcurement: List<RecurrentProcurement>?,
+            @field:JsonProperty("recurrentProcurement") @param:JsonProperty("recurrentProcurement") val recurrentProcurement: List<RecurrentProcurement> = emptyList(),
+
             @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance
         ) {
@@ -415,7 +418,7 @@ data class PnCreateResponse(
             @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("additionalClassifications") @param:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
+            @field:JsonProperty("additionalClassifications") @param:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification> = emptyList(),
 
             @JsonDeserialize(using = QuantityDeserializer::class)
             @JsonSerialize(using = QuantitySerializer::class)
@@ -454,7 +457,7 @@ data class PnCreateResponse(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
+            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String> = emptyList()
         )
     }
 }

@@ -1,6 +1,6 @@
 package com.procurement.access.infrastructure.dto.pn.converter
 
-import com.procurement.access.application.service.pn.create.PnCreateRequestData
+import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
@@ -9,25 +9,19 @@ import com.procurement.access.lib.mapIfNotEmpty
 import com.procurement.access.lib.orThrow
 import com.procurement.access.lib.takeIfNotEmpty
 
-fun PnCreateRequest.convert() = PnCreateRequestData(
+fun PnCreateRequest.convert() = PnCreateData(
     planning = this.planning
         .let { planning ->
-            PnCreateRequestData.Planning(
+            PnCreateData.Planning(
                 rationale = planning.rationale,
                 budget = planning.budget
                     .let { budget ->
-                        PnCreateRequestData.Planning.Budget(
+                        PnCreateData.Planning.Budget(
                             description = budget.description,
-                            amount = budget.amount
-                                .let { amount ->
-                                    PnCreateRequestData.Planning.Budget.Amount(
-                                        amount = amount.amount,
-                                        currency = amount.currency
-                                    )
-                                },
+                            amount = budget.amount,
                             budgetBreakdowns = budget.budgetBreakdowns
                                 .mapIfNotEmpty { budgetBreakdowns ->
-                                    PnCreateRequestData.Planning.Budget.BudgetBreakdown(
+                                    PnCreateData.Planning.Budget.BudgetBreakdown(
                                         id = budgetBreakdowns.id.takeIfNotEmpty {
                                             ErrorException(
                                                 error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
@@ -41,23 +35,17 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                                     message = "The attribute 'budget.description' is empty or blank."
                                                 )
                                             },
-                                        amount = budgetBreakdowns.amount
-                                            .let { amount ->
-                                                PnCreateRequestData.Planning.Budget.BudgetBreakdown.Amount(
-                                                    amount = amount.amount,
-                                                    currency = amount.currency
-                                                )
-                                            },
+                                        amount = budgetBreakdowns.amount,
                                         period = budgetBreakdowns.period
                                             .let { period ->
-                                                PnCreateRequestData.Planning.Budget.BudgetBreakdown.Period(
+                                                PnCreateData.Planning.Budget.BudgetBreakdown.Period(
                                                     startDate = period.startDate,
                                                     endDate = period.endDate
                                                 )
                                             },
                                         sourceParty = budgetBreakdowns.sourceParty
                                             .let { sourceParty ->
-                                                PnCreateRequestData.Planning.Budget.BudgetBreakdown.SourceParty(
+                                                PnCreateData.Planning.Budget.BudgetBreakdown.SourceParty(
                                                     name = sourceParty.name
                                                         .takeIfNotEmpty {
                                                             ErrorException(
@@ -70,7 +58,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                             },
                                         europeanUnionFunding = budgetBreakdowns.europeanUnionFunding
                                             ?.let { europeanUnionFunding ->
-                                                PnCreateRequestData.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                                PnCreateData.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
                                                     projectIdentifier = europeanUnionFunding.projectIdentifier
                                                         .takeIfNotEmpty {
                                                             ErrorException(
@@ -109,7 +97,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
         },
     tender = this.tender
         .let { tender ->
-            PnCreateRequestData.Tender(
+            PnCreateData.Tender(
                 title = tender.title.takeIfNotEmpty {
                     ErrorException(
                         error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
@@ -134,18 +122,18 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                     .takeIfNotEmpty {
                         ErrorException(
                             error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                            message = "The attribute 'tender.procurementMethodRationale' is empty or blank."
+                            message = "The attribute 'tender.procurementMethodAdditionalInfo' is empty or blank."
                         )
                     },
                 tenderPeriod = tender.tenderPeriod
                     .let { tenderPeriod ->
-                        PnCreateRequestData.Tender.TenderPeriod(
+                        PnCreateData.Tender.TenderPeriod(
                             startDate = tenderPeriod.startDate
                         )
                     },
                 procuringEntity = tender.procuringEntity
                     .let { procuringEntity ->
-                        PnCreateRequestData.Tender.ProcuringEntity(
+                        PnCreateData.Tender.ProcuringEntity(
                             name = procuringEntity.name
                                 .takeIfNotEmpty {
                                     ErrorException(
@@ -155,7 +143,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                 },
                             identifier = procuringEntity.identifier
                                 .let { identifier ->
-                                    PnCreateRequestData.Tender.ProcuringEntity.Identifier(
+                                    PnCreateData.Tender.ProcuringEntity.Identifier(
                                         scheme = identifier.scheme
                                             .takeIfNotEmpty {
                                                 ErrorException(
@@ -194,7 +182,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                     )
                                 }
                                 ?.map { additionalIdentifiers ->
-                                    PnCreateRequestData.Tender.ProcuringEntity.AdditionalIdentifier(
+                                    PnCreateData.Tender.ProcuringEntity.AdditionalIdentifier(
                                         scheme = additionalIdentifiers.scheme
                                             .takeIfNotEmpty {
                                                 ErrorException(
@@ -228,7 +216,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                 .orEmpty(),
                             address = procuringEntity.address
                                 .let { address ->
-                                    PnCreateRequestData.Tender.ProcuringEntity.Address(
+                                    PnCreateData.Tender.ProcuringEntity.Address(
                                         streetAddress = address.streetAddress
                                             .takeIfNotEmpty {
                                                 ErrorException(
@@ -245,10 +233,10 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                             },
                                         addressDetails = address.addressDetails
                                             .let { addressDetails ->
-                                                PnCreateRequestData.Tender.ProcuringEntity.Address.AddressDetails(
+                                                PnCreateData.Tender.ProcuringEntity.Address.AddressDetails(
                                                     country = addressDetails.country
                                                         .let { country ->
-                                                            PnCreateRequestData.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                            PnCreateData.Tender.ProcuringEntity.Address.AddressDetails.Country(
                                                                 scheme = country.scheme
                                                                     .takeIfNotEmpty {
                                                                         ErrorException(
@@ -281,7 +269,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                                         },
                                                     region = addressDetails.region
                                                         .let { region ->
-                                                            PnCreateRequestData.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                            PnCreateData.Tender.ProcuringEntity.Address.AddressDetails.Region(
                                                                 scheme = region.scheme
                                                                     .takeIfNotEmpty {
                                                                         ErrorException(
@@ -314,7 +302,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                                         },
                                                     locality = addressDetails.locality
                                                         .let { locality ->
-                                                            PnCreateRequestData.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                            PnCreateData.Tender.ProcuringEntity.Address.AddressDetails.Locality(
                                                                 scheme = locality.scheme
                                                                     .takeIfNotEmpty {
                                                                         ErrorException(
@@ -351,7 +339,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                 },
                             contactPoint = procuringEntity.contactPoint
                                 .let { contactPoint ->
-                                    PnCreateRequestData.Tender.ProcuringEntity.ContactPoint(
+                                    PnCreateData.Tender.ProcuringEntity.ContactPoint(
                                         name = contactPoint.name
                                             .takeIfNotEmpty {
                                                 ErrorException(
@@ -399,7 +387,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                         )
                     }
                     ?.map { lot ->
-                        PnCreateRequestData.Tender.Lot(
+                        PnCreateData.Tender.Lot(
                             id = lot.id,
                             title = lot.title
                                 .takeIfNotEmpty {
@@ -418,16 +406,16 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                             value = lot.value,
                             contractPeriod = lot.contractPeriod
                                 .let { contractPeriod ->
-                                    PnCreateRequestData.Tender.Lot.ContractPeriod(
+                                    PnCreateData.Tender.Lot.ContractPeriod(
                                         startDate = contractPeriod.startDate,
                                         endDate = contractPeriod.endDate
                                     )
                                 },
                             placeOfPerformance = lot.placeOfPerformance
                                 .let { placeOfPerformance ->
-                                    PnCreateRequestData.Tender.Lot.PlaceOfPerformance(
+                                    PnCreateData.Tender.Lot.PlaceOfPerformance(
                                         address = placeOfPerformance.address.let { address ->
-                                            PnCreateRequestData.Tender.Lot.PlaceOfPerformance.Address(
+                                            PnCreateData.Tender.Lot.PlaceOfPerformance.Address(
                                                 streetAddress = address.streetAddress
                                                     .takeIfNotEmpty {
                                                         ErrorException(
@@ -443,9 +431,9 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                                         )
                                                     },
                                                 addressDetails = address.addressDetails.let { addressDetails ->
-                                                    PnCreateRequestData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                    PnCreateData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
                                                         country = addressDetails.country.let { country ->
-                                                            PnCreateRequestData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                            PnCreateData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
                                                                 scheme = country.scheme
                                                                     .takeIfNotEmpty {
                                                                         ErrorException(
@@ -477,7 +465,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                                             )
                                                         },
                                                         region = addressDetails.region.let { region ->
-                                                            PnCreateRequestData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                            PnCreateData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
                                                                 scheme = region.scheme
                                                                     .takeIfNotEmpty {
                                                                         ErrorException(
@@ -509,7 +497,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                                             )
                                                         },
                                                         locality = addressDetails.locality.let { locality ->
-                                                            PnCreateRequestData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                            PnCreateData.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
                                                                 scheme = locality.scheme
                                                                     .takeIfNotEmpty {
                                                                         ErrorException(
@@ -558,7 +546,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                         )
                     }
                     ?.map { item ->
-                        PnCreateRequestData.Tender.Item(
+                        PnCreateData.Tender.Item(
                             id = item.id,
                             description = item.description
                                 .takeIfNotEmpty {
@@ -576,7 +564,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                 },
                             classification = item.classification
                                 .let { classification ->
-                                    PnCreateRequestData.Tender.Item.Classification(
+                                    PnCreateData.Tender.Item.Classification(
                                         id = classification.id,
                                         description = classification.description
                                             .takeIfNotEmpty {
@@ -596,7 +584,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                                     )
                                 }
                                 ?.map { additionalClassification ->
-                                    PnCreateRequestData.Tender.Item.AdditionalClassification(
+                                    PnCreateData.Tender.Item.AdditionalClassification(
                                         id = additionalClassification.id,
                                         description = additionalClassification.description
                                             .takeIfNotEmpty {
@@ -612,7 +600,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                             quantity = item.quantity,
                             unit = item.unit
                                 .let { unit ->
-                                    PnCreateRequestData.Tender.Item.Unit(
+                                    PnCreateData.Tender.Item.Unit(
                                         id = unit.id,
                                         name = unit.name
                                     )
@@ -627,8 +615,8 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                             message = "The tender contain empty list of the documents."
                         )
                     }
-                    ?.mapIfNotEmpty { document ->
-                        PnCreateRequestData.Tender.Document(
+                    ?.map { document ->
+                        PnCreateData.Tender.Document(
                             documentType = document.documentType,
                             id = document.id,
                             title = document.title
@@ -651,7 +639,7 @@ fun PnCreateRequest.convert() = PnCreateRequestData(
                     .orEmpty(),
                 classification = tender.classification
                     .let { classification ->
-                        PnCreateRequestData.Tender.Classification(
+                        PnCreateData.Tender.Classification(
                             scheme = classification.scheme,
                             id = classification.id,
                             description = classification.description
