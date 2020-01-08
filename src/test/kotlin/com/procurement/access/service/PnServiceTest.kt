@@ -8,7 +8,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.service.pn.create.CreatePnContext
-import com.procurement.access.application.service.pn.create.PnCreateRequestData
+import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
@@ -34,7 +34,6 @@ import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.dto.bpe.country
-import com.procurement.access.model.dto.bpe.operationId
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.stage
@@ -66,6 +65,7 @@ class PnServiceTest {
         private const val PERMANENT_ITEM_ID_4 = "permanent-item-4"
 
         private val PATTERN_MODE = "ocds-t1s2t3".toRegex()
+        private val OCDS_PREFIX = "ocds-t1s2t3"
     }
 
     private lateinit var generationService: GenerationService
@@ -586,7 +586,7 @@ class PnServiceTest {
 
     private data class CreatePnPayload(
         val context: CreatePnContext,
-        val data: PnCreateRequestData
+        val data: PnCreateData
     )
 
     private fun getCreatePnPayload(cm: CommandMessage): CreatePnPayload {
@@ -596,11 +596,10 @@ class PnServiceTest {
             pmd = cm.pmd,
             country = cm.country,
             startDate = cm.startDate,
-            mode = MainMode(PATTERN_MODE),
-            operationId = cm.operationId
+            mode = MainMode(prefix = OCDS_PREFIX, pattern = PATTERN_MODE)
         )
         val request: PnCreateRequest = toObject(PnCreateRequest::class.java, cm.data)
-        val data: PnCreateRequestData = request.convert()
+        val data: PnCreateData = request.convert()
         return CreatePnPayload(context = context, data = data)
     }
 }
