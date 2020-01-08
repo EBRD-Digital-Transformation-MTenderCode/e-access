@@ -53,9 +53,9 @@ val CommandMessage.country: String
     get() = this.context.country
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'country' attribute in context.")
 
-val CommandMessage.operationId: String
-    get() = this.context.operationId
-        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'operationId' attribute in context.")
+val CommandMessage.phase: String
+    get() = this.context.phase
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'phase' attribute in context.")
 
 val CommandMessage.pmd: ProcurementMethod
     get() = this.context.pmd?.let {
