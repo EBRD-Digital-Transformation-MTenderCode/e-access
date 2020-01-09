@@ -15,26 +15,14 @@ fun PnCreateResult.convert(): PnCreateResponse =
                         .let { budget ->
                             PnCreateResponse.Planning.Budget(
                                 description = budget.description,
-                                amount = budget.amount
-                                    .let { amount ->
-                                        PnCreateResponse.Planning.Budget.Amount(
-                                            amount = amount.amount,
-                                            currency = amount.currency
-                                        )
-                                    },
+                                amount = budget.amount,
                                 isEuropeanUnionFunded = budget.isEuropeanUnionFunded,
                                 budgetBreakdowns = budget.budgetBreakdowns
                                     .map { budgetBreakdown ->
                                         PnCreateResponse.Planning.Budget.BudgetBreakdown(
                                             id = budgetBreakdown.id,
                                             description = budgetBreakdown.description,
-                                            amount = budgetBreakdown.amount
-                                                .let { amount ->
-                                                    PnCreateResponse.Planning.Budget.BudgetBreakdown.Amount(
-                                                        amount = amount.amount,
-                                                        currency = amount.currency
-                                                    )
-                                                },
+                                            amount = budgetBreakdown.amount,
                                             period = budgetBreakdown.period
                                                 .let { period ->
                                                     PnCreateResponse.Planning.Budget.BudgetBreakdown.Period(
