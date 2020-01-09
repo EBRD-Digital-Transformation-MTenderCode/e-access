@@ -26,11 +26,6 @@ class PnCreateData(
             val budgetBreakdowns: List<BudgetBreakdown>
         ) {
 
-            data class Amount(
-                val amount: BigDecimal,
-                val currency: String
-            )
-
             data class BudgetBreakdown(
                 val id: String,
                 val description: String?,
