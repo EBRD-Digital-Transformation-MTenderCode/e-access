@@ -10,7 +10,7 @@
       "isEuropeanUnionFunded": false,
       "budgetBreakdown": [
         {
-          "id": "request.pn.planning.budget.budgetBreakdown.id",
+          "id": "ocds-t1s2t3-MD-1545301873443-FS-1545302026838",
           "description": "request.pn.planning.budget.budgetBreakdown.description",
           "amount": {
             "amount": 10000000.01,
