@@ -287,7 +287,7 @@ class CnOnPnService(
             error = INVALID_PROCURING_ENTITY,
             message = "Invalid identifier of procuring entity. " +
                 "Request.procuringEntity.id (=${procuringEntityRequest.id})  != " +
-                "DB.procuringEntity.id (=${procuringEntityRequest}). "
+                "DB.procuringEntity.id (=${procuringEntityDB.id}). "
         )
     }
 
