@@ -28,13 +28,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                                                 message = "The attribute 'budget.id' is empty or blank."
                                             )
                                         },
-                                        description = budgetBreakdowns.description
-                                            .takeIfNotEmpty {
-                                                ErrorException(
-                                                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                    message = "The attribute 'budget.description' is empty or blank."
-                                                )
-                                            },
+                                        description = budgetBreakdowns.description,
                                         amount = budgetBreakdowns.amount,
                                         period = budgetBreakdowns.period
                                             .let { period ->
@@ -46,13 +40,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                                         sourceParty = budgetBreakdowns.sourceParty
                                             .let { sourceParty ->
                                                 PnCreateData.Planning.Budget.BudgetBreakdown.SourceParty(
-                                                    name = sourceParty.name
-                                                        .takeIfNotEmpty {
-                                                            ErrorException(
-                                                                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                                message = "The attribute 'sourceParty.name' is empty or blank."
-                                                            )
-                                                        },
+                                                    name = sourceParty.name,
                                                     id = sourceParty.id
                                                 )
                                             },
