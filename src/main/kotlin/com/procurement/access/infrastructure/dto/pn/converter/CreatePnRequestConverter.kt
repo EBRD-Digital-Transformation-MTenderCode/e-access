@@ -372,7 +372,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                                             ?.takeIfNotEmpty {
                                                 ErrorException(
                                                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                    message = "The attribute 'contactPoint.irl' is empty or blank."
+                                                    message = "The attribute 'contactPoint.url' is empty or blank."
                                                 )
                                             }
                                     )
