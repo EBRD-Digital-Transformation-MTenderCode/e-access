@@ -377,6 +377,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                     ?.map { lot ->
                         PnCreateData.Tender.Lot(
                             id = lot.id,
+                            internalId = lot.internalId,
                             title = lot.title
                                 .takeIfNotEmpty {
                                     ErrorException(
@@ -536,6 +537,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                     ?.map { item ->
                         PnCreateData.Tender.Item(
                             id = item.id,
+                            internalId = item.internalId,
                             description = item.description
                                 .takeIfNotEmpty {
                                     ErrorException(

@@ -216,6 +216,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                         .map { lot ->
                             PnCreateResponse.Tender.Lot(
                                 id = lot.id,
+                                internalId = lot.internalId,
                                 title = lot.title,
                                 description = lot.description,
                                 status = lot.status,
@@ -303,6 +304,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                         .map { item ->
                             PnCreateResponse.Tender.Item(
                                 id = item.id,
+                                internalId = item.internalId,
                                 classification = item.classification
                                     .let { classification ->
                                         PnCreateResponse.Tender.Item.Classification(

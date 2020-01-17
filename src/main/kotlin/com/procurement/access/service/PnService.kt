@@ -635,6 +635,7 @@ class PnService(
             PNEntity.Tender.Lot(
                 //BR-3.1.5
                 id = relatedTemporalWithPermanentLotId.getValue(lot.id),
+                internalId = lot.internalId,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.1.1 */
@@ -712,6 +713,7 @@ class PnService(
             PNEntity.Tender.Item(
                 //BR-3.1.6
                 id = generationService.generatePermanentItemId(),
+                internalId = item.internalId,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     PNEntity.Tender.Item.Classification(
@@ -1060,6 +1062,7 @@ class PnService(
                     lots = tender.lots.map { lot ->
                         PnCreateResult.Tender.Lot(
                             id = lot.id,
+                            internalId = lot.internalId,
                             title = lot.title,
                             description = lot.description,
                             status = lot.status,
@@ -1145,6 +1148,7 @@ class PnService(
                     items = tender.items.map { item ->
                         PnCreateResult.Tender.Item(
                             id = item.id,
+                            internalId = item.internalId,
                             classification = item.classification.let { classification ->
                                 PnCreateResult.Tender.Item.Classification(
                                     scheme = classification.scheme,
