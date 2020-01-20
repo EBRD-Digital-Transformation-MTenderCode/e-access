@@ -215,6 +215,7 @@ data class PnCreateResult(
 
         data class Lot(
             val id: String,
+            val internalId: String?,
             val title: String,
             val description: String,
             val status: LotStatus,
@@ -292,6 +293,7 @@ data class PnCreateResult(
 
         data class Item(
             val id: String,
+            val internalId: String?,
             val classification: Classification,
             val additionalClassifications: List<AdditionalClassification>,
             val quantity: BigDecimal,

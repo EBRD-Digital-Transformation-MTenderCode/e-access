@@ -149,6 +149,7 @@ class PnCreateData(
 
         data class Lot(
             val id: String,
+            val internalId: String?,
             val title: String,
             val description: String,
             val value: Money,
@@ -204,6 +205,7 @@ class PnCreateData(
 
         data class Item(
             val id: String,
+            val internalId: String?,
             val classification: Classification,
             val additionalClassifications: List<AdditionalClassification>,
             val quantity: BigDecimal,
