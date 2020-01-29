@@ -1,0 +1,145 @@
+{
+  "planning": {
+    "rationale": "reason for budget",
+    "budget": {
+      "budgetBreakdown": [
+        {
+          "description": "description of budget",
+          "id": "ocds-t1s2t3-MD-1573466274662-FS-1573466317411",
+          "amount": {
+            "amount": 0,
+            "currency": "MDL"
+          }
+        }
+      ]
+    }
+  },
+  "tender": {
+    "title": "tender.title",
+    "description": "tender.desription",
+    "legalBasis": "REGULATION_966_2012",
+    "procurementMethodRationale": "procurementMethodRationale",
+    "procurementMethodAdditionalInfo": "procurementMethodAdditionalInfo",
+    "lots": [
+      {
+        "id": "577fd5c4-e314-40a9-aabe-732d7f5269ad",
+        "internalId": "tender.lots[0].internalId",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "value": {
+          "amount": 10,
+          "currency": "EUR"
+        },
+        "contractPeriod": {
+          "startDate": "2020-01-17T10:30:40Z",
+          "endDate": "2020-01-30T10:30:40Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "tender.lots[0].placeOfPerformance.address.streetAddress",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "tender.lots[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "tender.lots[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.description"
+              }
+            }
+          },
+          "description": null
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "aca608c9-ba03-477c-8e40-4cf916613abf",
+        "internalId": "tender.items[0].internalId",
+        "description": "tender.items[0].description",
+        "classification": {
+          "scheme": "CPV",
+          "description": "tender.items[0].classification.description",
+          "id": "15500000-3"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "description": "tender.items[0].additionalClassifications.description",
+            "id": "AB06-7"
+          }
+        ],
+        "quantity": 1,
+        "unit": {
+          "id": "121",
+          "name": "square"
+        },
+        "relatedLot": "577fd5c4-e314-40a9-aabe-732d7f5269ad"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2019-09-01T10:30:40Z"
+    },
+    "procuringEntity": {
+      "name": "name of PE",
+      "address": {
+        "streetAddress": "tender.procuringEntity.address.streetAddress",
+        "addressDetails": {
+          "country": {
+            "scheme": "iso-alpha2",
+            "id": "MD",
+            "description": "tender.procuringEntity.address.country.description",
+            "uri": "tender.procuringEntity.address.country.uri"
+          },
+          "region": {
+            "scheme": "CUATM",
+            "id": "0101000",
+            "description": "tender.procuringEntity.address.region.description",
+            "uri": "tender.procuringEntity.address.region.uri"
+          },
+          "locality": {
+            "scheme": "other",
+            "id": "locality",
+            "description": "tender.procuringEntity.address.locality.description"
+          }
+        }
+      },
+      "identifier": {
+        "id": "1",
+        "scheme": "MD-IDNO",
+        "legalName": "tender.procuringEntity.identifier.legalName",
+        "uri": "tender.procuringEntity.identifier.uri"
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "445521",
+          "scheme": "md-idno",
+          "legalName": "tender.procuringEntity.additionalIdentifiers[0].legalName",
+          "uri": "tender.procuringEntity.additionalIdentifiers[0].uri"
+        }
+      ],
+      "contactPoint": {
+        "name": "tender.procuringEntity.contactPoint.name",
+        "email": "tender.procuringEntity.contactPoint.email",
+        "telephone": "tender.procuringEntity.contactPoint.telephone",
+        "faxNumber": "tender.procuringEntity.contactPoint.faxNumber",
+        "url": "tender.procuringEntity.contactPoint.url"
+      }
+    },
+    "submissionMethodRationale": [
+      "tender.submissionMethodRationale"
+    ],
+    "submissionMethodDetails": "tender.submissionMethodDetails",
+    "procurementMethodDetails": "tender.procurementMethodDetails",
+    "eligibilityCriteria": "tender.eligibilityCriteria"
+  }
+}

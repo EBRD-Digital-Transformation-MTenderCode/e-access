@@ -1,0 +1,236 @@
+{
+  "ocid": "ocds-t1s2t3-MD-1579523524876",
+  "planning": {
+    "budget": {
+      "amount": {
+        "amount": 15.00,
+        "currency": "EUR"
+      },
+      "isEuropeanUnionFunded": true,
+      "budgetBreakdown": [
+        {
+          "id": "ocds-t1s2t3-MD-1578479159266-FS-1578497462570",
+          "description": "description",
+          "amount": {
+            "amount": 15.00,
+            "currency": "EUR"
+          },
+          "period": {
+            "startDate": "2019-10-01T00:00:00Z",
+            "endDate": "2020-08-01T00:00:00Z"
+          },
+          "sourceParty": {
+            "id": "MD-IDNO-1",
+            "name": "name of buyerei"
+          },
+          "europeanUnionFunding": {
+            "projectIdentifier": "projectIdentifier",
+            "projectName": "Name of this project",
+            "uri": "http://uriuri.th"
+          }
+        }
+      ]
+    },
+    "rationale": "reason for budget"
+  },
+  "tender": {
+    "id": "ocds-t1s2t3-MD-1579523524876",
+    "title": "tender.title",
+    "description": "tender.desription",
+    "status": "planning",
+    "statusDetails": "planning",
+    "classification": {
+      "scheme": "CPV",
+      "id": "15500000-3",
+      "description": "Produse lactate"
+    },
+    "mainProcurementCategory": "goods",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "TEST_microValue",
+    "procurementMethodRationale": "procurementMethodRationale",
+    "procurementMethodAdditionalInfo": "procurementMethodAdditionalInfo",
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+    "submissionMethodRationale": [
+      "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+    ],
+    "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "REGULATION_966_2012",
+    "procuringEntity": {
+      "id": "MD-IDNO-1",
+      "name": "name of procuringEntity",
+      "identifier": {
+        "id": "1",
+        "scheme": "MD-IDNO",
+        "legalName": "identifier/legal name",
+        "uri": "uri"
+      },
+      "address": {
+        "streetAddress": "street address",
+        "addressDetails": {
+          "country": {
+            "scheme": "iso-alpha2",
+            "id": "MD",
+            "description": "MOLDOVA",
+            "uri": "http://reference.iatistandard.org"
+          },
+          "region": {
+            "scheme": "CUATM",
+            "id": "0101000",
+            "description": "mun.Chişinău",
+            "uri": "http://statistica.md"
+          },
+          "locality": {
+            "scheme": "other",
+            "id": "localityid",
+            "description": "locality/description"
+          }
+        }
+      },
+      "additionalIdentifiers": [
+        {
+          "id": "445521",
+          "scheme": "md-idno",
+          "legalName": "legalName",
+          "uri": "uri"
+        }
+      ],
+      "contactPoint": {
+        "name": "contactPoint/name",
+        "email": "contactPoint/email",
+        "telephone": "contactPoint/456-95-96",
+        "faxNumber": "fax-number",
+        "url": "url"
+      }
+    },
+    "requiresElectronicCatalogue": false,
+    "contractPeriod": {
+      "startDate": "2020-01-17T10:30:40Z",
+      "endDate": "2020-01-30T10:30:40Z"
+    },
+    "tenderPeriod": {
+      "startDate": "2019-09-01T10:30:40Z"
+    },
+    "value": {
+      "amount": 10.00,
+      "currency": "EUR"
+    },
+    "lotGroups": [
+      {
+        "optionToCombine": false
+      }
+    ],
+    "lots": [
+      {
+        "id": "577fd5c4-e314-40a9-aabe-732d7f5269ad",
+        "internalId": "tender.lots[0].internalId",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "status": "planning",
+        "statusDetails": "empty",
+        "value": {
+          "amount": 10.00,
+          "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2020-01-17T10:30:40Z",
+          "endDate": "2020-01-30T10:30:40Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "tender.lots[0].placeOfPerformance.address.streetAddress",
+            "addressDetails": {
+              "country": {
+                "scheme": "iso-alpha2",
+                "id": "MD",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "tender.lots[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "CUATM",
+                "id": "1000000",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "tender.lots[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.description"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "aca608c9-ba03-477c-8e40-4cf916613abf",
+        "internalId": "tender.items[0].internalId",
+        "description": "tender.items[0].description",
+        "classification": {
+          "scheme": "CPV",
+          "id": "15500000-3",
+          "description": "Produse lactate"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPVS",
+            "id": "AB06-7",
+            "description": "Plastic"
+          }
+        ],
+        "quantity": 1.000,
+        "unit": {
+          "id": "121",
+          "name": "Metru cub consistent"
+        },
+        "relatedLot": "577fd5c4-e314-40a9-aabe-732d7f5269ad"
+      }
+    ]
+  }
+}
