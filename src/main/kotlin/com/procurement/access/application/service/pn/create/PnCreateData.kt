@@ -234,7 +234,7 @@ class PnCreateData(
         data class Document(
             val id: String,
             val documentType: TenderDocumentType,
-            val title: String?,
+            val title: String,
             val description: String?,
             val relatedLots: List<String>
         )
