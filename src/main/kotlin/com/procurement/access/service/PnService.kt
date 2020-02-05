@@ -1183,7 +1183,7 @@ class PnService(
                         PnCreateResult.Tender.Document(
                             documentType = TenderDocumentType.fromString(document.documentType.value),
                             id = document.id,
-                            title = document.title,
+                            title = document.title!!,
                             description = document.description,
                             relatedLots = document.relatedLots?.toList() ?: emptyList()
                         )
