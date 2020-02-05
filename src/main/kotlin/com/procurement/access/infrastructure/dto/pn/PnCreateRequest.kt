@@ -11,8 +11,6 @@ import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
@@ -46,14 +44,6 @@ class PnCreateRequest(
             @field:JsonProperty("budgetBreakdown") @param:JsonProperty("budgetBreakdown") val budgetBreakdowns: List<BudgetBreakdown>
         ) {
 
-            data class Amount(
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
-                @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-            )
-
             data class BudgetBreakdown(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
@@ -70,14 +60,6 @@ class PnCreateRequest(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @get:JsonProperty("europeanUnionFunding") @param:JsonProperty("europeanUnionFunding") val europeanUnionFunding: EuropeanUnionFunding?
             ) {
-
-                data class Amount(
-                    @JsonDeserialize(using = AmountDeserializer::class)
-                    @JsonSerialize(using = AmountSerializer::class)
-                    @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
-
-                    @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
-                )
 
                 data class Period(
                     @JsonDeserialize(using = JsonDateTimeDeserializer::class)
