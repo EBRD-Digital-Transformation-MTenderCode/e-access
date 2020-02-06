@@ -234,7 +234,7 @@ class PnService(
      */
     private fun checkRelatedLotsInDocuments(lotsIds: Set<String>, documents: List<PnCreateData.Tender.Document>) {
         documents.forEach { document ->
-            document.relatedLots?.forEach { relatedLot ->
+            document.relatedLots.forEach { relatedLot ->
                 if (relatedLot !in lotsIds)
                     throw ErrorException(ErrorType.INVALID_DOCS_RELATED_LOTS)
             }
@@ -558,7 +558,7 @@ class PnService(
                             uri = identifier.uri
                         )
                     },
-                    additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
+                    additionalIdentifiers = procuringEntity.additionalIdentifiers.map { additionalIdentifier ->
                         PNEntity.Tender.ProcuringEntity.AdditionalIdentifier(
                             scheme = additionalIdentifier.scheme,
                             id = additionalIdentifier.id,
@@ -722,7 +722,7 @@ class PnService(
                         description = classification.description
                     )
                 },
-                additionalClassifications = item.additionalClassifications?.map { additionalClassification ->
+                additionalClassifications = item.additionalClassifications.map { additionalClassification ->
                     PNEntity.Tender.Item.AdditionalClassification(
                         scheme = additionalClassification.scheme,
                         id = additionalClassification.id,
@@ -747,7 +747,7 @@ class PnService(
             documentType = DocumentType.fromString(documentFromRequest.documentType.value),
             title = documentFromRequest.title,
             description = documentFromRequest.description,
-            relatedLots = documentFromRequest.relatedLots?.toSet()
+            relatedLots = documentFromRequest.relatedLots.toSet()
         )
     }
 
@@ -755,7 +755,7 @@ class PnService(
         documentFromRequest: PnCreateData.Tender.Document,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): PNEntity.Tender.Document {
-        val relatedLots = documentFromRequest.relatedLots?.map { relatedLot ->
+        val relatedLots = documentFromRequest.relatedLots.map { relatedLot ->
             relatedTemporalWithPermanentLotId.getValue(relatedLot)
         }
 
@@ -764,7 +764,7 @@ class PnService(
             documentType = DocumentType.fromString(documentFromRequest.documentType.value),
             title = documentFromRequest.title,
             description = documentFromRequest.description,
-            relatedLots = relatedLots?.toSet()
+            relatedLots = relatedLots.toSet()
         )
     }
 
@@ -1183,7 +1183,7 @@ class PnService(
                         PnCreateResult.Tender.Document(
                             documentType = TenderDocumentType.fromString(document.documentType.value),
                             id = document.id,
-                            title = document.title,
+                            title = document.title!!,
                             description = document.description,
                             relatedLots = document.relatedLots?.toList() ?: emptyList()
                         )
