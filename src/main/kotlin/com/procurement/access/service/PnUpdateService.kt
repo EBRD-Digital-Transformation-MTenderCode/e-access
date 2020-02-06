@@ -172,7 +172,8 @@ class PnUpdateService(private val generationService: GenerationService,
 
     private fun checkDocumentsTitle(documents: List<Document>?) {
         documents?.forEach { document ->
-            if (document.title == null || document.title!!.isBlank()) {
+            val title = document.title
+            if (title == null || title.isBlank()) {
                 throw ErrorException(
                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
                     message = "Missing attribute 'document.title' at 'tender'."
