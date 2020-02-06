@@ -73,6 +73,8 @@ class PnUpdateService(private val generationService: GenerationService,
                 message = "The attribute 'tender.description' is empty or blank."
             )
 
+        checkDocumentsTitle(documents = pnDto.tender.documents)
+
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
@@ -166,6 +168,18 @@ class PnUpdateService(private val generationService: GenerationService,
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun checkDocumentsTitle(documents: List<Document>?) {
+        documents?.forEach { document ->
+            val title = document.title
+            if (title == null || title.isBlank()) {
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Missing attribute 'document.title' at 'tender'."
+                )
+            }
+        }
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
