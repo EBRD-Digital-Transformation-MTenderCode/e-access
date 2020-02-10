@@ -396,10 +396,10 @@ class PnUpdateService(private val generationService: GenerationService,
     private fun updateLot(updatableTenderLot: Lot, lotDto: LotPnUpdate): Lot {
         return updatableTenderLot.copy(
             title = lotDto.title,
-            internalId = lotDto.internalId,
+            internalId = lotDto.internalId ?: updatableTenderLot.internalId,
             description = lotDto.description,
             contractPeriod = lotDto.contractPeriod,
-            placeOfPerformance = lotDto.placeOfPerformance
+            placeOfPerformance = lotDto.placeOfPerformance ?: updatableTenderLot.placeOfPerformance
         )
     }
 
@@ -422,7 +422,7 @@ class PnUpdateService(private val generationService: GenerationService,
     private fun updateItem(itemDb: Item, itemDto: ItemPnUpdate): Item {
         return itemDb.copy(
             description = itemDto.description,
-            internalId = itemDto.internalId,
+            internalId = itemDto.internalId ?: itemDb.internalId,
             relatedLot = itemDto.relatedLot
         )
     }
