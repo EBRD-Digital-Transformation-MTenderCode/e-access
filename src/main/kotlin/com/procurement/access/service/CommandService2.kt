@@ -3,7 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ResponseStatus
 import com.procurement.access.infrastructure.dto.converter.convert
-import com.procurement.access.infrastructure.dto.lot.GetLotIdsByStatesRequest
+import com.procurement.access.infrastructure.dto.lot.GetLotIdsRequest
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse2
 import com.procurement.access.model.dto.bpe.Command2Message
 import com.procurement.access.model.dto.bpe.Command2Type
@@ -28,12 +28,12 @@ class CommandService2(
         }
 
         val dataOfResponse = when (c2m.action) {
-            Command2Type.GET_LOT_IDS_BY_STATES -> {
-                val request = toObject(GetLotIdsByStatesRequest::class.java, c2m.params)
-                val result = lotsService.getLotIdsByStates(data = request.convert())
+            Command2Type.GET_LOT_IDS -> {
+                val request = toObject(GetLotIdsRequest::class.java, c2m.params)
+                val result = lotsService.getLotIds(data = request.convert())
                 val response = result.convert()
                 response.also {
-                    log.debug("GET_LOT_IDS_BY_STATES. Response: ${toJson(it)}")
+                    log.debug("GET_LOT_IDS. Response: ${toJson(it)}")
                 }
             }
         }

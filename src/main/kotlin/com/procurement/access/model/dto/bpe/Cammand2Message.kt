@@ -19,7 +19,7 @@ data class Command2Message @JsonCreator constructor(
 )
 
 enum class Command2Type(private val value: String) {
-    GET_LOT_IDS_BY_STATES("getLotIdsByStates");
+    GET_LOT_IDS("getLotIds");
 
     @JsonValue
     fun value(): String {
