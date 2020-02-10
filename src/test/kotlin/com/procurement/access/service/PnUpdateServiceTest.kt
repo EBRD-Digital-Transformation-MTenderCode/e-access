@@ -9,7 +9,10 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.json.JsonValidator
+import com.procurement.access.json.getArray
+import com.procurement.access.json.getObject
 import com.procurement.access.json.loadJson
+import com.procurement.access.json.putAttribute
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
@@ -46,32 +49,81 @@ class PnUpdateServiceTest {
     @Nested
     inner class BusinessRules {
         private lateinit var requestNode: ObjectNode
-        private lateinit var mockTenderProcess: String
+        private lateinit var mockTenderProcess: ObjectNode
 
         @BeforeEach
         fun prepare() {
             requestNode = loadJson(REQUEST_PATH).toNode() as ObjectNode
-            mockTenderProcess = loadJson(MOCK_TENDER_PATH)
-            val entity = TenderProcessEntity(
-                cpId = CPID,
-                stage = STAGE,
-                createdDate = Date(),
-                jsonData = mockTenderProcess,
-                owner = ContextGenerator.OWNER,
-                token = ContextGenerator.TOKEN
-            )
-            whenever(tenderProcessDao.getByCpIdAndStage(cpId = any(), stage = any()))
-                .thenReturn(entity)
+            mockTenderProcess = loadJson(MOCK_TENDER_PATH).toNode() as ObjectNode
         }
 
         @DisplayName("test Of Update from request")
         @Test
         fun testOfUpdate() {
+            getByCpidAndStage(tenderProcess = mockTenderProcess)
             val commandMessage = commandMessage(pmd = PMD, data = requestNode)
             val result = service.updatePn(cm = commandMessage)
             val actualJson = result.data!!.toJson()
-            val expectedJson = loadJson(EXPECTED_JSON_PATH).toNode().toJson()
+            val expectedJson = loadJson(EXPECTED_JSON_PATH)
             JsonValidator.equalsJsons(expectedJson, actualJson)
+        }
+
+        @DisplayName("internal id from request - null, TP - not null")
+        @Test
+        fun internalIdTest() {
+
+            mockTenderProcess.getObject("tender")
+                .getArray("lots")
+                .getObject(0)
+                .putAttribute("internalId", "lot[0].internalId")
+
+            mockTenderProcess.getObject("tender")
+                .getArray("items")
+                .getObject(0)
+                .putAttribute("internalId", "item[0].internalId")
+
+            getByCpidAndStage(tenderProcess = mockTenderProcess)
+
+            requestNode.getObject("tender")
+                .getArray("lots")
+                .getObject(0)
+                .remove("internalId")
+
+            requestNode.getObject("tender")
+                .getArray("items")
+                .getObject(0)
+                .remove("internalId")
+
+            val commandMessage = commandMessage(pmd = PMD, data = requestNode)
+            val result = service.updatePn(cm = commandMessage)
+            val actualJson = result.data!!.toJson()
+            val expectedJson = loadJson(EXPECTED_JSON_PATH).toNode()
+
+            expectedJson.getObject("tender")
+                .getArray("lots")
+                .getObject(0)
+                .putAttribute("internalId", "lot[0].internalId")
+
+            expectedJson.getObject("tender")
+                .getArray("items")
+                .getObject(0)
+                .putAttribute("internalId", "item[0].internalId")
+
+
+            JsonValidator.equalsJsons(expectedJson = expectedJson.toJson(), actualJson = actualJson)
+        }
+
+        private fun getByCpidAndStage(tenderProcess: ObjectNode) {
+            val entity = TenderProcessEntity(
+                cpId = CPID,
+                stage = STAGE,
+                createdDate = Date(),
+                jsonData = tenderProcess.toJson(),
+                owner = ContextGenerator.OWNER,
+                token = ContextGenerator.TOKEN
+            )
+            whenever(tenderProcessDao.getByCpIdAndStage(cpId = any(), stage = any()))
+                .thenReturn(entity)
         }
     }
 
