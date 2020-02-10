@@ -3,8 +3,8 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.service.lot.GetActiveLotsContext
-import com.procurement.access.application.service.lot.GetLotIdsByStatesParams
-import com.procurement.access.application.service.lot.GetLotIdsByStatesResult
+import com.procurement.access.application.service.lot.GetLotIdsParams
+import com.procurement.access.application.service.lot.GetLotIdsResult
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
@@ -45,44 +45,38 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.util.*
-import kotlin.Comparator
 
 @Service
 class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
-    fun getLotIdsByStates(data: GetLotIdsByStatesParams): GetLotIdsByStatesResult {
+    fun getLotIds(data: GetLotIdsParams): GetLotIdsResult {
 
         val stage = data.ocid.split("-")[4]
         val tenderEntity = tenderProcessDao.getByCpIdAndStage(cpId = data.cpid, stage = stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
         val tenderProcess = toObject(TenderProcess::class.java, tenderEntity.jsonData)
 
-        val sortedStatuses = data.states.sortedWith(Comparator { state1, state2 ->
-            when {
-                state1.statusDetails != null && state1.status != null && (state2.status == null || state2.statusDetails == null) -> 1
-                (state1.statusDetails == null || state1.status == null) && state2.status != null && state2.statusDetails != null -> -1
-                else                                                                                                             -> 0
-            }
-        })
+        val sortedStatuses = data.states.sorted()
 
         val lotIds = getLotsOnStates(
             lots = tenderProcess.tender.lots,
             states = sortedStatuses
         ).map { lot -> LotId.fromString(lot.id) }
 
-        return GetLotIdsByStatesResult(lotIds = lotIds)
+        return GetLotIdsResult(lotIds = lotIds)
     }
 
     private fun getLotsOnStates(
         lots: List<Lot>,
-        states: List<GetLotIdsByStatesParams.State>
+        states: List<GetLotIdsParams.State>
     ): List<Lot> {
         return lots.filter { lot ->
             val state = states.firstOrNull { state ->
                 checkLotOnStatusAndStatusDetails(
                     lot = lot,
                     status = state.status,
-                    statusDetails = state.statusDetails)
+                    statusDetails = state.statusDetails
+                )
             }
             state != null
         }
@@ -94,16 +88,12 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         statusDetails: LotStatusDetails?
     ): Boolean {
         return when {
-            status == null        -> {
-                lot.statusDetails == statusDetails
-            }
-            statusDetails == null -> {
-                lot.status == status
-            }
-            else                  -> {
-                lot.statusDetails == statusDetails
-                    && lot.status == status
-            }
+            status == null        -> lot.statusDetails == statusDetails
+
+            statusDetails == null  -> lot.status == status
+
+            else                  -> lot.statusDetails == statusDetails && lot.status == status
+
         }
     }
 
