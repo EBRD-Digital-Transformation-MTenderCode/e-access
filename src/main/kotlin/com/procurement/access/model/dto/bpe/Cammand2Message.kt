@@ -7,12 +7,16 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.config.GlobalProperties
 import com.procurement.access.exception.EnumException
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
+import com.procurement.access.infrastructure.web.dto.ApiFailResponse
+import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
+import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
+import java.time.LocalDateTime
+import java.util.*
 
 data class Command2Message @JsonCreator constructor(
 
-    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+    @field:JsonProperty("id") @param:JsonProperty("id") val id: UUID,
     @field:JsonProperty("action") @param:JsonProperty("action") val action: Command2Type,
     @field:JsonProperty("params") @param:JsonProperty("params") val params: JsonNode,
     @field:JsonProperty("version") @param:JsonProperty("version") val version: ApiVersion
@@ -31,21 +35,21 @@ enum class Command2Type(private val value: String) {
     }
 }
 
-fun errorResponse(exception: Exception, id: String, version: ApiVersion): ApiErrorResponse =
+fun errorResponse(exception: Exception, id: UUID = NaN, version: ApiVersion): ApiResponse =
     when (exception) {
-        is ErrorException -> getApiErrorResponse(
+        is ErrorException -> getApiFailResponse(
             id = id,
             version = version,
             code = exception.code,
             message = exception.message!!
         )
-        is EnumException  -> getApiErrorResponse(
+        is EnumException  -> getApiIncidentResponse(
             id = id,
             version = version,
             code = exception.code,
             message = exception.message!!
         )
-        else              -> getApiErrorResponse(
+        else              -> getApiIncidentResponse(
             id = id,
             version = version,
             code = "00.00",
@@ -53,15 +57,51 @@ fun errorResponse(exception: Exception, id: String, version: ApiVersion): ApiErr
         )
     }
 
-private fun getApiErrorResponse(id: String, version: ApiVersion, code: String, message: String): ApiErrorResponse {
-    return ApiErrorResponse(
-        errors = listOf(
-            ApiErrorResponse.Error(
+private fun getApiFailResponse(
+    id: UUID,
+    version: ApiVersion,
+    code: String,
+    message: String
+): ApiFailResponse {
+    return ApiFailResponse(
+        id = id,
+        version = version,
+        result = listOf(
+            ApiFailResponse.Error(
                 code = "400.${GlobalProperties.serviceId}." + code,
                 description = message
             )
-        ),
-        id = id,
-        version = version
+        )
     )
 }
+
+private fun getApiIncidentResponse(
+    id: UUID,
+    version: ApiVersion,
+    code: String,
+    message: String
+): ApiIncidentResponse {
+    return ApiIncidentResponse(
+        id = id,
+        version = version,
+        result = ApiIncidentResponse.Incident(
+            id = UUID.randomUUID(),
+            date = LocalDateTime.now(),
+            errors = listOf(
+                ApiIncidentResponse.Incident.Error(
+                    code = "400.${GlobalProperties.serviceId}." + code,
+                    description = message,
+                    metadata = null
+                )
+            ),
+            service = ApiIncidentResponse.Incident.Service(
+                id = GlobalProperties.serviceId,
+                version = version,
+                name = GlobalProperties.serviceName
+            )
+        )
+    )
+}
+
+val NaN: UUID
+    get() = UUID(0, 0)

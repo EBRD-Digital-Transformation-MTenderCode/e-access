@@ -1,10 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.HistoryDao
-import com.procurement.access.domain.model.enums.ResponseStatus
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.lot.GetLotIdsRequest
-import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse2
+import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.Command2Message
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.utils.toJson
@@ -21,10 +20,10 @@ class CommandService2(
         private val log = LoggerFactory.getLogger(CommandService2::class.java)
     }
 
-    fun execute(c2m: Command2Message): ApiSuccessResponse2 {
-        val historyEntity = historyDao.getHistory(c2m.id, c2m.action.value())
+    fun execute(c2m: Command2Message): ApiSuccessResponse {
+        val historyEntity = historyDao.getHistory(c2m.id.toString(), c2m.action.value())
         if (historyEntity != null) {
-            return toObject(ApiSuccessResponse2::class.java, historyEntity.jsonData)
+            return toObject(ApiSuccessResponse::class.java, historyEntity.jsonData)
         }
 
         val dataOfResponse = when (c2m.action) {
@@ -37,13 +36,12 @@ class CommandService2(
                 }
             }
         }
-        val response = ApiSuccessResponse2(
+        val response = ApiSuccessResponse(
             version = c2m.version,
             id = c2m.id,
-            status = ResponseStatus.SUCCESS,
             result = dataOfResponse
         )
-        historyDao.saveHistory(operationId = c2m.id, command = c2m.action.value(), response = response)
+        historyDao.saveHistory(operationId = c2m.id.toString(), command = c2m.action.value(), response = response)
         return response
     }
 }

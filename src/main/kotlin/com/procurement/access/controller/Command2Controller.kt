@@ -39,7 +39,6 @@ class Command2Controller(private val commandService2: CommandService2) {
             val response =
                 errorResponse(
                     exception = expected,
-                    id = "N/A",
                     version = GlobalProperties.App.apiVersion
                 )
             return ResponseEntity(response, HttpStatus.OK)
