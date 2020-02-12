@@ -56,14 +56,23 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             ?: throw ErrorException(DATA_NOT_FOUND)
         val tenderProcess = toObject(TenderProcess::class.java, tenderEntity.jsonData)
 
-        val sortedStatuses = data.states.sorted()
+        return when {
+            data.states.isEmpty() ->
+                GetLotIdsResult(
+                    lotIds = tenderProcess.tender.lots
+                        .map { lot -> LotId.fromString(lot.id) }
+                )
+            else                  -> {
+                val sortedStatuses = data.states.sorted()
 
-        val lotIds = getLotsOnStates(
-            lots = tenderProcess.tender.lots,
-            states = sortedStatuses
-        ).map { lot -> LotId.fromString(lot.id) }
+                val lotIds = getLotsOnStates(
+                    lots = tenderProcess.tender.lots,
+                    states = sortedStatuses
+                ).map { lot -> LotId.fromString(lot.id) }
 
-        return GetLotIdsResult(lotIds = lotIds)
+                GetLotIdsResult(lotIds = lotIds)
+            }
+        }
     }
 
     private fun getLotsOnStates(
@@ -88,11 +97,11 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         statusDetails: LotStatusDetails?
     ): Boolean {
         return when {
-            status == null        -> lot.statusDetails == statusDetails
+            status == null -> lot.statusDetails == statusDetails
 
-            statusDetails == null  -> lot.status == status
+            statusDetails == null -> lot.status == status
 
-            else                  -> lot.statusDetails == statusDetails && lot.status == status
+            else -> lot.statusDetails == statusDetails && lot.status == status
 
         }
     }

@@ -8,7 +8,8 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 data class GetLotIdsRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
-    @field:JsonProperty("states") @param:JsonProperty("states") val states: List<State>
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("states") @param:JsonProperty("states") val states: List<State>?
 ) {
     data class State(
         @JsonInclude(JsonInclude.Include.NON_NULL)
