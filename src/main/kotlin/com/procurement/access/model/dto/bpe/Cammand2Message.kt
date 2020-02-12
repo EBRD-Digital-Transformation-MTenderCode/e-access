@@ -47,13 +47,13 @@ fun errorResponse(exception: Exception, id: UUID = NaN, version: ApiVersion): Ap
             id = id,
             version = version,
             code = exception.code,
-            message = exception.message!!
+            message = exception.message ?: "Internal server error."
         )
         else              -> getApiIncidentResponse(
             id = id,
             version = version,
             code = "00.00",
-            message = exception.message!!
+            message = exception.message ?: "Internal server error."
         )
     }
 
@@ -96,7 +96,7 @@ private fun getApiIncidentResponse(
             ),
             service = ApiIncidentResponse.Incident.Service(
                 id = GlobalProperties.serviceId,
-                version = version,
+                version = GlobalProperties.App.apiVersion,
                 name = GlobalProperties.serviceName
             )
         )
