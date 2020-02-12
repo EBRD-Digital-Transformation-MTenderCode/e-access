@@ -13,8 +13,6 @@ import java.util.*
 sealed class ApiResponse(
     @field:JsonProperty("id") @param:JsonProperty("id") val id: UUID,
 
-    @JsonDeserialize(using = ApiVersionDeserializer::class)
-    @JsonSerialize(using = ApiVersionSerializer::class)
     @field:JsonProperty("version") @param:JsonProperty("version") val version: ApiVersion,
 
     @field:JsonProperty("result") @param:JsonProperty("result") val result: Any?
@@ -23,6 +21,8 @@ sealed class ApiResponse(
 }
 
 class ApiSuccessResponse(
+    @JsonDeserialize(using = ApiVersionDeserializer::class)
+    @JsonSerialize(using = ApiVersionSerializer::class)
     version: ApiVersion,
     id: UUID,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any?
