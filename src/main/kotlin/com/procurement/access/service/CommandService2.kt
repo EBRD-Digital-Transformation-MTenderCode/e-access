@@ -30,7 +30,7 @@ class CommandService2(
             Command2Type.GET_LOT_IDS -> {
                 val request = toObject(GetLotIdsRequest::class.java, c2m.params)
                 val result = lotsService.getLotIds(data = request.convert())
-                val response = result.convert()
+                val response = result.lotIds.toList()
                 response.also {
                     log.debug("GET_LOT_IDS. Response: ${toJson(it)}")
                 }
