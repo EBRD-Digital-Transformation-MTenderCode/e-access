@@ -1639,7 +1639,7 @@ class CnOnPnService(
                 //BR-3.8.5
                 id = lot.id,
 
-                internalId = null,
+                internalId = lot.internalId,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.8.7 */
@@ -1713,7 +1713,7 @@ class CnOnPnService(
             CNEntity.Tender.Item(
                 //BR-3.8.6
                 id = item.id,
-                internalId = null,
+                internalId = item.internalId,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
