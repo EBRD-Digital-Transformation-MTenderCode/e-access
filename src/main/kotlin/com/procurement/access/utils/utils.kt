@@ -81,3 +81,9 @@ fun <T> toObject(clazz: Class<T>, json: JsonNode): T {
         throw IllegalArgumentException(e)
     }
 }
+
+fun String.toNode(): JsonNode = try {
+    JsonMapper.mapper.readTree(this)
+} catch (exception: JsonProcessingException) {
+    throw IllegalArgumentException("Error parsing String to JsonNode.", exception)
+}
