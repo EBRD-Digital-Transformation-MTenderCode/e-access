@@ -105,3 +105,19 @@ private fun getApiIncidentResponse(
 
 val NaN: UUID
     get() = UUID(0, 0)
+
+fun JsonNode.getId(): UUID {
+    return UUID.fromString(this.get("id").asText())
+}
+
+fun JsonNode.getAction(): Command2Type {
+    return Command2Type.valueOf(this.get("action").asText())
+}
+
+fun JsonNode.getVersion(): ApiVersion {
+    return ApiVersion.valueOf(this.get("version").asText())
+}
+
+fun JsonNode.getParams(): JsonNode {
+    return this.get("params")
+}
