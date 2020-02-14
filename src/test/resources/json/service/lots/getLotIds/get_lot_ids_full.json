@@ -1,16 +1,21 @@
 {
-  "states": [
-    {
-      "statusDetails": "empty"
-    },
-    {
-      "status": "active",
-      "statusDetails": "empty"
-    },
-    {
-      "status": "active"
-    }
-  ],
-  "cpid": "ocds-b3wdp1-MD-1580458690892",
-  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+  "version": "2.0",
+  "id": "8a0b50c7-8ded-49d8-a785-d6f6ff5289fd",
+  "action": "getLotIds",
+  "params": {
+    "states": [
+      {
+        "status": "active",
+        "statusDetails": "empty"
+      },
+      {
+        "status": "active"
+      },
+      {
+        "statusDetails": "empty"
+      }
+    ],
+    "cpid": "ocds-b3wdp1-MD-1580458690892",
+    "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+  }
 }
