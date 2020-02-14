@@ -3,8 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.service.lot.GetActiveLotsContext
-import com.procurement.access.application.service.lot.GetLotIdsParams
-import com.procurement.access.application.service.lot.GetLotIdsResult
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
@@ -49,62 +47,6 @@ import java.util.*
 @Service
 class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
-    fun getLotIds(data: GetLotIdsParams): GetLotIdsResult {
-
-        val stage = data.ocid.split("-")[4]
-        val tenderEntity = tenderProcessDao.getByCpIdAndStage(cpId = data.cpid, stage = stage)
-            ?: throw ErrorException(DATA_NOT_FOUND)
-        val tenderProcess = toObject(TenderProcess::class.java, tenderEntity.jsonData)
-
-        return when {
-            data.states.isEmpty() ->
-                GetLotIdsResult(
-                    lotIds = tenderProcess.tender.lots
-                        .map { lot -> LotId.fromString(lot.id) }
-                )
-            else                  -> {
-                val sortedStatuses = data.states.sorted()
-
-                val lotIds = getLotsOnStates(
-                    lots = tenderProcess.tender.lots,
-                    states = sortedStatuses
-                ).map { lot -> LotId.fromString(lot.id) }
-
-                GetLotIdsResult(lotIds = lotIds)
-            }
-        }
-    }
-
-    private fun getLotsOnStates(
-        lots: List<Lot>,
-        states: List<GetLotIdsParams.State>
-    ): List<Lot> {
-        return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                checkLotOnStatusAndStatusDetails(
-                    lot = lot,
-                    status = state.status,
-                    statusDetails = state.statusDetails
-                )
-            }
-            state != null
-        }
-    }
-
-    private fun checkLotOnStatusAndStatusDetails(
-        lot: Lot,
-        status: LotStatus?,
-        statusDetails: LotStatusDetails?
-    ): Boolean {
-        return when {
-            status == null -> lot.statusDetails == statusDetails
-
-            statusDetails == null -> lot.status == status
-
-            else -> lot.statusDetails == statusDetails && lot.status == status
-
-        }
-    }
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
