@@ -3,15 +3,13 @@ package com.procurement.access.controller
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.config.GlobalProperties
 import com.procurement.access.infrastructure.web.dto.ApiResponse
-import com.procurement.access.model.dto.bpe.Command2Message
+import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.model.dto.bpe.NaN
 import com.procurement.access.model.dto.bpe.errorResponse
-import com.procurement.access.model.dto.bpe.getId
-import com.procurement.access.model.dto.bpe.getVersion
 import com.procurement.access.service.CommandService2
+import com.procurement.access.utils.getBy
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toNode
-import com.procurement.access.utils.toObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -36,15 +34,6 @@ class Command2Controller(private val commandService2: CommandService2) {
         if (log.isDebugEnabled)
             log.debug("RECEIVED COMMAND: '$requestBody'.")
 
-        try {
-            toObject(Command2Message::class.java, requestBody)
-        } catch (expected: Exception) {
-            log.debug("Error.", expected)
-            return createErrorResponseEntity(
-                expected = expected
-            )
-        }
-
         val node: JsonNode = try {
             requestBody.toNode()
         } catch (expected: Exception) {
@@ -54,8 +43,35 @@ class Command2Controller(private val commandService2: CommandService2) {
             )
         }
 
-        val id = node.getId()
-        val version = node.getVersion()
+        val id = try {
+            UUID.fromString(node.getBy(parameter = "id").asText())
+        } catch (expected: Exception) {
+            log.debug("Error.", expected)
+            return createErrorResponseEntity(
+                expected = expected
+            )
+        }
+
+        val version = try {
+            ApiVersion.valueOf(node.getBy(parameter = "version").asText())
+        } catch (expected: Exception) {
+            log.debug("Error.", expected)
+            return createErrorResponseEntity(
+                id = id,
+                expected = expected
+            )
+        }
+
+        try {
+            node.getBy(parameter = "params")
+        } catch (expected: Exception) {
+            log.debug("Error.", expected)
+            return createErrorResponseEntity(
+                id = id,
+                expected = expected,
+                version = version
+            )
+        }
 
         val response = try {
             commandService2.execute(request = node)
@@ -65,9 +81,9 @@ class Command2Controller(private val commandService2: CommandService2) {
                 }
         } catch (expected: Exception) {
             log.debug("Error.", expected)
-            errorResponse(
-                exception = expected,
+            return createErrorResponseEntity(
                 id = id,
+                expected = expected,
                 version = version
             )
         }
@@ -75,10 +91,14 @@ class Command2Controller(private val commandService2: CommandService2) {
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    private fun createErrorResponseEntity(expected: Exception, id: UUID = NaN): ResponseEntity<ApiResponse> {
+    private fun createErrorResponseEntity(
+        expected: Exception,
+        id: UUID = NaN,
+        version : ApiVersion = GlobalProperties.App.apiVersion
+    ): ResponseEntity<ApiResponse> {
         val response = errorResponse(
             exception = expected,
-            version = GlobalProperties.App.apiVersion,
+            version = version,
             id = id
         )
         return ResponseEntity(response, HttpStatus.OK)
