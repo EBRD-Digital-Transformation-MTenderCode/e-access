@@ -26,7 +26,7 @@ class CommandService2(
         val id = request.getId()
         val action = request.getAction()
 
-        val historyEntity = historyDao.getHistory(id.toString(), action.value())
+        val historyEntity = historyDao.getHistory(id.toString(), action.toString())
         if (historyEntity != null) {
             return toObject(ApiSuccessResponse::class.java, historyEntity.jsonData)
         }
@@ -41,7 +41,7 @@ class CommandService2(
             }
         }
 
-        historyDao.saveHistory(operationId = id.toString(), command = action.value(), response = response)
+        historyDao.saveHistory(operationId = id.toString(), command = action.toString(), response = response)
         return response
     }
 }
