@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
@@ -86,4 +87,15 @@ fun String.toNode(): JsonNode = try {
     JsonMapper.mapper.readTree(this)
 } catch (exception: JsonProcessingException) {
     throw IllegalArgumentException("Error parsing String to JsonNode.", exception)
+}
+
+fun JsonNode.getBy(parameter: String): JsonNode {
+    val par = this.get(parameter)
+    return par?.let { node ->
+        if (node is NullNode) {
+            throw IllegalArgumentException("$parameter is absent")
+        } else {
+            par
+        }
+    } ?: par
 }
