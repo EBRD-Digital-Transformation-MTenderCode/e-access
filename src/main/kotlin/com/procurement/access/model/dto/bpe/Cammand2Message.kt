@@ -1,5 +1,6 @@
 package com.procurement.access.model.dto.bpe
 
+import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.config.GlobalProperties
 import com.procurement.access.exception.EnumException
@@ -8,10 +9,11 @@ import com.procurement.access.infrastructure.web.dto.ApiFailResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
+import com.procurement.access.utils.getBy
 import java.time.LocalDateTime
 import java.util.*
 
-enum class Command2Type(private val value: String) {
+enum class Command2Type(@JsonValue private val value: String) {
     GET_LOT_IDS("getLotIds");
 
     companion object {
@@ -26,7 +28,6 @@ enum class Command2Type(private val value: String) {
     }
 
     override fun toString() = value
-
 }
 
 fun errorResponse(exception: Exception, id: UUID = NaN, version: ApiVersion): ApiResponse =
@@ -101,17 +102,17 @@ val NaN: UUID
     get() = UUID(0, 0)
 
 fun JsonNode.getId(): UUID {
-    return UUID.fromString(this.get("id").asText())
+    return UUID.fromString(this.getBy("id").asText())
 }
 
 fun JsonNode.getAction(): Command2Type {
-    return Command2Type.fromString(this.get("action").asText())
+    return Command2Type.fromString(this.getBy("action").asText())
 }
 
 fun JsonNode.getVersion(): ApiVersion {
-    return ApiVersion.valueOf(this.get("version").asText())
+    return ApiVersion.valueOf(this.getBy("version").asText())
 }
 
 fun JsonNode.getParams(): JsonNode {
-    return this.get("params")
+    return this.getBy("params")
 }
