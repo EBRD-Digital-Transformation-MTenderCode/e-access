@@ -2,11 +2,11 @@ package com.procurement.access.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.dao.HistoryDao
+import com.procurement.access.infrastructure.handlers.GetLotIdsHandler
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.getAction
 import com.procurement.access.model.dto.bpe.getId
-import com.procurement.access.service.handler.GetLotIdsHandler
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.slf4j.LoggerFactory

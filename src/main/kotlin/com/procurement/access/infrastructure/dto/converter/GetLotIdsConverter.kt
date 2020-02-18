@@ -1,6 +1,8 @@
 package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.service.lot.GetLotIdsParams
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.lot.GetLotIdsRequest
@@ -17,8 +19,8 @@ fun GetLotIdsRequest.convert() = GetLotIdsParams(
     }
         ?.map { state ->
             GetLotIdsParams.State(
-                status = state.status,
-                statusDetails = state.statusDetails
+                status = if (state.status != null) LotStatus.fromString(state.status) else null,
+                statusDetails = if (state.statusDetails != null) LotStatusDetails.fromString(state.statusDetails) else null
             )
         }
         .orEmpty()
