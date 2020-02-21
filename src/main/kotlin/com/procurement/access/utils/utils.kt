@@ -91,11 +91,8 @@ fun String.toNode(): JsonNode = try {
 
 fun JsonNode.getBy(parameter: String): JsonNode {
     val par = this.get(parameter)
-    return par?.let { node ->
-        if (node is NullNode) {
-            throw IllegalArgumentException("$parameter is absent")
-        } else {
-            par
-        }
-    } ?: par
+    return if (par == null || par is NullNode)
+        throw IllegalArgumentException("$parameter is absent")
+    else
+        par
 }

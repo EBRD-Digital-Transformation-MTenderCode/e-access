@@ -2,11 +2,7 @@ package com.procurement.access.infrastructure.web.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.enums.ResponseStatus
-import com.procurement.access.infrastructure.bind.apiversion.ApiVersionDeserializer
-import com.procurement.access.infrastructure.bind.apiversion.ApiVersionSerializer
 import java.time.LocalDateTime
 import java.util.*
 
@@ -21,8 +17,6 @@ sealed class ApiResponse(
 }
 
 class ApiSuccessResponse(
-    @JsonDeserialize(using = ApiVersionDeserializer::class)
-    @JsonSerialize(using = ApiVersionSerializer::class)
     version: ApiVersion,
     id: UUID,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any?
