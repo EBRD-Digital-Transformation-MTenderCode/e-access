@@ -150,6 +150,9 @@
         ]
       }
     ],
+    "procuringEntity": {
+      "id": "procuringEntity.id"
+    },
     "lots": [
       {
         "id": "lot-1",

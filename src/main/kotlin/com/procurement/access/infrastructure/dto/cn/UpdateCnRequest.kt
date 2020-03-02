@@ -102,7 +102,9 @@ data class UpdateCnRequest(
 
         data class ProcuringEntity(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>?
         ) {
 
             data class Person(

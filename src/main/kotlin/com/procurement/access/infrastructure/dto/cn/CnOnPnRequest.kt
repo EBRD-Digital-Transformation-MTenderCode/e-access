@@ -179,7 +179,9 @@ data class CnOnPnRequest(
 
         data class ProcuringEntity(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone>
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone> = emptyList()
         ) {
             data class Persone(
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
