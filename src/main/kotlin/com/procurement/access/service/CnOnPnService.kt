@@ -5,7 +5,6 @@ import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
-import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
@@ -307,11 +306,9 @@ class CnOnPnService(
      *
      * VR-1.0.1.10.6
      *
-     * eAccess checks the availability of one Persones object with one businessFunctions object
-     * where persones.businessFunctions.type == "authority" in Persones array from Request:
-     * IF [there is Persones object with businessFunctions object where type == "authority"] then validation is successful; }
-     * else { eAccess throws Exception: "Authority person shoud be specified in Request"; }
-     *
+     * eAccess checks persones.businessFunctions.type values in all businessFuctions object from Request;
+     * IF businessFunctions.type == oneOf procuringEntityBusinessFuncTypeEnum value (link), validation is successful;}
+     * else {  eAccess throws Exception: "Invalid business functions type";
      */
     private fun checkProcuringEntityPersones(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
@@ -326,20 +323,6 @@ class CnOnPnService(
         if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
             message = "Persones objects should be unique in Request. "
-        )
-
-        val authorityPersones = procuringEntityRequest.persones.asSequence()
-            .flatMap { it.businessFunctions.asSequence() }
-            .filter { it.type == BusinessFunctionType.AUTHORITY }
-            .toList()
-
-        if (authorityPersones.isEmpty()) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Authority person should be specified in Request. "
-        )
-        if (authorityPersones.size > 1) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Only one person should be specified as authority. "
         )
     }
 
