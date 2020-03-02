@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.exception.EnumException
 
 enum class BusinessFunctionType(@JsonValue val value: String) {
+
+    @Deprecated("Use 'chairman' instead of it")
     AUTHORITY("authority"),
+
+    CHAIRMAN("chairman"),
     PROCURMENT_OFFICER("procurementOfficer"),
     CONTACT_POINT("contactPoint"),
     TECHNICAL_EVALUATOR("technicalEvaluator"),
