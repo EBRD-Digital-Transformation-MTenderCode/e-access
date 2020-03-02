@@ -658,13 +658,17 @@ class CNServiceImpl(
 
                 //VR-1.0.1.10.8 (1)
                 when (businessFunction.type) {
-                    BusinessFunctionType.AUTHORITY,
+                    BusinessFunctionType.CHAIRMAN,
                     BusinessFunctionType.PROCURMENT_OFFICER,
                     BusinessFunctionType.CONTACT_POINT,
                     BusinessFunctionType.TECHNICAL_EVALUATOR,
                     BusinessFunctionType.TECHNICAL_OPENER,
                     BusinessFunctionType.PRICE_OPENER,
                     BusinessFunctionType.PRICE_EVALUATOR -> Unit
+                    BusinessFunctionType.AUTHORITY       -> throw ErrorException(
+                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                        message = "Type '${BusinessFunctionType.AUTHORITY.value}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
+                    )
                 }
 
                 if (businessFunction.period.startDate > startDate)
