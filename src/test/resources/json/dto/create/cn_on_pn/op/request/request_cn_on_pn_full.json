@@ -199,7 +199,7 @@
           "businessFunctions": [
             {
               "id": "procuringEntity.persones[0].businessFunctions[0].id",
-              "type": "authority",
+              "type": "chairman",
               "jobTitle": "Chief Executive Officer",
               "period": {
                 "startDate": "2019-10-16T11:45:56Z"

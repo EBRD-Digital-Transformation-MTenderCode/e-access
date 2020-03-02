@@ -5,6 +5,7 @@ import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
@@ -344,20 +345,37 @@ class CnOnPnService(
     private fun checkPersonesBusinessFunctions(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
-        fun detalizationError(): Nothing = throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "At least one businessFunctions detalization should be added. "
-        )
 
-        fun uniquenessError(): Nothing = throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "businessFunctions objects should be unique in every Person from Request. "
-        )
-
-        procuringEntityRequest.persones.map { it.businessFunctions }
+        procuringEntityRequest.persones
+            .map { it.businessFunctions }
             .forEach { businessfunctions ->
-                if (businessfunctions.isEmpty()) detalizationError()
-                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) uniquenessError()
+                if (businessfunctions.isEmpty()) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "At least one businessFunctions detalization should be added. "
+                )
+                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "businessFunctions objects should be unique in every Person from Request. "
+                )
+            }
+
+        procuringEntityRequest.persones
+            .flatMap { it.businessFunctions }
+            .forEach {
+                when (it.type) {
+                    BusinessFunctionType.CHAIRMAN,
+                    BusinessFunctionType.PROCURMENT_OFFICER,
+                    BusinessFunctionType.CONTACT_POINT,
+                    BusinessFunctionType.TECHNICAL_EVALUATOR,
+                    BusinessFunctionType.TECHNICAL_OPENER,
+                    BusinessFunctionType.PRICE_OPENER,
+                    BusinessFunctionType.PRICE_EVALUATOR -> Unit
+
+                    BusinessFunctionType.AUTHORITY       -> throw ErrorException(
+                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                        message = "Type '${BusinessFunctionType.AUTHORITY.value}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
+                    )
+                }
             }
     }
 
