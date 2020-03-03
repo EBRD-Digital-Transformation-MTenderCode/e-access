@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.dto.lot
+package com.procurement.access.infrastructure.handler.get.lotids
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty

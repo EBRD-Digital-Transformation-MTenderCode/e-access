@@ -1,7 +1,5 @@
 package com.procurement.access.application.service.lot
 
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -11,20 +9,20 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSorting() {
         val unsortedStates = listOf(
-            GetLotIdsParams.State(status = null, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = LotStatus.COMPLETE, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY)
+            createState(status = null, statusDetails = null),
+            createState(status = "active", statusDetails = null),
+            createState(status = null, statusDetails = "awarded"),
+            createState(status = "active", statusDetails = "awarded"),
+            createState(status = "complete", statusDetails = "empty"),
+            createState(status = null, statusDetails = "empty")
         )
         val expected = listOf(
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.COMPLETE, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = null)
+            createState(status = "active", statusDetails = "awarded"),
+            createState(status = "active", statusDetails = null),
+            createState(status = "complete", statusDetails = "empty"),
+            createState(status = null, statusDetails = "awarded"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = null)
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -34,18 +32,18 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSortByLotStatus() {
         val unsortedStates = listOf(
-            GetLotIdsParams.State(status = LotStatus.CANCELLED, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.PLANNED, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = null)
+            createState(status = "cancelled", statusDetails = null),
+            createState(status = "active", statusDetails = null),
+            createState(status = "planned", statusDetails = null),
+            createState(status = "active", statusDetails = null),
+            createState(status = null, statusDetails = null)
         )
         val expected = listOf(
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.CANCELLED, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.PLANNED, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = null)
+            createState(status = "active", statusDetails = null),
+            createState(status = "active", statusDetails = null),
+            createState(status = "cancelled", statusDetails = null),
+            createState(status = "planned", statusDetails = null),
+            createState(status = null, statusDetails = null)
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -55,18 +53,18 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSortByLotStatusDetails(){
         val unsortedStates = listOf(
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.CANCELLED),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.UNSUCCESSFUL)
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = "cancelled"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = null),
+            createState(status = null, statusDetails = "unsuccessful")
         )
         val expected = listOf(
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.CANCELLED),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.UNSUCCESSFUL),
-            GetLotIdsParams.State(status = null, statusDetails = null)
+            createState(status = null, statusDetails = "cancelled"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = "unsuccessful"),
+            createState(status = null, statusDetails = null)
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -76,18 +74,18 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSortDuplicate() {
         val unsortedStates = listOf(
-            GetLotIdsParams.State(status = null, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.AWARDED)
+            createState(status = null, statusDetails = null),
+            createState(status = "active", statusDetails = "awarded"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = "active", statusDetails = "empty"),
+            createState(status = "active", statusDetails = "awarded")
         )
         val expected = listOf(
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = null)
+            createState(status = "active", statusDetails = "awarded"),
+            createState(status = "active", statusDetails = "awarded"),
+            createState(status = "active", statusDetails = "empty"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = null)
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -97,25 +95,28 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSortNulls() {
         val unsortedStates = listOf(
-            GetLotIdsParams.State(status = null, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = null, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.COMPLETE, statusDetails = null)
+            createState(status = null, statusDetails = null),
+            createState(status = "active", statusDetails = null),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = "active", statusDetails = "empty"),
+            createState(status = null, statusDetails = "awarded"),
+            createState(status = null, statusDetails = null),
+            createState(status = "complete", statusDetails = null)
         )
         val expected = listOf(
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = LotStatus.ACTIVE, statusDetails = null),
-            GetLotIdsParams.State(status = LotStatus.COMPLETE, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.AWARDED),
-            GetLotIdsParams.State(status = null, statusDetails = LotStatusDetails.EMPTY),
-            GetLotIdsParams.State(status = null, statusDetails = null),
-            GetLotIdsParams.State(status = null, statusDetails = null)
+            createState(status = "active", statusDetails = "empty"),
+            createState(status = "active", statusDetails = null),
+            createState(status = "complete", statusDetails = null),
+            createState(status = null, statusDetails = "awarded"),
+            createState(status = null, statusDetails = "empty"),
+            createState(status = null, statusDetails = null),
+            createState(status = null, statusDetails = null)
         )
 
         val sortedStates = unsortedStates.sorted()
         assertEquals(expected, sortedStates)
+    }
+    private fun createState(status :String?, statusDetails :String?) : GetLotIdsParams.State {
+        return GetLotIdsParams.State.tryCreate(status,statusDetails).get
     }
 }
