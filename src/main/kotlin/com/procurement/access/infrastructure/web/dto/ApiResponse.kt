@@ -19,7 +19,7 @@ sealed class ApiResponse(
 class ApiSuccessResponse(
     version: ApiVersion,
     id: UUID,
-    @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any?
+    @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any? = null
 ) : ApiResponse(
     version = version,
     result = result,
@@ -29,7 +29,7 @@ class ApiSuccessResponse(
     override val status: ResponseStatus = ResponseStatus.SUCCESS
 }
 
-class ApiFailResponse(
+class ApiDataErrorResponse(
     version: ApiVersion,
     id: UUID,
     result: List<Error>
@@ -39,7 +39,22 @@ class ApiFailResponse(
     id = id
 ) {
     @field:JsonProperty("status")
-    override val status: ResponseStatus = ResponseStatus.FAIL
+    override val status: ResponseStatus = ResponseStatus.ERROR
+
+    class Error(val code: String?, val description: String?, val attributeName: String)
+}
+
+class ApiErrorResponse(
+    version: ApiVersion,
+    id: UUID,
+    result: List<Error>
+) : ApiResponse(
+    version = version,
+    result = result,
+    id = id
+) {
+    @field:JsonProperty("status")
+    override val status: ResponseStatus = ResponseStatus.ERROR
 
     class Error(val code: String?, val description: String?)
 }
