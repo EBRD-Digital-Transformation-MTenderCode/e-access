@@ -1,6 +1,7 @@
 package com.procurement.access.domain.model.enums
 
 import com.fasterxml.jackson.annotation.JsonValue
+import com.procurement.access.domain.util.Result
 import com.procurement.access.exception.EnumException
 
 enum class LotStatus(@JsonValue val value: String) {
@@ -23,6 +24,15 @@ enum class LotStatus(@JsonValue val value: String) {
                 enumType = LotStatus::class.java.canonicalName,
                 value = value,
                 values = values().joinToString { it.value }
+            )
+
+        fun tryCreate(value: String): Result<LotStatus, String> = elements[value.toUpperCase()]
+            ?.let {
+                Result.success(it)
+            }
+            ?: Result.failure(
+                "Unknown value for enumType ${LotStatus::class.java.canonicalName}: " +
+                    "$value, Allowed values are ${values().joinToString { it.value }}"
             )
     }
 }
