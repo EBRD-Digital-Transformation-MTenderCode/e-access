@@ -6,8 +6,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.infrastructure.dto.converter.convert
-import com.procurement.access.infrastructure.dto.lot.GetLotIdsRequest
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsRequest
 import com.procurement.access.json.JSON
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
@@ -55,9 +55,13 @@ class LotServiceTest {
         fun success() {
 
             val request = request.toNode()
-            val data = toObject(GetLotIdsRequest::class.java, request).convert()
 
-            val result = handler.getLotIds(cpId = data.cpid, stage = STAGE, states = data.states)
+            val req = toObject(GetLotIdsRequest::class.java, request)
+
+            val paramsResult = req.convert()
+            val params = paramsResult.get
+
+            val result = handler.getLotIds(cpId = params.cpid, stage = STAGE, states = params.states)
 
             val expected = listOf(
                 LotId.fromString("577fd5c4-e314-40a9-aabe-732d7f5269ad"),
@@ -66,7 +70,7 @@ class LotServiceTest {
                 LotId.fromString("577fd5c4-e314-40a9-aabe-732d7f5269a5")
             )
 
-            assertEquals(expected, result)
+            assertEquals(expected, result.get)
         }
     }
 }

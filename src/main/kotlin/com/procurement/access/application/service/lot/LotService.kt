@@ -1,6 +1,8 @@
 package com.procurement.access.application.service.lot
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -8,6 +10,7 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.TemporalLotId
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.util.Result
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -19,6 +22,7 @@ import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
+import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 interface LotService {
@@ -35,7 +39,7 @@ interface LotService {
         cpId: String,
         stage: String,
         states: List<GetLotIdsParams.State>
-    ): List<LotId>
+    ): Result<List<LotId>, Fail>
 }
 
 @Service
@@ -47,20 +51,35 @@ class LotServiceImpl(
         cpId: String,
         stage: String,
         states: List<GetLotIdsParams.State>
-    ): List<LotId> {
-        val tenderProcessEntity = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
-        val tenderProcess = toObject(TenderProcess::class.java, tenderProcessEntity.jsonData)
+    ): Result<List<LotId>, Fail> {
+        val tenderProcessEntityResult = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
+        if (tenderProcessEntityResult.isFail) {
+            return Result.failure(tenderProcessEntityResult.error)
+        }
+
+        val tenderProcess =
+            when (val result = tenderProcessEntityResult.get.jsonData.tryToObject(TenderProcess::class.java)) {
+                is Result.Success -> result.get
+                is Result.Failure -> return Result.failure(
+                    BadRequestErrors.ParseToObject(
+                        listOf(BadRequestErrors.Detail(result.error))
+                    )
+                )
+            }
+
         return when {
             states.isEmpty() ->
-                tenderProcess.tender.lots
-                    .map { lot -> LotId.fromString(lot.id) }
+                Result.success(
+                    tenderProcess.tender.lots
+                        .map { lot -> LotId.fromString(lot.id) }
+                )
             else -> {
                 val sortedStatuses = states.sorted()
-
-                getLotsOnStates(
-                    lots = tenderProcess.tender.lots,
-                    states = sortedStatuses
-                ).map { lot -> LotId.fromString(lot.id) }
+                Result.success(
+                    getLotsOnStates(
+                        lots = tenderProcess.tender.lots,
+                        states = sortedStatuses
+                    ).map { lot -> LotId.fromString(lot.id) })
             }
         }
     }
@@ -162,9 +181,9 @@ class LotServiceImpl(
 
     override fun getLotsForAuction(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
         return when (context.operationType) {
-            OperationType.CREATE_CN_ON_PN             -> getLotsForCnOnPn(context, data)
+            OperationType.CREATE_CN_ON_PN -> getLotsForCnOnPn(context, data)
 
-            OperationType.UPDATE_CN                   -> getLotsForUpdateCn(context, data)
+            OperationType.UPDATE_CN -> getLotsForUpdateCn(context, data)
 
             OperationType.CREATE_CN,
             OperationType.CREATE_PN,
@@ -337,9 +356,15 @@ class LotServiceImpl(
             lot
     }
 
-    private fun getTenderProcessEntityByCpIdAndStage(cpId: String, stage: String) =
-        tenderProcessDao.getByCpIdAndStage(cpId = cpId, stage = stage)
-            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+    private fun getTenderProcessEntityByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity, Fail> {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpId, stage = stage)
+            ?: return Result.failure(
+                BadRequestErrors.EntityNotFound(
+                    listOf(BadRequestErrors.Detail("TenderProcessEntity not found by $cpId and $stage"))
+                )
+            )
+        return Result.success(entity)
+    }
 
     private fun getLotsOnStates(lots: List<Lot>, states: List<GetLotIdsParams.State>): List<Lot> {
         return lots.filter { lot ->
