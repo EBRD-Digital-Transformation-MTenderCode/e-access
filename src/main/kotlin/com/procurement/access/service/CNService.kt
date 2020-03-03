@@ -838,16 +838,14 @@ class CNServiceImpl(
         val idsAllPersons = receivedPersonsIds.union(savedPersonsIds)
         val idsNewPersons = getNewElements(receivedPersonsIds, savedPersonsIds)
         val idsUpdatePersons = getElementsForUpdate(receivedPersonsIds, savedPersonsIds)
-        val idsRemovePersons = getElementsForRemove(receivedPersonsIds, savedPersonsIds)
+        val idsOldPersons = getElementsForRemove(receivedPersonsIds, savedPersonsIds)
 
         val updatedPersons = idsAllPersons.asSequence()
-            .filter { id ->
-                id !in idsRemovePersons
-            }
             .map { id ->
                 when (id) {
                     in idsNewPersons -> createPerson(receivedPersonsById.getValue(id))
                     in idsUpdatePersons -> savedPersonsById.getValue(id).update(receivedPersonsById.getValue(id))
+                    in idsOldPersons -> savedPersonsById.getValue(id)
                     else -> throw IllegalStateException()
                 }
             }
