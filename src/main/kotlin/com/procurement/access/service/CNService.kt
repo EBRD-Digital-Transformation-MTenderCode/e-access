@@ -664,7 +664,7 @@ class CNServiceImpl(
                     BusinessFunctionType.PRICE_EVALUATOR -> Unit
                     BusinessFunctionType.AUTHORITY       -> throw ErrorException(
                         error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                        message = "Type '${BusinessFunctionType.AUTHORITY.value}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
+                        message = "Type '${BusinessFunctionType.AUTHORITY}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
                     )
                 }
 

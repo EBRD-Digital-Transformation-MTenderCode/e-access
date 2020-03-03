@@ -181,7 +181,7 @@ data class CnOnPnRequest(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone> = emptyList()
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone>?
         ) {
             data class Persone(
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,

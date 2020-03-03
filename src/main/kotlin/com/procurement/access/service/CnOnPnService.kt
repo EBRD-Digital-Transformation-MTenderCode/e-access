@@ -314,17 +314,21 @@ class CnOnPnService(
     private fun checkProcuringEntityPersones(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
-        if (procuringEntityRequest.persones.isEmpty()) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "At least one Person should be added. "
-        )
 
-        val personesIdentifier = procuringEntityRequest.persones.map { it.identifier.id }
-        val personesIdentifierUnique = personesIdentifier.toSet()
-        if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Persones objects should be unique in Request. "
-        )
+        procuringEntityRequest.persones
+            ?.apply {
+                if (this.isEmpty()) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "At least one Person should be added. "
+                )
+
+                val personesIdentifier = this.map { it.identifier.id }
+                val personesIdentifierUnique = personesIdentifier.toSet()
+                if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "Persones objects should be unique in Request. "
+                )
+            }
     }
 
     /**
@@ -347,8 +351,8 @@ class CnOnPnService(
     ) {
 
         procuringEntityRequest.persones
-            .map { it.businessFunctions }
-            .forEach { businessfunctions ->
+            ?.map { it.businessFunctions }
+            ?.forEach { businessfunctions ->
                 if (businessfunctions.isEmpty()) throw ErrorException(
                     error = INVALID_PROCURING_ENTITY,
                     message = "At least one businessFunctions detalization should be added. "
@@ -360,8 +364,8 @@ class CnOnPnService(
             }
 
         procuringEntityRequest.persones
-            .flatMap { it.businessFunctions }
-            .forEach {
+            ?.flatMap { it.businessFunctions }
+            ?.forEach {
                 when (it.type) {
                     BusinessFunctionType.CHAIRMAN,
                     BusinessFunctionType.PROCURMENT_OFFICER,
@@ -396,8 +400,9 @@ class CnOnPnService(
             message = "Invalid period in bussiness function specification. "
         )
 
-        procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach { if (it.period.startDate > context.startDate) dateError() }
+        procuringEntityRequest.persones
+            ?.flatMap { it.businessFunctions }
+            ?.forEach { if (it.period.startDate > context.startDate) dateError() }
     }
 
     /**
@@ -425,8 +430,9 @@ class CnOnPnService(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
 
-        procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach { businessFunction ->
+        procuringEntityRequest.persones
+            ?.flatMap { it.businessFunctions }
+            ?.forEach { businessFunction ->
                 businessFunction.documents?.let { documents ->
                     if (documents.isEmpty()) throw ErrorException(
                         error = ErrorType.EMPTY_DOCS,
@@ -1129,7 +1135,7 @@ class CnOnPnService(
                         )
                     },
                     persones = request.tender.procuringEntity?.let { _procuringEntity ->
-                        _procuringEntity.persones.map { person ->
+                        _procuringEntity.persones?.map { person ->
                             CNEntity.Tender.ProcuringEntity.Persone(
                                 title = person.title,
                                 name = person.name,
