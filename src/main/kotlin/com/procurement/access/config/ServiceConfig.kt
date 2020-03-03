@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
     basePackages = [
         "com.procurement.access.service",
         "com.procurement.access.application.service",
-        "com.procurement.access.infrastructure.handlers"
+        "com.procurement.access.infrastructure.handler"
     ]
 )
 @EnableConfigurationProperties(value = [OCDSProperties::class])
