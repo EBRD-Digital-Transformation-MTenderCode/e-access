@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.util.Result
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
@@ -83,16 +85,20 @@ fun <T> toObject(clazz: Class<T>, json: JsonNode): T {
     }
 }
 
-fun String.toNode(): JsonNode = try {
-    JsonMapper.mapper.readTree(this)
-} catch (exception: JsonProcessingException) {
-    throw IllegalArgumentException("Error parsing String to JsonNode.", exception)
+fun <T : Any> JsonNode.tryToObject(target: Class<T>): Result<T, String> = try {
+    Result.success(JsonMapper.mapper.treeToValue(this, target))
+} catch (expected: Exception) {
+    Result.failure("Error binding JSON to an object of type '${target.canonicalName}'.")
 }
 
-fun JsonNode.getBy(parameter: String): JsonNode {
-    val par = this.get(parameter)
-    return if (par == null || par is NullNode)
-        throw IllegalArgumentException("$parameter is absent")
-    else
-        par
+fun <T : Any> String.tryToObject(target: Class<T>): Result<T, String> = try {
+    Result.success(JsonMapper.mapper.readValue(this, target))
+} catch (expected: Exception) {
+    Result.failure("Error binding JSON to an object of type '${target.canonicalName}'.")
+}
+
+fun String.toNode(): Result<JsonNode, Fail> = try {
+    Result.success(JsonMapper.mapper.readTree(this))
+} catch (exception: JsonProcessingException) {
+    Result.failure(DataErrors.DataFormatMismatch(this))
 }
