@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 enum class ResponseStatus (@JsonValue val value: String){
     SUCCESS("success"),
-    FAIL("fail"),
+    ERROR("error"),
     INCIDENT("incident")
 }
