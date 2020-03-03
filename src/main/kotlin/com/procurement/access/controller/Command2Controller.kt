@@ -1,13 +1,17 @@
 package com.procurement.access.controller
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.config.GlobalProperties
+import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.model.dto.bpe.NaN
 import com.procurement.access.model.dto.bpe.errorResponse
+import com.procurement.access.model.dto.bpe.getAction
+import com.procurement.access.model.dto.bpe.getId
+import com.procurement.access.model.dto.bpe.getVersion
+import com.procurement.access.model.dto.bpe.hasParams
 import com.procurement.access.service.CommandService2
-import com.procurement.access.utils.getBy
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toNode
 import org.slf4j.Logger
@@ -32,72 +36,49 @@ class Command2Controller(private val commandService2: CommandService2) {
         @RequestBody requestBody: String
     ): ResponseEntity<ApiResponse> {
         if (log.isDebugEnabled)
-            log.debug("RECEIVED COMMAND: '$requestBody'.")
+            log.debug("RECEIVED COMMAND: '${requestBody}'.")
 
-        val node: JsonNode = try {
-            requestBody.toNode()
-        } catch (expected: Exception) {
-            log.debug("Error.", expected)
-            return createErrorResponseEntity(
-                expected = expected
-            )
+        val node = when (val result = requestBody.toNode()) {
+            is Result.Success -> result.get
+            is Result.Failure -> return createErrorResponseEntity(expected = result.error)
         }
 
-        val id = try {
-            UUID.fromString(node.getBy(parameter = "id").asText())
-        } catch (expected: Exception) {
-            log.debug("Error.", expected)
-            return createErrorResponseEntity(
-                expected = expected
-            )
+        val id = when (val result = node.getId()) {
+            is Result.Success -> result.get
+            is Result.Failure -> return createErrorResponseEntity(expected = result.error)
         }
 
-        val version = try {
-            ApiVersion.valueOf(node.getBy(parameter = "version").asText())
-        } catch (expected: Exception) {
-            log.debug("Error.", expected)
-            return createErrorResponseEntity(
-                id = id,
-                expected = expected
-            )
+        val version = when (val result = node.getVersion()) {
+            is Result.Success -> result.get
+            is Result.Failure -> return createErrorResponseEntity(id = id, expected = result.error)
         }
 
-        try {
-            node.getBy(parameter = "params")
-        } catch (expected: Exception) {
-            log.debug("Error.", expected)
-            return createErrorResponseEntity(
-                id = id,
-                expected = expected,
-                version = version
-            )
+        when (val result = node.getAction()) {
+            is Result.Success -> Unit
+            is Result.Failure -> return createErrorResponseEntity(id = id, expected = result.error, version = version)
         }
 
-        val response = try {
-            commandService2.execute(request = node)
-                .also { response ->
-                    if (log.isDebugEnabled)
-                        log.debug("RESPONSE (id: '${id}'): '${toJson(response)}'.")
-                }
-        } catch (expected: Exception) {
-            log.debug("Error.", expected)
-            return createErrorResponseEntity(
-                id = id,
-                expected = expected,
-                version = version
-            )
-        }
+        val hasParams = node.hasParams()
+        if (hasParams.isError)
+            return createErrorResponseEntity(id = id, expected = hasParams.error, version = version)
+
+
+        val response = commandService2.execute(request = node)
+            .also { response ->
+                if (log.isDebugEnabled)
+                    log.debug("RESPONSE (id: '${id}'): '${toJson(response)}'.")
+            }
 
         return ResponseEntity(response, HttpStatus.OK)
     }
 
     private fun createErrorResponseEntity(
-        expected: Exception,
+        expected: Fail,
         id: UUID = NaN,
         version : ApiVersion = GlobalProperties.App.apiVersion
     ): ResponseEntity<ApiResponse> {
         val response = errorResponse(
-            exception = expected,
+            fail = expected,
             version = version,
             id = id
         )
