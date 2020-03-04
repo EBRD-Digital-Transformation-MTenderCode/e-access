@@ -2,7 +2,6 @@ package com.procurement.access.controller
 
 import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.model.dto.bpe.NaN
@@ -38,30 +37,24 @@ class Command2Controller(private val commandService2: CommandService2) {
         if (log.isDebugEnabled)
             log.debug("RECEIVED COMMAND: '${requestBody}'.")
 
-        val node = when (val result = requestBody.toNode()) {
-            is Result.Success -> result.get
-            is Result.Failure -> return createErrorResponseEntity(expected = result.error)
-        }
+        val node = requestBody.toNode()
+            .doOnError { error -> return createErrorResponseEntity(expected = error) }
+            .get
 
-        val id = when (val result = node.getId()) {
-            is Result.Success -> result.get
-            is Result.Failure -> return createErrorResponseEntity(expected = result.error)
-        }
+        val id = node.getId()
+            .doOnError { error -> return createErrorResponseEntity(expected = error) }
+            .get
 
-        val version = when (val result = node.getVersion()) {
-            is Result.Success -> result.get
-            is Result.Failure -> return createErrorResponseEntity(id = id, expected = result.error)
-        }
+        val version = node.getVersion()
+            .doOnError { error -> return createErrorResponseEntity(id = id, expected = error) }
+            .get
 
-        when (val result = node.getAction()) {
-            is Result.Success -> Unit
-            is Result.Failure -> return createErrorResponseEntity(id = id, expected = result.error, version = version)
-        }
+        node.getAction()
+            .doOnError { error -> return createErrorResponseEntity(id = id, expected = error, version = version) }
 
         val hasParams = node.hasParams()
         if (hasParams.isError)
             return createErrorResponseEntity(id = id, expected = hasParams.error, version = version)
-
 
         val response = commandService2.execute(request = node)
             .also { response ->
@@ -75,7 +68,7 @@ class Command2Controller(private val commandService2: CommandService2) {
     private fun createErrorResponseEntity(
         expected: Fail,
         id: UUID = NaN,
-        version : ApiVersion = GlobalProperties.App.apiVersion
+        version: ApiVersion = GlobalProperties.App.apiVersion
     ): ResponseEntity<ApiResponse> {
         val response = errorResponse(
             fail = expected,
