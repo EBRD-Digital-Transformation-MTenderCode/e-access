@@ -4,7 +4,7 @@ sealed class ValidationResult<out E> {
 
     companion object {
         fun <E> ok(): ValidationResult<E> = Ok
-        fun <E> error(value: E): ValidationResult<E> = Error(value)
+        fun <E> error(value: E): ValidationResult<E> = Fail(value)
     }
 
     abstract val error: E
@@ -13,18 +13,18 @@ sealed class ValidationResult<out E> {
 
     val asOption: Option<E>
         get() = when (this) {
-            is Error -> Option.pure(error)
+            is Fail -> Option.pure(error)
             is Ok -> Option.none()
         }
 
     fun <R> map(transform: (E) -> R): ValidationResult<R> = when (this) {
         is Ok -> this
-        is Error -> Error(transform(this.error))
+        is Fail -> Fail(transform(this.error))
     }
 
     fun <R> bind(function: (E) -> ValidationResult<R>): ValidationResult<R> = when (this) {
         is Ok -> this
-        is Error -> function(this.error)
+        is Fail -> function(this.error)
     }
 
     object Ok : ValidationResult<Nothing>() {
@@ -34,7 +34,7 @@ sealed class ValidationResult<out E> {
         override val isError: Boolean = !isOk
     }
 
-    class Error<out E>(value: E) : ValidationResult<E>() {
+    class Fail<out E>(value: E) : ValidationResult<E>() {
         override val error: E = value
         override val isOk: Boolean = false
         override val isError: Boolean = !isOk

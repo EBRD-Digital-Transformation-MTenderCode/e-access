@@ -102,3 +102,5 @@ fun String.toNode(): Result<JsonNode, Fail> = try {
 } catch (exception: JsonProcessingException) {
     Result.failure(DataErrors.DataFormatMismatch(this))
 }
+
+fun String.getStageFromOcid() = this.split("-")[4]
