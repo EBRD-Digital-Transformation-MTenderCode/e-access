@@ -1,5 +1,6 @@
 package com.procurement.access.application.service.lot
 
+import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
@@ -44,7 +45,8 @@ interface LotService {
 
 @Service
 class LotServiceImpl(
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderProcessDao: TenderProcessDao,
+    private val tenderProcessRepository: TenderProcessRepository
 ) : LotService {
 
     override fun getLotIds(
@@ -52,20 +54,15 @@ class LotServiceImpl(
         stage: String,
         states: List<GetLotIdsParams.State>
     ): Result<List<LotId>, Fail> {
-        val tenderProcessEntityResult = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
-        if (tenderProcessEntityResult.isFail) {
-            return Result.failure(tenderProcessEntityResult.error)
-        }
 
-        val tenderProcess =
-            when (val result = tenderProcessEntityResult.get.jsonData.tryToObject(TenderProcess::class.java)) {
-                is Result.Success -> result.get
-                is Result.Failure -> return Result.failure(
-                    BadRequestErrors.ParseToObject(
-                        listOf(BadRequestErrors.Detail(result.error))
-                    )
-                )
-            }
+        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
+            .doOnError { error -> return Result.failure(error)}
+            .get
+            .jsonData
+            .tryToObject(TenderProcess::class.java)
+            .doOnError {error ->  return Result.failure(BadRequestErrors.ParseToObject(error)) }
+            .get
+
 
         return when {
             states.isEmpty() ->
@@ -357,12 +354,16 @@ class LotServiceImpl(
     }
 
     private fun getTenderProcessEntityByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpId, stage = stage)
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpId = cpId, stage = stage)
+            .doOnError {error -> return Result.failure(error)  }
+            .get
             ?: return Result.failure(
                 BadRequestErrors.EntityNotFound(
-                    listOf(BadRequestErrors.Detail("TenderProcessEntity not found by $cpId and $stage"))
+                    entityName = "TenderProcessEntity",
+                    by = "by cpid = '$cpId' and stage = '$stage'"
                 )
             )
+
         return Result.success(entity)
     }
 

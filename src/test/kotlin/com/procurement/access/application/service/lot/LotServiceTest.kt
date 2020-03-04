@@ -3,8 +3,10 @@ package com.procurement.access.application.service.lot
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.lot.LotId
+import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsRequest
@@ -27,12 +29,14 @@ class LotServiceTest {
     }
 
     private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var handler: LotServiceImpl
 
     @BeforeEach
     fun init() {
         tenderProcessDao = mock()
-        handler = LotServiceImpl(tenderProcessDao = tenderProcessDao)
+        tenderProcessRepository = mock()
+        handler = LotServiceImpl(tenderProcessDao = tenderProcessDao,tenderProcessRepository = tenderProcessRepository)
     }
 
     @DisplayName("Get Lot Ids Handler")
@@ -46,8 +50,8 @@ class LotServiceTest {
             request = loadJson(PATH_TO_REQUEST)
             tenderProcess = loadJson(PATH_TO_TENDER_PROCESS)
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = tenderProcess)
-            whenever(tenderProcessDao.getByCpIdAndStage(cpId = any(), stage = any()))
-                .thenReturn(tenderProcessEntity)
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpId = any(), stage = any()))
+                .thenReturn(Result.success(tenderProcessEntity))
         }
 
         @Test

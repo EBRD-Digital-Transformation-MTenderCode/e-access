@@ -1,10 +1,25 @@
 package com.procurement.access.domain.util
 
+fun <T, E> T.asSuccess(): Result<T, E> = Result.success(this)
+fun <T, E> E.asFailure(): Result<T, E> = Result.failure(this)
+
 sealed class Result<out T, out E> {
     companion object {
         fun <T> pure(value: T) = Success(value)
         fun <T> success(value: T) = Success(value)
         fun <E> failure(error: E) = Failure(error)
+        fun <T, E> merge(vararg results: Result<T, E>): Result<T, List<E>> {
+            val errors = mutableListOf<E>()
+                .apply {
+                    for (result in results) {
+                        when (result) {
+                            is Success -> Unit
+                            is Failure -> this.add(result.error)
+                        }
+                    }
+                }
+            return failure(errors)
+        }
     }
 
     abstract val isSuccess: Boolean
@@ -12,6 +27,11 @@ sealed class Result<out T, out E> {
 
     abstract val get: T
     abstract val error: E
+
+    inline fun doOnError(block: (error: E) -> Unit): Result<T, E> {
+        if (this.isFail) block(this.error)
+        return this
+    }
 
     val orNull: T?
         get() = when (this) {
@@ -59,7 +79,7 @@ sealed class Result<out T, out E> {
 
 infix fun <T, E> T.validate(rule: ValidationRule<T, E>): Result<T, E> = when (val result = rule.test(this)) {
     is ValidationResult.Ok -> Result.success(this)
-    is ValidationResult.Error -> Result.failure(result.error)
+    is ValidationResult.Fail -> Result.failure(result.error)
 }
 
 infix fun <T, E> Result<T, E>.validate(rule: ValidationRule<T, E>): Result<T, E> = when (this) {

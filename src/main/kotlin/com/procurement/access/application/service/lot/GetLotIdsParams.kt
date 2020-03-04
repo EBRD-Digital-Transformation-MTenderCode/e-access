@@ -3,7 +3,6 @@ package com.procurement.access.application.service.lot
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
 
 data class GetLotIdsParams private constructor(
@@ -15,17 +14,17 @@ data class GetLotIdsParams private constructor(
         fun tryCreate(
             cpid: String,
             ocid: String,
-            states: Option<List<State>>
+            states: List<State>?
         ): Result<GetLotIdsParams, DataErrors> {
 
-            if (states.isDefined && states.get.isEmpty()) {
+            if (states != null && states.isEmpty()) {
                 return Result.failure(DataErrors.EmptyArray("GetLotIdsParams.states"))
             }
 
             return Result.success(
                 GetLotIdsParams(
                     cpid = cpid,
-                    states = if (states.isDefined) states.get else emptyList(),
+                    states = states ?: emptyList(),
                     ocid = ocid
                 )
             )
@@ -42,21 +41,21 @@ data class GetLotIdsParams private constructor(
                 status: String?,
                 statusDetails: String?
             ): Result<State, DataErrors> {
-                val statusResult = if (status != null) LotStatus.tryCreate(status) else null
 
-                if (statusResult != null && statusResult.isFail)
-                    return Result.failure(DataErrors.UnknownValue(statusResult.error))
+                val createdStatus = status
+                    ?.let { LotStatus.tryCreate(status) }
+                    ?.doOnError {error ->  Result.failure(DataErrors.UnknownValue(error)) }
+                    ?.get
 
-                val statusDetailResult =
-                    if (statusDetails != null) LotStatusDetails.tryCreate(statusDetails) else null
-
-                if (statusDetailResult != null && statusDetailResult.isFail)
-                    return Result.failure(DataErrors.UnknownValue(statusDetailResult.error))
+                val createdStatusDetail =statusDetails
+                    ?.let { LotStatusDetails.tryCreate(statusDetails) }
+                    ?.doOnError {error ->  Result.failure(DataErrors.UnknownValue(error)) }
+                    ?.get
 
                 return Result.success(
                     State(
-                        status = statusResult?.get,
-                        statusDetails = statusDetailResult?.get
+                        status = createdStatus,
+                        statusDetails = createdStatusDetail
                     )
                 )
             }
