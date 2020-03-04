@@ -18,14 +18,5 @@ sealed class Fail {
         }
     }
 
-    sealed class Incident : Fail() {
-        abstract val code: String
-        abstract val description: String
-
-//        sealed class Internal : Incident() {
-//            data class ResponseError(val httpCode: Int, val contentType: String, val body: String?) : Internal()
-//        }
-
-        data class External(val code: String, val description: String)
-    }
+    abstract class Incident(val code: String, val description: String, val exception: Exception) : Fail()
 }

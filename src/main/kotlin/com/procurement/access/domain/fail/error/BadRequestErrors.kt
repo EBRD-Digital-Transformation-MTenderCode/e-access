@@ -4,24 +4,18 @@ import com.procurement.access.domain.fail.Fail
 
 sealed class BadRequestErrors(
     numberError: String,
-    override val description: String,
-    val details: List<Detail>
-) :
-    Fail.Error("BR-") {
+    override val description: String
+) : Fail.Error("BR-") {
 
     override val code: String = prefix + numberError
 
-    class EntityNotFound(details: List<Detail>) : BadRequestErrors(
+    class EntityNotFound(entityName: String, by: String) : BadRequestErrors(
         numberError = "01",
-        description = "Entity not found",
-        details = details
+        description = "Entity '$entityName' not found $by"
     )
 
-    class ParseToObject(details: List<Detail>): BadRequestErrors(
+    class ParseToObject(objectName: String) : BadRequestErrors(
         numberError = "02",
-        description = "Error binding json to an object",
-        details = details
+        description = "Error binding json to an object '$objectName'"
     )
-
-    class Detail(val name: String)
 }
