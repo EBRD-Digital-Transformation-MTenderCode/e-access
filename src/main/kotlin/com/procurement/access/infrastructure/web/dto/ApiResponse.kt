@@ -72,7 +72,7 @@ class ApiIncidentResponse(
     override val status: ResponseStatus = ResponseStatus.INCIDENT
 
     class Incident(val id: UUID, val date: LocalDateTime, val service: Service, val errors: List<Error>) {
-        class Service(val id: String, val name: String, val version: ApiVersion)
+        class Service(val id: String, val name: String, val version: String)
         class Error(val code: String, val description: String, val metadata: Any?)
     }
 }

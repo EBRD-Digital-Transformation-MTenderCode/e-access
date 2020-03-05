@@ -27,7 +27,6 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
         private const val COLUMN_CREATION_DATE = "created_date"
         private const val COLUMN_OWNER = "owner"
         private const val COLUMN_JSON_DATA = "json_data"
-        private const val ONE = 1
 
         private const val FIND_AUTH_BY_CPID_CQL = """
                SELECT $COLUMN_TOKEN,
@@ -41,7 +40,6 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                  FROM $KEY_SPACE.$TABLE_NAME
                 WHERE $COLUMN_CPID=?
                   AND $COLUMN_STAGE=?
-                LIMIT $ONE
             """
         private const val SAVE_CQL = """
           INSERT INTO $KEY_SPACE.$TABLE_NAME(

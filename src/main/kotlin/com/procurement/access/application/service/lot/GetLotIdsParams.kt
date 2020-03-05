@@ -5,7 +5,7 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.util.Result
 
-data class GetLotIdsParams private constructor(
+class GetLotIdsParams private constructor(
     val cpid: String,
     val ocid: String,
     val states: List<State>
@@ -31,7 +31,7 @@ data class GetLotIdsParams private constructor(
         }
     }
 
-    data class State private constructor(
+    class State private constructor(
         val status: LotStatus?,
         val statusDetails: LotStatusDetails?
     ) : Comparable<State> {
@@ -44,12 +44,12 @@ data class GetLotIdsParams private constructor(
 
                 val createdStatus = status
                     ?.let { LotStatus.tryCreate(status) }
-                    ?.doOnError {error ->  Result.failure(DataErrors.UnknownValue(error)) }
+                    ?.doOnError { error -> Result.failure(DataErrors.UnknownValue(error)) }
                     ?.get
 
-                val createdStatusDetail =statusDetails
+                val createdStatusDetail = statusDetails
                     ?.let { LotStatusDetails.tryCreate(statusDetails) }
-                    ?.doOnError {error ->  Result.failure(DataErrors.UnknownValue(error)) }
+                    ?.doOnError { error -> Result.failure(DataErrors.UnknownValue(error)) }
                     ?.get
 
                 return Result.success(
