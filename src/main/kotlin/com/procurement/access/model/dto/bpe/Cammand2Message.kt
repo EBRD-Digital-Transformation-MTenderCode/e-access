@@ -118,7 +118,7 @@ fun JsonNode.getVersion(): Result<ApiVersion, DataErrors> {
             when (val result = ApiVersion.tryOf(value)) {
                 is Result.Success -> result
                 is Result.Failure -> result.mapError {
-                    DataErrors.DataTypeMismatch(attributeName = result.error)
+                    DataErrors.DataFormatMismatch(attributeName = result.error)
                 }
             }
         }
@@ -131,7 +131,7 @@ fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
             when (val result = Command2Type.tryOf(value)) {
                 is Result.Success -> result
                 is Result.Failure -> result.mapError {
-                    DataErrors.DataTypeMismatch(attributeName = result.error)
+                    DataErrors.DataFormatMismatch(attributeName = result.error)
                 }
             }
         }
@@ -142,7 +142,7 @@ private fun asUUID(value: String): Result<UUID, DataErrors> =
         Result.success<UUID>(UUID.fromString(value))
     } catch (exception: IllegalArgumentException) {
         Result.failure(
-            DataErrors.DataTypeMismatch(attributeName = "id")
+            DataErrors.DataFormatMismatch(attributeName = "id")
         )
     }
 
@@ -166,7 +166,7 @@ fun <T : Any> JsonNode.tryGetParams(target: Class<T>): Result<T, DataErrors> =
         when (val result = node.tryToObject(target)) {
             is Result.Success -> result
             is Result.Failure -> result.mapError {
-                DataErrors.DataTypeMismatch(attributeName = result.error)
+                DataErrors.DataFormatMismatch(attributeName = result.error)
             }
         }
     }
