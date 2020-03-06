@@ -1,9 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class LegalBasis(@JsonValue val value: String) {
+enum class LegalBasis(@JsonValue override val key: String) : EnumElementProvider.Key {
     DIRECTIVE_2014_23_EU("DIRECTIVE_2014_23_EU"),
     DIRECTIVE_2014_24_EU("DIRECTIVE_2014_24_EU"),
     DIRECTIVE_2014_25_EU("DIRECTIVE_2014_25_EU"),
@@ -12,18 +13,12 @@ enum class LegalBasis(@JsonValue val value: String) {
     NATIONAL_PROCUREMENT_LAW("NATIONAL_PROCUREMENT_LAW"),
     NULL("NULL");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, LegalBasis> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<LegalBasis>(info = info()) {
 
-        fun fromString(value: String): LegalBasis = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = LegalBasis::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = LegalBasis.orThrow(name)
     }
 }

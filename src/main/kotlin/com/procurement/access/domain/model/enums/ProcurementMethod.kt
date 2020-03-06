@@ -1,9 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class ProcurementMethod(@JsonValue val value: String) {
+enum class ProcurementMethod(@JsonValue override val key: String) : EnumElementProvider.Key {
     MV("open"),
     OT("open"),
     RT("selective"),
@@ -21,23 +22,12 @@ enum class ProcurementMethod(@JsonValue val value: String) {
     TEST_FA("limited"),
     TEST_OP("selective");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, ProcurementMethod> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<ProcurementMethod>(info = info()) {
 
-        fun <T : Exception> valueOrException(name: String, block: (Exception) -> T): ProcurementMethod = try {
-            valueOf(name)
-        } catch (exception: Exception) {
-            throw block(exception)
-        }
-
-        fun fromString(value: String): ProcurementMethod =
-            elements[value.toUpperCase()] ?: throw EnumException(
-                enumType = ProcurementMethod::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value })
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = ProcurementMethod.orThrow(name)
     }
 }

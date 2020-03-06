@@ -1,26 +1,21 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class ExtendedProcurementCategory(@JsonValue val value: String) {
+enum class ExtendedProcurementCategory(@JsonValue override val key: String) : EnumElementProvider.Key {
     GOODS("goods"),
     WORKS("works"),
     SERVICES("services"),
     CONSULTING_SERVICES("consultingServices");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, ExtendedProcurementCategory> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<ExtendedProcurementCategory>(info = info()) {
 
-        fun fromString(value: String): ExtendedProcurementCategory = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = ExtendedProcurementCategory::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = ExtendedProcurementCategory.orThrow(name)
     }
 }

@@ -1,27 +1,22 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class SubmissionMethodRationale(@JsonValue val value: String) {
+enum class SubmissionMethodRationale(@JsonValue override val key: String) : EnumElementProvider.Key {
     TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE("TOOLS_DEVICES_FILE_FORMATS_UNAVAILABLE"),
     IPR_ISSUES("IPR_ISSUES"),
     REQUIRES_SPECIALISED_EQUIPMENT("REQUIRES_SPECIALISED_EQUIPMENT"),
     PHYSICAL_MODEL("PHYSICAL_MODEL"),
     SENSITIVE_INFORMATION("SENSITIVE_INFORMATION");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, SubmissionMethodRationale> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<SubmissionMethodRationale>(info = info()) {
 
-        fun fromString(value: String): SubmissionMethodRationale = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = SubmissionMethodRationale::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = SubmissionMethodRationale.orThrow(name)
     }
 }

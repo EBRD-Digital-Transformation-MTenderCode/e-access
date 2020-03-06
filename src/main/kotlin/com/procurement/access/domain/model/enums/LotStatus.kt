@@ -1,10 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.domain.util.Result
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class LotStatus(@JsonValue val value: String) {
+enum class LotStatus(@JsonValue override val key: String) : EnumElementProvider.Key {
     PLANNING("planning"),
     PLANNED("planned"),
     ACTIVE("active"),
@@ -12,27 +12,12 @@ enum class LotStatus(@JsonValue val value: String) {
     UNSUCCESSFUL("unsuccessful"),
     COMPLETE("complete");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, LotStatus> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<LotStatus>(info = info()) {
 
-        fun fromString(value: String): LotStatus = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = LotStatus::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
-
-        fun tryCreate(value: String): Result<LotStatus, String> = elements[value.toUpperCase()]
-            ?.let {
-                Result.success(it)
-            }
-            ?: Result.failure(
-                "Unknown value for enumType ${LotStatus::class.java.canonicalName}: " +
-                    "$value, Allowed values are ${values().joinToString { it.value }}"
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = orThrow(name)
     }
 }

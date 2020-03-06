@@ -1,9 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class Scheme(@JsonValue val value: String) {
+enum class Scheme(@JsonValue override val key: String) : EnumElementProvider.Key {
     CPV("CPV"),
     CPVS("CPVS"),
     GSIN("GSIN"),
@@ -12,18 +13,12 @@ enum class Scheme(@JsonValue val value: String) {
     OKDP("OKDP"),
     OKPD("OKPD");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, Scheme> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<Scheme>(info = info()) {
 
-        fun fromString(value: String): Scheme = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = Scheme::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = Scheme.orThrow(name)
     }
 }
