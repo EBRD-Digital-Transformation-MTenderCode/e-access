@@ -2,54 +2,73 @@ package com.procurement.access.domain.fail.error
 
 import com.procurement.access.domain.fail.Fail
 
-sealed class DataErrors(numberError: String, override val description: String, val attributeName: String) :
-    Fail.Error("DR-") {
+sealed class DataErrors(numberError: String, override val description: String) : Fail.Error("DR-") {
 
     override val code: String = prefix + numberError
 
-    class MissingRequiredAttribute(attributeName: String) :
-        DataErrors(numberError = "1", description = "Missing required attribute.", attributeName = attributeName)
+    class Parsing(description: String) : DataErrors(numberError = "0", description = description)
 
-    class DataTypeMismatch(attributeName: String) :
-        DataErrors(numberError = "2", description = "Data type mismatch.", attributeName = attributeName)
+    sealed class Validation(numberError: String, val name: String, description: String) :
+        DataErrors(numberError = numberError, description = description) {
 
-    class UnknownValue(attributeName: String) :
-        DataErrors(
-            numberError = "3",
-            description = "Attribute value mismatch with one of enum expected values",
-            attributeName = attributeName
-        )
+        class MissingRequiredAttribute(name: String) :
+            Validation(numberError = "1", description = "Missing required attribute.", name = name)
 
-    class DataFormatMismatch(attributeName: String) :
-        DataErrors(numberError = "4", description = "Data format mismatch.", attributeName = attributeName)
+        class DataTypeMismatch(name: String, expectedType: String, actualType: String) :
+            Validation(
+                numberError = "2",
+                description = "Data type mismatch. Expected data type: '$expectedType', actual data type: '$actualType'.",
+                name = name
+            )
 
-    class DataMismatchToPattern(attributeName: String) :
-        DataErrors(numberError = "5", description = "Data mismatch to pattern.", attributeName = attributeName)
+        class UnknownValue(name: String, expectedValues: Collection<String>, actualValue: String) :
+            Validation(
+                numberError = "3",
+                description = "Attribute value mismatch with one of enum expected values. Expected values: '${expectedValues.joinToString()}', actual value: '$actualValue'.",
+                name = name
+            )
 
-    class UniquenessDataMismatch(attributeName: String) :
-        DataErrors(numberError = "6", description = "Uniqueness data mismatch.", attributeName = attributeName)
+        class DataFormatMismatch(name: String, expectedFormat: String, actualValue: String) :
+            Validation(
+                numberError = "4",
+                description = "Data format mismatch. Expected data format: '$expectedFormat', actual value: '$actualValue'.",
+                name = name
+            )
 
-    class InvalidNumberOfElementsInArray(attributeName: String) :
-        DataErrors(
-            numberError = "7",
-            description = "Invalid number of objects in the array.",
-            attributeName = attributeName
-        )
+        class DataMismatchToPattern(name: String, pattern: String, actualValue: String) :
+            Validation(
+                numberError = "5",
+                description = "Data mismatch to pattern: '$pattern'. Actual value: '$actualValue'.",
+                name = name
+            )
 
-    class InvalidStringLength(attributeName: String) :
-        DataErrors(numberError = "8", description = "Invalid number of chars in string.", attributeName = attributeName)
+        class UniquenessDataMismatch(name: String, value: String) :
+            Validation(numberError = "6", description = "Uniqueness data mismatch: '$value'.", name = name)
 
-    class EmptyObject(attributeName: String) :
-        DataErrors(numberError = "9", description = "Object is empty.", attributeName = attributeName)
+        class InvalidNumberOfElementsInArray(name: String, min: Int? = null, max: Int? = null, actualLength: Int) :
+            Validation(
+                numberError = "7",
+                description = "Invalid number of objects in the array. Expected length from '${min ?: "none min"}' to '${max ?: "none max"}', actual length: '$actualLength'.",
+                name = name
+            )
 
-    class EmptyArray(attributeName: String) :
-        DataErrors(numberError = "10", description = "Array is empty.", attributeName = attributeName)
+        class InvalidStringLength(name: String, min: Int? = null, max: Int? = null, actualLength: Int) :
+            Validation(
+                numberError = "8",
+                description = "Invalid number of chars in string. Expected length from '${min ?: "none min"}' to '${max ?: "none max"}', actual length: '$actualLength'.",
+                name = name
+            )
 
-    class EmptyString(attributeName: String) :
-        DataErrors(numberError = "11", description = "String is empty.", attributeName = attributeName)
+        class EmptyObject(name: String) :
+            Validation(numberError = "9", description = "Object is empty.", name = name)
 
-    class UnexpectedAttribute(attributeName: String) :
-        DataErrors(numberError = "12", description = "Unexpected attribute.", attributeName = attributeName)
+        class EmptyArray(name: String) :
+            Validation(numberError = "10", description = "Array is empty.", name = name)
 
-    class Detail(val name: String)
+        class EmptyString(name: String) :
+            Validation(numberError = "11", description = "String is empty.", name = name)
+
+        class UnexpectedAttribute(name: String) :
+            Validation(numberError = "12", description = "Unexpected attribute.", name = name)
+    }
 }

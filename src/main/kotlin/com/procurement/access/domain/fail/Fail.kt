@@ -1,5 +1,6 @@
 package com.procurement.access.domain.fail
 
+import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
 
@@ -18,5 +19,22 @@ sealed class Fail {
         }
     }
 
-    abstract class Incident(val code: String, val description: String, val exception: Exception) : Fail()
+    sealed class Incident(val level: Level, number: String, val description: String) : Fail() {
+        val code: String = "INC-$number"
+
+        class Database(val exception: Exception) :
+            Incident(
+                level = Level.ERROR,
+                number = "01",
+                description = "Database incident"
+            )
+
+        enum class Level(override val key: String) : EnumElementProvider.Key {
+            ERROR("error"),
+            WARNING("warning"),
+            INFO("info");
+
+            companion object : EnumElementProvider<Level>(info = info())
+        }
+    }
 }
