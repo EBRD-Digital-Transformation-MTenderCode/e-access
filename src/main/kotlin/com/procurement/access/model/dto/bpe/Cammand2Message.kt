@@ -9,7 +9,6 @@ import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
@@ -32,7 +31,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
 
         @JvmStatic
         @JsonCreator
-        fun creator(name: String) = LotStatusDetails.orThrow(name)
+        fun creator(name: String) = Command2Type.orThrow(name)
     }
 }
 
