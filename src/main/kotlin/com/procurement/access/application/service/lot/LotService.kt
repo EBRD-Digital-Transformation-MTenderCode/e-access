@@ -55,12 +55,13 @@ class LotServiceImpl(
         states: List<GetLotIdsParams.State>
     ): Result<List<LotId>, Fail> {
 
-        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
+        val data = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
             .doOnError { error -> return Result.failure(error)}
             .get
             .jsonData
-            .tryToObject(TenderProcess::class.java)
-            .doOnError {error ->  return Result.failure(BadRequestErrors.ParseToObject(error)) }
+
+        val tenderProcess = data.tryToObject(TenderProcess::class.java)
+            .doOnError {error ->  return Result.failure(Fail.Incident.Parsing(data)) }
             .get
 
 

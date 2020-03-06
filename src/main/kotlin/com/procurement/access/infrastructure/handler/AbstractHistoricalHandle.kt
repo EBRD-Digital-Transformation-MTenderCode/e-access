@@ -13,7 +13,7 @@ import com.procurement.access.utils.tryToObject
 import org.slf4j.LoggerFactory
 
 abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
-    private val target: Class<ApiResponse>,
+    private val target: Class<ApiSuccessResponse>,
     private val historyRepository: HistoryDao
 ) : AbstractHandler<ACTION, ApiResponse>() {
     companion object {
@@ -27,23 +27,30 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
 
         val history = historyRepository.getHistory(id.toString(), action.key)
         if (history != null) {
-            val result = history.jsonData.tryToObject(target)
-            return ApiSuccessResponse(version = version, id = id, result = result)
+            val data = history.jsonData
+            val result = data.tryToObject(target)
+                .doOnError {
+                    return responseError(
+                        id = id,
+                        version = version,
+                        fails = listOf(
+                            Fail.Incident.Parsing(data)
+                        )
+                    )
+                }
+            return result.get
         }
-        val serviceResult = execute(node).also {
-            log.debug("'{}' has been executed. Result: '{}'", action.key, it)
-        }
+        val serviceResult = execute(node)
+            .also {
+                log.debug("'{}' has been executed. Result: '{}'", action.key, it)
+            }
 
         return when (serviceResult) {
             is Result.Success -> ApiSuccessResponse(id = id, version = version, result = serviceResult.get)
                 .also {
                     historyRepository.saveHistory(id.toString(), action.key, it)
-
                 }
             is Result.Failure -> responseError(id = id, version = version, fails = serviceResult.error)
-                .also {
-                    historyRepository.saveHistory(id.toString(), action.key, it)
-                }
         }
     }
 

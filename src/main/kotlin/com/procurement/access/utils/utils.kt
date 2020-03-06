@@ -94,7 +94,7 @@ fun <T : Any> JsonNode.tryToObject(target: Class<T>): Result<T, String> = try {
 fun <T : Any> String.tryToObject(target: Class<T>): Result<T, String> = try {
     Result.success(JsonMapper.mapper.readValue(this, target))
 } catch (expected: Exception) {
-    Result.failure("Error binding JSON to an object of type '${target.canonicalName}'.")
+    Result.failure("Error binding String to an object of type '${target.canonicalName}'.")
 }
 
 fun String.toNode(): Result<JsonNode, Fail> = try {

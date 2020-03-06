@@ -44,6 +44,30 @@ abstract class AbstractHandler<ACTION : Action, R : Any> :
                     }
                 )
             }
+            is Fail.Incident.Parsing -> {
+                fails as List<Fail.Incident.Parsing>
+                val incident = Fail.Incident.DatabaseIncident()
+                ApiIncidentResponse(
+                    id = id,
+                    version = version,
+                    result = ApiIncidentResponse.Incident(
+                        id = UUID.randomUUID(),
+                        date = LocalDateTime.now(),
+                        errors = fails.map { fail ->
+                            ApiIncidentResponse.Incident.Error(
+                                code = "${incident.code}/${GlobalProperties.service.id}",
+                                description = incident.description,
+                                metadata = null
+                            )
+                        },
+                        service = ApiIncidentResponse.Incident.Service(
+                            id = GlobalProperties.service.id,
+                            version = GlobalProperties.service.version,
+                            name = GlobalProperties.service.name
+                        )
+                    )
+                )
+            }
             is Fail.Incident -> {
                 fails as List<Fail.Incident>
                 ApiIncidentResponse(

@@ -9,7 +9,7 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
-import com.procurement.access.infrastructure.web.dto.ApiResponse
+import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.utils.getStageFromOcid
@@ -21,7 +21,7 @@ class GetLotIdsHandler(
     private val historyDao: HistoryDao
 ) : AbstractHistoricalHandler<Command2Type, List<LotId>>(
     historyRepository = historyDao,
-    target = ApiResponse::class.java
+    target = ApiSuccessResponse::class.java
 ) {
 
     override fun execute(node: JsonNode): Result<List<LotId>, List<Fail>> {
