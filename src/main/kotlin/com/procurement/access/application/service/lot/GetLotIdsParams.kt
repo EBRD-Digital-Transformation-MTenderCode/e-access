@@ -18,7 +18,7 @@ class GetLotIdsParams private constructor(
         ): Result<GetLotIdsParams, DataErrors> {
 
             if (states != null && states.isEmpty()) {
-                return Result.failure(DataErrors.EmptyArray("GetLotIdsParams.states"))
+                return Result.failure(DataErrors.Validation.EmptyArray("GetLotIdsParams.states"))
             }
 
             return Result.success(
@@ -43,14 +43,29 @@ class GetLotIdsParams private constructor(
             ): Result<State, DataErrors> {
 
                 val createdStatus = status
-                    ?.let { LotStatus.tryCreate(status) }
-                    ?.doOnError { error -> Result.failure(DataErrors.UnknownValue(error)) }
-                    ?.get
+                    ?.let {
+                        LotStatus.orNull(it)
+                            ?: return Result.failure(
+                                DataErrors.Validation.UnknownValue(
+                                    name = "status",
+                                    expectedValues = LotStatus.allowedValues,
+                                    actualValue = it
+                                )
+                            )
+                    }
 
                 val createdStatusDetail = statusDetails
-                    ?.let { LotStatusDetails.tryCreate(statusDetails) }
-                    ?.doOnError { error -> Result.failure(DataErrors.UnknownValue(error)) }
-                    ?.get
+                    ?.let {
+                        LotStatusDetails.orNull(statusDetails)
+                            ?: return Result.failure(
+                                DataErrors.Validation.UnknownValue(
+                                    name = "statusDetails",
+                                    expectedValues = LotStatusDetails.allowedValues,
+                                    actualValue = it
+                                )
+                            )
+                    }
+
 
                 return Result.success(
                     State(
@@ -72,7 +87,7 @@ class GetLotIdsParams private constructor(
         private fun compareStatus(thisStatus: LotStatus?, otherStatus: LotStatus?): Int {
             return if (thisStatus != null) {
                 if (otherStatus != null) {
-                    thisStatus.value.compareTo(otherStatus.value)
+                    thisStatus.key.compareTo(otherStatus.key)
                 } else {
                     -1
                 }
@@ -91,7 +106,7 @@ class GetLotIdsParams private constructor(
         ): Int {
             return if (thisStatusDetails != null) {
                 if (otherStatusDetail != null) {
-                    thisStatusDetails.value.compareTo(otherStatusDetail.value)
+                    thisStatusDetails.key.compareTo(otherStatusDetail.key)
                 } else {
                     -1
                 }
@@ -102,6 +117,24 @@ class GetLotIdsParams private constructor(
                     0
                 }
             }
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as State
+
+            if (status != other.status) return false
+            if (statusDetails != other.statusDetails) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = status?.hashCode() ?: 0
+            result = 31 * result + (statusDetails?.hashCode() ?: 0)
+            return result
         }
     }
 }

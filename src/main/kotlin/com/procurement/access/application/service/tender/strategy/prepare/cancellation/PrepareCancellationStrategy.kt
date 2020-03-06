@@ -105,7 +105,7 @@ class PrepareCancellationStrategy(
             }
             else -> throw ErrorException(
                 error = INVALID_TENDER_STATUS,
-                message = "Tender can't be cancelled, because tender in ${tenderProcess.tender.status.value} status."
+                message = "Tender can't be cancelled, because tender in ${tenderProcess.tender.status.key} status."
             )
         }
     }

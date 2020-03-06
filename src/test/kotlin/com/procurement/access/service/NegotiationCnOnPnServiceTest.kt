@@ -259,7 +259,7 @@ class NegotiationCnOnPnServiceTest {
             @Test
             fun vr_3_8_18() {
                 pnWithItems.getObject("tender")
-                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
+                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
@@ -725,7 +725,7 @@ class NegotiationCnOnPnServiceTest {
             @Test
             fun vr_3_8_18() {
                 pnWithoutItems.getObject("tender")
-                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
+                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,

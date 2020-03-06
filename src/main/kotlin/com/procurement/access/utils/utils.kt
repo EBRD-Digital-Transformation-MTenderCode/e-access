@@ -100,7 +100,7 @@ fun <T : Any> String.tryToObject(target: Class<T>): Result<T, String> = try {
 fun String.toNode(): Result<JsonNode, Fail> = try {
     Result.success(JsonMapper.mapper.readTree(this))
 } catch (exception: JsonProcessingException) {
-    Result.failure(DataErrors.DataTypeMismatch(this))
+    Result.failure(DataErrors.Parsing("Can not parse Sting to Node"))
 }
 
 fun String.getStageFromOcid() = this.split("-")[4]

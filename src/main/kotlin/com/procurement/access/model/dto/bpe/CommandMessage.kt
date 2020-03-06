@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.lot.LotId
-import com.procurement.access.exception.EnumException
+import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.utils.toLocal
@@ -59,13 +59,11 @@ val CommandMessage.phase: String
 
 val CommandMessage.pmd: ProcurementMethod
     get() = this.context.pmd?.let {
-        ProcurementMethod.valueOrException(it) {
-            ErrorException(ErrorType.INVALID_PMD)
-        }
+        ProcurementMethod.creator(it)
     } ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'pmd' attribute in context.")
 
 val CommandMessage.operationType: OperationType
-    get() = this.context.operationType?.let { OperationType.fromString(it) }
+    get() = this.context.operationType?.let { OperationType.creator(it) }
         ?: throw ErrorException(
             error = ErrorType.CONTEXT,
             message = "Missing the 'operationType' attribute in context."
@@ -223,12 +221,12 @@ fun getErrorExceptionResponseDto(exception: ErrorException, id: String? = null):
     )
 }
 
-fun getEnumExceptionResponseDto(error: EnumException, id: String? = null): ResponseDto {
+fun getEnumExceptionResponseDto(error: EnumElementProviderException, id: String? = null): ResponseDto {
     return ResponseDto(
         errors = listOf(
             ResponseErrorDto(
                 code = "400.03." + error.code,
-                description = error.msg
+                description = error.message
             )
         ),
         id = id

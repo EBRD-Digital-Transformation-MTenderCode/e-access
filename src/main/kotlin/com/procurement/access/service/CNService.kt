@@ -1063,7 +1063,7 @@ class CNServiceImpl(
                         )
                         ?: CNEntity.Tender.Document(
                             id = document.id,
-                            documentType = DocumentType.fromString(document.documentType.value),
+                            documentType = DocumentType.creator(document.documentType.key),
                             title = document.title,
                             description = document.description,
                             relatedLots = document.relatedLots.map { it.toString() }
@@ -1454,7 +1454,7 @@ class CNServiceImpl(
                 submissionMethodDetails = tender.submissionMethodDetails,
                 documents = tender.documents.map { document ->
                     UpdatedCn.Tender.Document(
-                        documentType = TenderDocumentType.fromString(document.documentType.value),
+                        documentType = TenderDocumentType.creator(document.documentType.key),
                         id = document.id,
                         title = document.title,
                         description = document.description,

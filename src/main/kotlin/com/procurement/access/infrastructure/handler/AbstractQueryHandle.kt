@@ -25,24 +25,24 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
         val id = node.getId().get
         val version = node.getVersion().get
 
-        val history = historyRepository.getHistory(id.toString(), action.value)
+        val history = historyRepository.getHistory(id.toString(), action.key)
         if (history != null) {
             val result = history.jsonData.tryToObject(target)
             return ApiSuccessResponse(version = version, id = id, result = result)
         }
         val serviceResult = execute(node).also {
-            log.debug("'{}' has been executed. Result: '{}'", action.value, it)
+            log.debug("'{}' has been executed. Result: '{}'", action.key, it)
         }
 
         return when (serviceResult) {
             is Result.Success -> ApiSuccessResponse(id = id, version = version, result = serviceResult.get)
                 .also {
-                    historyRepository.saveHistory(id.toString(), action.value, it)
+                    historyRepository.saveHistory(id.toString(), action.key, it)
 
                 }
             is Result.Failure -> responseError(id = id, version = version, fails = serviceResult.error)
                 .also {
-                    historyRepository.saveHistory(id.toString(), action.value, it)
+                    historyRepository.saveHistory(id.toString(), action.key, it)
                 }
         }
     }

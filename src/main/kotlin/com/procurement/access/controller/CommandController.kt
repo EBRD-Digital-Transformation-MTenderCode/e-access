@@ -1,6 +1,6 @@
 package com.procurement.access.controller
 
-import com.procurement.access.exception.EnumException
+import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -50,7 +50,7 @@ class CommandController(private val commandService: CommandService) {
         log.error("Error.", ex)
         return when (ex) {
             is ErrorException -> getErrorExceptionResponseDto(ex)
-            is EnumException -> getEnumExceptionResponseDto(ex)
+            is EnumElementProviderException -> getEnumExceptionResponseDto(ex)
             else -> getExceptionResponseDto(ex)
         }
     }

@@ -164,7 +164,7 @@ class CheckAwardStrategyTest {
                     getObject("tender")
                         .getArray("lots")
                         .getObject(0)
-                        .setAttribute("status", LotStatus.UNSUCCESSFUL.value)
+                        .setAttribute("status", LotStatus.UNSUCCESSFUL.key)
                 }
                 .toJson()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)

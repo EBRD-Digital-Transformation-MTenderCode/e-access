@@ -7,7 +7,7 @@ import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.procurement.access.application.repository.Auth
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.domain.fail.incident.DatabaseIncident
+import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
@@ -58,7 +58,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     private val preparedGetByCpIdAndStageCQL = session.prepare(GET_BY_CPID_AND_STAGE_CQL)
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
 
-    override fun save(entity: TenderProcessEntity): Result<ResultSet, DatabaseIncident> {
+    override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> {
         val insert = preparedSaveCQL.bind()
             .apply {
                 setString(COLUMN_CPID, entity.cpId)
@@ -72,7 +72,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .doOnError { error -> return failure(error) }
     }
 
-    override fun getByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity?, DatabaseIncident> {
+    override fun getByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity?, Fail.Incident.Database> {
         val query = preparedGetByCpIdAndStageCQL.bind()
             .apply {
                 setString(COLUMN_CPID, cpId)
@@ -87,7 +87,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .asSuccess()
     }
 
-    override fun findAuthByCpid(cpid: String): Result<List<Auth>, DatabaseIncident> {
+    override fun findAuthByCpid(cpid: String): Result<List<Auth>, Fail.Incident.Database> {
         val query = preparedFindAuthByCpidCQL.bind()
             .apply {
                 setString(COLUMN_CPID, cpid)
@@ -100,10 +100,10 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .asSuccess()
     }
 
-    protected fun load(statement: BoundStatement): Result<ResultSet, DatabaseIncident> = try {
+    protected fun load(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
         success(session.execute(statement))
     } catch (expected: Exception) {
-        failure(DatabaseIncident.Database(expected))
+        failure(Fail.Incident.Database(expected))
     }
 
     private fun Row.convertToTenderProcessEntity(): TenderProcessEntity {

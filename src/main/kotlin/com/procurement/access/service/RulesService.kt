@@ -14,7 +14,7 @@ class RulesService(private val rulesDao: RulesDao) {
         country: String,
         pmd: ProcurementMethod,
         mainProcurementCategory: MainProcurementCategory
-    ): Boolean = getValue(country, pmd, mainProcurementCategory.value).toBoolean()
+    ): Boolean = getValue(country, pmd, mainProcurementCategory.key).toBoolean()
 
     private fun getValue(country: String, pmd: ProcurementMethod, parameter: String): String =
         rulesDao.getValue(country, pmd, parameter)

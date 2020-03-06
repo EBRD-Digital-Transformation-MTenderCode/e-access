@@ -191,7 +191,7 @@ class LotServiceImpl(
             OperationType.CREATE_NEGOTIATION_CN_ON_PN ->
                 throw ErrorException(
                     error = ErrorType.INVALID_OPERATION_TYPE,
-                    message = "The 'getLotsForAuction' command does not apply for '${context.operationType.value}' operation type."
+                    message = "The 'getLotsForAuction' command does not apply for '${context.operationType.key}' operation type."
                 )
         }
     }
