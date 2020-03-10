@@ -6,7 +6,7 @@ import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsRequest
 
-fun GetLotIdsRequest.convert(): Result<GetLotIdsParams, List<DataErrors>> {
+fun GetLotIdsRequest.convert(): Result<GetLotIdsParams, DataErrors> {
 
     val states = this.states
         ?.mapResult { it.convert() }
@@ -14,14 +14,9 @@ fun GetLotIdsRequest.convert(): Result<GetLotIdsParams, List<DataErrors>> {
         ?.get
 
     return GetLotIdsParams.tryCreate(cpid = this.cpid, ocid = this.ocid, states = states)
-        .mapError { error ->
-            listOf(error)
-        }
+
 }
 
-fun GetLotIdsRequest.State.convert(): Result<GetLotIdsParams.State, List<DataErrors>> =
+fun GetLotIdsRequest.State.convert(): Result<GetLotIdsParams.State, DataErrors> =
     GetLotIdsParams.State.tryCreate(status = this.status, statusDetails = this.statusDetails)
-        .mapError { error ->
-            listOf(error)
-        }
 

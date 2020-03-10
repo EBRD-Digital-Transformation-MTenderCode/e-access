@@ -24,9 +24,9 @@ class GetLotIdsHandler(
     target = ApiSuccessResponse::class.java
 ) {
 
-    override fun execute(node: JsonNode): Result<List<LotId>, List<Fail>> {
+    override fun execute(node: JsonNode): Result<List<LotId>, Fail> {
         val params = node.tryGetParams(GetLotIdsRequest::class.java)
-            .doOnError { error: DataErrors -> return Result.failure(listOf(error)) }
+            .doOnError { error: DataErrors -> return Result.failure(error) }
             .get
             .convert()
             .doOnError { error -> return Result.failure(error) }
@@ -35,7 +35,6 @@ class GetLotIdsHandler(
         val stage = params.ocid.getStageFromOcid()
 
         return lotService.getLotIds(cpId = params.cpid, stage = stage, states = params.states)
-            .mapError { fail -> listOf(fail) }
     }
 
     override val action: Command2Type

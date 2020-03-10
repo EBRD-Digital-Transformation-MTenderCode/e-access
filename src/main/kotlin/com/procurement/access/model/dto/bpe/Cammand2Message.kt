@@ -46,8 +46,7 @@ fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion): ApiResponse 
         is Fail.Incident -> getApiIncidentResponse(
             id = id,
             version = version,
-            code = fail.code,
-            message = fail.description
+            incident = fail
         )
     }
 
@@ -72,27 +71,31 @@ private fun getApiFailResponse(
 private fun getApiIncidentResponse(
     id: UUID,
     version: ApiVersion,
-    code: String,
-    message: String
+    incident: Fail.Incident
 ): ApiIncidentResponse {
     return ApiIncidentResponse(
         id = id,
         version = version,
-        result = ApiIncidentResponse.Incident(
-            id = UUID.randomUUID(),
-            date = LocalDateTime.now(),
-            errors = listOf(
-                ApiIncidentResponse.Incident.Error(
-                    code = "${code}/${GlobalProperties.service.id}",
-                    description = message,
-                    metadata = null
-                )
-            ),
-            service = ApiIncidentResponse.Incident.Service(
-                id = GlobalProperties.service.id,
-                version = GlobalProperties.service.version,
-                name = GlobalProperties.service.name
+        result = generateIncident(fail = incident)
+    )
+}
+
+fun generateIncident(fail: Fail.Incident): ApiIncidentResponse.Incident {
+    return ApiIncidentResponse.Incident(
+        id = UUID.randomUUID(),
+        date = LocalDateTime.now(),
+        level = fail.level,
+        details = listOf(
+            ApiIncidentResponse.Incident.Detail(
+                code = "${fail.code}/${GlobalProperties.service.id}",
+                description = fail.description,
+                metadata = null
             )
+        ),
+        service = ApiIncidentResponse.Incident.Service(
+            id = GlobalProperties.service.id,
+            version = GlobalProperties.service.version,
+            name = GlobalProperties.service.name
         )
     )
 }

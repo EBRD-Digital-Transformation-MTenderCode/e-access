@@ -9,87 +9,59 @@ import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
-import java.time.LocalDateTime
+import com.procurement.access.model.dto.bpe.generateIncident
 import java.util.*
 
 abstract class AbstractHandler<ACTION : Action, R : Any> :
     Handler<ACTION, ApiResponse> {
 
-    protected fun responseError(id: UUID, version: ApiVersion, fails: List<Fail>): ApiResponse =
-        when (fails[0]) {
-            is DataErrors -> {
-                fails as List<DataErrors.Validation>
-                ApiDataErrorResponse(
-                    version = version,
-                    id = id,
-                    result = fails.map { fail ->
-                        ApiDataErrorResponse.Error(
-                            code = "${fail.code}/${GlobalProperties.service.id}",
-                            description = fail.description,
-                            attributeName = fail.name
-                        )
-                    }
-                )
-            }
+    protected fun responseError(id: UUID, version: ApiVersion, fail: Fail): ApiResponse =
+        when (fail) {
             is Fail.Error -> {
-                fails as List<Fail.Error>
-                ApiErrorResponse(
-                    version = version,
-                    id = id,
-                    result = fails.map { fail ->
-                        ApiErrorResponse.Error(
-                            code = "${fail.code}/${GlobalProperties.service.id}",
-                            description = fail.description
+                when (fail) {
+                    is DataErrors.Validation -> {
+                        ApiDataErrorResponse(
+                            version = version,
+                            id = id,
+                            result = listOf(
+                                ApiDataErrorResponse.Error(
+                                    code = "${fail.code}/${GlobalProperties.service.id}",
+                                    description = fail.description,
+                                    attributeName = fail.name
+                                )
+                            )
                         )
                     }
-                )
-            }
-            is Fail.Incident.Parsing -> {
-                fails as List<Fail.Incident.Parsing>
-                val incident = Fail.Incident.DatabaseIncident()
-                ApiIncidentResponse(
-                    id = id,
-                    version = version,
-                    result = ApiIncidentResponse.Incident(
-                        id = UUID.randomUUID(),
-                        date = LocalDateTime.now(),
-                        errors = fails.map { fail ->
-                            ApiIncidentResponse.Incident.Error(
-                                code = "${incident.code}/${GlobalProperties.service.id}",
-                                description = incident.description,
-                                metadata = null
+                    else -> {
+                        ApiErrorResponse(
+                            version = version,
+                            id = id,
+                            result = listOf(
+                                ApiErrorResponse.Error(
+                                    code = "${fail.code}/${GlobalProperties.service.id}",
+                                    description = fail.description
+                                )
                             )
-                        },
-                        service = ApiIncidentResponse.Incident.Service(
-                            id = GlobalProperties.service.id,
-                            version = GlobalProperties.service.version,
-                            name = GlobalProperties.service.name
                         )
-                    )
-                )
+                    }
+                }
             }
             is Fail.Incident -> {
-                fails as List<Fail.Incident>
-                ApiIncidentResponse(
-                    id = id,
-                    version = version,
-                    result = ApiIncidentResponse.Incident(
-                        id = UUID.randomUUID(),
-                        date = LocalDateTime.now(),
-                        errors = fails.map { fail ->
-                            ApiIncidentResponse.Incident.Error(
-                                code = "${fail.code}/${GlobalProperties.service.id}",
-                                description = fail.description,
-                                metadata = null
-                            )
-                        },
-                        service = ApiIncidentResponse.Incident.Service(
-                            id = GlobalProperties.service.id,
-                            version = GlobalProperties.service.version,
-                            name = GlobalProperties.service.name
+                when (fail) {
+                    is Fail.Incident.Parsing -> {
+                        val incident = Fail.Incident.DatabaseIncident()
+                        ApiIncidentResponse(
+                            id = id,
+                            version = version,
+                            result = generateIncident(fail = incident)
                         )
+                    }
+                    else -> ApiIncidentResponse(
+                        id = id,
+                        version = version,
+                        result = generateIncident(fail = fail)
                     )
-                )
+                }
             }
         }
 }

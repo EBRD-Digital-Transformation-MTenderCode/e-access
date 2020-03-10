@@ -26,9 +26,9 @@ abstract class AbstractValidationHandler<ACTION : Action> : AbstractHandler<ACTI
 
         return when (result) {
             is ValidationResult.Ok -> ApiSuccessResponse(version = version, id = id)
-            is ValidationResult.Fail -> responseError(id = id, version = version, fails = result.error)
+            is ValidationResult.Fail -> responseError(id = id, version = version, fail = result.error)
         }
     }
 
-    abstract fun execute(node: JsonNode): ValidationResult<List<Fail>>
+    abstract fun execute(node: JsonNode): ValidationResult<Fail>
 }

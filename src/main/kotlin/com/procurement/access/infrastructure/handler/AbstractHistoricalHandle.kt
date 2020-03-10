@@ -33,9 +33,7 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
                     return responseError(
                         id = id,
                         version = version,
-                        fails = listOf(
-                            Fail.Incident.Parsing(data)
-                        )
+                        fail = Fail.Incident.Parsing(data)
                     )
                 }
             return result.get
@@ -50,9 +48,9 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
                 .also {
                     historyRepository.saveHistory(id.toString(), action.key, it)
                 }
-            is Result.Failure -> responseError(id = id, version = version, fails = serviceResult.error)
+            is Result.Failure -> responseError(id = id, version = version, fail = serviceResult.error)
         }
     }
 
-    abstract fun execute(node: JsonNode): Result<R, List<Fail>>
+    abstract fun execute(node: JsonNode): Result<R, Fail>
 }
