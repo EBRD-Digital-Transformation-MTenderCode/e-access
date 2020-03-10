@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.web.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.enums.ResponseStatus
 import java.time.LocalDateTime
 import java.util.*
@@ -71,8 +72,14 @@ class ApiIncidentResponse(
     @field:JsonProperty("status")
     override val status: ResponseStatus = ResponseStatus.INCIDENT
 
-    class Incident(val id: UUID, val date: LocalDateTime, val service: Service, val errors: List<Error>) {
+    class Incident(
+        val id: UUID,
+        val date: LocalDateTime,
+        val level: Fail.Incident.Level,
+        val service: Service,
+        val details: List<Detail>
+    ) {
         class Service(val id: String, val name: String, val version: String)
-        class Error(val code: String, val description: String, val metadata: Any?)
+        class Detail(val code: String, val description: String, val metadata: Any?)
     }
 }
