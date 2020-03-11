@@ -14,8 +14,8 @@ sealed class BadRequestErrors(
         description = "Entity '$entityName' not found $by"
     )
 
-    class ParseToObject(objectName: String) : BadRequestErrors(
+    class Parsing(message: String) : BadRequestErrors(
         numberError = "02",
-        description = "Error binding json to an object '$objectName'"
+        description = message
     )
 }

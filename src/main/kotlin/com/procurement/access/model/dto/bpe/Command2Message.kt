@@ -8,12 +8,14 @@ import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.bind
+import com.procurement.access.infrastructure.web.dto.ApiDataErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
@@ -35,70 +37,63 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     }
 }
 
-fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion): ApiResponse =
+fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
     when (fail) {
-        is Error -> getApiFailResponse(
-            id = id,
-            version = version,
-            code = fail.code,
-            message = fail.description
-        )
-        is Fail.Incident -> getApiIncidentResponse(
-            id = id,
-            version = version,
-            incident = fail
-        )
+        is DataErrors.Parsing -> {
+            val error = BadRequestErrors.Parsing("Invalid request data")
+            generateErrorResponse(id = id, version = version, fail = error)
+        }
+        is Error -> generateErrorResponse(id = id, version = version, fail = fail)
+        is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
 
-private fun getApiFailResponse(
-    id: UUID,
-    version: ApiVersion,
-    code: String,
-    message: String
-): ApiErrorResponse {
-    return ApiErrorResponse(
-        id = id,
+fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiDataErrorResponse =
+    ApiDataErrorResponse(
         version = version,
+        id = id,
         result = listOf(
-            ApiErrorResponse.Error(
-                code = "${code}/${GlobalProperties.service.id}",
-                description = message
-            )
-        )
-    )
-}
-
-private fun getApiIncidentResponse(
-    id: UUID,
-    version: ApiVersion,
-    incident: Fail.Incident
-): ApiIncidentResponse {
-    return ApiIncidentResponse(
-        id = id,
-        version = version,
-        result = generateIncident(fail = incident)
-    )
-}
-
-fun generateIncident(fail: Fail.Incident): ApiIncidentResponse.Incident {
-    return ApiIncidentResponse.Incident(
-        id = UUID.randomUUID(),
-        date = LocalDateTime.now(),
-        level = fail.level,
-        details = listOf(
-            ApiIncidentResponse.Incident.Detail(
+            ApiDataErrorResponse.Error(
                 code = "${fail.code}/${GlobalProperties.service.id}",
                 description = fail.description,
-                metadata = null
+                attributeName = fail.name
             )
-        ),
-        service = ApiIncidentResponse.Incident.Service(
-            id = GlobalProperties.service.id,
-            version = GlobalProperties.service.version,
-            name = GlobalProperties.service.name
         )
     )
-}
+
+fun generateErrorResponse(id: UUID, version: ApiVersion, fail: Fail.Error): ApiErrorResponse =
+    ApiErrorResponse(
+        version = version,
+        id = id,
+        result = listOf(
+            ApiErrorResponse.Error(
+                code = "${fail.code}/${GlobalProperties.service.id}",
+                description = fail.description
+            )
+        )
+    )
+
+fun generateIncidentResponse(id: UUID, version: ApiVersion, fail: Fail.Incident): ApiIncidentResponse =
+    ApiIncidentResponse(
+        id = id,
+        version = version,
+        result = ApiIncidentResponse.Incident(
+            id = UUID.randomUUID(),
+            date = LocalDateTime.now(),
+            level = fail.level,
+            details = listOf(
+                ApiIncidentResponse.Incident.Detail(
+                    code = "${fail.code}/${GlobalProperties.service.id}",
+                    description = fail.description,
+                    metadata = null
+                )
+            ),
+            service = ApiIncidentResponse.Incident.Service(
+                id = GlobalProperties.service.id,
+                version = GlobalProperties.service.version,
+                name = GlobalProperties.service.name
+            )
+        )
+    )
 
 val NaN: UUID
     get() = UUID(0, 0)
