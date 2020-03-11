@@ -1,15 +1,14 @@
 package com.procurement.access.infrastructure.handler
 
-import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Action
-import com.procurement.access.infrastructure.web.dto.ApiDataErrorResponse
-import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
-import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
-import com.procurement.access.model.dto.bpe.generateIncident
+import com.procurement.access.model.dto.bpe.generateDataErrorResponse
+import com.procurement.access.model.dto.bpe.generateErrorResponse
+import com.procurement.access.model.dto.bpe.generateIncidentResponse
 import java.util.*
 
 abstract class AbstractHandler<ACTION : Action, R : Any> :
@@ -19,49 +18,14 @@ abstract class AbstractHandler<ACTION : Action, R : Any> :
         when (fail) {
             is Fail.Error -> {
                 when (fail) {
-                    is DataErrors.Validation -> {
-                        ApiDataErrorResponse(
-                            version = version,
-                            id = id,
-                            result = listOf(
-                                ApiDataErrorResponse.Error(
-                                    code = "${fail.code}/${GlobalProperties.service.id}",
-                                    description = fail.description,
-                                    attributeName = fail.name
-                                )
-                            )
-                        )
+                    is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
+                    is DataErrors.Parsing -> {
+                        val error = BadRequestErrors.Parsing("Internal Server Error")
+                        generateErrorResponse(id = id, version = version, fail = error)
                     }
-                    else -> {
-                        ApiErrorResponse(
-                            version = version,
-                            id = id,
-                            result = listOf(
-                                ApiErrorResponse.Error(
-                                    code = "${fail.code}/${GlobalProperties.service.id}",
-                                    description = fail.description
-                                )
-                            )
-                        )
-                    }
+                    else -> generateErrorResponse(id = id, version = version, fail = fail)
                 }
             }
-            is Fail.Incident -> {
-                when (fail) {
-                    is Fail.Incident.Parsing -> {
-                        val incident = Fail.Incident.DatabaseIncident()
-                        ApiIncidentResponse(
-                            id = id,
-                            version = version,
-                            result = generateIncident(fail = incident)
-                        )
-                    }
-                    else -> ApiIncidentResponse(
-                        id = id,
-                        version = version,
-                        result = generateIncident(fail = fail)
-                    )
-                }
-            }
+            is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
         }
 }
