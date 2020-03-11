@@ -20,12 +20,20 @@ abstract class AbstractHandler<ACTION : Action, R : Any> :
                 when (fail) {
                     is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
                     is DataErrors.Parsing -> {
-                        val error = BadRequestErrors.Parsing("Internal Server Error")
+                        val error = BadRequestErrors.Parsing("Invalid request data")
                         generateErrorResponse(id = id, version = version, fail = error)
                     }
                     else -> generateErrorResponse(id = id, version = version, fail = fail)
                 }
             }
-            is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
+            is Fail.Incident -> {
+                when (fail) {
+                    is Fail.Incident.Parsing -> {
+                        val incident = Fail.Incident.DatabaseIncident()
+                        generateIncidentResponse(id = id, version = version, fail = incident)
+                    }
+                    else -> generateIncidentResponse(id = id, version = version, fail = fail)
+                }
+            }
         }
 }

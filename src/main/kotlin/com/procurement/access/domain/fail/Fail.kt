@@ -37,7 +37,7 @@ sealed class Fail {
         class DatabaseIncident : Incident(
             level = Level.ERROR,
             number = "03",
-            description = "Could not process data from database."
+            description = "Internal Server Error."
         )
 
         enum class Level(override val key: String) : EnumElementProvider.Key {
