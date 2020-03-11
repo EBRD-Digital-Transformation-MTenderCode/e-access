@@ -36,7 +36,12 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             """
 
         private const val GET_BY_CPID_AND_STAGE_CQL = """
-               SELECT *
+               SELECT $COLUMN_CPID,
+                      $COLUMN_TOKEN,
+                      $COLUMN_OWNER,
+                      $COLUMN_STAGE,
+                      $COLUMN_CREATION_DATE,
+                      $COLUMN_JSON_DATA
                  FROM $KEY_SPACE.$TABLE_NAME
                 WHERE $COLUMN_CPID=?
                   AND $COLUMN_STAGE=?
