@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getAction
+import com.procurement.access.model.dto.bpe.getId
+import com.procurement.access.model.dto.bpe.getVersion
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -18,7 +21,19 @@ class CommandService2(
 
     fun execute(request: JsonNode): ApiResponse {
 
-        val response = when (request.getAction().get) {
+        val id = request.getId()
+            .doOnError { error -> return errorResponse(fail = error) }
+            .get
+
+        val version = request.getVersion()
+            .doOnError { error -> return errorResponse(id = id, fail = error) }
+            .get
+
+        val action = request.getAction()
+            .doOnError { error -> return errorResponse(id = id, version = version, fail = error) }
+            .get
+
+        val response = when (action) {
             Command2Type.GET_LOT_IDS -> {
                 getLotIdsHandler.handle(node = request)
             }
