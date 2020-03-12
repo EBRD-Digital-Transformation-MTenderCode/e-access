@@ -90,7 +90,13 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                 UpdateCnData.Tender.ProcuringEntity(
                     id = procuringEntity.id,
                     persons = procuringEntity.persons
-                        .mapIfNotEmpty { person ->
+                        .errorIfEmpty {
+                            ErrorException(
+                                error = ErrorType.IS_EMPTY,
+                                message = "The tender contain empty list of persons in procuringEntity."
+                            )
+                        }
+                        ?.map { person ->
                             UpdateCnData.Tender.ProcuringEntity.Person(
                                 title = person.title,
                                 name = person.name,
@@ -138,12 +144,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                                     }
                             )
                         }
-                        .orThrow {
-                            ErrorException(
-                                error = ErrorType.IS_EMPTY,
-                                message = "The procuring entity contain empty list of the persons."
-                            )
-                        }
+                        .orEmpty()
                 )
             },
             lots = tender.lots
