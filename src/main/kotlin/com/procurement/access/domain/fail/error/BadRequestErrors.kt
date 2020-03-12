@@ -14,7 +14,7 @@ sealed class BadRequestErrors(
         description = "Entity '$entityName' not found $by"
     )
 
-    class Parsing(message: String) : BadRequestErrors(
+    class Parsing(message: String, val request: String) : BadRequestErrors(
         numberError = "02",
         description = message
     )
