@@ -35,7 +35,7 @@ import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
 @Service
-class TenderService(private val tenderProcessDao: TenderProcessDao) {
+class TenderService(private val tenderProcessDao: TenderProcessDao, private val generationService: GenerationService) {
 
     fun setSuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -162,7 +162,7 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         }
         val items = process.tender.items.asSequence().filter { lotsIdsSet.contains(it.relatedLot) }.toList()
         val contractedTender = GetDataForAcTender(
-                id = process.tender.id,
+                id = generationService.getRandomUUID(),
                 classification = process.tender.classification,
                 procurementMethod = process.tender.procurementMethod,
                 procurementMethodDetails = process.tender.procurementMethodDetails,
