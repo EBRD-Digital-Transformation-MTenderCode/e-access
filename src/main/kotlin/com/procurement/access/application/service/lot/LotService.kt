@@ -61,7 +61,7 @@ class LotServiceImpl(
             .jsonData
 
         val tenderProcess = data.tryToObject(TenderProcess::class.java)
-            .doOnError {error ->  return Result.failure(Fail.Incident.Parsing(data)) }
+            .doOnError {error ->  return Result.failure(Fail.Incident.DatabaseIncident()) }
             .get
 
 

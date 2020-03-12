@@ -1,6 +1,7 @@
 package com.procurement.access.controller
 
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getId
@@ -31,7 +32,7 @@ class Command2Controller(private val commandService2: CommandService2) {
             log.debug("RECEIVED COMMAND: '${requestBody}'.")
 
         val node = requestBody.toNode()
-            .doOnError { error -> return responseEntity(expected = error) }
+            .doOnError { error -> return responseEntity(expected = BadRequestErrors.Parsing("Invalid request data")) }
             .get
 
         val id = node.getId()

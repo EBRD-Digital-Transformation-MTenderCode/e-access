@@ -8,7 +8,6 @@ import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
-import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.Result
@@ -38,10 +37,6 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
 
 fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
     when (fail) {
-        is DataErrors.Parsing -> {
-            val error = BadRequestErrors.Parsing("Invalid request data")
-            generateErrorResponse(id = id, version = version, fail = error)
-        }
         is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
         is Error -> generateErrorResponse(id = id, version = version, fail = fail)
         is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
