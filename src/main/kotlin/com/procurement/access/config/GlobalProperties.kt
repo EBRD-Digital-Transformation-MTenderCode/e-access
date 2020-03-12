@@ -1,5 +1,6 @@
 package com.procurement.access.config
 
+import com.procurement.access.infrastructure.io.orThrow
 import com.procurement.access.infrastructure.web.dto.ApiVersion
 import java.util.*
 
@@ -18,14 +19,14 @@ object GlobalProperties {
     )
 
     private fun getGitProperties(): String {
-        val prop = Properties()
-        val loader = Thread.currentThread().contextClassLoader
-        val stream = loader.getResourceAsStream("git.properties")
-        if (stream != null) {
-            prop.load(stream)
-            return prop.getProperty("git.commit.id.abbrev")
-        } else {
-            throw RuntimeException("Unable to find git.commit.id.abbrev")
+        val gitProps: Properties = try {
+            GlobalProperties::class.java.getResourceAsStream("/git.properties")
+                .use { stream ->
+                    Properties().apply { load(stream) }
+                }
+        } catch (expected: Exception) {
+            throw IllegalStateException(expected)
         }
+        return gitProps.orThrow("git.commit.id.abbrev")
     }
 }
