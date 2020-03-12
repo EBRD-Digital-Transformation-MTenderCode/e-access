@@ -322,7 +322,7 @@ class CnOnPnService(
                     message = "At least one Person should be added. "
                 )
 
-                val personesIdentifier = this.map { it.identifier.id }
+                val personesIdentifier = this.map { it.identifier }
                 val personesIdentifierUnique = personesIdentifier.toSet()
                 if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
                     error = INVALID_PROCURING_ENTITY,
