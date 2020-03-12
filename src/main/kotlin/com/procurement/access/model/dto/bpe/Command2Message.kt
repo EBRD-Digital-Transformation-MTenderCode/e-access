@@ -42,6 +42,7 @@ fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProper
             val error = BadRequestErrors.Parsing("Invalid request data")
             generateErrorResponse(id = id, version = version, fail = error)
         }
+        is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
         is Error -> generateErrorResponse(id = id, version = version, fail = fail)
         is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
