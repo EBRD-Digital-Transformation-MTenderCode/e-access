@@ -28,15 +28,28 @@ sealed class Fail {
             description = "Database incident."
         )
 
-        class Parsing(data: String) : Incident(
+        class Parsing(val className: String,val exception: Exception) : Incident(
             level = Level.ERROR,
             number = "02",
-            description = "Entity has invalid data = $data."
+            description = "Error parsing to $className."
         )
 
         class DatabaseIncident : Incident(
             level = Level.ERROR,
             number = "03",
+            description = "Internal Server Error."
+        )
+
+        class Transforming(val exception: Exception) :
+            Incident(
+                level = Level.ERROR,
+                number = "04",
+                description = "Error transforming."
+            )
+
+        class ParsingIncident : Incident(
+            level = Level.ERROR,
+            number = "05",
             description = "Internal Server Error."
         )
 
