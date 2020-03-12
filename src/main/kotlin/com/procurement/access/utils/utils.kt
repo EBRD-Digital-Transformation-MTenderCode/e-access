@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Result
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
@@ -85,22 +84,22 @@ fun <T> toObject(clazz: Class<T>, json: JsonNode): T {
     }
 }
 
-fun <T : Any> JsonNode.tryToObject(target: Class<T>): Result<T, String> = try {
+fun <T : Any> JsonNode.tryToObject(target: Class<T>): Result<T, Fail.Incident.Parsing> = try {
     Result.success(JsonMapper.mapper.treeToValue(this, target))
 } catch (expected: Exception) {
-    Result.failure("Error binding JSON to an object of type '${target.canonicalName}'.")
+    Result.failure(Fail.Incident.Parsing(className = target.canonicalName, exception = expected))
 }
 
-fun <T : Any> String.tryToObject(target: Class<T>): Result<T, String> = try {
+fun <T : Any> String.tryToObject(target: Class<T>): Result<T, Fail.Incident.Parsing> = try {
     Result.success(JsonMapper.mapper.readValue(this, target))
 } catch (expected: Exception) {
-    Result.failure("Error binding String to an object of type '${target.canonicalName}'.")
+    Result.failure(Fail.Incident.Parsing(className = target.canonicalName, exception = expected))
 }
 
 fun String.toNode(): Result<JsonNode, Fail> = try {
     Result.success(JsonMapper.mapper.readTree(this))
 } catch (exception: JsonProcessingException) {
-    Result.failure(DataErrors.Parsing("Can not parse Sting to Node"))
+    Result.failure(Fail.Incident.Transforming(exception = exception))
 }
 
 fun String.getStageFromOcid() = this.split("-")[4]

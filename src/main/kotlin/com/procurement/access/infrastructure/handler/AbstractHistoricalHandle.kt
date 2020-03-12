@@ -33,7 +33,7 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
                     return responseError(
                         id = id,
                         version = version,
-                        fail = Fail.Incident.Parsing(data)
+                        fail = Fail.Incident.ParsingIncident()
                     )
                 }
             return result.get

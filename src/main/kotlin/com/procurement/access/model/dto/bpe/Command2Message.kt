@@ -18,7 +18,6 @@ import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
-import com.procurement.access.utils.tryToObject
 import java.time.LocalDateTime
 import java.util.*
 
@@ -158,12 +157,5 @@ fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
         Result.failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
 }
 
-fun <T : Any> JsonNode.tryGetParams(target: Class<T>): Result<T, DataErrors> =
-    getAttribute("params").bind { node ->
-        when (val result = node.tryToObject(target)) {
-            is Result.Success -> result
-            is Result.Failure -> result.mapError {
-                DataErrors.Parsing("Error parsing 'params'")
-            }
-        }
-    }
+fun  JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =
+    getAttribute("params")
