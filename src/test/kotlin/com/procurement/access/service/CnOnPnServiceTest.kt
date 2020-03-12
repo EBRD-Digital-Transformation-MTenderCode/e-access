@@ -68,6 +68,8 @@ class CnOnPnServiceTest {
         private const val PERMANENT_ITEM_ID_2 = "permanent-item-2"
         private const val PERMANENT_ITEM_ID_3 = "permanent-item-3"
         private const val PERMANENT_ITEM_ID_4 = "permanent-item-4"
+
+        private const val TENDER_ID = "ocds-t1s2t3-MD-1552650554287"
     }
 
     private lateinit var generationService: GenerationService
@@ -83,6 +85,9 @@ class CnOnPnServiceTest {
         rulesService = mock()
 
         service = CnOnPnService(generationService, tenderProcessDao, rulesService)
+
+        whenever(generationService.getRandomUUID())
+            .thenReturn(TENDER_ID)
     }
 
     @DisplayName("Check Endpoint")
