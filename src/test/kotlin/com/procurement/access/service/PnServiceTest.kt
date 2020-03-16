@@ -64,6 +64,8 @@ class PnServiceTest {
         private const val PERMANENT_ITEM_ID_3 = "permanent-item-3"
         private const val PERMANENT_ITEM_ID_4 = "permanent-item-4"
 
+        private const val TENDER_ID = "ocds-t1s2t3-MD-1552650554287"
+
         private val PATTERN_MODE = "ocds-t1s2t3".toRegex()
         private val OCDS_PREFIX = "ocds-t1s2t3"
     }
@@ -94,6 +96,9 @@ class PnServiceTest {
 
         whenever(generationService.generatePermanentItemId())
             .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
+
+        whenever(generationService.generatePermanentTenderId())
+            .thenReturn(TENDER_ID)
     }
 
     @Nested

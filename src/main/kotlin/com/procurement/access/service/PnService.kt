@@ -421,7 +421,6 @@ class PnService(
             planning = planning(request),
             tender = tender(
                 pmd = contextRequest.pmd,
-                ocid = id,
                 value = value,
                 lots = lots,
                 items = items,
@@ -485,7 +484,6 @@ class PnService(
 
     private fun tender(
         pmd: ProcurementMethod,
-        ocid: String,
         value: PNEntity.Tender.Value,
         lots: List<PNEntity.Tender.Lot>,
         items: List<PNEntity.Tender.Item>,
@@ -495,7 +493,7 @@ class PnService(
     ): PNEntity.Tender {
         return PNEntity.Tender(
             //BR-3.1.4
-            id = ocid,
+            id = generationService.generatePermanentTenderId(),
             /** Begin BR-3.1.2*/
             status = TenderStatus.PLANNING,
             statusDetails = TenderStatusDetails.PLANNING,

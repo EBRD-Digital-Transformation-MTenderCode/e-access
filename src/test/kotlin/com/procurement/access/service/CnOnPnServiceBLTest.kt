@@ -61,6 +61,11 @@ class CnOnPnServiceBLTest {
             val firstItemIdExcepted = "111"
             val secondItemIdExcepted = "112"
 
+            val tenderId = "ocds-t1s2t3-MD-1552650554287"
+
+            whenever(generationService.generatePermanentTenderId())
+                .thenReturn(tenderId)
+
             whenever(generationService.generatePermanentLotId())
                 .thenReturn(firstLotIdExcepted)
                 .thenReturn(secondLotIdExcepted)
@@ -103,6 +108,8 @@ class CnOnPnServiceBLTest {
                 .generatePermanentLotId()
             verify(generationService, times(2))
                 .generatePermanentItemId()
+            verify(generationService, times(1))
+                .generatePermanentTenderId()
         }
     }
 
