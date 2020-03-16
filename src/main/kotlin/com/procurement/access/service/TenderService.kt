@@ -46,8 +46,8 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(
-                process.tender.status.value,
-                process.tender.statusDetails.value))
+                process.tender.status.key,
+                process.tender.statusDetails.key))
     }
 
     fun setUnsuspended(cm: CommandMessage): ResponseDto {
@@ -58,14 +58,14 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
-            process.tender.statusDetails = TenderStatusDetails.fromString(phase)
+            process.tender.statusDetails = TenderStatusDetails.creator(phase)
         } else {
             throw ErrorException(IS_NOT_SUSPENDED)
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UnsuspendedTenderRs(UnsuspendedTender(
-                process.tender.status.value,
-                process.tender.statusDetails.value,
+                process.tender.status.key,
+                process.tender.statusDetails.key,
                 process.tender.procurementMethodModalities,
                 process.tender.electronicAuctions)))
     }
@@ -134,9 +134,9 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.statusDetails = TenderStatusDetails.fromString(phase)
+        process.tender.statusDetails = TenderStatusDetails.creator(phase)
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value, process.tender.statusDetails.value))
+        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.key, process.tender.statusDetails.key))
     }
 
     fun getTenderOwner(cm: CommandMessage): ResponseDto {

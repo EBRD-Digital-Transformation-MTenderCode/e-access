@@ -23,7 +23,6 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
-import com.procurement.access.exception.ErrorType.INVALID_PMD
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.BudgetCnCreate
@@ -99,7 +98,7 @@ class CnCreateService(private val generationService: GenerationService,
                     title = tenderDto.title,
                     description = tenderDto.description,
                     status = ACTIVE,
-                    statusDetails = TenderStatusDetails.fromString(context.phase),
+                    statusDetails = TenderStatusDetails.creator(context.phase),
                     classification = tenderDto.classification,
                     mainProcurementCategory = tenderDto.mainProcurementCategory,
                     additionalProcurementCategories = null,
@@ -235,9 +234,7 @@ class CnCreateService(private val generationService: GenerationService,
         }
     }
 
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
-        ErrorException(INVALID_PMD)
-    }
+    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.creator(pmd)
 
     private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetValue: Value): Value {
         val currency = budgetValue.currency

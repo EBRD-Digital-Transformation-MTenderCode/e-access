@@ -18,7 +18,6 @@ import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
-import com.procurement.access.exception.ErrorType.INVALID_PMD
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
@@ -744,7 +743,7 @@ class PnService(
     private fun convertRequestDocument(documentFromRequest: PnCreateData.Tender.Document): PNEntity.Tender.Document {
         return PNEntity.Tender.Document(
             id = documentFromRequest.id,
-            documentType = DocumentType.fromString(documentFromRequest.documentType.value),
+            documentType = DocumentType.creator(documentFromRequest.documentType.key),
             title = documentFromRequest.title,
             description = documentFromRequest.description,
             relatedLots = documentFromRequest.relatedLots.toSet()
@@ -761,7 +760,7 @@ class PnService(
 
         return PNEntity.Tender.Document(
             id = documentFromRequest.id,
-            documentType = DocumentType.fromString(documentFromRequest.documentType.value),
+            documentType = DocumentType.creator(documentFromRequest.documentType.key),
             title = documentFromRequest.title,
             description = documentFromRequest.description,
             relatedLots = relatedLots.toSet()
@@ -856,9 +855,7 @@ class PnService(
         )
     }
 
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
-        ErrorException(INVALID_PMD)
-    }
+    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.creator(pmd)
 
     private fun getResponse(cn: PNEntity, token: UUID): PnCreateResult {
         return PnCreateResult(
@@ -1181,7 +1178,7 @@ class PnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents?.map { document ->
                         PnCreateResult.Tender.Document(
-                            documentType = TenderDocumentType.fromString(document.documentType.value),
+                            documentType = TenderDocumentType.creator(document.documentType.key),
                             id = document.id,
                             title = document.title!!,
                             description = document.description,

@@ -1306,7 +1306,7 @@ class CnOnPnService(
 
         return CNEntity.Tender.Document(
             id = newDocumentFromRequest.id,
-            documentType = DocumentType.fromString(newDocumentFromRequest.documentType.value),
+            documentType = DocumentType.creator(newDocumentFromRequest.documentType.key),
             title = newDocumentFromRequest.title,
             description = newDocumentFromRequest.description,
             //BR-3.6.5(CN)
@@ -2170,7 +2170,7 @@ class CnOnPnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents.map { document ->
                         CnOnPnResponse.Tender.Document(
-                            documentType = TenderDocumentType.fromString(document.documentType.value),
+                            documentType = TenderDocumentType.creator(document.documentType.key),
                             id = document.id,
                             title = document.title,
                             description = document.description,

@@ -1,9 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class TenderDocumentType(@JsonValue val value: String) {
+enum class TenderDocumentType(@JsonValue override val key: String) : EnumElementProvider.Key {
 
     EVALUATION_CRITERIA("evaluationCriteria"),
     ELIGIBILITY_CRITERIA("eligibilityCriteria"),
@@ -24,18 +25,12 @@ enum class TenderDocumentType(@JsonValue val value: String) {
     CONTRACT_ARRANGEMENTS("contractArrangements"),
     CONTRACT_GUARANTEES("contractGuarantees");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, TenderDocumentType> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<TenderDocumentType>(info = info()) {
 
-        fun fromString(value: String): TenderDocumentType = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = TenderDocumentType::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = TenderDocumentType.orThrow(name)
     }
 }

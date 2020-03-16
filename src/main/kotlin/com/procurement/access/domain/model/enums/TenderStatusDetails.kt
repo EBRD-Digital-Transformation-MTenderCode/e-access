@@ -1,9 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class TenderStatusDetails(@JsonValue val value: String) {
+enum class TenderStatusDetails(@JsonValue override val key: String) : EnumElementProvider.Key {
     PLANNING("planning"),
     PLANNED("planned"),
     CLARIFICATION("clarification"),
@@ -19,18 +20,12 @@ enum class TenderStatusDetails(@JsonValue val value: String) {
     COMPLETE("complete"),
     EMPTY("empty");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, TenderStatusDetails> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<TenderStatusDetails>(info = info()) {
 
-        fun fromString(value: String): TenderStatusDetails = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = TenderStatusDetails::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = TenderStatusDetails.orThrow(name)
     }
 }

@@ -27,7 +27,7 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
             return requirements.map { requirement ->
                 val id: String = requirement.get("id").asText()
                 val title: String = requirement.get("title").asText()
-                val dataType: RequirementDataType = RequirementDataType.fromString(requirement.get("dataType").asText())
+                val dataType: RequirementDataType = RequirementDataType.creator(requirement.get("dataType").asText())
                 val description: String? = requirement.takeIf { it.has("description") }?.get("description")?.asText()
                 val period: Period? = requirement.takeIf { it.has("period") }
                     ?.let {
@@ -52,7 +52,7 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
         }
 
         private fun requirementValue(requirementNode: JsonNode): RequirementValue? {
-            val dataType = RequirementDataType.fromString(requirementNode.get("dataType").asText())
+            val dataType = RequirementDataType.creator(requirementNode.get("dataType").asText())
             return if (isExpectedValue(requirementNode)) {
                 when (dataType) {
                     RequirementDataType.BOOLEAN -> ExpectedValue.of(requirementNode.get("expectedValue").booleanValue())

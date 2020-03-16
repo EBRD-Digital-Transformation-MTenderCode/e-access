@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.procurement.access.infrastructure.bind.apiversion.ApiVersionDeserializer
+import com.procurement.access.infrastructure.bind.apiversion.ApiVersionSerializer
 import com.procurement.access.infrastructure.bind.money.MoneyModule
+import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
@@ -22,6 +25,9 @@ fun ObjectMapper.configuration() {
 
         addDeserializer(String::class.java, StringsDeserializer())
         addDeserializer(Int::class.java, IntDeserializer())
+
+        addSerializer(ApiVersion::class.java, ApiVersionSerializer())
+        addDeserializer(ApiVersion::class.java, ApiVersionDeserializer())
     }
 
     this.registerModule(module)

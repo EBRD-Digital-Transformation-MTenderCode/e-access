@@ -1,10 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class BusinessFunctionType(@JsonValue val value: String) {
-
+enum class BusinessFunctionType(@JsonValue override val key: String) : EnumElementProvider.Key {
     @Deprecated("Use 'chairman' instead of it")
     AUTHORITY("authority"),
 
@@ -16,18 +16,12 @@ enum class BusinessFunctionType(@JsonValue val value: String) {
     PRICE_OPENER("priceOpener"),
     PRICE_EVALUATOR("priceEvaluator");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, BusinessFunctionType> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<BusinessFunctionType>(info = info()) {
 
-        fun fromString(value: String): BusinessFunctionType = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = BusinessFunctionType::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = BusinessFunctionType.orThrow(name)
     }
 }
