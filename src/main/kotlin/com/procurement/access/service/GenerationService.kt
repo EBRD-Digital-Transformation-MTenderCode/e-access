@@ -12,6 +12,10 @@ class GenerationService {
 
     fun getCpId(country: String, mode: Mode): String = mode.prefix + "-" + country + "-" + milliNowUTC()
 
+    fun generatePermanentTenderId(): String {
+        return UUID.randomUUID().toString()
+    }
+
     fun generateRandomUUID(): UUID {
         return UUIDs.random()
     }
