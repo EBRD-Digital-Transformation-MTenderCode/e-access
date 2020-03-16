@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class BusinessFunctionType(@JsonValue override val key: String) : EnumElementProvider.Key {
+    @Deprecated("Use 'chairman' instead of it")
     AUTHORITY("authority"),
+
+    CHAIRMAN("chairman"),
     PROCURMENT_OFFICER("procurementOfficer"),
     CONTACT_POINT("contactPoint"),
     TECHNICAL_EVALUATOR("technicalEvaluator"),

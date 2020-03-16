@@ -179,7 +179,9 @@ data class CnOnPnRequest(
 
         data class ProcuringEntity(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone>
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Persone>?
         ) {
             data class Persone(
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
@@ -193,7 +195,20 @@ data class CnOnPnRequest(
 
                     @JsonInclude(JsonInclude.Include.NON_NULL)
                     @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
-                )
+                ) {
+                    override fun equals(other: Any?): Boolean = if (this === other)
+                        true
+                    else
+                        other is Identifier
+                            && this.scheme == other.scheme
+                            && this.id == other.id
+
+                    override fun hashCode(): Int {
+                        var result = scheme.hashCode()
+                        result = 31 * result + id.hashCode()
+                        return result
+                    }
+                }
 
                 data class BusinessFunction(
                     @field:JsonProperty("id") @param:JsonProperty("id") val id: String,

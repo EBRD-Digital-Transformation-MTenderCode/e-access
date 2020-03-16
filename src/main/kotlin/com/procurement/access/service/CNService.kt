@@ -148,9 +148,6 @@ class CNServiceImpl(
         //BR-1.0.1.15.3
         val updatedProcuringEntity = if (dataWithPermanentId.tender.procuringEntity != null)
             cn.tender.procuringEntity.update(dataWithPermanentId.tender.procuringEntity.persons)
-                .also { procuringEntity ->
-                    procuringEntity.checkBusinessFunctionsType()
-                }
         else
             cn.tender.procuringEntity
 
@@ -658,13 +655,17 @@ class CNServiceImpl(
 
                 //VR-1.0.1.10.8 (1)
                 when (businessFunction.type) {
-                    BusinessFunctionType.AUTHORITY,
+                    BusinessFunctionType.CHAIRMAN,
                     BusinessFunctionType.PROCURMENT_OFFICER,
                     BusinessFunctionType.CONTACT_POINT,
                     BusinessFunctionType.TECHNICAL_EVALUATOR,
                     BusinessFunctionType.TECHNICAL_OPENER,
                     BusinessFunctionType.PRICE_OPENER,
                     BusinessFunctionType.PRICE_EVALUATOR -> Unit
+                    BusinessFunctionType.AUTHORITY       -> throw ErrorException(
+                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                        message = "Type '${BusinessFunctionType.AUTHORITY}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
+                    )
                 }
 
                 if (businessFunction.period.startDate > startDate)
@@ -684,33 +685,6 @@ class CNServiceImpl(
             }
 
         return this
-    }
-
-    /**
-     * VR-1.0.1.10.8 (2)
-     * 2. eAccess checks the availability of one Persones object with one businessFunctions object
-     *    where persones.businessFunctions.type == "authority" in Persones array after updating (adding new person to DB from request):
-     *   a. IF [there is one Persones object with one businessFunctions object where type == "authority"] then validation is successful;
-     *   b. ELSE eAccess throws Exception: "Authority person shoud be specified in procuring entity";
-     */
-    private fun CNEntity.Tender.ProcuringEntity.checkBusinessFunctionsType() {
-        var containAuthority = false
-        this.persones
-            ?.asSequence()
-            ?.flatMap { person ->
-                person.businessFunctions.asSequence()
-            }
-            ?.forEach { businessFunction ->
-                if (businessFunction.type == BusinessFunctionType.AUTHORITY) {
-                    if (containAuthority)
-                        throw ErrorException(
-                            error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                            message = "More than one business function with type 'AUTHORITY'."
-                        )
-                    else
-                        containAuthority = true
-                }
-            }
     }
 
     /**
@@ -864,16 +838,14 @@ class CNServiceImpl(
         val idsAllPersons = receivedPersonsIds.union(savedPersonsIds)
         val idsNewPersons = getNewElements(receivedPersonsIds, savedPersonsIds)
         val idsUpdatePersons = getElementsForUpdate(receivedPersonsIds, savedPersonsIds)
-        val idsRemovePersons = getElementsForRemove(receivedPersonsIds, savedPersonsIds)
+        val idsOldPersons = getElementsForRemove(receivedPersonsIds, savedPersonsIds)
 
         val updatedPersons = idsAllPersons.asSequence()
-            .filter { id ->
-                id !in idsRemovePersons
-            }
             .map { id ->
                 when (id) {
                     in idsNewPersons -> createPerson(receivedPersonsById.getValue(id))
                     in idsUpdatePersons -> savedPersonsById.getValue(id).update(receivedPersonsById.getValue(id))
+                    in idsOldPersons -> savedPersonsById.getValue(id)
                     else -> throw IllegalStateException()
                 }
             }

@@ -73,6 +73,8 @@ class PnUpdateService(private val generationService: GenerationService,
                 message = "The attribute 'tender.description' is empty or blank."
             )
 
+        checkDocumentsTitle(documents = pnDto.tender.documents)
+
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
@@ -166,6 +168,18 @@ class PnUpdateService(private val generationService: GenerationService,
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun checkDocumentsTitle(documents: List<Document>?) {
+        documents?.forEach { document ->
+            val title = document.title
+            if (title == null || title.isBlank()) {
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Missing attribute 'document.title' at 'tender'."
+                )
+            }
+        }
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
@@ -382,10 +396,10 @@ class PnUpdateService(private val generationService: GenerationService,
     private fun updateLot(updatableTenderLot: Lot, lotDto: LotPnUpdate): Lot {
         return updatableTenderLot.copy(
             title = lotDto.title,
-            internalId = lotDto.internalId,
+            internalId = lotDto.internalId ?: updatableTenderLot.internalId,
             description = lotDto.description,
             contractPeriod = lotDto.contractPeriod,
-            placeOfPerformance = lotDto.placeOfPerformance
+            placeOfPerformance = lotDto.placeOfPerformance ?: updatableTenderLot.placeOfPerformance
         )
     }
 
@@ -408,7 +422,7 @@ class PnUpdateService(private val generationService: GenerationService,
     private fun updateItem(itemDb: Item, itemDto: ItemPnUpdate): Item {
         return itemDb.copy(
             description = itemDto.description,
-            internalId = itemDto.internalId,
+            internalId = itemDto.internalId ?: itemDb.internalId,
             relatedLot = itemDto.relatedLot
         )
     }

@@ -988,43 +988,6 @@ class CnOnPnServiceTest {
             }
 
             @Nested
-            inner class VR_1_0_1_10_6 {
-
-                @Test
-                fun `two authority person`() {
-
-                    val person = requestNode.getObject("tender")
-                        .getObject("procuringEntity")
-                        .getArray("persones")
-                        .get(0) as ObjectNode
-
-                    val newPerson = person.deepCopy().also {
-                        it.getObject("identifier").setAttribute("id", "NEW_UNIQUE_ID")
-                        val businessFunction = it.getArray("businessFunctions").get(0) as ObjectNode
-                        businessFunction.setAttribute("type", "authority")
-                    }
-
-                    requestNode.getObject("tender")
-                        .getObject("procuringEntity")
-                        .putArray("persones")
-                        .putObject(person)
-                        .putObject(newPerson)
-
-                    val context: CheckCnOnPnContext = checkContext()
-
-                    val exception =
-                        assertThrows<ErrorException> {
-                            service.checkCnOnPn(
-                                context = context,
-                                data = requestNode.toObject()
-                            )
-                        }
-                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
-                    assertTrue(exception.message!!.contains("Only one person should be specified as authority."))
-                }
-            }
-
-            @Nested
             inner class VR_1_0_1_10_4 {
 
                 @Test
