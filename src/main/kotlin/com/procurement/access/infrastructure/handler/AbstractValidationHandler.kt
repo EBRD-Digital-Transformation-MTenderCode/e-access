@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.handler
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.ValidationResult
@@ -8,12 +9,11 @@ import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
-import org.slf4j.LoggerFactory
+import com.procurement.access.utils.toJson
 
-abstract class AbstractValidationHandler<ACTION : Action> : AbstractHandler<ACTION, ApiResponse>() {
-    companion object {
-        private val log = LoggerFactory.getLogger(AbstractValidationHandler::class.java)
-    }
+abstract class AbstractValidationHandler<ACTION : Action>(
+    private val logger: Logger
+) : AbstractHandler<ACTION, ApiResponse>(logger = logger) {
 
     override fun handle(node: JsonNode): ApiResponse {
         val id = node.getId().get
@@ -21,7 +21,7 @@ abstract class AbstractValidationHandler<ACTION : Action> : AbstractHandler<ACTI
 
         val result = execute(node)
             .also {
-                log.debug("'{}' has been executed. Result: '{}'", action.key, it)
+                logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
             }
 
         return when (result) {

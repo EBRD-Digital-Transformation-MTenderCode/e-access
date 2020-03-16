@@ -1,5 +1,6 @@
 package com.procurement.access.infrastructure.handler
 
+import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Action
@@ -10,11 +11,13 @@ import com.procurement.access.model.dto.bpe.generateErrorResponse
 import com.procurement.access.model.dto.bpe.generateIncidentResponse
 import java.util.*
 
-abstract class AbstractHandler<ACTION : Action, R : Any> :
-    Handler<ACTION, ApiResponse> {
+abstract class AbstractHandler<ACTION : Action, R : Any>(
+    private val logger: Logger
+) : Handler<ACTION, ApiResponse> {
 
-    protected fun responseError(id: UUID, version: ApiVersion, fail: Fail): ApiResponse =
-        when (fail) {
+    protected fun responseError(id: UUID, version: ApiVersion, fail: Fail): ApiResponse {
+        fail.logging(logger)
+        return when (fail) {
             is Fail.Error -> {
                 when (fail) {
                     is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
@@ -23,4 +26,5 @@ abstract class AbstractHandler<ACTION : Action, R : Any> :
             }
             is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
         }
+    }
 }

@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.handler.get.lotids
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
@@ -19,10 +20,12 @@ import org.springframework.stereotype.Service
 @Service
 class GetLotIdsHandler(
     private val lotService: LotService,
-    private val historyDao: HistoryDao
+    private val historyDao: HistoryDao,
+    private val logger: Logger
 ) : AbstractHistoricalHandler<Command2Type, List<LotId>>(
     historyRepository = historyDao,
-    target = ApiSuccessResponse::class.java
+    target = ApiSuccessResponse::class.java,
+    logger = logger
 ) {
 
     override fun execute(node: JsonNode): Result<List<LotId>, Fail> {
