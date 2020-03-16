@@ -20,10 +20,6 @@ class GenerationService {
         return UUIDs.random()
     }
 
-    fun generatePermanentTenderId(): String {
-        return UUID.randomUUID().toString()
-    }
-
     fun generateTimeBasedUUID(): UUID {
         return UUIDs.timeBased()
     }
