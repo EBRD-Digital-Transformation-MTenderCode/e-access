@@ -97,7 +97,7 @@ class PnServiceTest {
         whenever(generationService.generatePermanentItemId())
             .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
 
-        whenever(generationService.getRandomUUID())
+        whenever(generationService.generatePermanentTenderId())
             .thenReturn(TENDER_ID)
     }
 

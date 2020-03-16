@@ -63,7 +63,7 @@ class CnOnPnServiceBLTest {
 
             val tenderId = "ocds-t1s2t3-MD-1552650554287"
 
-            whenever(generationService.getRandomUUID())
+            whenever(generationService.generatePermanentTenderId())
                 .thenReturn(tenderId)
 
             whenever(generationService.generatePermanentLotId())
@@ -109,7 +109,7 @@ class CnOnPnServiceBLTest {
             verify(generationService, times(2))
                 .generatePermanentItemId()
             verify(generationService, times(1))
-                .getRandomUUID()
+                .generatePermanentTenderId()
         }
     }
 

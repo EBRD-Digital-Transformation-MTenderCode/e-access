@@ -86,7 +86,7 @@ class CnOnPnServiceTest {
 
         service = CnOnPnService(generationService, tenderProcessDao, rulesService)
 
-        whenever(generationService.getRandomUUID())
+        whenever(generationService.generatePermanentTenderId())
             .thenReturn(TENDER_ID)
     }
 
