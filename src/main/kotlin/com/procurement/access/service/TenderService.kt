@@ -162,7 +162,7 @@ class TenderService(private val tenderProcessDao: TenderProcessDao, private val 
         }
         val items = process.tender.items.asSequence().filter { lotsIdsSet.contains(it.relatedLot) }.toList()
         val contractedTender = GetDataForAcTender(
-                id = generationService.getRandomUUID(),
+                id = generationService.generatePermanentTenderId(),
                 classification = process.tender.classification,
                 procurementMethod = process.tender.procurementMethod,
                 procurementMethodDetails = process.tender.procurementMethodDetails,
