@@ -494,7 +494,7 @@ class PnService(
     ): PNEntity.Tender {
         return PNEntity.Tender(
             //BR-3.1.4
-            id = generationService.getRandomUUID(),
+            id = generationService.generatePermanentTenderId(),
             /** Begin BR-3.1.2*/
             status = TenderStatus.PLANNING,
             statusDetails = TenderStatusDetails.PLANNING,
