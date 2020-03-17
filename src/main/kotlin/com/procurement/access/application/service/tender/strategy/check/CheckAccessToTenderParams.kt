@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.owner.tryCreateOwner
 import com.procurement.access.domain.model.token.Token
 import com.procurement.access.domain.model.token.tryCreateToken
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 
 class CheckAccessToTenderParams private constructor(
@@ -26,38 +27,38 @@ class CheckAccessToTenderParams private constructor(
 
             val cpidResult = Cpid.tryCreate(cpid = cpid)
                 .doOnError { pattern ->
-                    DataErrors.Validation.DataMismatchToPattern(
+                    return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = cpid,
                         name = "cpid",
                         pattern = pattern
-                    )
+                    ).asFailure()
                 }
                 .get
             val ocidResult = Ocid.tryCreate(ocid = ocid)
                 .doOnError { pattern ->
-                    DataErrors.Validation.DataMismatchToPattern(
+                    return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = ocid,
                         name = "ocid",
                         pattern = pattern
-                    )
+                    ).asFailure()
                 }
                 .get
             val ownerResult = owner.tryCreateOwner()
                 .doOnError { pattern ->
-                    DataErrors.Validation.DataMismatchToPattern(
+                    return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = owner,
                         name = "owner",
                         pattern = pattern
-                    )
+                    ).asFailure()
                 }
                 .get
             val tokenResult = token.tryCreateToken()
                 .doOnError { pattern ->
-                    DataErrors.Validation.DataMismatchToPattern(
+                    return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = token,
                         name = "token",
                         pattern = pattern
-                    )
+                    ).asFailure()
                 }
                 .get
 
