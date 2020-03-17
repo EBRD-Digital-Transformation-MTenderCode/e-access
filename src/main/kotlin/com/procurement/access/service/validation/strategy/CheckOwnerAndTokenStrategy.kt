@@ -4,7 +4,7 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.ValidationError
+import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -43,10 +43,20 @@ class CheckOwnerAndTokenStrategy(
             .get
         auths.forEach { auth ->
             if (auth.owner != params.owner)
-                return ValidationResult.error(ValidationError.InvalidOwner())
+                return ValidationResult.error(
+                    ValidationErrors.InvalidOwner(
+                        owner = auth.owner,
+                        cpid = params.cpid.value
+                    )
+                )
 
             if (auth.token != params.token)
-                return ValidationResult.error(ValidationError.InvalidToken())
+                return ValidationResult.error(
+                    ValidationErrors.InvalidToken(
+                        token = auth.token,
+                        cpid = params.cpid.value
+                    )
+                )
         }
         return ValidationResult.ok()
     }
