@@ -96,22 +96,6 @@ class LotServiceImpl(
             .asSuccess()
     }
 
-    private fun Lot.convertToGetLotStateByIdsResult(): Result<GetLotStateByIdsResult, Fail> {
-
-        val lotId = this.id.tryCreateLotId()
-            .doOnError { error ->
-                return error.asFailure()
-            }
-            .get
-
-        return GetLotStateByIdsResult(
-                id = lotId,
-                status = this.status!!,
-                statusDetails = this.statusDetails!!
-            )
-            .asSuccess()
-    }
-
     override fun getLotIds(
         cpId: String,
         stage: String,
@@ -304,6 +288,22 @@ class LotServiceImpl(
                 )
             }
         )
+    }
+
+    private fun Lot.convertToGetLotStateByIdsResult(): Result<GetLotStateByIdsResult, Fail> {
+
+        val lotId = this.id.tryCreateLotId()
+            .doOnError { error ->
+                return error.asFailure()
+            }
+            .get
+
+        return GetLotStateByIdsResult(
+            id = lotId,
+            status = this.status!!,
+            statusDetails = this.statusDetails!!
+        )
+            .asSuccess()
     }
 
     private fun getLotsForCnOnPn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction =
