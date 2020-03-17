@@ -22,4 +22,9 @@ sealed class ValidationErrors(numberError: String, override val description: Str
         numberError = "02",
         description = "Invalid token '$token' by cpid '$cpid'"
     )
+
+    class LotsNotFound(val lotsId: Collection<String>) : ValidationErrors(
+        numberError = "03",
+        description = "Lots '$lotsId' do not found."
+    )
 }
