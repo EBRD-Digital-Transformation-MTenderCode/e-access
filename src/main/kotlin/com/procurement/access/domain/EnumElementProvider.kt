@@ -23,18 +23,9 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
         )
     }
 
-    private val values: Map<String, T> = info.values.associateBy { it.name }
-
     private val elements: Map<String, T> = info.values.associateBy { it.key.toUpperCase() }
 
     val allowedValues: List<String> = info.values.map { it.key }
-
-    fun valueOrThrow(key: String): T = values[key]
-        ?: throw EnumElementProviderException(
-            enumType = info.target.canonicalName,
-            value = key,
-            values = info.values.joinToString { it.name }
-        )
 
     fun orNull(key: String): T? = elements[key.toUpperCase()]
 
