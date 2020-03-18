@@ -25,13 +25,15 @@ enum class ProcurementMethod(@JsonValue val key: String) {
 
     companion object {
 
+        private val allowedValues = values()
+
         fun creator(name: String) = try {
             valueOf(name)
         } catch (ignored: Exception) {
             throw EnumElementProviderException(
                 enumType = this::class.java.canonicalName,
                 value = name,
-                values = values().joinToString { it.name }
+                values = allowedValues.joinToString { it.name }
             )
         }
     }
