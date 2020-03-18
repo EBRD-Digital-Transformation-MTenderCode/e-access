@@ -1,6 +1,5 @@
 package com.procurement.access.domain.model.enums
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
@@ -26,8 +25,6 @@ enum class ProcurementMethod(@JsonValue override val key: String) : EnumElementP
 
     companion object : EnumElementProvider<ProcurementMethod>(info = info()) {
 
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = ProcurementMethod.orThrow(name)
+        fun creator(name: String) = valueOrThrow(name)
     }
 }
