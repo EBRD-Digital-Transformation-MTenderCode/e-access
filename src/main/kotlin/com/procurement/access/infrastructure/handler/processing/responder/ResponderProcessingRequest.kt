@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.handler.processing.responder
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import java.time.LocalDateTime
@@ -39,7 +40,7 @@ data class ResponderProcessingRequest(
             )
 
             data class Document(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: DocumentId,
                 @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: BusinessFunctionDocumentType,
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
 
