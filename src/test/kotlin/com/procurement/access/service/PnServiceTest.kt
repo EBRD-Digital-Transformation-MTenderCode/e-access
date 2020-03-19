@@ -118,7 +118,7 @@ class PnServiceTest {
             requestNode.getObject("tender", "tenderPeriod")
                 .setAttribute("startDate", "2019-02-10T01:01:01Z")
 
-            val cm = commandMessage(pmd = pmd.key, data = requestNode)
+            val cm = commandMessage(pmd = pmd.name, data = requestNode)
             val payload = getCreatePnPayload(cm)
             val exception = assertThrows<ErrorException> {
                 service.createPn(payload.context, payload.data)
@@ -137,7 +137,7 @@ class PnServiceTest {
                 requestNode.getObject("planning", "budget", "amount")
                     .setAttribute("amount", 1.01)
 
-                val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                val cm = commandMessage(pmd = pmd.name, data = requestNode)
                 val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
                     service.createPn(payload.context, payload.data)
@@ -153,7 +153,7 @@ class PnServiceTest {
                 requestNode.getObject("planning", "budget", "amount")
                     .setAttribute("currency", "UNKNOWN")
 
-                val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                val cm = commandMessage(pmd = pmd.name, data = requestNode)
                 val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
                     service.createPn(payload.context, payload.data)
@@ -215,7 +215,7 @@ class PnServiceTest {
                         .getObject("period")
                         .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
 
-                    val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                    val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
                         service.createPn(payload.context, payload.data)
@@ -254,7 +254,7 @@ class PnServiceTest {
                             )
                         }
 
-                    val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                    val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
                         service.createPn(payload.context, payload.data)
@@ -275,7 +275,7 @@ class PnServiceTest {
                     }
                 }
 
-                val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                val cm = commandMessage(pmd = pmd.name, data = requestNode)
                 val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
                     service.createPn(payload.context, payload.data)
@@ -303,7 +303,7 @@ class PnServiceTest {
                         }
                     }
 
-                    val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                    val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
                         service.createPn(payload.context, payload.data)
@@ -338,7 +338,7 @@ class PnServiceTest {
                     requestNode.getObject("tender", "tenderPeriod")
                         .setAttribute("startDate", tenderPeriodEndDate.format(JsonDateTimeFormatter.formatter))
 
-                    val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                    val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
                         service.createPn(payload.context, payload.data)
@@ -358,7 +358,7 @@ class PnServiceTest {
                 fun vr3_1_12_1(pmd: ProcurementMethod) {
                     requestNode.getObject("tender").putArray("lots")
 
-                    val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                    val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     println(requestNode)
 
                     val exception = assertThrows<ErrorException> {
@@ -377,7 +377,7 @@ class PnServiceTest {
                         .getObject(0)
                         .setAttribute("id", UUID.randomUUID().toString())
 
-                    val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                    val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
                     val exception = assertThrows<ErrorException> {
                         service.createPn(payload.context, payload.data)
@@ -398,7 +398,7 @@ class PnServiceTest {
                 }
                 items.putObject(item)
 
-                val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                val cm = commandMessage(pmd = pmd.name, data = requestNode)
                 val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
                     service.createPn(payload.context, payload.data)
@@ -417,7 +417,7 @@ class PnServiceTest {
                         getObject(0).setAttribute("id", id)
                         getObject(1).setAttribute("id", id)
                     }
-                val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                val cm = commandMessage(pmd = pmd.name, data = requestNode)
                 val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
                     service.createPn(payload.context, payload.data)
@@ -436,7 +436,7 @@ class PnServiceTest {
                         getObject(0).setAttribute("id", id)
                         getObject(1).setAttribute("id", id)
                     }
-                val cm = commandMessage(pmd = pmd.key, data = requestNode)
+                val cm = commandMessage(pmd = pmd.name, data = requestNode)
                 val payload = getCreatePnPayload(cm)
                 val exception = assertThrows<ErrorException> {
                     service.createPn(payload.context, payload.data)
@@ -528,7 +528,7 @@ class PnServiceTest {
             val pathToJsonFileOfResponse = testData.responseJsonFile()
 
             val data = loadJson(pathToJsonFileOfRequest).toNode()
-            val cm = commandMessage(pmd = pmd.key, data = data)
+            val cm = commandMessage(pmd = pmd.name, data = data)
 
             val payload = getCreatePnPayload(cm)
 
