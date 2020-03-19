@@ -44,7 +44,7 @@
     "email": "string",
     "telephone": "string",
     "faxNumber": "string",
-    "uri": "string"
+    "url": "string"
   },
   "persones": [
     {
