@@ -4,7 +4,7 @@
   "identifier": {
     "id": "string",
     "legalName": "string",
-    "schema": "string"
+    "scheme": "string"
   },
   "address": {
     "streetAddress": "string",
@@ -12,19 +12,19 @@
       "country": {
         "id": "string",
         "description": "string",
-        "schema": "string",
+        "scheme": "string",
         "uri": "string"
       },
       "region": {
         "id": "string",
         "description": "string",
-        "schema": "string",
+        "scheme": "string",
         "uri": "string"
       },
       "locality": {
         "id": "string",
         "description": "string",
-        "schema": "string"
+        "scheme": "string"
       }
     }
   },

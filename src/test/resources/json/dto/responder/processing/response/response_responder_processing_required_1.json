@@ -4,13 +4,13 @@
   "identifier": {
     "id": "string",
     "legalName": "string",
-    "schema": "string"
+    "scheme": "string"
   },
   "additionalIdentifiers": [
     {
       "id": "string",
       "legalName": "string",
-      "schema": "string"
+      "scheme": "string"
     }
   ],
   "address": {
@@ -19,19 +19,19 @@
       "country": {
         "id": "string",
         "description": "string",
-        "schema": "string",
+        "scheme": "string",
         "uri": "string"
       },
       "region": {
         "id": "string",
         "description": "string",
-        "schema": "string",
+        "scheme": "string",
         "uri": "string"
       },
       "locality": {
         "id": "string",
         "description": "string",
-        "schema": "string"
+        "scheme": "string"
       }
     }
   },
