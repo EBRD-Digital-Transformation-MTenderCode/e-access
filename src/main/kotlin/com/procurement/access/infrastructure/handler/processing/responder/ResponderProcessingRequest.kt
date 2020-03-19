@@ -2,14 +2,11 @@ package com.procurement.access.infrastructure.handler.processing.responder
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.access.domain.model.document.DocumentId
-import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
-import com.procurement.access.domain.model.enums.BusinessFunctionType
-import java.time.LocalDateTime
 
 data class ResponderProcessingRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
+    @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: String,
     @field:JsonProperty("responder") @param:JsonProperty("responder") val responder: Responder
 ) {
     data class Responder(
@@ -28,7 +25,7 @@ data class ResponderProcessingRequest(
 
         data class BusinessFunction(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("type") @param:JsonProperty("type") val type: BusinessFunctionType,
+            @field:JsonProperty("type") @param:JsonProperty("type") val type: String,
             @field:JsonProperty("jobTitle") @param:JsonProperty("jobTitle") val jobTitle: String,
             @field:JsonProperty("period") @param:JsonProperty("period") val period: Period,
 
@@ -36,12 +33,12 @@ data class ResponderProcessingRequest(
             @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
         ) {
             data class Period(
-                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
+                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: String
             )
 
             data class Document(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: DocumentId,
-                @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: BusinessFunctionDocumentType,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
