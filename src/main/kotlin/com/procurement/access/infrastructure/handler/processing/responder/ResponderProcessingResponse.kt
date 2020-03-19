@@ -86,7 +86,7 @@ data class ResponderProcessingResponse(
         @field:JsonProperty("faxNumber") @param:JsonProperty("faxNumber") val faxNumber: String?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+        @field:JsonProperty("url") @param:JsonProperty("url") val url: String?
     )
 
     data class Person(
