@@ -24,7 +24,7 @@ data class ResponderProcessingResponse(
     data class Identifier(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
         @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
-        @field:JsonProperty("schema") @param:JsonProperty("schema") val schema: String,
+        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
@@ -33,7 +33,7 @@ data class ResponderProcessingResponse(
     data class AdditionalIdentifier(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
         @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
-        @field:JsonProperty("schema") @param:JsonProperty("schema") val schema: String,
+        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
@@ -55,21 +55,21 @@ data class ResponderProcessingResponse(
             data class Country(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-                @field:JsonProperty("schema") @param:JsonProperty("schema") val schema: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
                 @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
             )
 
             data class Region(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-                @field:JsonProperty("schema") @param:JsonProperty("schema") val schema: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
                 @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
             )
 
             data class Locality(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-                @field:JsonProperty("schema") @param:JsonProperty("schema") val schema: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
