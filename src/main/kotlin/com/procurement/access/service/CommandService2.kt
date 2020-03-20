@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.infrastructure.handler.check.persons.CheckPersonesStructureHandler
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Service
 @Service
 class CommandService2(
     private val getLotIdsHandler: GetLotIdsHandler,
-    private val responderProcessingHandler: ResponderProcessingHandler
+    private val responderProcessingHandler: ResponderProcessingHandler,
+    private val checkPersonesStructureHandler: CheckPersonesStructureHandler
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(CommandService2::class.java)
@@ -43,6 +45,7 @@ class CommandService2(
         val response = when (action) {
             Command2Type.GET_LOT_IDS -> getLotIdsHandler.handle(node = request)
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
+            Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonesStructureHandler.handle(node = request)
         }
 
         if (log.isDebugEnabled)
