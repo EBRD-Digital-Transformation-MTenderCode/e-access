@@ -13,7 +13,6 @@ import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.service.ResponderService
-import com.procurement.access.utils.getStageFromOcid
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
@@ -47,9 +46,7 @@ class ResponderProcessingHandler(
             .doOnError { error -> return Result.failure(error) }
             .get
 
-        val stage = params.ocid.getStageFromOcid()
-
-        return responderService.responderProcessing(params = params, stage = stage)
+        return responderService.responderProcessing(params = params)
     }
 
     override val action: Command2Type

@@ -1,23 +1,31 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructureParams
 import com.procurement.access.application.model.responder.processing.ResponderProcessingParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
+import com.procurement.access.domain.fail.error.ValidationError
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResponse
 import com.procurement.access.model.entity.TenderProcessEntity
+import com.procurement.access.utils.getStageFromOcid
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 interface ResponderService {
-    fun responderProcessing(params: ResponderProcessingParams, stage: String): Result<ResponderProcessingResponse, Fail>
+    fun responderProcessing(params: ResponderProcessingParams): Result<ResponderProcessingResponse, Fail>
+    fun checkPersonesStructure(params: CheckPersonesStructureParams): ValidationResult<Fail.Error>
 }
 
 @Service
@@ -26,10 +34,9 @@ class ResponderServiceImpl(
     private val tenderProcessRepository: TenderProcessRepository
 ) : ResponderService {
 
-    override fun responderProcessing(
-        params: ResponderProcessingParams,
-        stage: String
-    ): Result<ResponderProcessingResponse, Fail> {
+    override fun responderProcessing(params: ResponderProcessingParams): Result<ResponderProcessingResponse, Fail> {
+
+        val stage = params.ocid.getStageFromOcid()
 
         val entity = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid, stage = stage)
             .doOnError { error -> return Result.failure(error) }
@@ -45,6 +52,11 @@ class ResponderServiceImpl(
         val responder = params.responder
         val dbPersons = cnEntity.tender.procuringEntity.persones
 
+        /**
+         * BR-1.0.1.15.3
+         * BR-1.0.1.15.4
+         * BR-1.0.1.5.3
+         */
         val updatedPersons = updateStrategy(
             receivedElements = listOf(responder),
             keyExtractorForReceivedElement = responderPersonKeyExtractor,
@@ -78,6 +90,55 @@ class ResponderServiceImpl(
             }
 
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())
+    }
+
+    override fun checkPersonesStructure(params: CheckPersonesStructureParams): ValidationResult<Fail.Error> {
+        when (params.locationOfPersones) {
+            LocationOfPersonsType.REQUIREMENT_RESPONSE -> {
+                params.persons
+                    .flatMap { it.businessFunctions }
+                    .apply {
+                        val result = validateRequirementResponseBusinessFunctionfType() // VR-10.5.5.2
+                        if (result.isError) return result
+                    }
+                    .flatMap { it.documents }
+                    .apply {
+                        val result = validateRequirementResponseDocumentType() // // VR-10.5.5.1
+                        if (result.isError) return result
+                    }
+            }
+        }
+
+        return ValidationResult.ok()
+    }
+
+    private fun List<CheckPersonesStructureParams.Person.BusinessFunction>.validateRequirementResponseBusinessFunctionfType()
+        : ValidationResult<Fail.Error> {
+        this.forEach {
+            when (it.type) {
+                BusinessFunctionType.CHAIRMAN,
+                BusinessFunctionType.PROCURMENT_OFFICER,
+                BusinessFunctionType.CONTACT_POINT,
+                BusinessFunctionType.TECHNICAL_EVALUATOR,
+                BusinessFunctionType.TECHNICAL_OPENER,
+                BusinessFunctionType.PRICE_OPENER,
+                BusinessFunctionType.PRICE_EVALUATOR -> Unit
+                BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
+                    ValidationError.InvalidBusinessFunctionType(it.id)
+                )
+            }
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun List<CheckPersonesStructureParams.Person.BusinessFunction.Document>.validateRequirementResponseDocumentType()
+        : ValidationResult<Fail.Error> {
+        this.forEach {
+            when (it.documentType) {
+                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+            }
+        }
+        return ValidationResult.ok()
     }
 
     private fun getTenderProcessEntityByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity, Fail> {
