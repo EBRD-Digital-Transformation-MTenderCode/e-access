@@ -5,6 +5,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.extension.mapOptionalResult
+import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingRequest
 
 fun ResponderProcessingRequest.convert(): Result<ResponderProcessingParams, DataErrors> {
@@ -29,7 +30,7 @@ private fun ResponderProcessingRequest.Responder.convert(): Result<ResponderProc
         .get
 
     val businessFunctions = this.businessFunctions
-        .mapOptionalResult { it.convert() }
+        .mapResult { it.convert() }
         .doOnError { error -> return failure(error) }
         .get
 
