@@ -59,7 +59,7 @@ class ResponderProcessingParams private constructor(
                 title: String,
                 name: String,
                 identifier: Identifier,
-                businessFunctions: Option<List<BusinessFunction>>
+                businessFunctions: List<BusinessFunction>
             ): Result<Responder, DataErrors> {
 
                 return Result.success(
@@ -67,7 +67,7 @@ class ResponderProcessingParams private constructor(
                         title = title,
                         name = name,
                         identifier = identifier,
-                        businessFunctions = businessFunctions.get
+                        businessFunctions = businessFunctions
                     )
                 )
             }
@@ -80,22 +80,12 @@ class ResponderProcessingParams private constructor(
         ) {
 
             companion object {
-                fun tryCreate(
-                    scheme: String,
-                    id: String,
-                    uri: String?
-                ): Result<Identifier, DataErrors> {
-
+                fun tryCreate(scheme: String, id: String, uri: String?): Result<Identifier, DataErrors> {
                     return Result.success(
-                        Identifier(
-                            scheme = scheme,
-                            id = id,
-                            uri = uri
-                        )
+                        Identifier(scheme = scheme, id = id, uri = uri)
                     )
                 }
             }
-
         }
 
         class BusinessFunction private constructor(
@@ -117,14 +107,39 @@ class ResponderProcessingParams private constructor(
 
                     val parsedType = type
                         .let {
-                            BusinessFunctionType.orNull(it)
-                                ?: return Result.failure(
+                            val businessFunctionType = BusinessFunctionType.orNull(it)
+                                ?: return failure(
                                     DataErrors.Validation.UnknownValue(
                                         name = "type",
                                         expectedValues = BusinessFunctionType.allowedValues,
                                         actualValue = it
                                     )
                                 )
+
+                            when (businessFunctionType) {
+                                BusinessFunctionType.CHAIRMAN,
+                                BusinessFunctionType.PROCURMENT_OFFICER,
+                                BusinessFunctionType.CONTACT_POINT,
+                                BusinessFunctionType.TECHNICAL_EVALUATOR,
+                                BusinessFunctionType.TECHNICAL_OPENER,
+                                BusinessFunctionType.PRICE_OPENER,
+                                BusinessFunctionType.PRICE_EVALUATOR -> businessFunctionType
+                                BusinessFunctionType.AUTHORITY       -> return failure(
+                                    DataErrors.Validation.UnknownValue(
+                                        name = "type",
+                                        expectedValues = listOf(
+                                            BusinessFunctionType.CHAIRMAN.key,
+                                            BusinessFunctionType.PROCURMENT_OFFICER.key,
+                                            BusinessFunctionType.CONTACT_POINT.key,
+                                            BusinessFunctionType.TECHNICAL_EVALUATOR.key,
+                                            BusinessFunctionType.TECHNICAL_OPENER.key,
+                                            BusinessFunctionType.PRICE_OPENER.key,
+                                            BusinessFunctionType.PRICE_EVALUATOR.key
+                                        ),
+                                        actualValue = it
+                                    )
+                                )
+                            }
                         }
 
                     return Result.success(
@@ -161,9 +176,7 @@ class ResponderProcessingParams private constructor(
                             .get
 
                         return Result.success(
-                            Period(
-                                startDate = startDateParsed
-                            )
+                            Period(startDate = startDateParsed)
                         )
                     }
                 }
@@ -186,14 +199,19 @@ class ResponderProcessingParams private constructor(
 
                         val createdDocumentType = documentType
                             .let {
-                                BusinessFunctionDocumentType.orNull(it)
-                                    ?: return Result.failure(
+                                val businessFunctionDocumentType = BusinessFunctionDocumentType.orNull(it)
+                                    ?: return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "documentType",
                                             expectedValues = BusinessFunctionDocumentType.allowedValues,
                                             actualValue = it
                                         )
                                     )
+
+                                when(businessFunctionDocumentType) {
+                                    BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> businessFunctionDocumentType
+                                }
+
                             }
 
                         return Result.success(
