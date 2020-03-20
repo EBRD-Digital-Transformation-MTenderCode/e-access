@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
+import com.procurement.access.lib.toSetBy
 import java.time.LocalDateTime
 
 class CheckPersonesStructureParams private constructor(
@@ -25,6 +26,12 @@ class CheckPersonesStructureParams private constructor(
             locationOfPersones: String
         ): Result<CheckPersonesStructureParams, DataErrors> {
 
+            val allowedTypes = LocationOfPersonsType.values().filter {
+                when (it) {
+                    LocationOfPersonsType.REQUIREMENT_RESPONSE -> true
+                }
+            }.toSetBy { it.key }
+
             val parsedType = locationOfPersones
                 .let {
                     val locationOfPersonsType = LocationOfPersonsType.orNull(it)
@@ -36,9 +43,16 @@ class CheckPersonesStructureParams private constructor(
                             )
                         )
 
-                    when(locationOfPersonsType) {
-                        LocationOfPersonsType.REQUIREMENT_RESPONSE -> locationOfPersonsType
-                    }
+                    if (locationOfPersonsType.key !in allowedTypes)
+                        return failure(
+                            DataErrors.Validation.UnknownValue(
+                                name = "locationOfPersones",
+                                expectedValues = allowedTypes,
+                                actualValue = it
+                            )
+                        )
+                    else
+                        locationOfPersonsType
 
                 }
 
@@ -120,41 +134,40 @@ class CheckPersonesStructureParams private constructor(
                     documents: Option<List<Document>>
                 ): Result<BusinessFunction, DataErrors> {
 
+                    val allowedTypes = BusinessFunctionType.values().filter {
+                        when (it) {
+                            BusinessFunctionType.CHAIRMAN,
+                            BusinessFunctionType.PROCURMENT_OFFICER,
+                            BusinessFunctionType.CONTACT_POINT,
+                            BusinessFunctionType.TECHNICAL_EVALUATOR,
+                            BusinessFunctionType.TECHNICAL_OPENER,
+                            BusinessFunctionType.PRICE_OPENER,
+                            BusinessFunctionType.PRICE_EVALUATOR -> true
+                            BusinessFunctionType.AUTHORITY       -> false
+                        }
+                    }.toSetBy { it.key }
+
                     val parsedType = type
                         .let {
                             val businessFunctionType = BusinessFunctionType.orNull(it)
                                 ?: return failure(
                                     DataErrors.Validation.UnknownValue(
-                                        name = "type",
+                                        name = "businessFunction.type",
                                         expectedValues = BusinessFunctionType.allowedValues,
                                         actualValue = it
                                     )
                                 )
 
-                            when (businessFunctionType) {
-                                BusinessFunctionType.CHAIRMAN,
-                                BusinessFunctionType.PROCURMENT_OFFICER,
-                                BusinessFunctionType.CONTACT_POINT,
-                                BusinessFunctionType.TECHNICAL_EVALUATOR,
-                                BusinessFunctionType.TECHNICAL_OPENER,
-                                BusinessFunctionType.PRICE_OPENER,
-                                BusinessFunctionType.PRICE_EVALUATOR -> businessFunctionType
-                                BusinessFunctionType.AUTHORITY       -> return failure(
+                            if (businessFunctionType.key !in allowedTypes)
+                                return failure(
                                     DataErrors.Validation.UnknownValue(
-                                        name = "type",
-                                        expectedValues = listOf(
-                                            BusinessFunctionType.CHAIRMAN.key,
-                                            BusinessFunctionType.PROCURMENT_OFFICER.key,
-                                            BusinessFunctionType.CONTACT_POINT.key,
-                                            BusinessFunctionType.TECHNICAL_EVALUATOR.key,
-                                            BusinessFunctionType.TECHNICAL_OPENER.key,
-                                            BusinessFunctionType.PRICE_OPENER.key,
-                                            BusinessFunctionType.PRICE_EVALUATOR.key
-                                        ),
+                                        name = "businessFunction.type",
+                                        expectedValues = allowedTypes,
                                         actualValue = it
                                     )
                                 )
-                            }
+                            else
+                                businessFunctionType
                         }
 
                     return Result.success(
@@ -214,6 +227,12 @@ class CheckPersonesStructureParams private constructor(
                         description: String?
                     ): Result<Document, DataErrors> {
 
+                        val allowedTypes = BusinessFunctionDocumentType.values().filter {
+                            when (it) {
+                                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
+                            }
+                        }.toSetBy { it.key }
+
                         val createdDocumentType = documentType
                             .let {
                                 val businessFunctionDocumentType = BusinessFunctionDocumentType.orNull(it)
@@ -224,10 +243,16 @@ class CheckPersonesStructureParams private constructor(
                                             actualValue = it
                                         )
                                     )
-
-                                when(businessFunctionDocumentType) {
-                                    BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> businessFunctionDocumentType
-                                }
+                                if (businessFunctionDocumentType.key !in allowedTypes)
+                                    return failure(
+                                        DataErrors.Validation.UnknownValue(
+                                            name = "documentType",
+                                            expectedValues = allowedTypes,
+                                            actualValue = it
+                                        )
+                                    )
+                                else
+                                    businessFunctionDocumentType
                             }
 
                         return Result.success(
