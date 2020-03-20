@@ -65,7 +65,7 @@ class LotServiceImpl(
             .get
             .jsonData
             .tryToObject(TenderProcess::class.java)
-            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident()) }
+            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
         if (params.lotIds.isEmpty()) {
@@ -76,9 +76,7 @@ class LotServiceImpl(
             }.asSuccess()
         }
 
-        val receivedLotIds = params.lotIds.asSequence()
-            .map { it.toString() }
-            .toSet()
+        val receivedLotIds = params.lotIds.toSetBy { it.toString() }
 
         val filteredLots = tenderProcess.tender.lots.filter { lot -> receivedLotIds.contains(lot.id) }
 
@@ -108,7 +106,7 @@ class LotServiceImpl(
             .jsonData
 
         val tenderProcess = data.tryToObject(TenderProcess::class.java)
-            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident()) }
+            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
 
