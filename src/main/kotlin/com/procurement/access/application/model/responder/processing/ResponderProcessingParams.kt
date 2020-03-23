@@ -1,6 +1,10 @@
 package com.procurement.access.application.model.responder.processing
 
+import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.date.tryParse
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -12,8 +16,8 @@ import com.procurement.access.lib.toSetBy
 import java.time.LocalDateTime
 
 class ResponderProcessingParams private constructor(
-    val cpid: String,
-    val ocid: String,
+    val cpid: Cpid,
+    val ocid: Ocid,
     val startDate: LocalDateTime,
     val responder: Responder
 ) {
@@ -24,6 +28,18 @@ class ResponderProcessingParams private constructor(
             startDate: String,
             responder: Responder
         ): Result<ResponderProcessingParams, DataErrors> {
+
+            val cpidResult = parseCpid(value = cpid)
+                .doOnError { error ->
+                    return failure(error)
+                }
+                .get
+
+            val ocidResult = parseOcid(value = ocid)
+                .doOnError { error ->
+                    return failure(error)
+                }
+                .get
 
             val startDateParsed = startDate.tryParse()
                 .doOnError { expectedFormat ->
@@ -39,8 +55,8 @@ class ResponderProcessingParams private constructor(
 
             return Result.success(
                 ResponderProcessingParams(
-                    cpid = cpid,
-                    ocid = ocid,
+                    cpid = cpidResult,
+                    ocid = ocidResult,
                     startDate = startDateParsed,
                     responder = responder
                 )
