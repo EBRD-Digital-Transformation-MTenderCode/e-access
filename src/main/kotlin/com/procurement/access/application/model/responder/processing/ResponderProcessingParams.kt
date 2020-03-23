@@ -106,35 +106,22 @@ class ResponderProcessingParams private constructor(
                     documents: Option<List<Document>>
                 ): Result<BusinessFunction, DataErrors> {
 
-                    val allowedTypes = BusinessFunctionType.values().filter {
-                        when (it) {
-                            BusinessFunctionType.CHAIRMAN,
-                            BusinessFunctionType.PROCURMENT_OFFICER,
-                            BusinessFunctionType.CONTACT_POINT,
-                            BusinessFunctionType.TECHNICAL_EVALUATOR,
-                            BusinessFunctionType.TECHNICAL_OPENER,
-                            BusinessFunctionType.PRICE_OPENER,
-                            BusinessFunctionType.PRICE_EVALUATOR -> true
-                            BusinessFunctionType.AUTHORITY       -> false
-                        }
-                    }.toSetBy { it.key }
-
                     val parsedType = type
                         .let {
                             val businessFunctionType = BusinessFunctionType.orNull(it)
                                 ?: return failure(
                                     DataErrors.Validation.UnknownValue(
                                         name = "businessFunction.type",
-                                        expectedValues = BusinessFunctionType.allowedValues,
+                                        expectedValues = allowedBusinessFunctionTypes,
                                         actualValue = it
                                     )
                                 )
 
-                            if (businessFunctionType.key !in allowedTypes)
+                            if (businessFunctionType.key !in allowedBusinessFunctionTypes)
                                 return failure(
                                     DataErrors.Validation.UnknownValue(
                                         name = "businessFunction.type",
-                                        expectedValues = allowedTypes,
+                                        expectedValues = allowedBusinessFunctionTypes,
                                         actualValue = it
                                     )
                                 )
@@ -198,28 +185,22 @@ class ResponderProcessingParams private constructor(
                         description: String?
                     ): Result<Document, DataErrors> {
 
-                        val allowedTypes = BusinessFunctionDocumentType.values().filter {
-                            when (it) {
-                                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
-                            }
-                        }.toSetBy { it.key }
-
                         val createdDocumentType = documentType
                             .let {
                                 val businessFunctionDocumentType = BusinessFunctionDocumentType.orNull(it)
                                     ?: return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "documentType",
-                                            expectedValues = BusinessFunctionDocumentType.allowedValues,
+                                            expectedValues = allowedBusinessFunctionDocumentTypes,
                                             actualValue = it
                                         )
                                     )
 
-                                if (businessFunctionDocumentType.key !in allowedTypes)
+                                if (businessFunctionDocumentType.key !in allowedBusinessFunctionDocumentTypes)
                                     return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "businessFunction.type",
-                                            expectedValues = allowedTypes,
+                                            expectedValues = allowedBusinessFunctionDocumentTypes,
                                             actualValue = it
                                         )
                                     )
@@ -243,3 +224,22 @@ class ResponderProcessingParams private constructor(
         }
     }
 }
+
+val allowedBusinessFunctionTypes = BusinessFunctionType.values().filter {
+    when (it) {
+        BusinessFunctionType.CHAIRMAN,
+        BusinessFunctionType.PROCURMENT_OFFICER,
+        BusinessFunctionType.CONTACT_POINT,
+        BusinessFunctionType.TECHNICAL_EVALUATOR,
+        BusinessFunctionType.TECHNICAL_OPENER,
+        BusinessFunctionType.PRICE_OPENER,
+        BusinessFunctionType.PRICE_EVALUATOR -> true
+        BusinessFunctionType.AUTHORITY       -> false
+    }
+}.toSetBy { it.key }
+
+val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.values().filter {
+    when (it) {
+        BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
+    }
+}.toSetBy { it.key }
