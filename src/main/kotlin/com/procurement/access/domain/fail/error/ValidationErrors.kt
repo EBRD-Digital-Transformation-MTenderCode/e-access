@@ -14,17 +14,17 @@ sealed class ValidationErrors(numberError: String, override val description: Str
     }
 
     class InvalidOwner(val owner: Owner, val cpid: String) : ValidationErrors(
-        numberError = "01",
+        numberError = "10.1.1.2",
         description = "Invalid owner '$owner' by cpid '$cpid'"
     )
 
     class InvalidToken(val token: Token, val cpid: String) : ValidationErrors(
-        numberError = "02",
+        numberError = "10.1.1.1",
         description = "Invalid token '$token' by cpid '$cpid'"
     )
 
     class LotsNotFound(val lotsId: Collection<String>) : ValidationErrors(
-        numberError = "03",
+        numberError = "10.1.3.1",
         description = "Lots '$lotsId' do not found."
     )
 }
