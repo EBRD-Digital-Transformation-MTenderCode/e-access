@@ -39,25 +39,25 @@ fun parseOcid(value: String): Result<Ocid, DataErrors.Validation.DataMismatchToP
         .get
         .asSuccess()
 
-fun parseOwner(value: String): Result<Owner, DataErrors.Validation.DataMismatchToPattern> =
+fun parseOwner(value: String): Result<Owner, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateOwner()
         .doOnError { pattern ->
-            return DataErrors.Validation.DataMismatchToPattern(
+            return DataErrors.Validation.DataFormatMismatch(
                 actualValue = value,
                 name = "owner",
-                pattern = pattern
+                expectedFormat = pattern
             ).asFailure()
         }
         .get
         .asSuccess()
 
-fun parseToken(value: String): Result<Token, DataErrors.Validation.DataMismatchToPattern> =
+fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateToken()
         .doOnError { pattern ->
-            return DataErrors.Validation.DataMismatchToPattern(
+            return DataErrors.Validation.DataFormatMismatch(
                 actualValue = value,
                 name = "token",
-                pattern = pattern
+                expectedFormat = pattern
             ).asFailure()
         }
         .get
