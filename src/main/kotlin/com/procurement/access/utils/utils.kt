@@ -58,6 +58,8 @@ fun milliNowUTC(): Long {
     return localNowUTC().toInstant(ZoneOffset.UTC).toEpochMilli()
 }
 
+fun LocalDateTime.toMilliseconds(): Long = this.toInstant(ZoneOffset.UTC).toEpochMilli()
+
 /*Json utils*/
 
 fun <Any> toJson(obj: Any): String {
