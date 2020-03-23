@@ -5,7 +5,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.token.Token
 
-sealed class ValidationErrors(numberError: String, override val description: String) : Fail.Error(prefix = "VE-") {
+sealed class ValidationErrors(numberError: String, override val description: String) : Fail.Error(prefix = "VR-") {
 
     override val code: String = prefix + numberError
 
