@@ -36,17 +36,15 @@ class ResponderServiceImpl(
 
     override fun responderProcessing(params: ResponderProcessingParams): Result<ResponderProcessingResponse, Fail> {
 
-        val stage = params.ocid.getStageFromOcid()
+        val stage = params.ocid.toString().getStageFromOcid()
 
-        val entity = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid, stage = stage)
+        val entity = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
 
         val cnEntity = entity.jsonData.tryToObject(CNEntity::class.java)
             .doOnError { error ->
-                error.logging(logger)
-                return Result.failure(Fail.Incident.DatabaseIncident())
-            }
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
         val responder = params.responder
@@ -76,7 +74,7 @@ class ResponderServiceImpl(
 
         tenderProcessRepository.save(
             TenderProcessEntity(
-                cpId = params.cpid,
+                cpId = params.cpid.toString(),
                 token = entity.token,
                 stage = stage,
                 owner = entity.owner,
@@ -85,8 +83,7 @@ class ResponderServiceImpl(
             )
         )
             .doOnError { error ->
-                error.logging(logger)
-                return Result.failure(Fail.Incident.DatabaseIncident())
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())

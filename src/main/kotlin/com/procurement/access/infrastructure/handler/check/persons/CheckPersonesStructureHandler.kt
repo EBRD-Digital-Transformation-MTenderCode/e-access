@@ -27,11 +27,11 @@ class CheckPersonesStructureHandler(
 
         val params: CheckPersonesStructureParams = paramsNode.tryToObject(CheckPersonesStructureRequest::class.java)
             .doOnError { error ->
-                error.logging(logger)
                 return ValidationResult.error(
                     BadRequestErrors.Parsing(
                         message = "Can not parse to ${error.className}",
-                        request = paramsNode.toString()
+                        request = paramsNode.toString(),
+                        exception = error.exception
                     )
                 )
             }
