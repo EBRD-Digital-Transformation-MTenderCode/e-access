@@ -20,7 +20,7 @@ class GetLotStateByIdsParams private constructor(
             cpid: String,
             ocid: String
         ): Result<GetLotStateByIdsParams, DataErrors> {
-            val cpidResult = Cpid.tryCreate(cpid = cpid)
+            val cpidResult = Cpid.tryCreate(value = cpid)
                 .doOnError { pattern ->
                     return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = cpid,
@@ -29,7 +29,7 @@ class GetLotStateByIdsParams private constructor(
                     ).asFailure()
                 }
                 .get
-            val ocidResult = Ocid.tryCreate(ocid = ocid)
+            val ocidResult = Ocid.tryCreate(value = ocid)
                 .doOnError { pattern ->
                     return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = ocid,

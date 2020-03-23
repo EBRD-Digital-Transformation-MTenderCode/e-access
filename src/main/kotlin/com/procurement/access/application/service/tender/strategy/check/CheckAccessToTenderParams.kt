@@ -25,7 +25,7 @@ class CheckAccessToTenderParams private constructor(
             token: String
         ): Result<CheckAccessToTenderParams, DataErrors> {
 
-            val cpidResult = Cpid.tryCreate(cpid = cpid)
+            val cpidResult = Cpid.tryCreate(value = cpid)
                 .doOnError { pattern ->
                     return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = cpid,
@@ -34,7 +34,7 @@ class CheckAccessToTenderParams private constructor(
                     ).asFailure()
                 }
                 .get
-            val ocidResult = Ocid.tryCreate(ocid = ocid)
+            val ocidResult = Ocid.tryCreate(value = ocid)
                 .doOnError { pattern ->
                     return DataErrors.Validation.DataMismatchToPattern(
                         actualValue = ocid,

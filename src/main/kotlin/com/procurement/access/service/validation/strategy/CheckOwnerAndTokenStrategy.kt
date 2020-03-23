@@ -38,24 +38,18 @@ class CheckOwnerAndTokenStrategy(
     }
 
     fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
-        val auths = tenderProcessRepository.findAuthByCpid(cpid = params.cpid.value)
+        val auths = tenderProcessRepository.findAuthByCpid(cpid = params.cpid.toString())
             .doOnError { error -> return ValidationResult.error(error) }
             .get
         auths.forEach { auth ->
             if (auth.owner != params.owner)
                 return ValidationResult.error(
-                    ValidationErrors.InvalidOwner(
-                        owner = auth.owner,
-                        cpid = params.cpid.value
-                    )
+                    ValidationErrors.InvalidOwner(owner = params.owner, cpid = params.cpid.toString())
                 )
 
             if (auth.token != params.token)
                 return ValidationResult.error(
-                    ValidationErrors.InvalidToken(
-                        token = auth.token,
-                        cpid = params.cpid.value
-                    )
+                    ValidationErrors.InvalidToken(token = params.token, cpid = params.cpid.toString())
                 )
         }
         return ValidationResult.ok()

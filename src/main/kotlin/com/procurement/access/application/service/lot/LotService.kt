@@ -58,9 +58,9 @@ class LotServiceImpl(
 ) : LotService {
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
-        val stage = params.ocid.value.getStageFromOcid()
+        val stage = params.ocid.toString().getStageFromOcid()
 
-        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.value, stage = stage)
+        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
             .jsonData
