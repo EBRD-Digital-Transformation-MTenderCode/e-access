@@ -1,6 +1,10 @@
 package com.procurement.access.application.model.responder.check.structure
 
+import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.date.tryParse
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -13,8 +17,8 @@ import com.procurement.access.lib.toSetBy
 import java.time.LocalDateTime
 
 class CheckPersonesStructureParams private constructor(
-    val cpid: String,
-    val ocid: String,
+    val cpid: Cpid,
+    val ocid: Ocid,
     val persons: List<Person>,
     val locationOfPersones: LocationOfPersonsType
 ) {
@@ -25,6 +29,18 @@ class CheckPersonesStructureParams private constructor(
             persons: List<Person>,
             locationOfPersones: String
         ): Result<CheckPersonesStructureParams, DataErrors> {
+
+            val cpidResult = parseCpid(value = cpid)
+                .doOnError { error ->
+                    return failure(error)
+                }
+                .get
+
+            val ocidResult = parseOcid(value = ocid)
+                .doOnError { error ->
+                    return failure(error)
+                }
+                .get
 
             val parsedType = locationOfPersones
                 .let {
@@ -52,8 +68,8 @@ class CheckPersonesStructureParams private constructor(
 
             return Result.success(
                 CheckPersonesStructureParams(
-                    cpid = cpid,
-                    ocid = ocid,
+                    cpid = cpidResult,
+                    ocid = ocidResult,
                     persons = persons,
                     locationOfPersones = parsedType
                 )
