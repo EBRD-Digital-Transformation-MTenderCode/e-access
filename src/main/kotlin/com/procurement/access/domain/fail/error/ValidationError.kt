@@ -6,7 +6,7 @@ sealed class ValidationError(numberError: String, override val description: Stri
     override val code: String = prefix + numberError
 
     class InvalidBusinessFunctionType(id: String) : ValidationError(
-        numberError = "1",
+        numberError = "10.5.5.2",
         description = "Business function '${id}' has invalid type."
     )
 }
