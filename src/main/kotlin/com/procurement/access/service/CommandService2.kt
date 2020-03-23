@@ -3,8 +3,8 @@ package com.procurement.access.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
-import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonesStructureHandler
+import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
@@ -13,14 +13,13 @@ import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getAction
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class CommandService2(
     private val getLotIdsHandler: GetLotIdsHandler,
     private val responderProcessingHandler: ResponderProcessingHandler,
-    private val checkPersonesStructureHandler: CheckPersonesStructureHandler
+    private val checkPersonesStructureHandler: CheckPersonesStructureHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val logger: Logger
