@@ -23,6 +23,8 @@ import java.util.*
 
 enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
     GET_LOT_IDS("getLotIds"),
+    CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
+    GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     RESPONDER_PROCESSING("responderProcessing"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure");
 
