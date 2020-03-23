@@ -1,5 +1,7 @@
 package com.procurement.access.application.service.lot
 
+import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -20,40 +22,39 @@ class GetLotStateByIdsParams private constructor(
             cpid: String,
             ocid: String
         ): Result<GetLotStateByIdsParams, DataErrors> {
-            val cpidResult = Cpid.tryCreate(value = cpid)
-                .doOnError { pattern ->
-                    return DataErrors.Validation.DataMismatchToPattern(
-                        actualValue = cpid,
-                        name = "cpid",
-                        pattern = pattern
-                    ).asFailure()
+            val cpidResult = parseCpid(value = cpid)
+                .doOnError { error ->
+                    return Result.failure(error)
                 }
                 .get
-            val ocidResult = Ocid.tryCreate(value = ocid)
-                .doOnError { pattern ->
-                    return DataErrors.Validation.DataMismatchToPattern(
-                        actualValue = ocid,
-                        name = "ocid",
-                        pattern = pattern
-                    ).asFailure()
+            val ocidResult = parseOcid(value = ocid)
+                .doOnError { error ->
+                    return Result.failure(error)
                 }
                 .get
 
-            val lotIdsResult = lotIds?.map { lotId ->
-                lotId.tryCreateLotId()
-                    .doOnError { format ->
-                        return DataErrors.Validation.DataFormatMismatch(
-                            actualValue = lotId,
-                            name = "lotIds",
-                            expectedFormat = "uuid"
-                        ).asFailure()
+            val lotIdsResult = if (lotIds != null) {
+                if (lotIds.isNotEmpty()) {
+                    lotIds.map { lotId ->
+                        lotId.tryCreateLotId()
+                            .doOnError { format ->
+                                return DataErrors.Validation.DataFormatMismatch(
+                                    actualValue = lotId,
+                                    name = "lotIds",
+                                    expectedFormat = "uuid"
+                                ).asFailure()
+                            }
+                            .get
                     }
-                    .get
-            }
+                } else {
+                    return DataErrors.Validation.EmptyArray(name = "lotIds")
+                        .asFailure()
+                }
+            } else emptyList()
             return GetLotStateByIdsParams(
                 cpid = cpidResult,
                 ocid = ocidResult,
-                lotIds = lotIdsResult ?: emptyList()
+                lotIds = lotIdsResult
             ).asSuccess()
         }
     }

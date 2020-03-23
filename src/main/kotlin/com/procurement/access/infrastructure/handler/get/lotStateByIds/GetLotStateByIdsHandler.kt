@@ -5,6 +5,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
@@ -29,7 +30,14 @@ class GetLotStateByIdsHandler(
             .doOnError { error -> return Result.failure(error) }
             .get
         val params = paramsNode.tryToObject(GetLotStateByIdsRequest::class.java)
-            .doOnError { error -> return Result.failure(error) }
+            .doOnError { error ->
+                return Result.failure(
+                    BadRequestErrors.Parsing(
+                        message = "Can not parse to ${error.className}",
+                        request = paramsNode.toString()
+                    )
+                )
+            }
             .get
             .convert()
             .doOnError { error -> return Result.failure(error) }

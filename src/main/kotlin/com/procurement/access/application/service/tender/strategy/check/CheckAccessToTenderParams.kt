@@ -1,14 +1,15 @@
 package com.procurement.access.application.service.tender.strategy.check
 
+import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
+import com.procurement.access.application.model.parseOwner
+import com.procurement.access.application.model.parseToken
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.owner.Owner
-import com.procurement.access.domain.model.owner.tryCreateOwner
 import com.procurement.access.domain.model.token.Token
-import com.procurement.access.domain.model.token.tryCreateToken
 import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 
 class CheckAccessToTenderParams private constructor(
@@ -25,49 +26,33 @@ class CheckAccessToTenderParams private constructor(
             token: String
         ): Result<CheckAccessToTenderParams, DataErrors> {
 
-            val cpidResult = Cpid.tryCreate(value = cpid)
-                .doOnError { pattern ->
-                    return DataErrors.Validation.DataMismatchToPattern(
-                        actualValue = cpid,
-                        name = "cpid",
-                        pattern = pattern
-                    ).asFailure()
+            val cpidResult = parseCpid(value = cpid)
+                .doOnError { error ->
+                    return Result.failure(error)
                 }
                 .get
-            val ocidResult = Ocid.tryCreate(value = ocid)
-                .doOnError { pattern ->
-                    return DataErrors.Validation.DataMismatchToPattern(
-                        actualValue = ocid,
-                        name = "ocid",
-                        pattern = pattern
-                    ).asFailure()
+            val ocidResult = parseOcid(value = ocid)
+                .doOnError { error ->
+                    return Result.failure(error)
                 }
                 .get
-            val ownerResult = owner.tryCreateOwner()
-                .doOnError { pattern ->
-                    return DataErrors.Validation.DataMismatchToPattern(
-                        actualValue = owner,
-                        name = "owner",
-                        pattern = pattern
-                    ).asFailure()
+            val ownerResult = parseOwner(value = owner)
+                .doOnError { error ->
+                    return Result.failure(error)
                 }
                 .get
-            val tokenResult = token.tryCreateToken()
-                .doOnError { pattern ->
-                    return DataErrors.Validation.DataMismatchToPattern(
-                        actualValue = token,
-                        name = "token",
-                        pattern = pattern
-                    ).asFailure()
+            val tokenResult = parseToken(value = token)
+                .doOnError { error ->
+                    return Result.failure(error)
                 }
                 .get
 
             return CheckAccessToTenderParams(
-                    cpid = cpidResult,
-                    ocid = ocidResult,
-                    owner = ownerResult,
-                    token = tokenResult
-                )
+                cpid = cpidResult,
+                ocid = ocidResult,
+                owner = ownerResult,
+                token = tokenResult
+            )
                 .asSuccess()
         }
     }

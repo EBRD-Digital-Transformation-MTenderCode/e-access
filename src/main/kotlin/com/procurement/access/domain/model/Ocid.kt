@@ -33,8 +33,8 @@ class Ocid private constructor(private val value: String) {
         fun tryCreateOrNull(value: String): Ocid? = if (value.matches(regex)) Ocid(value = value) else null
 
         fun tryCreate(value: String): Result<Ocid, String> =
-            if (value.matches(Ocid.regex)) Result.success(Ocid(value = value))
-            else Result.failure(Ocid.pattern)
+            if (value.matches(regex)) Result.success(Ocid(value = value))
+            else Result.failure(pattern)
 
         fun generate(cpid: Cpid, stage: Stage, timestamp: LocalDateTime): Ocid =
             Ocid("$cpid-$stage-${timestamp.toMilliseconds()}")

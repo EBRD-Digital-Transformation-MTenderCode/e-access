@@ -292,7 +292,8 @@ class LotServiceImpl(
 
         val lotId = this.id.tryCreateLotId()
             .doOnError { error ->
-                return error.asFailure()
+                return Fail.Incident.DatabaseIncident(exception = error.exception)
+                    .asFailure()
             }
             .get
 
