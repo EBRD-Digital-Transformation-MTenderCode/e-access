@@ -27,4 +27,10 @@ sealed class ValidationErrors(numberError: String, override val description: Str
         numberError = "10.1.3.1",
         description = "Lots '$lotsId' do not found."
     )
+
+    class InvalidBusinessFunctionType(id: String) : ValidationErrors(
+        numberError = "10.5.5.2",
+        description = "Business function '${id}' has invalid type."
+    )
+
 }

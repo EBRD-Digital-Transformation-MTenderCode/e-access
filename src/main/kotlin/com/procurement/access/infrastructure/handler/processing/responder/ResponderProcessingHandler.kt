@@ -37,7 +37,8 @@ class ResponderProcessingHandler(
                 return Result.failure(
                     BadRequestErrors.Parsing(
                         message = "Can not parse to ${error.className}",
-                        request = paramsNode.toString()
+                        request = paramsNode.toString(),
+                        exception = error.exception
                     )
                 )
             }

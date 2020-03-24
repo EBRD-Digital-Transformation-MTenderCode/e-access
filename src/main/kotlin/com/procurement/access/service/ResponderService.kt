@@ -6,7 +6,7 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
-import com.procurement.access.domain.fail.error.ValidationError
+import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
@@ -42,9 +42,11 @@ class ResponderServiceImpl(
             .doOnError { error -> return Result.failure(error) }
             .get
 
-        val cnEntity = entity.jsonData.tryToObject(CNEntity::class.java)
+        val cnEntity = entity.jsonData
+            .tryToObject(CNEntity::class.java)
             .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
             .get
 
         val responder = params.responder
@@ -121,7 +123,7 @@ class ResponderServiceImpl(
                 BusinessFunctionType.PRICE_OPENER,
                 BusinessFunctionType.PRICE_EVALUATOR -> Unit
                 BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
-                    ValidationError.InvalidBusinessFunctionType(it.id)
+                    ValidationErrors.InvalidBusinessFunctionType(it.id)
                 )
             }
         }
