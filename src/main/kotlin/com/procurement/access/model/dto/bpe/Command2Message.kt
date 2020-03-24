@@ -8,6 +8,7 @@ import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.Result
@@ -18,6 +19,7 @@ import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
+import com.procurement.access.utils.tryToObject
 import java.time.LocalDateTime
 import java.util.*
 
@@ -133,6 +135,21 @@ fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
         }
 }
 
+fun <T : Any> JsonNode.tryParamsToObject(target: Class<T>): Result<T, BadRequestErrors> {
+    return tryToObject(target = target)
+        .doOnError {
+            return Result.failure(
+                BadRequestErrors.Parsing(
+                    message = "Can not parse 'params'.",
+                    request = this.toString(),
+                    exception = it.exception
+                )
+            )
+        }
+        .get
+        .asSuccess()
+}
+
 private fun asUUID(value: String): Result<UUID, DataErrors> =
     try {
         Result.success<UUID>(UUID.fromString(value))
@@ -159,5 +176,5 @@ fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
         Result.failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
 }
 
-fun  JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =
+fun JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =
     getAttribute("params")
