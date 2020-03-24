@@ -1,11 +1,11 @@
 package com.procurement.access.application.model.responder.check.structure
 
 import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.date.tryParse
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
@@ -188,16 +188,8 @@ class CheckPersonesStructureParams private constructor(
                         startDate: String
                     ): Result<Period, DataErrors> {
 
-                        val startDateParsed = startDate.tryParse()
-                            .doOnError { expectedFormat ->
-                                return failure(
-                                    DataErrors.Validation.DataFormatMismatch(
-                                        name = "startDate",
-                                        actualValue = startDate,
-                                        expectedFormat = expectedFormat
-                                    )
-                                )
-                            }
+                        val startDateParsed = parseDate(startDate)
+                            .doOnError { error -> return failure(error) }
                             .get
 
                         return Result.success(

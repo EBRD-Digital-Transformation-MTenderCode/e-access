@@ -1,6 +1,7 @@
 package com.procurement.access.application.model.responder.processing
 
 import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
@@ -114,6 +115,19 @@ class ResponderProcessingParams private constructor(
         ) {
 
             companion object {
+                private val allowedBusinessFunctionTypes = BusinessFunctionType.values().filter {
+                    when (it) {
+                        BusinessFunctionType.CHAIRMAN,
+                        BusinessFunctionType.PROCURMENT_OFFICER,
+                        BusinessFunctionType.CONTACT_POINT,
+                        BusinessFunctionType.TECHNICAL_EVALUATOR,
+                        BusinessFunctionType.TECHNICAL_OPENER,
+                        BusinessFunctionType.PRICE_OPENER,
+                        BusinessFunctionType.PRICE_EVALUATOR -> true
+                        BusinessFunctionType.AUTHORITY       -> false
+                    }
+                }.toSetBy { it.key }
+
                 fun tryCreate(
                     id: String,
                     type: String,
@@ -167,16 +181,8 @@ class ResponderProcessingParams private constructor(
                         startDate: String
                     ): Result<Period, DataErrors> {
 
-                        val startDateParsed = startDate.tryParse()
-                            .doOnError { expectedFormat ->
-                                return failure(
-                                    DataErrors.Validation.DataFormatMismatch(
-                                        name = "startDate",
-                                        actualValue = startDate,
-                                        expectedFormat = expectedFormat
-                                    )
-                                )
-                            }
+                        val startDateParsed = parseDate(startDate)
+                            .doOnError { error -> return failure(error) }
                             .get
 
                         return Result.success(
@@ -194,6 +200,12 @@ class ResponderProcessingParams private constructor(
             ) {
 
                 companion object {
+                    private val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.values().filter {
+                        when (it) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
+                        }
+                    }.toSetBy { it.key }
+
                     fun tryCreate(
                         id: String,
                         documentType: String,
@@ -240,22 +252,3 @@ class ResponderProcessingParams private constructor(
         }
     }
 }
-
-val allowedBusinessFunctionTypes = BusinessFunctionType.values().filter {
-    when (it) {
-        BusinessFunctionType.CHAIRMAN,
-        BusinessFunctionType.PROCURMENT_OFFICER,
-        BusinessFunctionType.CONTACT_POINT,
-        BusinessFunctionType.TECHNICAL_EVALUATOR,
-        BusinessFunctionType.TECHNICAL_OPENER,
-        BusinessFunctionType.PRICE_OPENER,
-        BusinessFunctionType.PRICE_EVALUATOR -> true
-        BusinessFunctionType.AUTHORITY       -> false
-    }
-}.toSetBy { it.key }
-
-val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.values().filter {
-    when (it) {
-        BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
-    }
-}.toSetBy { it.key }
