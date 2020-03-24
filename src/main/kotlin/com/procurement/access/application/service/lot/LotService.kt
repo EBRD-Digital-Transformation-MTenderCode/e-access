@@ -5,6 +5,7 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -25,7 +26,7 @@ import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.getStageFromOcid
+import com.procurement.access.utils.getStage
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
@@ -43,7 +44,7 @@ interface LotService {
     ): SettedLotsStatusUnsuccessful
 
     fun getLotIds(
-        cpId: String,
+        cpId: Cpid,
         stage: String,
         states: List<GetLotIdsParams.State>
     ): Result<List<LotId>, Fail>
@@ -58,7 +59,7 @@ class LotServiceImpl(
 ) : LotService {
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
-        val stage = params.ocid.toString().getStageFromOcid()
+        val stage = params.ocid.getStage()
 
         val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = stage)
             .doOnError { error -> return Result.failure(error) }
@@ -95,12 +96,12 @@ class LotServiceImpl(
     }
 
     override fun getLotIds(
-        cpId: String,
+        cpId: Cpid,
         stage: String,
         states: List<GetLotIdsParams.State>
     ): Result<List<LotId>, Fail> {
 
-        val data = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
+        val data = getTenderProcessEntityByCpIdAndStage(cpId = cpId.toString(), stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
             .jsonData

@@ -13,7 +13,7 @@ import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
-import com.procurement.access.utils.getStageFromOcid
+import com.procurement.access.utils.getStage
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
@@ -48,7 +48,7 @@ class GetLotIdsHandler(
             .doOnError { error -> return Result.failure(error) }
             .get
 
-        val stage = params.ocid.getStageFromOcid()
+        val stage = params.ocid.getStage()
 
         return lotService.getLotIds(cpId = params.cpid, stage = stage, states = params.states)
     }
