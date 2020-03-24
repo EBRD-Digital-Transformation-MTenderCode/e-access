@@ -4,6 +4,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.toSetBy
 
 class GetLotIdsParams private constructor(
     val cpid: String,
@@ -11,6 +12,20 @@ class GetLotIdsParams private constructor(
     val states: List<State>
 ) {
     companion object {
+
+        private val allowedLotStatuses = listOf(
+            LotStatus.PLANNING,
+            LotStatus.ACTIVE,
+            LotStatus.COMPLETE,
+            LotStatus.UNSUCCESSFUL,
+            LotStatus.CANCELLED
+        ).toSetBy { it.key }
+
+        private val allowedLotStatusDetails = listOf(
+            LotStatusDetails.EMPTY,
+            LotStatusDetails.AWARDED
+        ).toSetBy { it.key }
+
         fun tryCreate(
             cpid: String,
             ocid: String,
@@ -45,10 +60,11 @@ class GetLotIdsParams private constructor(
                 val createdStatus = status
                     ?.let {
                         LotStatus.orNull(it)
+                            ?.takeIf { status -> status.key in allowedLotStatuses }
                             ?: return Result.failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "status",
-                                    expectedValues = LotStatus.allowedValues,
+                                    expectedValues = allowedLotStatuses,
                                     actualValue = it
                                 )
                             )
@@ -57,10 +73,11 @@ class GetLotIdsParams private constructor(
                 val createdStatusDetail = statusDetails
                     ?.let {
                         LotStatusDetails.orNull(statusDetails)
+                            ?.takeIf { statusDetails -> statusDetails.key in allowedLotStatusDetails }
                             ?: return Result.failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "statusDetails",
-                                    expectedValues = LotStatusDetails.allowedValues,
+                                    expectedValues = allowedLotStatusDetails,
                                     actualValue = it
                                 )
                             )

@@ -34,7 +34,7 @@ internal class GetLotIdsParamsTest {
         val unsortedStates = listOf(
             createState(status = "cancelled", statusDetails = null),
             createState(status = "active", statusDetails = null),
-            createState(status = "planned", statusDetails = null),
+            createState(status = "planning", statusDetails = null),
             createState(status = "active", statusDetails = null),
             createState(status = null, statusDetails = null)
         )
@@ -42,7 +42,7 @@ internal class GetLotIdsParamsTest {
             createState(status = "active", statusDetails = null),
             createState(status = "active", statusDetails = null),
             createState(status = "cancelled", statusDetails = null),
-            createState(status = "planned", statusDetails = null),
+            createState(status = "planning", statusDetails = null),
             createState(status = null, statusDetails = null)
         )
 
@@ -54,16 +54,14 @@ internal class GetLotIdsParamsTest {
     fun testSortByLotStatusDetails(){
         val unsortedStates = listOf(
             createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = "cancelled"),
             createState(status = null, statusDetails = "empty"),
             createState(status = null, statusDetails = null),
-            createState(status = null, statusDetails = "unsuccessful")
+            createState(status = null, statusDetails = "awarded")
         )
         val expected = listOf(
-            createState(status = null, statusDetails = "cancelled"),
+            createState(status = null, statusDetails = "awarded"),
             createState(status = null, statusDetails = "empty"),
             createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = "unsuccessful"),
             createState(status = null, statusDetails = null)
         )
 
