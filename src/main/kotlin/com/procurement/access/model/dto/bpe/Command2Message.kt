@@ -8,6 +8,7 @@ import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
+import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.Result
@@ -18,6 +19,7 @@ import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiVersion
+import com.procurement.access.utils.tryToObject
 import java.time.LocalDateTime
 import java.util.*
 
@@ -41,8 +43,8 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
 fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
     when (fail) {
         is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
-        is Error -> generateErrorResponse(id = id, version = version, fail = fail)
-        is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
+        is Error                 -> generateErrorResponse(id = id, version = version, fail = fail)
+        is Fail.Incident         -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
 
 fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiDataErrorResponse =
@@ -58,7 +60,7 @@ fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Va
         )
     )
 
-fun generateErrorResponse(id: UUID, version: ApiVersion, fail: Fail.Error): ApiErrorResponse =
+fun generateErrorResponse(id: UUID, version: ApiVersion, fail: Error): ApiErrorResponse =
     ApiErrorResponse(
         version = version,
         id = id,
@@ -148,6 +150,21 @@ private fun asUUID(value: String): Result<UUID, DataErrors> =
         )
     }
 
+fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
+    return this.tryToObject(clazz)
+        .doOnError { error ->
+            return Result.failure(
+                BadRequestErrors.Parsing(
+                    message = "Can not parse 'params",
+                    request = this.toString(),
+                    exception = error.exception
+                )
+            )
+        }
+        .get
+        .asSuccess()
+}
+
 fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
     return if (has(name)) {
         val attr = get(name)
@@ -161,5 +178,5 @@ fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
         Result.failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
 }
 
-fun  JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =
+fun JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =
     getAttribute("params")
