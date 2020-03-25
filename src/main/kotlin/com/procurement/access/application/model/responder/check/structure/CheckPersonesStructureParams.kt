@@ -23,6 +23,12 @@ class CheckPersonesStructureParams private constructor(
     val locationOfPersones: LocationOfPersonsType
 ) {
     companion object {
+        private val allowedLocationOfPersonsTypes = LocationOfPersonsType.values().filter {
+            when (it) {
+                LocationOfPersonsType.REQUIREMENT_RESPONSE -> true
+            }
+        }.toSetBy { it.key }
+
         fun tryCreate(
             cpid: String,
             ocid: String,
@@ -44,7 +50,8 @@ class CheckPersonesStructureParams private constructor(
 
             val parsedType = locationOfPersones
                 .let {
-                    val locationOfPersonsType = LocationOfPersonsType.orNull(it)
+                    LocationOfPersonsType.orNull(it)
+                        ?.takeIf { it.key in allowedLocationOfPersonsTypes }
                         ?: return failure(
                             DataErrors.Validation.UnknownValue(
                                 name = "locationOfPersones",
@@ -52,17 +59,6 @@ class CheckPersonesStructureParams private constructor(
                                 actualValue = it
                             )
                         )
-
-                    if (locationOfPersonsType.key !in allowedLocationOfPersonsTypes)
-                        return failure(
-                            DataErrors.Validation.UnknownValue(
-                                name = "locationOfPersones",
-                                expectedValues = allowedLocationOfPersonsTypes,
-                                actualValue = it
-                            )
-                        )
-                    else
-                        locationOfPersonsType
 
                 }
 
@@ -136,6 +132,19 @@ class CheckPersonesStructureParams private constructor(
         ) {
 
             companion object {
+                private val allowedBusinessFunctionTypes = BusinessFunctionType.values().filter {
+                    when (it) {
+                        BusinessFunctionType.CHAIRMAN,
+                        BusinessFunctionType.PROCURMENT_OFFICER,
+                        BusinessFunctionType.CONTACT_POINT,
+                        BusinessFunctionType.TECHNICAL_EVALUATOR,
+                        BusinessFunctionType.TECHNICAL_OPENER,
+                        BusinessFunctionType.PRICE_OPENER,
+                        BusinessFunctionType.PRICE_EVALUATOR -> true
+                        BusinessFunctionType.AUTHORITY       -> false
+                    }
+                }.toSetBy { it.key }
+
                 fun tryCreate(
                     id: String,
                     type: String,
@@ -146,7 +155,8 @@ class CheckPersonesStructureParams private constructor(
 
                     val parsedType = type
                         .let {
-                            val businessFunctionType = BusinessFunctionType.orNull(it)
+                            BusinessFunctionType.orNull(it)
+                                ?.takeIf { it.key in allowedBusinessFunctionTypes }
                                 ?: return failure(
                                     DataErrors.Validation.UnknownValue(
                                         name = "businessFunction.type",
@@ -154,17 +164,6 @@ class CheckPersonesStructureParams private constructor(
                                         actualValue = it
                                     )
                                 )
-
-                            if (businessFunctionType.key !in allowedBusinessFunctionTypes)
-                                return failure(
-                                    DataErrors.Validation.UnknownValue(
-                                        name = "businessFunction.type",
-                                        expectedValues = allowedBusinessFunctionTypes,
-                                        actualValue = it
-                                    )
-                                )
-                            else
-                                businessFunctionType
                         }
 
                     return Result.success(
@@ -209,6 +208,12 @@ class CheckPersonesStructureParams private constructor(
             ) {
 
                 companion object {
+                    private val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.values().filter {
+                        when (it) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
+                        }
+                    }.toSetBy { it.key }
+
                     fun tryCreate(
                         id: String,
                         documentType: String,
@@ -218,7 +223,8 @@ class CheckPersonesStructureParams private constructor(
 
                         val createdDocumentType = documentType
                             .let {
-                                val businessFunctionDocumentType = BusinessFunctionDocumentType.orNull(it)
+                                BusinessFunctionDocumentType.orNull(it)
+                                    ?.takeIf { it.key in allowedBusinessFunctionDocumentTypes }
                                     ?: return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "documentType",
@@ -226,16 +232,6 @@ class CheckPersonesStructureParams private constructor(
                                             actualValue = it
                                         )
                                     )
-                                if (businessFunctionDocumentType.key !in allowedBusinessFunctionDocumentTypes)
-                                    return failure(
-                                        DataErrors.Validation.UnknownValue(
-                                            name = "documentType",
-                                            expectedValues = allowedBusinessFunctionDocumentTypes,
-                                            actualValue = it
-                                        )
-                                    )
-                                else
-                                    businessFunctionDocumentType
                             }
 
                         return Result.success(
@@ -253,27 +249,3 @@ class CheckPersonesStructureParams private constructor(
     }
 }
 
-val allowedLocationOfPersonsTypes = LocationOfPersonsType.values().filter {
-    when (it) {
-        LocationOfPersonsType.REQUIREMENT_RESPONSE -> true
-    }
-}.toSetBy { it.key }
-
-val allowedBusinessFunctionTypes = BusinessFunctionType.values().filter {
-    when (it) {
-        BusinessFunctionType.CHAIRMAN,
-        BusinessFunctionType.PROCURMENT_OFFICER,
-        BusinessFunctionType.CONTACT_POINT,
-        BusinessFunctionType.TECHNICAL_EVALUATOR,
-        BusinessFunctionType.TECHNICAL_OPENER,
-        BusinessFunctionType.PRICE_OPENER,
-        BusinessFunctionType.PRICE_EVALUATOR -> true
-        BusinessFunctionType.AUTHORITY       -> false
-    }
-}.toSetBy { it.key }
-
-val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.values().filter {
-    when (it) {
-        BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
-    }
-}.toSetBy { it.key }

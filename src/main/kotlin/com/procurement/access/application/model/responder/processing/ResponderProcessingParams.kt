@@ -138,7 +138,8 @@ class ResponderProcessingParams private constructor(
 
                     val parsedType = type
                         .let {
-                            val businessFunctionType = BusinessFunctionType.orNull(it)
+                            BusinessFunctionType.orNull(it)
+                                ?.takeIf { it.key in allowedBusinessFunctionTypes }
                                 ?: return failure(
                                     DataErrors.Validation.UnknownValue(
                                         name = "businessFunction.type",
@@ -146,18 +147,6 @@ class ResponderProcessingParams private constructor(
                                         actualValue = it
                                     )
                                 )
-
-                            if (businessFunctionType.key !in allowedBusinessFunctionTypes)
-                                return failure(
-                                    DataErrors.Validation.UnknownValue(
-                                        name = "businessFunction.type",
-                                        expectedValues = allowedBusinessFunctionTypes,
-                                        actualValue = it
-                                    )
-                                )
-                            else
-                                businessFunctionType
-
                         }
 
                     return Result.success(
@@ -215,7 +204,8 @@ class ResponderProcessingParams private constructor(
 
                         val createdDocumentType = documentType
                             .let {
-                                val businessFunctionDocumentType = BusinessFunctionDocumentType.orNull(it)
+                                BusinessFunctionDocumentType.orNull(it)
+                                    ?.takeIf { it.key in allowedBusinessFunctionDocumentTypes }
                                     ?: return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "documentType",
@@ -223,19 +213,6 @@ class ResponderProcessingParams private constructor(
                                             actualValue = it
                                         )
                                     )
-
-                                if (businessFunctionDocumentType.key !in allowedBusinessFunctionDocumentTypes)
-                                    return failure(
-                                        DataErrors.Validation.UnknownValue(
-                                            name = "businessFunction.type",
-                                            expectedValues = allowedBusinessFunctionDocumentTypes,
-                                            actualValue = it
-                                        )
-                                    )
-                                else
-                                    businessFunctionDocumentType
-
-
                             }
 
                         return Result.success(
