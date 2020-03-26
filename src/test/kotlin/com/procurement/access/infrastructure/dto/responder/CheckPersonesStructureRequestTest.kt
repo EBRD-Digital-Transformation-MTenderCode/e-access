@@ -4,8 +4,8 @@ import com.procurement.access.infrastructure.AbstractDTOTestBase
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonesStructureRequest
 import org.junit.jupiter.api.Test
 
-class CheckPersonesStructureRequestTest : AbstractDTOTestBase<CheckPersonesStructureRequest>(
-    CheckPersonesStructureRequest::class.java
+class CheckPersonesStructureRequestTest : AbstractDTOTestBase<CheckPersonesStructureRequest.Params>(
+    CheckPersonesStructureRequest.Params::class.java
 ) {
     @Test
     fun fully() {

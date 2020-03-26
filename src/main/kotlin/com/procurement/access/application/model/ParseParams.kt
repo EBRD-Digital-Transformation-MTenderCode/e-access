@@ -65,7 +65,7 @@ fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMis
         .get
         .asSuccess()
 
-fun parseDate(value: String): Result<LocalDateTime, DataErrors.Validation.DataFormatMismatch> =
+fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation.DataFormatMismatch> =
     value.tryParse()
         .doOnError { expectedFormat ->
             return Result.failure(

@@ -1,9 +1,8 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructureParams
+import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessingParams
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -25,12 +24,11 @@ import org.springframework.stereotype.Service
 
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessingParams): Result<ResponderProcessingResponse, Fail>
-    fun checkPersonesStructure(params: CheckPersonesStructureParams): ValidationResult<Fail.Error>
+    fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
 }
 
 @Service
 class ResponderServiceImpl(
-    private val logger: Logger,
     private val tenderProcessRepository: TenderProcessRepository
 ) : ResponderService {
 
@@ -91,7 +89,7 @@ class ResponderServiceImpl(
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())
     }
 
-    override fun checkPersonesStructure(params: CheckPersonesStructureParams): ValidationResult<Fail.Error> {
+    override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
         when (params.locationOfPersones) {
             LocationOfPersonsType.REQUIREMENT_RESPONSE -> {
                 params.persons
@@ -111,7 +109,7 @@ class ResponderServiceImpl(
         return ValidationResult.ok()
     }
 
-    private fun List<CheckPersonesStructureParams.Person.BusinessFunction>.validateRequirementResponseBusinessFunctionfType()
+    private fun List<CheckPersonesStructure.Params.Person.BusinessFunction>.validateRequirementResponseBusinessFunctionfType()
         : ValidationResult<Fail.Error> {
         this.forEach {
             when (it.type) {
@@ -130,7 +128,7 @@ class ResponderServiceImpl(
         return ValidationResult.ok()
     }
 
-    private fun List<CheckPersonesStructureParams.Person.BusinessFunction.Document>.validateRequirementResponseDocumentType()
+    private fun List<CheckPersonesStructure.Params.Person.BusinessFunction.Document>.validateRequirementResponseDocumentType()
         : ValidationResult<Fail.Error> {
         this.forEach {
             when (it.documentType) {

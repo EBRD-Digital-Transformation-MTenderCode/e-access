@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service
 @Service
 class CheckPersonesStructureHandler(
     private val responderService: ResponderService,
-    private val logger: Logger
+    logger: Logger
 ) : AbstractValidationHandler<Command2Type>(logger) {
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
         val params = node.tryGetParams()
             .doOnError { error -> return ValidationResult.error(error) }
             .get
-            .tryParamsToObject(CheckPersonesStructureRequest::class.java)
+            .tryParamsToObject(CheckPersonesStructureRequest.Params::class.java)
             .doOnError { error -> return ValidationResult.error(error) }
             .get
             .convert()

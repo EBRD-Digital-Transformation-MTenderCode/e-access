@@ -1,8 +1,8 @@
 package com.procurement.access.application.model.responder.processing
 
 import com.procurement.access.application.model.parseCpid
-import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseOcid
+import com.procurement.access.application.model.parseStartDate
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -170,7 +170,7 @@ class ResponderProcessingParams private constructor(
                         startDate: String
                     ): Result<Period, DataErrors> {
 
-                        val startDateParsed = parseDate(startDate)
+                        val startDateParsed = parseStartDate(startDate)
                             .doOnError { error -> return failure(error) }
                             .get
 
