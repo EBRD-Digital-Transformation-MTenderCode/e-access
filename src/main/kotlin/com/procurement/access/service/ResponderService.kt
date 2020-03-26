@@ -6,9 +6,11 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.extension.toSetBy
@@ -16,7 +18,6 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResponse
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.getStageFromOcid
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject
@@ -33,10 +34,9 @@ class ResponderServiceImpl(
 ) : ResponderService {
 
     override fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResponse, Fail> {
+        val stage = params.ocid.stage
 
-        val stage = params.ocid.toString().getStageFromOcid()
-
-        val entity = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = stage)
+        val entity = getTenderProcessEntityByCpIdAndStage(cpid = params.cpid, stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
 
@@ -76,7 +76,7 @@ class ResponderServiceImpl(
             TenderProcessEntity(
                 cpId = params.cpid.toString(),
                 token = entity.token,
-                stage = stage,
+                stage = stage.toString(),
                 owner = entity.owner,
                 createdDate = params.startDate.toDate(),
                 jsonData = toJson(updatedCnEntity)
@@ -138,14 +138,14 @@ class ResponderServiceImpl(
         return ValidationResult.ok()
     }
 
-    private fun getTenderProcessEntityByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpId = cpId, stage = stage)
+    private fun getTenderProcessEntityByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpId = cpid.toString(), stage = stage.toString())
             .doOnError { error -> return Result.failure(error) }
             .get
             ?: return Result.failure(
                 BadRequestErrors.EntityNotFound(
                     entityName = "TenderProcessEntity",
-                    by = "by cpid = '$cpId' and stage = '$stage'"
+                    by = "by cpid = '$cpid' and stage = '$stage'"
                 )
             )
 
