@@ -7,6 +7,15 @@ import com.procurement.access.exception.EnumElementProviderException
 
 abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
                                                                    T : EnumElementProvider.Key {
+
+    @Target(AnnotationTarget.PROPERTY)
+    @MustBeDocumented
+    annotation class DeprecatedElement
+
+    @Target(AnnotationTarget.PROPERTY)
+    @MustBeDocumented
+    annotation class ExcludedElement
+
     interface Key {
         val key: String
     }
@@ -17,15 +26,22 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
     )
 
     companion object {
-        inline fun <reified T : Enum<T>> info() = EnumInfo(
-            target = T::class.java,
-            values = enumValues()
-        )
+        inline fun <reified T : Enum<T>> info() = EnumInfo(target = T::class.java, values = enumValues())
     }
 
     private val elements: Map<String, T> = info.values.associateBy { it.key.toUpperCase() }
 
-    val allowedValues: List<String> = info.values.map { it.key }
+    val allowedValues: List<String> = info.values
+        .asSequence()
+        .filter { element -> element.isNotExcluded() }
+        .map { element -> element.key + if (element.isDeprecated()) " (Deprecated)" else "" }
+        .toList()
+
+    private fun <E : Enum<E>> Enum<E>.isDeprecated(): Boolean = this.findAnnotation<DeprecatedElement, E>() != null
+    private fun <E : Enum<E>> Enum<E>.isNotExcluded(): Boolean = this.findAnnotation<ExcludedElement, E>() == null
+
+    private inline fun <reified A : Annotation, E : Enum<E>> Enum<E>.findAnnotation(): Annotation? =
+        this::class.java.getField((this as Enum<*>).name).annotations.find { it is A }
 
     fun orNull(key: String): T? = elements[key.toUpperCase()]
 
@@ -46,4 +62,6 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
             failure("Unknown value '$key' for enum type '$enumType'. Allowed values are '$allowedValues'.")
         }
     }
+
+    operator fun contains(key: String): Boolean = orNull(key) != null
 }
