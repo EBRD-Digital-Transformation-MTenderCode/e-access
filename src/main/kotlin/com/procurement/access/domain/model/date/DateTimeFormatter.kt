@@ -11,10 +11,10 @@ private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(formatPat
 
 fun LocalDateTime.format(): String = this.format(formatter)
 
-fun String.parse(): LocalDateTime = LocalDateTime.parse(this, formatter)
+fun String.parseLocalDateTime(): LocalDateTime = LocalDateTime.parse(this, formatter)
 
-fun String.tryParse(): Result<LocalDateTime, String> = try {
-    Result.success(LocalDateTime.parse(this, formatter))
+fun String.tryParseLocalDateTime(): Result<LocalDateTime, String> = try {
+    Result.success(this.parseLocalDateTime())
 } catch (ignore: Exception) {
     Result.failure(formatPattern)
 }

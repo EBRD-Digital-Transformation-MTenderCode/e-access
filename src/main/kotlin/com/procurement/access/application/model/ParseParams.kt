@@ -3,7 +3,7 @@ package com.procurement.access.application.model
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.date.tryParse
+import com.procurement.access.domain.model.date.tryParseLocalDateTime
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.owner.tryCreateOwner
 import com.procurement.access.domain.model.token.Token
@@ -66,7 +66,7 @@ fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMis
         .asSuccess()
 
 fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation.DataFormatMismatch> =
-    value.tryParse()
+    value.tryParseLocalDateTime()
         .doOnError { expectedFormat ->
             return Result.failure(
                 DataErrors.Validation.DataFormatMismatch(

@@ -4,8 +4,8 @@ import com.procurement.access.infrastructure.AbstractDTOTestBase
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingRequest
 import org.junit.jupiter.api.Test
 
-class ResponderProcessingRequestTest : AbstractDTOTestBase<ResponderProcessingRequest>(
-    ResponderProcessingRequest::class.java
+class ResponderProcessingRequestTest : AbstractDTOTestBase<ResponderProcessingRequest.Params>(
+    ResponderProcessingRequest.Params::class.java
 ) {
     @Test
     fun fully() {

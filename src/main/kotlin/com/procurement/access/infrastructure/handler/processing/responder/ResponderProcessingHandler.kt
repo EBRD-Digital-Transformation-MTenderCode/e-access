@@ -29,7 +29,7 @@ class ResponderProcessingHandler(
         val params = node.tryGetParams()
             .doOnError { error -> return Result.failure(error) }
             .get
-            .tryParamsToObject(ResponderProcessingRequest::class.java)
+            .tryParamsToObject(ResponderProcessingRequest.Params::class.java)
             .doOnError { error -> return Result.failure(error) }
             .get
             .convert()
