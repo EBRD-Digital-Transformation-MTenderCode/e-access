@@ -13,7 +13,6 @@ import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
-import com.procurement.access.utils.getStage
 import org.springframework.stereotype.Service
 
 @Service
@@ -40,9 +39,7 @@ class GetLotIdsHandler(
             .doOnError { error -> return Result.failure(error) }
             .get
 
-        val stage = params.ocid.getStage()
-
-        return lotService.getLotIds(cpId = params.cpid, stage = stage, states = params.states)
+        return lotService.getLotIds(cpId = params.cpid, stage = params.ocid.stage.key, states = params.states)
     }
 
     override val action: Command2Type

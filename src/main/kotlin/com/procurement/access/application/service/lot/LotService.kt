@@ -26,7 +26,6 @@ import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.getStage
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
@@ -59,9 +58,8 @@ class LotServiceImpl(
 ) : LotService {
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
-        val stage = params.ocid.getStage()
 
-        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = stage)
+        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = params.ocid.stage.key)
             .doOnError { error -> return Result.failure(error) }
             .get
             .jsonData

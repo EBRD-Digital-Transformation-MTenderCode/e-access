@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.util.Result
 import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
@@ -104,5 +103,3 @@ fun String.toNode(): Result<JsonNode, Fail.Incident.Transforming> = try {
 } catch (exception: JsonProcessingException) {
     Result.failure(Fail.Incident.Transforming(exception = exception))
 }
-
-fun Ocid.getStage() = this.toString().split("-")[4]
