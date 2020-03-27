@@ -1007,7 +1007,7 @@ class CnOnPnServiceTest {
                         it.getObject("identifier").setAttribute("id", "NEW_UNIQUE_ID")
                         println(it)
                         val businessFunction = it.getArray("businessFunctions").get(0) as ObjectNode
-                        businessFunction.setAttribute("type", "authority")
+                        businessFunction.setAttribute("type", "chairman")
                     }
                     person.putArray("businessFunctions")
 
