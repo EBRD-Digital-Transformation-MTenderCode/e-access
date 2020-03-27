@@ -3,14 +3,13 @@ package com.procurement.access.infrastructure.handler.check.accesstotender
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
+import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.validation.ValidationService
-import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 @Service
@@ -25,15 +24,8 @@ class CheckAccessToTenderHandler(
             .doOnError { error -> return ValidationResult.error(error) }
             .get
 
-        val params = paramsNode.tryToObject(CheckAccessToTenderRequest::class.java)
-            .doOnError { error ->
-                return ValidationResult.error(
-                    BadRequestErrors.Parsing(
-                        message = "Can not parse to ${error.className}",
-                        request = paramsNode.toString()
-                    )
-                )
-            }
+        val params = paramsNode.tryParamsToObject(CheckAccessToTenderRequest::class.java)
+            .doOnError { error -> return ValidationResult.error(error) }
             .get
             .convert()
             .doOnError { error -> return ValidationResult.error(error) }
