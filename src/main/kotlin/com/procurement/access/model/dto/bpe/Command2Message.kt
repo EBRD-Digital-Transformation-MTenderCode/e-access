@@ -139,21 +139,6 @@ fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
         }
 }
 
-fun <T : Any> JsonNode.tryParamsToObject(target: Class<T>): Result<T, BadRequestErrors> {
-    return tryToObject(target = target)
-        .doOnError {
-            return Result.failure(
-                BadRequestErrors.Parsing(
-                    message = "Can not parse 'params'.",
-                    request = this.toString(),
-                    exception = it.exception
-                )
-            )
-        }
-        .get
-        .asSuccess()
-}
-
 private fun JsonNode.tryGetStringAttribute(name: String): Result<String, DataErrors> {
     return this.tryGetAttribute(name = name, type = JsonNodeType.STRING)
         .map {
