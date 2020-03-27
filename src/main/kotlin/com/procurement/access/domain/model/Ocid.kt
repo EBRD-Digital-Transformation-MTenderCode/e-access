@@ -1,13 +1,15 @@
 package com.procurement.access.domain.model
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.utils.toMilliseconds
+import java.io.Serializable
 import java.time.LocalDateTime
 
-class Ocid private constructor(private val value: String) {
+class Ocid private constructor(private val value: String, val stage: Stage) : Serializable {
 
     override fun equals(other: Any?): Boolean {
         return if (this !== other)
@@ -23,6 +25,7 @@ class Ocid private constructor(private val value: String) {
     override fun toString(): String = value
 
     companion object {
+        private const val STAGE_POSITION = 4
         private val STAGES: String
             get() = Stage.allowedElements.keysAsStrings()
                 .joinToString(separator = "|", prefix = "(", postfix = ")") { it.toUpperCase() }
@@ -32,13 +35,24 @@ class Ocid private constructor(private val value: String) {
         val pattern: String
             get() = regex.pattern
 
-        fun tryCreateOrNull(value: String): Ocid? = if (value.matches(regex)) Ocid(value = value) else null
+
+        @JvmStatic
+        @JsonCreator
+        fun tryCreateOrNull(value: String): Ocid? =
+            if (value.matches(regex)) {
+                val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!
+                Ocid(value = value, stage = stage)
+            } else
+                null
 
         fun tryCreate(value: String): Result<Ocid, String> =
-            if (value.matches(regex)) Result.success(Ocid(value = value))
-            else Result.failure(pattern)
+            if (value.matches(regex)) {
+                val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!
+                Result.success(Ocid(value = value, stage = stage))
+            } else
+                Result.failure(pattern)
 
         fun generate(cpid: Cpid, stage: Stage, timestamp: LocalDateTime): Ocid =
-            Ocid("$cpid-$stage-${timestamp.toMilliseconds()}")
+            Ocid("$cpid-$stage-${timestamp.toMilliseconds()}", stage)
     }
 }

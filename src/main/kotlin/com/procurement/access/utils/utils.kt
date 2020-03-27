@@ -103,5 +103,3 @@ fun String.toNode(): Result<JsonNode, Fail.Incident.Transforming> = try {
 } catch (exception: JsonProcessingException) {
     Result.failure(Fail.Incident.Transforming(exception = exception))
 }
-
-fun String.getStageFromOcid() = this.split("-")[4]

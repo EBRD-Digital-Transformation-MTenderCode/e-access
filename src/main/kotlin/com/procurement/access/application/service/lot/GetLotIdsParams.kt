@@ -1,14 +1,19 @@
 package com.procurement.access.application.service.lot
 
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
+import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.asFailure
 
 class GetLotIdsParams private constructor(
-    val cpid: String,
-    val ocid: String,
+    val cpid: Cpid,
+    val ocid: Ocid,
     val states: List<State>
 ) {
     companion object {
@@ -41,15 +46,23 @@ class GetLotIdsParams private constructor(
             states: List<State>?
         ): Result<GetLotIdsParams, DataErrors> {
 
+            val cpidResult = parseCpid(value = cpid)
+                .doOnError { error-> return error.asFailure() }
+                .get
+
+            val ocidResult = parseOcid(value = ocid)
+                .doOnError { error-> return error.asFailure() }
+                .get
+
             if (states != null && states.isEmpty()) {
                 return Result.failure(DataErrors.Validation.EmptyArray("GetLotIdsParams.states"))
             }
 
             return Result.success(
                 GetLotIdsParams(
-                    cpid = cpid,
+                    cpid = cpidResult,
                     states = states ?: emptyList(),
-                    ocid = ocid
+                    ocid = ocidResult
                 )
             )
         }
