@@ -8,6 +8,7 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -44,7 +45,7 @@ interface LotService {
 
     fun getLotIds(
         cpId: Cpid,
-        stage: String,
+        stage: Stage,
         states: List<GetLotIdsParams.State>
     ): Result<List<LotId>, Fail>
 
@@ -59,7 +60,7 @@ class LotServiceImpl(
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
 
-        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid.toString(), stage = params.ocid.stage.key)
+        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid, stage = params.ocid.stage)
             .doOnError { error -> return Result.failure(error) }
             .get
             .jsonData
@@ -95,11 +96,11 @@ class LotServiceImpl(
 
     override fun getLotIds(
         cpId: Cpid,
-        stage: String,
+        stage: Stage,
         states: List<GetLotIdsParams.State>
     ): Result<List<LotId>, Fail> {
 
-        val data = getTenderProcessEntityByCpIdAndStage(cpId = cpId.toString(), stage = stage)
+        val data = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
             .jsonData
@@ -415,8 +416,8 @@ class LotServiceImpl(
             lot
     }
 
-    private fun getTenderProcessEntityByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpId = cpId, stage = stage)
+    private fun getTenderProcessEntityByCpIdAndStage(cpId: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpId, stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
             ?: return Result.failure(

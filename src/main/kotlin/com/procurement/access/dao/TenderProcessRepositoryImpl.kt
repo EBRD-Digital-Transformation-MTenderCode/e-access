@@ -8,6 +8,8 @@ import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.procurement.access.application.repository.Auth
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
@@ -77,11 +79,11 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .doOnError { error -> return failure(error) }
     }
 
-    override fun getByCpIdAndStage(cpId: String, stage: String): Result<TenderProcessEntity?, Fail.Incident.Database> {
+    override fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database> {
         val query = preparedGetByCpIdAndStageCQL.bind()
             .apply {
-                setString(COLUMN_CPID, cpId)
-                setString(COLUMN_STAGE, stage)
+                setString(COLUMN_CPID, cpid.toString())
+                setString(COLUMN_STAGE, stage.toString())
             }
 
         return load(query)
@@ -92,10 +94,10 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .asSuccess()
     }
 
-    override fun findAuthByCpid(cpid: String): Result<List<Auth>, Fail.Incident.Database> {
+    override fun findAuthByCpid(cpid: Cpid): Result<List<Auth>, Fail.Incident.Database> {
         val query = preparedFindAuthByCpidCQL.bind()
             .apply {
-                setString(COLUMN_CPID, cpid)
+                setString(COLUMN_CPID, cpid.toString())
             }
 
         return load(query)
