@@ -40,7 +40,8 @@ class Command2Controller(
                 return responseEntity(
                     expected = BadRequestErrors.Parsing(
                         message = "Invalid request data",
-                        request = requestBody
+                        request = requestBody,
+                        exception = error.exception
                     )
                 )
             }

@@ -6,7 +6,7 @@ import com.procurement.access.domain.fail.Fail
 sealed class BadRequestErrors(
     numberError: String,
     override val description: String
-) : Fail.Error("BR-") {
+) : Fail.Error("RQ-") {
 
     override val code: String = prefix + numberError
 
@@ -20,7 +20,11 @@ sealed class BadRequestErrors(
         description = message
     ) {
         override fun logging(logger: Logger) {
-            logger.error(message = message, exception = exception )
+            logger.error(message = "$message Invalid request body $request.", exception = exception)
         }
+    }
+
+    override fun logging(logger: Logger) {
+        logger.error(message = message)
     }
 }

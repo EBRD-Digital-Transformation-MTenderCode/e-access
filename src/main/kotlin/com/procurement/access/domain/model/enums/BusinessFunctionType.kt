@@ -3,9 +3,10 @@ package com.procurement.access.domain.model.enums
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
+import com.procurement.access.domain.EnumElementProvider.ExcludedElement
 
 enum class BusinessFunctionType(@JsonValue override val key: String) : EnumElementProvider.Key {
-    @Deprecated("Use 'chairman' instead of it")
+    @ExcludedElement
     AUTHORITY("authority"),
 
     CHAIRMAN("chairman"),
