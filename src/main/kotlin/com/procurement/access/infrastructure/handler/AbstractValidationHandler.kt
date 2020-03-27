@@ -19,13 +19,11 @@ abstract class AbstractValidationHandler<ACTION : Action>(
         val id = node.getId().get
         val version = node.getVersion().get
 
-        val result = execute(node)
-            .also {
-                logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
-            }
-
-        return when (result) {
+        return when (val result = execute(node)) {
             is ValidationResult.Ok -> ApiSuccessResponse(version = version, id = id)
+                .also {
+                    logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
+                }
             is ValidationResult.Fail -> responseError(id = id, version = version, fail = result.error)
         }
     }

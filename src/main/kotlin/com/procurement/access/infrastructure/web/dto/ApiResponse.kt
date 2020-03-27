@@ -42,7 +42,8 @@ class ApiDataErrorResponse(
     @field:JsonProperty("status")
     override val status: ResponseStatus = ResponseStatus.ERROR
 
-    class Error(val code: String?, val description: String?, val attributeName: String)
+    class Error(val code: String?, val description: String?, val details: List<Detail>)
+    class Detail(val name: String)
 }
 
 class ApiErrorResponse(

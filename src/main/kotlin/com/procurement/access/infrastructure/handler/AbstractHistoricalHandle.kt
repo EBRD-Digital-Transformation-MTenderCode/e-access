@@ -38,14 +38,11 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
                 }
             return result.get
         }
-        val serviceResult = execute(node)
-            .also {
-                logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
-            }
 
-        return when (serviceResult) {
+        return when (val serviceResult = execute(node)) {
             is Result.Success -> ApiSuccessResponse(id = id, version = version, result = serviceResult.get)
                 .also {
+                    logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
                     historyRepository.saveHistory(id.toString(), action.key, it)
                 }
             is Result.Failure -> responseError(id = id, version = version, fail = serviceResult.error)
