@@ -1,5 +1,6 @@
 package com.procurement.access.application.service.lot
 
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -11,6 +12,29 @@ class GetLotIdsParams private constructor(
     val states: List<State>
 ) {
     companion object {
+
+        private val allowedLotStatuses = LotStatus.allowedElements
+            .filter {
+                when (it) {
+                    LotStatus.PLANNING,
+                    LotStatus.ACTIVE,
+                    LotStatus.COMPLETE,
+                    LotStatus.UNSUCCESSFUL,
+                    LotStatus.CANCELLED -> true
+                    LotStatus.PLANNED -> false
+                }
+            }
+
+        private val allowedLotStatusDetails = LotStatusDetails.allowedElements
+            .filter {
+                when (it) {
+                    LotStatusDetails.EMPTY,
+                    LotStatusDetails.AWARDED -> true
+                    LotStatusDetails.UNSUCCESSFUL,
+                    LotStatusDetails.CANCELLED -> false
+                }
+            }
+
         fun tryCreate(
             cpid: String,
             ocid: String,
@@ -45,10 +69,11 @@ class GetLotIdsParams private constructor(
                 val createdStatus = status
                     ?.let {
                         LotStatus.orNull(it)
+                            ?.takeIf { status -> status in allowedLotStatuses }
                             ?: return Result.failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "status",
-                                    expectedValues = LotStatus.allowedValues,
+                                    expectedValues = allowedLotStatuses.keysAsStrings(),
                                     actualValue = it
                                 )
                             )
@@ -57,10 +82,11 @@ class GetLotIdsParams private constructor(
                 val createdStatusDetail = statusDetails
                     ?.let {
                         LotStatusDetails.orNull(statusDetails)
+                            ?.takeIf { statusDetails -> statusDetails in allowedLotStatusDetails }
                             ?: return Result.failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "statusDetails",
-                                    expectedValues = LotStatusDetails.allowedValues,
+                                    expectedValues = allowedLotStatusDetails.keysAsStrings(),
                                     actualValue = it
                                 )
                             )
