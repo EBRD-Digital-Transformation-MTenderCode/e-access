@@ -159,7 +159,7 @@
           "businessFunctions": [
             {
               "id": "tender.procuringEntity.persones[0].businessFunctions[0].id",
-              "type": "authority",
+              "type": "chairman",
               "jobTitle": "Chief Executive Officer",
               "period": {
                 "startDate": "2018-04-01T10:00:00Z"

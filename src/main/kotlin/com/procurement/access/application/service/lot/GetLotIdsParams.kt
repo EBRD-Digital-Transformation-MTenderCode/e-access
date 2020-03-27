@@ -1,5 +1,6 @@
 package com.procurement.access.application.service.lot
 
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -48,7 +49,7 @@ class GetLotIdsParams private constructor(
                             ?: return Result.failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "status",
-                                    expectedValues = LotStatus.allowedValues,
+                                    expectedValues = LotStatus.allowedElements.keysAsStrings(),
                                     actualValue = it
                                 )
                             )
@@ -60,7 +61,7 @@ class GetLotIdsParams private constructor(
                             ?: return Result.failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "statusDetails",
-                                    expectedValues = LotStatusDetails.allowedValues,
+                                    expectedValues = LotStatusDetails.allowedElements.keysAsStrings(),
                                     actualValue = it
                                 )
                             )

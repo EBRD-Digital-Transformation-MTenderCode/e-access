@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.NullNode
 import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.EnumElementProvider
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
 import com.procurement.access.domain.fail.error.BadRequestErrors
@@ -133,7 +134,7 @@ fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
                 DataErrors.Validation.UnknownValue(
                     name = "action",
                     actualValue = value,
-                    expectedValues = Command2Type.allowedValues
+                    expectedValues = Command2Type.allowedElements.keysAsStrings()
                 )
             )
         }
