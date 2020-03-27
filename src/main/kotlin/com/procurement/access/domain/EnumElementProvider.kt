@@ -9,11 +9,9 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
                                                                    T : EnumElementProvider.Key {
 
     @Target(AnnotationTarget.PROPERTY)
-    @MustBeDocumented
     annotation class DeprecatedElement
 
     @Target(AnnotationTarget.PROPERTY)
-    @MustBeDocumented
     annotation class ExcludedElement
 
     interface Key {
@@ -37,12 +35,6 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
         .map { element -> element.key + if (element.isDeprecated()) " (Deprecated)" else "" }
         .toList()
 
-    private fun <E : Enum<E>> Enum<E>.isDeprecated(): Boolean = this.findAnnotation<DeprecatedElement, E>() != null
-    private fun <E : Enum<E>> Enum<E>.isNotExcluded(): Boolean = this.findAnnotation<ExcludedElement, E>() == null
-
-    private inline fun <reified A : Annotation, E : Enum<E>> Enum<E>.findAnnotation(): Annotation? =
-        this::class.java.getField((this as Enum<*>).name).annotations.find { it is A }
-
     fun orNull(key: String): T? = elements[key.toUpperCase()]
 
     fun orThrow(key: String): T = orNull(key)
@@ -64,4 +56,10 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
     }
 
     operator fun contains(key: String): Boolean = orNull(key) != null
+
+    private fun <E : Enum<E>> Enum<E>.isNotExcluded(): Boolean = this.findAnnotation<ExcludedElement, E>() == null
+    private fun <E : Enum<E>> Enum<E>.isDeprecated(): Boolean = this.findAnnotation<DeprecatedElement, E>() != null
+    private inline fun <reified A : Annotation, E : Enum<E>> Enum<E>.findAnnotation(): A? = this.javaClass
+        .getDeclaredField(this.name)
+        .getAnnotation(A::class.java)
 }
