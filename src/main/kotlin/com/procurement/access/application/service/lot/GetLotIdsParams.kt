@@ -13,18 +13,29 @@ class GetLotIdsParams private constructor(
 ) {
     companion object {
 
-        private val allowedLotStatuses = listOf(
-            LotStatus.PLANNING,
-            LotStatus.ACTIVE,
-            LotStatus.COMPLETE,
-            LotStatus.UNSUCCESSFUL,
-            LotStatus.CANCELLED
-        ).toSetBy { it.key }
+        private val allowedLotStatuses = LotStatus.values()
+            .filter {
+                when (it) {
+                    LotStatus.PLANNING,
+                    LotStatus.ACTIVE,
+                    LotStatus.COMPLETE,
+                    LotStatus.UNSUCCESSFUL,
+                    LotStatus.CANCELLED -> true
+                    LotStatus.PLANNED -> false
+                }
+            }
+            .toSetBy { it.key }
 
-        private val allowedLotStatusDetails = listOf(
-            LotStatusDetails.EMPTY,
-            LotStatusDetails.AWARDED
-        ).toSetBy { it.key }
+        private val allowedLotStatusDetails = LotStatusDetails.values()
+            .filter {
+                when (it) {
+                    LotStatusDetails.EMPTY,
+                    LotStatusDetails.AWARDED -> true
+                    LotStatusDetails.UNSUCCESSFUL,
+                    LotStatusDetails.CANCELLED -> false
+                }
+            }
+            .toSetBy { it.key }
 
         fun tryCreate(
             cpid: String,
