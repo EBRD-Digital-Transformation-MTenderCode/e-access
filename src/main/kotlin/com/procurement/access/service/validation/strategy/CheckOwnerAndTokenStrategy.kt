@@ -41,6 +41,10 @@ class CheckOwnerAndTokenStrategy(
         val auths = tenderProcessRepository.findAuthByCpid(cpid = params.cpid)
             .doOnError { error -> return ValidationResult.error(error) }
             .get
+
+        if (auths.isEmpty())
+            return ValidationResult.error(ValidationErrors.TenderNotFound(cpid = params.cpid, ocid = params.ocid))
+
         auths.forEach { auth ->
             if (auth.owner != params.owner)
                 return ValidationResult.error(
