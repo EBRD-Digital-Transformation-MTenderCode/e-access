@@ -7,13 +7,14 @@ import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.date.tryParseLocalDateTime
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.util.None
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
+import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
 class ResponderProcessing {
@@ -40,16 +41,8 @@ class ResponderProcessing {
                     .doOnError { error -> return failure(error) }
                     .get
 
-                val startDateParsed = startDate.tryParseLocalDateTime()
-                    .doOnError { expectedFormat ->
-                        return failure(
-                            DataErrors.Validation.DataFormatMismatch(
-                                name = "startDate",
-                                actualValue = startDate,
-                                expectedFormat = expectedFormat
-                            )
-                        )
-                    }
+                val startDateParsed = parseStartDate(startDate)
+                    .doOnError { error -> return failure(error) }
                     .get
 
                 return Result.success(
@@ -154,7 +147,10 @@ class ResponderProcessing {
                                 type = parsedType,
                                 jobTitle = jobTitle,
                                 period = period,
-                                documents = documents.get
+                                documents = when (documents) {
+                                    is Some -> documents.get
+                                    None    -> emptyList()
+                                }
                             )
                         )
                     }

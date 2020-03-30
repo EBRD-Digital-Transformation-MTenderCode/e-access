@@ -180,7 +180,7 @@ fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
         .doOnError { error ->
             return Result.failure(
                 BadRequestErrors.Parsing(
-                    message = "Can not parse 'params",
+                    message = "Can not parse 'params'.",
                     request = this.toString(),
                     exception = error.exception
                 )

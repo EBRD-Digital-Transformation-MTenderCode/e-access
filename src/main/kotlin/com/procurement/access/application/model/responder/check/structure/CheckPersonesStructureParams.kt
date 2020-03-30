@@ -11,9 +11,11 @@ import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
+import com.procurement.access.domain.util.None
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
+import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
 class CheckPersonesStructure {
@@ -168,7 +170,10 @@ class CheckPersonesStructure {
                                 type = parsedType,
                                 jobTitle = jobTitle,
                                 period = period,
-                                documents = documents.get
+                                documents = when (documents) {
+                                    is Some -> documents.get
+                                    None    -> emptyList()
+                                }
                             )
                         )
                     }

@@ -1,14 +1,14 @@
 package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResponse
+import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 
-fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
-    ResponderProcessingResponse(
+fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResult =
+    ResponderProcessingResult(
         id = this.id,
         identifier = this.identifier
             .let { identifier ->
-                ResponderProcessingResponse.Identifier(
+                ResponderProcessingResult.Identifier(
                     id = identifier.id,
                     scheme = identifier.scheme,
                     legalName = identifier.legalName,
@@ -17,7 +17,7 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
             },
         additionalIdentifiers = this.additionalIdentifiers
             ?.map { additionalIdentifiers ->
-                ResponderProcessingResponse.AdditionalIdentifier(
+                ResponderProcessingResult.AdditionalIdentifier(
                     id = additionalIdentifiers.id,
                     scheme = additionalIdentifiers.scheme,
                     legalName = additionalIdentifiers.legalName,
@@ -27,7 +27,7 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
         name = this.name,
         contactPoint = this.contactPoint
             .let { contactPoint ->
-                ResponderProcessingResponse.ContactPoint(
+                ResponderProcessingResult.ContactPoint(
                     name = contactPoint.name,
                     url = contactPoint.url,
                     email = contactPoint.email,
@@ -37,15 +37,15 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
             },
         address = this.address
             .let { address ->
-                ResponderProcessingResponse.Address(
+                ResponderProcessingResult.Address(
                     streetAddress = address.streetAddress,
                     postalCode = address.postalCode,
                     addressDetails = address.addressDetails
                         .let { addressDetails ->
-                            ResponderProcessingResponse.Address.AddressDetails(
+                            ResponderProcessingResult.Address.AddressDetails(
                                 country = addressDetails.country
                                     .let { country ->
-                                        ResponderProcessingResponse.Address.AddressDetails.Country(
+                                        ResponderProcessingResult.Address.AddressDetails.Country(
                                             id = country.id,
                                             scheme = country.scheme,
                                             description = country.description,
@@ -54,7 +54,7 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
                                     },
                                 region = addressDetails.region
                                     .let { region ->
-                                        ResponderProcessingResponse.Address.AddressDetails.Region(
+                                        ResponderProcessingResult.Address.AddressDetails.Region(
                                             id = region.id,
                                             scheme = region.scheme,
                                             description = region.description,
@@ -63,7 +63,7 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
                                     },
                                 locality = addressDetails.locality
                                     .let { locality ->
-                                        ResponderProcessingResponse.Address.AddressDetails.Locality(
+                                        ResponderProcessingResult.Address.AddressDetails.Locality(
                                             id = locality.id,
                                             scheme = locality.scheme,
                                             description = locality.description,
@@ -76,12 +76,12 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
             },
         persons = this.persones
             ?.map { person ->
-                ResponderProcessingResponse.Person(
+                ResponderProcessingResult.Person(
                     title = person.title,
                     name = person.name,
                     identifier = person.identifier
                         .let { identifier ->
-                            ResponderProcessingResponse.Person.Identifier(
+                            ResponderProcessingResult.Person.Identifier(
                                 id = identifier.id,
                                 scheme = identifier.scheme,
                                 uri = identifier.uri
@@ -89,19 +89,19 @@ fun CNEntity.Tender.ProcuringEntity.convert(): ResponderProcessingResponse =
                         },
                     businessFunctions = person.businessFunctions
                         .map { businessFunction ->
-                            ResponderProcessingResponse.Person.BusinessFunction(
+                            ResponderProcessingResult.Person.BusinessFunction(
                                 id = businessFunction.id,
                                 type = businessFunction.type,
                                 jobTitle = businessFunction.jobTitle,
                                 period = businessFunction.period
                                     .let { period ->
-                                        ResponderProcessingResponse.Person.BusinessFunction.Period(
+                                        ResponderProcessingResult.Person.BusinessFunction.Period(
                                             startDate = period.startDate
                                         )
                                     },
                                 documents = businessFunction.documents
                                     ?.map { document ->
-                                        ResponderProcessingResponse.Person.BusinessFunction.Document(
+                                        ResponderProcessingResult.Person.BusinessFunction.Document(
                                             id = document.id,
                                             title = document.title,
                                             description = document.description,

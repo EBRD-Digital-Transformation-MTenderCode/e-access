@@ -16,7 +16,7 @@ import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResponse
+import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -24,7 +24,7 @@ import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 interface ResponderService {
-    fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResponse, Fail>
+    fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
     fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
 }
 
@@ -33,7 +33,7 @@ class ResponderServiceImpl(
     private val tenderProcessRepository: TenderProcessRepository
 ) : ResponderService {
 
-    override fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResponse, Fail> {
+    override fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail> {
         val stage = params.ocid.stage
 
         val entity = getTenderProcessEntityByCpIdAndStage(cpid = params.cpid, stage = stage)
@@ -139,7 +139,7 @@ class ResponderServiceImpl(
     }
 
     private fun getTenderProcessEntityByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpId = cpid.toString(), stage = stage.toString())
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
             ?: return Result.failure(

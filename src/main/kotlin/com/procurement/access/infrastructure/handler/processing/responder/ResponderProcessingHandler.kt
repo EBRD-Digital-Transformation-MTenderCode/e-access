@@ -19,13 +19,13 @@ class ResponderProcessingHandler(
     private val responderService: ResponderService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, ResponderProcessingResponse>(
+) : AbstractHistoricalHandler<Command2Type, ResponderProcessingResult>(
     historyRepository = historyDao,
     target = ApiSuccessResponse::class.java,
     logger = logger
 ) {
 
-    override fun execute(node: JsonNode): Result<ResponderProcessingResponse, Fail> {
+    override fun execute(node: JsonNode): Result<ResponderProcessingResult, Fail> {
         val params = node.tryGetParams()
             .doOnError { error -> return Result.failure(error) }
             .get

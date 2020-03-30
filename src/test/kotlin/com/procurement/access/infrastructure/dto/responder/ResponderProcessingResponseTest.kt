@@ -1,11 +1,11 @@
 package com.procurement.access.infrastructure.dto.responder
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResponse
+import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import org.junit.jupiter.api.Test
 
-class ResponderProcessingResponseTest : AbstractDTOTestBase<ResponderProcessingResponse>(
-    ResponderProcessingResponse::class.java
+class ResponderProcessingResponseTest : AbstractDTOTestBase<ResponderProcessingResult>(
+    ResponderProcessingResult::class.java
 ) {
     @Test
     fun fully() {
