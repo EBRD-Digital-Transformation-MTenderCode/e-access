@@ -3,6 +3,7 @@ package com.procurement.access.application.model.responder.processing
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parseStartDate
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -13,7 +14,6 @@ import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.lib.toSetBy
 import java.time.LocalDateTime
 
 class ResponderProcessing {
@@ -113,7 +113,7 @@ class ResponderProcessing {
             ) {
 
                 companion object {
-                    private val allowedBusinessFunctionTypes = BusinessFunctionType.values()
+                    private val allowedBusinessFunctionTypes = BusinessFunctionType.allowedElements
                         .filter {
                             when (it) {
                                 BusinessFunctionType.CHAIRMAN,
@@ -125,7 +125,7 @@ class ResponderProcessing {
                                 BusinessFunctionType.PRICE_EVALUATOR -> true
                                 BusinessFunctionType.AUTHORITY       -> false
                             }
-                        }.toSetBy { it.key }
+                        }.toSet()
 
                     fun tryCreate(
                         id: String,
@@ -138,11 +138,11 @@ class ResponderProcessing {
                         val parsedType = type
                             .let {
                                 BusinessFunctionType.orNull(it)
-                                    ?.takeIf { it.key in allowedBusinessFunctionTypes }
+                                    ?.takeIf { it in allowedBusinessFunctionTypes }
                                     ?: return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "businessFunction.type",
-                                            expectedValues = allowedBusinessFunctionTypes,
+                                            expectedValues = allowedBusinessFunctionTypes.keysAsStrings(),
                                             actualValue = it
                                         )
                                     )
@@ -188,12 +188,12 @@ class ResponderProcessing {
                 ) {
 
                     companion object {
-                        private val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.values()
+                        private val allowedBusinessFunctionDocumentTypes = BusinessFunctionDocumentType.allowedElements
                             .filter {
                                 when (it) {
                                     BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
                                 }
-                            }.toSetBy { it.key }
+                            }.toSet()
 
                         fun tryCreate(
                             id: String,
@@ -205,11 +205,11 @@ class ResponderProcessing {
                             val createdDocumentType = documentType
                                 .let {
                                     BusinessFunctionDocumentType.orNull(it)
-                                        ?.takeIf { it.key in allowedBusinessFunctionDocumentTypes }
+                                        ?.takeIf { it in allowedBusinessFunctionDocumentTypes }
                                         ?: return failure(
                                             DataErrors.Validation.UnknownValue(
                                                 name = "documentType",
-                                                expectedValues = allowedBusinessFunctionDocumentTypes,
+                                                expectedValues = allowedBusinessFunctionDocumentTypes.keysAsStrings(),
                                                 actualValue = it
                                             )
                                         )
