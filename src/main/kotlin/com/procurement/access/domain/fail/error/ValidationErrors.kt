@@ -6,7 +6,11 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.token.Token
 
-sealed class ValidationErrors(numberError: String, override val description: String) : Fail.Error(prefix = "VR-") {
+sealed class ValidationErrors(
+    numberError: String,
+    override val description: String,
+    val objectId: String? = null
+) : Fail.Error(prefix = "VR-") {
 
     override val code: String = prefix + numberError
 
@@ -14,14 +18,22 @@ sealed class ValidationErrors(numberError: String, override val description: Str
         logger.error(message = message)
     }
 
-    class InvalidOwner(val owner: Owner, val cpid: Cpid) : ValidationErrors(
+    class InvalidOwner(
+        val owner: Owner,
+        val cpid: Cpid
+    ) : ValidationErrors(
         numberError = "10.1.1.2",
-        description = "Invalid owner '$owner' by cpid '${cpid}'"
+        description = "Invalid owner '$owner' by cpid '${cpid}'.",
+        objectId = cpid.toString()
     )
 
-    class InvalidToken(val token: Token, val cpid: Cpid) : ValidationErrors(
+    class InvalidToken(
+        val token: Token,
+        val cpid: Cpid
+    ) : ValidationErrors(
         numberError = "10.1.1.1",
-        description = "Invalid token '$token' by cpid '$cpid'"
+        description = "Invalid token '$token' by cpid '$cpid'.",
+        objectId = cpid.toString()
     )
 
     class LotsNotFound(val lotsId: Collection<String>) : ValidationErrors(
