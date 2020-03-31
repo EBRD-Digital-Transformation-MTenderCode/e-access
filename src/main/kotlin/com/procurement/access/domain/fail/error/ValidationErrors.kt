@@ -18,22 +18,14 @@ sealed class ValidationErrors(
         logger.error(message = message)
     }
 
-    class InvalidOwner(
-        val owner: Owner,
-        val cpid: Cpid
-    ) : ValidationErrors(
+    class InvalidOwner(val owner: Owner, val cpid: Cpid) : ValidationErrors(
         numberError = "10.1.1.2",
-        description = "Invalid owner '$owner' by cpid '${cpid}'.",
-        entityId = cpid.toString()
+        description = "Invalid owner '$owner' by cpid '${cpid}'."
     )
 
-    class InvalidToken(
-        val token: Token,
-        val cpid: Cpid
-    ) : ValidationErrors(
+    class InvalidToken(val token: Token, val cpid: Cpid) : ValidationErrors(
         numberError = "10.1.1.1",
-        description = "Invalid token '$token' by cpid '$cpid'.",
-        entityId = cpid.toString()
+        description = "Invalid token '$token' by cpid '$cpid'."
     )
 
     class LotsNotFound(val lotsId: Collection<String>) : ValidationErrors(
