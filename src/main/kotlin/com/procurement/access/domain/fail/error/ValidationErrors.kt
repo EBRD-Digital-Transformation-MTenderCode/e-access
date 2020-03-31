@@ -9,7 +9,7 @@ import com.procurement.access.domain.model.token.Token
 sealed class ValidationErrors(
     numberError: String,
     override val description: String,
-    val objectId: String? = null
+    val entityId: String? = null
 ) : Fail.Error(prefix = "VR-") {
 
     override val code: String = prefix + numberError
@@ -24,7 +24,7 @@ sealed class ValidationErrors(
     ) : ValidationErrors(
         numberError = "10.1.1.2",
         description = "Invalid owner '$owner' by cpid '${cpid}'.",
-        objectId = cpid.toString()
+        entityId = cpid.toString()
     )
 
     class InvalidToken(
@@ -33,7 +33,7 @@ sealed class ValidationErrors(
     ) : ValidationErrors(
         numberError = "10.1.1.1",
         description = "Invalid token '$token' by cpid '$cpid'.",
-        objectId = cpid.toString()
+        entityId = cpid.toString()
     )
 
     class LotsNotFound(val lotsId: Collection<String>) : ValidationErrors(

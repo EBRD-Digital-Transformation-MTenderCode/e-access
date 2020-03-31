@@ -70,7 +70,7 @@ fun generateValidationErrorResponse(id: UUID, version: ApiVersion, fail: Validat
             ApiErrorResponse.Error(
                 code = "${fail.code}/${GlobalProperties.service.id}",
                 description = fail.description,
-                details = if (fail.objectId == null) null else listOf(ApiErrorResponse.Error.Detail(id = fail.objectId))
+                details = if (fail.entityId == null) null else listOf(ApiErrorResponse.Error.Detail(id = fail.entityId))
             )
         )
     )
