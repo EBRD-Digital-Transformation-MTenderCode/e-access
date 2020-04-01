@@ -31,7 +31,9 @@ import java.util.*
 enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
     GET_LOT_IDS("getLotIds"),
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
-    GET_LOT_STATE_BY_IDS("getLotStateByIds");
+    GET_LOT_STATE_BY_IDS("getLotStateByIds"),
+    RESPONDER_PROCESSING("responderProcessing"),
+    CHECK_PERSONES_STRUCTURE("checkPersonesStructure");
 
     override fun toString(): String = key
 
@@ -46,8 +48,8 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
 fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
     when (fail) {
         is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
-        is Error -> generateErrorResponse(id = id, version = version, fail = fail)
-        is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
+        is Error                 -> generateErrorResponse(id = id, version = version, fail = fail)
+        is Fail.Incident         -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
 
 fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiErrorResponse =
@@ -152,21 +154,6 @@ fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
         }
 }
 
-fun <T : Any> JsonNode.tryParamsToObject(target: Class<T>): Result<T, BadRequestErrors> {
-    return tryToObject(target = target)
-        .doOnError {
-            return Result.failure(
-                BadRequestErrors.Parsing(
-                    message = "Can not parse 'params'.",
-                    request = this.toString(),
-                    exception = it.exception
-                )
-            )
-        }
-        .get
-        .asSuccess()
-}
-
 private fun JsonNode.tryGetStringAttribute(name: String): Result<String, DataErrors> {
     return this.tryGetAttribute(name = name, type = JsonNodeType.STRING)
         .map {
@@ -201,6 +188,21 @@ private fun asUUID(value: String): Result<UUID, DataErrors> =
             )
         )
     }
+
+fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
+    return this.tryToObject(clazz)
+        .doOnError { error ->
+            return Result.failure(
+                BadRequestErrors.Parsing(
+                    message = "Can not parse 'params'.",
+                    request = this.toString(),
+                    exception = error.exception
+                )
+            )
+        }
+        .get
+        .asSuccess()
+}
 
 fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
     return if (has(name)) {

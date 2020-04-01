@@ -1,0 +1,30 @@
+{
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "startDate": "2020-03-18T07:35:37Z",
+  "responder": {
+    "title": "string",
+    "name": "string",
+    "identifier": {
+      "scheme": "string",
+      "id": "string"
+    },
+    "businessFunctions": [
+      {
+        "id": "string",
+        "type": "chairman",
+        "jobTitle": "string",
+        "period": {
+          "startDate": "2020-03-18T07:35:37Z"
+        },
+        "documents": [
+          {
+            "id": "string",
+            "documentType": "regulatoryDocument",
+            "title": "string"
+          }
+        ]
+      }
+    ]
+  }
+}
