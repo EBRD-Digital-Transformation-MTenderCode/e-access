@@ -93,15 +93,20 @@ class ResponderServiceImpl(
         when (params.locationOfPersones) {
             LocationOfPersonsType.REQUIREMENT_RESPONSE -> {
                 params.persons
-                    .flatMap { it.businessFunctions }
-                    .apply {
-                        val result = validateRequirementResponseBusinessFunctionfType() // VR-10.5.5.2
-                        if (result.isError) return result
+                    .asSequence()
+                    .flatMap { it.businessFunctions.asSequence() }
+                    .also { businessFunctions ->
+                        businessFunctions.forEach {
+                            val result = it.validateType() // VR-10.5.5.2
+                            if (result.isError) return result
+                        }
                     }
-                    .flatMap { it.documents }
-                    .apply {
-                        val result = validateRequirementResponseDocumentType() // // VR-10.5.5.1
-                        if (result.isError) return result
+                    .flatMap { it.documents.asSequence() }
+                    .also { documents ->
+                        documents.forEach {
+                            val result = it.validateType() // VR-10.5.5.1
+                            if (result.isError) return result
+                        }
                     }
             }
         }
@@ -109,31 +114,25 @@ class ResponderServiceImpl(
         return ValidationResult.ok()
     }
 
-    private fun List<CheckPersonesStructure.Params.Person.BusinessFunction>.validateRequirementResponseBusinessFunctionfType()
-        : ValidationResult<Fail.Error> {
-        this.forEach {
-            when (it.type) {
-                BusinessFunctionType.CHAIRMAN,
-                BusinessFunctionType.PROCURMENT_OFFICER,
-                BusinessFunctionType.CONTACT_POINT,
-                BusinessFunctionType.TECHNICAL_EVALUATOR,
-                BusinessFunctionType.TECHNICAL_OPENER,
-                BusinessFunctionType.PRICE_OPENER,
-                BusinessFunctionType.PRICE_EVALUATOR -> Unit
-                BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
-                    ValidationErrors.InvalidBusinessFunctionType(it.id)
-                )
-            }
+    private fun CheckPersonesStructure.Params.Person.BusinessFunction.validateType(): ValidationResult<Fail.Error> {
+        when (this.type) {
+            BusinessFunctionType.CHAIRMAN,
+            BusinessFunctionType.PROCURMENT_OFFICER,
+            BusinessFunctionType.CONTACT_POINT,
+            BusinessFunctionType.TECHNICAL_EVALUATOR,
+            BusinessFunctionType.TECHNICAL_OPENER,
+            BusinessFunctionType.PRICE_OPENER,
+            BusinessFunctionType.PRICE_EVALUATOR -> Unit
+            BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
+                ValidationErrors.InvalidBusinessFunctionType(this.id)
+            )
         }
         return ValidationResult.ok()
     }
 
-    private fun List<CheckPersonesStructure.Params.Person.BusinessFunction.Document>.validateRequirementResponseDocumentType()
-        : ValidationResult<Fail.Error> {
-        this.forEach {
-            when (it.documentType) {
-                BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
-            }
+    private fun CheckPersonesStructure.Params.Person.BusinessFunction.Document.validateType(): ValidationResult<Fail.Error> {
+        when (this.documentType) {
+            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
         }
         return ValidationResult.ok()
     }
