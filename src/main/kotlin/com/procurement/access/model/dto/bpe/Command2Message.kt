@@ -12,13 +12,14 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Error
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.util.Action
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.bind
-import com.procurement.access.infrastructure.web.dto.ApiDataErrorResponse
+import com.procurement.access.domain.util.extension.toList
 import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
@@ -51,15 +52,28 @@ fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProper
         is Fail.Incident         -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
 
-fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiDataErrorResponse =
-    ApiDataErrorResponse(
+fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiErrorResponse =
+    ApiErrorResponse(
         version = version,
         id = id,
         result = listOf(
-            ApiDataErrorResponse.Error(
+            ApiErrorResponse.Error(
                 code = "${fail.code}/${GlobalProperties.service.id}",
                 description = fail.description,
-                details = listOf(ApiDataErrorResponse.Detail(name = fail.name))
+                details = ApiErrorResponse.Error.Detail.tryCreateOrNull(name = fail.name).toList()
+            )
+        )
+    )
+
+fun generateValidationErrorResponse(id: UUID, version: ApiVersion, fail: ValidationErrors): ApiErrorResponse =
+    ApiErrorResponse(
+        version = version,
+        id = id,
+        result = listOf(
+            ApiErrorResponse.Error(
+                code = "${fail.code}/${GlobalProperties.service.id}",
+                description = fail.description,
+                details = ApiErrorResponse.Error.Detail.tryCreateOrNull(id = fail.entityId).toList()
             )
         )
     )

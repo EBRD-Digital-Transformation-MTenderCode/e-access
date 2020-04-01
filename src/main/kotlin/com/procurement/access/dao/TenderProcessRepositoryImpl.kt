@@ -103,7 +103,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
         return load(query)
             .doOnError { error -> return failure(error) }
             .get
-            .map { row -> row.convertToContractEntity() }
+            .map { row -> row.convertToAuth() }
             .asSuccess()
     }
 
@@ -124,7 +124,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
         )
     }
 
-    private fun Row.convertToContractEntity(): Auth = Auth(
+    private fun Row.convertToAuth(): Auth = Auth(
         token = this.getUUID(COLUMN_TOKEN),
         owner = this.getString(COLUMN_OWNER)
     )
