@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -124,7 +125,10 @@ class ResponderServiceImpl(
             BusinessFunctionType.PRICE_OPENER,
             BusinessFunctionType.PRICE_EVALUATOR -> Unit
             BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
-                ValidationErrors.InvalidBusinessFunctionType(this.id)
+                ValidationErrors.InvalidBusinessFunctionType(
+                    id = this.id,
+                    allowedValues = BusinessFunctionType.allowedElements.keysAsStrings()
+                )
             )
         }
         return ValidationResult.ok()
