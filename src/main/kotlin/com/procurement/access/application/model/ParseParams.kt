@@ -4,6 +4,8 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.date.tryParseLocalDateTime
+import com.procurement.access.domain.model.lot.LotId
+import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.owner.tryCreateOwner
 import com.procurement.access.domain.model.token.Token
@@ -73,6 +75,20 @@ fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation.D
                     name = "startDate",
                     actualValue = value,
                     expectedFormat = expectedFormat
+                )
+            )
+        }
+        .get
+        .asSuccess()
+
+fun parseLotId(value:String):Result<LotId, DataErrors.Validation.DataFormatMismatch> =
+    value.tryCreateLotId()
+        .doOnError { inident->
+            return Result.failure(
+                DataErrors.Validation.DataFormatMismatch(
+                    name = "id",
+                    actualValue = value,
+                    expectedFormat = "uuid"
                 )
             )
         }
