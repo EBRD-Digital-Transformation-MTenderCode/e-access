@@ -30,7 +30,11 @@ class CheckPersonesStructure {
             private val allowedLocationOfPersonsTypes = LocationOfPersonsType.allowedElements
                 .filter {
                     when (it) {
-                        LocationOfPersonsType.REQUIREMENT_RESPONSE -> true
+                        LocationOfPersonsType.AWARD,
+                        LocationOfPersonsType.PROCURING_ENTITY,
+                        LocationOfPersonsType.TENDERERS,
+                        LocationOfPersonsType.SUPPLIERS,
+                        LocationOfPersonsType.BUYER -> true
                     }
                 }.toSet()
 
@@ -38,7 +42,7 @@ class CheckPersonesStructure {
                 cpid: String,
                 ocid: String,
                 persons: List<Person>,
-                locationOfPersones: String
+                locationOfPersons: String
             ): Result<Params, DataErrors> {
 
                 val parsedCpid = parseCpid(value = cpid)
@@ -49,7 +53,7 @@ class CheckPersonesStructure {
                     .doOnError { error -> return failure(error) }
                     .get
 
-                val parsedLocationOfPersones = locationOfPersones
+                val parsedLocationOfPersones = locationOfPersons
                     .let {
                         LocationOfPersonsType.orNull(it)
                             ?.takeIf { it in allowedLocationOfPersonsTypes }

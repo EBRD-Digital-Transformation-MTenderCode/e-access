@@ -33,7 +33,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     RESPONDER_PROCESSING("responderProcessing"),
-    CHECK_PERSONES_STRUCTURE("checkPersonesStructure");
+    CHECK_PERSONES_STRUCTURE("checkPersonsStructure");
 
     override fun toString(): String = key
 
