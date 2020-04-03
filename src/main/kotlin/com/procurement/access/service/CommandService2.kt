@@ -24,6 +24,7 @@ class CommandService2(
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val setStateForLotsHandler: SetStateForLotsHandler,
+    private val setStateForTenderHandler: CheckAccessToTenderHandler,
     private val logger: Logger
 ) {
 
@@ -53,6 +54,7 @@ class CommandService2(
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
             Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonesStructureHandler.handle(node = request)
             Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")
