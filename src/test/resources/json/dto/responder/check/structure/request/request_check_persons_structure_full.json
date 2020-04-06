@@ -1,11 +1,12 @@
 {
-  "persones": [
+  "persons": [
     {
       "title": "string",
       "name": "string",
       "identifier": {
         "scheme": "string",
-        "id": "string"
+        "id": "string",
+        "uri": "string"
       },
       "businessFunctions": [
         {
@@ -14,12 +15,20 @@
           "jobTitle": "string",
           "period": {
             "startDate": "2020-02-12T12:14:12Z"
-          }
+          },
+          "documents": [
+            {
+              "documentType": "regulatoryDocument",
+              "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+              "title": "string",
+              "description": "string"
+            }
+          ]
         }
       ]
     }
   ],
   "cpid": "ocds-b3wdp1-MD-1580458690892",
   "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
-  "locationOfPersones": "requirementResponse"
+  "locationOfPersons": "requirementResponse"
 }
