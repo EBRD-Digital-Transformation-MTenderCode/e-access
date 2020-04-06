@@ -24,13 +24,17 @@ class CheckPersonesStructure {
         val cpid: Cpid,
         val ocid: Ocid,
         val persons: List<Person>,
-        val locationOfPersones: LocationOfPersonsType
+        val locationOfPersons: LocationOfPersonsType
     ) {
         companion object {
             private val allowedLocationOfPersonsTypes = LocationOfPersonsType.allowedElements
                 .filter {
                     when (it) {
-                        LocationOfPersonsType.REQUIREMENT_RESPONSE -> true
+                        LocationOfPersonsType.AWARD,
+                        LocationOfPersonsType.BUYER,
+                        LocationOfPersonsType.PROCURING_ENTITY,
+                        LocationOfPersonsType.SUPPLIERS,
+                        LocationOfPersonsType.TENDERERS-> true
                     }
                 }.toSet()
 
@@ -68,7 +72,7 @@ class CheckPersonesStructure {
                         cpid = parsedCpid,
                         ocid = parsedOcid,
                         persons = persons,
-                        locationOfPersones = parsedLocationOfPersones
+                        locationOfPersons = parsedLocationOfPersones
                     )
                 )
             }
