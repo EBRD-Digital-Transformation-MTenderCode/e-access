@@ -68,14 +68,6 @@ class LotServiceImpl(
             .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
-        if (params.lotIds.isEmpty()) {
-            return tenderProcess.tender.lots.map { lot ->
-                lot.convertToGetLotStateByIdsResult()
-                    .doOnError { error -> return error.asFailure() }
-                    .get
-            }.asSuccess()
-        }
-
         val receivedLotIds = params.lotIds.toSetBy { it.toString() }
 
         val filteredLots = tenderProcess.tender.lots.filter { lot -> receivedLotIds.contains(lot.id) }
