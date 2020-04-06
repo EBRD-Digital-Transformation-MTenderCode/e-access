@@ -33,5 +33,5 @@ class CheckPersonesStructureHandler(
     }
 
     override val action: Command2Type
-        get() = Command2Type.CHECK_PERSONES_STRUCTURE
+        get() = Command2Type.CHECK_PERSONS_STRUCTURE
 }

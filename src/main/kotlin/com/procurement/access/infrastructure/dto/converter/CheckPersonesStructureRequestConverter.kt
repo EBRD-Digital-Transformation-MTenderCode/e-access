@@ -19,7 +19,7 @@ fun CheckPersonesStructureRequest.Params.convert(): Result<CheckPersonesStructur
         cpid = this.cpid,
         ocid = this.ocid,
         persons = convertedPersons,
-        locationOfPersones = this.locationOfPersones
+        locationOfPersones = this.locationOfPersons
     )
 }
 
