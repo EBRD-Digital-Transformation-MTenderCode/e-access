@@ -5,7 +5,11 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class LocationOfPersonsType(@JsonValue override val key: String) : EnumElementProvider.Key {
-    REQUIREMENT_RESPONSE("requirementResponse");
+    AWARD("award"),
+    PROCURING_ENTITY("procuringEntity"),
+    TENDERERS("tenderers"),
+    SUPPLIERS("suppliers"),
+    BUYER("buyer");
 
     override fun toString(): String = key
 

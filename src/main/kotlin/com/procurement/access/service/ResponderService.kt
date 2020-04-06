@@ -92,7 +92,7 @@ class ResponderServiceImpl(
 
     override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
         when (params.locationOfPersones) {
-            LocationOfPersonsType.REQUIREMENT_RESPONSE -> {
+            LocationOfPersonsType.AWARD -> {
                 params.persons
                     .asSequence()
                     .flatMap { it.businessFunctions.asSequence() }
@@ -110,6 +110,10 @@ class ResponderServiceImpl(
                         }
                     }
             }
+            LocationOfPersonsType.PROCURING_ENTITY,
+            LocationOfPersonsType.TENDERERS,
+            LocationOfPersonsType.SUPPLIERS,
+            LocationOfPersonsType.BUYER -> Unit
         }
 
         return ValidationResult.ok()
