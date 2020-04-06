@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.handler.check.persons
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class CheckPersonesStructureRequest {
+class CheckPersonsStructureRequest {
 
     data class Params(
         @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,

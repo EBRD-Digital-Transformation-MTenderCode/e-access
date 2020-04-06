@@ -13,7 +13,7 @@ import com.procurement.access.service.ResponderService
 import org.springframework.stereotype.Service
 
 @Service
-class CheckPersonesStructureHandler(
+class CheckPersonsStructureHandler(
     private val responderService: ResponderService,
     logger: Logger
 ) : AbstractValidationHandler<Command2Type>(logger) {
@@ -22,14 +22,14 @@ class CheckPersonesStructureHandler(
         val params = node.tryGetParams()
             .doOnError { error -> return ValidationResult.error(error) }
             .get
-            .tryParamsToObject(CheckPersonesStructureRequest.Params::class.java)
+            .tryParamsToObject(CheckPersonsStructureRequest.Params::class.java)
             .doOnError { error -> return ValidationResult.error(error) }
             .get
             .convert()
             .doOnError { error -> return ValidationResult.error(error) }
             .get
 
-        return responderService.checkPersonesStructure(params = params)
+        return responderService.checkPersonsStructure(params = params)
     }
 
     override val action: Command2Type

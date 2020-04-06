@@ -18,7 +18,7 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
-class CheckPersonesStructure {
+class CheckPersonsStructure {
 
     class Params private constructor(
         val cpid: Cpid,

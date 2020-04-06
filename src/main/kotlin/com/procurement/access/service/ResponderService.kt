@@ -1,9 +1,8 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
+import com.procurement.access.application.model.responder.check.structure.CheckPersonsStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Service
 
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
-    fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
+    fun checkPersonsStructure(params: CheckPersonsStructure.Params): ValidationResult<Fail.Error>
 }
 
 @Service
@@ -90,7 +89,7 @@ class ResponderServiceImpl(
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())
     }
 
-    override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
+    override fun checkPersonsStructure(params: CheckPersonsStructure.Params): ValidationResult<Fail.Error> {
 
         val validDocumentTypes = getValidDocumentTypesForPersons(params)
         val validBusinessFunctions = getValidBusinessFunctionTypesForPersons(params)
@@ -125,7 +124,7 @@ class ResponderServiceImpl(
         return ValidationResult.ok()
     }
 
-    private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
+    private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonsStructure.Params) =
         when (params.locationOfPersons) {
             LocationOfPersonsType.AWARD ->
                 BusinessFunctionType.allowedElements
@@ -147,7 +146,7 @@ class ResponderServiceImpl(
             LocationOfPersonsType.TENDERERS -> emptySet()
         }
 
-    private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
+    private fun getValidDocumentTypesForPersons(params: CheckPersonsStructure.Params) =
         when (params.locationOfPersons) {
             LocationOfPersonsType.AWARD ->
                 BusinessFunctionDocumentType.allowedElements
