@@ -91,55 +91,76 @@ class ResponderServiceImpl(
     }
 
     override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
-        when (params.locationOfPersones) {
-            LocationOfPersonsType.REQUIREMENT_RESPONSE -> {
-                params.persons
-                    .asSequence()
-                    .flatMap { it.businessFunctions.asSequence() }
-                    .also { businessFunctions ->
-                        businessFunctions.forEach {
-                            val result = it.validateType() // VR-10.5.5.2
-                            if (result.isError) return result
-                        }
-                    }
-                    .flatMap { it.documents.asSequence() }
-                    .also { documents ->
-                        documents.forEach {
-                            val result = it.validateType() // VR-10.5.5.1
-                            if (result.isError) return result
-                        }
-                    }
+
+        val validDocumentTypes = getValidDocumentTypesForPersons(params)
+        val validBusinessFunctions = getValidBusinessFunctionTypesForPersons(params)
+
+        params.persons
+            .asSequence()
+            .flatMap { it.businessFunctions.asSequence() }
+            .also { businessFunctions ->
+                businessFunctions.forEach { businessFunction ->
+                    if (businessFunction.type !in validBusinessFunctions)
+                        return ValidationResult.error(
+                            ValidationErrors.InvalidBusinessFunctionType(
+                                id = businessFunction.id,
+                                allowedValues = validBusinessFunctions.map { it.toString() }
+                            )
+                        )
+                }
             }
-        }
+            .flatMap { it.documents.asSequence() }
+            .also { documents ->
+                documents.forEach { document ->
+                    if (document.documentType !in validDocumentTypes)
+                        return ValidationResult.error(
+                            ValidationErrors.InvalidDocumentType(
+                                id = document.id,
+                                allowedValues = validDocumentTypes.map { it.toString() }
+                            )
+                        )
+                }
+            }
 
         return ValidationResult.ok()
     }
 
-    private fun CheckPersonesStructure.Params.Person.BusinessFunction.validateType(): ValidationResult<Fail.Error> {
-        when (this.type) {
-            BusinessFunctionType.CHAIRMAN,
-            BusinessFunctionType.PROCURMENT_OFFICER,
-            BusinessFunctionType.CONTACT_POINT,
-            BusinessFunctionType.TECHNICAL_EVALUATOR,
-            BusinessFunctionType.TECHNICAL_OPENER,
-            BusinessFunctionType.PRICE_OPENER,
-            BusinessFunctionType.PRICE_EVALUATOR -> Unit
-            BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
-                ValidationErrors.InvalidBusinessFunctionType(
-                    id = this.id,
-                    allowedValues = BusinessFunctionType.allowedElements.keysAsStrings()
-                )
-            )
+    private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
+        when (params.locationOfPersons) {
+            LocationOfPersonsType.AWARD ->
+                BusinessFunctionType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionType.CHAIRMAN,
+                            BusinessFunctionType.PROCURMENT_OFFICER,
+                            BusinessFunctionType.CONTACT_POINT,
+                            BusinessFunctionType.TECHNICAL_EVALUATOR,
+                            BusinessFunctionType.TECHNICAL_OPENER,
+                            BusinessFunctionType.PRICE_OPENER,
+                            BusinessFunctionType.PRICE_EVALUATOR -> true
+                            BusinessFunctionType.AUTHORITY -> false
+                        }
+                    }.toSet()
+            LocationOfPersonsType.BUYER,
+            LocationOfPersonsType.PROCURING_ENTITY,
+            LocationOfPersonsType.SUPPLIERS,
+            LocationOfPersonsType.TENDERERS -> emptySet()
         }
-        return ValidationResult.ok()
-    }
 
-    private fun CheckPersonesStructure.Params.Person.BusinessFunction.Document.validateType(): ValidationResult<Fail.Error> {
-        when (this.documentType) {
-            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+    private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
+        when (params.locationOfPersons) {
+            LocationOfPersonsType.AWARD ->
+                BusinessFunctionDocumentType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
+                        }
+                    }.toSet()
+            LocationOfPersonsType.BUYER,
+            LocationOfPersonsType.PROCURING_ENTITY,
+            LocationOfPersonsType.SUPPLIERS,
+            LocationOfPersonsType.TENDERERS -> emptySet()
         }
-        return ValidationResult.ok()
-    }
 
     private fun getTenderProcessEntityByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
