@@ -36,7 +36,7 @@ class GetLotStateByIdsParams private constructor(
             val lotIdsResult = if (lotIds.isNotEmpty()) {
                 lotIds.map { lotId ->
                     lotId.tryCreateLotId()
-                        .doOnError { format ->
+                        .doOnError {
                             return DataErrors.Validation.DataFormatMismatch(
                                 actualValue = lotId,
                                 name = "lotIds",
