@@ -143,7 +143,20 @@ class ResponderServiceImpl(
             LocationOfPersonsType.BUYER,
             LocationOfPersonsType.PROCURING_ENTITY,
             LocationOfPersonsType.SUPPLIERS,
-            LocationOfPersonsType.TENDERERS -> emptySet()
+            LocationOfPersonsType.TENDERERS ->
+                BusinessFunctionType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionType.CHAIRMAN,
+                            BusinessFunctionType.PROCURMENT_OFFICER,
+                            BusinessFunctionType.CONTACT_POINT,
+                            BusinessFunctionType.TECHNICAL_EVALUATOR,
+                            BusinessFunctionType.TECHNICAL_OPENER,
+                            BusinessFunctionType.PRICE_OPENER,
+                            BusinessFunctionType.PRICE_EVALUATOR,
+                            BusinessFunctionType.AUTHORITY -> false
+                        }
+                    }
         }
 
     private fun getValidDocumentTypesForPersons(params: CheckPersonsStructure.Params) =
@@ -158,10 +171,19 @@ class ResponderServiceImpl(
             LocationOfPersonsType.BUYER,
             LocationOfPersonsType.PROCURING_ENTITY,
             LocationOfPersonsType.SUPPLIERS,
-            LocationOfPersonsType.TENDERERS -> emptySet()
+            LocationOfPersonsType.TENDERERS ->
+                BusinessFunctionDocumentType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> false
+                        }
+                    }.toSet()
         }
 
-    private fun getTenderProcessEntityByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
+    private fun getTenderProcessEntityByCpIdAndStage(
+        cpid: Cpid,
+        stage: Stage
+    ): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
@@ -176,10 +198,17 @@ class ResponderServiceImpl(
     }
 }
 
-private val responderPersonKeyExtractor: (ResponderProcessing.Params.Responder) -> String = { it.identifier.id + it.identifier.scheme }
-private val dbPersonKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone) -> String = { it.identifier.id + it.identifier.scheme }
+private val responderPersonKeyExtractor
+    : (ResponderProcessing.Params.Responder)
+-> String = { it.identifier.id + it.identifier.scheme }
+private val dbPersonKeyExtractor
+    : (CNEntity.Tender.ProcuringEntity.Persone)
+-> String = { it.identifier.id + it.identifier.scheme }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.update(received: ResponderProcessing.Params.Responder): CNEntity.Tender.ProcuringEntity.Persone {
+private fun CNEntity.Tender.ProcuringEntity.Persone.update(
+    received: ResponderProcessing.Params.Responder
+)
+    : CNEntity.Tender.ProcuringEntity.Persone {
     return CNEntity.Tender.ProcuringEntity.Persone(
         title = received.title,
         name = received.name,
@@ -195,10 +224,17 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.update(received: ResponderPr
     )
 }
 
-private val responderBusinessFunctionKeyExtractor: (ResponderProcessing.Params.Responder.BusinessFunction) -> String = { it.id }
-private val dbBusinessFunctionKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction) -> String = { it.id }
+private val responderBusinessFunctionKeyExtractor
+    : (ResponderProcessing.Params.Responder.BusinessFunction)
+-> String = { it.id }
+private val dbBusinessFunctionKeyExtractor
+    : (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction)
+-> String = { it.id }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.Identifier.update(received: ResponderProcessing.Params.Responder.Identifier): CNEntity.Tender.ProcuringEntity.Persone.Identifier {
+private fun CNEntity.Tender.ProcuringEntity.Persone.Identifier.update(
+    received: ResponderProcessing.Params.Responder.Identifier
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.Identifier {
     return CNEntity.Tender.ProcuringEntity.Persone.Identifier(
         id = received.id,
         scheme = received.scheme,
@@ -206,7 +242,10 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.Identifier.update(received: 
     )
 }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(received: ResponderProcessing.Params.Responder.BusinessFunction): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction {
+private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction {
     return CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
         id = received.id,
         jobTitle = received.jobTitle,
@@ -223,15 +262,25 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(rece
     )
 }
 
-private val responderDocumentKeyExtractor: (ResponderProcessing.Params.Responder.BusinessFunction.Document) -> String = { it.id }
-private val dbDocumentKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document) -> String = { it.id }
+private val responderDocumentKeyExtractor
+    : (ResponderProcessing.Params.Responder.BusinessFunction.Document)
+-> String = { it.id }
+private val dbDocumentKeyExtractor
+    : (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document)
+-> String = { it.id }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period.update(received: ResponderProcessing.Params.Responder.BusinessFunction.Period): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
+private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Period
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
         startDate = received.startDate
     )
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(received: ResponderProcessing.Params.Responder.BusinessFunction.Document): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
+private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Document
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         id = received.id,
         documentType = received.documentType,
@@ -239,7 +288,10 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.up
         description = received.description ?: this.description
     )
 
-private fun createPerson(received: ResponderProcessing.Params.Responder): CNEntity.Tender.ProcuringEntity.Persone =
+private fun createPerson(
+    received: ResponderProcessing.Params.Responder
+)
+    : CNEntity.Tender.ProcuringEntity.Persone =
     CNEntity.Tender.ProcuringEntity.Persone(
         title = received.title,
         name = received.name,
@@ -248,14 +300,20 @@ private fun createPerson(received: ResponderProcessing.Params.Responder): CNEnti
             .map { createBusinessFunction(it) }
     )
 
-private fun createIdentifier(received: ResponderProcessing.Params.Responder.Identifier): CNEntity.Tender.ProcuringEntity.Persone.Identifier =
+private fun createIdentifier(
+    received: ResponderProcessing.Params.Responder.Identifier
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.Identifier =
     CNEntity.Tender.ProcuringEntity.Persone.Identifier(
         id = received.id,
         scheme = received.scheme,
         uri = received.uri
     )
 
-private fun createBusinessFunction(received: ResponderProcessing.Params.Responder.BusinessFunction): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction =
+private fun createBusinessFunction(
+    received: ResponderProcessing.Params.Responder.BusinessFunction
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
         id = received.id,
         type = received.type,
@@ -265,12 +323,18 @@ private fun createBusinessFunction(received: ResponderProcessing.Params.Responde
             .map { createDocument(it) }
     )
 
-private fun createPeriod(received: ResponderProcessing.Params.Responder.BusinessFunction.Period): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
+private fun createPeriod(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Period
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
         startDate = received.startDate
     )
 
-private fun createDocument(received: ResponderProcessing.Params.Responder.BusinessFunction.Document): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
+private fun createDocument(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Document
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         id = received.id,
         title = received.title,
