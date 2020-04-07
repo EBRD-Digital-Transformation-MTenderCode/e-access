@@ -9,7 +9,6 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSorting() {
         val unsortedStates = listOf(
-            createState(status = null, statusDetails = null),
             createState(status = "active", statusDetails = null),
             createState(status = null, statusDetails = "awarded"),
             createState(status = "active", statusDetails = "awarded"),
@@ -21,8 +20,7 @@ internal class GetLotIdsParamsTest {
             createState(status = "active", statusDetails = null),
             createState(status = "complete", statusDetails = "empty"),
             createState(status = null, statusDetails = "awarded"),
-            createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = null)
+            createState(status = null, statusDetails = "empty")
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -35,15 +33,13 @@ internal class GetLotIdsParamsTest {
             createState(status = "cancelled", statusDetails = null),
             createState(status = "active", statusDetails = null),
             createState(status = "planning", statusDetails = null),
-            createState(status = "active", statusDetails = null),
-            createState(status = null, statusDetails = null)
+            createState(status = "active", statusDetails = null)
         )
         val expected = listOf(
             createState(status = "active", statusDetails = null),
             createState(status = "active", statusDetails = null),
             createState(status = "cancelled", statusDetails = null),
-            createState(status = "planning", statusDetails = null),
-            createState(status = null, statusDetails = null)
+            createState(status = "planning", statusDetails = null)
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -55,14 +51,12 @@ internal class GetLotIdsParamsTest {
         val unsortedStates = listOf(
             createState(status = null, statusDetails = "empty"),
             createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = null),
             createState(status = null, statusDetails = "awarded")
         )
         val expected = listOf(
             createState(status = null, statusDetails = "awarded"),
             createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = null)
+            createState(status = null, statusDetails = "empty")
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -72,7 +66,6 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSortDuplicate() {
         val unsortedStates = listOf(
-            createState(status = null, statusDetails = null),
             createState(status = "active", statusDetails = "awarded"),
             createState(status = null, statusDetails = "empty"),
             createState(status = "active", statusDetails = "empty"),
@@ -82,8 +75,7 @@ internal class GetLotIdsParamsTest {
             createState(status = "active", statusDetails = "awarded"),
             createState(status = "active", statusDetails = "awarded"),
             createState(status = "active", statusDetails = "empty"),
-            createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = null)
+            createState(status = null, statusDetails = "empty")
         )
 
         val sortedStates = unsortedStates.sorted()
@@ -93,12 +85,10 @@ internal class GetLotIdsParamsTest {
     @Test
     fun testSortNulls() {
         val unsortedStates = listOf(
-            createState(status = null, statusDetails = null),
             createState(status = "active", statusDetails = null),
             createState(status = null, statusDetails = "empty"),
             createState(status = "active", statusDetails = "empty"),
             createState(status = null, statusDetails = "awarded"),
-            createState(status = null, statusDetails = null),
             createState(status = "complete", statusDetails = null)
         )
         val expected = listOf(
@@ -106,9 +96,7 @@ internal class GetLotIdsParamsTest {
             createState(status = "active", statusDetails = null),
             createState(status = "complete", statusDetails = null),
             createState(status = null, statusDetails = "awarded"),
-            createState(status = null, statusDetails = "empty"),
-            createState(status = null, statusDetails = null),
-            createState(status = null, statusDetails = null)
+            createState(status = null, statusDetails = "empty")
         )
 
         val sortedStates = unsortedStates.sorted()
