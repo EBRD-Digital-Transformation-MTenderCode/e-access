@@ -42,5 +42,5 @@ class SetStateForTenderHandler(
     }
 
     override val action: Command2Type
-        get() = Command2Type.SET_STATE_FOR_LOTS
+        get() = Command2Type.SET_STATE_FOR_TENDER
 }

@@ -74,11 +74,10 @@ class LotServiceImpl(
             .get
 
         val lotsIds = params.lots
-            .map { it.id.toString() }
-            .toSetBy { it }
+            .toSetBy { it.id.toString() }
         val dbLotsIds: Set<String> = tenderProcess.tender.lots
-            .map { it.id }
-            .toSetBy { it }
+            .toSetBy { it.id }
+
         val unknownLotsIds = getUnknownElements(received = lotsIds, known = dbLotsIds)
         if (unknownLotsIds.isNotEmpty()) {
             return Result.failure(ValidationErrors.LotsNotFound(lotsId = unknownLotsIds))

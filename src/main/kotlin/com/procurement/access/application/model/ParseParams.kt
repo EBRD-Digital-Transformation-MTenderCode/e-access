@@ -86,7 +86,7 @@ fun parseLotId(value:String):Result<LotId, DataErrors.Validation.DataFormatMisma
         .doOnError { inident->
             return Result.failure(
                 DataErrors.Validation.DataFormatMismatch(
-                    name = "id",
+                    name = "lot.id",
                     actualValue = value,
                     expectedFormat = "uuid"
                 )
