@@ -33,6 +33,8 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     RESPONDER_PROCESSING("responderProcessing"),
+    SET_STATE_FOR_LOTS("setStateForLots"),
+    SET_STATE_FOR_TENDER("setStateForTender"),
     CHECK_PERSONS_STRUCTURE("checkPersonsStructure");
 
     override fun toString(): String = key
@@ -213,13 +215,11 @@ fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
     return if (has(name)) {
         val attr = get(name)
         if (attr !is NullNode)
-            Result.success(attr)
+            success(attr)
         else
-            Result.failure(
-                DataErrors.Validation.DataTypeMismatch(name = "$attr", actualType = "null", expectedType = "not null")
-            )
+            failure(DataErrors.Validation.DataTypeMismatch(name = name, actualType = "null", expectedType = "not null"))
     } else
-        Result.failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
+        failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
 }
 
 fun JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =

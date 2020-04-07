@@ -15,9 +15,7 @@ import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.cpid
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.token
-import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.tryToObject
 
 class CheckOwnerAndTokenStrategy(
     private val tenderProcessDao: TenderProcessDao,
@@ -48,18 +46,6 @@ class CheckOwnerAndTokenStrategy(
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .doOnError { error -> return ValidationResult.error(error) }
             .get
-
-        val tenderProcess = tenderProcessEntity.jsonData
-            .tryToObject(TenderProcess::class.java)
-            .doOnError { error ->
-                return ValidationResult.error(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-            .get
-
-        if (tenderProcess.ocid != params.ocid.toString())
-            return ValidationResult.error(
-                ValidationErrors.TenderNotFoundCheckAccessToTender(cpid = params.cpid, ocid = params.ocid)
-            )
 
         if (tenderProcessEntity.owner != params.owner)
             return ValidationResult.error(ValidationErrors.InvalidOwner(owner = params.owner, cpid = params.cpid))

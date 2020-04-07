@@ -39,6 +39,11 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )
 
+    class TenderNotFoundSetStateForTender(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "10.1.6.1",
+        description = "Tender not found by cpid '$cpid' and '$ocid'."
+    )
+
     class InvalidBusinessFunctionType(id: String, allowedValues: List<String>) : ValidationErrors(
         numberError = "10.1.5.2",
         description = "Business function '${id}' has invalid type. Allowed values: ${allowedValues}"

@@ -1,5 +1,6 @@
 package com.procurement.access.application.service.lot
 
+import com.procurement.access.application.model.params.SetStateForLotsParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
@@ -18,10 +19,12 @@ import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.domain.util.extension.getUnknownElements
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsResult
+import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
 import com.procurement.access.lib.orThrow
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.ocds.Lot
@@ -50,6 +53,8 @@ interface LotService {
     ): Result<List<LotId>, Fail>
 
     fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail>
+
+    fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail>
 }
 
 @Service
@@ -57,6 +62,54 @@ class LotServiceImpl(
     private val tenderProcessDao: TenderProcessDao,
     private val tenderProcessRepository: TenderProcessRepository
 ) : LotService {
+
+    override fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail> {
+        val tenderProcessEntity = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid, stage = params.ocid.stage)
+            .doOnError { error -> return Result.failure(error) }
+            .get
+
+        val tenderProcess = tenderProcessEntity.jsonData
+            .tryToObject(TenderProcess::class.java)
+            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+            .get
+
+        val lotsIds = params.lots
+            .toSetBy { it.id.toString() }
+        val dbLotsIds: Set<String> = tenderProcess.tender.lots
+            .toSetBy { it.id }
+
+        val unknownLotsIds = getUnknownElements(received = lotsIds, known = dbLotsIds)
+        if (unknownLotsIds.isNotEmpty()) {
+            return Result.failure(ValidationErrors.LotsNotFound(lotsId = unknownLotsIds))
+        }
+
+        val mapRequestIds = params.lots
+            .associateBy { it.id.toString() }
+
+        val updatedLots = tenderProcess.tender.lots
+            .map { dbLot ->
+                mapRequestIds[dbLot.id]
+                    ?.let {
+                        dbLot.setStatusAndStatusDetails(requestLot = it)
+                    }
+                    ?: dbLot
+            }
+        val updatedTenderProcess = tenderProcess.copy(
+            tender = tenderProcess.tender.copy(
+                lots = updatedLots
+            )
+        )
+        tenderProcessRepository.save(tenderProcessEntity.updateTenderProcess(tenderProcess = updatedTenderProcess))
+        return params.lots
+            .map { lot ->
+                SetStateForLotsResult(
+                    id = lot.id,
+                    status = lot.status,
+                    statusDetails = lot.statusDetails
+                )
+            }
+            .asSuccess()
+    }
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
 
@@ -67,14 +120,6 @@ class LotServiceImpl(
             .tryToObject(TenderProcess::class.java)
             .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
-
-        if (params.lotIds.isEmpty()) {
-            return tenderProcess.tender.lots.map { lot ->
-                lot.convertToGetLotStateByIdsResult()
-                    .doOnError { error -> return error.asFailure() }
-                    .get
-            }.asSuccess()
-        }
 
         val receivedLotIds = params.lotIds.toSetBy { it.toString() }
 
@@ -441,5 +486,13 @@ class LotServiceImpl(
             }
             state != null
         }
+    }
+
+    private fun Lot.setStatusAndStatusDetails(requestLot: SetStateForLotsParams.Lot): Lot {
+        return this.copy(status = requestLot.status, statusDetails = requestLot.statusDetails)
+    }
+
+    private fun TenderProcessEntity.updateTenderProcess(tenderProcess: TenderProcess): TenderProcessEntity {
+        return this.copy(jsonData = toJson(tenderProcess))
     }
 }
