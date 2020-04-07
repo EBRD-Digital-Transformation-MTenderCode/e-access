@@ -18,7 +18,7 @@ class GetLotStateByIdsParams private constructor(
 ) {
     companion object {
         fun tryCreate(
-            lotIds: List<String>?,
+            lotIds: List<String>,
             cpid: String,
             ocid: String
         ): Result<GetLotStateByIdsParams, DataErrors> {
@@ -33,24 +33,23 @@ class GetLotStateByIdsParams private constructor(
                 }
                 .get
 
-            val lotIdsResult = if (lotIds != null) {
-                if (lotIds.isNotEmpty()) {
-                    lotIds.map { lotId ->
-                        lotId.tryCreateLotId()
-                            .doOnError { format ->
-                                return DataErrors.Validation.DataFormatMismatch(
-                                    actualValue = lotId,
-                                    name = "lotIds",
-                                    expectedFormat = "uuid"
-                                ).asFailure()
-                            }
-                            .get
-                    }
-                } else {
-                    return DataErrors.Validation.EmptyArray(name = "lotIds")
-                        .asFailure()
+            val lotIdsResult = if (lotIds.isNotEmpty()) {
+                lotIds.map { lotId ->
+                    lotId.tryCreateLotId()
+                        .doOnError {
+                            return DataErrors.Validation.DataFormatMismatch(
+                                actualValue = lotId,
+                                name = "lotIds",
+                                expectedFormat = "uuid"
+                            ).asFailure()
+                        }
+                        .get
                 }
-            } else emptyList()
+            } else {
+                return DataErrors.Validation.EmptyArray(name = "lotIds")
+                    .asFailure()
+            }
+
             return GetLotStateByIdsParams(
                 cpid = cpidResult,
                 ocid = ocidResult,
