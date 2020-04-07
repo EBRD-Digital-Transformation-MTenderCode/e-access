@@ -215,13 +215,11 @@ fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
     return if (has(name)) {
         val attr = get(name)
         if (attr !is NullNode)
-            Result.success(attr)
+            success(attr)
         else
-            Result.failure(
-                DataErrors.Validation.DataTypeMismatch(name = "$attr", actualType = "null", expectedType = "not null")
-            )
+            failure(DataErrors.Validation.DataTypeMismatch(name = name, actualType = "null", expectedType = "not null"))
     } else
-        Result.failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
+        failure(DataErrors.Validation.MissingRequiredAttribute(name = name))
 }
 
 fun JsonNode.tryGetParams(): Result<JsonNode, DataErrors> =
