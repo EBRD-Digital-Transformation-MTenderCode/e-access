@@ -34,7 +34,7 @@ sealed class ValidationErrors(
         description = "Lots '$lotsId' do not found."
     )
 
-    class TenderNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundCheckAccessToTender(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
         numberError = "10.1.1.3",
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )

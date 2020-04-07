@@ -49,8 +49,8 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
 fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
     when (fail) {
         is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
-        is Error                 -> generateErrorResponse(id = id, version = version, fail = fail)
-        is Fail.Incident         -> generateIncidentResponse(id = id, version = version, fail = fail)
+        is Error -> generateErrorResponse(id = id, version = version, fail = fail)
+        is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
 
 fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiErrorResponse =
@@ -118,9 +118,8 @@ val NaN: UUID
     get() = UUID(0, 0)
 
 fun JsonNode.getId(): Result<UUID, DataErrors> {
-    return this.getAttribute("id")
-        .bind {
-            val value = it.asText()
+    return this.tryGetStringAttribute("id")
+        .bind { value ->
             asUUID(value)
         }
 }
@@ -142,17 +141,7 @@ fun JsonNode.getVersion(): Result<ApiVersion, DataErrors> {
 }
 
 fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
-    return this.getAttribute("action")
-        .bind {
-            val value = it.asText()
-            Command2Type.orNull(value)?.asSuccess<Command2Type, DataErrors>() ?: Result.failure(
-                DataErrors.Validation.UnknownValue(
-                    name = "action",
-                    actualValue = value,
-                    expectedValues = Command2Type.allowedElements.keysAsStrings()
-                )
-            )
-        }
+    return this.tryGetEnumAttribute(name = "action", enumProvider = Command2Type)
 }
 
 private fun JsonNode.tryGetStringAttribute(name: String): Result<String, DataErrors> {
@@ -161,6 +150,22 @@ private fun JsonNode.tryGetStringAttribute(name: String): Result<String, DataErr
             it.asText()
         }
 }
+
+private fun <T> JsonNode.tryGetEnumAttribute(name: String, enumProvider: EnumElementProvider<T>)
+    : Result<T, DataErrors> where T : Enum<T>,
+                                  T : EnumElementProvider.Key =
+    this.tryGetStringAttribute(name)
+        .bind { enum ->
+            enumProvider.orNull(enum)
+                ?.asSuccess<T, DataErrors>()
+                ?: failure(
+                    DataErrors.Validation.UnknownValue(
+                        name = name,
+                        expectedValues = enumProvider.allowedElements.keysAsStrings(),
+                        actualValue = enum
+                    )
+                )
+        }
 
 private fun JsonNode.tryGetAttribute(name: String, type: JsonNodeType): Result<JsonNode, DataErrors> =
     getAttribute(name = name)
