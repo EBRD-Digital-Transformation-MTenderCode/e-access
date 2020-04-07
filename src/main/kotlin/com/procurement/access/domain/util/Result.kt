@@ -33,6 +33,20 @@ sealed class Result<out T, out E> {
         return this
     }
 
+    inline fun doReturn(error: (E) -> Nothing): T {
+        return when (this) {
+            is Success -> this.get
+            else       -> error(this.error)
+        }
+    }
+
+    inline fun forwardResult(failure: (Failure<E>) -> Nothing): T {
+        return when (this) {
+            is Success -> this.get
+            is Failure -> failure(this)
+        }
+    }
+
     val orNull: T?
         get() = when (this) {
             is Success -> get
