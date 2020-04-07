@@ -7,6 +7,7 @@ import com.procurement.access.infrastructure.handler.check.persons.CheckPersones
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
+import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.errorResponse
@@ -22,6 +23,8 @@ class CommandService2(
     private val checkPersonesStructureHandler: CheckPersonesStructureHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
+    private val setStateForLotsHandler: SetStateForLotsHandler,
+    private val setStateForTenderHandler: CheckAccessToTenderHandler,
     private val logger: Logger
 ) {
 
@@ -50,6 +53,8 @@ class CommandService2(
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
             Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonesStructureHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")
