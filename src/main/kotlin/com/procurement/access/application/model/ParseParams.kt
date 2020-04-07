@@ -81,12 +81,12 @@ fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation.D
         .get
         .asSuccess()
 
-fun parseLotId(value:String):Result<LotId, DataErrors.Validation.DataFormatMismatch> =
+fun parseLotId(value: String, attributeName: String): Result<LotId, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateLotId()
-        .doOnError { inident->
+        .doOnError { incident ->
             return Result.failure(
                 DataErrors.Validation.DataFormatMismatch(
-                    name = "lot.id",
+                    name = attributeName,
                     actualValue = value,
                     expectedFormat = "uuid"
                 )

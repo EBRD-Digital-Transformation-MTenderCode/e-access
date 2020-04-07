@@ -75,7 +75,7 @@ data class SetStateForLotsParams private constructor(
                 status: String,
                 statusDetails: String
             ): Result<Lot, DataErrors> {
-                val idResult = parseLotId(value = id)
+                val idResult = parseLotId(value = id, attributeName = "Lot.id")
                     .doOnError { error -> return error.asFailure() }
                     .get
 
