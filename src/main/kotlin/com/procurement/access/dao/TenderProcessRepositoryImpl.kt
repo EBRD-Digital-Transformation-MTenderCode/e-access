@@ -5,7 +5,6 @@ import com.datastax.driver.core.ResultSet
 import com.datastax.driver.core.Row
 import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder
-import com.procurement.access.application.repository.Auth
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
@@ -29,13 +28,6 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
         private const val COLUMN_CREATION_DATE = "created_date"
         private const val COLUMN_OWNER = "owner"
         private const val COLUMN_JSON_DATA = "json_data"
-
-        private const val FIND_AUTH_BY_CPID_CQL = """
-               SELECT $COLUMN_TOKEN,
-                      $COLUMN_OWNER
-                 FROM $KEY_SPACE.$TABLE_NAME
-                WHERE $COLUMN_CPID=?
-            """
 
         private const val GET_BY_CPID_AND_STAGE_CQL = """
                SELECT $COLUMN_CPID,
@@ -61,7 +53,6 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             """
     }
 
-    private val preparedFindAuthByCpidCQL = session.prepare(FIND_AUTH_BY_CPID_CQL)
     private val preparedGetByCpIdAndStageCQL = session.prepare(GET_BY_CPID_AND_STAGE_CQL)
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
 
@@ -94,19 +85,6 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .asSuccess()
     }
 
-    override fun findAuthByCpid(cpid: Cpid): Result<List<Auth>, Fail.Incident.Database> {
-        val query = preparedFindAuthByCpidCQL.bind()
-            .apply {
-                setString(COLUMN_CPID, cpid.toString())
-            }
-
-        return load(query)
-            .doOnError { error -> return failure(error) }
-            .get
-            .map { row -> row.convertToAuth() }
-            .asSuccess()
-    }
-
     protected fun load(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
         success(session.execute(statement))
     } catch (expected: Exception) {
@@ -123,9 +101,4 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             this.getString(COLUMN_JSON_DATA)
         )
     }
-
-    private fun Row.convertToAuth(): Auth = Auth(
-        token = this.getUUID(COLUMN_TOKEN),
-        owner = this.getString(COLUMN_OWNER)
-    )
 }
