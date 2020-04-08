@@ -8,6 +8,7 @@ import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotSta
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
+import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.errorResponse
@@ -24,7 +25,7 @@ class CommandService2(
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val setStateForLotsHandler: SetStateForLotsHandler,
-    private val setStateForTenderHandler: CheckAccessToTenderHandler,
+    private val setStateForTenderHandler: SetStateForTenderHandler,
     private val logger: Logger
 ) {
 
