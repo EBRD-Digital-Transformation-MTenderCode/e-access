@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.responder.check.structure.CheckPersonsStructure
+import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service
 
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
-    fun checkPersonsStructure(params: CheckPersonsStructure.Params): ValidationResult<Fail.Error>
+    fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
 }
 
 @Service
@@ -89,7 +89,7 @@ class ResponderServiceImpl(
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())
     }
 
-    override fun checkPersonsStructure(params: CheckPersonsStructure.Params): ValidationResult<Fail.Error> {
+    override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
 
         val validDocumentTypes = getValidDocumentTypesForPersons(params)
         val validBusinessFunctions = getValidBusinessFunctionTypesForPersons(params)
@@ -124,8 +124,8 @@ class ResponderServiceImpl(
         return ValidationResult.ok()
     }
 
-    private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonsStructure.Params) =
-        when (params.locationOfPersons) {
+    private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
+        when (params.locationOfPersones) {
             LocationOfPersonsType.AWARD ->
                 BusinessFunctionType.allowedElements
                     .filter {
@@ -159,8 +159,8 @@ class ResponderServiceImpl(
                     }
         }
 
-    private fun getValidDocumentTypesForPersons(params: CheckPersonsStructure.Params) =
-        when (params.locationOfPersons) {
+    private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
+        when (params.locationOfPersones) {
             LocationOfPersonsType.AWARD ->
                 BusinessFunctionDocumentType.allowedElements
                     .filter {

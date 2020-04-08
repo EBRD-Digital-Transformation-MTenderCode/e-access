@@ -22,14 +22,14 @@ class CheckPersonsStructureHandler(
         val params = node.tryGetParams()
             .doOnError { error -> return ValidationResult.error(error) }
             .get
-            .tryParamsToObject(CheckPersonsStructureRequest.Params::class.java)
+            .tryParamsToObject(CheckPersonesStructureRequest.Params::class.java)
             .doOnError { error -> return ValidationResult.error(error) }
             .get
             .convert()
             .doOnError { error -> return ValidationResult.error(error) }
             .get
 
-        return responderService.checkPersonsStructure(params = params)
+        return responderService.checkPersonesStructure(params = params)
     }
 
     override val action: Command2Type

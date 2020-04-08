@@ -18,16 +18,16 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
-class CheckPersonsStructure {
+class CheckPersonesStructure {
 
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
         val persons: List<Person>,
-        val locationOfPersons: LocationOfPersonsType
+        val locationOfPersones: LocationOfPersonsType
     ) {
         companion object {
-            private val allowedLocationOfPersonsTypes = LocationOfPersonsType.allowedElements
+            private val allowedLocationOfPersonesTypes = LocationOfPersonsType.allowedElements
                 .filter {
                     when (it) {
                         LocationOfPersonsType.AWARD,
@@ -42,7 +42,7 @@ class CheckPersonsStructure {
                 cpid: String,
                 ocid: String,
                 persons: List<Person>,
-                locationOfPersons: String
+                locationOfPersones: String
             ): Result<Params, DataErrors> {
 
                 val parsedCpid = parseCpid(value = cpid)
@@ -53,14 +53,14 @@ class CheckPersonsStructure {
                     .doOnError { error -> return failure(error) }
                     .get
 
-                val parsedLocationOfPersones = locationOfPersons
+                val parsedLocationOfPersones = locationOfPersones
                     .let {
                         LocationOfPersonsType.orNull(it)
-                            ?.takeIf { it in allowedLocationOfPersonsTypes }
+                            ?.takeIf { it in allowedLocationOfPersonesTypes }
                             ?: return failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "locationOfPersones",
-                                    expectedValues = allowedLocationOfPersonsTypes.keysAsStrings(),
+                                    expectedValues = allowedLocationOfPersonesTypes.keysAsStrings(),
                                     actualValue = it
                                 )
                             )
@@ -72,7 +72,7 @@ class CheckPersonsStructure {
                         cpid = parsedCpid,
                         ocid = parsedOcid,
                         persons = persons,
-                        locationOfPersons = parsedLocationOfPersones
+                        locationOfPersones = parsedLocationOfPersones
                     )
                 )
             }
