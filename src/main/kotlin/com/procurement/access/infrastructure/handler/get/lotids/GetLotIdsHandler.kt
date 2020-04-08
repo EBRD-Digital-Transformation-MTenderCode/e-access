@@ -39,7 +39,7 @@ class GetLotIdsHandler(
             .doOnError { error -> return Result.failure(error) }
             .get
 
-        return lotService.getLotIds(cpId = params.cpid, stage = params.ocid.stage, states = params.states)
+        return lotService.getLotIds(params = params)
     }
 
     override val action: Command2Type
