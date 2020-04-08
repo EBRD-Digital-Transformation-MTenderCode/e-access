@@ -1,8 +1,8 @@
 package com.procurement.access.application.service.lot
 
-import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseOcid
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -47,15 +47,15 @@ class GetLotIdsParams private constructor(
         ): Result<GetLotIdsParams, DataErrors> {
 
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error-> return error.asFailure() }
+                .doOnError { error -> return error.asFailure() }
                 .get
 
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error-> return error.asFailure() }
+                .doOnError { error -> return error.asFailure() }
                 .get
 
             if (states != null && states.isEmpty()) {
-                return Result.failure(DataErrors.Validation.EmptyArray("GetLotIdsParams.states"))
+                return Result.failure(DataErrors.Validation.EmptyArray("states"))
             }
 
             return Result.success(
@@ -78,6 +78,9 @@ class GetLotIdsParams private constructor(
                 status: String?,
                 statusDetails: String?
             ): Result<State, DataErrors> {
+
+                if (status == null && statusDetails == null)
+                    return Result.failure(DataErrors.Validation.EmptyObject(name = "states"))
 
                 val createdStatus = status
                     ?.let {

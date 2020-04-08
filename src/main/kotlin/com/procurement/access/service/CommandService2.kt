@@ -8,6 +8,7 @@ import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotSta
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
+import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.errorResponse
@@ -24,6 +25,8 @@ class CommandService2(
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
+    private val setStateForLotsHandler: SetStateForLotsHandler,
+    private val setStateForTenderHandler: CheckAccessToTenderHandler,
     private val logger: Logger
 ) {
 
@@ -53,6 +56,8 @@ class CommandService2(
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
             Command2Type.CHECK_PERSONS_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
             Command2Type.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")
