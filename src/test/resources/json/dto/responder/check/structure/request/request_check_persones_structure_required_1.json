@@ -1,12 +1,11 @@
 {
-  "persons": [
+  "persones": [
     {
       "title": "string",
       "name": "string",
       "identifier": {
         "scheme": "string",
-        "id": "string",
-        "uri": "string"
+        "id": "string"
       },
       "businessFunctions": [
         {
@@ -20,8 +19,7 @@
             {
               "documentType": "regulatoryDocument",
               "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
-              "title": "string",
-              "description": "string"
+              "title": "string"
             }
           ]
         }

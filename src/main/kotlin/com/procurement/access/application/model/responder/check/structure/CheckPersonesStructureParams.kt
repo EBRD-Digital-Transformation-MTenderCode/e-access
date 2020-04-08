@@ -18,12 +18,12 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
-class CheckPersonsStructure {
+class CheckPersonesStructure {
 
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
-        val persons: List<Person>,
+        val persones: List<Person>,
         val locationOfPersons: LocationOfPersonsType
     ) {
         companion object {
@@ -41,7 +41,7 @@ class CheckPersonsStructure {
             fun tryCreate(
                 cpid: String,
                 ocid: String,
-                persons: List<Person>,
+                persones: List<Person>,
                 locationOfPersons: String
             ): Result<Params, DataErrors> {
 
@@ -71,7 +71,7 @@ class CheckPersonsStructure {
                     Params(
                         cpid = parsedCpid,
                         ocid = parsedOcid,
-                        persons = persons,
+                        persones = persones,
                         locationOfPersons = parsedLocationOfPersones
                     )
                 )
