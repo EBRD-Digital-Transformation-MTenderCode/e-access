@@ -55,7 +55,7 @@ class CommandService2(
             Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
-            Command2Type.CHECK_PERSONS_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
+            Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
             Command2Type.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
             Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
             Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
