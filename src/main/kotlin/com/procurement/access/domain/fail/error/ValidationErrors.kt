@@ -54,4 +54,9 @@ sealed class ValidationErrors(
         description = "Document '${id}' has invalid type. Allowed values: ${allowedValues}"
     )
 
+    class TenderNotFoundOnGetTenderState(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "10.1.7.1",
+        description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
 }

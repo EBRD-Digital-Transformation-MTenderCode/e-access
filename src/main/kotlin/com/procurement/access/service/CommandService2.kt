@@ -6,6 +6,7 @@ import com.procurement.access.infrastructure.handler.check.accesstotender.CheckA
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
+import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderHandler
@@ -24,6 +25,7 @@ class CommandService2(
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
+    private val getTenderStateHandler: GetTenderStateHandler,
     private val setStateForLotsHandler: SetStateForLotsHandler,
     private val setStateForTenderHandler: SetStateForTenderHandler,
     private val logger: Logger
@@ -54,6 +56,7 @@ class CommandService2(
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
             Command2Type.CHECK_PERSONS_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
+            Command2Type.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
             Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
             Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
         }
