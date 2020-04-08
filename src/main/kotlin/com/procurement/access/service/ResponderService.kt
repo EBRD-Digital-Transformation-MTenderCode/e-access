@@ -94,7 +94,7 @@ class ResponderServiceImpl(
         val validDocumentTypes = getValidDocumentTypesForPersons(params)
         val validBusinessFunctions = getValidBusinessFunctionTypesForPersons(params)
 
-        params.persons
+        params.persones
             .asSequence()
             .flatMap { it.businessFunctions.asSequence() }
             .also { businessFunctions ->

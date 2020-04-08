@@ -10,7 +10,7 @@ import com.procurement.access.infrastructure.handler.check.persons.CheckPersones
 
 fun CheckPersonesStructureRequest.Params.convert(): Result<CheckPersonesStructure.Params, DataErrors> {
 
-    val convertedPersons = this.persons
+    val convertedPersones = this.persones
         .mapResult { it.convert() }
         .doOnError { error -> return failure(error) }
         .get
@@ -18,7 +18,7 @@ fun CheckPersonesStructureRequest.Params.convert(): Result<CheckPersonesStructur
     return CheckPersonesStructure.Params.tryCreate(
         cpid = this.cpid,
         ocid = this.ocid,
-        persons = convertedPersons,
+        persones = convertedPersones,
         locationOfPersones = this.locationOfPersones
     )
 }

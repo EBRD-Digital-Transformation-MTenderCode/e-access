@@ -23,7 +23,7 @@ class CheckPersonesStructure {
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
-        val persons: List<Person>,
+        val persones: List<Person>,
         val locationOfPersones: LocationOfPersonsType
     ) {
         companion object {
@@ -41,7 +41,7 @@ class CheckPersonesStructure {
             fun tryCreate(
                 cpid: String,
                 ocid: String,
-                persons: List<Person>,
+                persones: List<Person>,
                 locationOfPersones: String
             ): Result<Params, DataErrors> {
 
@@ -71,7 +71,7 @@ class CheckPersonesStructure {
                     Params(
                         cpid = parsedCpid,
                         ocid = parsedOcid,
-                        persons = persons,
+                        persones = persones,
                         locationOfPersones = parsedLocationOfPersones
                     )
                 )
