@@ -45,8 +45,13 @@ sealed class ValidationErrors(
     )
 
     class InvalidBusinessFunctionType(id: String, allowedValues: List<String>) : ValidationErrors(
-        numberError = "10.5.5.2",
+        numberError = "10.1.5.2",
         description = "Business function '${id}' has invalid type. Allowed values: ${allowedValues}"
+    )
+
+    class InvalidDocumentType(id: String, allowedValues: List<String>) : ValidationErrors(
+        numberError = "10.1.5.1",
+        description = "Document '${id}' has invalid type. Allowed values: ${allowedValues}"
     )
 
 }

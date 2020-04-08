@@ -1,9 +1,8 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
+import com.procurement.access.application.model.responder.check.structure.CheckPersonsStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Service
 
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
-    fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
+    fun checkPersonsStructure(params: CheckPersonsStructure.Params): ValidationResult<Fail.Error>
 }
 
 @Service
@@ -90,62 +89,101 @@ class ResponderServiceImpl(
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())
     }
 
-    override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
-        when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD -> {
-                params.persons
-                    .asSequence()
-                    .flatMap { it.businessFunctions.asSequence() }
-                    .also { businessFunctions ->
-                        businessFunctions.forEach {
-                            val result = it.validateType() // VR-10.5.5.2
-                            if (result.isError) return result
-                        }
-                    }
-                    .flatMap { it.documents.asSequence() }
-                    .also { documents ->
-                        documents.forEach {
-                            val result = it.validateType() // VR-10.5.5.1
-                            if (result.isError) return result
-                        }
-                    }
+    override fun checkPersonsStructure(params: CheckPersonsStructure.Params): ValidationResult<Fail.Error> {
+
+        val validDocumentTypes = getValidDocumentTypesForPersons(params)
+        val validBusinessFunctions = getValidBusinessFunctionTypesForPersons(params)
+
+        params.persons
+            .asSequence()
+            .flatMap { it.businessFunctions.asSequence() }
+            .also { businessFunctions ->
+                businessFunctions.forEach { businessFunction ->
+                    if (businessFunction.type !in validBusinessFunctions)
+                        return ValidationResult.error(
+                            ValidationErrors.InvalidBusinessFunctionType(
+                                id = businessFunction.id,
+                                allowedValues = validBusinessFunctions.map { it.toString() }
+                            )
+                        )
+                }
             }
+            .flatMap { it.documents.asSequence() }
+            .also { documents ->
+                documents.forEach { document ->
+                    if (document.documentType !in validDocumentTypes)
+                        return ValidationResult.error(
+                            ValidationErrors.InvalidDocumentType(
+                                id = document.id,
+                                allowedValues = validDocumentTypes.map { it.toString() }
+                            )
+                        )
+                }
+            }
+
+        return ValidationResult.ok()
+    }
+
+    private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonsStructure.Params) =
+        when (params.locationOfPersons) {
+            LocationOfPersonsType.AWARD ->
+                BusinessFunctionType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionType.CHAIRMAN,
+                            BusinessFunctionType.PROCURMENT_OFFICER,
+                            BusinessFunctionType.CONTACT_POINT,
+                            BusinessFunctionType.TECHNICAL_EVALUATOR,
+                            BusinessFunctionType.TECHNICAL_OPENER,
+                            BusinessFunctionType.PRICE_OPENER,
+                            BusinessFunctionType.PRICE_EVALUATOR -> true
+                            BusinessFunctionType.AUTHORITY -> false
+                        }
+                    }.toSet()
+            LocationOfPersonsType.BUYER,
             LocationOfPersonsType.PROCURING_ENTITY,
-            LocationOfPersonsType.TENDERERS,
             LocationOfPersonsType.SUPPLIERS,
-            LocationOfPersonsType.BUYER -> Unit
+            LocationOfPersonsType.TENDERERS ->
+                BusinessFunctionType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionType.CHAIRMAN,
+                            BusinessFunctionType.PROCURMENT_OFFICER,
+                            BusinessFunctionType.CONTACT_POINT,
+                            BusinessFunctionType.TECHNICAL_EVALUATOR,
+                            BusinessFunctionType.TECHNICAL_OPENER,
+                            BusinessFunctionType.PRICE_OPENER,
+                            BusinessFunctionType.PRICE_EVALUATOR,
+                            BusinessFunctionType.AUTHORITY -> false
+                        }
+                    }
         }
 
-        return ValidationResult.ok()
-    }
-
-    private fun CheckPersonesStructure.Params.Person.BusinessFunction.validateType(): ValidationResult<Fail.Error> {
-        when (this.type) {
-            BusinessFunctionType.CHAIRMAN,
-            BusinessFunctionType.PROCURMENT_OFFICER,
-            BusinessFunctionType.CONTACT_POINT,
-            BusinessFunctionType.TECHNICAL_EVALUATOR,
-            BusinessFunctionType.TECHNICAL_OPENER,
-            BusinessFunctionType.PRICE_OPENER,
-            BusinessFunctionType.PRICE_EVALUATOR -> Unit
-            BusinessFunctionType.AUTHORITY       -> return ValidationResult.error(
-                ValidationErrors.InvalidBusinessFunctionType(
-                    id = this.id,
-                    allowedValues = BusinessFunctionType.allowedElements.keysAsStrings()
-                )
-            )
+    private fun getValidDocumentTypesForPersons(params: CheckPersonsStructure.Params) =
+        when (params.locationOfPersons) {
+            LocationOfPersonsType.AWARD ->
+                BusinessFunctionDocumentType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
+                        }
+                    }.toSet()
+            LocationOfPersonsType.BUYER,
+            LocationOfPersonsType.PROCURING_ENTITY,
+            LocationOfPersonsType.SUPPLIERS,
+            LocationOfPersonsType.TENDERERS ->
+                BusinessFunctionDocumentType.allowedElements
+                    .filter {
+                        when (it) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> false
+                        }
+                    }.toSet()
         }
-        return ValidationResult.ok()
-    }
 
-    private fun CheckPersonesStructure.Params.Person.BusinessFunction.Document.validateType(): ValidationResult<Fail.Error> {
-        when (this.documentType) {
-            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
-        }
-        return ValidationResult.ok()
-    }
-
-    private fun getTenderProcessEntityByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
+    private fun getTenderProcessEntityByCpIdAndStage(
+        cpid: Cpid,
+        stage: Stage
+    ): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
             .doOnError { error -> return Result.failure(error) }
             .get
@@ -160,10 +198,17 @@ class ResponderServiceImpl(
     }
 }
 
-private val responderPersonKeyExtractor: (ResponderProcessing.Params.Responder) -> String = { it.identifier.id + it.identifier.scheme }
-private val dbPersonKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone) -> String = { it.identifier.id + it.identifier.scheme }
+private val responderPersonKeyExtractor
+    : (ResponderProcessing.Params.Responder)
+-> String = { it.identifier.id + it.identifier.scheme }
+private val dbPersonKeyExtractor
+    : (CNEntity.Tender.ProcuringEntity.Persone)
+-> String = { it.identifier.id + it.identifier.scheme }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.update(received: ResponderProcessing.Params.Responder): CNEntity.Tender.ProcuringEntity.Persone {
+private fun CNEntity.Tender.ProcuringEntity.Persone.update(
+    received: ResponderProcessing.Params.Responder
+)
+    : CNEntity.Tender.ProcuringEntity.Persone {
     return CNEntity.Tender.ProcuringEntity.Persone(
         title = received.title,
         name = received.name,
@@ -179,10 +224,17 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.update(received: ResponderPr
     )
 }
 
-private val responderBusinessFunctionKeyExtractor: (ResponderProcessing.Params.Responder.BusinessFunction) -> String = { it.id }
-private val dbBusinessFunctionKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction) -> String = { it.id }
+private val responderBusinessFunctionKeyExtractor
+    : (ResponderProcessing.Params.Responder.BusinessFunction)
+-> String = { it.id }
+private val dbBusinessFunctionKeyExtractor
+    : (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction)
+-> String = { it.id }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.Identifier.update(received: ResponderProcessing.Params.Responder.Identifier): CNEntity.Tender.ProcuringEntity.Persone.Identifier {
+private fun CNEntity.Tender.ProcuringEntity.Persone.Identifier.update(
+    received: ResponderProcessing.Params.Responder.Identifier
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.Identifier {
     return CNEntity.Tender.ProcuringEntity.Persone.Identifier(
         id = received.id,
         scheme = received.scheme,
@@ -190,7 +242,10 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.Identifier.update(received: 
     )
 }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(received: ResponderProcessing.Params.Responder.BusinessFunction): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction {
+private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction {
     return CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
         id = received.id,
         jobTitle = received.jobTitle,
@@ -207,15 +262,25 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(rece
     )
 }
 
-private val responderDocumentKeyExtractor: (ResponderProcessing.Params.Responder.BusinessFunction.Document) -> String = { it.id }
-private val dbDocumentKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document) -> String = { it.id }
+private val responderDocumentKeyExtractor
+    : (ResponderProcessing.Params.Responder.BusinessFunction.Document)
+-> String = { it.id }
+private val dbDocumentKeyExtractor
+    : (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document)
+-> String = { it.id }
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period.update(received: ResponderProcessing.Params.Responder.BusinessFunction.Period): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
+private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Period
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
         startDate = received.startDate
     )
 
-private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(received: ResponderProcessing.Params.Responder.BusinessFunction.Document): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
+private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Document
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         id = received.id,
         documentType = received.documentType,
@@ -223,7 +288,10 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.up
         description = received.description ?: this.description
     )
 
-private fun createPerson(received: ResponderProcessing.Params.Responder): CNEntity.Tender.ProcuringEntity.Persone =
+private fun createPerson(
+    received: ResponderProcessing.Params.Responder
+)
+    : CNEntity.Tender.ProcuringEntity.Persone =
     CNEntity.Tender.ProcuringEntity.Persone(
         title = received.title,
         name = received.name,
@@ -232,14 +300,20 @@ private fun createPerson(received: ResponderProcessing.Params.Responder): CNEnti
             .map { createBusinessFunction(it) }
     )
 
-private fun createIdentifier(received: ResponderProcessing.Params.Responder.Identifier): CNEntity.Tender.ProcuringEntity.Persone.Identifier =
+private fun createIdentifier(
+    received: ResponderProcessing.Params.Responder.Identifier
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.Identifier =
     CNEntity.Tender.ProcuringEntity.Persone.Identifier(
         id = received.id,
         scheme = received.scheme,
         uri = received.uri
     )
 
-private fun createBusinessFunction(received: ResponderProcessing.Params.Responder.BusinessFunction): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction =
+private fun createBusinessFunction(
+    received: ResponderProcessing.Params.Responder.BusinessFunction
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
         id = received.id,
         type = received.type,
@@ -249,12 +323,18 @@ private fun createBusinessFunction(received: ResponderProcessing.Params.Responde
             .map { createDocument(it) }
     )
 
-private fun createPeriod(received: ResponderProcessing.Params.Responder.BusinessFunction.Period): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
+private fun createPeriod(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Period
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
         startDate = received.startDate
     )
 
-private fun createDocument(received: ResponderProcessing.Params.Responder.BusinessFunction.Document): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
+private fun createDocument(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Document
+)
+    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         id = received.id,
         title = received.title,

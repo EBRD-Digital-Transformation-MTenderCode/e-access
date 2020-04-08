@@ -18,13 +18,13 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
-class CheckPersonesStructure {
+class CheckPersonsStructure {
 
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
         val persons: List<Person>,
-        val locationOfPersones: LocationOfPersonsType
+        val locationOfPersons: LocationOfPersonsType
     ) {
         companion object {
             private val allowedLocationOfPersonsTypes = LocationOfPersonsType.allowedElements
@@ -72,7 +72,7 @@ class CheckPersonesStructure {
                         cpid = parsedCpid,
                         ocid = parsedOcid,
                         persons = persons,
-                        locationOfPersones = parsedLocationOfPersones
+                        locationOfPersons = parsedLocationOfPersones
                     )
                 )
             }
