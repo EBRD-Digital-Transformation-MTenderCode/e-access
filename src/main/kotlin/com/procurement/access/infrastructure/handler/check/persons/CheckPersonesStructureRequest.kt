@@ -10,7 +10,7 @@ class CheckPersonesStructureRequest {
         @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
         @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Person>,
 
-        @field:JsonProperty("locationOfPersons") @param:JsonProperty("locationOfPersons") val locationOfPersons: String
+        @field:JsonProperty("locationOfPersones") @param:JsonProperty("locationOfPersones") val locationOfPersones: String
     ) {
         data class Person(
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,

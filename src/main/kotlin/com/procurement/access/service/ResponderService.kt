@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service
 
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
-    fun checkPersonsStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
+    fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
 }
 
 @Service
@@ -89,7 +89,7 @@ class ResponderServiceImpl(
         return Result.success(updatedCnEntity.tender.procuringEntity.convert())
     }
 
-    override fun checkPersonsStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
+    override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
 
         val validDocumentTypes = getValidDocumentTypesForPersons(params)
         val validBusinessFunctions = getValidBusinessFunctionTypesForPersons(params)
@@ -125,7 +125,7 @@ class ResponderServiceImpl(
     }
 
     private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
-        when (params.locationOfPersons) {
+        when (params.locationOfPersones) {
             LocationOfPersonsType.AWARD ->
                 BusinessFunctionType.allowedElements
                     .filter {
@@ -160,7 +160,7 @@ class ResponderServiceImpl(
         }
 
     private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
-        when (params.locationOfPersons) {
+        when (params.locationOfPersones) {
             LocationOfPersonsType.AWARD ->
                 BusinessFunctionDocumentType.allowedElements
                     .filter {

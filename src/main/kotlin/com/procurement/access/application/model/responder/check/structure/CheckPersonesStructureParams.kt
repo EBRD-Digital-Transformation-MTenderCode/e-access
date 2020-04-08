@@ -24,10 +24,10 @@ class CheckPersonesStructure {
         val cpid: Cpid,
         val ocid: Ocid,
         val persones: List<Person>,
-        val locationOfPersons: LocationOfPersonsType
+        val locationOfPersones: LocationOfPersonsType
     ) {
         companion object {
-            private val allowedLocationOfPersonsTypes = LocationOfPersonsType.allowedElements
+            private val allowedLocationOfPersonesTypes = LocationOfPersonsType.allowedElements
                 .filter {
                     when (it) {
                         LocationOfPersonsType.AWARD,
@@ -42,7 +42,7 @@ class CheckPersonesStructure {
                 cpid: String,
                 ocid: String,
                 persones: List<Person>,
-                locationOfPersons: String
+                locationOfPersones: String
             ): Result<Params, DataErrors> {
 
                 val parsedCpid = parseCpid(value = cpid)
@@ -53,14 +53,14 @@ class CheckPersonesStructure {
                     .doOnError { error -> return failure(error) }
                     .get
 
-                val parsedLocationOfPersones = locationOfPersons
+                val parsedLocationOfPersones = locationOfPersones
                     .let {
                         LocationOfPersonsType.orNull(it)
-                            ?.takeIf { it in allowedLocationOfPersonsTypes }
+                            ?.takeIf { it in allowedLocationOfPersonesTypes }
                             ?: return failure(
                                 DataErrors.Validation.UnknownValue(
                                     name = "locationOfPersones",
-                                    expectedValues = allowedLocationOfPersonsTypes.keysAsStrings(),
+                                    expectedValues = allowedLocationOfPersonesTypes.keysAsStrings(),
                                     actualValue = it
                                 )
                             )
@@ -72,7 +72,7 @@ class CheckPersonesStructure {
                         cpid = parsedCpid,
                         ocid = parsedOcid,
                         persones = persones,
-                        locationOfPersons = parsedLocationOfPersones
+                        locationOfPersones = parsedLocationOfPersones
                     )
                 )
             }

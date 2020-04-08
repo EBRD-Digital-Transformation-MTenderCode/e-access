@@ -29,9 +29,9 @@ class CheckPersonsStructureHandler(
             .doOnError { error -> return ValidationResult.error(error) }
             .get
 
-        return responderService.checkPersonsStructure(params = params)
+        return responderService.checkPersonesStructure(params = params)
     }
 
     override val action: Command2Type
-        get() = Command2Type.CHECK_PERSONS_STRUCTURE
+        get() = Command2Type.CHECK_PERSONES_STRUCTURE
 }
