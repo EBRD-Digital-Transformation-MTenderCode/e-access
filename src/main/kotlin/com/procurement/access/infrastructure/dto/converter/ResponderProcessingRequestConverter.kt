@@ -18,7 +18,7 @@ fun ResponderProcessingRequest.Params.convert(): Result<ResponderProcessing.Para
     return ResponderProcessing.Params.tryCreate(
         cpid = this.cpid,
         ocid = this.ocid,
-        startDate = this.startDate,
+        date = this.date,
         responder = responder
     )
 }
