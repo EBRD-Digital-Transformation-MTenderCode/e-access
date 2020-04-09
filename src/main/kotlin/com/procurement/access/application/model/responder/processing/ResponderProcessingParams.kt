@@ -22,14 +22,14 @@ class ResponderProcessing {
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
-        val startDate: LocalDateTime,
+        val date: LocalDateTime,
         val responder: Responder
     ) {
         companion object {
             fun tryCreate(
                 cpid: String,
                 ocid: String,
-                startDate: String,
+                date: String,
                 responder: Responder
             ): Result<Params, DataErrors> {
 
@@ -41,7 +41,7 @@ class ResponderProcessing {
                     .doOnError { error -> return failure(error) }
                     .get
 
-                val startDateParsed = parseStartDate(startDate)
+                val dateParsed = parseStartDate(date)
                     .doOnError { error -> return failure(error) }
                     .get
 
@@ -49,7 +49,7 @@ class ResponderProcessing {
                     Params(
                         cpid = cpidResult,
                         ocid = ocidResult,
-                        startDate = startDateParsed,
+                        date = dateParsed,
                         responder = responder
                     )
                 )

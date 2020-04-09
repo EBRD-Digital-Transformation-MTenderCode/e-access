@@ -78,7 +78,7 @@ class ResponderServiceImpl(
                 token = entity.token,
                 stage = stage.toString(),
                 owner = entity.owner,
-                createdDate = params.startDate.toDate(),
+                createdDate = params.date.toDate(),
                 jsonData = toJson(updatedCnEntity)
             )
         )
