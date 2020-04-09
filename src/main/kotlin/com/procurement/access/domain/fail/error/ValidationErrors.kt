@@ -29,8 +29,18 @@ sealed class ValidationErrors(
         description = "Invalid token '$token' by cpid '$cpid'."
     )
 
-    class LotsNotFound(val lotsId: Collection<String>) : ValidationErrors(
+    class LotsNotFoundSetStateForLots(val lotsId: Collection<String>) : ValidationErrors(
+        numberError = "10.1.7.1",
+        description = "Lots '$lotsId' do not found."
+    )
+
+    class TenderNotFoundGetLotStateByIds(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
         numberError = "10.1.3.1",
+        description = "Tender not found by cpid '$cpid' and '$ocid'."
+    )
+
+    class LotsNotFoundGetLotStateByIds(val lotsId: Collection<String>) : ValidationErrors(
+        numberError = "10.1.3.2",
         description = "Lots '$lotsId' do not found."
     )
 

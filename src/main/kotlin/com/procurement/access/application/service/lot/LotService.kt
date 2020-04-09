@@ -4,12 +4,9 @@ import com.procurement.access.application.model.params.SetStateForLotsParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -46,11 +43,7 @@ interface LotService {
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful
 
-    fun getLotIds(
-        cpId: Cpid,
-        stage: Stage,
-        states: List<GetLotIdsParams.State>
-    ): Result<List<LotId>, Fail>
+    fun getLotIds(params: GetLotIdsParams): Result<List<LotId>, Fail>
 
     fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail>
 
@@ -64,9 +57,15 @@ class LotServiceImpl(
 ) : LotService {
 
     override fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail> {
-        val tenderProcessEntity = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid, stage = params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+            cpid = params.cpid,
+            stage = params.ocid.stage
+        )
             .doOnError { error -> return Result.failure(error) }
             .get
+            ?: return Result.failure(
+                ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
+            )
 
         val tenderProcess = tenderProcessEntity.jsonData
             .tryToObject(TenderProcess::class.java)
@@ -80,7 +79,7 @@ class LotServiceImpl(
 
         val unknownLotsIds = getUnknownElements(received = lotsIds, known = dbLotsIds)
         if (unknownLotsIds.isNotEmpty()) {
-            return Result.failure(ValidationErrors.LotsNotFound(lotsId = unknownLotsIds))
+            return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds))
         }
 
         val mapRequestIds = params.lots
@@ -113,10 +112,17 @@ class LotServiceImpl(
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
 
-        val tenderProcess = getTenderProcessEntityByCpIdAndStage(cpId = params.cpid, stage = params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+            cpid = params.cpid,
+            stage = params.ocid.stage
+        )
             .doOnError { error -> return Result.failure(error) }
             .get
-            .jsonData
+            ?: return Result.failure(
+                ValidationErrors.TenderNotFoundGetLotStateByIds(cpid = params.cpid, ocid = params.ocid)
+            )
+
+        val tenderProcess = tenderProcessEntity.jsonData
             .tryToObject(TenderProcess::class.java)
             .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
@@ -128,41 +134,42 @@ class LotServiceImpl(
         val knownLots = filteredLots.toSetBy { it.id }
         val unknownLots = receivedLotIds - knownLots
         if (unknownLots.isNotEmpty())
-            return ValidationErrors.LotsNotFound(unknownLots)
+            return ValidationErrors.LotsNotFoundGetLotStateByIds(unknownLots)
                 .asFailure()
 
         return filteredLots.map {
-                it.convertToGetLotStateByIdsResult()
-                    .doOnError { error -> return error.asFailure() }
-                    .get
-            }
+            it.convertToGetLotStateByIdsResult()
+                .doOnError { error -> return error.asFailure() }
+                .get
+        }
             .asSuccess()
     }
 
-    override fun getLotIds(
-        cpId: Cpid,
-        stage: Stage,
-        states: List<GetLotIdsParams.State>
-    ): Result<List<LotId>, Fail> {
+    override fun getLotIds(params: GetLotIdsParams): Result<List<LotId>, Fail> {
 
-        val data = getTenderProcessEntityByCpIdAndStage(cpId = cpId, stage = stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+            cpid = params.cpid,
+            stage = params.ocid.stage
+        )
             .doOnError { error -> return Result.failure(error) }
             .get
-            .jsonData
+            ?: return emptyList<LotId>()
+                .asSuccess()
 
-        val tenderProcess = data.tryToObject(TenderProcess::class.java)
+        val tenderProcess = tenderProcessEntity.jsonData
+            .tryToObject(TenderProcess::class.java)
             .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
 
         return when {
-            states.isEmpty() ->
+            params.states.isEmpty() ->
                 Result.success(
                     tenderProcess.tender.lots
                         .map { lot -> LotId.fromString(lot.id) }
                 )
             else -> {
-                val sortedStatuses = states.sorted()
+                val sortedStatuses = params.states.sorted()
                 Result.success(
                     getLotsOnStates(
                         lots = tenderProcess.tender.lots,
@@ -459,20 +466,6 @@ class LotServiceImpl(
             )
         } else
             lot
-    }
-
-    private fun getTenderProcessEntityByCpIdAndStage(cpId: Cpid, stage: Stage): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpId, stage = stage)
-            .doOnError { error -> return Result.failure(error) }
-            .get
-            ?: return Result.failure(
-                BadRequestErrors.EntityNotFound(
-                    entityName = "TenderProcessEntity",
-                    by = "by cpid = '$cpId' and stage = '$stage'"
-                )
-            )
-
-        return Result.success(entity)
     }
 
     private fun getLotsOnStates(lots: List<Lot>, states: List<GetLotIdsParams.State>): List<Lot> {

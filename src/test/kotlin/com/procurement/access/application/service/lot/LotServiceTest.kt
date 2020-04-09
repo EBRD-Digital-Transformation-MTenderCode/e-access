@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.dto.converter.convert
@@ -26,7 +25,6 @@ class LotServiceTest {
     companion object {
         private const val PATH_TO_REQUEST = "json/service/lots/getLotIds/get_lot_ids_full.json"
         private const val PATH_TO_TENDER_PROCESS = "json/service/lots/getLotIds/tender_process.json"
-        private val STAGE = Stage.AC
     }
 
     private lateinit var tenderProcessDao: TenderProcessDao
@@ -66,7 +64,7 @@ class LotServiceTest {
             val paramsResult = req.convert()
             val params = paramsResult.get
 
-            val result = handler.getLotIds(cpId = params.cpid, stage = STAGE, states = params.states)
+            val result = handler.getLotIds(params = params)
 
             val expected = listOf(
                 LotId.fromString("577fd5c4-e314-40a9-aabe-732d7f5269ad"),
