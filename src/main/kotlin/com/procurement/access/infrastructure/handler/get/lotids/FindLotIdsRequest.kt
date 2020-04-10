@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.handler.get.lotids
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class GetLotIdsRequest(
+data class FindLotIdsRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

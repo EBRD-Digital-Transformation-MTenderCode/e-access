@@ -9,7 +9,7 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
-import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsRequest
+import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsRequest
 import com.procurement.access.json.JSON
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
@@ -59,12 +59,12 @@ class LotServiceTest {
 
             val request = request.toNode()
 
-            val req = toObject(GetLotIdsRequest::class.java, request)
+            val req = toObject(FindLotIdsRequest::class.java, request)
 
             val paramsResult = req.convert()
             val params = paramsResult.get
 
-            val result = handler.getLotIds(params = params)
+            val result = handler.findLotIds(params = params)
 
             val expected = listOf(
                 LotId.fromString("577fd5c4-e314-40a9-aabe-732d7f5269ad"),

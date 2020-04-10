@@ -11,7 +11,7 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 
-class GetLotIdsParams private constructor(
+class FindLotIdsParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid,
     val states: List<State>
@@ -44,7 +44,7 @@ class GetLotIdsParams private constructor(
             cpid: String,
             ocid: String,
             states: List<State>?
-        ): Result<GetLotIdsParams, DataErrors> {
+        ): Result<FindLotIdsParams, DataErrors> {
 
             val cpidResult = parseCpid(value = cpid)
                 .doOnError { error -> return error.asFailure() }
@@ -59,7 +59,7 @@ class GetLotIdsParams private constructor(
             }
 
             return Result.success(
-                GetLotIdsParams(
+                FindLotIdsParams(
                     cpid = cpidResult,
                     states = states ?: emptyList(),
                     ocid = ocidResult

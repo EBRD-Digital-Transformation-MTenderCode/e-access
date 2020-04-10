@@ -43,7 +43,7 @@ interface LotService {
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful
 
-    fun getLotIds(params: GetLotIdsParams): Result<List<LotId>, Fail>
+    fun findLotIds(params: FindLotIdsParams): Result<List<LotId>, Fail>
 
     fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail>
 
@@ -145,7 +145,7 @@ class LotServiceImpl(
             .asSuccess()
     }
 
-    override fun getLotIds(params: GetLotIdsParams): Result<List<LotId>, Fail> {
+    override fun findLotIds(params: FindLotIdsParams): Result<List<LotId>, Fail> {
 
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
             cpid = params.cpid,
@@ -468,7 +468,7 @@ class LotServiceImpl(
             lot
     }
 
-    private fun getLotsOnStates(lots: List<Lot>, states: List<GetLotIdsParams.State>): List<Lot> {
+    private fun getLotsOnStates(lots: List<Lot>, states: List<FindLotIdsParams.State>): List<Lot> {
         return lots.filter { lot ->
             val state = states.firstOrNull { state ->
                 when {
