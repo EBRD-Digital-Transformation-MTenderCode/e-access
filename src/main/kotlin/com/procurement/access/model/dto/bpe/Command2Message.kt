@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
-    GET_LOT_IDS("getLotIds"),
+    FIND_LOT_IDS("findLotIds"),
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     RESPONDER_PROCESSING("responderProcessing"),

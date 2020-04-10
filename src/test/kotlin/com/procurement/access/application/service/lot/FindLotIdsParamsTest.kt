@@ -3,7 +3,7 @@ package com.procurement.access.application.service.lot
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class GetLotIdsParamsTest {
+internal class FindLotIdsParamsTest {
 
 
     @Test
@@ -102,7 +102,7 @@ internal class GetLotIdsParamsTest {
         val sortedStates = unsortedStates.sorted()
         assertEquals(expected, sortedStates)
     }
-    private fun createState(status :String?, statusDetails :String?) : GetLotIdsParams.State {
-        return GetLotIdsParams.State.tryCreate(status,statusDetails).get
+    private fun createState(status :String?, statusDetails :String?) : FindLotIdsParams.State {
+        return FindLotIdsParams.State.tryCreate(status, statusDetails).get
     }
 }

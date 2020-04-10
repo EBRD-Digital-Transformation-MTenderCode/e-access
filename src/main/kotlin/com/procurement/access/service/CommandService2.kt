@@ -5,7 +5,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
-import com.procurement.access.infrastructure.handler.get.lotids.GetLotIdsHandler
+import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandService2(
-    private val getLotIdsHandler: GetLotIdsHandler,
+    private val findLotIdsHandler: FindLotIdsHandler,
     private val responderProcessingHandler: ResponderProcessingHandler,
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
@@ -51,7 +51,7 @@ class CommandService2(
             .get
 
         val response = when (action) {
-            Command2Type.GET_LOT_IDS -> getLotIdsHandler.handle(node = request)
+            Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
             Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
             Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
