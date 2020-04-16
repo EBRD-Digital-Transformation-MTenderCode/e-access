@@ -23,8 +23,6 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
-import com.procurement.access.infrastructure.dto.cn.create.CreateCnResponse
-import com.procurement.access.infrastructure.dto.cn.create.convert
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.BudgetCnCreate
@@ -85,7 +83,7 @@ class CnCreateService(private val generationService: GenerationService,
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
         val tp = TenderProcess(
                 ocid = cpId,
-//                token = null,
+                token = null,
                 planning = Planning(
                         budget = Budget(
                                 description = planningDto.budget.description,
@@ -103,7 +101,7 @@ class CnCreateService(private val generationService: GenerationService,
                     statusDetails = TenderStatusDetails.creator(context.phase),
                     classification = tenderDto.classification,
                     mainProcurementCategory = tenderDto.mainProcurementCategory,
-//                    additionalProcurementCategories = null,
+                    additionalProcurementCategories = null,
                     procurementMethod = context.pmd,
                     procurementMethodDetails = tenderDto.procurementMethodDetails,
                     procurementMethodRationale = tenderDto.procurementMethodRationale,
@@ -111,7 +109,7 @@ class CnCreateService(private val generationService: GenerationService,
                     submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
                     submissionMethodDetails = tenderDto.submissionMethodDetails,
                     submissionMethodRationale = tenderDto.submissionMethodRationale,
-//                    submissionLanguages = null,
+                    submissionLanguages = null,
                     eligibilityCriteria = tenderDto.eligibilityCriteria,
                     acceleratedProcedure = AcceleratedProcedure(isAcceleratedProcedure = false),
                     designContest = DesignContest(serviceContractAward = false),
@@ -123,6 +121,7 @@ class CnCreateService(private val generationService: GenerationService,
                     legalBasis = tenderDto.legalBasis,
                     procuringEntity = tenderDto.procuringEntity,
                     awardCriteria = tenderDto.awardCriteria ?: AwardCriteria.PRICE_ONLY,
+                    awardCriteriaDetails = null,
                     requiresElectronicCatalogue = false,
                     contractPeriod = getContractPeriod(tenderDto.lots, planningDto.budget),
                     tenderPeriod = tenderDto.tenderPeriod,
@@ -138,8 +137,8 @@ class CnCreateService(private val generationService: GenerationService,
         )
         val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
         tenderProcessDao.save(entity)
-        val response: CreateCnResponse = tp.convert(entity.token)
-        return ResponseDto(data = response)
+        tp.token = entity.token.toString()
+        return ResponseDto(data = tp)
     }
 
     private fun validateAuctionsDto(country: String, pmd: ProcurementMethod, cnDto: CnCreate) {

@@ -5,13 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.AwardCriteriaDetails
+import com.procurement.access.domain.model.enums.ExtendedProcurementCategory
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.SubmissionLanguage
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -31,7 +35,7 @@ data class Tender @JsonCreator constructor(
 
         val mainProcurementCategory: MainProcurementCategory,
 
-//        var additionalProcurementCategories: List<ExtendedProcurementCategory>?,
+        var additionalProcurementCategories: List<ExtendedProcurementCategory>?,
 
         val procurementMethod: ProcurementMethod,
 
@@ -47,7 +51,7 @@ data class Tender @JsonCreator constructor(
 
         val submissionMethodRationale: List<String>,
 
-//        val submissionLanguages: List<SubmissionLanguage>?,
+        val submissionLanguages: List<SubmissionLanguage>?,
 
         val eligibilityCriteria: String,
 
@@ -70,6 +74,15 @@ data class Tender @JsonCreator constructor(
         val procuringEntity: OrganizationReference,
 
         var awardCriteria: AwardCriteria?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<CNEntity.Tender.Criteria> = emptyList(),
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<CNEntity.Tender.Conversion> = emptyList(),
 
         @get:JsonProperty("requiresElectronicCatalogue")
         @field:JsonDeserialize(using = BooleansDeserializer::class)

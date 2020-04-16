@@ -16,11 +16,11 @@ data class BudgetBreakdown @JsonCreator constructor(
 
         val sourceParty: SourceParty?,
 
-        val europeanUnionFunding: EuropeanUnionFunding?
+        val europeanUnionFunding: EuropeanUnionFunding?,
 
-//        val project: String?,
+        val project: String?,
 
-//        val projectID: String?,
+        val projectID: String?,
 
-//        val uri: String?
+        val uri: String?
 )
