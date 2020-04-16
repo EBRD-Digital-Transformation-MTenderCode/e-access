@@ -5,12 +5,9 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.TenderStatusDetails.SUSPENDED
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.AUCTION_LOT_HAS_INVALID_AMOUNT_VALUE
 import com.procurement.access.exception.ErrorType.AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE
-import com.procurement.access.exception.ErrorType.CONTEXT
-import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_IS_EMPTY
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_IS_NON_EMPTY
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
@@ -20,20 +17,13 @@ import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
-import com.procurement.access.exception.ErrorType.INVALID_OWNER
-import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.IS_SUSPENDED
 import com.procurement.access.exception.ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_AUCTIONS
-import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.exception.ErrorType.TENDER_CONTAIN_DUPLICATE_LOT_ID
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.ItemCnUpdate
 import com.procurement.access.model.dto.cn.LotCnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
-import com.procurement.access.model.dto.cn.validate
-import com.procurement.access.model.dto.ocds.Amendment
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.Document
@@ -50,8 +40,6 @@ import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
-import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -63,87 +51,6 @@ class CnUpdateService(private val generationService: GenerationService,
 
     companion object{
         private val persentEligibleMinimumDifferenceAmount = BigDecimal(0.1)
-    }
-
-    fun updateCn(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val token = cm.context.token ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
-        val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
-
-        //VR-3.20.17
-        if (cnDto.tender.title.isBlank())
-            throw ErrorException(
-                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                message = "The attribute 'tender.title' is empty or blank."
-            )
-
-        //VR-3.20.18
-        if (cnDto.tender.description.isBlank())
-            throw ErrorException(
-                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                message = "The attribute 'tender.description' is empty or blank."
-            )
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
-        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
-        val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
-        validateTenderStatus(tenderProcess)
-        val lotsDto = cnDto.tender.lots
-        val itemsDto = cnDto.tender.items
-        val documentsDto = cnDto.tender.documents
-        val lotsDb = tenderProcess.tender.lots
-        validateAuctionsDto(tenderProcess.tender, cnDto)
-        checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
-        checkLotsContractPeriod(cnDto)
-        val lotsDtoId = lotsDto.asSequence().map { it.id }.toSet()
-        val lotsDbId = lotsDb.asSequence().map { it.id }.toSet()
-        var newLotsId = lotsDtoId - lotsDbId
-        val oldCanceledLotsDbId = lotsDb.asSequence().filter { it.status == LotStatus.CANCELLED }.map { it.id }.toSet()
-        val allCanceledLotsId = lotsDbId - lotsDtoId
-        val newCanceledLots = allCanceledLotsId - oldCanceledLotsDbId
-        validateRelatedLots(lotsDbId, lotsDtoId, itemsDto)
-        val activeLots: List<Lot>
-        val canceledLots: List<Lot>
-        val updatedLots: List<Lot>
-        val updatedItems: List<Item>
-        newLotsId = setLotsId(cnDto.tender, newLotsId)
-        activeLots = getActiveLots(lotsDto = lotsDto, lotsTender = lotsDb, newLotsId = newLotsId)
-        setContractPeriod(tenderProcess.tender, activeLots, tenderProcess.planning.budget)
-        setTenderValueByActiveLots(tenderProcess.tender, activeLots)
-        canceledLots = getCanceledLots(lotsDb, allCanceledLotsId)
-        updatedLots = activeLots + canceledLots
-        updatedItems = updateItems(tenderProcess.tender.items, itemsDto)
-        tenderProcess.planning.apply {
-            rationale = cnDto.planning.rationale
-            budget.description = cnDto.planning.budget.description
-        }
-        tenderProcess.tender.apply {
-            title = cnDto.tender.title
-            description = cnDto.tender.description
-            procurementMethodRationale = cnDto.tender.procurementMethodRationale
-            procurementMethodAdditionalInfo = cnDto.tender.procurementMethodAdditionalInfo
-            items = updatedItems
-            lots = updatedLots
-            documents = updateDocuments(this, documentsDto)
-            tenderPeriod = cnDto.tender.tenderPeriod
-            enquiryPeriod = cnDto.tender.enquiryPeriod
-            if (electronicAuctions != null && cnDto.tender.electronicAuctions != null) {
-                procurementMethodModalities = cnDto.tender.procurementMethodModalities
-                electronicAuctions = cnDto.tender.electronicAuctions
-            }
-        }
-        if (!tenderProcess.tender.lots.any { it.status == LotStatus.ACTIVE }) throw ErrorException(NO_ACTIVE_LOTS)
-        tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
-        if (newCanceledLots.isNotEmpty()) {
-            tenderProcess.amendment = Amendment(relatedLots = newCanceledLots)
-        }
-        tenderProcess.isLotsChanged = (newLotsId.isNotEmpty() || newCanceledLots.isNotEmpty())
-
-        return ResponseDto(data = tenderProcess)
     }
 
     private fun validateAuctionsDto(tender: Tender, cnDto: CnUpdate) {

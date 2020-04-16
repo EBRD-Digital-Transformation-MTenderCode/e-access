@@ -12,7 +12,6 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
@@ -255,24 +254,35 @@ class CNServiceImpl(
         //VR-1.0.1.2.2
         this.tender.documents.forEach { document ->
             when (document.documentType) {
-                TenderDocumentType.TENDER_NOTICE,
-                TenderDocumentType.BIDDING_DOCUMENTS,
-                TenderDocumentType.TECHNICAL_SPECIFICATIONS,
-                TenderDocumentType.EVALUATION_CRITERIA,
-                TenderDocumentType.CLARIFICATIONS,
-                TenderDocumentType.ELIGIBILITY_CRITERIA,
-                TenderDocumentType.RISK_PROVISIONS,
-                TenderDocumentType.BILL_OF_QUANTITY,
-                TenderDocumentType.CONFLICT_OF_INTEREST,
-                TenderDocumentType.PROCUREMENT_PLAN,
-                TenderDocumentType.CONTRACT_DRAFT,
-                TenderDocumentType.COMPLAINTS,
-                TenderDocumentType.ILLUSTRATION,
-                TenderDocumentType.CANCELLATION_DETAILS,
-                TenderDocumentType.EVALUATION_REPORTS,
-                TenderDocumentType.SHORTLISTED_FIRMS,
-                TenderDocumentType.CONTRACT_ARRANGEMENTS,
-                TenderDocumentType.CONTRACT_GUARANTEES -> Unit
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> Unit
+
+                DocumentType.MARKET_STUDIES,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.PROJECT_PLAN -> throw ErrorException(
+                    error = ErrorType.INVALID_DOCUMENT_TYPE,
+                    message = "tender.documents[] contains not allowed document type"
+                )
             }
         }
 
@@ -1426,7 +1436,7 @@ class CNServiceImpl(
                 submissionMethodDetails = tender.submissionMethodDetails,
                 documents = tender.documents.map { document ->
                     UpdatedCn.Tender.Document(
-                        documentType = TenderDocumentType.creator(document.documentType.key),
+                        documentType = document.documentType,
                         id = document.id,
                         title = document.title,
                         description = document.description,

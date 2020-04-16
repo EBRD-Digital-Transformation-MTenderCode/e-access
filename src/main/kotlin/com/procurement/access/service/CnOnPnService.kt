@@ -11,7 +11,6 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -1339,7 +1338,8 @@ class CnOnPnService(
                     CNEntity.Tender.Item.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
-                        description = classification.description
+                        description = classification.description,
+                        uri = null
                     )
                 },
                 additionalClassifications = item.additionalClassifications
@@ -1554,7 +1554,8 @@ class CnOnPnService(
             CNEntity.Tender.Classification(
                 scheme = it.scheme,
                 id = it.id,
-                description = it.description
+                description = it.description,
+                uri = null
             )
         }
     }
@@ -1625,7 +1626,8 @@ class CnOnPnService(
             CNEntity.Tender.Classification(
                 scheme = it.scheme,
                 id = it.id,
-                description = it.description
+                description = it.description,
+                uri = null
             )
         }
     }
@@ -1726,7 +1728,8 @@ class CnOnPnService(
                     CNEntity.Tender.Item.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
-                        description = classification.description
+                        description = classification.description,
+                        uri = null
                     )
                 },
                 additionalClassifications = item.additionalClassifications
@@ -2170,7 +2173,7 @@ class CnOnPnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents.map { document ->
                         CnOnPnResponse.Tender.Document(
-                            documentType = TenderDocumentType.creator(document.documentType.key),
+                            documentType = document.documentType,
                             id = document.id,
                             title = document.title,
                             description = document.description,

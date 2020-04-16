@@ -1,6 +1,7 @@
 package com.procurement.access.application.service.pn.create
 
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -8,7 +9,6 @@ import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
@@ -322,7 +322,7 @@ data class PnCreateResult(
 
         data class Document(
             val id: String,
-            val documentType: TenderDocumentType,
+            val documentType: DocumentType,
             val title: String,
             val description: String?,
             val relatedLots: List<String>

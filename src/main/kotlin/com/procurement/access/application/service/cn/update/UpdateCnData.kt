@@ -3,8 +3,8 @@ package com.procurement.access.application.service.cn.update
 import com.procurement.access.domain.model.EntityBase
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
@@ -171,7 +171,7 @@ data class UpdateCnData(
         ) : EntityBase<String>(), RelatedLot<String>
 
         data class Document(
-            val documentType: TenderDocumentType,
+            val documentType: DocumentType,
             override val id: String,
             val title: String?,
             val description: String?,
