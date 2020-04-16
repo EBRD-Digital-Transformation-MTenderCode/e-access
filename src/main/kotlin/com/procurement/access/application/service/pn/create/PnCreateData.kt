@@ -1,10 +1,10 @@
 package com.procurement.access.application.service.pn.create
 
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.money.Money
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -233,7 +233,7 @@ class PnCreateData(
 
         data class Document(
             val id: String,
-            val documentType: TenderDocumentType,
+            val documentType: DocumentType,
             val title: String,
             val description: String?,
             val relatedLots: List<String>

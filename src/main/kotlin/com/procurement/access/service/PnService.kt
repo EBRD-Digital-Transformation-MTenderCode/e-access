@@ -11,7 +11,6 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
@@ -1176,7 +1175,7 @@ class PnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents?.map { document ->
                         PnCreateResult.Tender.Document(
-                            documentType = TenderDocumentType.creator(document.documentType.key),
+                            documentType = document.documentType,
                             id = document.id,
                             title = document.title!!,
                             description = document.description,
