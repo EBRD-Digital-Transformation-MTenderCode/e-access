@@ -14,7 +14,7 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.extension.toSetBy
-import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.dto.converter.toReference
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -86,7 +86,8 @@ class ResponderServiceImpl(
                 return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
-        return Result.success(updatedCnEntity.tender.procuringEntity.convert())
+        // FR-10.1.4.12
+        return Result.success(params.responder.toReference())
     }
 
     override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {

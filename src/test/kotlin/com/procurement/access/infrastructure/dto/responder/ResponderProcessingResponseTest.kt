@@ -11,19 +11,4 @@ class ResponderProcessingResponseTest : AbstractDTOTestBase<ResponderProcessingR
     fun fully() {
         testBindingAndMapping(pathToJsonFile = "json/dto/responder/processing/response/response_responder_processing_full.json")
     }
-
-    @Test
-    fun required1() {
-        testBindingAndMapping(pathToJsonFile = "json/dto/responder/processing/response/response_responder_processing_required_1.json")
-    }
-
-    @Test
-    fun required2() {
-        testBindingAndMapping(pathToJsonFile = "json/dto/responder/processing/response/response_responder_processing_required_2.json")
-    }
-
-    @Test
-    fun required3() {
-        testBindingAndMapping(pathToJsonFile = "json/dto/responder/processing/response/response_responder_processing_required_3.json")
-    }
 }
