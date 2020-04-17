@@ -69,4 +69,9 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
     )
 
+    class TenderNotFoundOnGetOrganization(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.9.1",
+        description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
 }
