@@ -31,10 +31,7 @@ class CheckPersonesStructure {
                 .filter {
                     when (it) {
                         LocationOfPersonsType.AWARD,
-                        LocationOfPersonsType.PROCURING_ENTITY,
-                        LocationOfPersonsType.TENDERERS,
-                        LocationOfPersonsType.SUPPLIERS,
-                        LocationOfPersonsType.BUYER -> true
+                        LocationOfPersonsType.PROCURING_ENTITY -> true
                     }
                 }.toSet()
 

@@ -126,7 +126,7 @@ class ResponderServiceImpl(
 
     private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
         when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD ->
+            LocationOfPersonsType.AWARD            ->
                 BusinessFunctionType.allowedElements
                     .filter {
                         when (it) {
@@ -137,13 +137,10 @@ class ResponderServiceImpl(
                             BusinessFunctionType.TECHNICAL_OPENER,
                             BusinessFunctionType.PRICE_OPENER,
                             BusinessFunctionType.PRICE_EVALUATOR -> true
-                            BusinessFunctionType.AUTHORITY -> false
+                            BusinessFunctionType.AUTHORITY       -> false
                         }
                     }.toSet()
-            LocationOfPersonsType.BUYER,
-            LocationOfPersonsType.PROCURING_ENTITY,
-            LocationOfPersonsType.SUPPLIERS,
-            LocationOfPersonsType.TENDERERS ->
+            LocationOfPersonsType.PROCURING_ENTITY ->
                 BusinessFunctionType.allowedElements
                     .filter {
                         when (it) {
@@ -161,17 +158,14 @@ class ResponderServiceImpl(
 
     private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
         when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD ->
+            LocationOfPersonsType.AWARD            ->
                 BusinessFunctionDocumentType.allowedElements
                     .filter {
                         when (it) {
                             BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> true
                         }
                     }.toSet()
-            LocationOfPersonsType.BUYER,
-            LocationOfPersonsType.PROCURING_ENTITY,
-            LocationOfPersonsType.SUPPLIERS,
-            LocationOfPersonsType.TENDERERS ->
+            LocationOfPersonsType.PROCURING_ENTITY ->
                 BusinessFunctionDocumentType.allowedElements
                     .filter {
                         when (it) {

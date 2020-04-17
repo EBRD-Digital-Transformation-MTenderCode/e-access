@@ -6,10 +6,7 @@ import com.procurement.access.domain.EnumElementProvider
 
 enum class LocationOfPersonsType(@JsonValue override val key: String) : EnumElementProvider.Key {
     AWARD("award"),
-    PROCURING_ENTITY("procuringEntity"),
-    TENDERERS("tenderers"),
-    SUPPLIERS("suppliers"),
-    BUYER("buyer");
+    PROCURING_ENTITY("procuringEntity");
 
     override fun toString(): String = key
 
