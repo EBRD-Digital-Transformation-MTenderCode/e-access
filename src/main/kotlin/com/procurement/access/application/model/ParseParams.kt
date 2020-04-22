@@ -1,5 +1,7 @@
 package com.procurement.access.application.model
 
+import com.procurement.access.domain.EnumElementProvider
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -94,3 +96,17 @@ fun parseLotId(value: String, attributeName: String): Result<LotId, DataErrors.V
         }
         .get
         .asSuccess()
+
+fun <T> parseEnum(value: String, allowedEnums: Set<T>, attributeName: String, target: EnumElementProvider<T>)
+    : Result<T, DataErrors.Validation.UnknownValue> where T : Enum<T>,
+                                                          T : EnumElementProvider.Key =
+    target.orNull(value)
+        ?.takeIf { it in allowedEnums }
+        ?.asSuccess()
+        ?: Result.failure(
+            DataErrors.Validation.UnknownValue(
+                name = attributeName,
+                expectedValues = allowedEnums.keysAsStrings(),
+                actualValue = value
+            )
+        )

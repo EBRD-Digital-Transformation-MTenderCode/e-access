@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.organization.GetOrganization
 import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.repository.TenderProcessRepository
@@ -13,9 +14,12 @@ import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
+import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -26,6 +30,7 @@ import org.springframework.stereotype.Service
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
     fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
+    fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail>
 }
 
 @Service
@@ -122,6 +127,30 @@ class ResponderServiceImpl(
             }
 
         return ValidationResult.ok()
+    }
+
+    override fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail> {
+        val stage = params.ocid.stage
+
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
+            .orForwardFail { error -> return error }
+            ?: return Result.failure(
+                ValidationErrors.TenderNotFoundOnGetOrganization(cpid = params.cpid, ocid = params.ocid)
+            )
+
+        val cnEntity = entity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .doOnError { error ->
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+            .get
+
+        // FR.COM-1.9.1
+        val result = when (params.role) {
+            GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(cnEntity.tender.procuringEntity)
+        }
+
+        return result.asSuccess()
     }
 
     private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
