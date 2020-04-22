@@ -16,9 +16,9 @@ class GetTenderStateParams private constructor(
             cpid: String, ocid: String
         ): Result<GetTenderStateParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .forwardResult { error -> return error }
+                .orForwardFail { error -> return error }
             val ocidResult = parseOcid(value = ocid)
-                .forwardResult { error -> return error }
+                .orForwardFail { error -> return error }
 
             return GetTenderStateParams(
                 cpid = cpidResult,

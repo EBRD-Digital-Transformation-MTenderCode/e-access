@@ -28,15 +28,12 @@ class GetOrganizationHandler(
     override fun execute(node: JsonNode): Result<GetOrganizationResult, Fail> {
 
         val paramsNode = node.tryGetParams()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .orForwardFail { error -> return error }
 
         val params = paramsNode.tryParamsToObject(GetOrganizationRequest::class.java)
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .orForwardFail { error -> return error }
             .convert()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .orForwardFail { error -> return error }
 
         return responderService.getOrganization(params = params)
     }

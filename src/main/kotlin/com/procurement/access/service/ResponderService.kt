@@ -11,7 +11,6 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
-import com.procurement.access.domain.model.enums.OrganizationRole
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
@@ -134,7 +133,7 @@ class ResponderServiceImpl(
         val stage = params.ocid.stage
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
-            .forwardResult { error -> return error }
+            .orForwardFail { error -> return error }
             ?: return Result.failure(
                 ValidationErrors.TenderNotFoundOnGetOrganization(cpid = params.cpid, ocid = params.ocid)
             )
@@ -148,7 +147,7 @@ class ResponderServiceImpl(
 
         // FR.COM-1.9.1
         val result = when (params.role) {
-            OrganizationRole.PROCURING_ENTITY -> convert(cnEntity.tender.procuringEntity)
+            GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(cnEntity.tender.procuringEntity)
         }
 
         return result.asSuccess()

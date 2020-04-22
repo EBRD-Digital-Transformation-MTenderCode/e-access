@@ -262,7 +262,7 @@ class TenderService(
     fun getTenderState(params: GetTenderStateParams): Result<GetTenderStateResult, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(
             cpid = params.cpid, stage = params.ocid.stage
-        ).forwardResult { incident -> return incident }
+        ).orForwardFail { incident -> return incident }
             ?: return ValidationErrors.TenderNotFoundOnGetTenderState(
                 cpid = params.cpid, ocid = params.ocid
             ).asFailure()

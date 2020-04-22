@@ -1,14 +1,15 @@
 package com.procurement.access.application.model.organization
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseEnum
 import com.procurement.access.application.model.parseOcid
-import com.procurement.access.application.model.parseOrganizationRole
+import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.enums.OrganizationRole
 import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
 
 class GetOrganization {
 
@@ -18,6 +19,7 @@ class GetOrganization {
         val role: OrganizationRole
     ) {
         companion object {
+
             private val allowedRoles = OrganizationRole.allowedElements
                 .filter { value ->
                     when (value) {
@@ -32,22 +34,33 @@ class GetOrganization {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .orForwardFail { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .orForwardFail { error -> return error }
 
-                val roleParsed = parseOrganizationRole(
-                    role = role,
-                    allowedValues = allowedRoles,
-                    attributeName = "role"
+                val roleParsed = parseEnum(
+                    value = role,
+                    allowedEnums = allowedRoles,
+                    attributeName = "role",
+                    target = OrganizationRole
                 )
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .orForwardFail { error -> return error }
 
                 return Result.success(Params(cpid = cpidResult, ocid = ocidResult, role = roleParsed))
+            }
+        }
+
+        enum class OrganizationRole(@JsonValue override val key: String) : EnumElementProvider.Key {
+            PROCURING_ENTITY("procuringEntity");
+
+            override fun toString(): String = key
+
+            companion object : EnumElementProvider<OrganizationRole>(info = info()) {
+
+                @JvmStatic
+                @JsonCreator
+                fun creator(name: String) = OrganizationRole.orThrow(name)
             }
         }
     }
