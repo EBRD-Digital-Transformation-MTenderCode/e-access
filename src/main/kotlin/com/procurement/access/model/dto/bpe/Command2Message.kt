@@ -36,7 +36,8 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
     GET_TENDER_STATE("getTenderState"),
     SET_STATE_FOR_LOTS("setStateForLots"),
-    SET_STATE_FOR_TENDER("setStateForTender");
+    SET_STATE_FOR_TENDER("setStateForTender"),
+    GET_ORGANIZATION("getOrganization");
 
     override fun toString(): String = key
 

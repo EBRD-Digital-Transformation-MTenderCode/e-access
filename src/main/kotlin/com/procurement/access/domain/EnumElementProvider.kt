@@ -5,7 +5,6 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.exception.EnumElementProviderException
 
-
 abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
                                                                    T : EnumElementProvider.Key {
 
@@ -40,7 +39,7 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
 
     val allowedElements: List<T> = info.values.filter { element -> element.isNotExcluded() }
 
-    private val elements: Map<String, T> = allowedElements.associateBy { it.key.toUpperCase() }
+    private val elements: Map<String, T> = info.values.associateBy { it.key.toUpperCase() }
 
     fun orNull(key: String): T? = elements[key.toUpperCase()]
 
@@ -48,7 +47,7 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
         ?: throw EnumElementProviderException(
             enumType = info.target.canonicalName,
             value = key,
-            values = info.values.joinToString { it.key }
+            values = allowedElements.joinToString { it.key }
         )
 
     fun tryOf(key: String): Result<T, String> {
@@ -57,7 +56,7 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
             success(element)
         else {
             val enumType = info.target.canonicalName
-            val allowedValues = info.values.joinToString { it.key }
+            val allowedValues = allowedElements.joinToString { it.key }
             failure("Unknown value '$key' for enum type '$enumType'. Allowed values are '$allowedValues'.")
         }
     }
