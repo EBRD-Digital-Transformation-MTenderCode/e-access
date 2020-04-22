@@ -18,6 +18,7 @@ import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
+import com.procurement.access.infrastructure.dto.converter.toReference
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
@@ -91,7 +92,8 @@ class ResponderServiceImpl(
                 return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
-        return Result.success(updatedCnEntity.tender.procuringEntity.convert())
+        // FR-10.1.4.12
+        return Result.success(params.responder.toReference())
     }
 
     override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
