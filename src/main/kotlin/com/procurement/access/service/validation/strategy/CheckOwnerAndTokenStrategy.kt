@@ -47,7 +47,7 @@ class CheckOwnerAndTokenStrategy(
             .doOnError { error -> return ValidationResult.error(error) }
             .get
 
-        if (tenderProcessEntity.owner != params.owner)
+        if (tenderProcessEntity.owner != params.owner.toString())
             return ValidationResult.error(ValidationErrors.InvalidOwner(owner = params.owner, cpid = params.cpid))
 
         if (tenderProcessEntity.token != params.token)
