@@ -111,7 +111,7 @@ class LotServiceImpl(
         val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCNEntity))
 
         tenderProcessRepository.save(updatedTenderProcessEntity)
-            .forwardResult { incident -> return incident }
+            .orForwardFail{ incident -> return incident }
 
         return resultLots.toList().mapResult { it.convertToSetStateForLotsResult()}
     }

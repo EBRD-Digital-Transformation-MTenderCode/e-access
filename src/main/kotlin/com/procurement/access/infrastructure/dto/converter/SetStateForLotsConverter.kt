@@ -48,7 +48,7 @@ fun SetStateForLotsRequest.Lot.convert(): Result<SetStateForLotsParams.Lot, Data
 fun CNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
     SetStateForLotsResult(
         id = id.tryCreateLotId()
-            .forwardResult { fail -> return fail },
+            .orForwardFail { fail -> return fail },
         status = status,
         statusDetails = statusDetails
     ).asSuccess()
