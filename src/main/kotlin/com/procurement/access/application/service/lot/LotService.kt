@@ -17,8 +17,10 @@ import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.getUnknownElements
+import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsResult
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
@@ -67,14 +69,14 @@ class LotServiceImpl(
                 ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
             )
 
-        val tenderProcess = tenderProcessEntity.jsonData
-            .tryToObject(TenderProcess::class.java)
+        val cnEntity = tenderProcessEntity.jsonData
+            .tryToObject(CNEntity::class.java)
             .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
         val lotsIds = params.lots
             .toSetBy { it.id.toString() }
-        val dbLotsIds: Set<String> = tenderProcess.tender.lots
+        val dbLotsIds: Set<String> = cnEntity.tender.lots
             .toSetBy { it.id }
 
         val unknownLotsIds = getUnknownElements(received = lotsIds, known = dbLotsIds)
@@ -85,29 +87,33 @@ class LotServiceImpl(
         val mapRequestIds = params.lots
             .associateBy { it.id.toString() }
 
-        val updatedLots = tenderProcess.tender.lots
+        val resultLots = mutableListOf<CNEntity.Tender.Lot>()
+
+        val updatedLots = cnEntity.tender.lots
             .map { dbLot ->
                 mapRequestIds[dbLot.id]
-                    ?.let {
-                        dbLot.setStatusAndStatusDetails(requestLot = it)
+                    ?.let { requestLot ->
+                        if (statusOrStatusDetailsVaries(databaseLot = dbLot, requestLot = requestLot)) {
+                            val updatedLot = dbLot.copy(
+                                status = requestLot.status, statusDetails = requestLot.statusDetails
+                            )
+                            resultLots.add(updatedLot)
+                            updatedLot
+                        } else dbLot
                     }
                     ?: dbLot
             }
-        val updatedTenderProcess = tenderProcess.copy(
-            tender = tenderProcess.tender.copy(
+        val updatedCNEntity = cnEntity.copy(
+            tender = cnEntity.tender.copy(
                 lots = updatedLots
             )
         )
-        tenderProcessRepository.save(tenderProcessEntity.updateTenderProcess(tenderProcess = updatedTenderProcess))
-        return params.lots
-            .map { lot ->
-                SetStateForLotsResult(
-                    id = lot.id,
-                    status = lot.status,
-                    statusDetails = lot.statusDetails
-                )
-            }
-            .asSuccess()
+        val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCNEntity))
+
+        tenderProcessRepository.save(updatedTenderProcessEntity)
+            .forwardResult { incident -> return incident }
+
+        return resultLots.toList().mapResult { it.convertToSetStateForLotsResult()}
     }
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
@@ -481,11 +487,7 @@ class LotServiceImpl(
         }
     }
 
-    private fun Lot.setStatusAndStatusDetails(requestLot: SetStateForLotsParams.Lot): Lot {
-        return this.copy(status = requestLot.status, statusDetails = requestLot.statusDetails)
-    }
-
-    private fun TenderProcessEntity.updateTenderProcess(tenderProcess: TenderProcess): TenderProcessEntity {
-        return this.copy(jsonData = toJson(tenderProcess))
-    }
+    private fun statusOrStatusDetailsVaries(
+        databaseLot: CNEntity.Tender.Lot, requestLot: SetStateForLotsParams.Lot
+    ) = databaseLot.status != requestLot.status || databaseLot.statusDetails != requestLot.statusDetails
 }
