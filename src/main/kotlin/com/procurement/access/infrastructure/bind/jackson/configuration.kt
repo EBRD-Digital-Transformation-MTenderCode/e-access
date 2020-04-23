@@ -9,10 +9,8 @@ import com.procurement.access.infrastructure.bind.apiversion.ApiVersionDeseriali
 import com.procurement.access.infrastructure.bind.apiversion.ApiVersionSerializer
 import com.procurement.access.infrastructure.bind.money.MoneyModule
 import com.procurement.access.infrastructure.web.dto.ApiVersion
-import com.procurement.access.model.dto.databinding.IntDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
-import com.procurement.access.model.dto.databinding.StringsDeserializer
 import java.time.LocalDateTime
 
 fun ObjectMapper.configuration() {
@@ -22,9 +20,6 @@ fun ObjectMapper.configuration() {
          */
         addSerializer(LocalDateTime::class.java, JsonDateTimeSerializer())
         addDeserializer(LocalDateTime::class.java, JsonDateTimeDeserializer())
-
-        addDeserializer(String::class.java, StringsDeserializer())
-        addDeserializer(Int::class.java, IntDeserializer())
 
         addSerializer(ApiVersion::class.java, ApiVersionSerializer())
         addDeserializer(ApiVersion::class.java, ApiVersionDeserializer())
