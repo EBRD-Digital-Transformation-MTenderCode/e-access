@@ -4,7 +4,6 @@ import com.datastax.driver.core.BoundStatement
 import com.datastax.driver.core.ResultSet
 import com.datastax.driver.core.Row
 import com.datastax.driver.core.Session
-import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
@@ -63,7 +62,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setUUID(COLUMN_TOKEN, entity.token)
                 setString(COLUMN_OWNER, entity.owner)
                 setString(COLUMN_STAGE, entity.stage)
-                QueryBuilder.set(COLUMN_CREATION_DATE, entity.createdDate)
+                setTimestamp(COLUMN_CREATION_DATE, entity.createdDate)
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
         return load(insert)
