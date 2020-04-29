@@ -13,6 +13,7 @@ object JsonFilePathGenerator {
         ProcurementMethod.NP, ProcurementMethod.TEST_NP,
         ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "lp"
 
+        ProcurementMethod.GPA,
         ProcurementMethod.RT, ProcurementMethod.TEST_RT,
         ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw IllegalArgumentException()
     }
