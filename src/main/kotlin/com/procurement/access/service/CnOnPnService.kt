@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
