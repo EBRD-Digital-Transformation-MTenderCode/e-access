@@ -1,0 +1,216 @@
+{
+  "preQualification": {
+    "period": {
+      "endDate": "2019-03-16T12:40:00Z"
+    }
+  },
+  "tender": {
+    "secondStage": {
+    },
+    "enquiryPeriod": {
+      "endDate": "2019-03-16T12:40:00Z",
+      "startDate": "2019-03-15T11:54:35Z"
+    },
+    "procurementMethodModalities": [
+      "electronicAuction"
+    ],
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "1",
+          "relatedLot": "lot-1",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 1.01,
+                "currency": "pn.planning.budget.amount.currency"
+              }
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "relatedLot": "lot-2",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 2.01,
+                "currency": "pn.planning.budget.amount.currency"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "criteria": [
+      {
+        "id": "d3732c09-7d62-4edc-a172-241da6636e7c",
+        "title": "Bankruptcy",
+        "description": "Is the economic operator bankrupt? This information needs not be given if exclusion of economic operators in this case has been made mandatory under the applicable national law without any possibility of derogation where the economic operator is nevertheless able to perform the contract.",
+        "requirementGroups": [
+          {
+            "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00555",
+            "requirements": [
+              {
+                "id": "974c8196-9d1c-419c-9ca9-45bb9f5fd59a",
+                "title": "Your answer?",
+                "dataType": "boolean",
+                "expectedValue": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "002",
+        "title": "Product warranty",
+        "requirementGroups": [
+          {
+            "id": "002-1",
+            "requirements": [
+              {
+                "id": "002-1-1",
+                "title": "A minimum product warranty of 1 year is guaranteed",
+                "dataType": "boolean"
+              },
+              {
+                "id": "002-1-2",
+                "title": "The number of years for proposed product warranty",
+                "dataType": "number",
+                "minValue": 1.000,
+                "maxValue": 3.000,
+                "period": {
+                  "startDate": "2019-01-01T10:00:00Z",
+                  "endDate": "2019-12-31T10:00:00Z"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "004",
+        "title": "Product",
+        "description": "Country of origin",
+        "relatesTo": "item",
+        "relatedItem": "002",
+        "requirementGroups": [
+          {
+            "id": "004-1",
+            "requirements": [
+              {
+                "id": "004-1-1",
+                "title": "Product has to be manufactured in the EU",
+                "dataType": "boolean",
+                "expectedValue": true
+              },
+              {
+                "id": "004-1-2",
+                "title": "Country of origin",
+                "dataType": "string"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "conversions": [
+      {
+        "id": "conversion-1557946336820",
+        "relatesTo": "requirement",
+        "relatedItem": "002-1-2",
+        "rationale": "Number of years for product guarantee",
+        "coefficients": [
+          {
+            "id": "coefficient-1557947503428",
+            "value": 1,
+            "coefficient": 1
+          },
+          {
+            "id": "coefficient-1557947503428",
+            "value": true,
+            "coefficient": 0.85
+          },
+          {
+            "id": "coefficient-1557947503428",
+            "value": "3",
+            "coefficient": 0.7
+          }
+        ]
+      },
+      {
+        "id": "conversion-1557946336820",
+        "relatesTo": "requirement",
+        "relatedItem": "003-1-2",
+        "rationale": "Number of Google certified staff",
+        "description": "conversions.description",
+        "coefficients": [
+          {
+            "id": "coefficient-1557947503428",
+            "value": 1,
+            "coefficient": 1
+          }
+        ]
+      }
+    ],
+    "procuringEntity": {
+      "id": "procuringEntity.id"
+    },
+    "lots": [
+      {
+        "id": "lot-1",
+        "title": "request.tender.lot[0].title",
+        "description": "request.tender.lot[0].description",
+        "value": {
+          "amount": 400.01,
+          "currency": "pn.planning.budget.amount.currency"
+        },
+        "contractPeriod": {
+          "startDate": "2019-11-06T10:00:00Z",
+          "endDate": "2019-11-16T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "request.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "addressDetails": {
+              "country": {
+                "id": "request.tender.lot[0].placeOfPerformance.address.addressDetails.country.id"
+              },
+              "region": {
+                "id": "request.tender.lot[0].placeOfPerformance.address.addressDetails.region.id"
+              },
+              "locality": {
+                "scheme": "request.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "request.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "request.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "item-1",
+        "description": "request.tender.item[0].description",
+        "classification": {
+          "scheme": "CPV",
+          "id": "request.tender.item[0].classification.id",
+          "description": "request.tender.item[0].classification.description"
+        },
+        "quantity": 100.010,
+        "unit": {
+          "id": "request.tender.item[0].unit.id",
+          "name": "request.tender.item[0].unit.name"
+        },
+        "relatedLot": "lot-1"
+      }
+    ],
+    "documents": [
+      {
+        "id": "document-1",
+        "documentType": "billOfQuantity"
+      }
+    ]
+  }
+}
