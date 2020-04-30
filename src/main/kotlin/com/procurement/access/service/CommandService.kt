@@ -6,6 +6,7 @@ import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.model.context.CheckCnOnPnGpaContext
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.model.context.CreateCnOnPnGpaContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CheckedCnOnPnGpa
@@ -37,6 +38,8 @@ import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaRequest
+import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
@@ -196,8 +199,7 @@ class CommandService(
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-                    ProcurementMethod.GPA -> {
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
                         val context = CreateCnOnPnContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
@@ -211,6 +213,24 @@ class CommandService(
                             .also {
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN. Response: ${toJson(it)}")
+                            }
+                        ResponseDto(data = response)
+                    }
+
+                    ProcurementMethod.GPA -> {
+                        val context = CreateCnOnPnGpaContext(
+                            cpid = cm.cpid,
+                            previousStage = cm.prevStage,
+                            stage = cm.stage,
+                            country = cm.country,
+                            pmd = cm.pmd,
+                            startDate = cm.startDate
+                        )
+                        val request: CreateCnOnPnGpaRequest = toObject(CreateCnOnPnGpaRequest::class.java, cm.data)
+                        val response: CreateCnOnPnGpaResponse = cnOnPnGpaService.createCnOnPnGpa(context = context, data = request)
+                            .also {
+                                if (log.isDebugEnabled)
+                                    log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
                             }
                         ResponseDto(data = response)
                     }

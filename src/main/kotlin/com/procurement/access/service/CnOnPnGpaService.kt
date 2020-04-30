@@ -1,12 +1,18 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.model.context.CheckCnOnPnGpaContext
+import com.procurement.access.application.model.context.CreateCnOnPnGpaContext
 import com.procurement.access.application.service.CheckedCnOnPnGpa
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -21,11 +27,17 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
+import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaRequest
+import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
+import com.procurement.access.infrastructure.dto.cn.criteria.Period
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.entity.TenderProcessEntity
+import com.procurement.access.utils.toDate
+import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -34,6 +46,7 @@ import java.time.LocalDateTime
 
 @Service
 class CnOnPnGpaService(
+    private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao,
     private val rulesService: RulesService
 ) {
@@ -183,6 +196,1405 @@ class CnOnPnGpaService(
         return CheckedCnOnPnGpa(requireAuction = data.tender.electronicAuctions != null)
     }
 
+    fun createCnOnPnGpa(context: CreateCnOnPnGpaContext, data: CreateCnOnPnGpaRequest): CreateCnOnPnGpaResponse {
+        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
+            ?: throw ErrorException(DATA_NOT_FOUND)
+
+        val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
+
+        val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
+            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
+        else
+            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
+
+        val cnEntity = CNEntity(
+            ocid = pnEntity.ocid,
+            planning = planning(pnEntity), //BR-3.8.1
+            tender = tender
+        )
+
+        tenderProcessDao.save(
+            TenderProcessEntity(
+                cpId = context.cpid,
+                token = tenderProcessEntity.token,
+                stage = context.stage,
+                owner = tenderProcessEntity.owner,
+                createdDate = context.startDate.toDate(),
+                jsonData = toJson(cnEntity)
+            )
+        )
+
+        return getResponse(cnEntity)
+    }
+
+
+    /** Begin Business Rules */
+    private fun createTenderBasedPNWithoutItems(
+        request: CreateCnOnPnGpaRequest,
+        pnEntity: PNEntity
+    ): CNEntity.Tender {
+        //BR-3.6.5
+        val relatedTemporalWithPermanentLotId: Map<String, String> = generatePermanentLotId(request.tender.lots)
+        val relatedTemporalWithPermanentItemId: Map<String, String> = generatePermanentItemId(request.tender.items)
+
+        /** Begin BR-3.8.3 */
+        val classification: CNEntity.Tender.Classification =
+            classificationFromRequest(classificationFromRequest = request.tender.classification!!)
+        val lots: List<CNEntity.Tender.Lot> = convertRequestLots(request.tender, relatedTemporalWithPermanentLotId)
+        val items: List<CNEntity.Tender.Item> =
+            convertRequestItems(
+                request.tender.items,
+                relatedTemporalWithPermanentLotId,
+                relatedTemporalWithPermanentItemId
+            )
+        /** End BR-3.8.3 */
+
+        val rawCriteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
+        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
+        if ((rawCriteria == null) && (conversions != null))
+            throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+
+        val criteria = rawCriteria?.let {
+            convertRequestCriteria(
+                tender = request.tender,
+                relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
+                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+            )
+        }
+
+        /** Begin BR-3.8.4 */
+        //BR-3.8.14 -> BR-3.6.30
+        val value: CNEntity.Tender.Value = calculateTenderValueFromLotsGpaCheck(request.tender.lots)
+        //BR-3.8.15 -> BR-3.6.31
+        val contractPeriod: CNEntity.Tender.ContractPeriod = calculationTenderContractPeriodGpaCreate(lots = request.tender.lots)
+        /** End BR-3.8.4 */
+
+        //BR-3.8.5 -> BR-3.6.5
+        val electronicAuctions: CNEntity.Tender.ElectronicAuctions? = convertElectronicAuctionsFromRequest(
+            tenderFromRequest = request.tender,
+            relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+        )
+
+        //BR-3.8.18 -> BR-3.7.13
+        val updatedDocuments: List<CNEntity.Tender.Document> = updateDocuments(
+            documentsFromRequest = request.tender.documents,
+            documentsFromDB = pnEntity.tender.documents ?: emptyList(),
+            relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+        )
+
+        return tender(
+            request = request,
+            pnEntity = pnEntity,
+            classification = classification,
+            criteria = criteria,
+            conversions = conversions,
+            lots = lots,
+            items = items,
+            value = value,
+            contractPeriod = contractPeriod,
+            electronicAuctions = electronicAuctions,
+            updatedDocuments = updatedDocuments
+        )
+    }
+
+    private fun createTenderBasedPNWithItems(
+        request: CreateCnOnPnGpaRequest,
+        pnEntity: PNEntity
+    ): CNEntity.Tender {
+        /** Begin BR-3.8.3 */
+        val classification: CNEntity.Tender.Classification =
+            classificationFromPNToCN(classificationFromPN = pnEntity.tender.classification)
+        val lots: List<CNEntity.Tender.Lot> = lotsFromPNToCN(lotsFromPN = pnEntity.tender.lots)
+        val items: List<CNEntity.Tender.Item> = itemsFromPNToCN(itemsFromPN = pnEntity.tender.items)
+        /** End BR-3.8.3 */
+
+        val criteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
+        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
+        if ((criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+
+        /** Begin BR-3.8.4 */
+        val value: CNEntity.Tender.Value = pnEntity.tender.value.let {
+            CNEntity.Tender.Value(
+                amount = it.amount,
+                currency = it.currency
+            )
+        }
+        val contractPeriod: CNEntity.Tender.ContractPeriod = pnEntity.tender.contractPeriod!!.let {
+            CNEntity.Tender.ContractPeriod(
+                startDate = it.startDate,
+                endDate = it.endDate
+            )
+        }
+        /** End BR-3.8.4 */
+
+        //BR-3.8.5 -> BR-3.6.5
+        val electronicAuctions: CNEntity.Tender.ElectronicAuctions? = convertElectronicAuctionsFromRequest(
+            tenderFromRequest = request.tender
+        )
+
+        //BR-3.8.18 -> BR-3.7.13
+        val updatedDocuments: List<CNEntity.Tender.Document> = updateDocuments(
+            documentsFromRequest = request.tender.documents,
+            documentsFromDB = pnEntity.tender.documents ?: emptyList(),
+            relatedTemporalWithPermanentLotId = emptyMap()
+        )
+
+        return tender(
+            request = request,
+            pnEntity = pnEntity,
+            classification = classification,
+            criteria = criteria,
+            conversions = conversions,
+            lots = lots,
+            items = items,
+            value = value,
+            contractPeriod = contractPeriod,
+            electronicAuctions = electronicAuctions,
+            updatedDocuments = updatedDocuments
+        )
+    }
+
+
+    private fun convertRequestItems(
+        itemsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Item>,
+        relatedTemporalWithPermanentLotId: Map<String, String>,
+        relatedTemporalWithPermanentItemId: Map<String, String>
+    ): List<CNEntity.Tender.Item> {
+        return itemsFromRequest.map { item ->
+            CNEntity.Tender.Item(
+                //BR-3.8.6(CN on PN) item id (tender.items.id) -> BR-3.6.6
+                internalId = item.internalId,
+                id = relatedTemporalWithPermanentItemId.getValue(item.id),
+                description = item.description,
+                classification = item.classification.let { classification ->
+                    CNEntity.Tender.Item.Classification(
+                        scheme = classification.scheme,
+                        id = classification.id,
+                        description = classification.description,
+                        uri = null
+                    )
+                },
+                additionalClassifications = item.additionalClassifications
+                    ?.map { additionalClassification ->
+                        CNEntity.Tender.Item.AdditionalClassification(
+                            scheme = additionalClassification.scheme,
+                            id = additionalClassification.id,
+                            description = additionalClassification.description
+                        )
+                    },
+                quantity = item.quantity,
+                unit = item.unit.let { unit ->
+                    CNEntity.Tender.Item.Unit(
+                        id = unit.id,
+                        name = unit.name
+                    )
+                },
+                relatedLot = relatedTemporalWithPermanentLotId.getValue(item.relatedLot) //BR-3.8.6(CN on PN) -> BR-3.6.5(CN)
+            )
+        }
+    }
+
+    /**
+     * BR-3.8.3
+     */
+    private fun convertRequestLots(
+        tender: CreateCnOnPnGpaRequest.Tender,
+        relatedTemporalWithPermanentLotId: Map<String, String>
+    ): List<CNEntity.Tender.Lot> {
+        return tender.lots.map { lot ->
+            CNEntity.Tender.Lot(
+                id = relatedTemporalWithPermanentLotId.getValue(lot.id), //BR-3.8.5
+                internalId = lot.internalId,
+                title = lot.title,
+                description = lot.description,
+                /** Begin BR-3.8.7 -> BR-3.6.1 */
+                status = LotStatus.ACTIVE,
+                statusDetails = LotStatusDetails.EMPTY,
+                /** End BR-3.8.7 -> BR-3.6.1 */
+
+                //BR-3.8.4; BR-3.8.14 -> BR-3.6.30
+                value = lot.value.let { value ->
+                    CNEntity.Tender.Lot.Value(
+                        amount = value.amount,
+                        currency = value.currency
+                    )
+                },
+
+                /** Begin BR-3.8.4 */
+                //BR-3.8.9 -> BR-3.6.17
+                options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.4; BR-3.8.9 -> BR-3.6.17
+                //BR-3.8.10 -> BR-3.6.18
+                variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.4; BR-3.8.10 -> BR-3.6.18
+                //BR-3.8.11 -> BR-3.6.19
+                renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.4; BR-3.8.11 -> BR-3.6.19
+                //BR-3.8.12 -> BR-3.6.20
+                recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.4; BR-3.8.12 -> BR-3.6.20
+                /** End BR-3.8.4 */
+
+                //BR-3.8.4; BR-3.8.15 -> BR-3.6.31
+                contractPeriod = lot.contractPeriod.let { contractPeriod ->
+                    CNEntity.Tender.Lot.ContractPeriod(
+                        startDate = contractPeriod.startDate,
+                        endDate = contractPeriod.endDate
+                    )
+                },
+                placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                    CNEntity.Tender.Lot.PlaceOfPerformance(
+                        address = placeOfPerformance.address.let { address ->
+                            CNEntity.Tender.Lot.PlaceOfPerformance.Address(
+                                streetAddress = address.streetAddress,
+                                postalCode = address.postalCode,
+                                addressDetails = address.addressDetails.let { addressDetails ->
+                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                        country = addressDetails.country.let { country ->
+                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                scheme = country.scheme!!, //VR-3.14.1(CheckItem)
+                                                id = country.id,
+                                                description = country.description!!,
+                                                uri = country.uri!!
+                                            )
+                                        },
+                                        region = addressDetails.region.let { region ->
+                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                scheme = region.scheme!!,
+                                                id = region.id,
+                                                description = region.description!!,
+                                                uri = region.uri!!
+                                            )
+                                        },
+                                        locality = addressDetails.locality.let { locality ->
+                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                scheme = locality.scheme,
+                                                id = locality.id,
+                                                description = locality.description,
+                                                uri = locality.uri
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        },
+                        description = placeOfPerformance.description
+                    )
+                }
+            )
+        }
+    }
+
+    /**
+     * BR-3.8.3
+     */
+    private fun classificationFromRequest(
+        classificationFromRequest: CreateCnOnPnGpaRequest.Tender.Classification
+    ): CNEntity.Tender.Classification {
+        return classificationFromRequest.let {
+            CNEntity.Tender.Classification(
+                scheme = it.scheme,
+                id = it.id,
+                description = it.description,
+                uri = null
+            )
+        }
+    }
+
+    private fun convertRequestCriteria(
+        tender: CreateCnOnPnGpaRequest.Tender,
+        relatedTemporalWithPermanentLotId: Map<String, String>,
+        relatedTemporalWithPermanentItemId: Map<String, String>
+    ): List<CNEntity.Tender.Criteria> {
+        return tender.criteria!!.map { criteria ->
+            CNEntity.Tender.Criteria(
+                id = criteria.id,
+                title = criteria.title,
+                description = criteria.description,
+                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
+                    CNEntity.Tender.Criteria.RequirementGroup(
+                        id = requirementGroup.id,
+                        description = requirementGroup.description,
+                        requirements = requirementGroup.requirements.map { requirement ->
+                            Requirement(
+                                id = requirement.id,
+                                description = requirement.description,
+                                title = requirement.title,
+                                period = requirement.period?.let { period ->
+                                    Period(
+                                        startDate = period.startDate,
+                                        endDate = period.endDate
+                                    )
+                                },
+                                dataType = requirement.dataType,
+                                value = requirement.value
+                            )
+                        }
+                    )
+                },
+                relatesTo = criteria.relatesTo,
+                relatedItem = when (criteria.relatesTo) {
+                    CriteriaRelatesToEnum.LOT  -> relatedTemporalWithPermanentLotId.getValue(criteria.relatedItem!!)
+                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criteria.relatedItem!!)
+                    else                       -> criteria.relatedItem
+                }
+            )
+        }
+    }
+
+    /**
+     * BR-3.8.3
+     */
+    private fun itemsFromPNToCN(itemsFromPN: List<PNEntity.Tender.Item>): List<CNEntity.Tender.Item> {
+        return itemsFromPN.map { item ->
+            CNEntity.Tender.Item(
+                //BR-3.8.6
+                id = item.id,
+                internalId = item.internalId,
+                description = item.description,
+                classification = item.classification.let { classification ->
+                    CNEntity.Tender.Item.Classification(
+                        scheme = classification.scheme,
+                        id = classification.id,
+                        description = classification.description,
+                        uri = null
+                    )
+                },
+                additionalClassifications = item.additionalClassifications
+                    ?.map { additionalClassification ->
+                        CNEntity.Tender.Item.AdditionalClassification(
+                            scheme = additionalClassification.scheme,
+                            id = additionalClassification.id,
+                            description = additionalClassification.description
+                        )
+                    },
+                quantity = item.quantity,
+                unit = item.unit.let { unit ->
+                    CNEntity.Tender.Item.Unit(
+                        id = unit.id,
+                        name = unit.name
+                    )
+                },
+                relatedLot = item.relatedLot
+            )
+        }
+    }
+
+    /**
+     * BR-3.8.3
+     */
+    private fun lotsFromPNToCN(lotsFromPN: List<PNEntity.Tender.Lot>): List<CNEntity.Tender.Lot> {
+        return lotsFromPN.map { lot ->
+            /** Begin BR-3.8.7 */
+            val status = if (lot.status == LotStatus.PLANNING)
+                LotStatus.ACTIVE
+            else
+                lot.status
+            /** End BR-3.8.7 */
+
+            CNEntity.Tender.Lot(
+                //BR-3.8.5
+                id = lot.id,
+
+                internalId = lot.internalId,
+                title = lot.title,
+                description = lot.description,
+                /** Begin BR-3.8.7 */
+                status = status,
+                statusDetails = LotStatusDetails.EMPTY,
+                /** End BR-3.8.7 */
+                value = lot.value.let { value ->
+                    CNEntity.Tender.Lot.Value(
+                        amount = value.amount,
+                        currency = value.currency
+                    )
+                },
+                options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
+                recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
+                renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
+                variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
+                contractPeriod = lot.contractPeriod.let { contractPeriod ->
+                    CNEntity.Tender.Lot.ContractPeriod(
+                        startDate = contractPeriod.startDate,
+                        endDate = contractPeriod.endDate
+                    )
+                },
+                placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                    CNEntity.Tender.Lot.PlaceOfPerformance(
+                        address = placeOfPerformance.address.let { address ->
+                            CNEntity.Tender.Lot.PlaceOfPerformance.Address(
+                                streetAddress = address.streetAddress,
+                                postalCode = address.postalCode,
+                                addressDetails = address.addressDetails.let { addressDetails ->
+                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                        country = addressDetails.country.let { country ->
+                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                scheme = country.scheme, //VR-3.14.1(CheckItem)
+                                                id = country.id,
+                                                description = country.description,
+                                                uri = country.uri
+                                            )
+                                        },
+                                        region = addressDetails.region.let { region ->
+                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                scheme = region.scheme,
+                                                id = region.id,
+                                                description = region.description,
+                                                uri = region.uri
+                                            )
+                                        },
+                                        locality = addressDetails.locality.let { locality ->
+                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                scheme = locality.scheme,
+                                                id = locality.id,
+                                                description = locality.description,
+                                                uri = locality.uri
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        },
+                        description = placeOfPerformance.description
+                    )
+                }
+            )
+        }
+    }
+
+
+    /**
+     * BR-3.8.3
+     */
+    private fun classificationFromPNToCN(
+        classificationFromPN: PNEntity.Tender.Classification
+    ): CNEntity.Tender.Classification {
+        return classificationFromPN.let {
+            CNEntity.Tender.Classification(
+                scheme = it.scheme,
+                id = it.id,
+                description = it.description,
+                uri = null
+            )
+        }
+    }
+
+    private fun criteriaFromRequest(
+        criteriaFromRequest: List<CreateCnOnPnGpaRequest.Tender.Criteria>?
+    ): List<CNEntity.Tender.Criteria>? {
+        return criteriaFromRequest?.map { criteria ->
+            CNEntity.Tender.Criteria(
+                id = criteria.id,
+                title = criteria.title,
+                description = criteria.description,
+                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
+                    CNEntity.Tender.Criteria.RequirementGroup(
+                        id = requirementGroup.id,
+                        description = requirementGroup.description,
+                        requirements = requirementGroup.requirements.map { requirement ->
+                            Requirement(
+                                id = requirement.id,
+                                description = requirement.description,
+                                title = requirement.title,
+                                period = requirement.period?.let { period ->
+                                    Period(
+                                        startDate = period.startDate,
+                                        endDate = period.endDate
+                                    )
+                                },
+                                dataType = requirement.dataType,
+                                value = requirement.value
+                            )
+                        }
+                    )
+                },
+                relatesTo = criteria.relatesTo,
+                relatedItem = criteria.relatedItem
+            )
+        }
+    }
+
+    private fun updateDocuments(
+        documentsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Document>,
+        documentsFromDB: List<PNEntity.Tender.Document>,
+        relatedTemporalWithPermanentLotId: Map<String, String>
+    ): List<CNEntity.Tender.Document> {
+        return if (documentsFromDB.isNotEmpty()) {
+            val documentsFromRequestById: Map<String, CreateCnOnPnGpaRequest.Tender.Document> =
+                documentsFromRequest.associateBy { document -> document.id }
+            val existsDocumentsById: Map<String, PNEntity.Tender.Document> =
+                documentsFromDB.associateBy { document -> document.id }
+
+            val updatedDocuments: Set<CNEntity.Tender.Document> = updateExistsDocuments(
+                documentsFromRequestById = documentsFromRequestById,
+                existsDocumentsById = existsDocumentsById,
+                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+            )
+
+            val newDocumentsFromRequest: Set<CreateCnOnPnGpaRequest.Tender.Document> = extractNewDocuments(
+                documentsFromRequest = documentsFromRequest,
+                existsDocumentsById = existsDocumentsById
+            )
+
+            val newDocuments: List<CNEntity.Tender.Document> = convertNewDocuments(
+                newDocumentsFromRequest = newDocumentsFromRequest,
+                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+            )
+
+            updatedDocuments.union(newDocuments).toList()
+        } else {
+            convertNewDocuments(
+                newDocumentsFromRequest = documentsFromRequest,
+                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+            )
+        }
+    }
+
+    private fun updateExistsDocuments(
+        documentsFromRequestById: Map<String, CreateCnOnPnGpaRequest.Tender.Document>,
+        existsDocumentsById: Map<String, PNEntity.Tender.Document>,
+        relatedTemporalWithPermanentLotId: Map<String, String>
+    ): Set<CNEntity.Tender.Document> {
+        return existsDocumentsById.asSequence()
+            .map { (id, document) ->
+                val documentSource =
+                    documentsFromRequestById[id]
+                        ?: throw ErrorException(
+                            error = INVALID_DOCS_ID,
+                            message = "Document with id: '$id' from db not contains in request"
+                        )
+
+                val relatedLots = getPermanentLotsIds(
+                    temporalIds = documentSource.relatedLots,
+                    relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+                )
+
+                CNEntity.Tender.Document(
+                    documentType = document.documentType,
+                    id = document.id,
+                    title = documentSource.title,
+                    description = documentSource.description,
+                    //BR-3.6.5(CN)
+                    relatedLots = relatedLots
+                )
+            }.toSet()
+    }
+
+    private fun getPermanentLotsIds(
+        temporalIds: List<String>?,
+        relatedTemporalWithPermanentLotId: Map<String, String>
+    ): List<String>? {
+        return if (temporalIds != null && relatedTemporalWithPermanentLotId.isNotEmpty())
+            temporalIds.map { relatedTemporalWithPermanentLotId.getValue(it) }
+        else
+            temporalIds
+    }
+
+    private fun extractNewDocuments(
+        documentsFromRequest: Collection<CreateCnOnPnGpaRequest.Tender.Document>,
+        existsDocumentsById: Map<String, PNEntity.Tender.Document>
+    ): Set<CreateCnOnPnGpaRequest.Tender.Document> {
+        return documentsFromRequest.asSequence()
+            .filter { document -> !existsDocumentsById.containsKey(document.id) }
+            .toSet()
+    }
+
+    private fun convertNewDocuments(
+        newDocumentsFromRequest: Collection<CreateCnOnPnGpaRequest.Tender.Document>,
+        relatedTemporalWithPermanentLotId: Map<String, String>
+    ): List<CNEntity.Tender.Document> {
+        return newDocumentsFromRequest.map { document ->
+            convertNewDocument(document, relatedTemporalWithPermanentLotId)
+        }
+    }
+
+    private fun convertNewDocument(
+        newDocumentFromRequest: CreateCnOnPnGpaRequest.Tender.Document,
+        relatedTemporalWithPermanentLotId: Map<String, String>
+    ): CNEntity.Tender.Document {
+        val relatedLots = getPermanentLotsIds(
+            temporalIds = newDocumentFromRequest.relatedLots,
+            relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+        )
+
+        return CNEntity.Tender.Document(
+            id = newDocumentFromRequest.id,
+            documentType = DocumentType.creator(newDocumentFromRequest.documentType.key),
+            title = newDocumentFromRequest.title,
+            description = newDocumentFromRequest.description,
+            //BR-3.6.5(CN)
+            relatedLots = relatedLots
+        )
+    }
+
+    private fun tender(
+        request: CreateCnOnPnGpaRequest,
+        pnEntity: PNEntity,
+        classification: CNEntity.Tender.Classification,
+        criteria: List<CNEntity.Tender.Criteria>?,
+        conversions: List<CNEntity.Tender.Conversion>?,
+        lots: List<CNEntity.Tender.Lot>,
+        items: List<CNEntity.Tender.Item>,
+        value: CNEntity.Tender.Value,
+        contractPeriod: CNEntity.Tender.ContractPeriod,
+        electronicAuctions: CNEntity.Tender.ElectronicAuctions?,
+        updatedDocuments: List<CNEntity.Tender.Document>
+    ): CNEntity.Tender {
+        /** Begin BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
+        val status = TenderStatus.ACTIVE
+        val statusDetails: TenderStatusDetails = TenderStatusDetails.SUBMISSION
+        /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
+
+        return CNEntity.Tender(
+            id = generationService.generatePermanentTenderId(),
+            /** Begin BR-3.8.8 -> BR-3.6.2*/
+            status = status,
+            statusDetails = statusDetails,
+            /** End BR-3.8.8 -> BR-3.6.2*/
+
+            classification = classification,
+            title = pnEntity.tender.title, //BR-3.8.1
+            description = pnEntity.tender.description, //BR-3.8.1
+            //BR-3.8.1
+            acceleratedProcedure = pnEntity.tender.acceleratedProcedure.let {
+                CNEntity.Tender.AcceleratedProcedure(
+                    isAcceleratedProcedure = it.isAcceleratedProcedure
+                )
+            },
+            //BR-3.8.1
+            designContest = pnEntity.tender.designContest.let {
+                CNEntity.Tender.DesignContest(
+                    serviceContractAward = it.serviceContractAward
+                )
+            },
+            //BR-3.8.1
+            electronicWorkflows = pnEntity.tender.electronicWorkflows.let {
+                CNEntity.Tender.ElectronicWorkflows(
+                    useOrdering = it.useOrdering,
+                    usePayment = it.usePayment,
+                    acceptInvoicing = it.acceptInvoicing
+                )
+            },
+            //BR-3.8.1
+            jointProcurement = pnEntity.tender.jointProcurement.let {
+                CNEntity.Tender.JointProcurement(
+                    isJointProcurement = it.isJointProcurement
+                )
+            },
+            //BR-3.8.1
+            procedureOutsourcing = pnEntity.tender.procedureOutsourcing.let {
+                CNEntity.Tender.ProcedureOutsourcing(
+                    procedureOutsourced = it.procedureOutsourced
+                )
+            },
+            //BR-3.8.1
+            framework = pnEntity.tender.framework.let {
+                CNEntity.Tender.Framework(
+                    isAFramework = it.isAFramework
+                )
+            },
+            //BR-3.8.1
+            dynamicPurchasingSystem = pnEntity.tender.dynamicPurchasingSystem.let {
+                CNEntity.Tender.DynamicPurchasingSystem(
+                    hasDynamicPurchasingSystem = it.hasDynamicPurchasingSystem
+                )
+            },
+            legalBasis = pnEntity.tender.legalBasis, //BR-3.8.1
+            procurementMethod = pnEntity.tender.procurementMethod, //BR-3.8.1
+            procurementMethodDetails = pnEntity.tender.procurementMethodDetails,//BR-3.8.1
+            procurementMethodRationale = request.tender.procurementMethodRationale,
+            procurementMethodAdditionalInfo = request.tender.procurementMethodAdditionalInfo,
+            mainProcurementCategory = pnEntity.tender.mainProcurementCategory, //BR-3.8.1
+
+            eligibilityCriteria = pnEntity.tender.eligibilityCriteria, //BR-3.8.1
+
+            //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
+            awardCriteria = request.tender.awardCriteria,
+            awardCriteriaDetails = request.tender.awardCriteriaDetails,
+            tenderPeriod = null,
+            secondStage = request.tender.secondStage
+                ?.let { secondStage ->
+                    CNEntity.Tender.SecondStage(
+                        minimumCandidates = secondStage.minimumCandidates,
+                        maximumCandidates = secondStage.maximumCandidates
+                    )
+                },
+            contractPeriod = contractPeriod,
+            enquiryPeriod = request.tender.enquiryPeriod.let { period ->
+                CNEntity.Tender.EnquiryPeriod(
+                    startDate = period.startDate,
+                    endDate = period.endDate
+                )
+            },
+            procurementMethodModalities = request.tender.procurementMethodModalities,
+            electronicAuctions = electronicAuctions, //BR-3.8.5 -> BR-3.6.5
+            //BR-3.8.1
+            procuringEntity = pnEntity.tender.procuringEntity.let { procuringEntity ->
+                CNEntity.Tender.ProcuringEntity(
+                    id = procuringEntity.id,
+                    name = procuringEntity.name,
+                    identifier = procuringEntity.identifier.let { identifier ->
+                        CNEntity.Tender.ProcuringEntity.Identifier(
+                            scheme = identifier.scheme,
+                            id = identifier.id,
+                            legalName = identifier.legalName,
+                            uri = identifier.uri
+                        )
+                    },
+                    additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
+                        CNEntity.Tender.ProcuringEntity.AdditionalIdentifier(
+                            scheme = additionalIdentifier.scheme,
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            uri = additionalIdentifier.uri
+                        )
+                    },
+                    address = procuringEntity.address.let { address ->
+                        CNEntity.Tender.ProcuringEntity.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails.let { addressDetails ->
+                                CNEntity.Tender.ProcuringEntity.Address.AddressDetails(
+                                    country = addressDetails.country.let { country ->
+                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                            scheme = country.scheme,
+                                            id = country.id,
+                                            description = country.description,
+                                            uri = country.uri
+                                        )
+                                    },
+                                    region = addressDetails.region.let { region ->
+                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                            scheme = region.scheme,
+                                            id = region.id,
+                                            description = region.description,
+                                            uri = region.uri
+                                        )
+                                    },
+                                    locality = addressDetails.locality.let { locality ->
+                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                            scheme = locality.scheme,
+                                            id = locality.id,
+                                            description = locality.description,
+                                            uri = locality.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                    contactPoint = procuringEntity.contactPoint.let { contactPoint ->
+                        CNEntity.Tender.ProcuringEntity.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            telephone = contactPoint.telephone,
+                            faxNumber = contactPoint.faxNumber,
+                            url = contactPoint.url
+                        )
+                    },
+                    persones = request.tender.procuringEntity?.let { _procuringEntity ->
+                        _procuringEntity.persones?.map { person ->
+                            CNEntity.Tender.ProcuringEntity.Persone(
+                                title = person.title,
+                                name = person.name,
+                                identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
+                                    scheme = person.identifier.scheme,
+                                    id = person.identifier.id,
+                                    uri = person.identifier.uri
+                                ),
+                                businessFunctions = person.businessFunctions.map { businessFunction ->
+                                    CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                        id = businessFunction.id,
+                                        jobTitle = businessFunction.jobTitle,
+                                        type = businessFunction.type,
+                                        period = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                            startDate = businessFunction.period.startDate
+                                        ),
+                                        documents = businessFunction.documents?.map { document ->
+                                            CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                id = document.id,
+                                                documentType = document.documentType,
+                                                title = document.title,
+                                                description = document.description
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    }
+                )
+            },
+            value = value,
+            //BR-3.8.1
+            lotGroups = pnEntity.tender.lotGroups.map {
+                CNEntity.Tender.LotGroup(
+                    optionToCombine = it.optionToCombine
+                )
+            },
+            requiresElectronicCatalogue = pnEntity.tender.requiresElectronicCatalogue,
+            criteria = criteria,
+            conversions = conversions,
+            lots = lots, //BR-3.8.3
+            items = items, //BR-3.8.3
+            submissionMethod = pnEntity.tender.submissionMethod, //BR-3.8.1
+            submissionMethodRationale = pnEntity.tender.submissionMethodRationale, //BR-3.8.1
+            submissionMethodDetails = pnEntity.tender.submissionMethodDetails, //BR-3.8.1
+            documents = updatedDocuments //BR-3.7.13
+        )
+    }
+
+    private fun conversionsFromRequest(
+        conversionsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Conversion>?
+    ): List<CNEntity.Tender.Conversion>? {
+        return conversionsFromRequest?.map { conversion ->
+            CNEntity.Tender.Conversion(
+                id = conversion.id,
+                relatedItem = conversion.relatedItem,
+                relatesTo = conversion.relatesTo,
+                rationale = conversion.rationale,
+                description = conversion.description,
+                coefficients = conversion.coefficients.map { coefficient ->
+                    CNEntity.Tender.Conversion.Coefficient(
+                        id = coefficient.id,
+                        value = coefficient.value,
+                        coefficient = coefficient.coefficient
+                    )
+                }
+            )
+        }
+    }
+
+    private fun convertElectronicAuctionsFromRequest(
+        tenderFromRequest: CreateCnOnPnGpaRequest.Tender,
+        relatedTemporalWithPermanentLotId: Map<String, String> = emptyMap()
+    ): CNEntity.Tender.ElectronicAuctions? {
+        return tenderFromRequest.electronicAuctions?.let {
+            val details = it.details.map { detail ->
+                CNEntity.Tender.ElectronicAuctions.Detail(
+                    id = detail.id,
+                    relatedLot = if (relatedTemporalWithPermanentLotId.isNotEmpty())
+                        relatedTemporalWithPermanentLotId.getValue(detail.relatedLot) //BR-3.8.6(CN on PN) -> BR-3.6.5(CN)
+                    else
+                        detail.relatedLot,
+                    electronicAuctionModalities = detail.electronicAuctionModalities.map { electronicAuctionModalities ->
+                        CNEntity.Tender.ElectronicAuctions.Detail.Modalities(
+                            eligibleMinimumDifference = electronicAuctionModalities.eligibleMinimumDifference.let { eligibleMinimumDifference ->
+                                CNEntity.Tender.ElectronicAuctions.Detail.Modalities.EligibleMinimumDifference(
+                                    amount = eligibleMinimumDifference.amount,
+                                    currency = eligibleMinimumDifference.currency
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+
+            CNEntity.Tender.ElectronicAuctions(
+                details = details
+            )
+        }
+    }
+
+    /**
+     * BR-3.8.5(CN on PN) lot id (tender.lots.id) -> BR-3.6.5
+     *
+     * eAccess меняет временные "ID" (tender/lot/id) лотов на постоянные.
+     * Постоянные "ID" (tender/lot/id) лотов формируются как уникальные для данного контрактного процесса
+     * 32-символьные идентификаторы.
+     */
+    private fun generatePermanentLotId(lots: List<CreateCnOnPnGpaRequest.Tender.Lot>): Map<String, String> {
+        return lots.asSequence()
+            .map { lot ->
+                val permanentId = generationService.generatePermanentLotId() //BR-3.8.6
+                lot.id to permanentId
+            }
+            .toMap()
+    }
+
+    private fun generatePermanentItemId(itemsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Item>): Map<String, String> {
+        return itemsFromRequest.asSequence()
+            .map { item ->
+                val permanentId = generationService.generatePermanentItemId()
+                item.id to permanentId
+            }
+            .toMap()
+    }
+
+    private fun getResponse(cn: CNEntity): CreateCnOnPnGpaResponse {
+        return CreateCnOnPnGpaResponse(
+            planning = cn.planning.let { planning ->
+                CreateCnOnPnGpaResponse.Planning(
+                    rationale = planning.rationale,
+                    budget = planning.budget.let { budget ->
+                        CreateCnOnPnGpaResponse.Planning.Budget(
+                            description = budget.description,
+                            amount = budget.amount.let { amount ->
+                                CreateCnOnPnGpaResponse.Planning.Budget.Amount(
+                                    amount = amount.amount,
+                                    currency = amount.currency
+                                )
+                            },
+                            isEuropeanUnionFunded = budget.isEuropeanUnionFunded,
+                            budgetBreakdowns = budget.budgetBreakdowns.map { budgetBreakdown ->
+                                CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown(
+                                    id = budgetBreakdown.id,
+                                    description = budgetBreakdown.description,
+                                    amount = budgetBreakdown.amount.let { amount ->
+                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.Amount(
+                                            amount = amount.amount,
+                                            currency = amount.currency
+                                        )
+                                    },
+                                    period = budgetBreakdown.period.let { period ->
+                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.Period(
+                                            startDate = period.startDate,
+                                            endDate = period.endDate
+                                        )
+                                    },
+                                    sourceParty = budgetBreakdown.sourceParty.let { sourceParty ->
+                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.SourceParty(
+                                            id = sourceParty.id,
+                                            name = sourceParty.name
+                                        )
+                                    },
+                                    europeanUnionFunding = budgetBreakdown.europeanUnionFunding?.let { europeanUnionFunding ->
+                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                            projectIdentifier = europeanUnionFunding.projectIdentifier,
+                                            projectName = europeanUnionFunding.projectName,
+                                            uri = europeanUnionFunding.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            },
+            tender = cn.tender.let { tender ->
+                CreateCnOnPnGpaResponse.Tender(
+                    id = tender.id,
+                    status = tender.status,
+                    statusDetails = tender.statusDetails,
+                    title = tender.title,
+                    description = tender.description,
+                    classification = tender.classification.let { classification ->
+                        CreateCnOnPnGpaResponse.Tender.Classification(
+                            scheme = classification.scheme,
+                            id = classification.id,
+                            description = classification.description
+                        )
+                    },
+                    requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
+                    enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
+                        CreateCnOnPnGpaResponse.Tender.EnquiryPeriod(
+                            startDate = enquiryPeriod!!.startDate,
+                            endDate = enquiryPeriod.endDate
+                        )
+                    },
+                    acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
+                        CreateCnOnPnGpaResponse.Tender.AcceleratedProcedure(
+                            isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
+                        )
+                    },
+                    designContest = tender.designContest.let { designContest ->
+                        CreateCnOnPnGpaResponse.Tender.DesignContest(
+                            serviceContractAward = designContest.serviceContractAward
+                        )
+                    },
+                    electronicWorkflows = tender.electronicWorkflows.let { electronicWorkflows ->
+                        CreateCnOnPnGpaResponse.Tender.ElectronicWorkflows(
+                            useOrdering = electronicWorkflows.useOrdering,
+                            usePayment = electronicWorkflows.usePayment,
+                            acceptInvoicing = electronicWorkflows.acceptInvoicing
+                        )
+                    },
+                    jointProcurement = tender.jointProcurement.let { jointProcurement ->
+                        CreateCnOnPnGpaResponse.Tender.JointProcurement(
+                            isJointProcurement = jointProcurement.isJointProcurement
+                        )
+                    },
+                    procedureOutsourcing = tender.procedureOutsourcing.let { procedureOutsourcing ->
+                        CreateCnOnPnGpaResponse.Tender.ProcedureOutsourcing(
+                            procedureOutsourced = procedureOutsourcing.procedureOutsourced
+                        )
+                    },
+                    framework = tender.framework.let { framework ->
+                        CreateCnOnPnGpaResponse.Tender.Framework(
+                            isAFramework = framework.isAFramework
+                        )
+                    },
+                    dynamicPurchasingSystem = tender.dynamicPurchasingSystem.let { dynamicPurchasingSystem ->
+                        CreateCnOnPnGpaResponse.Tender.DynamicPurchasingSystem(
+                            hasDynamicPurchasingSystem = dynamicPurchasingSystem.hasDynamicPurchasingSystem
+                        )
+                    },
+                    legalBasis = tender.legalBasis,
+                    procurementMethod = tender.procurementMethod,
+                    procurementMethodDetails = tender.procurementMethodDetails,
+                    procurementMethodRationale = tender.procurementMethodRationale,
+                    procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
+                    mainProcurementCategory = tender.mainProcurementCategory,
+                    eligibilityCriteria = tender.eligibilityCriteria,
+                    contractPeriod = tender.contractPeriod?.let { contractPeriod ->
+                        CreateCnOnPnGpaResponse.Tender.ContractPeriod(
+                            startDate = contractPeriod.startDate,
+                            endDate = contractPeriod.endDate
+                        )
+                    },
+                    procurementMethodModalities = tender.procurementMethodModalities,
+                    electronicAuctions = tender.electronicAuctions?.let { electronicAuctions ->
+                        CreateCnOnPnGpaResponse.Tender.ElectronicAuctions(
+                            details = electronicAuctions.details.map { detail ->
+                                CreateCnOnPnGpaResponse.Tender.ElectronicAuctions.Detail(
+                                    id = detail.id,
+                                    relatedLot = detail.relatedLot,
+                                    electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
+                                        CreateCnOnPnGpaResponse.Tender.ElectronicAuctions.Detail.Modalities(
+                                            eligibleMinimumDifference = modality.eligibleMinimumDifference.let { emd ->
+                                                CreateCnOnPnGpaResponse.Tender.ElectronicAuctions.Detail.Modalities.EligibleMinimumDifference(
+                                                    amount = emd.amount,
+                                                    currency = emd.currency
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                    procuringEntity = tender.procuringEntity.let { procuringEntity ->
+                        CreateCnOnPnGpaResponse.Tender.ProcuringEntity(
+                            id = procuringEntity.id,
+                            name = procuringEntity.name,
+                            identifier = procuringEntity.identifier.let { identifier ->
+                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Identifier(
+                                    scheme = identifier.scheme,
+                                    id = identifier.id,
+                                    legalName = identifier.legalName,
+                                    uri = identifier.uri
+                                )
+                            },
+                            additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
+                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                                    scheme = additionalIdentifier.scheme,
+                                    id = additionalIdentifier.id,
+                                    legalName = additionalIdentifier.legalName,
+                                    uri = additionalIdentifier.uri
+                                )
+                            },
+                            address = procuringEntity.address.let { address ->
+                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address(
+                                    streetAddress = address.streetAddress,
+                                    postalCode = address.postalCode,
+                                    addressDetails = address.addressDetails.let { addressDetails ->
+                                        CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                                            country = addressDetails.country.let { country ->
+                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                    scheme = country.scheme,
+                                                    id = country.id,
+                                                    description = country.description,
+                                                    uri = country.uri
+                                                )
+                                            },
+                                            region = addressDetails.region.let { region ->
+                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                    scheme = region.scheme,
+                                                    id = region.id,
+                                                    description = region.description,
+                                                    uri = region.uri
+                                                )
+                                            },
+                                            locality = addressDetails.locality.let { locality ->
+                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                    scheme = locality.scheme,
+                                                    id = locality.id,
+                                                    description = locality.description,
+                                                    uri = locality.uri
+                                                )
+                                            }
+
+                                        )
+                                    }
+                                )
+                            },
+                            contactPoint = procuringEntity.contactPoint.let { contactPoint ->
+                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.ContactPoint(
+                                    name = contactPoint.name,
+                                    email = contactPoint.email,
+                                    telephone = contactPoint.telephone,
+                                    faxNumber = contactPoint.faxNumber,
+                                    url = contactPoint.url
+                                )
+                            },
+                            persones = procuringEntity.persones?.map { persone ->
+                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone(
+                                    name = persone.name,
+                                    title = persone.title,
+                                    identifier = CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.Identifier(
+                                        id = persone.identifier.id,
+                                        scheme = persone.identifier.scheme,
+                                        uri = persone.identifier.uri
+                                    ),
+                                    businessFunctions = persone.businessFunctions.map { businessFunction ->
+                                        CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                            id = businessFunction.id,
+                                            type = businessFunction.type,
+                                            jobTitle = businessFunction.jobTitle,
+                                            period = CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                                startDate = businessFunction.period.startDate
+                                            ),
+                                            documents = businessFunction.documents?.map { document ->
+                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                    id = document.id,
+                                                    documentType = document.documentType,
+                                                    title = document.title,
+                                                    description = document.description
+                                                )
+                                            }
+
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                    value = tender.value.let { value ->
+                        CreateCnOnPnGpaResponse.Tender.Value(
+                            amount = value.amount,
+                            currency = value.currency
+                        )
+                    },
+                    lotGroups = tender.lotGroups.map { lotGroup ->
+                        CreateCnOnPnGpaResponse.Tender.LotGroup(
+                            optionToCombine = lotGroup.optionToCombine
+                        )
+                    },
+                    criteria = tender.criteria?.map { criteria ->
+                        CreateCnOnPnGpaResponse.Tender.Criteria(
+                            id = criteria.id,
+                            title = criteria.title,
+                            description = criteria.description,
+                            requirementGroups = criteria.requirementGroups.map {
+                                CreateCnOnPnGpaResponse.Tender.Criteria.RequirementGroup(
+                                    id = it.id,
+                                    description = it.description,
+                                    requirements = it.requirements.map { requirement ->
+                                        Requirement(
+                                            id = requirement.id,
+                                            description = requirement.description,
+                                            title = requirement.title,
+                                            period = requirement.period?.let { period ->
+                                                Period(
+                                                    startDate = period.startDate,
+                                                    endDate = period.endDate
+                                                )
+                                            },
+                                            dataType = requirement.dataType,
+                                            value = requirement.value
+                                        )
+                                    }
+                                )
+                            },
+                            relatesTo = criteria.relatesTo,
+                            relatedItem = criteria.relatedItem
+                        )
+                    },
+                    conversions = tender.conversions?.map { conversion ->
+                        CreateCnOnPnGpaResponse.Tender.Conversion(
+                            id = conversion.id,
+                            relatedItem = conversion.relatedItem,
+                            relatesTo = conversion.relatesTo,
+                            rationale = conversion.rationale,
+                            description = conversion.description,
+                            coefficients = conversion.coefficients.map { coefficient ->
+                                CreateCnOnPnGpaResponse.Tender.Conversion.Coefficient(
+                                    id = coefficient.id,
+                                    value = coefficient.value,
+                                    coefficient = coefficient.coefficient
+                                )
+                            }
+                        )
+                    },
+                    lots = tender.lots.map { lot ->
+                        CreateCnOnPnGpaResponse.Tender.Lot(
+                            id = lot.id,
+                            internalId = lot.internalId,
+                            title = lot.title,
+                            description = lot.description,
+                            status = lot.status,
+                            statusDetails = lot.statusDetails,
+                            value = lot.value.let { value ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.Value(
+                                    amount = value.amount,
+                                    currency = value.currency
+                                )
+                            },
+                            options = lot.options.map { option ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.Option(
+                                    hasOptions = option.hasOptions
+                                )
+                            },
+                            variants = lot.variants.map { variant ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.Variant(
+                                    hasVariants = variant.hasVariants
+                                )
+                            },
+                            renewals = lot.renewals.map { renewal ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.Renewal(
+                                    hasRenewals = renewal.hasRenewals
+                                )
+                            },
+                            recurrentProcurement = lot.recurrentProcurement.map { recurrentProcurement ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.RecurrentProcurement(
+                                    isRecurrent = recurrentProcurement.isRecurrent
+                                )
+                            },
+                            contractPeriod = lot.contractPeriod.let { contractPeriod ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.ContractPeriod(
+                                    startDate = contractPeriod.startDate,
+                                    endDate = contractPeriod.endDate
+                                )
+                            },
+                            placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                                CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance(
+                                    description = placeOfPerformance.description,
+                                    address = placeOfPerformance.address.let { address ->
+                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address(
+                                            streetAddress = address.streetAddress,
+                                            postalCode = address.postalCode,
+                                            addressDetails = address.addressDetails.let { addressDetails ->
+                                                CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                    country = addressDetails.country.let { country ->
+                                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                            scheme = country.scheme,
+                                                            id = country.id,
+                                                            description = country.description,
+                                                            uri = country.uri
+                                                        )
+                                                    },
+                                                    region = addressDetails.region.let { region ->
+                                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                            scheme = region.scheme,
+                                                            id = region.id,
+                                                            description = region.description,
+                                                            uri = region.uri
+                                                        )
+                                                    },
+                                                    locality = addressDetails.locality.let { locality ->
+                                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                            scheme = locality.scheme,
+                                                            id = locality.id,
+                                                            description = locality.description,
+                                                            uri = locality.uri
+                                                        )
+                                                    }
+
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                    items = tender.items.map { item ->
+                        CreateCnOnPnGpaResponse.Tender.Item(
+                            id = item.id,
+                            internalId = item.internalId,
+                            classification = item.classification.let { classification ->
+                                CreateCnOnPnGpaResponse.Tender.Item.Classification(
+                                    scheme = classification.scheme,
+                                    id = classification.id,
+                                    description = classification.description
+                                )
+                            },
+                            additionalClassifications = item.additionalClassifications?.map { additionalClassification ->
+                                CreateCnOnPnGpaResponse.Tender.Item.AdditionalClassification(
+                                    scheme = additionalClassification.scheme,
+                                    id = additionalClassification.id,
+                                    description = additionalClassification.description
+                                )
+                            },
+                            quantity = item.quantity,
+                            unit = item.unit.let { unit ->
+                                CreateCnOnPnGpaResponse.Tender.Item.Unit(
+                                    id = unit.id,
+                                    name = unit.name
+                                )
+                            },
+                            description = item.description,
+                            relatedLot = item.relatedLot
+                        )
+                    },
+                    awardCriteria = tender.awardCriteria,
+                    awardCriteriaDetails = tender.awardCriteriaDetails,
+                    submissionMethod = tender.submissionMethod,
+                    submissionMethodRationale = tender.submissionMethodRationale,
+                    submissionMethodDetails = tender.submissionMethodDetails,
+                    documents = tender.documents.map { document ->
+                        CreateCnOnPnGpaResponse.Tender.Document(
+                            documentType = document.documentType,
+                            id = document.id,
+                            title = document.title,
+                            description = document.description,
+                            relatedLots = document.relatedLots
+                        )
+                    },
+                    secondStage = tender.secondStage
+                        ?.let { secondStage ->
+                            CreateCnOnPnGpaResponse.Tender.SecondStage(
+                                minimumCandidates = secondStage.minimumCandidates,
+                                maximumCandidates = secondStage.maximumCandidates
+                            )
+                        }
+                )
+            }
+        )
+    }
+
+    private fun planning(pnEntity: PNEntity): CNEntity.Planning {
+        return CNEntity.Planning(
+            rationale = pnEntity.planning.rationale,
+            budget = CNEntity.Planning.Budget(
+                description = pnEntity.planning.budget.description,
+                amount = pnEntity.planning.budget.amount.let {
+                    CNEntity.Planning.Budget.Amount(
+                        amount = it.amount,
+                        currency = it.currency
+                    )
+                },
+                isEuropeanUnionFunded = pnEntity.planning.budget.isEuropeanUnionFunded,
+                budgetBreakdowns = pnEntity.planning.budget.budgetBreakdowns.map { budgetBreakdown ->
+                    CNEntity.Planning.Budget.BudgetBreakdown(
+                        id = budgetBreakdown.id,
+                        description = budgetBreakdown.description,
+                        amount = budgetBreakdown.amount.let {
+                            CNEntity.Planning.Budget.BudgetBreakdown.Amount(
+                                amount = it.amount,
+                                currency = it.currency
+                            )
+                        },
+                        period = budgetBreakdown.period.let {
+                            CNEntity.Planning.Budget.BudgetBreakdown.Period(
+                                startDate = it.startDate,
+                                endDate = it.endDate
+                            )
+                        },
+                        sourceParty = budgetBreakdown.sourceParty.let {
+                            CNEntity.Planning.Budget.BudgetBreakdown.SourceParty(
+                                name = it.name,
+                                id = it.id
+                            )
+                        },
+                        europeanUnionFunding = budgetBreakdown.europeanUnionFunding?.let {
+                            CNEntity.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                projectIdentifier = it.projectIdentifier,
+                                projectName = it.projectName,
+                                uri = it.uri
+                            )
+                        }
+                    )
+                }
+            )
+        )
+    }
 
     /**
      * VR-3.8.3(CN on PN) Documents ->  VR-3.6.1(CN)
@@ -797,7 +2209,30 @@ class CnOnPnGpaService(
         return CNEntity.Tender.Value(totalAmount, currency)
     }
 
+    /**
+     * BR-3.8.14(CN on PN) -> BR-3.6.30(CN)
+     *
+     * eAccess add object "Value":
+     *      "Amount" (tender.value.amount) is obtained by summation of values from "Amount" (tender.lot.value.amount)
+     *      of all lot objects from Request.
+     *      eAccess sets "Currency" (tender.value.currency) == "Currency" (tender.lot.value.currency) from Request.
+     */
+    private fun calculateTenderValueFromLotsGpaCheck(lotsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.Value {
+        val currency = lotsFromRequest.elementAt(0).value.currency
+        val totalAmount = lotsFromRequest.fold(BigDecimal.ZERO) { acc, lot ->
+            acc.plus(lot.value.amount)
+        }.setScale(2, RoundingMode.HALF_UP)
+        return CNEntity.Tender.Value(totalAmount, currency)
+    }
+
     private fun calculationTenderContractPeriod(lots: List<CheckCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
+        val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
+        val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
+        val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
+        return CNEntity.Tender.ContractPeriod(startDate, endDate)
+    }
+
+    private fun calculationTenderContractPeriodGpaCreate(lots: List<CreateCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
         val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
