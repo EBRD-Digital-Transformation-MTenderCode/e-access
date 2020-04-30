@@ -72,6 +72,7 @@ data class SetStateForTenderParams private constructor(
                         TenderStatusDetails.AWARDED_STANDSTILL,
                         TenderStatusDetails.AWARDED_SUSPENDED,
                         TenderStatusDetails.AWARDED_CONTRACT_PREPARATION,
+                        TenderStatusDetails.SUBMISSION,
                         TenderStatusDetails.COMPLETE -> false
                     }
                 }

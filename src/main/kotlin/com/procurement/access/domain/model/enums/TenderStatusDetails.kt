@@ -18,7 +18,9 @@ enum class TenderStatusDetails(@JsonValue override val key: String) : EnumElemen
     AWARDED_SUSPENDED("awardedSuspended"),
     AWARDED_CONTRACT_PREPARATION("awardedContractPreparation"),
     COMPLETE("complete"),
-    EMPTY("empty");
+    EMPTY("empty"),
+    SUBMISSION("submission");
+
 
     override fun toString(): String = key
 
