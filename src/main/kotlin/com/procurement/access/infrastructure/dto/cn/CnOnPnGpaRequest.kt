@@ -75,12 +75,6 @@ data class CnOnPnGpaRequest(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
 
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>?,
-
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>?,
-
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
 
