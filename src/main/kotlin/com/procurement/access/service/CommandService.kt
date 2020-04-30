@@ -33,8 +33,8 @@ import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.CnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
@@ -554,7 +554,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: CnOnPnGpaRequest = toObject(CnOnPnGpaRequest::class.java, cm.data)
+                        val request: CheckCnOnPnGpaRequest = toObject(CheckCnOnPnGpaRequest::class.java, cm.data)
                         val result: CheckedCnOnPnGpa = cnOnPnGpaService.checkCnOnPnGpa(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Result: ${toJson(result)}")

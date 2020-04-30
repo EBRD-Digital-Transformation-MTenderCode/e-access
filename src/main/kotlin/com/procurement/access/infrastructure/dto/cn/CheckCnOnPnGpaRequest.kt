@@ -32,7 +32,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class CnOnPnGpaRequest(
+data class CheckCnOnPnGpaRequest(
     @field:JsonProperty("preQualification") @param:JsonProperty("preQualification") val preQualification: PreQualification,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
