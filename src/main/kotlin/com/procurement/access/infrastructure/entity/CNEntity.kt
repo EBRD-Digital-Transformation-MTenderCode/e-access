@@ -131,6 +131,9 @@ data class CNEntity(
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage? = null,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -190,6 +193,14 @@ data class CNEntity(
         @field:JsonProperty("submissionMethodDetails") @param:JsonProperty("submissionMethodDetails") val submissionMethodDetails: String,
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
     ) {
+
+        data class SecondStage(
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("minimumCandidates") @param:JsonProperty("minimumCandidates") val minimumCandidates: Int?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("maximumCandidates") @param:JsonProperty("maximumCandidates") val maximumCandidates: Int?
+        )
 
         data class Criteria(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
