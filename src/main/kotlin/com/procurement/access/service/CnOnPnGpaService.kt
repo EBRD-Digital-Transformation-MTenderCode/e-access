@@ -2057,7 +2057,7 @@ class CnOnPnGpaService(
             if (lotId !in itemsRelatedLots)
                 throw ErrorException(
                     error = ErrorType.LOT_ID_NOT_MATCH_TO_RELATED_LOT_IN_ITEMS,
-                    message = ""
+                    message = "Lot with id='${lotId}' not matches any relatedLots in items"
                 )
         }
     }
