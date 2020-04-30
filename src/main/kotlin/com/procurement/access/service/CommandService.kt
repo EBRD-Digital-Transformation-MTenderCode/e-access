@@ -163,7 +163,7 @@ class CommandService(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-                    ProcurementMethod.GPA -> {
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = UpdateCnContext(
                             cpid = cm.cpid,
                             token = cm.token,
@@ -217,7 +217,7 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
-                    ProcurementMethod.GPA -> {
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = CreateCnOnPnGpaContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
@@ -338,7 +338,7 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
-                    ProcurementMethod.GPA,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
@@ -447,7 +447,7 @@ class CommandService(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-                    ProcurementMethod.GPA -> {
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = GetLotsAuctionContext(
                             cpid = cm.cpid,
                             stage = cm.stage
@@ -566,7 +566,7 @@ class CommandService(
                         response
                     }
 
-                    ProcurementMethod.GPA -> {
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = CheckCnOnPnGpaContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
