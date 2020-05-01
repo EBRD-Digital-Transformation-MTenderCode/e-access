@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.service.cn.update.UpdateCnData
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
@@ -63,7 +64,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                         .mapIfNotEmpty { detail ->
                             UpdateCnData.Tender.ElectronicAuctions.Detail(
                                 id = detail.id,
-                                relatedLot = detail.relatedLot,
+                                relatedLot = LotId.fromString(detail.relatedLot),
                                 electronicAuctionModalities = detail.electronicAuctionModalities
                                     .mapIfNotEmpty { modality ->
                                         UpdateCnData.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
@@ -150,7 +151,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
             lots = tender.lots
                 .mapIfNotEmpty { lot ->
                     UpdateCnData.Tender.Lot(
-                        id = lot.id,
+                        id = LotId.fromString(lot.id),
                         internalId = lot.internalId,
                         title = lot.title,
                         description = lot.description,
@@ -214,7 +215,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                         id = item.id,
                         internalId = item.internalId,
                         description = item.description,
-                        relatedLot = item.relatedLot
+                        relatedLot = LotId.fromString(item.relatedLot)
                     )
                 }
                 .orThrow {
@@ -230,7 +231,7 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                         id = document.id,
                         title = document.title,
                         description = document.description,
-                        relatedLots = document.relatedLots?.toList().orEmpty()
+                        relatedLots = document.relatedLots?.map { LotId.fromString(it) }?.toList().orEmpty()
                     )
                 }
                 .orThrow {
