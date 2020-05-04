@@ -916,12 +916,7 @@ class CnOnPnGpaService(
                     )
                 },
             contractPeriod = contractPeriod,
-            enquiryPeriod = request.tender.enquiryPeriod.let { period ->
-                CNEntity.Tender.EnquiryPeriod(
-                    startDate = period.startDate,
-                    endDate = period.endDate
-                )
-            },
+            enquiryPeriod = null,
             procurementMethodModalities = request.tender.procurementMethodModalities,
             electronicAuctions = electronicAuctions, //BR-3.8.5 -> BR-3.6.5
             //BR-3.8.1
@@ -1182,12 +1177,6 @@ class CnOnPnGpaService(
                         )
                     },
                     requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
-                    enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
-                        CreateCnOnPnGpaResponse.Tender.EnquiryPeriod(
-                            startDate = enquiryPeriod!!.startDate,
-                            endDate = enquiryPeriod.endDate
-                        )
-                    },
                     acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
                         CreateCnOnPnGpaResponse.Tender.AcceleratedProcedure(
                             isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
