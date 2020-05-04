@@ -31,7 +31,6 @@ data class UpdateCnData(
         val procurementMethodRationale: String?,
         val procurementMethodAdditionalInfo: String?,
         val tenderPeriod: TenderPeriod,
-        val enquiryPeriod: EnquiryPeriod,
         val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val electronicAuctions: ElectronicAuctions?,
         val procuringEntity: ProcuringEntity?,
@@ -41,11 +40,6 @@ data class UpdateCnData(
     ) {
 
         data class TenderPeriod(
-            val startDate: LocalDateTime,
-            val endDate: LocalDateTime
-        )
-
-        data class EnquiryPeriod(
             val startDate: LocalDateTime,
             val endDate: LocalDateTime
         )

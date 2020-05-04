@@ -74,7 +74,6 @@ data class UpdatedCn(
         val description: String,
         val classification: Classification,
         val tenderPeriod: TenderPeriod,
-        val enquiryPeriod: EnquiryPeriod,
         val acceleratedProcedure: AcceleratedProcedure,
         val designContest: DesignContest,
         val electronicWorkflows: ElectronicWorkflows,
@@ -111,11 +110,6 @@ data class UpdatedCn(
         )
 
         data class TenderPeriod(
-            val startDate: LocalDateTime,
-            val endDate: LocalDateTime
-        )
-
-        data class EnquiryPeriod(
             val startDate: LocalDateTime,
             val endDate: LocalDateTime
         )
