@@ -5,10 +5,6 @@
     }
   },
   "tender": {
-    "enquiryPeriod": {
-      "endDate": "2019-03-16T12:40:00Z",
-      "startDate": "2019-03-15T11:54:35Z"
-    },
     "procurementMethodModalities": [
       "electronicAuction"
     ],

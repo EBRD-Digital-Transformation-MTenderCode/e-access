@@ -56,8 +56,6 @@ data class CheckCnOnPnGpaRequest(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,
 
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
-
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
 
@@ -84,16 +82,6 @@ data class CheckCnOnPnGpaRequest(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode
-        )
-
-        data class EnquiryPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
         )
 
         data class ElectronicAuctions(
