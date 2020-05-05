@@ -21,7 +21,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
                     id = additionalIdentifiers.id,
                     scheme = additionalIdentifiers.scheme,
                     legalName = additionalIdentifiers.legalName,
-                    uri = additionalIdentifiers.legalName
+                    uri = additionalIdentifiers.uri
                 )
             },
         name = procuringEntity.name,
