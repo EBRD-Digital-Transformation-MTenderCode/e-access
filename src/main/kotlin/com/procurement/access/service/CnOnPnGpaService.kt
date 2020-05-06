@@ -90,7 +90,7 @@ class CnOnPnGpaService(
                 ?.let { validateMinimumCandidates(it) } // VR-1.0.1.11.2
 
             maximumCandidates
-                ?.let { validateMaminumCandidates(it) } // VR-1.0.1.11.3
+                ?.let { validateMaximumCandidates(it) } // VR-1.0.1.11.3
 
             // VR-1.0.1.11.4
             if (this.minimumCandidates != null && this.maximumCandidates != null)
@@ -1658,7 +1658,7 @@ class CnOnPnGpaService(
      * a. IF [secondStage.maximumCandidates value from Request > (more) 0] then: validation is successful;
      * b. else eAccess throws Exception: "MaximumCandidates value should not be zero";
      */
-    private fun validateMaminumCandidates(amount: Int) {
+    private fun validateMaximumCandidates(amount: Int) {
         if (amount <= 0)
             throw ErrorException(
                 error = ErrorType.INVALID_SECOND_STAGE,
