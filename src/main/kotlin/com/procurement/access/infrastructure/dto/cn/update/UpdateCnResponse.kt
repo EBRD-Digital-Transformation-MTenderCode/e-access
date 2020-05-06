@@ -119,6 +119,9 @@ data class UpdateCnResponse(
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod?,
+
         @field:JsonProperty("acceleratedProcedure") @param:JsonProperty("acceleratedProcedure") val acceleratedProcedure: AcceleratedProcedure,
         @field:JsonProperty("designContest") @param:JsonProperty("designContest") val designContest: DesignContest,
         @field:JsonProperty("electronicWorkflows") @param:JsonProperty("electronicWorkflows") val electronicWorkflows: ElectronicWorkflows,
@@ -182,6 +185,16 @@ data class UpdateCnResponse(
         )
 
         data class TenderPeriod(
+            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+            @JsonSerialize(using = JsonDateTimeSerializer::class)
+            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
+
+            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+            @JsonSerialize(using = JsonDateTimeSerializer::class)
+            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
+        )
+
+        data class EnquiryPeriod(
             @JsonDeserialize(using = JsonDateTimeDeserializer::class)
             @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
