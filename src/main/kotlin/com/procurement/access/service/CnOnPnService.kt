@@ -81,8 +81,10 @@ class CnOnPnService(
 
             // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
             checkBusinessFunctionDocuments(requestProcuringEntity)
-            checkTenderDocumentsNotEmpty(data.tender)
         }
+
+        // VR-1.0.1.2.7
+        checkTenderDocumentsNotEmpty(data.tender)
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = data.tender.lots.asSequence()
