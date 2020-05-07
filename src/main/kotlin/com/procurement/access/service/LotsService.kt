@@ -248,6 +248,8 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
             ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "NP"
 
+            ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> "TP"
+
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
         }

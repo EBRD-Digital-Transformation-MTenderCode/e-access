@@ -1,4 +1,4 @@
-package com.procurement.access.application.service
+package com.procurement.access.application.model.context
 
 import java.time.LocalDateTime
 

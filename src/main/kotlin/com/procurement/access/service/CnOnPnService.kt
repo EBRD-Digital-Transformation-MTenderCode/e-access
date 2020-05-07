@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
@@ -81,8 +81,10 @@ class CnOnPnService(
 
             // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
             checkBusinessFunctionDocuments(requestProcuringEntity)
-            checkTenderDocumentsNotEmpty(data.tender)
         }
+
+        // VR-1.0.1.2.7
+        checkTenderDocumentsNotEmpty(data.tender)
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = data.tender.lots.asSequence()

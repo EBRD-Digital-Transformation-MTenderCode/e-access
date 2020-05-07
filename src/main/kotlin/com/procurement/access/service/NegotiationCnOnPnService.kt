@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao

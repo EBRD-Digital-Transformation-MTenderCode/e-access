@@ -41,3 +41,11 @@ INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'T
 INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'goods', 'true');
 INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'services', 'true');
 INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_SV', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'GPA', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'GPA', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'GPA', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_GPA', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_GPA', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_GPA', 'works', 'false');

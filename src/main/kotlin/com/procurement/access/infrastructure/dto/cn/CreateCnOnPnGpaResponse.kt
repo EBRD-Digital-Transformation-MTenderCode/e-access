@@ -1,12 +1,10 @@
-package com.procurement.access.infrastructure.entity
+package com.procurement.access.infrastructure.dto.cn
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
-import com.procurement.access.domain.model.EntityBase
 import com.procurement.access.domain.model.coefficient.CoefficientRate
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
@@ -26,7 +24,6 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
-import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
@@ -43,14 +40,9 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class CNEntity(
-    @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
+data class CreateCnOnPnGpaResponse(
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning,
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("amendment") @param:JsonProperty("amendment") val amendment: Amendment? = null
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
 
     data class Planning(
@@ -129,16 +121,6 @@ data class CNEntity(
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage? = null,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod?,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod?,
-
         @field:JsonProperty("acceleratedProcedure") @param:JsonProperty("acceleratedProcedure") val acceleratedProcedure: AcceleratedProcedure,
         @field:JsonProperty("designContest") @param:JsonProperty("designContest") val designContest: DesignContest,
         @field:JsonProperty("electronicWorkflows") @param:JsonProperty("electronicWorkflows") val electronicWorkflows: ElectronicWorkflows,
@@ -149,6 +131,9 @@ data class CNEntity(
         @field:JsonProperty("legalBasis") @param:JsonProperty("legalBasis") val legalBasis: LegalBasis,
         @field:JsonProperty("procurementMethod") @param:JsonProperty("procurementMethod") val procurementMethod: ProcurementMethod,
         @field:JsonProperty("procurementMethodDetails") @param:JsonProperty("procurementMethodDetails") val procurementMethodDetails: String,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodRationale") @param:JsonProperty("procurementMethodRationale") val procurementMethodRationale: String?,
@@ -163,7 +148,7 @@ data class CNEntity(
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: Set<ProcurementMethodModalities>?,
+        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
@@ -173,10 +158,10 @@ data class CNEntity(
         @field:JsonProperty("lotGroups") @param:JsonProperty("lotGroups") val lotGroups: List<LotGroup>,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>? = null,
+        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>? = null,
+        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>?,
 
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
@@ -254,10 +239,7 @@ data class CNEntity(
         data class Classification(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode
         )
 
         data class AcceleratedProcedure(
@@ -290,27 +272,7 @@ data class CNEntity(
             @field:JsonProperty("hasDynamicPurchasingSystem") @param:JsonProperty("hasDynamicPurchasingSystem") val hasDynamicPurchasingSystem: Boolean
         )
 
-        data class TenderPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-        )
-
         data class ContractPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-        )
-
-        data class EnquiryPeriod(
             @JsonDeserialize(using = JsonDateTimeDeserializer::class)
             @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
@@ -582,7 +544,7 @@ data class CNEntity(
         }
 
         data class Item(
-            @field:JsonProperty("id") @param:JsonProperty("id") override val id: String,
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
@@ -598,15 +560,12 @@ data class CNEntity(
             @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
-        ) : EntityBase<String>() {
+        ) {
 
             data class Classification(
                 @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String
             )
 
             data class AdditionalClassification(
@@ -635,8 +594,4 @@ data class CNEntity(
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
         )
     }
-
-    data class Amendment(
-        @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") override val relatedLots: List<String>
-    ) : RelatedLots<String>
 }
