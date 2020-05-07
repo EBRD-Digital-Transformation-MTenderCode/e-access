@@ -56,7 +56,7 @@ data class CreateCnOnPnGpaRequest(
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: Set<ProcurementMethodModalities>?,
+        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,

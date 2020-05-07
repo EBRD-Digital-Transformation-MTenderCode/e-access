@@ -918,7 +918,7 @@ class CnOnPnGpaService(
                 },
             contractPeriod = contractPeriod,
             enquiryPeriod = null,
-            procurementMethodModalities = request.tender.procurementMethodModalities,
+            procurementMethodModalities = request.tender.procurementMethodModalities?.toSet(),
             electronicAuctions = electronicAuctions, //BR-3.8.5 -> BR-3.6.5
             //BR-3.8.1
             procuringEntity = pnEntity.tender.procuringEntity.let { procuringEntity ->
@@ -1228,7 +1228,7 @@ class CnOnPnGpaService(
                             endDate = contractPeriod.endDate
                         )
                     },
-                    procurementMethodModalities = tender.procurementMethodModalities,
+                    procurementMethodModalities = tender.procurementMethodModalities?.toList(),
                     electronicAuctions = tender.electronicAuctions?.let { electronicAuctions ->
                         CreateCnOnPnGpaResponse.Tender.ElectronicAuctions(
                             details = electronicAuctions.details.map { detail ->
