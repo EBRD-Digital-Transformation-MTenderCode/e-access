@@ -31,7 +31,7 @@ data class UpdateCnData(
         val procurementMethodRationale: String?,
         val procurementMethodAdditionalInfo: String?,
         val tenderPeriod: TenderPeriod,
-        val enquiryPeriod: EnquiryPeriod,
+        val enquiryPeriod: EnquiryPeriod?,
         val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val electronicAuctions: ElectronicAuctions?,
         val procuringEntity: ProcuringEntity?,

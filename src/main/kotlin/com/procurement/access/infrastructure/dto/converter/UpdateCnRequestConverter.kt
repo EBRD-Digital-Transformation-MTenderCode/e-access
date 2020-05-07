@@ -43,12 +43,13 @@ fun UpdateCnRequest.convert() = UpdateCnData(
                     endDate = tenderPeriod.endDate
                 )
             },
-            enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
-                UpdateCnData.Tender.EnquiryPeriod(
-                    startDate = enquiryPeriod.startDate,
-                    endDate = enquiryPeriod.endDate
-                )
-            },
+            enquiryPeriod = tender.enquiryPeriod
+                ?.let { enquiryPeriod ->
+                    UpdateCnData.Tender.EnquiryPeriod(
+                        startDate = enquiryPeriod.startDate,
+                        endDate = enquiryPeriod.endDate
+                    )
+                },
             procurementMethodModalities = tender.procurementMethodModalities
                 .errorIfEmpty {
                     ErrorException(

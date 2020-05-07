@@ -74,7 +74,7 @@ data class UpdatedCn(
         val description: String,
         val classification: Classification,
         val tenderPeriod: TenderPeriod,
-        val enquiryPeriod: EnquiryPeriod,
+        val enquiryPeriod: EnquiryPeriod?,
         val acceleratedProcedure: AcceleratedProcedure,
         val designContest: DesignContest,
         val electronicWorkflows: ElectronicWorkflows,

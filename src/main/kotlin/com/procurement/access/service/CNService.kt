@@ -1048,12 +1048,13 @@ class CNServiceImpl(
                         endDate = tenderPeriod.endDate
                     )
                 },
-                enquiryPeriod = data.tender.enquiryPeriod.let { enquiryPeriod ->
-                    UpdatedCn.Tender.EnquiryPeriod(
-                        startDate = enquiryPeriod.startDate,
-                        endDate = enquiryPeriod.endDate
-                    )
-                },
+                enquiryPeriod = data.tender.enquiryPeriod
+                    ?.let { enquiryPeriod ->
+                        UpdatedCn.Tender.EnquiryPeriod(
+                            startDate = enquiryPeriod.startDate,
+                            endDate = enquiryPeriod.endDate
+                        )
+                    },
                 acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
                     UpdatedCn.Tender.AcceleratedProcedure(
                         isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
