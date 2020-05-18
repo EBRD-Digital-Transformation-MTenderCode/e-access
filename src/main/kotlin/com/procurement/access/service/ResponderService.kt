@@ -3,20 +3,22 @@ package com.procurement.access.service
 import com.procurement.access.application.model.organization.GetOrganization
 import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
+import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.toSetBy
-import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service
 interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
     fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
+    fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail>
     fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail>
 }
 
@@ -127,6 +130,83 @@ class ResponderServiceImpl(
                         )
                 }
             }
+
+        return ValidationResult.ok()
+    }
+
+    override fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail> {
+
+        params.responder.businessFunctions.asSequence()
+            .also { businessFunctions ->
+                businessFunctions.forEach { businessFunction ->
+                    if (businessFunction.type !in BusinessFunctionType.allowedElements)
+                        return ValidationResult.error(
+                            ValidationErrors.InvalidBusinessFunctionType(
+                                id = businessFunction.id,
+                                allowedValues = BusinessFunctionType.allowedElements.keysAsStrings()
+                            )
+                        )
+                }
+            }
+            .flatMap { it.documents.asSequence() }
+            .also { documents ->
+                documents.forEach { document ->
+                    if (document.documentType !in BusinessFunctionDocumentType.allowedElements)
+                        return ValidationResult.error(
+                            ValidationErrors.InvalidDocumentType(
+                                id = document.id,
+                                allowedValues = BusinessFunctionDocumentType.allowedElements.keysAsStrings()
+                            )
+                        )
+                }
+            }
+
+        val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .doReturn { error ->
+                return ValidationResult.error(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+            ?: return ValidationResult.error(
+                ValidationErrors.RequirementsNotFoundOnVerifyRequirementResponse(cpid = params.cpid, ocid = params.ocid)
+            )
+
+        val cn = cnEntity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .doReturn { error ->
+                return ValidationResult.error(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+
+        val requirementsToProcuringEntity = cn.tender.criteria
+            ?.asSequence()
+            ?.filter { it.source == CriteriaSource.PROCURING_ENTITY }
+            ?.flatMap { it.requirementGroups.asSequence() }
+            ?.flatMap { it.requirements.asSequence() }
+            ?.map { it.id }
+            ?.toSet()
+            .orEmpty()
+
+        val requirementIdFromRequest = params.requirementId.toString()
+        val foundedRequirement = cn.tender.criteria
+            ?.asSequence()
+            ?.flatMap { it.requirementGroups.asSequence() }
+            ?.flatMap { it.requirements.asSequence() }
+            ?.find { it.id == requirementIdFromRequest }
+            ?: return ValidationResult.error(
+                ValidationErrors.RequirementNotFoundOnVerifyRequirementResponse(cpid = params.cpid, ocid = params.ocid)
+            )
+
+        if (params.value.dataType != foundedRequirement.dataType)
+            return ValidationResult.error(
+                ValidationErrors.RequirementDataypeMismatchOnValidateRequirementResponses(
+                    id = params.requirementResponseId,
+                    received = params.value.dataType,
+                    available = foundedRequirement.dataType
+                )
+            )
+
+        if (foundedRequirement.id !in requirementsToProcuringEntity)
+            return ValidationResult.error(
+                ValidationErrors.InvalidCriteriaSourceOnVerifyRequirementResponse(foundedRequirement)
+            )
 
         return ValidationResult.ok()
     }
