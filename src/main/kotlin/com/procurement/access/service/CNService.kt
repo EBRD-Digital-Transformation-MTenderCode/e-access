@@ -320,7 +320,7 @@ class CNServiceImpl(
                 error = ErrorType.INVALID_CURRENCY,
                 message = "The currency of tender not compatible with the currency of lots."
             )
-        if (tenderValue.amount > amount.amount)
+        if (amount.amount > tenderValue.amount)
             throw ErrorException(
                 error = ErrorType.INVALID_TENDER,
                 message = "The amount of tender greater than the amount of lots."
