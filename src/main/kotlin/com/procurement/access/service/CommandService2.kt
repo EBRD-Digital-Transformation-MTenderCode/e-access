@@ -11,6 +11,7 @@ import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderS
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderHandler
+import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseHandler
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.Command2Type
@@ -26,6 +27,7 @@ class CommandService2(
     private val responderProcessingHandler: ResponderProcessingHandler,
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
     private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler,
+    private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
@@ -65,6 +67,7 @@ class CommandService2(
             Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
             Command2Type.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
             Command2Type.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(node = request)
+            Command2Type.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")
