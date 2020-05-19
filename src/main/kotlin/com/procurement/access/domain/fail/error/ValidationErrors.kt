@@ -4,8 +4,12 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.owner.Owner
+import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.token.Token
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 
 sealed class ValidationErrors(
     numberError: String,
@@ -74,4 +78,28 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
     )
 
+    class RequirementsNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.5.1",
+        description = "Requirements not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
+    class RequirementNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.5.2",
+        description = "Requirement not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
+    class InvalidCriteriaSourceOnVerifyRequirementResponse(requirement: Requirement) : ValidationErrors(
+        numberError = "1.5.4",
+        description = "Criteria that contains requirement (id='${requirement.id}') must have source='${CriteriaSource.PROCURING_ENTITY}'"
+    )
+
+    class RequirementDataypeMismatchOnValidateRequirementResponses(
+        id: RequirementResponseId,
+        received: RequirementDataType,
+        available: RequirementDataType
+    ) : ValidationErrors(
+        numberError = "1.5.3",
+        description = "Requirement response's value with id='${id}' is mismatching with stored requirement data type. " +
+            "Expected: ${available}, Actual: ${received}."
+    )
 }
