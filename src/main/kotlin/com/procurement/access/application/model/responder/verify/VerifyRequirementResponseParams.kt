@@ -14,11 +14,8 @@ import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.domain.model.requirement.tryToRequirementId
-import com.procurement.access.domain.util.None
-import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Some
 import java.time.LocalDateTime
 
 class VerifyRequirementResponse {
@@ -137,18 +134,18 @@ class VerifyRequirementResponse {
                         type: String,
                         jobTitle: String,
                         period: Period,
-                        documents: Option<List<Document>>
+                        documents: List<Document>?
                     ): Result<BusinessFunction, DataErrors> {
 
                         val parsedType = type
-                            .let {
-                                BusinessFunctionType.orNull(it)
+                            .let {type ->
+                                BusinessFunctionType.orNull(type)
                                     ?.takeIf { it in allowedBusinessFunctionTypes }
                                     ?: return failure(
                                         DataErrors.Validation.UnknownValue(
                                             name = "businessFunction.type",
                                             expectedValues = allowedBusinessFunctionTypes.keysAsStrings(),
-                                            actualValue = it
+                                            actualValue = type
                                         )
                                     )
                             }
@@ -159,10 +156,7 @@ class VerifyRequirementResponse {
                                 type = parsedType,
                                 jobTitle = jobTitle,
                                 period = period,
-                                documents = when (documents) {
-                                    is Some -> documents.get
-                                    None    -> emptyList()
-                                }
+                                documents = documents ?: emptyList()
                             )
                         )
                     }

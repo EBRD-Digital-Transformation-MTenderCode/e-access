@@ -5,7 +5,6 @@ import com.procurement.access.application.model.responder.check.structure.CheckP
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -136,31 +135,6 @@ class ResponderServiceImpl(
 
     override fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail> {
 
-        params.responder.businessFunctions.asSequence()
-            .also { businessFunctions ->
-                businessFunctions.forEach { businessFunction ->
-                    if (businessFunction.type !in BusinessFunctionType.allowedElements)
-                        return ValidationResult.error(
-                            ValidationErrors.InvalidBusinessFunctionType(
-                                id = businessFunction.id,
-                                allowedValues = BusinessFunctionType.allowedElements.keysAsStrings()
-                            )
-                        )
-                }
-            }
-            .flatMap { it.documents.asSequence() }
-            .also { documents ->
-                documents.forEach { document ->
-                    if (document.documentType !in BusinessFunctionDocumentType.allowedElements)
-                        return ValidationResult.error(
-                            ValidationErrors.InvalidDocumentType(
-                                id = document.id,
-                                allowedValues = BusinessFunctionDocumentType.allowedElements.keysAsStrings()
-                            )
-                        )
-                }
-            }
-
         val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
             .doReturn { error ->
                 return ValidationResult.error(Fail.Incident.DatabaseIncident(exception = error.exception))
@@ -175,14 +149,6 @@ class ResponderServiceImpl(
                 return ValidationResult.error(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
-        val requirementsToProcuringEntity = cn.tender.criteria
-            ?.asSequence()
-            ?.filter { it.source == CriteriaSource.PROCURING_ENTITY }
-            ?.flatMap { it.requirementGroups.asSequence() }
-            ?.flatMap { it.requirements.asSequence() }
-            ?.map { it.id }
-            ?.toSet()
-            .orEmpty()
 
         val requirementIdFromRequest = params.requirementId.toString()
         val foundedRequirement = cn.tender.criteria
@@ -203,7 +169,15 @@ class ResponderServiceImpl(
                 )
             )
 
-        if (foundedRequirement.id !in requirementsToProcuringEntity)
+        val requirementsToProcuringEntity = cn.tender.criteria
+            .asSequence()
+            .filter { it.source == CriteriaSource.PROCURING_ENTITY }
+            .flatMap { it.requirementGroups.asSequence() }
+            .flatMap { it.requirements.asSequence() }
+            .filter { it.id == foundedRequirement.id }
+            .toList()
+
+        if (requirementsToProcuringEntity.isEmpty())
             return ValidationResult.error(
                 ValidationErrors.InvalidCriteriaSourceOnVerifyRequirementResponse(foundedRequirement)
             )

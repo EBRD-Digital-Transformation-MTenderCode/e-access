@@ -4,7 +4,6 @@ import com.procurement.access.application.model.responder.verify.VerifyRequireme
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.extension.mapOptionalResult
 import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseRequest
 
@@ -50,9 +49,9 @@ private fun VerifyRequirementResponseRequest.Params.Responder.BusinessFunction.c
         .get
 
     val documents = this.documents
-        .mapOptionalResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        ?.mapResult { it.convert() }
+        ?.doOnError { error -> return failure(error) }
+        ?.get
 
     return VerifyRequirementResponse.Params.Responder.BusinessFunction.tryCreate(
         id = this.id,
