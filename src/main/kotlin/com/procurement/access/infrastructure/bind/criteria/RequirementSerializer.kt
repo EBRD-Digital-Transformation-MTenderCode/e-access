@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MaxValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
+import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
 import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
@@ -19,6 +20,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
     companion object {
         fun serialize(requirements: List<Requirement>): ArrayNode {
             fun BigDecimal.jsonFormat() = BigDecimal("%.3f".format(this))
+
             val serializedRequirements = JsonNodeFactory.withExactBigDecimals(true).arrayNode()
 
             requirements.map { requirement ->
@@ -26,9 +28,10 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
 
                 requirementNode.put("id", requirement.id)
                 requirementNode.put("title", requirement.title)
-                requirementNode.put("dataType", requirement.dataType.key)
+                requirementNode.put("dataType", requirement.dataType.toString())
 
                 requirement.description?.let { requirementNode.put("description", it) }
+
                 requirement.period?.let {
                     requirementNode.putObject("period")
                         .put("startDate", JsonDateTimeSerializer.serialize(it.startDate))
@@ -37,48 +40,39 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
 
 
                 when (requirement.value) {
-                    is ExpectedValue -> {
-                        when (requirement.value) {
-                            is ExpectedValue.AsString -> {
-                                requirementNode.put("expectedValue", requirement.value.value)
-                            }
-                            is ExpectedValue.AsBoolean -> {
-                                requirementNode.put("expectedValue", requirement.value.value)
-                            }
-                            is ExpectedValue.AsNumber -> {
-                                requirementNode.put("expectedValue", requirement.value.value.jsonFormat())
-                            }
-                            is ExpectedValue.AsInteger -> {
-                                requirementNode.put("expectedValue", requirement.value.value)
-                            }
-                        }
+                    is ExpectedValue.AsString -> {
+                        requirementNode.put("expectedValue", requirement.value.value)
                     }
-                    is RangeValue -> when (requirement.value) {
-                        is RangeValue.AsNumber -> {
-                            requirementNode.put("minValue", requirement.value.minValue.jsonFormat())
-                            requirementNode.put("maxValue", requirement.value.maxValue.jsonFormat())
-                        }
-                        is RangeValue.AsInteger -> {
-                            requirementNode.put("minValue", requirement.value.minValue)
-                            requirementNode.put("maxValue", requirement.value.maxValue)
-                        }
+                    is ExpectedValue.AsBoolean -> {
+                        requirementNode.put("expectedValue", requirement.value.value)
                     }
-                    is MinValue -> when (requirement.value) {
-                        is MinValue.AsNumber -> {
-                            requirementNode.put("minValue", requirement.value.value.jsonFormat())
-                        }
-                        is MinValue.AsInteger -> {
-                            requirementNode.put("minValue", requirement.value.value)
-                        }
+                    is ExpectedValue.AsNumber -> {
+                        requirementNode.put("expectedValue", requirement.value.value.jsonFormat())
                     }
-                    is MaxValue -> when (requirement.value) {
-                        is MaxValue.AsNumber -> {
-                            requirementNode.put("maxValue", requirement.value.value.jsonFormat())
-                        }
-                        is MaxValue.AsInteger -> {
-                            requirementNode.put("maxValue", requirement.value.value)
-                        }
+                    is ExpectedValue.AsInteger -> {
+                        requirementNode.put("expectedValue", requirement.value.value)
                     }
+                    is RangeValue.AsNumber -> {
+                        requirementNode.put("minValue", requirement.value.minValue.jsonFormat())
+                        requirementNode.put("maxValue", requirement.value.maxValue.jsonFormat())
+                    }
+                    is RangeValue.AsInteger -> {
+                        requirementNode.put("minValue", requirement.value.minValue)
+                        requirementNode.put("maxValue", requirement.value.maxValue)
+                    }
+                    is MinValue.AsNumber -> {
+                        requirementNode.put("minValue", requirement.value.value.jsonFormat())
+                    }
+                    is MinValue.AsInteger -> {
+                        requirementNode.put("minValue", requirement.value.value)
+                    }
+                    is MaxValue.AsNumber -> {
+                        requirementNode.put("maxValue", requirement.value.value.jsonFormat())
+                    }
+                    is MaxValue.AsInteger -> {
+                        requirementNode.put("maxValue", requirement.value.value)
+                    }
+                    is NoneValue -> Unit
                 }
 
                 requirementNode
