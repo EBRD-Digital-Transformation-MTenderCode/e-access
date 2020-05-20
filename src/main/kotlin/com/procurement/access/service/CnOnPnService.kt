@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
+import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
@@ -30,7 +31,6 @@ import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.criteria.Period
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -50,7 +50,8 @@ import java.util.*
 class CnOnPnService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao,
-    private val rulesService: RulesService
+    private val rulesService: RulesService,
+    private val criteriaService: CriteriaService
 ) {
 
     fun checkCnOnPn(context: CheckCnOnPnContext, data: CnOnPnRequest): CheckedCnOnPn {
@@ -179,6 +180,8 @@ class CnOnPnService(
             )
             /** End check Documents */
         }
+
+        criteriaService.checkCriteria(data)
 
         return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
@@ -1384,7 +1387,7 @@ class CnOnPnService(
                                 description = requirement.description,
                                 title = requirement.title,
                                 period = requirement.period?.let { period ->
-                                    Period(
+                                    Requirement.Period(
                                         startDate = period.startDate,
                                         endDate = period.endDate
                                     )
@@ -1580,7 +1583,7 @@ class CnOnPnService(
                                 description = requirement.description,
                                 title = requirement.title,
                                 period = requirement.period?.let { period ->
-                                    Period(
+                                    Requirement.Period(
                                         startDate = period.startDate,
                                         endDate = period.endDate
                                     )
@@ -2026,7 +2029,7 @@ class CnOnPnService(
                                             description = requirement.description,
                                             title = requirement.title,
                                             period = requirement.period?.let { period ->
-                                                Period(
+                                                Requirement.Period(
                                                     startDate = period.startDate,
                                                     endDate = period.endDate
                                                 )

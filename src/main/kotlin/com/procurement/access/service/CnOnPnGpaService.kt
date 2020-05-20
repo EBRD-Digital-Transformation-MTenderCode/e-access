@@ -29,7 +29,6 @@ import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
-import com.procurement.access.infrastructure.dto.cn.criteria.Period
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -518,7 +517,7 @@ class CnOnPnGpaService(
                                 description = requirement.description,
                                 title = requirement.title,
                                 period = requirement.period?.let { period ->
-                                    Period(
+                                    Requirement.Period(
                                         startDate = period.startDate,
                                         endDate = period.endDate
                                     )
@@ -694,7 +693,7 @@ class CnOnPnGpaService(
                                 description = requirement.description,
                                 title = requirement.title,
                                 period = requirement.period?.let { period ->
-                                    Period(
+                                    Requirement.Period(
                                         startDate = period.startDate,
                                         endDate = period.endDate
                                     )
@@ -1371,7 +1370,7 @@ class CnOnPnGpaService(
                                             description = requirement.description,
                                             title = requirement.title,
                                             period = requirement.period?.let { period ->
-                                                Period(
+                                                Requirement.Period(
                                                     startDate = period.startDate,
                                                     endDate = period.endDate
                                                 )
