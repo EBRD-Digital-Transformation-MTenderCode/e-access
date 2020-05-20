@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.model.dto.databinding.BooleansDeserializer
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Deprecated("Use 'CNEntity' instead of this")
 data class TenderProcess @JsonCreator constructor(
 
         val ocid: String?,

@@ -1,10 +1,18 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
+import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.asFailure
+import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -32,10 +40,15 @@ import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
+import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 @Service
-class TenderService(private val tenderProcessDao: TenderProcessDao) {
+class TenderService(
+    private val tenderProcessDao: TenderProcessDao,
+    private val generationService: GenerationService,
+    private val tenderProcessRepository: TenderProcessRepository
+) {
 
     fun setSuspended(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -46,8 +59,8 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UpdateTenderStatusRs(
-                process.tender.status.value,
-                process.tender.statusDetails.value))
+                process.tender.status.key,
+                process.tender.statusDetails.key))
     }
 
     fun setUnsuspended(cm: CommandMessage): ResponseDto {
@@ -58,14 +71,14 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED) {
-            process.tender.statusDetails = TenderStatusDetails.fromString(phase)
+            process.tender.statusDetails = TenderStatusDetails.creator(phase)
         } else {
             throw ErrorException(IS_NOT_SUSPENDED)
         }
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = UnsuspendedTenderRs(UnsuspendedTender(
-                process.tender.status.value,
-                process.tender.statusDetails.value,
+                process.tender.status.key,
+                process.tender.statusDetails.key,
                 process.tender.procurementMethodModalities,
                 process.tender.electronicAuctions)))
     }
@@ -96,7 +109,6 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         tenderProcessDao.save(getEntity(process, entity))
         return ResponseDto(data = CancellationRs(lots = lotsResponseDto))
     }
-
 
     fun setCancellation(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -134,9 +146,9 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.statusDetails = TenderStatusDetails.fromString(phase)
+        process.tender.statusDetails = TenderStatusDetails.creator(phase)
         tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.value, process.tender.statusDetails.value))
+        return ResponseDto(data = UpdateTenderStatusRs(process.tender.status.key, process.tender.statusDetails.key))
     }
 
     fun getTenderOwner(cm: CommandMessage): ResponseDto {
@@ -162,7 +174,7 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
         }
         val items = process.tender.items.asSequence().filter { lotsIdsSet.contains(it.relatedLot) }.toList()
         val contractedTender = GetDataForAcTender(
-                id = process.tender.id,
+                id = generationService.generatePermanentTenderId(),
                 classification = process.tender.classification,
                 procurementMethod = process.tender.procurementMethod,
                 procurementMethodDetails = process.tender.procurementMethodDetails,
@@ -245,5 +257,26 @@ class TenderService(private val tenderProcessDao: TenderProcessDao) {
                 createdDate = localNowUTC().toDate(),
                 jsonData = toJson(process)
         )
+    }
+
+    fun getTenderState(params: GetTenderStateParams): Result<GetTenderStateResult, Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(
+            cpid = params.cpid, stage = params.ocid.stage
+        ).orForwardFail { incident -> return incident }
+            ?: return ValidationErrors.TenderNotFoundOnGetTenderState(
+                cpid = params.cpid, ocid = params.ocid
+            ).asFailure()
+
+        val tenderProcess = entity.jsonData
+            .tryToObject(TenderProcess::class.java)
+            .doReturn { incident ->
+                return Fail.Incident.DatabaseIncident(incident.exception).asFailure()
+            }
+        return tenderProcess.tender.let { tender ->
+            GetTenderStateResult(
+                status = tender.status,
+                statusDetails = tender.statusDetails
+            ).asSuccess()
+        }
     }
 }

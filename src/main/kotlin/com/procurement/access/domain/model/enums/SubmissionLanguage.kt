@@ -1,9 +1,10 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class SubmissionLanguage(@JsonValue val value: String) {
+enum class SubmissionLanguage(@JsonValue override val key: String) : EnumElementProvider.Key {
     BG("bg"),
     ES("es"),
     CS("cs"),
@@ -29,18 +30,12 @@ enum class SubmissionLanguage(@JsonValue val value: String) {
     FI("fi"),
     SV("sv");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, SubmissionLanguage> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<SubmissionLanguage>(info = info()) {
 
-        fun fromString(value: String): SubmissionLanguage = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = SubmissionLanguage::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = SubmissionLanguage.orThrow(name)
     }
 }

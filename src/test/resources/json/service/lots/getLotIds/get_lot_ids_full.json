@@ -1,0 +1,16 @@
+{
+  "states": [
+    {
+      "status": "active",
+      "statusDetails": "empty"
+    },
+    {
+      "status": "active"
+    },
+    {
+      "statusDetails": "empty"
+    }
+  ],
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+}

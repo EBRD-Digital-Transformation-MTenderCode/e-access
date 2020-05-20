@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
@@ -11,7 +11,6 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -82,8 +81,10 @@ class CnOnPnService(
 
             // VR-1.0.1.2.1, VR-1.0.1.2.7, VR-1.0.1.2.8
             checkBusinessFunctionDocuments(requestProcuringEntity)
-            checkTenderDocumentsNotEmpty(data.tender)
         }
+
+        // VR-1.0.1.2.7
+        checkTenderDocumentsNotEmpty(data.tender)
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = data.tender.lots.asSequence()
@@ -287,7 +288,7 @@ class CnOnPnService(
             error = INVALID_PROCURING_ENTITY,
             message = "Invalid identifier of procuring entity. " +
                 "Request.procuringEntity.id (=${procuringEntityRequest.id})  != " +
-                "DB.procuringEntity.id (=${procuringEntityRequest}). "
+                "DB.procuringEntity.id (=${procuringEntityDB.id}). "
         )
     }
 
@@ -307,40 +308,28 @@ class CnOnPnService(
      *
      * VR-1.0.1.10.6
      *
-     * eAccess checks the availability of one Persones object with one businessFunctions object
-     * where persones.businessFunctions.type == "authority" in Persones array from Request:
-     * IF [there is Persones object with businessFunctions object where type == "authority"] then validation is successful; }
-     * else { eAccess throws Exception: "Authority person shoud be specified in Request"; }
-     *
+     * eAccess checks persones.businessFunctions.type values in all businessFuctions object from Request;
+     * IF businessFunctions.type == oneOf procuringEntityBusinessFuncTypeEnum value (link), validation is successful;}
+     * else {  eAccess throws Exception: "Invalid business functions type";
      */
     private fun checkProcuringEntityPersones(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
-        if (procuringEntityRequest.persones.isEmpty()) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "At least one Person should be added. "
-        )
 
-        val personesIdentifier = procuringEntityRequest.persones.map { it.identifier.id }
-        val personesIdentifierUnique = personesIdentifier.toSet()
-        if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Persones objects should be unique in Request. "
-        )
+        procuringEntityRequest.persones
+            ?.apply {
+                if (this.isEmpty()) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "At least one Person should be added. "
+                )
 
-        val authorityPersones = procuringEntityRequest.persones.asSequence()
-            .flatMap { it.businessFunctions.asSequence() }
-            .filter { it.type == BusinessFunctionType.AUTHORITY }
-            .toList()
-
-        if (authorityPersones.isEmpty()) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Authority person should be specified in Request. "
-        )
-        if (authorityPersones.size > 1) throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "Only one person should be specified as authority. "
-        )
+                val personesIdentifier = this.map { it.identifier }
+                val personesIdentifierUnique = personesIdentifier.toSet()
+                if (personesIdentifier.size != personesIdentifierUnique.size) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "Persones objects should be unique in Request. "
+                )
+            }
     }
 
     /**
@@ -361,20 +350,37 @@ class CnOnPnService(
     private fun checkPersonesBusinessFunctions(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
-        fun detalizationError(): Nothing = throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "At least one businessFunctions detalization should be added. "
-        )
 
-        fun uniquenessError(): Nothing = throw ErrorException(
-            error = INVALID_PROCURING_ENTITY,
-            message = "businessFunctions objects should be unique in every Person from Request. "
-        )
+        procuringEntityRequest.persones
+            ?.map { it.businessFunctions }
+            ?.forEach { businessfunctions ->
+                if (businessfunctions.isEmpty()) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "At least one businessFunctions detalization should be added. "
+                )
+                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) throw ErrorException(
+                    error = INVALID_PROCURING_ENTITY,
+                    message = "businessFunctions objects should be unique in every Person from Request. "
+                )
+            }
 
-        procuringEntityRequest.persones.map { it.businessFunctions }
-            .forEach { businessfunctions ->
-                if (businessfunctions.isEmpty()) detalizationError()
-                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) uniquenessError()
+        procuringEntityRequest.persones
+            ?.flatMap { it.businessFunctions }
+            ?.forEach {
+                when (it.type) {
+                    BusinessFunctionType.CHAIRMAN,
+                    BusinessFunctionType.PROCURMENT_OFFICER,
+                    BusinessFunctionType.CONTACT_POINT,
+                    BusinessFunctionType.TECHNICAL_EVALUATOR,
+                    BusinessFunctionType.TECHNICAL_OPENER,
+                    BusinessFunctionType.PRICE_OPENER,
+                    BusinessFunctionType.PRICE_EVALUATOR -> Unit
+
+                    BusinessFunctionType.AUTHORITY       -> throw ErrorException(
+                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                        message = "Type '${BusinessFunctionType.AUTHORITY.key}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
+                    )
+                }
             }
     }
 
@@ -395,8 +401,9 @@ class CnOnPnService(
             message = "Invalid period in bussiness function specification. "
         )
 
-        procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach { if (it.period.startDate > context.startDate) dateError() }
+        procuringEntityRequest.persones
+            ?.flatMap { it.businessFunctions }
+            ?.forEach { if (it.period.startDate > context.startDate) dateError() }
     }
 
     /**
@@ -424,8 +431,9 @@ class CnOnPnService(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
     ) {
 
-        procuringEntityRequest.persones.flatMap { it.businessFunctions }
-            .forEach { businessFunction ->
+        procuringEntityRequest.persones
+            ?.flatMap { it.businessFunctions }
+            ?.forEach { businessFunction ->
                 businessFunction.documents?.let { documents ->
                     if (documents.isEmpty()) throw ErrorException(
                         error = ErrorType.EMPTY_DOCS,
@@ -983,7 +991,7 @@ class CnOnPnService(
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
         return CNEntity.Tender(
-            id = pnEntity.tender.id, //BR-3.8.1
+            id = generationService.generatePermanentTenderId(),
             /** Begin BR-3.8.8 -> BR-3.6.2*/
             status = status,
             statusDetails = statusDetails,
@@ -1128,7 +1136,7 @@ class CnOnPnService(
                         )
                     },
                     persones = request.tender.procuringEntity?.let { _procuringEntity ->
-                        _procuringEntity.persones.map { person ->
+                        _procuringEntity.persones?.map { person ->
                             CNEntity.Tender.ProcuringEntity.Persone(
                                 title = person.title,
                                 name = person.name,
@@ -1299,7 +1307,7 @@ class CnOnPnService(
 
         return CNEntity.Tender.Document(
             id = newDocumentFromRequest.id,
-            documentType = DocumentType.fromString(newDocumentFromRequest.documentType.value),
+            documentType = DocumentType.creator(newDocumentFromRequest.documentType.key),
             title = newDocumentFromRequest.title,
             description = newDocumentFromRequest.description,
             //BR-3.6.5(CN)
@@ -1332,7 +1340,8 @@ class CnOnPnService(
                     CNEntity.Tender.Item.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
-                        description = classification.description
+                        description = classification.description,
+                        uri = null
                     )
                 },
                 additionalClassifications = item.additionalClassifications
@@ -1547,7 +1556,8 @@ class CnOnPnService(
             CNEntity.Tender.Classification(
                 scheme = it.scheme,
                 id = it.id,
-                description = it.description
+                description = it.description,
+                uri = null
             )
         }
     }
@@ -1618,7 +1628,8 @@ class CnOnPnService(
             CNEntity.Tender.Classification(
                 scheme = it.scheme,
                 id = it.id,
-                description = it.description
+                description = it.description,
+                uri = null
             )
         }
     }
@@ -1639,7 +1650,7 @@ class CnOnPnService(
                 //BR-3.8.5
                 id = lot.id,
 
-                internalId = null,
+                internalId = lot.internalId,
                 title = lot.title,
                 description = lot.description,
                 /** Begin BR-3.8.7 */
@@ -1713,13 +1724,14 @@ class CnOnPnService(
             CNEntity.Tender.Item(
                 //BR-3.8.6
                 id = item.id,
-                internalId = null,
+                internalId = item.internalId,
                 description = item.description,
                 classification = item.classification.let { classification ->
                     CNEntity.Tender.Item.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
-                        description = classification.description
+                        description = classification.description,
+                        uri = null
                     )
                 },
                 additionalClassifications = item.additionalClassifications
@@ -2163,7 +2175,7 @@ class CnOnPnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents.map { document ->
                         CnOnPnResponse.Tender.Document(
-                            documentType = TenderDocumentType.fromString(document.documentType.value),
+                            documentType = document.documentType,
                             id = document.id,
                             title = document.title,
                             description = document.description,

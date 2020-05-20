@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
@@ -8,7 +8,6 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -950,7 +949,7 @@ class NegotiationCnOnPnService(
 
         return CNEntity.Tender.Document(
             id = newDocumentFromRequest.id,
-            documentType = DocumentType.fromString(newDocumentFromRequest.documentType.value),
+            documentType = DocumentType.creator(newDocumentFromRequest.documentType.key),
             title = newDocumentFromRequest.title,
             description = newDocumentFromRequest.description,
             //BR-3.6.5(CN)
@@ -982,7 +981,8 @@ class NegotiationCnOnPnService(
                     CNEntity.Tender.Item.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
-                        description = classification.description
+                        description = classification.description,
+                        uri = null
                     )
                 },
                 additionalClassifications = item.additionalClassifications
@@ -1124,7 +1124,8 @@ class NegotiationCnOnPnService(
             CNEntity.Tender.Classification(
                 scheme = it.scheme,
                 id = it.id,
-                description = it.description
+                description = it.description,
+                uri = null
             )
         }
     }
@@ -1139,7 +1140,8 @@ class NegotiationCnOnPnService(
             CNEntity.Tender.Classification(
                 scheme = it.scheme,
                 id = it.id,
-                description = it.description
+                description = it.description,
+                uri = null
             )
         }
     }
@@ -1240,7 +1242,8 @@ class NegotiationCnOnPnService(
                     CNEntity.Tender.Item.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
-                        description = classification.description
+                        description = classification.description,
+                        uri = null
                     )
                 },
                 additionalClassifications = item.additionalClassifications
@@ -1574,7 +1577,7 @@ class NegotiationCnOnPnService(
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents.map { document ->
                         NegotiationCnOnPnResponse.Tender.Document(
-                            documentType = TenderDocumentType.fromString(document.documentType.value),
+                            documentType = document.documentType,
                             id = document.id,
                             title = document.title,
                             description = document.description,

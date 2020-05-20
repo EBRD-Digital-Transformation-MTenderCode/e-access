@@ -1,26 +1,21 @@
 package com.procurement.access.domain.model.enums
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.domain.EnumElementProvider
 
-enum class LotStatusDetails(@JsonValue val value: String) {
+enum class LotStatusDetails(@JsonValue override val key: String) : EnumElementProvider.Key {
     UNSUCCESSFUL("unsuccessful"),
     AWARDED("awarded"),
     CANCELLED("cancelled"),
     EMPTY("empty");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
-    companion object {
-        private val elements: Map<String, LotStatusDetails> = values().associateBy { it.value.toUpperCase() }
+    companion object : EnumElementProvider<LotStatusDetails>(info = info()) {
 
-        fun fromString(value: String): LotStatusDetails = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = LotStatusDetails::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = LotStatusDetails.orThrow(name)
     }
 }

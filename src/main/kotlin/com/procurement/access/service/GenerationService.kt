@@ -1,18 +1,19 @@
 package com.procurement.access.service
 
 import com.datastax.driver.core.utils.UUIDs
-import com.procurement.access.config.properties.OCDSProperties
+import com.procurement.access.application.model.Mode
 import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.utils.milliNowUTC
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class GenerationService(private val ocdsProperties: OCDSProperties) {
+class GenerationService {
 
-    fun getCpId(country: String, testMode: Boolean): String {
-        val prefix: String = if (testMode) ocdsProperties.prefixes!!.test!! else ocdsProperties.prefixes!!.main!!
-        return prefix + "-" + country + "-" + milliNowUTC()
+    fun getCpId(country: String, mode: Mode): String = mode.prefix + "-" + country + "-" + milliNowUTC()
+
+    fun generatePermanentTenderId(): String {
+        return UUID.randomUUID().toString()
     }
 
     fun generateRandomUUID(): UUID {

@@ -4,6 +4,7 @@ import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder.eq
 import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
+import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.entity.HistoryEntity
 import com.procurement.access.utils.localNowUTC
@@ -41,6 +42,22 @@ class HistoryDao(private val session: Session) {
                 .value(COMMAND, entity.command)
                 .value(OPERATION_DATE, entity.operationDate)
                 .value(JSON_DATA, entity.jsonData)
+        session.execute(insert)
+        return entity
+    }
+
+    fun saveHistory(operationId: String, command: String, response: ApiResponse): HistoryEntity {
+        val entity = HistoryEntity(
+            operationId = operationId,
+            command = command,
+            operationDate = localNowUTC().toDate(),
+            jsonData = toJson(response))
+
+        val insert = insertInto(HISTORY_TABLE)
+            .value(OPERATION_ID, entity.operationId)
+            .value(COMMAND, entity.command)
+            .value(OPERATION_DATE, entity.operationDate)
+            .value(JSON_DATA, entity.jsonData)
         session.execute(insert)
         return entity
     }

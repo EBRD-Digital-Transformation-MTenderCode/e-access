@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.LotStatus
@@ -10,7 +11,6 @@ import com.procurement.access.domain.model.enums.TenderStatus.ACTIVE
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_ID
 import com.procurement.access.exception.ErrorType.INVALID_AUCTION_MINIMUM
@@ -23,10 +23,8 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
-import com.procurement.access.exception.ErrorType.INVALID_PMD
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.cn.BudgetCnCreate
 import com.procurement.access.model.dto.cn.CnCreate
 import com.procurement.access.model.dto.cn.ItemCnCreate
@@ -59,7 +57,6 @@ import com.procurement.access.model.dto.ocds.validate
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -71,20 +68,13 @@ class CnCreateService(private val generationService: GenerationService,
                       private val tenderProcessDao: TenderProcessDao,
                       private val rulesService: RulesService) {
 
-    fun createCn(cm: CommandMessage): ResponseDto {
-        val country = cm.context.country ?: throw ErrorException(CONTEXT)
-        val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) } ?: throw ErrorException(CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
-        val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val testMode = cm.testMode
+    fun createCn(cm: CommandMessage, context: CnCreateContext): ResponseDto {
         val cnDto = toObject(CnCreate::class.java, cm.data).validate()
-        validateAuctionsDto(country, pmd, cnDto)
+        validateAuctionsDto(context.country, context.pmd, cnDto)
 
         checkLotsCurrency(cnDto)
         checkLotsContractPeriod(cnDto)
-        val cpId = generationService.getCpId(country = country, testMode = testMode)
+        val cpId = generationService.getCpId(country = context.country, mode = context.mode)
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
         validateDtoRelatedLots(tenderDto)
@@ -108,11 +98,11 @@ class CnCreateService(private val generationService: GenerationService,
                     title = tenderDto.title,
                     description = tenderDto.description,
                     status = ACTIVE,
-                    statusDetails = TenderStatusDetails.fromString(phase),
+                    statusDetails = TenderStatusDetails.creator(context.phase),
                     classification = tenderDto.classification,
                     mainProcurementCategory = tenderDto.mainProcurementCategory,
                     additionalProcurementCategories = null,
-                    procurementMethod = pmd,
+                    procurementMethod = context.pmd,
                     procurementMethodDetails = tenderDto.procurementMethodDetails,
                     procurementMethodRationale = tenderDto.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tenderDto.procurementMethodAdditionalInfo,
@@ -131,6 +121,7 @@ class CnCreateService(private val generationService: GenerationService,
                     legalBasis = tenderDto.legalBasis,
                     procuringEntity = tenderDto.procuringEntity,
                     awardCriteria = tenderDto.awardCriteria ?: AwardCriteria.PRICE_ONLY,
+                    awardCriteriaDetails = null,
                     requiresElectronicCatalogue = false,
                     contractPeriod = getContractPeriod(tenderDto.lots, planningDto.budget),
                     tenderPeriod = tenderDto.tenderPeriod,
@@ -144,7 +135,7 @@ class CnCreateService(private val generationService: GenerationService,
                     electronicAuctions = tenderDto.electronicAuctions
                 )
         )
-        val entity = getEntity(tp, cpId, stage, dateTime, owner)
+        val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ResponseDto(data = tp)
@@ -244,9 +235,7 @@ class CnCreateService(private val generationService: GenerationService,
         }
     }
 
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.valueOrException(pmd) {
-        ErrorException(INVALID_PMD)
-    }
+    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.creator(pmd)
 
     private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetValue: Value): Value {
         val currency = budgetValue.currency

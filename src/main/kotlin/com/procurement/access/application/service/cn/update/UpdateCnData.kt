@@ -3,8 +3,8 @@ package com.procurement.access.application.service.cn.update
 import com.procurement.access.domain.model.EntityBase
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
@@ -31,7 +31,7 @@ data class UpdateCnData(
         val procurementMethodRationale: String?,
         val procurementMethodAdditionalInfo: String?,
         val tenderPeriod: TenderPeriod,
-        val enquiryPeriod: EnquiryPeriod,
+        val enquiryPeriod: EnquiryPeriod?,
         val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val electronicAuctions: ElectronicAuctions?,
         val procuringEntity: ProcuringEntity?,
@@ -56,9 +56,9 @@ data class UpdateCnData(
 
             data class Detail(
                 override val id: String,
-                override val relatedLot: String,
+                override val relatedLot: LotId,
                 val electronicAuctionModalities: List<ElectronicAuctionModality>
-            ) : EntityBase<String>(), RelatedLot<String> {
+            ) : EntityBase<String>(), RelatedLot<LotId> {
 
                 data class ElectronicAuctionModality(
                     val eligibleMinimumDifference: Money
@@ -107,14 +107,14 @@ data class UpdateCnData(
         }
 
         data class Lot(
-            override val id: String,
+            override val id: LotId,
             val internalId: String?,
             val title: String,
             val description: String,
             val value: Money,
             val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance
-        ) : EntityBase<String>() {
+        ) : EntityBase<LotId>() {
 
             data class ContractPeriod(
                 val startDate: LocalDateTime,
@@ -167,178 +167,15 @@ data class UpdateCnData(
             override val id: String,
             val internalId: String?,
             val description: String,
-            override val relatedLot: String
-        ) : EntityBase<String>(), RelatedLot<String>
+            override val relatedLot: LotId
+        ) : EntityBase<String>(), RelatedLot<LotId>
 
         data class Document(
-            val documentType: TenderDocumentType,
+            val documentType: DocumentType,
             override val id: String,
             val title: String?,
             val description: String?,
-            override val relatedLots: List<String>
-        ) : EntityBase<String>(), RelatedLots<String>
+            override val relatedLots: List<LotId>
+        ) : EntityBase<String>(), RelatedLots<LotId>
     }
 }
-
-fun UpdateCnData.replaceTemplateLotIds(r: Map<String, LotId>) = UpdateCnWithPermanentId(
-    planning = this.planning?.let { planning ->
-        UpdateCnWithPermanentId.Planning(
-            rationale = planning.rationale,
-            budget = planning.budget?.let { budget ->
-                UpdateCnWithPermanentId.Planning.Budget(
-                    description = budget.description
-                )
-            }
-        )
-    },
-    tender = this.tender.let { tender ->
-        UpdateCnWithPermanentId.Tender(
-            title = tender.title,
-            description = tender.description,
-            procurementMethodRationale = tender.procurementMethodRationale,
-            procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-            tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
-                UpdateCnWithPermanentId.Tender.TenderPeriod(
-                    startDate = tenderPeriod.startDate,
-                    endDate = tenderPeriod.endDate
-                )
-            },
-            enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
-                UpdateCnWithPermanentId.Tender.EnquiryPeriod(
-                    startDate = enquiryPeriod.startDate,
-                    endDate = enquiryPeriod.endDate
-                )
-            },
-            procurementMethodModalities = tender.procurementMethodModalities,
-            electronicAuctions = tender.electronicAuctions?.let { electronicAuctions ->
-                UpdateCnWithPermanentId.Tender.ElectronicAuctions(
-                    details = electronicAuctions.details.map { detail ->
-                        UpdateCnWithPermanentId.Tender.ElectronicAuctions.Detail(
-                            id = detail.id,
-                            relatedLot = r[detail.relatedLot] ?: LotId.fromString(detail.relatedLot),
-                            electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
-                                UpdateCnWithPermanentId.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
-                                    eligibleMinimumDifference = modality.eligibleMinimumDifference
-                                )
-                            }
-                        )
-                    }
-                )
-            },
-            procuringEntity = tender.procuringEntity?.let { procuringEntity ->
-                UpdateCnWithPermanentId.Tender.ProcuringEntity(
-                    id = procuringEntity.id,
-                    persons = procuringEntity.persons.map { person ->
-                        UpdateCnWithPermanentId.Tender.ProcuringEntity.Person(
-                            title = person.title,
-                            name = person.name,
-                            identifier = person.identifier.let { identifier ->
-                                UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.Identifier(
-                                    scheme = identifier.scheme,
-                                    id = identifier.id,
-                                    uri = identifier.uri
-                                )
-                            },
-                            businessFunctions = person.businessFunctions.map { businessFunction ->
-                                UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction(
-                                    id = businessFunction.id,
-                                    type = businessFunction.type,
-                                    jobTitle = businessFunction.jobTitle,
-                                    period = businessFunction.period.let { period ->
-                                        UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Period(
-                                            startDate = period.startDate
-                                        )
-                                    },
-                                    documents = businessFunction.documents
-                                        .map { document ->
-                                            UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document(
-                                                id = document.id,
-                                                documentType = document.documentType,
-                                                title = document.title,
-                                                description = document.description
-                                            )
-                                        }
-
-                                )
-                            }
-                        )
-                    }
-                )
-            },
-            lots = tender.lots.map { lot ->
-                UpdateCnWithPermanentId.Tender.Lot(
-                    id = r[lot.id] ?: LotId.fromString(lot.id),
-                    internalId = lot.internalId,
-                    title = lot.title,
-                    description = lot.description,
-                    value = lot.value,
-                    contractPeriod = lot.contractPeriod.let { contractPeriod ->
-                        UpdateCnWithPermanentId.Tender.Lot.ContractPeriod(
-                            startDate = contractPeriod.startDate,
-                            endDate = contractPeriod.endDate
-                        )
-                    },
-                    placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                        UpdateCnWithPermanentId.Tender.Lot.PlaceOfPerformance(
-                            address = placeOfPerformance.address.let { address ->
-                                UpdateCnWithPermanentId.Tender.Lot.PlaceOfPerformance.Address(
-                                    streetAddress = address.streetAddress,
-                                    postalCode = address.postalCode,
-                                    addressDetails = address.addressDetails.let { addressDetails ->
-                                        UpdateCnWithPermanentId.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
-                                            country = addressDetails.country.let { country ->
-                                                UpdateCnWithPermanentId.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
-                                                    scheme = country.scheme,
-                                                    id = country.id,
-                                                    description = country.description,
-                                                    uri = country.uri
-                                                )
-                                            },
-                                            region = addressDetails.region.let { region ->
-                                                UpdateCnWithPermanentId.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
-                                                    scheme = region.scheme,
-                                                    id = region.id,
-                                                    description = region.description,
-                                                    uri = region.uri
-                                                )
-                                            },
-                                            locality = addressDetails.locality.let { locality ->
-                                                UpdateCnWithPermanentId.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
-                                                    scheme = locality.scheme,
-                                                    id = locality.id,
-                                                    description = locality.description,
-                                                    uri = locality.uri
-                                                )
-                                            }
-                                        )
-                                    }
-                                )
-                            },
-                            description = placeOfPerformance.description
-                        )
-                    }
-                )
-            },
-            items = tender.items.map { item ->
-                UpdateCnWithPermanentId.Tender.Item(
-                    id = item.id,
-                    internalId = item.internalId,
-                    description = item.description,
-                    relatedLot = r[item.relatedLot] ?: LotId.fromString(item.relatedLot)
-                )
-            },
-            documents = tender.documents
-                .map { document ->
-                    UpdateCnWithPermanentId.Tender.Document(
-                        documentType = document.documentType,
-                        id = document.id,
-                        title = document.title,
-                        description = document.description,
-                        relatedLots = document.relatedLots.map { relatedLot ->
-                            r[relatedLot] ?: LotId.fromString(relatedLot)
-                        }
-                    )
-                }
-        )
-    }
-)

@@ -6,10 +6,6 @@
       "startDate": "2019-04-01T10:00:00Z",
       "endDate": "2019-04-29T10:00:00Z"
     },
-    "enquiryPeriod": {
-      "endDate": "2019-03-16T12:40:00Z",
-      "startDate": "2019-03-15T11:54:35Z"
-    },
     "procuringEntity": {
       "id": "tender.procuringEntity.id",
       "persones": [
@@ -23,7 +19,7 @@
           "businessFunctions": [
             {
               "id": "tender.procuringEntity.persones[0].businessFunctions[0].id",
-              "type": "authority",
+              "type": "chairman",
               "jobTitle": "Chief Executive Officer",
               "period": {
                 "startDate": "2018-04-01T10:00:00Z"

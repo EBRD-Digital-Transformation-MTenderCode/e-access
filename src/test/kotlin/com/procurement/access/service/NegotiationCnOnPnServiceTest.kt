@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -259,7 +259,7 @@ class NegotiationCnOnPnServiceTest {
             @Test
             fun vr_3_8_18() {
                 pnWithItems.getObject("tender")
-                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
+                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
@@ -725,7 +725,7 @@ class NegotiationCnOnPnServiceTest {
             @Test
             fun vr_3_8_18() {
                 pnWithoutItems.getObject("tender")
-                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
+                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,

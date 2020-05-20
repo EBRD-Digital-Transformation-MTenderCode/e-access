@@ -1,12 +1,19 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.MainMode
+import com.procurement.access.application.model.Mode
+import com.procurement.access.application.model.TestMode
+import com.procurement.access.application.model.context.CheckCnOnPnContext
+import com.procurement.access.application.model.context.CheckCnOnPnGpaContext
+import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.model.context.CreateCnOnPnGpaContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
-import com.procurement.access.application.service.CheckCnOnPnContext
-import com.procurement.access.application.service.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
+import com.procurement.access.application.service.CheckedCnOnPnGpa
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
+import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.application.service.cn.update.UpdateCnContext
 import com.procurement.access.application.service.cn.update.UpdateCnData
 import com.procurement.access.application.service.lot.GetActiveLotsContext
@@ -15,18 +22,24 @@ import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.application.service.lot.LotsForAuctionContext
 import com.procurement.access.application.service.lot.LotsForAuctionData
 import com.procurement.access.application.service.lot.SetLotsStatusUnsuccessfulContext
+import com.procurement.access.application.service.pn.create.CreatePnContext
+import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.application.service.tender.strategy.get.awardCriteria.GetAwardCriteriaContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
+import com.procurement.access.config.properties.OCDSProperties
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaRequest
+import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
@@ -38,6 +51,9 @@ import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
 import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulRequest
 import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulResponse
+import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
+import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
+import com.procurement.access.infrastructure.dto.pn.converter.convert
 import com.procurement.access.infrastructure.dto.tender.get.awardCriteria.GetAwardCriteriaResponse
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
@@ -51,10 +67,12 @@ import com.procurement.access.model.dto.bpe.isAuction
 import com.procurement.access.model.dto.bpe.lotId
 import com.procurement.access.model.dto.bpe.operationType
 import com.procurement.access.model.dto.bpe.owner
+import com.procurement.access.model.dto.bpe.phase
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.prevStage
 import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.bpe.startDate
+import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.bpe.token
 import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toJson
@@ -73,17 +91,30 @@ class CommandService(
     private val cnService: CNService,
     private val cnOnPinService: CnOnPinService,
     private val cnOnPnService: CnOnPnService,
+    private val cnOnPnGpaService: CnOnPnGpaService,
     private val negotiationCnOnPnService: NegotiationCnOnPnService,
     private val tenderService: TenderService,
     private val lotsService: LotsService,
     private val lotService: LotService,
     private val stageService: StageService,
     private val validationService: ValidationService,
-    private val extendTenderService: ExtendTenderService
+    private val extendTenderService: ExtendTenderService,
+    private val ocdsProperties: OCDSProperties
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(CommandService::class.java)
     }
+
+    private val testMode = ocdsProperties.prefixes!!.test!!
+        .let { prefix ->
+            TestMode(prefix = prefix, pattern = prefix.toRegex())
+        }
+
+    private val mainMode = ocdsProperties.prefixes!!.main!!
+        .let { prefix ->
+            MainMode(prefix = prefix, pattern = prefix.toRegex())
+        }
+
 
     fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
@@ -92,14 +123,47 @@ class CommandService(
         }
         val response = when (cm.command) {
             CommandType.CREATE_PIN -> pinService.createPin(cm)
-            CommandType.CREATE_PN -> pnService.createPn(cm)
+            CommandType.CREATE_PN -> {
+                val context = CreatePnContext(
+                    stage = cm.stage,
+                    owner = cm.owner,
+                    pmd = cm.pmd,
+                    country = cm.country,
+                    startDate = cm.startDate,
+                    mode = getMode(cm.testMode)
+                )
+                val request: PnCreateRequest = toObject(PnCreateRequest::class.java, cm.data)
+                val data: PnCreateData = request.convert()
+                val result = pnService.createPn(context, data)
+                if (log.isDebugEnabled)
+                    log.debug("Update CN. Result: ${toJson(result)}")
+
+                val response: PnCreateResponse = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Update CN. Response: ${toJson(response)}")
+
+                return ResponseDto(data = response)
+            }
             CommandType.UPDATE_PN -> pnUpdateService.updatePn(cm)
-            CommandType.CREATE_CN -> cnCreateService.createCn(cm)
+            CommandType.CREATE_CN -> {
+                val context = CnCreateContext(
+                    stage = cm.stage,
+                    owner = cm.owner,
+                    pmd = cm.pmd,
+                    startDate = cm.startDate,
+                    phase = cm.phase,
+                    country = cm.country,
+                    mode = getMode(cm.testMode)
+                )
+
+                cnCreateService.createCn(cm, context)
+            }
             CommandType.UPDATE_CN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = UpdateCnContext(
                             cpid = cm.cpid,
                             token = cm.token,
@@ -149,6 +213,24 @@ class CommandService(
                             .also {
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN. Response: ${toJson(it)}")
+                            }
+                        ResponseDto(data = response)
+                    }
+
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
+                        val context = CreateCnOnPnGpaContext(
+                            cpid = cm.cpid,
+                            previousStage = cm.prevStage,
+                            stage = cm.stage,
+                            country = cm.country,
+                            pmd = cm.pmd,
+                            startDate = cm.startDate
+                        )
+                        val request: CreateCnOnPnGpaRequest = toObject(CreateCnOnPnGpaRequest::class.java, cm.data)
+                        val response: CreateCnOnPnGpaResponse = cnOnPnGpaService.createCnOnPnGpa(context = context, data = request)
+                            .also {
+                                if (log.isDebugEnabled)
+                                    log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
                             }
                         ResponseDto(data = response)
                     }
@@ -256,6 +338,7 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
@@ -363,7 +446,8 @@ class CommandService(
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = GetLotsAuctionContext(
                             cpid = cm.cpid,
                             stage = cm.stage
@@ -482,6 +566,28 @@ class CommandService(
                         response
                     }
 
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
+                        val context = CheckCnOnPnGpaContext(
+                            cpid = cm.cpid,
+                            previousStage = cm.prevStage,
+                            country = cm.country,
+                            pmd = cm.pmd,
+                            startDate = cm.startDate
+                        )
+                        val request: CheckCnOnPnGpaRequest = toObject(CheckCnOnPnGpaRequest::class.java, cm.data)
+                        val result: CheckedCnOnPnGpa = cnOnPnGpaService.checkCnOnPnGpa(context = context, data = request)
+                        if (log.isDebugEnabled)
+                            log.debug("Check CN on PN (GPA). Result: ${toJson(result)}")
+
+                        val response = CheckCnOnPnResponse(
+                            requireAuction = result.requireAuction
+                        )
+                        if (log.isDebugEnabled)
+                            log.debug("Check CN on PN (GPA). Response: ${toJson(response)}")
+
+                        response
+                    }
+
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA ->
                         throw ErrorException(ErrorType.INVALID_PMD)
@@ -528,4 +634,6 @@ class CommandService(
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }
+
+    fun getMode(isTestMode: Boolean): Mode = if (isTestMode) testMode else mainMode
 }

@@ -2,6 +2,7 @@ package com.procurement.access.application.service.cn.update
 
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -10,7 +11,6 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -74,7 +74,7 @@ data class UpdatedCn(
         val description: String,
         val classification: Classification,
         val tenderPeriod: TenderPeriod,
-        val enquiryPeriod: EnquiryPeriod,
+        val enquiryPeriod: EnquiryPeriod?,
         val acceleratedProcedure: AcceleratedProcedure,
         val designContest: DesignContest,
         val electronicWorkflows: ElectronicWorkflows,
@@ -386,7 +386,7 @@ data class UpdatedCn(
         }
 
         data class Document(
-            val documentType: TenderDocumentType,
+            val documentType: DocumentType,
             val id: String,
             val title: String?,
             val description: String?,

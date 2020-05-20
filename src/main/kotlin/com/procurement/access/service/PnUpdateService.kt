@@ -73,6 +73,8 @@ class PnUpdateService(private val generationService: GenerationService,
                 message = "The attribute 'tender.description' is empty or blank."
             )
 
+        checkDocumentsTitle(documents = pnDto.tender.documents)
+
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
@@ -91,9 +93,13 @@ class PnUpdateService(private val generationService: GenerationService,
             checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
             checkLotsContractPeriod(lotsDto, pnDto.tender.tenderPeriod.startDate)
             //validation relatedLot
-            val lotsIdSet = lotsDto.asSequence().map { it.id }.toHashSet()
+            val lotsIdSet = lotsDto.asSequence()
+                .map { it.id }
+                .toHashSet()
             if (lotsIdSet.size != lotsDto.size) throw ErrorException(INVALID_LOT_ID)
-            val lotsFromItemsSet = itemsDto.asSequence().map { it.relatedLot }.toHashSet()
+            val lotsFromItemsSet = itemsDto.asSequence()
+                .map { it.relatedLot }
+                .toHashSet()
             if (lotsFromItemsSet.size != lotsIdSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
 
@@ -109,13 +115,19 @@ class PnUpdateService(private val generationService: GenerationService,
             val itemsDto = pnDto.tender.items!!
             checkLotsCurrency(lotsDto, tenderProcess.tender.value.currency)
             checkLotsContractPeriod(lotsDto, pnDto.tender.tenderPeriod.startDate)
-            val lotsDtoIdSet = lotsDto.asSequence().map { it.id }.toHashSet()
-            val lotsDbIdSet = tenderProcess.tender.lots.asSequence().map { it.id }.toHashSet()
+            val lotsDtoIdSet = lotsDto.asSequence()
+                .map { it.id }
+                .toHashSet()
+            val lotsDbIdSet = tenderProcess.tender.lots.asSequence()
+                .map { it.id }
+                .toHashSet()
             var newLotsIdSet = lotsDtoIdSet - lotsDbIdSet
             val canceledLotsIdSet = lotsDbIdSet - lotsDtoIdSet
             //validation relatedLot
             if (lotsDtoIdSet.size != lotsDto.size) throw ErrorException(INVALID_LOT_ID)
-            val lotsFromItemsSet = itemsDto.asSequence().map { it.relatedLot }.toHashSet()
+            val lotsFromItemsSet = itemsDto.asSequence()
+                .map { it.relatedLot }
+                .toHashSet()
             if (!lotsFromItemsSet.containsAll(lotsDtoIdSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all active lots have related items
             if (!(lotsDbIdSet + newLotsIdSet).containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS) //is all items have valid related lots
 
@@ -156,6 +168,18 @@ class PnUpdateService(private val generationService: GenerationService,
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ResponseDto(data = tenderProcess)
+    }
+
+    private fun checkDocumentsTitle(documents: List<Document>?) {
+        documents?.forEach { document ->
+            val title = document.title
+            if (title == null || title.isBlank()) {
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Missing attribute 'document.title' at 'tender'."
+                )
+            }
+        }
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
@@ -233,15 +257,19 @@ class PnUpdateService(private val generationService: GenerationService,
         return newLotsIdSet
     }
 
-    private fun getActiveLots(lotsDto: List<LotPnUpdate>, lotsTender: List<Lot> = listOf(), newLotsId: Set<String>): List<Lot> {
+    private fun getActiveLots(
+        lotsDto: List<LotPnUpdate>,
+        lotsTender: List<Lot> = listOf(),
+        newLotsId: Set<String>
+    ): List<Lot> {
         val activeLots = mutableListOf<Lot>()
         lotsDto.forEach { lotDto ->
             if (lotDto.id in newLotsId) {
                 activeLots.add(convertDtoLotToLot(lotDto))
             } else {
                 val updatableTenderLot = lotsTender.asSequence().first { it.id == lotDto.id }
-                updatableTenderLot.updateLot(lotDto)
-                activeLots.add(updatableTenderLot)
+                val updatedLot = updateLot(updatableTenderLot = updatableTenderLot, lotDto = lotDto)
+                activeLots.add(updatedLot)
             }
         }
         return activeLots
@@ -266,19 +294,23 @@ class PnUpdateService(private val generationService: GenerationService,
     }
 
     private fun convertItems(itemsDto: List<ItemPnUpdate>): List<Item> {
-        return itemsDto.asSequence().map { convertDtoItemToItem(it) }.toList()
+        return itemsDto.map { convertDtoItemToItem(it) }
+
     }
 
     private fun updateItems(itemsTender: List<Item>, itemsDto: List<ItemPnUpdate>): List<Item> {
         //validation
-        val itemsDtoId = itemsDto.asSequence().map { it.id }.toHashSet()
+        val itemsDtoId = itemsDto.asSequence()
+            .map { it.id }
+            .toHashSet()
         if (itemsDtoId.size != itemsDto.size) throw ErrorException(INVALID_ITEMS)
-        val itemsDbId = itemsTender.asSequence().map { it.id }.toHashSet()
+        val itemsDbId = itemsTender.asSequence()
+            .map { it.id }
+            .toHashSet()
         if (itemsDtoId.size != itemsDbId.size) throw ErrorException(INVALID_ITEMS)
         if (!itemsDbId.containsAll(itemsDtoId)) throw ErrorException(INVALID_ITEMS)
         //update
-        itemsTender.forEach { itemDb -> itemDb.updateItem(itemsDto.first { it.id == itemDb.id }) }
-        return itemsTender
+        return itemsTender.map { itemDb -> updateItem(itemDb = itemDb, itemDto = itemsDto.first { it.id == itemDb.id }) }
     }
 
     private fun updateDocuments(tender: Tender, documentsDto: List<Document>?): List<Document> {
@@ -358,11 +390,17 @@ class PnUpdateService(private val generationService: GenerationService,
         )
     }
 
-    private fun Lot.updateLot(lotDto: LotPnUpdate) {
-        this.title = lotDto.title
-        this.description = lotDto.description
-        this.contractPeriod = lotDto.contractPeriod
-        this.placeOfPerformance = lotDto.placeOfPerformance
+    /**
+     * BR-3.2.6
+     */
+    private fun updateLot(updatableTenderLot: Lot, lotDto: LotPnUpdate): Lot {
+        return updatableTenderLot.copy(
+            title = lotDto.title,
+            internalId = lotDto.internalId ?: updatableTenderLot.internalId,
+            description = lotDto.description,
+            contractPeriod = lotDto.contractPeriod,
+            placeOfPerformance = lotDto.placeOfPerformance ?: updatableTenderLot.placeOfPerformance
+        )
     }
 
     private fun convertDtoItemToItem(itemDto: ItemPnUpdate): Item {
@@ -378,9 +416,15 @@ class PnUpdateService(private val generationService: GenerationService,
         )
     }
 
-    private fun Item.updateItem(itemDto: ItemPnUpdate) {
-        this.description = itemDto.description
-        this.relatedLot = itemDto.relatedLot
+    /**
+     * BR-3.2.3
+     */
+    private fun updateItem(itemDb: Item, itemDto: ItemPnUpdate): Item {
+        return itemDb.copy(
+            description = itemDto.description,
+            internalId = itemDto.internalId ?: itemDb.internalId,
+            relatedLot = itemDto.relatedLot
+        )
     }
 
     private fun getEntity(tp: TenderProcess,

@@ -149,6 +149,7 @@
     "documents": [
       {
         "id": "document-1",
+        "title": "request.pn.tender.document[0].title",
         "documentType": "tenderNotice"
       }
     ]

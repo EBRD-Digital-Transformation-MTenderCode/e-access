@@ -1,9 +1,9 @@
 package com.procurement.access.domain.model.enums
 
 import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.access.exception.EnumException
+import com.procurement.access.exception.EnumElementProviderException
 
-enum class ProcurementMethod(@JsonValue val value: String) {
+enum class ProcurementMethod(@JsonValue val key: String) {
     MV("open"),
     OT("open"),
     RT("selective"),
@@ -12,6 +12,7 @@ enum class ProcurementMethod(@JsonValue val value: String) {
     NP("limited"),
     FA("limited"),
     OP("selective"),
+    GPA("selective"),
     TEST_OT("open"),
     TEST_SV("open"),
     TEST_RT("selective"),
@@ -19,25 +20,23 @@ enum class ProcurementMethod(@JsonValue val value: String) {
     TEST_DA("limited"),
     TEST_NP("limited"),
     TEST_FA("limited"),
-    TEST_OP("selective");
+    TEST_OP("selective"),
+    TEST_GPA("selective");
 
-    override fun toString(): String {
-        return this.value
-    }
+    override fun toString(): String = key
 
     companion object {
-        private val elements: Map<String, ProcurementMethod> = values().associateBy { it.value.toUpperCase() }
 
-        fun <T : Exception> valueOrException(name: String, block: (Exception) -> T): ProcurementMethod = try {
+        private val allowedValues = values()
+
+        fun creator(name: String) = try {
             valueOf(name)
-        } catch (exception: Exception) {
-            throw block(exception)
+        } catch (ignored: Exception) {
+            throw EnumElementProviderException(
+                enumType = this::class.java.canonicalName,
+                value = name,
+                values = allowedValues.joinToString { it.name }
+            )
         }
-
-        fun fromString(value: String): ProcurementMethod =
-            elements[value.toUpperCase()] ?: throw EnumException(
-                enumType = ProcurementMethod::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value })
     }
 }

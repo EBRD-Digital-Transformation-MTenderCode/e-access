@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
@@ -45,7 +45,9 @@ data class UpdateCnRequest(
         @field:JsonProperty("procurementMethodAdditionalInfo") @param:JsonProperty("procurementMethodAdditionalInfo") val procurementMethodAdditionalInfo: String?,
 
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
@@ -72,7 +74,6 @@ data class UpdateCnRequest(
         )
 
         data class EnquiryPeriod(
-
             @JsonDeserialize(using = JsonDateTimeDeserializer::class)
             @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
@@ -102,7 +103,9 @@ data class UpdateCnRequest(
 
         data class ProcuringEntity(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>?
         ) {
 
             data class Person(
@@ -235,7 +238,7 @@ data class UpdateCnRequest(
         )
 
         data class Document(
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: TenderDocumentType,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)

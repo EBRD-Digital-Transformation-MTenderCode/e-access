@@ -2,17 +2,13 @@ package com.procurement.access.service
 
 import com.procurement.access.application.service.cn.update.UpdateCnContext
 import com.procurement.access.application.service.cn.update.UpdateCnData
-import com.procurement.access.application.service.cn.update.UpdateCnWithPermanentId
 import com.procurement.access.application.service.cn.update.UpdatedCn
-import com.procurement.access.application.service.cn.update.replaceTemplateLotIds
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
@@ -42,7 +38,6 @@ interface CNService {
 
 @Service
 class CNServiceImpl(
-    private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
 ) : CNService {
     override fun update(context: UpdateCnContext, data: UpdateCnData): UpdatedCn {
@@ -63,9 +58,9 @@ class CNServiceImpl(
         //VR-1.0.1.1.4
         cn.checkStatus()
 
-        val receivedLotsByIds: Map<String, UpdateCnData.Tender.Lot> = data.tender.lots.associateBy { it.id }
-        val savedLotsByIds: Map<String, CNEntity.Tender.Lot> = cn.tender.lots.associateBy { it.id }
-        val allLotsIds: Set<String> = receivedLotsByIds.keys + savedLotsByIds.keys
+        val receivedLotsByIds: Map<LotId, UpdateCnData.Tender.Lot> = data.tender.lots.associateBy { it.id }
+        val savedLotsByIds: Map<LotId, CNEntity.Tender.Lot> = cn.tender.lots.associateBy { LotId.fromString(it.id) }
+        val allLotsIds: Set<LotId> = receivedLotsByIds.keys + savedLotsByIds.keys
         val documentsIds: Set<String> = cn.tender.documents.toSetBy { it.id }
 
         data.checkDocuments(documentsIds) //VR-1.0.1.2.1, VR-1.0.1.2.2, VR-1.0.1.2.9
@@ -83,62 +78,41 @@ class CNServiceImpl(
 
         val receivedLotsIds = receivedLotsByIds.keys
         val savedLotsIds = savedLotsByIds.keys
-        val idsNewLots = getNewElements(receivedLotsIds, savedLotsIds)
         val idsUpdateLots = getElementsForUpdate(receivedLotsIds, savedLotsIds)
-        val idsCancelLots = getElementsForRemove(receivedLotsIds, savedLotsIds)
-            .filter { id ->
-                val lot = savedLotsByIds.getValue(id)
-                when (lot.status) {
-                    LotStatus.COMPLETE,
-                    LotStatus.CANCELLED,
-                    LotStatus.UNSUCCESSFUL -> false
+        val idsUnmodifiedLots = savedLotsIds - idsUpdateLots
 
-                    LotStatus.PLANNING,
-                    LotStatus.PLANNED,
-                    LotStatus.ACTIVE -> true
-                }
-            }
-        val idsUnmodifiedLots = savedLotsIds - idsUpdateLots - idsCancelLots
-
-        val permanentLotsIdsByTemporalIds: Map<String, LotId> = idsNewLots.generatePermanentId {
-            LotId.fromString(generationService.generatePermanentLotId())
-        }
-        val dataWithPermanentId: UpdateCnWithPermanentId = data.replaceTemplateLotIds(permanentLotsIdsByTemporalIds)
-        val receivedLotsByPermanentIds = dataWithPermanentId.tender.lots.associateBy { it.id }
-
-        val newLots: List<CNEntity.Tender.Lot> = idsNewLots.map { id ->
-            val permanentLotId: LotId = permanentLotsIdsByTemporalIds.getValue(id)
-            createNewLot(receivedLotsByPermanentIds.getValue(permanentLotId))
-        }
+        val receivedLotsByPermanentIds = data.tender.lots.associateBy { it.id }
 
         val updatedLots = idsUpdateLots.map { id ->
             updateLot(
-                src = receivedLotsByPermanentIds.getValue(LotId.fromString(id)),
+                src = receivedLotsByPermanentIds.getValue(id),
                 dst = savedLotsByIds.getValue(id)
             )
-        }
-
-        val cancelledLots = idsCancelLots.map { id ->
-            cancelLot(savedLotsByIds.getValue(id))
         }
 
         val unmodifiedLots = idsUnmodifiedLots.map { id ->
             savedLotsByIds.getValue(id)
         }
 
-        val allModifiedLots = (updatedLots + cancelledLots + newLots).also {
+        val allModifiedLots = updatedLots.also {
             //VR-1.0.1.4.7
             if (!it.any { lot -> lot.status == LotStatus.ACTIVE })
                 throw ErrorException(ErrorType.NO_ACTIVE_LOTS)
 
             //VR-1.0.1.4.8
-            dataWithPermanentId.checkRelatedLotItems(it)
+            data.checkRelatedLotItemsPermanent(it)
         }
 
-        val updatedItems = cn.updateItems(dataWithPermanentId)
+        val activeLotsFromDb = savedLotsByIds
+            .filter { it.value.status == LotStatus.ACTIVE }
+
+        // VR-1.0.1.4.10
+        validateAllActiveLotsWereTransferred(activeLotsFromDb, receivedLotsByIds)
+
+        val updatedItems = cn.updateItems(data)
 
         //BR-1.0.1.5.2
-        val updatedTenderDocuments = cn.updateTenderDocuments(dataWithPermanentId.tender.documents)
+        val updatedTenderDocuments = cn.updateTenderDocuments(data.tender.documents)
 
         //BR-1.0.1.1.2
         val updatedValue = calculateTenderAmount(allModifiedLots).let {
@@ -146,41 +120,38 @@ class CNServiceImpl(
         }
 
         //BR-1.0.1.15.3
-        val updatedProcuringEntity = if (dataWithPermanentId.tender.procuringEntity != null)
-            cn.tender.procuringEntity.update(dataWithPermanentId.tender.procuringEntity.persons)
-                .also { procuringEntity ->
-                    procuringEntity.checkBusinessFunctionsType()
-                }
+        val updatedProcuringEntity = if (data.tender.procuringEntity != null)
+            cn.tender.procuringEntity.update(data.tender.procuringEntity.persons)
         else
             cn.tender.procuringEntity
 
         val updatedCN = cn.copy(
             planning = cn.planning.copy(
-                rationale = dataWithPermanentId.planning?.rationale ?: cn.planning.rationale,
+                rationale = data.planning?.rationale ?: cn.planning.rationale,
                 budget = cn.planning.budget.copy(
-                    description = dataWithPermanentId.planning?.budget?.description
+                    description = data.planning?.budget?.description
                         ?: cn.planning.budget.description
                 )
             ),
             tender = cn.tender.copy(
-                title = dataWithPermanentId.tender.title,
-                description = dataWithPermanentId.tender.description,
-                tenderPeriod = dataWithPermanentId.tender.tenderPeriod.let { tenderPeriod ->
+                title = data.tender.title,
+                description = data.tender.description,
+                tenderPeriod = data.tender.tenderPeriod.let { tenderPeriod ->
                     CNEntity.Tender.TenderPeriod(
                         startDate = tenderPeriod.startDate,
                         endDate = tenderPeriod.endDate
                     )
                 },
                 contractPeriod = calculatedTenderContractPeriod,
-                procurementMethodRationale = dataWithPermanentId.tender.procurementMethodRationale
+                procurementMethodRationale = data.tender.procurementMethodRationale
                     .takeIfNotNullOrDefault(
                         cn.tender.procurementMethodRationale
                     ),
-                procurementMethodAdditionalInfo = dataWithPermanentId.tender.procurementMethodAdditionalInfo
+                procurementMethodAdditionalInfo = data.tender.procurementMethodAdditionalInfo
                     .takeIfNotNullOrDefault(
                         cn.tender.procurementMethodAdditionalInfo
                     ),
-                procurementMethodModalities = dataWithPermanentId.tender.procurementMethodModalities?.toSet()
+                procurementMethodModalities = data.tender.procurementMethodModalities?.toSet()
                     .takeIfNotNullOrDefault(
                         cn.tender.procurementMethodModalities
                     ),
@@ -189,13 +160,7 @@ class CNServiceImpl(
                 lots = allModifiedLots + unmodifiedLots,
                 items = updatedItems,
                 documents = updatedTenderDocuments //BR-1.0.1.5.2
-            ),
-            amendment = idsCancelLots.takeIf { it.isNotEmpty() }
-                ?.let {
-                    CNEntity.Amendment(
-                        relatedLots = idsCancelLots.toList()
-                    )
-                }
+            )
         )
 
         tenderProcessDao.save(
@@ -211,9 +176,28 @@ class CNServiceImpl(
 
         return getResponse(
             cn = updatedCN,
-            data = dataWithPermanentId,
-            lotsChanged = (idsNewLots.isNotEmpty() || idsCancelLots.isNotEmpty())
+            data = data,
+            lotsChanged = false
         )
+    }
+
+    /**
+     * VR-1.0.1.4.10
+     *
+     * eAccess compares Lot objects  transferred in Request with Lot objects from DB && have lot.status = "active":
+     * a. IF  [Lots.id in Request == (equal) Lots.id from DB], validation is successful;
+     * b. else eAccess throws Exception: "All lots in status “active “ must be transferred”
+     */
+    private fun validateAllActiveLotsWereTransferred(
+        activeLotsFromDb: Map<LotId, CNEntity.Tender.Lot>,
+        receivedLotsByIds: Map<LotId, UpdateCnData.Tender.Lot>
+    ) {
+        activeLotsFromDb.forEach { id, _ ->
+            receivedLotsByIds[id] ?: throw ErrorException(
+                error = ErrorType.INVALID_LOT,
+                message = "All lots in status 'active' must be transferred. Lot with id='${id}' not transferred."
+            )
+        }
     }
 
     /**
@@ -258,24 +242,35 @@ class CNServiceImpl(
         //VR-1.0.1.2.2
         this.tender.documents.forEach { document ->
             when (document.documentType) {
-                TenderDocumentType.TENDER_NOTICE,
-                TenderDocumentType.BIDDING_DOCUMENTS,
-                TenderDocumentType.TECHNICAL_SPECIFICATIONS,
-                TenderDocumentType.EVALUATION_CRITERIA,
-                TenderDocumentType.CLARIFICATIONS,
-                TenderDocumentType.ELIGIBILITY_CRITERIA,
-                TenderDocumentType.RISK_PROVISIONS,
-                TenderDocumentType.BILL_OF_QUANTITY,
-                TenderDocumentType.CONFLICT_OF_INTEREST,
-                TenderDocumentType.PROCUREMENT_PLAN,
-                TenderDocumentType.CONTRACT_DRAFT,
-                TenderDocumentType.COMPLAINTS,
-                TenderDocumentType.ILLUSTRATION,
-                TenderDocumentType.CANCELLATION_DETAILS,
-                TenderDocumentType.EVALUATION_REPORTS,
-                TenderDocumentType.SHORTLISTED_FIRMS,
-                TenderDocumentType.CONTRACT_ARRANGEMENTS,
-                TenderDocumentType.CONTRACT_GUARANTEES -> Unit
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> Unit
+
+                DocumentType.MARKET_STUDIES,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.PROJECT_PLAN -> throw ErrorException(
+                    error = ErrorType.INVALID_DOCUMENT_TYPE,
+                    message = "tender.documents[] contains not allowed document type"
+                )
             }
         }
 
@@ -298,7 +293,7 @@ class CNServiceImpl(
      *   a. IF set of documents.relatedLots values from Request can be included entirely in set of lot.ID values (got on step 3), validation is successful;
      *   b. ELSE eAccess throws Exception: "Undefined relatedLot value in Document";
      */
-    private fun UpdateCnData.checkRelatedLotsOfDocuments(allLotsIds: Set<String>): UpdateCnData {
+    private fun UpdateCnData.checkRelatedLotsOfDocuments(allLotsIds: Set<LotId>): UpdateCnData {
         this.tender.documents.forEach { document ->
             document.validation(allLotsIds) {
                 throw ErrorException(
@@ -315,8 +310,8 @@ class CNServiceImpl(
      * VR-1.0.1.3.2 amount (tender)
      */
     private fun CNEntity.checkTenderAmount(
-        savedLotsByIds: Map<String, CNEntity.Tender.Lot>,
-        receivedLotsByIds: Map<String, UpdateCnData.Tender.Lot>
+        savedLotsByIds: Map<LotId, CNEntity.Tender.Lot>,
+        receivedLotsByIds: Map<LotId, UpdateCnData.Tender.Lot>
     ): CNEntity {
         val amount = calculateLotsAmount(savedLotsByIds, receivedLotsByIds)
         val tenderValue = this.tender.value
@@ -325,7 +320,7 @@ class CNServiceImpl(
                 error = ErrorType.INVALID_CURRENCY,
                 message = "The currency of tender not compatible with the currency of lots."
             )
-        if (tenderValue.amount > amount.amount)
+        if (amount.amount > tenderValue.amount)
             throw ErrorException(
                 error = ErrorType.INVALID_TENDER,
                 message = "The amount of tender greater than the amount of lots."
@@ -334,10 +329,10 @@ class CNServiceImpl(
     }
 
     private fun calculateLotsAmount(
-        savedLotsByIds: Map<String, CNEntity.Tender.Lot>,
-        receivedLotsByIds: Map<String, UpdateCnData.Tender.Lot>
+        savedLotsByIds: Map<LotId, CNEntity.Tender.Lot>,
+        receivedLotsByIds: Map<LotId, UpdateCnData.Tender.Lot>
     ): Money {
-        val allLotsIds: Set<String> = receivedLotsByIds.keys + savedLotsByIds.keys
+        val allLotsIds: Set<LotId> = receivedLotsByIds.keys + savedLotsByIds.keys
 
         return allLotsIds.asSequence()
             .filter { id ->
@@ -385,7 +380,7 @@ class CNServiceImpl(
      * IF [Item.relatedLot from Request containsAll lot.ID from Lot with lots.status == "active"] validation is successful;
      * ELSE eAccess throws Exception: "Active lot should be connected to at least one item";
      */
-    private fun UpdateCnWithPermanentId.checkRelatedLotItems(allModifiedLots: List<CNEntity.Tender.Lot>) {
+    private fun UpdateCnData.checkRelatedLotItemsPermanent(allModifiedLots: List<CNEntity.Tender.Lot>) {
         val allActiveLotsIds: Set<LotId> = allModifiedLots.asSequence()
             .filter { lot -> lot.status == LotStatus.ACTIVE }
             .map { lot -> LotId.fromString(lot.id) }
@@ -530,7 +525,7 @@ class CNServiceImpl(
      *   b. ELSE eAccess throws Exception: "Incorrect relatedLot value in Item";
      */
 
-    private fun UpdateCnData.checkRelatedLotItems(allLotsIds: Set<String>): UpdateCnData {
+    private fun UpdateCnData.checkRelatedLotItems(allLotsIds: Set<LotId>): UpdateCnData {
         this.tender.items.forEach { item ->
             item.validation(allLotsIds) { relatedLot ->
                 throw ErrorException(
@@ -658,13 +653,17 @@ class CNServiceImpl(
 
                 //VR-1.0.1.10.8 (1)
                 when (businessFunction.type) {
-                    BusinessFunctionType.AUTHORITY,
+                    BusinessFunctionType.CHAIRMAN,
                     BusinessFunctionType.PROCURMENT_OFFICER,
                     BusinessFunctionType.CONTACT_POINT,
                     BusinessFunctionType.TECHNICAL_EVALUATOR,
                     BusinessFunctionType.TECHNICAL_OPENER,
                     BusinessFunctionType.PRICE_OPENER,
                     BusinessFunctionType.PRICE_EVALUATOR -> Unit
+                    BusinessFunctionType.AUTHORITY       -> throw ErrorException(
+                        error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                        message = "Type '${BusinessFunctionType.AUTHORITY}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
+                    )
                 }
 
                 if (businessFunction.period.startDate > startDate)
@@ -687,33 +686,6 @@ class CNServiceImpl(
     }
 
     /**
-     * VR-1.0.1.10.8 (2)
-     * 2. eAccess checks the availability of one Persones object with one businessFunctions object
-     *    where persones.businessFunctions.type == "authority" in Persones array after updating (adding new person to DB from request):
-     *   a. IF [there is one Persones object with one businessFunctions object where type == "authority"] then validation is successful;
-     *   b. ELSE eAccess throws Exception: "Authority person shoud be specified in procuring entity";
-     */
-    private fun CNEntity.Tender.ProcuringEntity.checkBusinessFunctionsType() {
-        var containAuthority = false
-        this.persones
-            ?.asSequence()
-            ?.flatMap { person ->
-                person.businessFunctions.asSequence()
-            }
-            ?.forEach { businessFunction ->
-                if (businessFunction.type == BusinessFunctionType.AUTHORITY) {
-                    if (containAuthority)
-                        throw ErrorException(
-                            error = ErrorType.INVALID_BUSINESS_FUNCTION,
-                            message = "More than one business function with type 'AUTHORITY'."
-                        )
-                    else
-                        containAuthority = true
-                }
-            }
-    }
-
-    /**
      *
      *
      * VR-1.0.1.2.8
@@ -729,78 +701,7 @@ class CNServiceImpl(
         }
     }
 
-    private fun <T, R> Collection<T>.generatePermanentId(generator: () -> R): Map<T, R> =
-        this.asSequence()
-            .map { id ->
-                id to generator()
-            }
-            .toMap()
-
-    private fun createNewLot(lot: UpdateCnWithPermanentId.Tender.Lot): CNEntity.Tender.Lot = CNEntity.Tender.Lot(
-        id = lot.id.toString(),
-        internalId = lot.internalId,
-        title = lot.title,
-        description = lot.description,
-        value = lot.value.let { value ->
-            CNEntity.Tender.Lot.Value(
-                amount = value.amount,
-                currency = value.currency
-            )
-        },
-        contractPeriod = lot.contractPeriod.let { contractPeriod ->
-            CNEntity.Tender.Lot.ContractPeriod(
-                startDate = contractPeriod.startDate,
-                endDate = contractPeriod.endDate
-            )
-        },
-        options = listOf(CNEntity.Tender.Lot.Option(false)),
-        variants = listOf(CNEntity.Tender.Lot.Variant(false)),
-        renewals = listOf(CNEntity.Tender.Lot.Renewal(false)),
-        recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)),
-        status = LotStatus.ACTIVE,
-        statusDetails = LotStatusDetails.EMPTY,
-        placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-            CNEntity.Tender.Lot.PlaceOfPerformance(
-                address = placeOfPerformance.address.let { address ->
-                    CNEntity.Tender.Lot.PlaceOfPerformance.Address(
-                        streetAddress = address.streetAddress,
-                        postalCode = address.postalCode,
-                        addressDetails = address.addressDetails.let { addressDetails ->
-                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
-                                country = addressDetails.country.let { country ->
-                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
-                                        scheme = country.scheme,
-                                        id = country.id,
-                                        description = country.description,
-                                        uri = country.uri
-                                    )
-                                },
-                                region = addressDetails.region.let { region ->
-                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
-                                        scheme = region.scheme,
-                                        id = region.id,
-                                        description = region.description,
-                                        uri = region.uri
-                                    )
-                                },
-                                locality = addressDetails.locality.let { locality ->
-                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
-                                        scheme = locality.scheme,
-                                        id = locality.id,
-                                        description = locality.description,
-                                        uri = locality.uri
-                                    )
-                                }
-                            )
-                        }
-                    )
-                },
-                description = placeOfPerformance.description
-            )
-        }
-    )
-
-    private fun updateLot(src: UpdateCnWithPermanentId.Tender.Lot, dst: CNEntity.Tender.Lot): CNEntity.Tender.Lot =
+    private fun updateLot(src: UpdateCnData.Tender.Lot, dst: CNEntity.Tender.Lot): CNEntity.Tender.Lot =
         dst.copy(
             internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId),
             title = src.title,
@@ -838,12 +739,7 @@ class CNServiceImpl(
             )
         )
 
-    private fun cancelLot(lot: CNEntity.Tender.Lot): CNEntity.Tender.Lot = lot.copy(
-        status = LotStatus.CANCELLED,
-        statusDetails = LotStatusDetails.EMPTY
-    )
-
-    fun CNEntity.updateItems(data: UpdateCnWithPermanentId): List<CNEntity.Tender.Item> =
+    fun CNEntity.updateItems(data: UpdateCnData): List<CNEntity.Tender.Item> =
         this.tender.items.update(sources = data.tender.items) { dst, src ->
             dst.copy(
                 description = src.description,
@@ -853,7 +749,7 @@ class CNServiceImpl(
         }
 
     private fun CNEntity.Tender.ProcuringEntity.update(
-        persons: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person>
+        persons: List<UpdateCnData.Tender.ProcuringEntity.Person>
     ): CNEntity.Tender.ProcuringEntity {
         val receivedPersonsById = persons.associateBy { it.identifier.id }
         val savedPersonsById = this.persones?.associateBy { it.identifier.id } ?: emptyMap()
@@ -864,16 +760,14 @@ class CNServiceImpl(
         val idsAllPersons = receivedPersonsIds.union(savedPersonsIds)
         val idsNewPersons = getNewElements(receivedPersonsIds, savedPersonsIds)
         val idsUpdatePersons = getElementsForUpdate(receivedPersonsIds, savedPersonsIds)
-        val idsRemovePersons = getElementsForRemove(receivedPersonsIds, savedPersonsIds)
+        val idsOldPersons = getElementsForRemove(receivedPersonsIds, savedPersonsIds)
 
         val updatedPersons = idsAllPersons.asSequence()
-            .filter { id ->
-                id !in idsRemovePersons
-            }
             .map { id ->
                 when (id) {
                     in idsNewPersons -> createPerson(receivedPersonsById.getValue(id))
                     in idsUpdatePersons -> savedPersonsById.getValue(id).update(receivedPersonsById.getValue(id))
+                    in idsOldPersons -> savedPersonsById.getValue(id)
                     else -> throw IllegalStateException()
                 }
             }
@@ -883,7 +777,7 @@ class CNServiceImpl(
     }
 
     private fun createPerson(
-        person: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person
+        person: UpdateCnData.Tender.ProcuringEntity.Person
     ) = CNEntity.Tender.ProcuringEntity.Persone(
         title = person.title,
         name = person.name,
@@ -913,7 +807,7 @@ class CNServiceImpl(
     )
 
     private fun CNEntity.Tender.ProcuringEntity.Persone.update(
-        person: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person
+        person: UpdateCnData.Tender.ProcuringEntity.Person
     ) = this.copy(
         title = person.title,
         name = person.name,
@@ -924,7 +818,7 @@ class CNServiceImpl(
      * BR-1.0.1.15.4
      */
     private fun updateBusinessFunctions(
-        receivedBusinessFunctions: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction>,
+        receivedBusinessFunctions: List<UpdateCnData.Tender.ProcuringEntity.Person.BusinessFunction>,
         savedBusinessFunctions: List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction>
     ): List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction> {
         val receivedBusinessFunctionsByIds = receivedBusinessFunctions.associateBy { it.id }
@@ -951,7 +845,7 @@ class CNServiceImpl(
     }
 
     private fun createBusinessFunction(
-        businessFunction: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction
+        businessFunction: UpdateCnData.Tender.ProcuringEntity.Person.BusinessFunction
     ) = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
         id = businessFunction.id,
         type = businessFunction.type,
@@ -972,7 +866,7 @@ class CNServiceImpl(
     )
 
     private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(
-        businessFunction: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction
+        businessFunction: UpdateCnData.Tender.ProcuringEntity.Person.BusinessFunction
     ) = this.copy(
         type = businessFunction.type,
         jobTitle = businessFunction.jobTitle,
@@ -984,7 +878,7 @@ class CNServiceImpl(
      * BR-1.0.1.5.1
      */
     private fun updateBusinessFunctionDocuments(
-        receivedDocuments: List<UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document>,
+        receivedDocuments: List<UpdateCnData.Tender.ProcuringEntity.Person.BusinessFunction.Document>,
         savedDocuments: List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document>
     ): List<CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document> {
         val receivedDocumentsByIds = receivedDocuments.associateBy { it.id }
@@ -1011,7 +905,7 @@ class CNServiceImpl(
     }
 
     private fun createBusinessFunctionDocument(
-        document: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document
+        document: UpdateCnData.Tender.ProcuringEntity.Person.BusinessFunction.Document
     ) = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         documentType = document.documentType,
         id = document.id,
@@ -1020,7 +914,7 @@ class CNServiceImpl(
     )
 
     private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(
-        document: UpdateCnWithPermanentId.Tender.ProcuringEntity.Person.BusinessFunction.Document
+        document: UpdateCnData.Tender.ProcuringEntity.Person.BusinessFunction.Document
     ) = this.copy(
         title = document.title,
         description = document.description.takeIfNotNullOrDefault(this.description)
@@ -1047,7 +941,7 @@ class CNServiceImpl(
      *         ii.  Document.description;
      *         iii. Document.relaredLots;
      */
-    private fun CNEntity.updateTenderDocuments(documentsFromRequest: List<UpdateCnWithPermanentId.Tender.Document>): List<CNEntity.Tender.Document> {
+    private fun CNEntity.updateTenderDocuments(documentsFromRequest: List<UpdateCnData.Tender.Document>): List<CNEntity.Tender.Document> {
         val documentsById = this.tender.documents.associateBy { it.id }
         val documentsFromRequestById = documentsFromRequest.associateBy { it.id }
 
@@ -1063,7 +957,7 @@ class CNServiceImpl(
                         )
                         ?: CNEntity.Tender.Document(
                             id = document.id,
-                            documentType = DocumentType.fromString(document.documentType.value),
+                            documentType = DocumentType.creator(document.documentType.key),
                             title = document.title,
                             description = document.description,
                             relatedLots = document.relatedLots.map { it.toString() }
@@ -1081,7 +975,7 @@ class CNServiceImpl(
 
     private fun getResponse(
         cn: CNEntity,
-        data: UpdateCnWithPermanentId,
+        data: UpdateCnData,
         lotsChanged: Boolean
     ) = UpdatedCn(
         lotsChanged = lotsChanged,
@@ -1154,12 +1048,13 @@ class CNServiceImpl(
                         endDate = tenderPeriod.endDate
                     )
                 },
-                enquiryPeriod = data.tender.enquiryPeriod.let { enquiryPeriod ->
-                    UpdatedCn.Tender.EnquiryPeriod(
-                        startDate = enquiryPeriod.startDate,
-                        endDate = enquiryPeriod.endDate
-                    )
-                },
+                enquiryPeriod = data.tender.enquiryPeriod
+                    ?.let { enquiryPeriod ->
+                        UpdatedCn.Tender.EnquiryPeriod(
+                            startDate = enquiryPeriod.startDate,
+                            endDate = enquiryPeriod.endDate
+                        )
+                    },
                 acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
                     UpdatedCn.Tender.AcceleratedProcedure(
                         isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
@@ -1454,7 +1349,7 @@ class CNServiceImpl(
                 submissionMethodDetails = tender.submissionMethodDetails,
                 documents = tender.documents.map { document ->
                     UpdatedCn.Tender.Document(
-                        documentType = TenderDocumentType.fromString(document.documentType.value),
+                        documentType = document.documentType,
                         id = document.id,
                         title = document.title,
                         description = document.description,

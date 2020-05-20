@@ -7,7 +7,7 @@ import com.nhaarman.mockito_kotlin.clearInvocations
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.application.service.CheckCnOnPnContext
+import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
@@ -68,6 +68,8 @@ class CnOnPnServiceTest {
         private const val PERMANENT_ITEM_ID_2 = "permanent-item-2"
         private const val PERMANENT_ITEM_ID_3 = "permanent-item-3"
         private const val PERMANENT_ITEM_ID_4 = "permanent-item-4"
+
+        private const val TENDER_ID = "ocds-t1s2t3-MD-1552650554287"
     }
 
     private lateinit var generationService: GenerationService
@@ -83,6 +85,9 @@ class CnOnPnServiceTest {
         rulesService = mock()
 
         service = CnOnPnService(generationService, tenderProcessDao, rulesService)
+
+        whenever(generationService.generatePermanentTenderId())
+            .thenReturn(TENDER_ID)
     }
 
     @DisplayName("Check Endpoint")
@@ -329,7 +334,7 @@ class CnOnPnServiceTest {
             @Test
             fun vr_3_8_18() {
                 pnWithItems.getObject("tender")
-                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
+                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
@@ -849,7 +854,7 @@ class CnOnPnServiceTest {
             @Test
             fun vr_3_8_18() {
                 pnWithoutItems.getObject("tender")
-                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.value)
+                    .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
@@ -988,43 +993,6 @@ class CnOnPnServiceTest {
             }
 
             @Nested
-            inner class VR_1_0_1_10_6 {
-
-                @Test
-                fun `two authority person`() {
-
-                    val person = requestNode.getObject("tender")
-                        .getObject("procuringEntity")
-                        .getArray("persones")
-                        .get(0) as ObjectNode
-
-                    val newPerson = person.deepCopy().also {
-                        it.getObject("identifier").setAttribute("id", "NEW_UNIQUE_ID")
-                        val businessFunction = it.getArray("businessFunctions").get(0) as ObjectNode
-                        businessFunction.setAttribute("type", "authority")
-                    }
-
-                    requestNode.getObject("tender")
-                        .getObject("procuringEntity")
-                        .putArray("persones")
-                        .putObject(person)
-                        .putObject(newPerson)
-
-                    val context: CheckCnOnPnContext = checkContext()
-
-                    val exception =
-                        assertThrows<ErrorException> {
-                            service.checkCnOnPn(
-                                context = context,
-                                data = requestNode.toObject()
-                            )
-                        }
-                    assertEquals(ErrorType.INVALID_PROCURING_ENTITY, exception.error)
-                    assertTrue(exception.message!!.contains("Only one person should be specified as authority."))
-                }
-            }
-
-            @Nested
             inner class VR_1_0_1_10_4 {
 
                 @Test
@@ -1039,7 +1007,7 @@ class CnOnPnServiceTest {
                         it.getObject("identifier").setAttribute("id", "NEW_UNIQUE_ID")
                         println(it)
                         val businessFunction = it.getArray("businessFunctions").get(0) as ObjectNode
-                        businessFunction.setAttribute("type", "authority")
+                        businessFunction.setAttribute("type", "chairman")
                     }
                     person.putArray("businessFunctions")
 

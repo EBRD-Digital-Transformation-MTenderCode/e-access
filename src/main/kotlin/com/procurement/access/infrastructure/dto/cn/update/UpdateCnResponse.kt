@@ -10,6 +10,7 @@ import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -18,7 +19,6 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
-import com.procurement.access.domain.model.enums.TenderDocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -118,7 +118,9 @@ data class UpdateCnResponse(
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod?,
 
         @field:JsonProperty("acceleratedProcedure") @param:JsonProperty("acceleratedProcedure") val acceleratedProcedure: AcceleratedProcedure,
         @field:JsonProperty("designContest") @param:JsonProperty("designContest") val designContest: DesignContest,
@@ -193,7 +195,6 @@ data class UpdateCnResponse(
         )
 
         data class EnquiryPeriod(
-
             @JsonDeserialize(using = JsonDateTimeDeserializer::class)
             @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
@@ -605,7 +606,7 @@ data class UpdateCnResponse(
         }
 
         data class Document(
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: TenderDocumentType,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String?,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,

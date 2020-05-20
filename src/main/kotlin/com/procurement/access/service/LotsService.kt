@@ -47,6 +47,7 @@ import java.util.*
 @Service
 class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
+
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
@@ -246,6 +247,8 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
             ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "NP"
+
+            ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> "TP"
 
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)

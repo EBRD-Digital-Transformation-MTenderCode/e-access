@@ -1,8 +1,10 @@
 package com.procurement.access.domain.model.enums
 
-import com.procurement.access.exception.EnumException
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+import com.procurement.access.domain.EnumElementProvider
 
-enum class OperationType(val value: String) {
+enum class OperationType(@JsonValue override val key: String) : EnumElementProvider.Key {
     CREATE_CN("createCN"),
     CREATE_PN("createPN"),
     CREATE_PIN("createPIN"),
@@ -13,14 +15,12 @@ enum class OperationType(val value: String) {
     CREATE_PIN_ON_PN("createPINonPN"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn");
 
-    companion object {
-        private val elements: Map<String, OperationType> = values().associateBy { it.value.toUpperCase() }
+    override fun toString(): String = key
 
-        fun fromString(value: String): OperationType = elements[value.toUpperCase()]
-            ?: throw EnumException(
-                enumType = OperationType::class.java.canonicalName,
-                value = value,
-                values = values().joinToString { it.value }
-            )
+    companion object : EnumElementProvider<OperationType>(info = info()) {
+
+        @JvmStatic
+        @JsonCreator
+        fun creator(name: String) = OperationType.orThrow(name)
     }
 }

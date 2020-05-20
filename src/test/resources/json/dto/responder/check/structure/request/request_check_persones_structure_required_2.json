@@ -1,0 +1,25 @@
+{
+  "persones": [
+    {
+      "title": "string",
+      "name": "string",
+      "identifier": {
+        "scheme": "string",
+        "id": "string"
+      },
+      "businessFunctions": [
+        {
+          "id": "string",
+          "type": "chairman",
+          "jobTitle": "string",
+          "period": {
+            "startDate": "2020-02-12T12:14:12Z"
+          }
+        }
+      ]
+    }
+  ],
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "locationOfPersones": "award"
+}
