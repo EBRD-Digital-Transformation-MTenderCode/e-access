@@ -15,8 +15,10 @@ import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.Scheme
+import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
@@ -35,8 +37,19 @@ import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CnOnPnRequest(
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item> = emptyList()
 ) {
+
+    data class Item(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+        @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
+    )
 
     data class Tender(
         @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -115,6 +128,9 @@ data class CnOnPnRequest(
         ) {
             data class Coefficient(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("relatedOption") @param:JsonProperty("relatedOption") val relatedOption: RelatedOption?,
 
                 @JsonDeserialize(using = CoefficientValueDeserializer::class)
                 @JsonSerialize(using = CoefficientValueSerializer::class)
