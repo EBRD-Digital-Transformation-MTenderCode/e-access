@@ -11,6 +11,7 @@ import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.util.None
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
@@ -76,6 +77,7 @@ class CheckPersonesStructure {
         }
 
         class Person private constructor(
+            val id: PersonId,
             val title: String,
             val name: String,
             val identifier: Identifier,
@@ -84,6 +86,7 @@ class CheckPersonesStructure {
 
             companion object {
                 fun tryCreate(
+                    id: String,
                     title: String,
                     name: String,
                     identifier: Identifier,
@@ -92,6 +95,8 @@ class CheckPersonesStructure {
 
                     return Result.success(
                         Person(
+                            id = PersonId.tryCreate(id)
+                                .orForwardFail { return it },
                             title = title,
                             name = name,
                             identifier = identifier,
@@ -140,7 +145,7 @@ class CheckPersonesStructure {
                                 BusinessFunctionType.TECHNICAL_OPENER,
                                 BusinessFunctionType.PRICE_OPENER,
                                 BusinessFunctionType.PRICE_EVALUATOR -> true
-                                BusinessFunctionType.AUTHORITY       -> false
+                                BusinessFunctionType.AUTHORITY -> false
                             }
                         }.toSet()
 
@@ -173,7 +178,7 @@ class CheckPersonesStructure {
                                 period = period,
                                 documents = when (documents) {
                                     is Some -> documents.get
-                                    None    -> emptyList()
+                                    None -> emptyList()
                                 }
                             )
                         )
