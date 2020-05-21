@@ -23,7 +23,7 @@ class ValidateRequirementResponsesParams private constructor(
     val operationType: OperationType
 ) {
     companion object {
-        private val allowedoperationTypes = OperationType.allowedElements
+        private val allowedOperationTypes = OperationType.allowedElements
             .filter { value ->
                 when (value) {
                     OperationType.CREATE_SUBMISSION           -> true
@@ -55,7 +55,7 @@ class ValidateRequirementResponsesParams private constructor(
             val operationTypeParsed = parseEnum(
                 value = operationType,
                 attributeName = "operationType",
-                allowedEnums = allowedoperationTypes,
+                allowedEnums = allowedOperationTypes,
                 target = OperationType.Companion
             )
                 .orForwardFail { error -> return error }
