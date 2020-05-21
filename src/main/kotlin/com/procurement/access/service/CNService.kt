@@ -14,6 +14,7 @@ import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.money.sum
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.uniqueIds
 import com.procurement.access.domain.model.update
 import com.procurement.access.exception.ErrorException
@@ -779,6 +780,10 @@ class CNServiceImpl(
     private fun createPerson(
         person: UpdateCnData.Tender.ProcuringEntity.Person
     ) = CNEntity.Tender.ProcuringEntity.Persone(
+        id = PersonId.generate(
+            scheme = person.identifier.scheme,
+            id = person.identifier.id
+        ),
         title = person.title,
         name = person.name,
         identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(

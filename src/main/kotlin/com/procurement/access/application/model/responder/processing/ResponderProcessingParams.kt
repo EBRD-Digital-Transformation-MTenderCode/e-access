@@ -10,6 +10,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.util.None
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
@@ -57,6 +58,7 @@ class ResponderProcessing {
         }
 
         class Responder private constructor(
+            val id: PersonId,
             val title: String,
             val name: String,
             val identifier: Identifier,
@@ -65,6 +67,7 @@ class ResponderProcessing {
 
             companion object {
                 fun tryCreate(
+                    id: String,
                     title: String,
                     name: String,
                     identifier: Identifier,
@@ -73,6 +76,8 @@ class ResponderProcessing {
 
                     return Result.success(
                         Responder(
+                            id = PersonId.tryCreate(id)
+                                .orForwardFail { return it },
                             title = title,
                             name = name,
                             identifier = identifier,
