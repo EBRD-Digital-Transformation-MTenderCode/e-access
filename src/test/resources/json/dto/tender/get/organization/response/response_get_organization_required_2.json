@@ -35,6 +35,7 @@
   },
   "persones": [
     {
+      "id": "scheme-id",
       "title": "string",
       "name": "string",
       "identifier": {

@@ -77,6 +77,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
         persons = procuringEntity.persones
             ?.map { person ->
                 GetOrganizationResult.Person(
+                    id = person.id,
                     title = person.title,
                     name = person.name,
                     identifier = person.identifier
