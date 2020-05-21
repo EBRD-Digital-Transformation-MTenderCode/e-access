@@ -35,11 +35,11 @@ private fun CheckPersonesStructureRequest.Params.Person.convert(): Result<CheckP
         .get
 
     return CheckPersonesStructure.Params.Person.tryCreate(
+        id = this.id,
         title = this.title,
         name = this.name,
         identifier = identifier,
         businessFunctions = businessFunctions
-
     )
 }
 
