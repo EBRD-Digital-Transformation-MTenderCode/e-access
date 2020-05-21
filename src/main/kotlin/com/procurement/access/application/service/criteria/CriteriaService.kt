@@ -1,28 +1,31 @@
 package com.procurement.access.application.service.criteria
 
+import com.procurement.access.application.model.criteria.CreatedCriteria
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
-import com.procurement.access.service.command.checkActualItemRelation
-import com.procurement.access.service.command.checkArrays
-import com.procurement.access.service.command.checkAwardCriteriaDetailsAreRequired
-import com.procurement.access.service.command.checkAwardCriteriaDetailsEnum
-import com.procurement.access.service.command.checkAwardCriteriaEnum
-import com.procurement.access.service.command.checkCastCoefficient
-import com.procurement.access.service.command.checkCoefficient
-import com.procurement.access.service.command.checkCoefficientDataType
-import com.procurement.access.service.command.checkCoefficientRelatedOption
-import com.procurement.access.service.command.checkCoefficientValueUniqueness
-import com.procurement.access.service.command.checkConversionRelatesToEnum
-import com.procurement.access.service.command.checkConversionRelation
-import com.procurement.access.service.command.checkConversionWithoutCriteria
-import com.procurement.access.service.command.checkCriteriaAndConversionAreRequired
-import com.procurement.access.service.command.checkCriteriaWithAwardCriteria
-import com.procurement.access.service.command.checkDatatypeCompliance
-import com.procurement.access.service.command.checkDateTime
-import com.procurement.access.service.command.checkMinMaxValue
-import com.procurement.access.service.command.checkRequirements
+import com.procurement.access.infrastructure.service.command.buildCriteria
+import com.procurement.access.infrastructure.service.command.checkActualItemRelation
+import com.procurement.access.infrastructure.service.command.checkArrays
+import com.procurement.access.infrastructure.service.command.checkAwardCriteriaDetailsAreRequired
+import com.procurement.access.infrastructure.service.command.checkAwardCriteriaDetailsEnum
+import com.procurement.access.infrastructure.service.command.checkAwardCriteriaEnum
+import com.procurement.access.infrastructure.service.command.checkCastCoefficient
+import com.procurement.access.infrastructure.service.command.checkCoefficient
+import com.procurement.access.infrastructure.service.command.checkCoefficientDataType
+import com.procurement.access.infrastructure.service.command.checkCoefficientRelatedOption
+import com.procurement.access.infrastructure.service.command.checkCoefficientValueUniqueness
+import com.procurement.access.infrastructure.service.command.checkConversionRelatesToEnum
+import com.procurement.access.infrastructure.service.command.checkConversionRelation
+import com.procurement.access.infrastructure.service.command.checkConversionWithoutCriteria
+import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversionAreRequired
+import com.procurement.access.infrastructure.service.command.checkCriteriaWithAwardCriteria
+import com.procurement.access.infrastructure.service.command.checkDatatypeCompliance
+import com.procurement.access.infrastructure.service.command.checkDateTime
+import com.procurement.access.infrastructure.service.command.checkMinMaxValue
+import com.procurement.access.infrastructure.service.command.checkRequirements
 
 interface CriteriaService {
     fun checkCriteria(data: CnOnPnRequest)
+    fun createCriteria(tender: CnOnPnRequest.Tender): CreatedCriteria
 }
 
 class CriteriaServiceImpl : CriteriaService {
@@ -51,5 +54,13 @@ class CriteriaServiceImpl : CriteriaService {
             .checkAwardCriteriaDetailsEnum()   // FReq-1.1.1.15
             .checkArrays()                     // FReq-1.1.1.16
     }
+
+    override fun createCriteria(tender: CnOnPnRequest.Tender): CreatedCriteria =
+        buildCriteria(
+            awardCriteria = tender.awardCriteria!!,
+            awardCriteriaDetails = tender.awardCriteriaDetails,
+            criteria = tender.criteria.orEmpty(),
+            conversions = tender.conversions.orEmpty()
+        )
 
 }

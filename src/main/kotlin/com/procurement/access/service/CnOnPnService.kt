@@ -1,6 +1,8 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.model.context.CheckCnOnPnContext
+import com.procurement.access.application.model.criteria.CreatedCriteria
+import com.procurement.access.application.model.criteria.toEntity
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.criteria.CriteriaService
@@ -823,18 +825,17 @@ class CnOnPnService(
             )
         /** End BR-3.8.3 */
 
-        val rawCriteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
         val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
-        if ((rawCriteria == null) && (conversions != null))
+        if ((request.tender.criteria == null) && (conversions != null))
             throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
 
-        val criteria = rawCriteria?.let {
-            convertRequestCriteria(
-                tender = request.tender,
-                relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
-                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
-            )
-        }
+        val criteriaWithPermanentId = criteriaService.createCriteria(request.tender)
+
+        val criteria = convertRequestCriteria(
+            criteria = criteriaWithPermanentId.criteria,
+            relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
+            relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
+        )
 
         /** Begin BR-3.8.4 */
         //BR-3.8.14 -> BR-3.6.30
@@ -882,9 +883,12 @@ class CnOnPnService(
         val items: List<CNEntity.Tender.Item> = itemsFromPNToCN(itemsFromPN = pnEntity.tender.items)
         /** End BR-3.8.3 */
 
-        val criteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
+        val criteria = criteriaService.createCriteria(request.tender)
+            .criteria
+            .map { it.toEntity() }
+
         val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
-        if ((criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+        if ((request.tender.criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
 
         /** Begin BR-3.8.4 */
         val value: CNEntity.Tender.Value = pnEntity.tender.value.let {
@@ -1368,18 +1372,18 @@ class CnOnPnService(
     }
 
     private fun convertRequestCriteria(
-        tender: CnOnPnRequest.Tender,
+        criteria: List<CreatedCriteria.Criteria>,
         relatedTemporalWithPermanentLotId: Map<String, String>,
         relatedTemporalWithPermanentItemId: Map<String, String>
     ): List<CNEntity.Tender.Criteria> {
-        return tender.criteria!!.map { criteria ->
+        return criteria.map { criterion ->
             CNEntity.Tender.Criteria(
-                id = criteria.id,
-                title = criteria.title,
-                description = criteria.description,
-                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
+                id = criterion.id.toString(),
+                title = criterion.title,
+                description = criterion.description,
+                requirementGroups = criterion.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = requirementGroup.id,
+                        id = requirementGroup.id.toString(),
                         description = requirementGroup.description,
                         requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
@@ -1398,11 +1402,11 @@ class CnOnPnService(
                         }
                     )
                 },
-                relatesTo = criteria.relatesTo,
-                relatedItem = when (criteria.relatesTo) {
-                    CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(criteria.relatedItem!!)
-                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criteria.relatedItem!!)
-                    else -> criteria.relatedItem
+                relatesTo = criterion.relatesTo,
+                relatedItem = when (criterion.relatesTo) {
+                    CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(criterion.relatedItem!!)
+                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criterion.relatedItem!!)
+                    else -> criterion.relatedItem
                 }
             )
         }
@@ -1561,41 +1565,6 @@ class CnOnPnService(
                 id = it.id,
                 description = it.description,
                 uri = null
-            )
-        }
-    }
-
-    private fun criteriaFromRequest(
-        criteriaFromRequest: List<CnOnPnRequest.Tender.Criteria>?
-    ): List<CNEntity.Tender.Criteria>? {
-        return criteriaFromRequest?.map { criteria ->
-            CNEntity.Tender.Criteria(
-                id = criteria.id,
-                title = criteria.title,
-                description = criteria.description,
-                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
-                    CNEntity.Tender.Criteria.RequirementGroup(
-                        id = requirementGroup.id,
-                        description = requirementGroup.description,
-                        requirements = requirementGroup.requirements.map { requirement ->
-                            Requirement(
-                                id = requirement.id,
-                                description = requirement.description,
-                                title = requirement.title,
-                                period = requirement.period?.let { period ->
-                                    Requirement.Period(
-                                        startDate = period.startDate,
-                                        endDate = period.endDate
-                                    )
-                                },
-                                dataType = requirement.dataType,
-                                value = requirement.value
-                            )
-                        }
-                    )
-                },
-                relatesTo = criteria.relatesTo,
-                relatedItem = criteria.relatedItem
             )
         }
     }

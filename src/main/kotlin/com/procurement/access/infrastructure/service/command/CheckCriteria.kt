@@ -1,4 +1,4 @@
-package com.procurement.access.service.command
+package com.procurement.access.infrastructure.service.command
 
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
