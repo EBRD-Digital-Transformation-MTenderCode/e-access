@@ -24,6 +24,7 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
@@ -391,6 +392,7 @@ data class CreateCnOnPnGpaResponse(
             )
 
             data class Persone(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: PersonId,
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
                 @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
                 @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,

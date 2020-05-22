@@ -1975,6 +1975,7 @@ class CnOnPnService(
                             },
                             persones = procuringEntity.persones?.map { persone ->
                                 CnOnPnResponse.Tender.ProcuringEntity.Persone(
+                                    id = persone.id,
                                     name = persone.name,
                                     title = persone.title,
                                     identifier = CnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(

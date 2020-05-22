@@ -1320,6 +1320,7 @@ class CnOnPnGpaService(
                             },
                             persones = procuringEntity.persones?.map { persone ->
                                 CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone(
+                                    id = persone.id,
                                     name = persone.name,
                                     title = persone.title,
                                     identifier = CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.Identifier(
