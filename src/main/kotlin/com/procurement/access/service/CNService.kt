@@ -1197,6 +1197,7 @@ class CNServiceImpl(
                         },
                         persons = procuringEntity.persones.mapOrEmpty { person ->
                             UpdatedCn.Tender.ProcuringEntity.Person(
+                                id = person.id,
                                 name = person.name,
                                 title = person.title,
                                 identifier = UpdatedCn.Tender.ProcuringEntity.Person.Identifier(
