@@ -35,11 +35,11 @@ private fun ResponderProcessingRequest.Params.Responder.convert(): Result<Respon
         .get
 
     return ResponderProcessing.Params.Responder.tryCreate(
+        id = this.id,
         title = this.title,
         name = this.name,
         identifier = identifier,
         businessFunctions = businessFunctions
-
     )
 }
 

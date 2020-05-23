@@ -193,6 +193,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         },
                         persons = procuringEntity.persons.map { person ->
                             UpdateCnResponse.Tender.ProcuringEntity.Person(
+                                id = person.id,
                                 title = person.title,
                                 name = person.name,
                                 identifier = person.identifier.let { identifier ->

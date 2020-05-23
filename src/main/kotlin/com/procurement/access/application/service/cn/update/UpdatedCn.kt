@@ -17,6 +17,7 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.model.persone.PersonId
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -231,6 +232,7 @@ data class UpdatedCn(
             }
 
             data class Person(
+                val id: PersonId,
                 val title: String,
                 val name: String,
                 val identifier: Identifier,

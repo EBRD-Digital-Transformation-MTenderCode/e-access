@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.persone.PersonId
 import java.time.LocalDateTime
 
 data class GetOrganizationResult(
@@ -90,6 +91,7 @@ data class GetOrganizationResult(
     )
 
     data class Person(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: PersonId,
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
         @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
