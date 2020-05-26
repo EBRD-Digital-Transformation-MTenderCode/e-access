@@ -102,4 +102,9 @@ sealed class ValidationErrors(
         description = "Requirement response's value with id='${id}' is mismatching with stored requirement data type. " +
             "Expected: ${available}, Actual: ${received}."
     )
+
+    class TenderNotFoundOnGetQualificationCriteriaAndMethod(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.11.1",
+        description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
+    )
 }
