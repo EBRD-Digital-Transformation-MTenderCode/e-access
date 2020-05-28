@@ -210,10 +210,9 @@ data class CNEntity(
         )
 
         data class OtherCriteria(
-            @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
 
-            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
         )
 

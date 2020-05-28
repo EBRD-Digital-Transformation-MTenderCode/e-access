@@ -6,8 +6,8 @@ import com.procurement.access.domain.EnumElementProvider
 
 enum class QualificationSystemMethod(@JsonValue override val key: String) : EnumElementProvider.Key {
 
-    automated("automated"),
-    manual("manual");
+    AUTOMATED("automated"),
+    MANUAL("manual");
 
     override fun toString(): String = key
 
