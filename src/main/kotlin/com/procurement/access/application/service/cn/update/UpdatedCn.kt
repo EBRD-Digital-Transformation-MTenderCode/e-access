@@ -9,6 +9,8 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -102,7 +104,8 @@ data class UpdatedCn(
         val submissionMethod: List<SubmissionMethod>,
         val submissionMethodRationale: List<String>,
         val submissionMethodDetails: String,
-        val documents: List<Document>
+        val documents: List<Document>,
+        val otherCriteria: OtherCriteria?
     ) {
 
         data class Classification(
@@ -394,6 +397,11 @@ data class UpdatedCn(
             val description: String?,
             override val relatedLots: List<LotId>
         ) : RelatedLots<LotId>
+
+        data class OtherCriteria(
+            val reductionCriteria: ReductionCriteria,
+            val qualificationSystemMethods: List<QualificationSystemMethod>
+        )
     }
 
     data class Amendment(
