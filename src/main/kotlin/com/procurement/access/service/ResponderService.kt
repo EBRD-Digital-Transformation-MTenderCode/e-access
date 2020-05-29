@@ -198,7 +198,7 @@ class ResponderServiceImpl(
             .doReturn { error ->
                 return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
-            ?: return failure(ValidationErrors.RequirementNotFountOnValidateRequirementResponses(cpid = params.cpid))
+            ?: return success(ValidateRequirementResponsesResult(emptyList()))
 
         val cn = cnEntity.jsonData
             .tryToObject(CNEntity::class.java)
@@ -208,18 +208,14 @@ class ResponderServiceImpl(
 
         val organizationIdsSet = params.organizationIds.toSet()
 
-        val requirementResponsesFromRequest = params.requirementResponses
-
-        val requirementsFromDbById = cn.tender.criteria
-            ?.asSequence()
-            ?.flatMap { it.requirementGroups.asSequence() }
-            ?.flatMap { it.requirements.asSequence() }
-            ?.associateBy { it.id }
-            .orEmpty()
-
-        val filteredCriteria = when (params.operationType) {
+        val filteredRequirement = when (params.operationType) {
             OperationType.CREATE_SUBMISSION           -> cn.tender.criteria
+                ?.asSequence()
                 ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+                ?.flatMap { it.requirementGroups.asSequence() }
+                ?.flatMap { it.requirements.asSequence() }
+                ?.associateBy { it.id }
+                .orEmpty()
 
             OperationType.CREATE_CN,
             OperationType.CREATE_PN,
@@ -229,28 +225,18 @@ class ResponderServiceImpl(
             OperationType.CREATE_CN_ON_PN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_PIN_ON_PN,
-            OperationType.CREATE_NEGOTIATION_CN_ON_PN -> emptyList()
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN -> emptyMap()
         }
-            .orEmpty()
 
-        val filteredRequirement = filteredCriteria
-            .asSequence()
-            .flatMap { it.requirementGroups.asSequence() }
-            .flatMap { it.requirements.asSequence() }
-            .map { it.id }
-            .toSet()
+        val requirementResponsesFromRequest = params.requirementResponses
 
         // VR.COM-1.10.1
         val requirementResponsesForTenderer = requirementResponsesFromRequest
             .filter { it.requirement.id.toString() in filteredRequirement }
 
         requirementResponsesForTenderer.forEach { requirementResponseRq ->
-            // VR.COM-1.10.2
             val id = requirementResponseRq.requirement.id.toString()
-            val foundedRequirement = requirementsFromDbById[id]
-                ?: return failure(
-                    ValidationErrors.RequirementNotFountOnValidateRequirementResponses(params.cpid)
-                )
+            val foundedRequirement = filteredRequirement.getValue(id)
 
             // VR.COM-1.10.3
             if (requirementResponseRq.value.dataType != foundedRequirement.dataType)
@@ -270,6 +256,7 @@ class ResponderServiceImpl(
                         requirementResponseId = requirementResponseRq.id
                     )
                 )
+
         }
 
         return success(requirementResponsesForTenderer.convert())
