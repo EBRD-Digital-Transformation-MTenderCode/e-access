@@ -1361,6 +1361,12 @@ class CNServiceImpl(
                         description = document.description,
                         relatedLots = document.relatedLots.mapOrEmpty { LotId.fromString(it) }
                     )
+                },
+                otherCriteria = tender.otherCriteria?.let { otherCriteria ->
+                    UpdatedCn.Tender.OtherCriteria(
+                        reductionCriteria = otherCriteria.reductionCriteria,
+                        qualificationSystemMethods = otherCriteria.qualificationSystemMethods
+                    )
                 }
             )
         },

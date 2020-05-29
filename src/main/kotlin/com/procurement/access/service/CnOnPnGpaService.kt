@@ -1539,7 +1539,13 @@ class CnOnPnGpaService(
                                 minimumCandidates = secondStage.minimumCandidates,
                                 maximumCandidates = secondStage.maximumCandidates
                             )
-                        }
+                        },
+                    otherCriteria = tender.otherCriteria?.let { otherCriteria ->
+                        CreateCnOnPnGpaResponse.Tender.OtherCriteria(
+                            reductionCriteria = otherCriteria.reductionCriteria,
+                            qualificationSystemMethods = otherCriteria.qualificationSystemMethods
+                        )
+                    }
                 )
             }
         )
