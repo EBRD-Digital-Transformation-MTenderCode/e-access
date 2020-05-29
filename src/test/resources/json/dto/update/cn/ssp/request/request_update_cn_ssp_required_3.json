@@ -61,6 +61,12 @@
         "documentType": "evaluationCriteria",
         "id": "tender.documents[0].documentType"
       }
-    ]
+    ],
+    "otherCriteria": {
+      "reductionCriteria": "reductionCriteria",
+      "qualificationSystemMethods": [
+        "automated"
+      ]
+    }
   }
 }
