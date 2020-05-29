@@ -20,6 +20,8 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -177,7 +179,10 @@ data class CreateCnOnPnGpaResponse(
         @field:JsonProperty("submissionMethod") @param:JsonProperty("submissionMethod") val submissionMethod: List<SubmissionMethod>,
         @field:JsonProperty("submissionMethodRationale") @param:JsonProperty("submissionMethodRationale") val submissionMethodRationale: List<String>,
         @field:JsonProperty("submissionMethodDetails") @param:JsonProperty("submissionMethodDetails") val submissionMethodDetails: String,
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria?
     ) {
 
         data class SecondStage(
@@ -594,6 +599,11 @@ data class CreateCnOnPnGpaResponse(
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
+        )
+
+        data class OtherCriteria(
+            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
+            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
         )
     }
 }
