@@ -226,11 +226,10 @@ class ResponderServiceImpl(
             OperationType.CREATE_NEGOTIATION_CN_ON_PN -> emptyMap()
         }
 
-        val requirementResponsesFromRequest = params.requirementResponses
         val organizationIdsSet = params.organizationIds.toSet()
 
         // VR.COM-1.10.1
-        val requirementResponsesForTenderer = requirementResponsesFromRequest
+        val requirementResponsesForTenderer = params.requirementResponses
             .filter { it.requirement.id.toString() in filteredRequirement }
 
         requirementResponsesForTenderer.forEach { requirementResponseRq ->
