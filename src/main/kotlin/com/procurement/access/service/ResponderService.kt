@@ -5,24 +5,31 @@ import com.procurement.access.application.model.responder.check.structure.CheckP
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.Result.Companion.failure
+import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
+import com.procurement.access.infrastructure.dto.converter.validate.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
+import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -33,6 +40,7 @@ interface ResponderService {
     fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail>
     fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
     fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail>
+    fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail>
     fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail>
 }
 
@@ -149,7 +157,6 @@ class ResponderServiceImpl(
                 return ValidationResult.error(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
-
         val requirementIdFromRequest = params.requirementId.toString()
         val foundedRequirement = cn.tender.criteria
             ?.asSequence()
@@ -162,7 +169,7 @@ class ResponderServiceImpl(
 
         if (params.value.dataType != foundedRequirement.dataType)
             return ValidationResult.error(
-                ValidationErrors.RequirementDataypeMismatchOnValidateRequirementResponses(
+                ValidationErrors.RequirementDataTypeMismatchOnValidateRequirementResponse(
                     id = params.requirementResponseId,
                     received = params.value.dataType,
                     available = foundedRequirement.dataType
@@ -183,6 +190,74 @@ class ResponderServiceImpl(
             )
 
         return ValidationResult.ok()
+    }
+
+    override fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail> {
+
+        val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .doReturn { error ->
+                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+            ?: return success(ValidateRequirementResponsesResult(emptyList()))
+
+        val cn = cnEntity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .doReturn { error ->
+                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+
+        val filteredRequirement = when (params.operationType) {
+            OperationType.CREATE_SUBMISSION           -> cn.tender.criteria
+                ?.asSequence()
+                ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+                ?.flatMap { it.requirementGroups.asSequence() }
+                ?.flatMap { it.requirements.asSequence() }
+                ?.associateBy { it.id }
+                .orEmpty()
+
+            OperationType.CREATE_CN,
+            OperationType.CREATE_PN,
+            OperationType.CREATE_PIN,
+            OperationType.UPDATE_CN,
+            OperationType.UPDATE_PN,
+            OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CN_ON_PIN,
+            OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN -> emptyMap()
+        }
+
+        val organizationIdsSet = params.organizationIds.toSet()
+
+        // VR.COM-1.10.1
+        val requirementResponsesForTenderer = params.requirementResponses
+            .filter { it.requirement.id.toString() in filteredRequirement }
+
+        requirementResponsesForTenderer.forEach { requirementResponseRq ->
+            val id = requirementResponseRq.requirement.id.toString()
+            val foundedRequirement = filteredRequirement.getValue(id)
+
+            // VR.COM-1.10.3
+            if (requirementResponseRq.value.dataType != foundedRequirement.dataType)
+                return failure(
+                    ValidationErrors.RequirementDataTypeMismatchOnValidateRequirementResponses(
+                        id = requirementResponseRq.id,
+                        received = requirementResponseRq.value.dataType,
+                        available = foundedRequirement.dataType
+                    )
+                )
+
+            // VR.COM-1.10.4
+            if (requirementResponseRq.relatedCandidate.id !in organizationIdsSet)
+                return failure(
+                    ValidationErrors.OrganizationIdNotPassedOnValidateRequirementResponses(
+                        candidateId = requirementResponseRq.relatedCandidate.id,
+                        requirementResponseId = requirementResponseRq.id
+                    )
+                )
+
+        }
+
+        return success(requirementResponsesForTenderer.convert())
     }
 
     override fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail> {

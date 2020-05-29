@@ -35,6 +35,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     RESPONDER_PROCESSING("responderProcessing"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
     VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse"),
+    VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
     GET_TENDER_STATE("getTenderState"),
     SET_STATE_FOR_LOTS("setStateForLots"),
     SET_STATE_FOR_TENDER("setStateForTender"),
