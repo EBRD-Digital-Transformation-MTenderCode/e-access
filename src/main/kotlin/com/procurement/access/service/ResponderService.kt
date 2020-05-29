@@ -206,8 +206,6 @@ class ResponderServiceImpl(
                 return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
-        val organizationIdsSet = params.organizationIds.toSet()
-
         val filteredRequirement = when (params.operationType) {
             OperationType.CREATE_SUBMISSION           -> cn.tender.criteria
                 ?.asSequence()
@@ -229,6 +227,7 @@ class ResponderServiceImpl(
         }
 
         val requirementResponsesFromRequest = params.requirementResponses
+        val organizationIdsSet = params.organizationIds.toSet()
 
         // VR.COM-1.10.1
         val requirementResponsesForTenderer = requirementResponsesFromRequest
