@@ -93,7 +93,7 @@ sealed class ValidationErrors(
         description = "Criteria that contains requirement (id='${requirement.id}') must have source='${CriteriaSource.PROCURING_ENTITY}'"
     )
 
-    class RequirementDataypeMismatchOnValidateRequirementResponses(
+    class RequirementDataTypeMismatchOnValidateRequirementResponse(
         id: RequirementResponseId,
         received: RequirementDataType,
         available: RequirementDataType
@@ -106,5 +106,24 @@ sealed class ValidationErrors(
     class TenderNotFoundOnGetQualificationCriteriaAndMethod(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
         numberError = "1.11.1",
         description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
+    class RequirementDataTypeMismatchOnValidateRequirementResponses(
+        id: RequirementResponseId,
+        received: RequirementDataType,
+        available: RequirementDataType
+    ) : ValidationErrors(
+        numberError = "1.10.3",
+        description = "Requirement response's value with id='${id}' is mismatching with stored requirement data type. " +
+            "Expected: ${available}, Actual: ${received}."
+    )
+
+    class OrganizationIdNotPassedOnValidateRequirementResponses(
+        candidateId: String,
+        requirementResponseId: RequirementResponseId
+    ) : ValidationErrors(
+        numberError = "1.10.4",
+        description = "For relatedCandidate='${candidateId}' that located in requirement response with id='${requirementResponseId}' " +
+            "cannot founded in 'organizationIds' array."
     )
 }
