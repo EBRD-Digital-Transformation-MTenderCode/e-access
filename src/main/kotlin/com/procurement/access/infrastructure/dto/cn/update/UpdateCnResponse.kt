@@ -23,6 +23,7 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateSerializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
@@ -397,6 +398,7 @@ data class UpdateCnResponse(
             }
 
             data class Person(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: PersonId,
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
                 @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
                 @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,

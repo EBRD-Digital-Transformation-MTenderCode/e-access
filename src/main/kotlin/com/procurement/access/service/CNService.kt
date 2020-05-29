@@ -14,6 +14,7 @@ import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.money.sum
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.uniqueIds
 import com.procurement.access.domain.model.update
 import com.procurement.access.exception.ErrorException
@@ -320,7 +321,7 @@ class CNServiceImpl(
                 error = ErrorType.INVALID_CURRENCY,
                 message = "The currency of tender not compatible with the currency of lots."
             )
-        if (tenderValue.amount > amount.amount)
+        if (amount.amount > tenderValue.amount)
             throw ErrorException(
                 error = ErrorType.INVALID_TENDER,
                 message = "The amount of tender greater than the amount of lots."
@@ -779,6 +780,10 @@ class CNServiceImpl(
     private fun createPerson(
         person: UpdateCnData.Tender.ProcuringEntity.Person
     ) = CNEntity.Tender.ProcuringEntity.Persone(
+        id = PersonId.generate(
+            scheme = person.identifier.scheme,
+            id = person.identifier.id
+        ),
         title = person.title,
         name = person.name,
         identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
@@ -1192,6 +1197,7 @@ class CNServiceImpl(
                         },
                         persons = procuringEntity.persones.mapOrEmpty { person ->
                             UpdatedCn.Tender.ProcuringEntity.Person(
+                                id = person.id,
                                 name = person.name,
                                 title = person.title,
                                 identifier = UpdatedCn.Tender.ProcuringEntity.Person.Identifier(

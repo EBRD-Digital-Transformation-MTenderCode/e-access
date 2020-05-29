@@ -379,6 +379,7 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.update(
 )
     : CNEntity.Tender.ProcuringEntity.Persone {
     return CNEntity.Tender.ProcuringEntity.Persone(
+        id = received.id,
         title = received.title,
         name = received.name,
         identifier = this.identifier.update(received.identifier),
@@ -459,9 +460,9 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.up
 
 private fun createPerson(
     received: ResponderProcessing.Params.Responder
-)
-    : CNEntity.Tender.ProcuringEntity.Persone =
+): CNEntity.Tender.ProcuringEntity.Persone =
     CNEntity.Tender.ProcuringEntity.Persone(
+        id = received.id,
         title = received.title,
         name = received.name,
         identifier = createIdentifier(received.identifier),

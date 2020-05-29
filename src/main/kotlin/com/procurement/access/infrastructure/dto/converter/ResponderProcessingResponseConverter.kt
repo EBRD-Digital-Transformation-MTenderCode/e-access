@@ -6,12 +6,6 @@ import com.procurement.access.infrastructure.handler.processing.responder.Respon
 fun ResponderProcessing.Params.Responder.toReference(): ResponderProcessingResult =
     ResponderProcessingResult( // FR-10.1.4.7
         name = this.name,  // FR-10.1.4.8
-        identifier = this.identifier // FR-10.1.4.9
-            .let { identifier ->
-                ResponderProcessingResult.Identifier(
-                    id = identifier.id, // FR-10.1.4.10
-                    scheme = identifier.scheme // FR-10.1.4.11
-                )
-            }
+        id = this.id // FR-10.1.4.9
     )
 

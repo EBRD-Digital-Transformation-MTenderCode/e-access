@@ -40,10 +40,10 @@ data class SetStateForLotsParams private constructor(
         }
     }
 
-    data class Lot private constructor(
+    class Lot private constructor(
         val id: LotId,
         val status: LotStatus,
-        val statusDetails: LotStatusDetails
+        val statusDetails: LotStatusDetails?
     ) {
         companion object {
             private val allowedLotStatuses = LotStatus.allowedElements
@@ -51,10 +51,10 @@ data class SetStateForLotsParams private constructor(
                     when (it) {
                         LotStatus.CANCELLED,
                         LotStatus.COMPLETE,
-                        LotStatus.ACTIVE -> true
+                        LotStatus.ACTIVE,
+                        LotStatus.UNSUCCESSFUL -> true
                         LotStatus.PLANNING,
-                        LotStatus.PLANNED,
-                        LotStatus.UNSUCCESSFUL -> false
+                        LotStatus.PLANNED -> false
                     }
                 }
                 .toSetBy { it }
@@ -73,7 +73,7 @@ data class SetStateForLotsParams private constructor(
             fun tryCreate(
                 id: String,
                 status: String,
-                statusDetails: String
+                statusDetails: String?
             ): Result<Lot, DataErrors> {
                 val idResult = parseLotId(value = id, attributeName = "Lot.id")
                     .doOnError { error -> return error.asFailure() }
@@ -88,15 +88,19 @@ data class SetStateForLotsParams private constructor(
                             actualValue = status
                         )
                     )
-                val statusDetailsResult = LotStatusDetails.orNull(key = statusDetails)
-                    ?.takeIf { it in allowedLotStatusDetails }
-                    ?: return Result.failure(
-                        DataErrors.Validation.UnknownValue(
-                            name = "Lot.statusDetails",
-                            expectedValues = allowedLotStatusDetails.keysAsStrings(),
-                            actualValue = statusDetails
+                val statusDetailsResult =  statusDetails?.let {
+                    LotStatusDetails.orNull(key = statusDetails)
+                        ?.takeIf { it in allowedLotStatusDetails }
+                        ?: return Result.failure(
+                            DataErrors.Validation.UnknownValue(
+                                name = "Lot.statusDetails",
+                                expectedValues = allowedLotStatusDetails.keysAsStrings(),
+                                actualValue = statusDetails
+                            )
                         )
-                    )
+                }
+
+
                 return Lot(id = idResult, status = statusResult, statusDetails = statusDetailsResult)
                     .asSuccess()
             }

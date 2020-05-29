@@ -103,6 +103,11 @@ sealed class ValidationErrors(
             "Expected: ${available}, Actual: ${received}."
     )
 
+    class TenderNotFoundOnGetQualificationCriteriaAndMethod(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.11.1",
+        description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
     class RequirementNotFountOnValidateRequirementResponses(cpid: Cpid) : ValidationErrors(
         numberError = "1.10.2",
         description = "Cannot found requirement by cpid='$cpid'"

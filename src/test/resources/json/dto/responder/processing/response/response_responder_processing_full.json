@@ -1,7 +1,4 @@
 {
-  "name": "string",
-  "identifier": {
-    "id": "string",
-    "scheme": "string"
-  }
+  "id": "scheme-id",
+  "name": "string"
 }

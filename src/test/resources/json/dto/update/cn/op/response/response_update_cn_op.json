@@ -149,6 +149,7 @@
       },
       "persones": [
         {
+          "id": "scheme-id",
           "title": "tender.procuringEntity.persones[0].title",
           "name": "tender.procuringEntity.persones[0].name",
           "identifier": {

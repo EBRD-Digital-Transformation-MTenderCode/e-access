@@ -95,7 +95,8 @@ class LotServiceImpl(
                     ?.let { requestLot ->
                         if (statusOrStatusDetailsVaries(databaseLot = dbLot, requestLot = requestLot)) {
                             val updatedLot = dbLot.copy(
-                                status = requestLot.status, statusDetails = requestLot.statusDetails
+                                status = requestLot.status,
+                                statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
                             )
                             resultLots.add(updatedLot)
                             updatedLot

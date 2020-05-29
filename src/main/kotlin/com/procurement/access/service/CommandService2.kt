@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
+import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationHandler
@@ -34,6 +35,7 @@ class CommandService2(
     private val setStateForLotsHandler: SetStateForLotsHandler,
     private val setStateForTenderHandler: SetStateForTenderHandler,
     private val getOrganizationHandler: GetOrganizationHandler,
+    private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val logger: Logger
 ) {
 
@@ -57,16 +59,17 @@ class CommandService2(
             .get
 
         val response = when (action) {
-            Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
-            Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
-            Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
-            Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
-            Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
-            Command2Type.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
-            Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
-            Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
-            Command2Type.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
-            Command2Type.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(node = request)
+            Command2Type.FIND_LOT_IDS                          -> findLotIdsHandler.handle(node = request)
+            Command2Type.CHECK_ACCESS_TO_TENDER                -> checkAccessToTenderHandler.handle(node = request)
+            Command2Type.GET_LOT_STATE_BY_IDS                  -> getLotStateByIdsHandler.handle(node = request)
+            Command2Type.RESPONDER_PROCESSING                  -> responderProcessingHandler.handle(node = request)
+            Command2Type.CHECK_PERSONES_STRUCTURE              -> checkPersonsStructureHandler.handle(node = request)
+            Command2Type.GET_TENDER_STATE                      -> getTenderStateHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_LOTS                    -> setStateForLotsHandler.handle(node = request)
+            Command2Type.SET_STATE_FOR_TENDER                  -> setStateForTenderHandler.handle(node = request)
+            Command2Type.GET_ORGANIZATION                      -> getOrganizationHandler.handle(node = request)
+            Command2Type.VERIFY_REQUIREMENT_RESPONSE           -> verifyRequirementResponseHandler.handle(node = request)
+            Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)
             Command2Type.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(node = request)
         }
 

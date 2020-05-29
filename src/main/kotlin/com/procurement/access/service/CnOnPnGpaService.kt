@@ -13,6 +13,7 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -987,6 +988,10 @@ class CnOnPnGpaService(
                     persones = request.tender.procuringEntity?.let { _procuringEntity ->
                         _procuringEntity.persones?.map { person ->
                             CNEntity.Tender.ProcuringEntity.Persone(
+                                id = PersonId.generate(
+                                    scheme = person.identifier.scheme,
+                                    id = person.identifier.id
+                                ),
                                 title = person.title,
                                 name = person.name,
                                 identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
@@ -1315,6 +1320,7 @@ class CnOnPnGpaService(
                             },
                             persones = procuringEntity.persones?.map { persone ->
                                 CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone(
+                                    id = persone.id,
                                     name = persone.name,
                                     title = persone.title,
                                     identifier = CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.Identifier(
