@@ -86,6 +86,12 @@
         "id": "document-1",
         "documentType": "billOfQuantity"
       }
-    ]
+    ],
+    "otherCriteria": {
+      "reductionCriteria": "reductionCriteria",
+      "qualificationSystemMethods": [
+        "automated"
+      ]
+    }
   }
 }
