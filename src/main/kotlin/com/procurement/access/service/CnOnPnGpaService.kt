@@ -1037,7 +1037,13 @@ class CnOnPnGpaService(
             submissionMethod = pnEntity.tender.submissionMethod, //BR-3.8.1
             submissionMethodRationale = pnEntity.tender.submissionMethodRationale, //BR-3.8.1
             submissionMethodDetails = pnEntity.tender.submissionMethodDetails, //BR-3.8.1
-            documents = updatedDocuments //BR-3.7.13
+            documents = updatedDocuments, //BR-3.7.13,
+            otherCriteria = request.tender.otherCriteria.let { otherCriteria ->
+                CNEntity.Tender.OtherCriteria(
+                    reductionCriteria = otherCriteria.reductionCriteria,
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods.toList()
+                )
+            }
         )
     }
 
