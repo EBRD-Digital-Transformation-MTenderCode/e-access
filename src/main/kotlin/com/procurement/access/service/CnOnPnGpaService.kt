@@ -11,6 +11,8 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
@@ -99,7 +101,7 @@ class CnOnPnGpaService(
                 validateCandidatesRange(min = minimumCandidates, max = maximumCandidates)
         }
 
-
+        checkOtherCriteria(data.tender.otherCriteria)
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = data.tender.lots.asSequence()
@@ -1893,6 +1895,23 @@ class CnOnPnGpaService(
             error = ErrorType.EMPTY_DOCS,
             message = "At least one document should be added to tenders documents. "
         )
+    }
+
+    private fun checkOtherCriteria(otherCriteria: CheckCnOnPnGpaRequest.Tender.OtherCriteria) {
+        if (otherCriteria.qualificationSystemMethods.isEmpty())
+            throw ErrorException(ErrorType.IS_EMPTY, "Values of qualificationSystemMethods should be added")
+
+        when (otherCriteria.reductionCriteria) {
+            ReductionCriteria.NONE,
+            ReductionCriteria.SCORING -> Unit
+        }
+
+        otherCriteria.qualificationSystemMethods.forEach { qualificationSystemMethod ->
+            when (qualificationSystemMethod) {
+                QualificationSystemMethod.AUTOMATED,
+                QualificationSystemMethod.MANUAL -> Unit
+            }
+        }
     }
 
     /**
