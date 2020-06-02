@@ -1,0 +1,23 @@
+[
+  {
+    "id": "MD.TEST_GPA.1",
+    "title": "string",
+    "description": "string",
+    "source": "procuringEntity",
+    "requirementGroups": [
+      {
+        "id": "MD.TEST_GPA.1.1",
+        "description": "string",
+        "requirements": [
+          {
+            "id": "MD.TEST_GPA.1.1.1",
+            "title": "string",
+            "description": "string",
+            "dataType": "boolean"
+          }
+        ]
+      }
+    ]
+  }
+]
+
