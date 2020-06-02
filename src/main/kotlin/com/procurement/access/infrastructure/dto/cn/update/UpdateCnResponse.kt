@@ -17,6 +17,8 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -175,7 +177,10 @@ data class UpdateCnResponse(
         @field:JsonProperty("submissionMethodDetails") @param:JsonProperty("submissionMethodDetails") val submissionMethodDetails: String,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria?
 
     ) {
 
@@ -615,6 +620,11 @@ data class UpdateCnResponse(
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<LotId>
+        )
+
+        data class OtherCriteria(
+            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
+            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
         )
     }
 

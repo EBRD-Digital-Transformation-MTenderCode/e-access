@@ -354,6 +354,12 @@
           "lot-2"
         ]
       }
-    ]
+    ],
+    "otherCriteria": {
+      "reductionCriteria": "reductionCriteria",
+      "qualificationSystemMethods": [
+        "automated"
+      ]
+    }
   }
 }

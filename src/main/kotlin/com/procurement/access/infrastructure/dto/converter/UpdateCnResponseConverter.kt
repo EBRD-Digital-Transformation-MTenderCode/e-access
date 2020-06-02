@@ -359,6 +359,12 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         description = document.description,
                         relatedLots = document.relatedLots.toList()
                     )
+                },
+                otherCriteria = tender.otherCriteria?.let { otherCriteria ->
+                    UpdateCnResponse.Tender.OtherCriteria(
+                        reductionCriteria = otherCriteria.reductionCriteria,
+                        qualificationSystemMethods = otherCriteria.qualificationSystemMethods
+                    )
                 }
             )
         },

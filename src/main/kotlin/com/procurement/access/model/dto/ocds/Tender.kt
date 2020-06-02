@@ -106,5 +106,8 @@ data class Tender @JsonCreator constructor(
 
         var procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
-        var electronicAuctions: ElectronicAuctions?
+        var electronicAuctions: ElectronicAuctions?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria? = null
 )
