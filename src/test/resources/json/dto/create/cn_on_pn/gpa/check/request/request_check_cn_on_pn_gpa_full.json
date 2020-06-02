@@ -223,7 +223,7 @@
       }
     ],
     "otherCriteria": {
-      "reductionCriteria": "reductionCriteria",
+      "reductionCriteria": "scoring",
       "qualificationSystemMethods": [
         "automated"
       ]
