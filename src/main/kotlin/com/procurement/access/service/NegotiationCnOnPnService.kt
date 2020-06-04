@@ -172,7 +172,10 @@ class NegotiationCnOnPnService(
             )
         )
 
-        return getResponse(cnEntity, tenderProcessEntity.token)
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+        val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
+
+        return getResponse(responseCnEntity, tenderProcessEntity.token)
     }
 
     /**
