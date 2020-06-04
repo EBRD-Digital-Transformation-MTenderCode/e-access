@@ -217,7 +217,10 @@ class CnOnPnService(
             )
         )
 
-        return getResponse(cnEntity, tenderProcessEntity.token)
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+        val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
+
+        return getResponse(responseCnEntity, tenderProcessEntity.token)
     }
 
     /**
@@ -382,7 +385,7 @@ class CnOnPnService(
                     BusinessFunctionType.PRICE_OPENER,
                     BusinessFunctionType.PRICE_EVALUATOR -> Unit
 
-                    BusinessFunctionType.AUTHORITY       -> throw ErrorException(
+                    BusinessFunctionType.AUTHORITY -> throw ErrorException(
                         error = ErrorType.INVALID_BUSINESS_FUNCTION,
                         message = "Type '${BusinessFunctionType.AUTHORITY.key}' was deprecated. Use '${BusinessFunctionType.CHAIRMAN}' instead of it"
                     )
@@ -824,6 +827,7 @@ class CnOnPnService(
                 relatedTemporalWithPermanentLotId,
                 relatedTemporalWithPermanentItemId
             )
+
         /** End BR-3.8.3 */
 
         val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
@@ -843,6 +847,7 @@ class CnOnPnService(
         val value: CNEntity.Tender.Value = calculateTenderValueFromLots(request.tender.lots)
         //BR-3.8.15 -> BR-3.6.31
         val contractPeriod: CNEntity.Tender.ContractPeriod = calculationTenderContractPeriod(lots = request.tender.lots)
+
         /** End BR-3.8.4 */
 
         //BR-3.8.5 -> BR-3.6.5
@@ -882,6 +887,7 @@ class CnOnPnService(
             classificationFromPNToCN(classificationFromPN = pnEntity.tender.classification)
         val lots: List<CNEntity.Tender.Lot> = lotsFromPNToCN(lotsFromPN = pnEntity.tender.lots)
         val items: List<CNEntity.Tender.Item> = itemsFromPNToCN(itemsFromPN = pnEntity.tender.items)
+
         /** End BR-3.8.3 */
 
         val criteria = criteriaService.createCriteria(request.tender)
@@ -904,6 +910,7 @@ class CnOnPnService(
                 endDate = it.endDate
             )
         }
+
         /** End BR-3.8.4 */
 
         //BR-3.8.5 -> BR-3.6.5

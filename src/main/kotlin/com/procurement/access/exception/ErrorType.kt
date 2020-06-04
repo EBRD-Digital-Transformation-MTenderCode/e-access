@@ -97,5 +97,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     EMPTY_LIST("10.82", "Collection is empty."),
     NOT_UNIQUE_IDS("10.83", "Elements in collection is not unique by id."),
     INVALID_AWARD_CRITERIA("10.84", "Invalid award criteria."),
-    INVALID_COEFFICIENT("10.85", "Invalid coefficient.");
+    INVALID_COEFFICIENT("10.85", "Invalid coefficient."),
+    INVALID_STAGE("10.78", "Invalid Stage.");
 }

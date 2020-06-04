@@ -2,7 +2,13 @@ package com.procurement.access.service
 
 import com.datastax.driver.core.utils.UUIDs
 import com.procurement.access.application.model.Mode
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.OrganizationReference
+import com.procurement.access.utils.localNowUTC
 import com.procurement.access.utils.milliNowUTC
 import org.springframework.stereotype.Service
 import java.util.*
@@ -50,5 +56,15 @@ class GenerationService {
 
     fun generateOrganizationId(organizationReference: OrganizationReference): String {
         return organizationReference.identifier.scheme + "-" + organizationReference.identifier.id
+    }
+
+    fun generateOcid(cpid: String, stage: String): Ocid {
+        val cpidParsed = Cpid.tryCreateOrNull(cpid)
+            ?: throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
+
+        val stageParsed = Stage.orNull(stage)
+            ?: throw ErrorException(ErrorType.INVALID_STAGE)
+
+        return Ocid.generate(cpid = cpidParsed, stage = stageParsed, timestamp = localNowUTC())
     }
 }

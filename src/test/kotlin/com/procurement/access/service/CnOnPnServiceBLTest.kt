@@ -11,6 +11,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
@@ -76,6 +77,11 @@ class CnOnPnServiceBLTest {
                 .thenReturn(firstItemIdExcepted)
                 .thenReturn(secondItemIdExcepted)
 
+            val context = createContext()
+            val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+            whenever(generationService.generateOcid(cpid = context.cpid, stage = context.stage))
+                .thenReturn(ocid)
+
             val pnWithoutItems = (loadJson(PATH_PN_JSON).toNode() as ObjectNode).apply {
                 getObject("tender") {
                     putArray("lots")
@@ -91,7 +97,6 @@ class CnOnPnServiceBLTest {
 
             val data: CnOnPnRequest =
                 loadJson("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json").toObject()
-            val context = createContext()
 
             val response: CnOnPnResponse = cnOnPnService.createCnOnPn(context = context, data = data)
 
@@ -105,6 +110,8 @@ class CnOnPnServiceBLTest {
 
             assertEquals(firstItemIdExcepted, response.tender.criteria!![2].relatedItem)
             assertEquals(secondItemIdExcepted, response.tender.criteria!![3].relatedItem)
+
+            assertEquals(ocid.toString(), response.ocid)
 
             verify(generationService, times(2))
                 .generatePermanentLotId()
