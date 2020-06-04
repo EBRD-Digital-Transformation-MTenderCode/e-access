@@ -10,6 +10,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
+import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -76,6 +77,7 @@ class CnOnPnServiceTest {
     private lateinit var generationService: GenerationService
     private lateinit var tenderProcessDao: TenderProcessDao
     private lateinit var rulesService: RulesService
+    private val criteriaService = CriteriaServiceImpl()
 
     private lateinit var service: CnOnPnService
 
@@ -85,7 +87,7 @@ class CnOnPnServiceTest {
         tenderProcessDao = mock()
         rulesService = mock()
 
-        service = CnOnPnService(generationService, tenderProcessDao, rulesService)
+        service = CnOnPnService(generationService, tenderProcessDao, rulesService, criteriaService)
 
         whenever(generationService.generatePermanentTenderId())
             .thenReturn(TENDER_ID)
@@ -99,7 +101,7 @@ class CnOnPnServiceTest {
         @Test
         fun tenderNotFound() {
             val data: CnOnPnRequest =
-                loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json")
+                loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn_check.json")
                     .toObject()
 
             whenever(
@@ -119,7 +121,7 @@ class CnOnPnServiceTest {
         }
 
         private val PATH_REQUEST_OP_JSON =
-            "json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json"
+            "json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn_check.json"
 
         @Nested
         inner class PNWithItems {
