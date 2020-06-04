@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
-import com.procurement.dossier.infrastructure.bind.criteria.RequirementValueDeserializer
-import com.procurement.dossier.infrastructure.bind.criteria.RequirementValueSerializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementValueDeserializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementValueSerializer
 
 class VerifyRequirementResponseRequest {
 

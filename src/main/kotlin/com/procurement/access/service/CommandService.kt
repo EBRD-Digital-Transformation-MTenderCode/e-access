@@ -74,6 +74,7 @@ import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.bpe.startDate
 import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.dto.bpe.token
+import com.procurement.access.service.validation.JsonValidationService
 import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
@@ -99,7 +100,8 @@ class CommandService(
     private val stageService: StageService,
     private val validationService: ValidationService,
     private val extendTenderService: ExtendTenderService,
-    private val ocdsProperties: OCDSProperties
+    private val ocdsProperties: OCDSProperties,
+    private val medeiaValidationService: JsonValidationService
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(CommandService::class.java)
@@ -530,7 +532,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
+                        val request: CnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
                         val result: CheckedCnOnPn = cnOnPnService.checkCnOnPn(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")
