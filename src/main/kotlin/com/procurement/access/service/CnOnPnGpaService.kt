@@ -226,8 +226,10 @@ class CnOnPnGpaService(
                 jsonData = toJson(cnEntity)
             )
         )
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+        val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
-        return getResponse(cnEntity)
+        return getResponse(responseCnEntity)
     }
 
 
@@ -1127,6 +1129,7 @@ class CnOnPnGpaService(
 
     private fun getResponse(cn: CNEntity): CreateCnOnPnGpaResponse {
         return CreateCnOnPnGpaResponse(
+            ocid = cn.ocid,
             planning = cn.planning.let { planning ->
                 CreateCnOnPnGpaResponse.Planning(
                     rationale = planning.rationale,

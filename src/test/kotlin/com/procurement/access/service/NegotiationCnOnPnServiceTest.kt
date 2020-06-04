@@ -2,12 +2,14 @@ package com.procurement.access.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -863,6 +865,10 @@ class NegotiationCnOnPnServiceTest {
                 )
             )
                 .thenReturn(tenderProcessEntity)
+
+            val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+            whenever(generationService.generateOcid(cpid = any(), stage = any()))
+                .thenReturn(ocid)
 
             val actualJson = service.createNegotiationCnOnPn(context = context, data = data).toJson()
 

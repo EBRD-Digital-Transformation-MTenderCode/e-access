@@ -45,7 +45,8 @@ import java.time.LocalDateTime
 
 data class CreateCnOnPnGpaResponse(
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning,
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
+    @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String
 ) {
 
     data class Planning(
