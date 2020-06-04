@@ -11,6 +11,7 @@ import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.persone.PersonId
@@ -1426,6 +1427,10 @@ class CnOnPnServiceTest {
                 requestNode.getObject("tender")
                     .remove("procuringEntity")
 
+                val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+                whenever(generationService.generateOcid(cpid = any(), stage = any()))
+                    .thenReturn(ocid)
+
                 val context: CreateCnOnPnContext = createContext()
                 val response: CnOnPnResponse = service.createCnOnPn(context = context, data = requestNode.toObject())
 
@@ -1447,7 +1452,9 @@ class CnOnPnServiceTest {
                     CnOnPnRequest.Tender.ProcuringEntity::class.java,
                     jsonProcuringEntity
                 )
-
+                val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+                whenever(generationService.generateOcid(cpid = any(), stage = any()))
+                    .thenReturn(ocid)
                 val context: CreateCnOnPnContext = createContext()
                 val response: CnOnPnResponse = service.createCnOnPn(context = context, data = requestNode.toObject())
 
@@ -1573,6 +1580,10 @@ class CnOnPnServiceTest {
                 )
             )
                 .thenReturn(tenderProcessEntity)
+
+            val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+            whenever(generationService.generateOcid(cpid = any(), stage = any()))
+                .thenReturn(ocid)
 
             val actualJson = service.createCnOnPn(context = context, data = data).toJson()
 
