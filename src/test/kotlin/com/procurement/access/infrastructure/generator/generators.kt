@@ -27,6 +27,7 @@ object CommandMessageGenerator {
 
 object ContextGenerator {
     const val CPID = "cpid-1"
+    const val OCID = "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
     val TOKEN: UUID = UUID.fromString("bd56490f-57ca-4d1a-9210-250cb9b4eed3")
     const val OWNER = "owner-1"
     const val COUNTRY = "MD"
