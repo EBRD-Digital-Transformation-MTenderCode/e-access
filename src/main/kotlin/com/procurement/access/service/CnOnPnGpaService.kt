@@ -4,9 +4,13 @@ import com.procurement.access.application.model.context.CheckCnOnPnGpaContext
 import com.procurement.access.application.model.context.CreateCnOnPnGpaContext
 import com.procurement.access.application.service.CheckedCnOnPnGpa
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -254,14 +258,21 @@ class CnOnPnGpaService(
             )
         /** End BR-3.8.3 */
 
-        val rawCriteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
-        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
+        val relatedTemporalWithPermanentRequirementId: Map<String, String> = generatePermanentRequirementIds(request.tender.criteria)
+        val rawCriteria = criteriaFromRequest(
+            criteriaFromRequest = request.tender.criteria,
+            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
+        )
+        val conversions = conversionsFromRequest(
+            conversionsFromRequest = request.tender.conversions,
+            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
+        )
         if ((rawCriteria == null) && (conversions != null))
             throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
 
         val criteria = rawCriteria?.let {
-            convertRequestCriteria(
-                tender = request.tender,
+            replaceTemporalLotAntItemIds(
+                criteria = it,
                 relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
                 relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
             )
@@ -302,6 +313,21 @@ class CnOnPnGpaService(
         )
     }
 
+    private fun generatePermanentRequirementIds(criteria: List<CreateCnOnPnGpaRequest.Tender.Criteria>?): Map<String, String> =
+        criteria
+            ?.asSequence()
+            ?.flatMap { criterion ->
+                criterion.requirementGroups.asSequence()
+            }
+            ?.flatMap { group ->
+                group.requirements.asSequence()
+            }
+            ?.map { requirement ->
+                requirement.id to generationService.requirementId()
+            }
+            ?.toMap()
+            ?: emptyMap()
+
     private fun createTenderBasedPNWithItems(
         request: CreateCnOnPnGpaRequest,
         pnEntity: PNEntity
@@ -313,8 +339,15 @@ class CnOnPnGpaService(
         val items: List<CNEntity.Tender.Item> = itemsFromPNToCN(itemsFromPN = pnEntity.tender.items)
         /** End BR-3.8.3 */
 
-        val criteria = criteriaFromRequest(criteriaFromRequest = request.tender.criteria)
-        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
+        val relatedTemporalWithPermanentRequirementId: Map<String, String> = generatePermanentRequirementIds(request.tender.criteria)
+        val criteria = criteriaFromRequest(
+            criteriaFromRequest = request.tender.criteria,
+            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
+        )
+        val conversions = conversionsFromRequest(
+            conversionsFromRequest = request.tender.conversions,
+            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
+        )
         if ((criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
 
         /** Begin BR-3.8.4 */
@@ -502,19 +535,20 @@ class CnOnPnGpaService(
         }
     }
 
-    private fun convertRequestCriteria(
-        tender: CreateCnOnPnGpaRequest.Tender,
+    private fun replaceTemporalLotAntItemIds(
+        criteria: List<CNEntity.Tender.Criteria>,
         relatedTemporalWithPermanentLotId: Map<String, String>,
         relatedTemporalWithPermanentItemId: Map<String, String>
     ): List<CNEntity.Tender.Criteria> {
-        return tender.criteria!!.map { criteria ->
+        return criteria.map { criterion ->
             CNEntity.Tender.Criteria(
-                id = criteria.id,
-                title = criteria.title,
-                description = criteria.description,
-                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
+                id = criterion.id,
+                title = criterion.title,
+                description = criterion.description,
+                source = criterion.source,
+                requirementGroups = criterion.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = requirementGroup.id,
+                        id = generationService.requirementGroupId(),
                         description = requirementGroup.description,
                         requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
@@ -533,11 +567,11 @@ class CnOnPnGpaService(
                         }
                     )
                 },
-                relatesTo = criteria.relatesTo,
-                relatedItem = when (criteria.relatesTo) {
-                    CriteriaRelatesToEnum.LOT  -> relatedTemporalWithPermanentLotId.getValue(criteria.relatedItem!!)
-                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criteria.relatedItem!!)
-                    else                       -> criteria.relatedItem
+                relatesTo = criterion.relatesTo,
+                relatedItem = when (criterion.relatesTo) {
+                    CriteriaRelatesToEnum.LOT  -> relatedTemporalWithPermanentLotId.getValue(criterion.relatedItem!!)
+                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criterion.relatedItem!!)
+                    else                       -> criterion.relatedItem
                 }
             )
         }
@@ -681,20 +715,22 @@ class CnOnPnGpaService(
     }
 
     private fun criteriaFromRequest(
-        criteriaFromRequest: List<CreateCnOnPnGpaRequest.Tender.Criteria>?
+        criteriaFromRequest: List<CreateCnOnPnGpaRequest.Tender.Criteria>?,
+        relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Criteria>? {
-        return criteriaFromRequest?.map { criteria ->
+        return criteriaFromRequest?.map { criterion ->
             CNEntity.Tender.Criteria(
-                id = criteria.id,
-                title = criteria.title,
-                description = criteria.description,
-                requirementGroups = criteria.requirementGroups.map { requirementGroup ->
+                id = generationService.criterionId(),
+                title = criterion.title,
+                description = criterion.description,
+                source = if(criterion.relatesTo == null || criterion.relatesTo != CriteriaRelatesToEnum.TENDERER) CriteriaSource.TENDERER else null,
+                requirementGroups = criterion.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
-                        id = requirementGroup.id,
+                        id = generationService.requirementGroupId(),
                         description = requirementGroup.description,
                         requirements = requirementGroup.requirements.map { requirement ->
                             Requirement(
-                                id = requirement.id,
+                                id = relatedTemporalWithPermanentRequirementId.getValue(requirement.id),
                                 description = requirement.description,
                                 title = requirement.title,
                                 period = requirement.period?.let { period ->
@@ -709,8 +745,8 @@ class CnOnPnGpaService(
                         }
                     )
                 },
-                relatesTo = criteria.relatesTo,
-                relatedItem = criteria.relatedItem
+                relatesTo = criterion.relatesTo,
+                relatedItem = criterion.relatedItem
             )
         }
     }
@@ -846,6 +882,11 @@ class CnOnPnGpaService(
         val statusDetails: TenderStatusDetails = TenderStatusDetails.SUBMISSION
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
+        val awardCriteriaDetails = if (request.tender.awardCriteria == AwardCriteria.PRICE_ONLY)
+            AwardCriteriaDetails.AUTOMATED
+        else
+            request.tender.awardCriteriaDetails
+
         return CNEntity.Tender(
             id = generationService.generatePermanentTenderId(),
             /** Begin BR-3.8.8 -> BR-3.6.2*/
@@ -911,7 +952,7 @@ class CnOnPnGpaService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria,
-            awardCriteriaDetails = request.tender.awardCriteriaDetails,
+            awardCriteriaDetails = awardCriteriaDetails,
             tenderPeriod = null,
             secondStage = request.tender.secondStage
                 ?.let { secondStage ->
@@ -1051,18 +1092,24 @@ class CnOnPnGpaService(
     }
 
     private fun conversionsFromRequest(
-        conversionsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Conversion>?
+        conversionsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Conversion>?,
+        relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Conversion>? {
         return conversionsFromRequest?.map { conversion ->
+            val relatedItem = if(conversion.relatesTo == ConversionsRelatesTo.REQUIREMENT)
+                relatedTemporalWithPermanentRequirementId.getValue(conversion.relatedItem)
+            else
+                conversion.relatedItem
+
             CNEntity.Tender.Conversion(
-                id = conversion.id,
-                relatedItem = conversion.relatedItem,
+                id = generationService.conversionId(),
+                relatedItem =  relatedItem,
                 relatesTo = conversion.relatesTo,
                 rationale = conversion.rationale,
                 description = conversion.description,
                 coefficients = conversion.coefficients.map { coefficient ->
                     CNEntity.Tender.Conversion.Coefficient(
-                        id = coefficient.id,
+                        id = generationService.coefficientId(),
                         value = coefficient.value,
                         coefficient = coefficient.coefficient
                     )
