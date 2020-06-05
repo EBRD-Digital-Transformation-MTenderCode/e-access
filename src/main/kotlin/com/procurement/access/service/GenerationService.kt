@@ -67,4 +67,15 @@ class GenerationService {
 
         return Ocid.generate(cpid = cpidParsed, stage = stageParsed, timestamp = localNowUTC())
     }
+
+    fun criterionId(): String = UUID.randomUUID().toString()
+
+    fun requirementGroupId(): String = UUID.randomUUID().toString()
+
+    fun requirementId(): String = UUID.randomUUID().toString()
+
+    fun conversionId(): String = UUID.randomUUID().toString()
+
+    fun coefficientId(): String = UUID.randomUUID().toString()
+
 }
