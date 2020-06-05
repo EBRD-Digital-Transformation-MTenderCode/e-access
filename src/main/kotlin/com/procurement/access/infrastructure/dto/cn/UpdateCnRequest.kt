@@ -8,8 +8,6 @@ import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.model.enums.QualificationSystemMethod
-import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
@@ -62,10 +60,7 @@ data class UpdateCnRequest(
 
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria?
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
     ) {
 
         data class TenderPeriod(
@@ -254,11 +249,6 @@ data class UpdateCnRequest(
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
-        )
-
-        data class OtherCriteria(
-            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
-            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
         )
     }
 }

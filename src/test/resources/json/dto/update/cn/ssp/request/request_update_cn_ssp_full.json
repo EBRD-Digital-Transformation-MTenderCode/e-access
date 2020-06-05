@@ -127,12 +127,6 @@
           "tender.lots[0].id"
         ]
       }
-    ],
-    "otherCriteria": {
-      "reductionCriteria": "scoring",
-      "qualificationSystemMethods": [
-        "automated"
-      ]
-    }
+    ]
   }
 }
