@@ -1996,12 +1996,13 @@ class CnOnPnService(
                             optionToCombine = lotGroup.optionToCombine
                         )
                     },
-                    criteria = tender.criteria?.map { criteria ->
+                    criteria = tender.criteria?.map { criterion ->
                         CnOnPnResponse.Tender.Criteria(
-                            id = criteria.id,
-                            title = criteria.title,
-                            description = criteria.description,
-                            requirementGroups = criteria.requirementGroups.map {
+                            id = criterion.id,
+                            title = criterion.title,
+                            description = criterion.description,
+                            source = criterion.source,
+                            requirementGroups = criterion.requirementGroups.map {
                                 CnOnPnResponse.Tender.Criteria.RequirementGroup(
                                     id = it.id,
                                     description = it.description,
@@ -2022,8 +2023,8 @@ class CnOnPnService(
                                     }
                                 )
                             },
-                            relatesTo = criteria.relatesTo,
-                            relatedItem = criteria.relatedItem
+                            relatesTo = criterion.relatesTo,
+                            relatedItem = criterion.relatedItem
                         )
                     },
                     conversions = tender.conversions?.map { conversion ->
