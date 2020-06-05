@@ -1,10 +1,31 @@
 {
+  "planning": {
+    "rationale": "planning.rationale",
+    "budget": {
+      "description": "planning.budget.description"
+    }
+  },
   "tender": {
     "title": "tender.title",
     "description": "tender.description",
-    "tenderPeriod": {
-      "startDate": "2019-04-01T10:00:00Z",
-      "endDate": "2019-04-29T10:00:00Z"
+    "procurementMethodRationale": "tender.procurementMethodRationale",
+    "procurementMethodAdditionalInfo": "tender.procurementMethodAdditionalInfo",
+    "procurementMethodModalities": ["electronicAuction"],
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "auction-1",
+          "relatedLot": "lot-1",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 150.00,
+                "currency": "MDL"
+              }
+            }
+          ]
+        }
+      ]
     },
     "procuringEntity": {
       "id": "tender.procuringEntity.id",
@@ -14,7 +35,8 @@
           "name": "tender.procuringEntity.persones[0].name",
           "identifier": {
             "scheme": "tender.procuringEntity.persones[0].identifier.scheme",
-            "id": "tender.procuringEntity.persones[0].identifier.id"
+            "id": "tender.procuringEntity.persones[0].identifier.id",
+            "uri": ""
           },
           "businessFunctions": [
             {
@@ -28,7 +50,8 @@
                 {
                   "id": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].id",
                   "documentType": "regulatoryDocument",
-                  "title": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].title"
+                  "title": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].title",
+                  "description": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].description"
                 }
               ]
             }
@@ -39,6 +62,7 @@
     "lots": [
       {
         "id": "tender.lots[0].id",
+        "internalId": "",
         "title": "tender.lots[0].title",
         "description": "tender.lots[0].description",
         "value": {
@@ -52,6 +76,7 @@
         "placeOfPerformance": {
           "address": {
             "streetAddress": "tender.lots[0].placeOfPerformance.address",
+            "postalCode": "tender.lots[0].placeOfPerformance.postalCode",
             "addressDetails": {
               "country": {
                 "scheme": "tender.lots[0].placeOfPerformance.addressDetails.country.scheme",
@@ -68,10 +93,12 @@
               "locality": {
                 "scheme": "tender.lots[0].placeOfPerformance.addressDetails.locality.scheme",
                 "id": "tender.lots[0].placeOfPerformance.addressDetails.locality.id",
-                "description": "tender.lots[0].placeOfPerformance.addressDetails.locality.description"
+                "description": "tender.lots[0].placeOfPerformance.addressDetails.locality.description",
+                "uri": "tender.lots[0].placeOfPerformance.addressDetails.locality.uri"
               }
             }
-          }
+          },
+          "description": "tender.lots[0].description"
         }
       }
     ],
@@ -85,8 +112,23 @@
     "documents": [
       {
         "documentType": "evaluationCriteria",
-        "id": "tender.documents[0].documentType"
+        "id": "tender.documents[0].documentType",
+        "title": "tender.documents[0].title",
+        "description": "tender.documents[0].description",
+        "relatedLots": [
+          "tender.lots[0].id"
+        ]
       }
-    ]
+    ],
+    "secondStage": {
+      "minimumCandidates": 1,
+      "maximumCandidates": 10
+    },
+    "otherCriteria": {
+      "reductionCriteria": "scoring",
+      "qualificationSystemMethods": [
+        "automated"
+      ]
+    }
   }
 }

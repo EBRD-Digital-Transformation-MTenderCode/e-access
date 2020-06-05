@@ -8,6 +8,8 @@ import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
@@ -15,7 +17,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
-data class UpdateCnRequest(
+data class UpdateSelectiveCnRequest(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning?,
 
@@ -44,11 +46,6 @@ data class UpdateCnRequest(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodAdditionalInfo") @param:JsonProperty("procurementMethodAdditionalInfo") val procurementMethodAdditionalInfo: String?,
 
-        @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("enquiryPeriod") @param:JsonProperty("enquiryPeriod") val enquiryPeriod: EnquiryPeriod?,
-
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
 
@@ -60,28 +57,13 @@ data class UpdateCnRequest(
 
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage?,
+
+        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria
     ) {
-
-        data class TenderPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-        )
-
-        data class EnquiryPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
-            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-        )
 
         data class ElectronicAuctions(
             @field:JsonProperty("details") @param:JsonProperty("details") val details: List<Detail>
@@ -249,6 +231,19 @@ data class UpdateCnRequest(
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
+        )
+
+        data class SecondStage(
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("minimumCandidates") @param:JsonProperty("minimumCandidates") val minimumCandidates: Int?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("maximumCandidates") @param:JsonProperty("maximumCandidates") val maximumCandidates: Int?
+        )
+
+        data class OtherCriteria(
+            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
+            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
         )
     }
 }

@@ -2,17 +2,6 @@
   "tender": {
     "title": "tender.title",
     "description": "tender.description",
-    "tenderPeriod": {
-      "startDate": "2019-04-01T10:00:00Z",
-      "endDate": "2019-04-29T10:00:00Z"
-    },
-    "enquiryPeriod": {
-      "endDate": "2019-03-16T12:40:00Z",
-      "startDate": "2019-03-15T11:54:35Z"
-    },
-    "procuringEntity": {
-      "id": "tender.procuringEntity.id"
-    },
     "lots": [
       {
         "id": "tender.lots[0].id",
@@ -64,6 +53,12 @@
         "documentType": "evaluationCriteria",
         "id": "tender.documents[0].documentType"
       }
-    ]
+    ],
+    "otherCriteria": {
+      "reductionCriteria": "scoring",
+      "qualificationSystemMethods": [
+        "automated"
+      ]
+    }
   }
 }
