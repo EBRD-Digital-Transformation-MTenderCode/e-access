@@ -21,6 +21,7 @@ import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
+import com.procurement.access.infrastructure.dto.cn.item.ItemReferenceRequest
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
@@ -35,7 +36,7 @@ data class SelectiveCnOnPnRequest(
     @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item> = emptyList()
+    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<ItemReferenceRequest> = emptyList()
 ) {
 
     data class PreQualification(
@@ -47,11 +48,6 @@ data class SelectiveCnOnPnRequest(
             @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
         )
     }
-
-    data class Item(
-        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-        @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
-    )
 
     data class Tender(
         @JsonInclude(JsonInclude.Include.NON_NULL)
