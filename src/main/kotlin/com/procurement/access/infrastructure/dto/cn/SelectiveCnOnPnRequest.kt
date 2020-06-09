@@ -37,6 +37,8 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class SelectiveCnOnPnRequest(
+    @field:JsonProperty("preQualification") @param:JsonProperty("preQualification") val preQualification: PreQualification,
+
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -45,6 +47,16 @@ data class SelectiveCnOnPnRequest(
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item> = emptyList()
 ) {
+
+    data class PreQualification(
+        @field:JsonProperty("period") @param:JsonProperty("period") val period: Period
+    ) {
+        data class Period(
+            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+            @JsonSerialize(using = JsonDateTimeSerializer::class)
+            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
+        )
+    }
 
     data class Item(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,

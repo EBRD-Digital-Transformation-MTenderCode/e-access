@@ -33,7 +33,6 @@ import com.procurement.access.exception.ErrorType.INVALID_PROCURING_ENTITY
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
@@ -57,7 +56,7 @@ class CnOnPnGpaService(
     private val rulesService: RulesService
 ) {
 
-    fun checkCnOnPnGpa(context: CheckCnOnPnGpaContext, data: CheckCnOnPnGpaRequest): CheckedCnOnPnGpa {
+    fun checkCnOnPnGpa(context: CheckCnOnPnGpaContext, data: SelectiveCnOnPnRequest): CheckedCnOnPnGpa {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -1674,7 +1673,7 @@ class CnOnPnGpaService(
      * в массиве Documents из запроса.
      */
     private fun checkDocuments(
-        documentsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Document>,
+        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
         val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSetBy { it.id }
@@ -1699,7 +1698,7 @@ class CnOnPnGpaService(
      * a. IF [there is at least one value minimumCandidates or maximumCandidates in Request] then: validation is successful;
      * b. } else {  eAccess throws Exception: "At least one value should be: minimumCandidates or maximumCandidates";
      */
-    private fun CheckCnOnPnGpaRequest.Tender.SecondStage.validateCompleteness() {
+    private fun SelectiveCnOnPnRequest.Tender.SecondStage.validateCompleteness() {
         if (this.minimumCandidates == null && this.maximumCandidates == null)
             throw ErrorException(
                 error = ErrorType.INVALID_SECOND_STAGE,
@@ -1762,7 +1761,7 @@ class CnOnPnGpaService(
      *
      */
     private fun checkProcuringEntityIdentifier(
-        procuringEntityRequest: CheckCnOnPnGpaRequest.Tender.ProcuringEntity,
+        procuringEntityRequest: SelectiveCnOnPnRequest.Tender.ProcuringEntity,
         procuringEntityDB: PNEntity.Tender.ProcuringEntity
     ) {
         if (procuringEntityDB.id != procuringEntityRequest.id) throw ErrorException(
@@ -1794,7 +1793,7 @@ class CnOnPnGpaService(
      * else {  eAccess throws Exception: "Invalid business functions type";
      */
     private fun checkProcuringEntityPersones(
-        procuringEntityRequest: CheckCnOnPnGpaRequest.Tender.ProcuringEntity
+        procuringEntityRequest: SelectiveCnOnPnRequest.Tender.ProcuringEntity
     ) {
 
         procuringEntityRequest.persones
@@ -1829,7 +1828,7 @@ class CnOnPnGpaService(
      *
      */
     private fun checkPersonesBusinessFunctions(
-        procuringEntityRequest: CheckCnOnPnGpaRequest.Tender.ProcuringEntity
+        procuringEntityRequest: SelectiveCnOnPnRequest.Tender.ProcuringEntity
     ) {
 
         procuringEntityRequest.persones
@@ -1874,7 +1873,7 @@ class CnOnPnGpaService(
      *
      */
     private fun checkBusinessFunctionPeriod(
-        procuringEntityRequest: CheckCnOnPnGpaRequest.Tender.ProcuringEntity,
+        procuringEntityRequest: SelectiveCnOnPnRequest.Tender.ProcuringEntity,
         context: CheckCnOnPnGpaContext
     ) {
         fun dateError(): Nothing = throw ErrorException(
@@ -1909,7 +1908,7 @@ class CnOnPnGpaService(
      * else {  eAccess throws Exception: "Invalid document type"; }
      */
     private fun checkBusinessFunctionDocuments(
-        procuringEntityRequest: CheckCnOnPnGpaRequest.Tender.ProcuringEntity
+        procuringEntityRequest: SelectiveCnOnPnRequest.Tender.ProcuringEntity
     ) {
 
         procuringEntityRequest.persones
@@ -1939,7 +1938,7 @@ class CnOnPnGpaService(
     }
 
     private fun checkTenderDocumentsNotEmpty(
-        tender: CheckCnOnPnGpaRequest.Tender
+        tender: SelectiveCnOnPnRequest.Tender
     ) {
         if (tender.documents.isEmpty()) throw ErrorException(
             error = ErrorType.EMPTY_DOCS,
@@ -1947,7 +1946,7 @@ class CnOnPnGpaService(
         )
     }
 
-    private fun checkOtherCriteria(otherCriteria: CheckCnOnPnGpaRequest.Tender.OtherCriteria) {
+    private fun checkOtherCriteria(otherCriteria: SelectiveCnOnPnRequest.Tender.OtherCriteria) {
         if (otherCriteria.qualificationSystemMethods.isEmpty())
             throw ErrorException(ErrorType.IS_EMPTY, "Values of qualificationSystemMethods should be added")
 
@@ -1985,7 +1984,7 @@ class CnOnPnGpaService(
      * from Request == "Currency" (budget.amount.currency) from saved PNEntity.
      */
     private fun checkCurrencyInLotsFromRequest(
-        lotsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Lot>,
+        lotsFromRequest: List<SelectiveCnOnPnRequest.Tender.Lot>,
         budgetFromPN: PNEntity.Planning.Budget
     ) {
         lotsFromRequest.forEach { lot ->
@@ -2026,7 +2025,7 @@ class CnOnPnGpaService(
      * всех добавленных объектов секции Lots запроса.
      */
     private fun checkContractPeriodInTender(
-        lotsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Lot>,
+        lotsFromRequest: List<SelectiveCnOnPnRequest.Tender.Lot>,
         budgetBreakdownsFromPN: List<PNEntity.Planning.Budget.BudgetBreakdown>
     ) {
         val tenderContractPeriod = calculationTenderContractPeriod(lotsFromRequest)
@@ -2060,7 +2059,7 @@ class CnOnPnGpaService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
         lotsIdsFromRequest: Set<String>,
-        documentsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Document>
+        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -2078,7 +2077,7 @@ class CnOnPnGpaService(
      *      from Request, validation is successful;
      *      else { eAccess throws Exception: "Invalid date-time values in lot contract period";
      */
-    private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest: CheckCnOnPnGpaRequest) {
+    private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest: SelectiveCnOnPnRequest) {
         val preQualificationPeriodEndDate = tenderFromRequest.preQualification.period.endDate
         tenderFromRequest.tender.lots.forEach { lot ->
             checkRangeContractPeriodInLotFromRequest(lot)
@@ -2090,7 +2089,7 @@ class CnOnPnGpaService(
         }
     }
 
-    private fun checkRangeContractPeriodInLotFromRequest(lot: CheckCnOnPnGpaRequest.Tender.Lot) {
+    private fun checkRangeContractPeriodInLotFromRequest(lot: SelectiveCnOnPnRequest.Tender.Lot) {
         if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate)
             throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
     }
@@ -2101,7 +2100,7 @@ class CnOnPnGpaService(
      * VR-3.6.11 "Quantity" (item)
      * eAccess проверяет, что значению "Quantity" (tender/items/quantity) каждого объекта секции Items больше нуля.
      */
-    private fun checkQuantityInItems(itemsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Item>) {
+    private fun checkQuantityInItems(itemsFromRequest: List<SelectiveCnOnPnRequest.Tender.Item>) {
         itemsFromRequest.forEach { item ->
             if (item.quantity <= BigDecimal.ZERO)
                 throw ErrorException(ErrorType.INVALID_ITEMS_QUANTITY)
@@ -2124,7 +2123,7 @@ class CnOnPnGpaService(
      */
     private fun checkLotIdsAsRelatedLotInItems(
         lotsIdsFromRequest: Set<String>,
-        itemsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Item>
+        itemsFromRequest: List<SelectiveCnOnPnRequest.Tender.Item>
     ) {
         if (lotsIdsFromRequest.isEmpty())
             throw ErrorException(ErrorType.EMPTY_LOTS)
@@ -2150,7 +2149,7 @@ class CnOnPnGpaService(
      */
     private fun checkRelatedLotInItemsFromRequest(
         lotsIdsFromRequest: Set<String>,
-        itemsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Item>
+        itemsFromRequest: List<SelectiveCnOnPnRequest.Tender.Item>
     ) {
         itemsFromRequest.forEach { item ->
             val relatedLot = item.relatedLot
@@ -2167,7 +2166,7 @@ class CnOnPnGpaService(
      * IF every lot.ID from Request is included once in list from Request, validation is successful;
      * ELSE eAccess throws Exception;
      */
-    private fun checkLotIdFromRequest(lotsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Lot>) {
+    private fun checkLotIdFromRequest(lotsFromRequest: List<SelectiveCnOnPnRequest.Tender.Lot>) {
         val idsAreUniques = lotsFromRequest.uniqueBy { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(LOT_ID_DUPLICATED)
@@ -2181,7 +2180,7 @@ class CnOnPnGpaService(
      * IF every item.ID from Request is included once in list from Request, validation is successful;
      * ELSE eAccess throws Exception;
      */
-    private fun checkItemIdFromRequest(itemsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Item>) {
+    private fun checkItemIdFromRequest(itemsFromRequest: List<SelectiveCnOnPnRequest.Tender.Item>) {
         val idsAreUniques = itemsFromRequest.uniqueBy { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ITEM_ID_IS_DUPLICATED)
@@ -2217,7 +2216,7 @@ class CnOnPnGpaService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
         lotsIdsFromPN: Set<String>,
-        documentsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Document>
+        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -2235,7 +2234,7 @@ class CnOnPnGpaService(
      */
     private fun checkAuctionsAreRequired(
         context: CheckCnOnPnGpaContext,
-        data: CheckCnOnPnGpaRequest,
+        data: SelectiveCnOnPnRequest,
         mainProcurementCategory: MainProcurementCategory
     ) {
         val isAuctionRequired = rulesService.isAuctionRequired(
@@ -2278,7 +2277,7 @@ class CnOnPnGpaService(
      *      of all lot objects from Request.
      *      eAccess sets "Currency" (tender.value.currency) == "Currency" (tender.lot.value.currency) from Request.
      */
-    private fun calculateTenderValueFromLots(lotsFromRequest: List<CheckCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.Value {
+    private fun calculateTenderValueFromLots(lotsFromRequest: List<SelectiveCnOnPnRequest.Tender.Lot>): CNEntity.Tender.Value {
         val currency = lotsFromRequest.elementAt(0).value.currency
         val totalAmount = lotsFromRequest.fold(BigDecimal.ZERO) { acc, lot ->
             acc.plus(lot.value.amount)
@@ -2302,7 +2301,7 @@ class CnOnPnGpaService(
         return CNEntity.Tender.Value(totalAmount, currency)
     }
 
-    private fun calculationTenderContractPeriod(lots: List<CheckCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
+    private fun calculationTenderContractPeriod(lots: List<SelectiveCnOnPnRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
         val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate

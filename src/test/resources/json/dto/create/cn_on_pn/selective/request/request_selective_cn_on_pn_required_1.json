@@ -1,4 +1,9 @@
 {
+  "preQualification": {
+    "period": {
+      "endDate": "2019-03-16T12:40:00Z"
+    }
+  },
   "tender": {
     "secondStage": {
     },
