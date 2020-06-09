@@ -1,7 +1,7 @@
 package com.procurement.access.application.service.criteria
 
 import com.procurement.access.application.model.criteria.CreatedCriteria
-import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.service.command.buildCriteria
 import com.procurement.access.infrastructure.service.command.checkActualItemRelation
 import com.procurement.access.infrastructure.service.command.checkArrays
@@ -24,13 +24,13 @@ import com.procurement.access.infrastructure.service.command.checkMinMaxValue
 import com.procurement.access.infrastructure.service.command.checkRequirements
 
 interface CriteriaService {
-    fun check(data: CnOnPnRequest)
-    fun create(tender: CnOnPnRequest.Tender): CreatedCriteria
+    fun check(data: OpenCnOnPnRequest)
+    fun create(tender: OpenCnOnPnRequest.Tender): CreatedCriteria
 }
 
 class CriteriaServiceImpl : CriteriaService {
 
-    override fun check(data: CnOnPnRequest) {
+    override fun check(data: OpenCnOnPnRequest) {
 
         data.checkConversionWithoutCriteria()
             .checkAwardCriteriaDetailsAreRequired()  // FReq-1.1.1.22
@@ -55,7 +55,7 @@ class CriteriaServiceImpl : CriteriaService {
             .checkArrays()                     // FReq-1.1.1.16
     }
 
-    override fun create(tender: CnOnPnRequest.Tender): CreatedCriteria =
+    override fun create(tender: OpenCnOnPnRequest.Tender): CreatedCriteria =
         buildCriteria(
             awardCriteria = tender.awardCriteria!!,
             awardCriteriaDetails = tender.awardCriteriaDetails,

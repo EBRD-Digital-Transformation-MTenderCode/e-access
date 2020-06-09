@@ -18,8 +18,8 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
@@ -101,7 +101,7 @@ class OpenCnOnPnServiceTest {
         @DisplayName("Check error when tender by cpid and prev stage not found.")
         @Test
         fun tenderNotFound() {
-            val data: CnOnPnRequest =
+            val data: OpenCnOnPnRequest =
                 loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn_check.json")
                     .toObject()
 
@@ -878,7 +878,7 @@ class OpenCnOnPnServiceTest {
         @Nested
         inner class ProcuringEntity {
 
-            private val CHECK_REQUEST_JSON = "json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json"
+            private val CHECK_REQUEST_JSON = "json/dto/create/cn_on_pn/open/request/request_open_cn_on_pn_full.json"
             private lateinit var requestNode: ObjectNode
             private lateinit var pnEntity: ObjectNode
 
@@ -1210,7 +1210,7 @@ class OpenCnOnPnServiceTest {
         @DisplayName("Check error when tender by cpid and prev stage not found.")
         @Test
         fun tenderNotFound() {
-            val data: CnOnPnRequest =
+            val data: OpenCnOnPnRequest =
                 loadJson("json/service/create/cn_on_pn/request/op/request_cn_with_auctions_on_pn.json")
                     .toObject()
 
@@ -1399,7 +1399,7 @@ class OpenCnOnPnServiceTest {
         @Nested
         inner class ProcuringEntity {
 
-            private val CHECK_REQUEST_JSON = "json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json"
+            private val CHECK_REQUEST_JSON = "json/dto/create/cn_on_pn/open/request/request_open_cn_on_pn_full.json"
             private lateinit var requestNode: ObjectNode
             private lateinit var pnEntity: ObjectNode
 
@@ -1434,14 +1434,14 @@ class OpenCnOnPnServiceTest {
                     .thenReturn(ocid)
 
                 val context: CreateOpenCnOnPnContext = createContext()
-                val response: CnOnPnResponse = service.create(context = context, data = requestNode.toObject())
+                val response: OpenCnOnPnResponse = service.create(context = context, data = requestNode.toObject())
 
                 val actualProcuringEntity = response.tender.procuringEntity.toJson()
                 val expectedProcuringEntity = pnEntity.getObject("tender").getObject("procuringEntity").toString()
 
                 val expectedPn = toObject(PNEntity.Tender.ProcuringEntity::class.java, expectedProcuringEntity)
                 val expectedCn = expectedPn.toProcuringEntityResponse()
-                val actualCn = toObject(CnOnPnResponse.Tender.ProcuringEntity::class.java, actualProcuringEntity)
+                val actualCn = toObject(OpenCnOnPnResponse.Tender.ProcuringEntity::class.java, actualProcuringEntity)
 
                 assertEquals(expectedCn, actualCn)
             }
@@ -1451,62 +1451,62 @@ class OpenCnOnPnServiceTest {
 
                 val jsonProcuringEntity = requestNode.getObject("tender").getObject("procuringEntity")
                 val requestProcuringEntity = toObject(
-                    CnOnPnRequest.Tender.ProcuringEntity::class.java,
+                    OpenCnOnPnRequest.Tender.ProcuringEntity::class.java,
                     jsonProcuringEntity
                 )
                 val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
                 whenever(generationService.generateOcid(cpid = any(), stage = any()))
                     .thenReturn(ocid)
                 val context: CreateOpenCnOnPnContext = createContext()
-                val response: CnOnPnResponse = service.create(context = context, data = requestNode.toObject())
+                val response: OpenCnOnPnResponse = service.create(context = context, data = requestNode.toObject())
 
                 val actualProcuringEntityJson = response.tender.procuringEntity.toJson()
                 val expectedProcuringEntityJson = pnEntity.getObject("tender").getObject("procuringEntity").toString()
 
                 val expectedPn = toObject(PNEntity.Tender.ProcuringEntity::class.java, expectedProcuringEntityJson)
                 val expectedCn = expectedPn.toProcuringEntityResponse(requestProcuringEntity)
-                val actualCn = toObject(CnOnPnResponse.Tender.ProcuringEntity::class.java, actualProcuringEntityJson)
+                val actualCn = toObject(OpenCnOnPnResponse.Tender.ProcuringEntity::class.java, actualProcuringEntityJson)
 
                 assertEquals(expectedCn, actualCn)
             }
 
             private fun PNEntity.Tender.ProcuringEntity.toProcuringEntityResponse(
-                requestProcuringEntity: CnOnPnRequest.Tender.ProcuringEntity? = null
-            ): CnOnPnResponse.Tender.ProcuringEntity {
-                return CnOnPnResponse.Tender.ProcuringEntity(
+                requestProcuringEntity: OpenCnOnPnRequest.Tender.ProcuringEntity? = null
+            ): OpenCnOnPnResponse.Tender.ProcuringEntity {
+                return OpenCnOnPnResponse.Tender.ProcuringEntity(
                     id = this.id,
                     name = this.name,
-                    identifier = CnOnPnResponse.Tender.ProcuringEntity.Identifier(
+                    identifier = OpenCnOnPnResponse.Tender.ProcuringEntity.Identifier(
                         id = this.identifier.id,
                         scheme = this.identifier.scheme,
                         legalName = this.identifier.legalName,
                         uri = this.identifier.uri
                     ),
                     additionalIdentifiers = this.additionalIdentifiers?.map { identifier ->
-                        CnOnPnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                        OpenCnOnPnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
                             id = identifier.id,
                             scheme = identifier.scheme,
                             legalName = identifier.legalName,
                             uri = identifier.uri
                         )
                     },
-                    address = CnOnPnResponse.Tender.ProcuringEntity.Address(
+                    address = OpenCnOnPnResponse.Tender.ProcuringEntity.Address(
                         streetAddress = this.address.streetAddress,
                         postalCode = this.address.postalCode,
-                        addressDetails = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails(
-                            country = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                        addressDetails = OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                            country = OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
                                 id = this.address.addressDetails.country.id,
                                 scheme = this.address.addressDetails.country.scheme,
                                 description = this.address.addressDetails.country.description,
                                 uri = this.address.addressDetails.country.uri
                             ),
-                            region = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                            region = OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
                                 id = this.address.addressDetails.region.id,
                                 scheme = this.address.addressDetails.region.scheme,
                                 description = this.address.addressDetails.region.description,
                                 uri = this.address.addressDetails.region.uri
                             ),
-                            locality = CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                            locality = OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
                                 id = this.address.addressDetails.locality.id,
                                 scheme = this.address.addressDetails.locality.scheme,
                                 description = this.address.addressDetails.locality.description,
@@ -1514,7 +1514,7 @@ class OpenCnOnPnServiceTest {
                             )
                         )
                     ),
-                    contactPoint = CnOnPnResponse.Tender.ProcuringEntity.ContactPoint(
+                    contactPoint = OpenCnOnPnResponse.Tender.ProcuringEntity.ContactPoint(
                         name = this.contactPoint.name,
                         email = this.contactPoint.email,
                         telephone = this.contactPoint.telephone,
@@ -1522,28 +1522,28 @@ class OpenCnOnPnServiceTest {
                         url = this.contactPoint.url
                     ),
                     persones = requestProcuringEntity?.persones?.map { person ->
-                        CnOnPnResponse.Tender.ProcuringEntity.Persone(
+                        OpenCnOnPnResponse.Tender.ProcuringEntity.Persone(
                             id = PersonId.generate(
                                 scheme = person.identifier.scheme,
                                 id = person.identifier.id
                             ),
                             title = person.title,
                             name = person.name,
-                            identifier = CnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
+                            identifier = OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
                                 scheme = person.identifier.scheme,
                                 id = person.identifier.id,
                                 uri = person.identifier.uri
                             ),
                             businessFunctions = person.businessFunctions.map { businessFunction ->
-                                CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
                                     id = businessFunction.id,
                                     jobTitle = businessFunction.jobTitle,
                                     type = businessFunction.type,
-                                    period = CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                    period = OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
                                         startDate = businessFunction.period.startDate
                                     ),
                                     documents = businessFunction.documents?.map { document ->
-                                        CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                        OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
                                             id = document.id,
                                             documentType = document.documentType,
                                             title = document.title,
@@ -1564,7 +1564,7 @@ class OpenCnOnPnServiceTest {
             val pathToJsonFileOfPNEntity = testData.pnJsonFile()
             val pathToJsonFileOfResponse = testData.responseJsonFile()
 
-            val data: CnOnPnRequest = loadJson(pathToJsonFileOfRequest).toObject()
+            val data: OpenCnOnPnRequest = loadJson(pathToJsonFileOfRequest).toObject()
             val context: CreateOpenCnOnPnContext = createContext()
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson(pathToJsonFileOfPNEntity))
@@ -1638,7 +1638,7 @@ class OpenCnOnPnServiceTest {
             val auctionsSegment = JsonFilePathGenerator.auctionSegment(hasAuctionsInRequest)
             return "json/service/create/cn_on_pn/request/op/request_cn_${auctionsSegment}_on_pn.json"
                 .also {
-                    testingBindingAndMapping<CnOnPnRequest>(it)
+                    testingBindingAndMapping<OpenCnOnPnRequest>(it)
                 }
         }
 
@@ -1657,7 +1657,7 @@ class OpenCnOnPnServiceTest {
             val segmentDocuments = JsonFilePathGenerator.documentsSegment(hasDocumentsInPN)
             return "json/service/create/cn_on_pn/response/op/response_cn_${auctionsSegment}_on_pn_${itemsSegment}_${segmentDocuments}.json"
                 .also {
-                    testingBindingAndMapping<CnOnPnResponse>(it)
+                    testingBindingAndMapping<OpenCnOnPnResponse>(it)
                 }
         }
     }

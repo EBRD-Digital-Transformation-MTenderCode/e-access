@@ -38,10 +38,10 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
@@ -237,8 +237,8 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
-                        val response: CnOnPnResponse = cnOnPnService.create(context = context, data = request)
+                        val request: OpenCnOnPnRequest = toObject(OpenCnOnPnRequest::class.java, cm.data)
+                        val response: OpenCnOnPnResponse = cnOnPnService.create(context = context, data = request)
                             .also {
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN. Response: ${toJson(it)}")
@@ -559,7 +559,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: CnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
+                        val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
                         val result: CheckedCnOnPn = cnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")

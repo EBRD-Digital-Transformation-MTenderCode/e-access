@@ -32,8 +32,8 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -57,7 +57,7 @@ class OpenCnOnPnService(
     private val criteriaService: CriteriaService
 ) {
 
-    fun check(context: CheckOpenCnOnPnContext, data: CnOnPnRequest): CheckedCnOnPn {
+    fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedCnOnPn {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -189,7 +189,7 @@ class OpenCnOnPnService(
         return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun create(context: CreateOpenCnOnPnContext, data: CnOnPnRequest): CnOnPnResponse {
+    fun create(context: CreateOpenCnOnPnContext, data: OpenCnOnPnRequest): OpenCnOnPnResponse {
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -263,7 +263,7 @@ class OpenCnOnPnService(
      * в массиве Documents из запроса.
      */
     private fun checkDocuments(
-        documentsFromRequest: List<CnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
         val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSetBy { it.id }
@@ -290,7 +290,7 @@ class OpenCnOnPnService(
      *
      */
     private fun checkProcuringEntityIdentifier(
-        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
+        procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity,
         procuringEntityDB: PNEntity.Tender.ProcuringEntity
     ) {
         if (procuringEntityDB.id != procuringEntityRequest.id) throw ErrorException(
@@ -322,7 +322,7 @@ class OpenCnOnPnService(
      * else {  eAccess throws Exception: "Invalid business functions type";
      */
     private fun checkProcuringEntityPersones(
-        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
+        procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity
     ) {
 
         procuringEntityRequest.persones
@@ -357,7 +357,7 @@ class OpenCnOnPnService(
      *
      */
     private fun checkPersonesBusinessFunctions(
-        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
+        procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity
     ) {
 
         procuringEntityRequest.persones
@@ -402,7 +402,7 @@ class OpenCnOnPnService(
      *
      */
     private fun checkBusinessFunctionPeriod(
-        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
+        procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity,
         context: CheckOpenCnOnPnContext
     ) {
         fun dateError(): Nothing = throw ErrorException(
@@ -437,7 +437,7 @@ class OpenCnOnPnService(
      * else {  eAccess throws Exception: "Invalid document type"; }
      */
     private fun checkBusinessFunctionDocuments(
-        procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity
+        procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity
     ) {
 
         procuringEntityRequest.persones
@@ -467,7 +467,7 @@ class OpenCnOnPnService(
     }
 
     private fun checkTenderDocumentsNotEmpty(
-        tender: CnOnPnRequest.Tender
+        tender: OpenCnOnPnRequest.Tender
     ) {
         if (tender.documents.isEmpty()) throw ErrorException(
             error = ErrorType.EMPTY_DOCS,
@@ -496,7 +496,7 @@ class OpenCnOnPnService(
      * from Request == "Currency" (budget.amount.currency) from saved PNEntity.
      */
     private fun checkCurrencyInLotsFromRequest(
-        lotsFromRequest: List<CnOnPnRequest.Tender.Lot>,
+        lotsFromRequest: List<OpenCnOnPnRequest.Tender.Lot>,
         budgetFromPN: PNEntity.Planning.Budget
     ) {
         lotsFromRequest.forEach { lot ->
@@ -537,7 +537,7 @@ class OpenCnOnPnService(
      * всех добавленных объектов секции Lots запроса.
      */
     private fun checkContractPeriodInTender(
-        lotsFromRequest: List<CnOnPnRequest.Tender.Lot>,
+        lotsFromRequest: List<OpenCnOnPnRequest.Tender.Lot>,
         budgetBreakdownsFromPN: List<PNEntity.Planning.Budget.BudgetBreakdown>
     ) {
         val tenderContractPeriod = calculationTenderContractPeriod(lotsFromRequest)
@@ -571,7 +571,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
         lotsIdsFromRequest: Set<String>,
-        documentsFromRequest: List<CnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -609,7 +609,7 @@ class OpenCnOnPnService(
      *      the context of Request, validation is successful;
      *      ELSE eAccess throws Exception;
      */
-    private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest: CnOnPnRequest.Tender) {
+    private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest: OpenCnOnPnRequest.Tender) {
         val tenderPeriodEndDate = tenderFromRequest.tenderPeriod.endDate
         tenderFromRequest.lots.forEach { lot ->
             checkRangeContractPeriodInLotFromRequest(lot)
@@ -621,7 +621,7 @@ class OpenCnOnPnService(
         }
     }
 
-    private fun checkRangeContractPeriodInLotFromRequest(lot: CnOnPnRequest.Tender.Lot) {
+    private fun checkRangeContractPeriodInLotFromRequest(lot: OpenCnOnPnRequest.Tender.Lot) {
         if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate)
             throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
     }
@@ -632,7 +632,7 @@ class OpenCnOnPnService(
      * VR-3.6.11 "Quantity" (item)
      * eAccess проверяет, что значению "Quantity" (tender/items/quantity) каждого объекта секции Items больше нуля.
      */
-    private fun checkQuantityInItems(itemsFromRequest: List<CnOnPnRequest.Tender.Item>) {
+    private fun checkQuantityInItems(itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>) {
         itemsFromRequest.forEach { item ->
             if (item.quantity <= BigDecimal.ZERO)
                 throw ErrorException(ErrorType.INVALID_ITEMS_QUANTITY)
@@ -655,7 +655,7 @@ class OpenCnOnPnService(
      */
     private fun checkLotIdsAsRelatedLotInItems(
         lotsIdsFromRequest: Set<String>,
-        itemsFromRequest: List<CnOnPnRequest.Tender.Item>
+        itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>
     ) {
         if (lotsIdsFromRequest.isEmpty())
             throw ErrorException(ErrorType.EMPTY_LOTS)
@@ -681,7 +681,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotInItemsFromRequest(
         lotsIdsFromRequest: Set<String>,
-        itemsFromRequest: List<CnOnPnRequest.Tender.Item>
+        itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>
     ) {
         itemsFromRequest.forEach { item ->
             val relatedLot = item.relatedLot
@@ -698,7 +698,7 @@ class OpenCnOnPnService(
      * IF every lot.ID from Request is included once in list from Request, validation is successful;
      * ELSE eAccess throws Exception;
      */
-    private fun checkLotIdFromRequest(lotsFromRequest: List<CnOnPnRequest.Tender.Lot>) {
+    private fun checkLotIdFromRequest(lotsFromRequest: List<OpenCnOnPnRequest.Tender.Lot>) {
         val idsAreUniques = lotsFromRequest.uniqueBy { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(LOT_ID_DUPLICATED)
@@ -712,7 +712,7 @@ class OpenCnOnPnService(
      * IF every item.ID from Request is included once in list from Request, validation is successful;
      * ELSE eAccess throws Exception;
      */
-    private fun checkItemIdFromRequest(itemsFromRequest: List<CnOnPnRequest.Tender.Item>) {
+    private fun checkItemIdFromRequest(itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>) {
         val idsAreUniques = itemsFromRequest.uniqueBy { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ITEM_ID_IS_DUPLICATED)
@@ -755,7 +755,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
         lotsIdsFromPN: Set<String>,
-        documentsFromRequest: List<CnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -773,7 +773,7 @@ class OpenCnOnPnService(
      */
     private fun checkAuctionsAreRequired(
         context: CheckOpenCnOnPnContext,
-        data: CnOnPnRequest,
+        data: OpenCnOnPnRequest,
         mainProcurementCategory: MainProcurementCategory
     ) {
         val isAuctionRequired = rulesService.isAuctionRequired(
@@ -810,7 +810,7 @@ class OpenCnOnPnService(
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
-        request: CnOnPnRequest,
+        request: OpenCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
         //BR-3.6.5
@@ -879,7 +879,7 @@ class OpenCnOnPnService(
     }
 
     private fun createTenderBasedPNWithItems(
-        request: CnOnPnRequest,
+        request: OpenCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
         /** Begin BR-3.8.3 */
@@ -988,7 +988,7 @@ class OpenCnOnPnService(
     }
 
     private fun tender(
-        request: CnOnPnRequest,
+        request: OpenCnOnPnRequest,
         pnEntity: PNEntity,
         classification: CNEntity.Tender.Classification,
         criteria: List<CNEntity.Tender.Criteria>?,
@@ -1213,7 +1213,7 @@ class OpenCnOnPnService(
      * Постоянные "ID" (tender/lot/id) лотов формируются как уникальные для данного контрактного процесса
      * 32-символьные идентификаторы.
      */
-    private fun generatePermanentLotId(lots: List<CnOnPnRequest.Tender.Lot>): Map<String, String> {
+    private fun generatePermanentLotId(lots: List<OpenCnOnPnRequest.Tender.Lot>): Map<String, String> {
         return lots.asSequence()
             .map { lot ->
                 val permanentId = generationService.generatePermanentLotId() //BR-3.8.6
@@ -1222,7 +1222,7 @@ class OpenCnOnPnService(
             .toMap()
     }
 
-    private fun generatePermanentItemId(itemsFromRequest: List<CnOnPnRequest.Tender.Item>): Map<String, String> {
+    private fun generatePermanentItemId(itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>): Map<String, String> {
         return itemsFromRequest.asSequence()
             .map { item ->
                 val permanentId = generationService.generatePermanentItemId()
@@ -1232,12 +1232,12 @@ class OpenCnOnPnService(
     }
 
     private fun updateDocuments(
-        documentsFromRequest: List<CnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
         documentsFromDB: List<PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return if (documentsFromDB.isNotEmpty()) {
-            val documentsFromRequestById: Map<String, CnOnPnRequest.Tender.Document> =
+            val documentsFromRequestById: Map<String, OpenCnOnPnRequest.Tender.Document> =
                 documentsFromRequest.associateBy { document -> document.id }
             val existsDocumentsById: Map<String, PNEntity.Tender.Document> =
                 documentsFromDB.associateBy { document -> document.id }
@@ -1248,7 +1248,7 @@ class OpenCnOnPnService(
                 relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
             )
 
-            val newDocumentsFromRequest: Set<CnOnPnRequest.Tender.Document> = extractNewDocuments(
+            val newDocumentsFromRequest: Set<OpenCnOnPnRequest.Tender.Document> = extractNewDocuments(
                 documentsFromRequest = documentsFromRequest,
                 existsDocumentsById = existsDocumentsById
             )
@@ -1268,7 +1268,7 @@ class OpenCnOnPnService(
     }
 
     private fun updateExistsDocuments(
-        documentsFromRequestById: Map<String, CnOnPnRequest.Tender.Document>,
+        documentsFromRequestById: Map<String, OpenCnOnPnRequest.Tender.Document>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): Set<CNEntity.Tender.Document> {
@@ -1298,16 +1298,16 @@ class OpenCnOnPnService(
     }
 
     private fun extractNewDocuments(
-        documentsFromRequest: Collection<CnOnPnRequest.Tender.Document>,
+        documentsFromRequest: Collection<OpenCnOnPnRequest.Tender.Document>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>
-    ): Set<CnOnPnRequest.Tender.Document> {
+    ): Set<OpenCnOnPnRequest.Tender.Document> {
         return documentsFromRequest.asSequence()
             .filter { document -> !existsDocumentsById.containsKey(document.id) }
             .toSet()
     }
 
     private fun convertNewDocuments(
-        newDocumentsFromRequest: Collection<CnOnPnRequest.Tender.Document>,
+        newDocumentsFromRequest: Collection<OpenCnOnPnRequest.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return newDocumentsFromRequest.map { document ->
@@ -1316,7 +1316,7 @@ class OpenCnOnPnService(
     }
 
     private fun convertNewDocument(
-        newDocumentFromRequest: CnOnPnRequest.Tender.Document,
+        newDocumentFromRequest: OpenCnOnPnRequest.Tender.Document,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): CNEntity.Tender.Document {
         val relatedLots = getPermanentLotsIds(
@@ -1345,7 +1345,7 @@ class OpenCnOnPnService(
     }
 
     private fun convertRequestItems(
-        itemsFromRequest: List<CnOnPnRequest.Tender.Item>,
+        itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>,
         relatedTemporalWithPermanentLotId: Map<String, String>,
         relatedTemporalWithPermanentItemId: Map<String, String>
     ): List<CNEntity.Tender.Item> {
@@ -1428,7 +1428,7 @@ class OpenCnOnPnService(
      * BR-3.8.3
      */
     private fun convertRequestLots(
-        tender: CnOnPnRequest.Tender,
+        tender: OpenCnOnPnRequest.Tender,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Lot> {
         return tender.lots.map { lot ->
@@ -1512,7 +1512,7 @@ class OpenCnOnPnService(
     }
 
     private fun convertElectronicAuctionsFromRequest(
-        tenderFromRequest: CnOnPnRequest.Tender,
+        tenderFromRequest: OpenCnOnPnRequest.Tender,
         relatedTemporalWithPermanentLotId: Map<String, String> = emptyMap()
     ): CNEntity.Tender.ElectronicAuctions? {
         return tenderFromRequest.electronicAuctions?.let {
@@ -1550,7 +1550,7 @@ class OpenCnOnPnService(
      *      of all lot objects from Request.
      *      eAccess sets "Currency" (tender.value.currency) == "Currency" (tender.lot.value.currency) from Request.
      */
-    private fun calculateTenderValueFromLots(lotsFromRequest: List<CnOnPnRequest.Tender.Lot>): CNEntity.Tender.Value {
+    private fun calculateTenderValueFromLots(lotsFromRequest: List<OpenCnOnPnRequest.Tender.Lot>): CNEntity.Tender.Value {
         val currency = lotsFromRequest.elementAt(0).value.currency
         val totalAmount = lotsFromRequest.fold(BigDecimal.ZERO) { acc, lot ->
             acc.plus(lot.value.amount)
@@ -1558,7 +1558,7 @@ class OpenCnOnPnService(
         return CNEntity.Tender.Value(totalAmount, currency)
     }
 
-    private fun calculationTenderContractPeriod(lots: List<CnOnPnRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
+    private fun calculationTenderContractPeriod(lots: List<OpenCnOnPnRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
         val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate
@@ -1569,7 +1569,7 @@ class OpenCnOnPnService(
      * BR-3.8.3
      */
     private fun classificationFromRequest(
-        classificationFromRequest: CnOnPnRequest.Tender.Classification
+        classificationFromRequest: OpenCnOnPnRequest.Tender.Classification
     ): CNEntity.Tender.Classification {
         return classificationFromRequest.let {
             CNEntity.Tender.Classification(
@@ -1582,7 +1582,7 @@ class OpenCnOnPnService(
     }
 
     private fun conversionsFromRequest(
-        conversionsFromRequest: List<CnOnPnRequest.Tender.Conversion>?
+        conversionsFromRequest: List<OpenCnOnPnRequest.Tender.Conversion>?
     ): List<CNEntity.Tender.Conversion>? {
         return conversionsFromRequest?.map { conversion ->
             CNEntity.Tender.Conversion(
@@ -1738,47 +1738,47 @@ class OpenCnOnPnService(
         }
     }
 
-    private fun getResponse(cn: CNEntity, token: UUID): CnOnPnResponse {
-        return CnOnPnResponse(
+    private fun getResponse(cn: CNEntity, token: UUID): OpenCnOnPnResponse {
+        return OpenCnOnPnResponse(
             ocid = cn.ocid,
             token = token.toString(),
             planning = cn.planning.let { planning ->
-                CnOnPnResponse.Planning(
+                OpenCnOnPnResponse.Planning(
                     rationale = planning.rationale,
                     budget = planning.budget.let { budget ->
-                        CnOnPnResponse.Planning.Budget(
+                        OpenCnOnPnResponse.Planning.Budget(
                             description = budget.description,
                             amount = budget.amount.let { amount ->
-                                CnOnPnResponse.Planning.Budget.Amount(
+                                OpenCnOnPnResponse.Planning.Budget.Amount(
                                     amount = amount.amount,
                                     currency = amount.currency
                                 )
                             },
                             isEuropeanUnionFunded = budget.isEuropeanUnionFunded,
                             budgetBreakdowns = budget.budgetBreakdowns.map { budgetBreakdown ->
-                                CnOnPnResponse.Planning.Budget.BudgetBreakdown(
+                                OpenCnOnPnResponse.Planning.Budget.BudgetBreakdown(
                                     id = budgetBreakdown.id,
                                     description = budgetBreakdown.description,
                                     amount = budgetBreakdown.amount.let { amount ->
-                                        CnOnPnResponse.Planning.Budget.BudgetBreakdown.Amount(
+                                        OpenCnOnPnResponse.Planning.Budget.BudgetBreakdown.Amount(
                                             amount = amount.amount,
                                             currency = amount.currency
                                         )
                                     },
                                     period = budgetBreakdown.period.let { period ->
-                                        CnOnPnResponse.Planning.Budget.BudgetBreakdown.Period(
+                                        OpenCnOnPnResponse.Planning.Budget.BudgetBreakdown.Period(
                                             startDate = period.startDate,
                                             endDate = period.endDate
                                         )
                                     },
                                     sourceParty = budgetBreakdown.sourceParty.let { sourceParty ->
-                                        CnOnPnResponse.Planning.Budget.BudgetBreakdown.SourceParty(
+                                        OpenCnOnPnResponse.Planning.Budget.BudgetBreakdown.SourceParty(
                                             id = sourceParty.id,
                                             name = sourceParty.name
                                         )
                                     },
                                     europeanUnionFunding = budgetBreakdown.europeanUnionFunding?.let { europeanUnionFunding ->
-                                        CnOnPnResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                        OpenCnOnPnResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
                                             projectIdentifier = europeanUnionFunding.projectIdentifier,
                                             projectName = europeanUnionFunding.projectName,
                                             uri = europeanUnionFunding.uri
@@ -1791,14 +1791,14 @@ class OpenCnOnPnService(
                 )
             },
             tender = cn.tender.let { tender ->
-                CnOnPnResponse.Tender(
+                OpenCnOnPnResponse.Tender(
                     id = tender.id,
                     status = tender.status,
                     statusDetails = tender.statusDetails,
                     title = tender.title,
                     description = tender.description,
                     classification = tender.classification.let { classification ->
-                        CnOnPnResponse.Tender.Classification(
+                        OpenCnOnPnResponse.Tender.Classification(
                             scheme = classification.scheme,
                             id = classification.id,
                             description = classification.description
@@ -1806,51 +1806,51 @@ class OpenCnOnPnService(
                     },
                     requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
                     tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
-                        CnOnPnResponse.Tender.TenderPeriod(
+                        OpenCnOnPnResponse.Tender.TenderPeriod(
                             startDate = tenderPeriod!!.startDate,
                             endDate = tenderPeriod.endDate
                         )
                     },
                     enquiryPeriod = tender.enquiryPeriod.let { enquiryPeriod ->
-                        CnOnPnResponse.Tender.EnquiryPeriod(
+                        OpenCnOnPnResponse.Tender.EnquiryPeriod(
                             startDate = enquiryPeriod!!.startDate,
                             endDate = enquiryPeriod.endDate
                         )
                     },
                     acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
-                        CnOnPnResponse.Tender.AcceleratedProcedure(
+                        OpenCnOnPnResponse.Tender.AcceleratedProcedure(
                             isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
                         )
                     },
                     designContest = tender.designContest.let { designContest ->
-                        CnOnPnResponse.Tender.DesignContest(
+                        OpenCnOnPnResponse.Tender.DesignContest(
                             serviceContractAward = designContest.serviceContractAward
                         )
                     },
                     electronicWorkflows = tender.electronicWorkflows.let { electronicWorkflows ->
-                        CnOnPnResponse.Tender.ElectronicWorkflows(
+                        OpenCnOnPnResponse.Tender.ElectronicWorkflows(
                             useOrdering = electronicWorkflows.useOrdering,
                             usePayment = electronicWorkflows.usePayment,
                             acceptInvoicing = electronicWorkflows.acceptInvoicing
                         )
                     },
                     jointProcurement = tender.jointProcurement.let { jointProcurement ->
-                        CnOnPnResponse.Tender.JointProcurement(
+                        OpenCnOnPnResponse.Tender.JointProcurement(
                             isJointProcurement = jointProcurement.isJointProcurement
                         )
                     },
                     procedureOutsourcing = tender.procedureOutsourcing.let { procedureOutsourcing ->
-                        CnOnPnResponse.Tender.ProcedureOutsourcing(
+                        OpenCnOnPnResponse.Tender.ProcedureOutsourcing(
                             procedureOutsourced = procedureOutsourcing.procedureOutsourced
                         )
                     },
                     framework = tender.framework.let { framework ->
-                        CnOnPnResponse.Tender.Framework(
+                        OpenCnOnPnResponse.Tender.Framework(
                             isAFramework = framework.isAFramework
                         )
                     },
                     dynamicPurchasingSystem = tender.dynamicPurchasingSystem.let { dynamicPurchasingSystem ->
-                        CnOnPnResponse.Tender.DynamicPurchasingSystem(
+                        OpenCnOnPnResponse.Tender.DynamicPurchasingSystem(
                             hasDynamicPurchasingSystem = dynamicPurchasingSystem.hasDynamicPurchasingSystem
                         )
                     },
@@ -1862,22 +1862,22 @@ class OpenCnOnPnService(
                     mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
-                        CnOnPnResponse.Tender.ContractPeriod(
+                        OpenCnOnPnResponse.Tender.ContractPeriod(
                             startDate = contractPeriod.startDate,
                             endDate = contractPeriod.endDate
                         )
                     },
                     procurementMethodModalities = tender.procurementMethodModalities,
                     electronicAuctions = tender.electronicAuctions?.let { electronicAuctions ->
-                        CnOnPnResponse.Tender.ElectronicAuctions(
+                        OpenCnOnPnResponse.Tender.ElectronicAuctions(
                             details = electronicAuctions.details.map { detail ->
-                                CnOnPnResponse.Tender.ElectronicAuctions.Detail(
+                                OpenCnOnPnResponse.Tender.ElectronicAuctions.Detail(
                                     id = detail.id,
                                     relatedLot = detail.relatedLot,
                                     electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
-                                        CnOnPnResponse.Tender.ElectronicAuctions.Detail.Modalities(
+                                        OpenCnOnPnResponse.Tender.ElectronicAuctions.Detail.Modalities(
                                             eligibleMinimumDifference = modality.eligibleMinimumDifference.let { emd ->
-                                                CnOnPnResponse.Tender.ElectronicAuctions.Detail.Modalities.EligibleMinimumDifference(
+                                                OpenCnOnPnResponse.Tender.ElectronicAuctions.Detail.Modalities.EligibleMinimumDifference(
                                                     amount = emd.amount,
                                                     currency = emd.currency
                                                 )
@@ -1889,11 +1889,11 @@ class OpenCnOnPnService(
                         )
                     },
                     procuringEntity = tender.procuringEntity.let { procuringEntity ->
-                        CnOnPnResponse.Tender.ProcuringEntity(
+                        OpenCnOnPnResponse.Tender.ProcuringEntity(
                             id = procuringEntity.id,
                             name = procuringEntity.name,
                             identifier = procuringEntity.identifier.let { identifier ->
-                                CnOnPnResponse.Tender.ProcuringEntity.Identifier(
+                                OpenCnOnPnResponse.Tender.ProcuringEntity.Identifier(
                                     scheme = identifier.scheme,
                                     id = identifier.id,
                                     legalName = identifier.legalName,
@@ -1901,7 +1901,7 @@ class OpenCnOnPnService(
                                 )
                             },
                             additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
-                                CnOnPnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                                OpenCnOnPnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
                                     scheme = additionalIdentifier.scheme,
                                     id = additionalIdentifier.id,
                                     legalName = additionalIdentifier.legalName,
@@ -1909,13 +1909,13 @@ class OpenCnOnPnService(
                                 )
                             },
                             address = procuringEntity.address.let { address ->
-                                CnOnPnResponse.Tender.ProcuringEntity.Address(
+                                OpenCnOnPnResponse.Tender.ProcuringEntity.Address(
                                     streetAddress = address.streetAddress,
                                     postalCode = address.postalCode,
                                     addressDetails = address.addressDetails.let { addressDetails ->
-                                        CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                                        OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails(
                                             country = addressDetails.country.let { country ->
-                                                CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
                                                     scheme = country.scheme,
                                                     id = country.id,
                                                     description = country.description,
@@ -1923,7 +1923,7 @@ class OpenCnOnPnService(
                                                 )
                                             },
                                             region = addressDetails.region.let { region ->
-                                                CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
                                                     scheme = region.scheme,
                                                     id = region.id,
                                                     description = region.description,
@@ -1931,7 +1931,7 @@ class OpenCnOnPnService(
                                                 )
                                             },
                                             locality = addressDetails.locality.let { locality ->
-                                                CnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                OpenCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
                                                     scheme = locality.scheme,
                                                     id = locality.id,
                                                     description = locality.description,
@@ -1944,7 +1944,7 @@ class OpenCnOnPnService(
                                 )
                             },
                             contactPoint = procuringEntity.contactPoint.let { contactPoint ->
-                                CnOnPnResponse.Tender.ProcuringEntity.ContactPoint(
+                                OpenCnOnPnResponse.Tender.ProcuringEntity.ContactPoint(
                                     name = contactPoint.name,
                                     email = contactPoint.email,
                                     telephone = contactPoint.telephone,
@@ -1953,25 +1953,25 @@ class OpenCnOnPnService(
                                 )
                             },
                             persones = procuringEntity.persones?.map { persone ->
-                                CnOnPnResponse.Tender.ProcuringEntity.Persone(
+                                OpenCnOnPnResponse.Tender.ProcuringEntity.Persone(
                                     id = persone.id,
                                     name = persone.name,
                                     title = persone.title,
-                                    identifier = CnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
+                                    identifier = OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
                                         id = persone.identifier.id,
                                         scheme = persone.identifier.scheme,
                                         uri = persone.identifier.uri
                                     ),
                                     businessFunctions = persone.businessFunctions.map { businessFunction ->
-                                        CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                        OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
                                             id = businessFunction.id,
                                             type = businessFunction.type,
                                             jobTitle = businessFunction.jobTitle,
-                                            period = CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                            period = OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
                                                 startDate = businessFunction.period.startDate
                                             ),
                                             documents = businessFunction.documents?.map { document ->
-                                                CnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                OpenCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
                                                     id = document.id,
                                                     documentType = document.documentType,
                                                     title = document.title,
@@ -1986,24 +1986,24 @@ class OpenCnOnPnService(
                         )
                     },
                     value = tender.value.let { value ->
-                        CnOnPnResponse.Tender.Value(
+                        OpenCnOnPnResponse.Tender.Value(
                             amount = value.amount,
                             currency = value.currency
                         )
                     },
                     lotGroups = tender.lotGroups.map { lotGroup ->
-                        CnOnPnResponse.Tender.LotGroup(
+                        OpenCnOnPnResponse.Tender.LotGroup(
                             optionToCombine = lotGroup.optionToCombine
                         )
                     },
                     criteria = tender.criteria?.map { criterion ->
-                        CnOnPnResponse.Tender.Criteria(
+                        OpenCnOnPnResponse.Tender.Criteria(
                             id = criterion.id,
                             title = criterion.title,
                             description = criterion.description,
                             source = criterion.source,
                             requirementGroups = criterion.requirementGroups.map {
-                                CnOnPnResponse.Tender.Criteria.RequirementGroup(
+                                OpenCnOnPnResponse.Tender.Criteria.RequirementGroup(
                                     id = it.id,
                                     description = it.description,
                                     requirements = it.requirements.map { requirement ->
@@ -2028,14 +2028,14 @@ class OpenCnOnPnService(
                         )
                     },
                     conversions = tender.conversions?.map { conversion ->
-                        CnOnPnResponse.Tender.Conversion(
+                        OpenCnOnPnResponse.Tender.Conversion(
                             id = conversion.id,
                             relatedItem = conversion.relatedItem,
                             relatesTo = conversion.relatesTo,
                             rationale = conversion.rationale,
                             description = conversion.description,
                             coefficients = conversion.coefficients.map { coefficient ->
-                                CnOnPnResponse.Tender.Conversion.Coefficient(
+                                OpenCnOnPnResponse.Tender.Conversion.Coefficient(
                                     id = coefficient.id,
                                     value = coefficient.value,
                                     coefficient = coefficient.coefficient
@@ -2044,7 +2044,7 @@ class OpenCnOnPnService(
                         )
                     },
                     lots = tender.lots.map { lot ->
-                        CnOnPnResponse.Tender.Lot(
+                        OpenCnOnPnResponse.Tender.Lot(
                             id = lot.id,
                             internalId = lot.internalId,
                             title = lot.title,
@@ -2052,48 +2052,48 @@ class OpenCnOnPnService(
                             status = lot.status,
                             statusDetails = lot.statusDetails,
                             value = lot.value.let { value ->
-                                CnOnPnResponse.Tender.Lot.Value(
+                                OpenCnOnPnResponse.Tender.Lot.Value(
                                     amount = value.amount,
                                     currency = value.currency
                                 )
                             },
                             options = lot.options.map { option ->
-                                CnOnPnResponse.Tender.Lot.Option(
+                                OpenCnOnPnResponse.Tender.Lot.Option(
                                     hasOptions = option.hasOptions
                                 )
                             },
                             variants = lot.variants.map { variant ->
-                                CnOnPnResponse.Tender.Lot.Variant(
+                                OpenCnOnPnResponse.Tender.Lot.Variant(
                                     hasVariants = variant.hasVariants
                                 )
                             },
                             renewals = lot.renewals.map { renewal ->
-                                CnOnPnResponse.Tender.Lot.Renewal(
+                                OpenCnOnPnResponse.Tender.Lot.Renewal(
                                     hasRenewals = renewal.hasRenewals
                                 )
                             },
                             recurrentProcurement = lot.recurrentProcurement.map { recurrentProcurement ->
-                                CnOnPnResponse.Tender.Lot.RecurrentProcurement(
+                                OpenCnOnPnResponse.Tender.Lot.RecurrentProcurement(
                                     isRecurrent = recurrentProcurement.isRecurrent
                                 )
                             },
                             contractPeriod = lot.contractPeriod.let { contractPeriod ->
-                                CnOnPnResponse.Tender.Lot.ContractPeriod(
+                                OpenCnOnPnResponse.Tender.Lot.ContractPeriod(
                                     startDate = contractPeriod.startDate,
                                     endDate = contractPeriod.endDate
                                 )
                             },
                             placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                                CnOnPnResponse.Tender.Lot.PlaceOfPerformance(
+                                OpenCnOnPnResponse.Tender.Lot.PlaceOfPerformance(
                                     description = placeOfPerformance.description,
                                     address = placeOfPerformance.address.let { address ->
-                                        CnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address(
+                                        OpenCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address(
                                             streetAddress = address.streetAddress,
                                             postalCode = address.postalCode,
                                             addressDetails = address.addressDetails.let { addressDetails ->
-                                                CnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                OpenCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
                                                     country = addressDetails.country.let { country ->
-                                                        CnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                        OpenCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
                                                             scheme = country.scheme,
                                                             id = country.id,
                                                             description = country.description,
@@ -2101,7 +2101,7 @@ class OpenCnOnPnService(
                                                         )
                                                     },
                                                     region = addressDetails.region.let { region ->
-                                                        CnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                        OpenCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
                                                             scheme = region.scheme,
                                                             id = region.id,
                                                             description = region.description,
@@ -2109,7 +2109,7 @@ class OpenCnOnPnService(
                                                         )
                                                     },
                                                     locality = addressDetails.locality.let { locality ->
-                                                        CnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                        OpenCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
                                                             scheme = locality.scheme,
                                                             id = locality.id,
                                                             description = locality.description,
@@ -2126,18 +2126,18 @@ class OpenCnOnPnService(
                         )
                     },
                     items = tender.items.map { item ->
-                        CnOnPnResponse.Tender.Item(
+                        OpenCnOnPnResponse.Tender.Item(
                             id = item.id,
                             internalId = item.internalId,
                             classification = item.classification.let { classification ->
-                                CnOnPnResponse.Tender.Item.Classification(
+                                OpenCnOnPnResponse.Tender.Item.Classification(
                                     scheme = classification.scheme,
                                     id = classification.id,
                                     description = classification.description
                                 )
                             },
                             additionalClassifications = item.additionalClassifications?.map { additionalClassification ->
-                                CnOnPnResponse.Tender.Item.AdditionalClassification(
+                                OpenCnOnPnResponse.Tender.Item.AdditionalClassification(
                                     scheme = additionalClassification.scheme,
                                     id = additionalClassification.id,
                                     description = additionalClassification.description
@@ -2145,7 +2145,7 @@ class OpenCnOnPnService(
                             },
                             quantity = item.quantity,
                             unit = item.unit.let { unit ->
-                                CnOnPnResponse.Tender.Item.Unit(
+                                OpenCnOnPnResponse.Tender.Item.Unit(
                                     id = unit.id,
                                     name = unit.name
                                 )
@@ -2160,7 +2160,7 @@ class OpenCnOnPnService(
                     submissionMethodRationale = tender.submissionMethodRationale,
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents.map { document ->
-                        CnOnPnResponse.Tender.Document(
+                        OpenCnOnPnResponse.Tender.Document(
                             documentType = document.documentType,
                             id = document.id,
                             title = document.title,

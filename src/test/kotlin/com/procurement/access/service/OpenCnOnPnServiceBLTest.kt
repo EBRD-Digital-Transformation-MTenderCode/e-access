@@ -13,8 +13,8 @@ import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.getObject
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CnOnPnServiceBLTest {
+class OpenCnOnPnServiceBLTest {
 
     companion object {
         private const val PATH_PN_JSON =
@@ -95,10 +95,10 @@ class CnOnPnServiceBLTest {
                 data = pnWithoutItems
             )
 
-            val data: CnOnPnRequest =
-                loadJson("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json").toObject()
+            val data: OpenCnOnPnRequest =
+                loadJson("json/dto/create/cn_on_pn/open/request/request_open_cn_on_pn_full.json").toObject()
 
-            val response: CnOnPnResponse = cnOnPnService.create(context = context, data = data)
+            val response: OpenCnOnPnResponse = cnOnPnService.create(context = context, data = data)
 
             assertEquals(firstLotIdExcepted, response.tender.lots[0].id)
             assertEquals(secondLotIdExcepted, response.tender.lots[1].id)
