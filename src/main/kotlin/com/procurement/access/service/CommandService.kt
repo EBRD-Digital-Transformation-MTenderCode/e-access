@@ -3,16 +3,16 @@ package com.procurement.access.service
 import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.model.Mode
 import com.procurement.access.application.model.TestMode
-import com.procurement.access.application.model.context.CheckCnOnPnContext
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
+import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CheckedCnOnPnGpa
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
-import com.procurement.access.application.service.CreateCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
+import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.application.service.cn.update.UpdateCnContext
 import com.procurement.access.application.service.cn.update.UpdateCnData
@@ -96,7 +96,7 @@ class CommandService(
     private val cnService: CNService,
     private val selectiveCNService: SelectiveCNService,
     private val cnOnPinService: CnOnPinService,
-    private val cnOnPnService: CnOnPnService,
+    private val cnOnPnService: OpenCnOnPnService,
     private val selectiveCnOnPnService: SelectiveCnOnPnService,
     private val negotiationCnOnPnService: NegotiationCnOnPnService,
     private val tenderService: TenderService,
@@ -229,7 +229,7 @@ class CommandService(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
-                        val context = CreateCnOnPnContext(
+                        val context = CreateOpenCnOnPnContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
                             stage = cm.stage,
@@ -238,7 +238,7 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: CnOnPnRequest = toObject(CnOnPnRequest::class.java, cm.data)
-                        val response: CnOnPnResponse = cnOnPnService.createCnOnPn(context = context, data = request)
+                        val response: CnOnPnResponse = cnOnPnService.create(context = context, data = request)
                             .also {
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN. Response: ${toJson(it)}")
@@ -552,7 +552,7 @@ class CommandService(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
-                        val context = CheckCnOnPnContext(
+                        val context = CheckOpenCnOnPnContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
                             country = cm.country,
@@ -560,7 +560,7 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: CnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
-                        val result: CheckedCnOnPn = cnOnPnService.checkCnOnPn(context = context, data = request)
+                        val result: CheckedCnOnPn = cnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")
 

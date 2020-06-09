@@ -1,10 +1,10 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.context.CheckCnOnPnContext
+import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.criteria.CreatedCriteria
 import com.procurement.access.application.model.criteria.toEntity
 import com.procurement.access.application.service.CheckedCnOnPn
-import com.procurement.access.application.service.CreateCnOnPnContext
+import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -50,14 +50,14 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Service
-class CnOnPnService(
+class OpenCnOnPnService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao,
     private val rulesService: RulesService,
     private val criteriaService: CriteriaService
 ) {
 
-    fun checkCnOnPn(context: CheckCnOnPnContext, data: CnOnPnRequest): CheckedCnOnPn {
+    fun check(context: CheckOpenCnOnPnContext, data: CnOnPnRequest): CheckedCnOnPn {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -189,7 +189,7 @@ class CnOnPnService(
         return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun createCnOnPn(context: CreateCnOnPnContext, data: CnOnPnRequest): CnOnPnResponse {
+    fun create(context: CreateOpenCnOnPnContext, data: CnOnPnRequest): CnOnPnResponse {
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -403,7 +403,7 @@ class CnOnPnService(
      */
     private fun checkBusinessFunctionPeriod(
         procuringEntityRequest: CnOnPnRequest.Tender.ProcuringEntity,
-        context: CheckCnOnPnContext
+        context: CheckOpenCnOnPnContext
     ) {
         fun dateError(): Nothing = throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
@@ -772,7 +772,7 @@ class CnOnPnService(
      * VR-1.0.1.7.7
      */
     private fun checkAuctionsAreRequired(
-        context: CheckCnOnPnContext,
+        context: CheckOpenCnOnPnContext,
         data: CnOnPnRequest,
         mainProcurementCategory: MainProcurementCategory
     ) {

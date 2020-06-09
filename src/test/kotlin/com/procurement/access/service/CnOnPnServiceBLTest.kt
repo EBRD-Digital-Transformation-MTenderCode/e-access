@@ -8,7 +8,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.application.service.CreateCnOnPnContext
+import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
@@ -37,7 +37,7 @@ class CnOnPnServiceBLTest {
             "json/service/create/cn_on_pn/entity/pn/entity_pn_with_items_with_documents.json"
     }
 
-    private lateinit var cnOnPnService: CnOnPnService
+    private lateinit var cnOnPnService: OpenCnOnPnService
     private val criteriaService = CriteriaServiceImpl()
     private val generationService: GenerationService = mock()
     private val tenderProcessDao: TenderProcessDao = mock()
@@ -45,7 +45,7 @@ class CnOnPnServiceBLTest {
 
     @BeforeAll
     fun init() {
-        cnOnPnService = CnOnPnService(generationService, tenderProcessDao, rulesService, criteriaService)
+        cnOnPnService = OpenCnOnPnService(generationService, tenderProcessDao, rulesService, criteriaService)
     }
 
     @AfterEach
@@ -98,7 +98,7 @@ class CnOnPnServiceBLTest {
             val data: CnOnPnRequest =
                 loadJson("json/dto/create/cn_on_pn/op/request/request_cn_on_pn_full.json").toObject()
 
-            val response: CnOnPnResponse = cnOnPnService.createCnOnPn(context = context, data = data)
+            val response: CnOnPnResponse = cnOnPnService.create(context = context, data = data)
 
             assertEquals(firstLotIdExcepted, response.tender.lots[0].id)
             assertEquals(secondLotIdExcepted, response.tender.lots[1].id)
@@ -131,7 +131,7 @@ class CnOnPnServiceBLTest {
 
 fun createContext(
     startDate: String = ContextGenerator.START_DATE
-): CreateCnOnPnContext = CreateCnOnPnContext(
+): CreateOpenCnOnPnContext = CreateOpenCnOnPnContext(
     cpid = ContextGenerator.CPID,
     previousStage = ContextGenerator.PREV_STAGE,
     stage = ContextGenerator.STAGE,
