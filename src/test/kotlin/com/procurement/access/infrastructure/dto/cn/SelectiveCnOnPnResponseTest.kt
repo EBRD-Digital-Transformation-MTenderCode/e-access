@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.dto.cn
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import org.junit.jupiter.api.Test
 
-class CreateCnOnPnGpaResponseTest : AbstractDTOTestBase<CreateCnOnPnGpaResponse>(CreateCnOnPnGpaResponse::class.java) {
+class SelectiveCnOnPnResponseTest : AbstractDTOTestBase<SelectiveCnOnPnResponse>(SelectiveCnOnPnResponse::class.java) {
 
     @Test
     fun fully() {

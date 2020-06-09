@@ -44,7 +44,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class CreateCnOnPnGpaResponse(
+data class SelectiveCnOnPnResponse(
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String

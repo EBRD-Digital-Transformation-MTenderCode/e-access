@@ -33,8 +33,8 @@ import com.procurement.access.exception.ErrorType.INVALID_PROCURING_ENTITY
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -202,7 +202,7 @@ class CnOnPnGpaService(
         return CheckedCnOnPnGpa(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun createCnOnPnGpa(context: CreateCnOnPnGpaContext, data: SelectiveCnOnPnRequest): CreateCnOnPnGpaResponse {
+    fun createCnOnPnGpa(context: CreateCnOnPnGpaContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -1173,46 +1173,46 @@ class CnOnPnGpaService(
             .toMap()
     }
 
-    private fun getResponse(cn: CNEntity): CreateCnOnPnGpaResponse {
-        return CreateCnOnPnGpaResponse(
+    private fun getResponse(cn: CNEntity): SelectiveCnOnPnResponse {
+        return SelectiveCnOnPnResponse(
             ocid = cn.ocid,
             planning = cn.planning.let { planning ->
-                CreateCnOnPnGpaResponse.Planning(
+                SelectiveCnOnPnResponse.Planning(
                     rationale = planning.rationale,
                     budget = planning.budget.let { budget ->
-                        CreateCnOnPnGpaResponse.Planning.Budget(
+                        SelectiveCnOnPnResponse.Planning.Budget(
                             description = budget.description,
                             amount = budget.amount.let { amount ->
-                                CreateCnOnPnGpaResponse.Planning.Budget.Amount(
+                                SelectiveCnOnPnResponse.Planning.Budget.Amount(
                                     amount = amount.amount,
                                     currency = amount.currency
                                 )
                             },
                             isEuropeanUnionFunded = budget.isEuropeanUnionFunded,
                             budgetBreakdowns = budget.budgetBreakdowns.map { budgetBreakdown ->
-                                CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown(
+                                SelectiveCnOnPnResponse.Planning.Budget.BudgetBreakdown(
                                     id = budgetBreakdown.id,
                                     description = budgetBreakdown.description,
                                     amount = budgetBreakdown.amount.let { amount ->
-                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.Amount(
+                                        SelectiveCnOnPnResponse.Planning.Budget.BudgetBreakdown.Amount(
                                             amount = amount.amount,
                                             currency = amount.currency
                                         )
                                     },
                                     period = budgetBreakdown.period.let { period ->
-                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.Period(
+                                        SelectiveCnOnPnResponse.Planning.Budget.BudgetBreakdown.Period(
                                             startDate = period.startDate,
                                             endDate = period.endDate
                                         )
                                     },
                                     sourceParty = budgetBreakdown.sourceParty.let { sourceParty ->
-                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.SourceParty(
+                                        SelectiveCnOnPnResponse.Planning.Budget.BudgetBreakdown.SourceParty(
                                             id = sourceParty.id,
                                             name = sourceParty.name
                                         )
                                     },
                                     europeanUnionFunding = budgetBreakdown.europeanUnionFunding?.let { europeanUnionFunding ->
-                                        CreateCnOnPnGpaResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                        SelectiveCnOnPnResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
                                             projectIdentifier = europeanUnionFunding.projectIdentifier,
                                             projectName = europeanUnionFunding.projectName,
                                             uri = europeanUnionFunding.uri
@@ -1225,14 +1225,14 @@ class CnOnPnGpaService(
                 )
             },
             tender = cn.tender.let { tender ->
-                CreateCnOnPnGpaResponse.Tender(
+                SelectiveCnOnPnResponse.Tender(
                     id = tender.id,
                     status = tender.status,
                     statusDetails = tender.statusDetails,
                     title = tender.title,
                     description = tender.description,
                     classification = tender.classification.let { classification ->
-                        CreateCnOnPnGpaResponse.Tender.Classification(
+                        SelectiveCnOnPnResponse.Tender.Classification(
                             scheme = classification.scheme,
                             id = classification.id,
                             description = classification.description
@@ -1240,39 +1240,39 @@ class CnOnPnGpaService(
                     },
                     requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
                     acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
-                        CreateCnOnPnGpaResponse.Tender.AcceleratedProcedure(
+                        SelectiveCnOnPnResponse.Tender.AcceleratedProcedure(
                             isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
                         )
                     },
                     designContest = tender.designContest.let { designContest ->
-                        CreateCnOnPnGpaResponse.Tender.DesignContest(
+                        SelectiveCnOnPnResponse.Tender.DesignContest(
                             serviceContractAward = designContest.serviceContractAward
                         )
                     },
                     electronicWorkflows = tender.electronicWorkflows.let { electronicWorkflows ->
-                        CreateCnOnPnGpaResponse.Tender.ElectronicWorkflows(
+                        SelectiveCnOnPnResponse.Tender.ElectronicWorkflows(
                             useOrdering = electronicWorkflows.useOrdering,
                             usePayment = electronicWorkflows.usePayment,
                             acceptInvoicing = electronicWorkflows.acceptInvoicing
                         )
                     },
                     jointProcurement = tender.jointProcurement.let { jointProcurement ->
-                        CreateCnOnPnGpaResponse.Tender.JointProcurement(
+                        SelectiveCnOnPnResponse.Tender.JointProcurement(
                             isJointProcurement = jointProcurement.isJointProcurement
                         )
                     },
                     procedureOutsourcing = tender.procedureOutsourcing.let { procedureOutsourcing ->
-                        CreateCnOnPnGpaResponse.Tender.ProcedureOutsourcing(
+                        SelectiveCnOnPnResponse.Tender.ProcedureOutsourcing(
                             procedureOutsourced = procedureOutsourcing.procedureOutsourced
                         )
                     },
                     framework = tender.framework.let { framework ->
-                        CreateCnOnPnGpaResponse.Tender.Framework(
+                        SelectiveCnOnPnResponse.Tender.Framework(
                             isAFramework = framework.isAFramework
                         )
                     },
                     dynamicPurchasingSystem = tender.dynamicPurchasingSystem.let { dynamicPurchasingSystem ->
-                        CreateCnOnPnGpaResponse.Tender.DynamicPurchasingSystem(
+                        SelectiveCnOnPnResponse.Tender.DynamicPurchasingSystem(
                             hasDynamicPurchasingSystem = dynamicPurchasingSystem.hasDynamicPurchasingSystem
                         )
                     },
@@ -1284,22 +1284,22 @@ class CnOnPnGpaService(
                     mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
-                        CreateCnOnPnGpaResponse.Tender.ContractPeriod(
+                        SelectiveCnOnPnResponse.Tender.ContractPeriod(
                             startDate = contractPeriod.startDate,
                             endDate = contractPeriod.endDate
                         )
                     },
                     procurementMethodModalities = tender.procurementMethodModalities?.toList(),
                     electronicAuctions = tender.electronicAuctions?.let { electronicAuctions ->
-                        CreateCnOnPnGpaResponse.Tender.ElectronicAuctions(
+                        SelectiveCnOnPnResponse.Tender.ElectronicAuctions(
                             details = electronicAuctions.details.map { detail ->
-                                CreateCnOnPnGpaResponse.Tender.ElectronicAuctions.Detail(
+                                SelectiveCnOnPnResponse.Tender.ElectronicAuctions.Detail(
                                     id = detail.id,
                                     relatedLot = detail.relatedLot,
                                     electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
-                                        CreateCnOnPnGpaResponse.Tender.ElectronicAuctions.Detail.Modalities(
+                                        SelectiveCnOnPnResponse.Tender.ElectronicAuctions.Detail.Modalities(
                                             eligibleMinimumDifference = modality.eligibleMinimumDifference.let { emd ->
-                                                CreateCnOnPnGpaResponse.Tender.ElectronicAuctions.Detail.Modalities.EligibleMinimumDifference(
+                                                SelectiveCnOnPnResponse.Tender.ElectronicAuctions.Detail.Modalities.EligibleMinimumDifference(
                                                     amount = emd.amount,
                                                     currency = emd.currency
                                                 )
@@ -1311,11 +1311,11 @@ class CnOnPnGpaService(
                         )
                     },
                     procuringEntity = tender.procuringEntity.let { procuringEntity ->
-                        CreateCnOnPnGpaResponse.Tender.ProcuringEntity(
+                        SelectiveCnOnPnResponse.Tender.ProcuringEntity(
                             id = procuringEntity.id,
                             name = procuringEntity.name,
                             identifier = procuringEntity.identifier.let { identifier ->
-                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Identifier(
+                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Identifier(
                                     scheme = identifier.scheme,
                                     id = identifier.id,
                                     legalName = identifier.legalName,
@@ -1323,7 +1323,7 @@ class CnOnPnGpaService(
                                 )
                             },
                             additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
-                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
                                     scheme = additionalIdentifier.scheme,
                                     id = additionalIdentifier.id,
                                     legalName = additionalIdentifier.legalName,
@@ -1331,13 +1331,13 @@ class CnOnPnGpaService(
                                 )
                             },
                             address = procuringEntity.address.let { address ->
-                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address(
+                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Address(
                                     streetAddress = address.streetAddress,
                                     postalCode = address.postalCode,
                                     addressDetails = address.addressDetails.let { addressDetails ->
-                                        CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                                        SelectiveCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails(
                                             country = addressDetails.country.let { country ->
-                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
                                                     scheme = country.scheme,
                                                     id = country.id,
                                                     description = country.description,
@@ -1345,7 +1345,7 @@ class CnOnPnGpaService(
                                                 )
                                             },
                                             region = addressDetails.region.let { region ->
-                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
                                                     scheme = region.scheme,
                                                     id = region.id,
                                                     description = region.description,
@@ -1353,7 +1353,7 @@ class CnOnPnGpaService(
                                                 )
                                             },
                                             locality = addressDetails.locality.let { locality ->
-                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
                                                     scheme = locality.scheme,
                                                     id = locality.id,
                                                     description = locality.description,
@@ -1366,7 +1366,7 @@ class CnOnPnGpaService(
                                 )
                             },
                             contactPoint = procuringEntity.contactPoint.let { contactPoint ->
-                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.ContactPoint(
+                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.ContactPoint(
                                     name = contactPoint.name,
                                     email = contactPoint.email,
                                     telephone = contactPoint.telephone,
@@ -1375,25 +1375,25 @@ class CnOnPnGpaService(
                                 )
                             },
                             persones = procuringEntity.persones?.map { persone ->
-                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone(
+                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Persone(
                                     id = persone.id,
                                     name = persone.name,
                                     title = persone.title,
-                                    identifier = CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.Identifier(
+                                    identifier = SelectiveCnOnPnResponse.Tender.ProcuringEntity.Persone.Identifier(
                                         id = persone.identifier.id,
                                         scheme = persone.identifier.scheme,
                                         uri = persone.identifier.uri
                                     ),
                                     businessFunctions = persone.businessFunctions.map { businessFunction ->
-                                        CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                        SelectiveCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction(
                                             id = businessFunction.id,
                                             type = businessFunction.type,
                                             jobTitle = businessFunction.jobTitle,
-                                            period = CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                            period = SelectiveCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
                                                 startDate = businessFunction.period.startDate
                                             ),
                                             documents = businessFunction.documents?.map { document ->
-                                                CreateCnOnPnGpaResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                SelectiveCnOnPnResponse.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
                                                     id = document.id,
                                                     documentType = document.documentType,
                                                     title = document.title,
@@ -1408,24 +1408,24 @@ class CnOnPnGpaService(
                         )
                     },
                     value = tender.value.let { value ->
-                        CreateCnOnPnGpaResponse.Tender.Value(
+                        SelectiveCnOnPnResponse.Tender.Value(
                             amount = value.amount,
                             currency = value.currency
                         )
                     },
                     lotGroups = tender.lotGroups.map { lotGroup ->
-                        CreateCnOnPnGpaResponse.Tender.LotGroup(
+                        SelectiveCnOnPnResponse.Tender.LotGroup(
                             optionToCombine = lotGroup.optionToCombine
                         )
                     },
                     criteria = tender.criteria?.map { criterion ->
-                        CreateCnOnPnGpaResponse.Tender.Criteria(
+                        SelectiveCnOnPnResponse.Tender.Criteria(
                             id = criterion.id,
                             title = criterion.title,
                             description = criterion.description,
                             source = criterion.source,
                             requirementGroups = criterion.requirementGroups.map {
-                                CreateCnOnPnGpaResponse.Tender.Criteria.RequirementGroup(
+                                SelectiveCnOnPnResponse.Tender.Criteria.RequirementGroup(
                                     id = it.id,
                                     description = it.description,
                                     requirements = it.requirements.map { requirement ->
@@ -1450,14 +1450,14 @@ class CnOnPnGpaService(
                         )
                     },
                     conversions = tender.conversions?.map { conversion ->
-                        CreateCnOnPnGpaResponse.Tender.Conversion(
+                        SelectiveCnOnPnResponse.Tender.Conversion(
                             id = conversion.id,
                             relatedItem = conversion.relatedItem,
                             relatesTo = conversion.relatesTo,
                             rationale = conversion.rationale,
                             description = conversion.description,
                             coefficients = conversion.coefficients.map { coefficient ->
-                                CreateCnOnPnGpaResponse.Tender.Conversion.Coefficient(
+                                SelectiveCnOnPnResponse.Tender.Conversion.Coefficient(
                                     id = coefficient.id,
                                     value = coefficient.value,
                                     coefficient = coefficient.coefficient
@@ -1466,7 +1466,7 @@ class CnOnPnGpaService(
                         )
                     },
                     lots = tender.lots.map { lot ->
-                        CreateCnOnPnGpaResponse.Tender.Lot(
+                        SelectiveCnOnPnResponse.Tender.Lot(
                             id = lot.id,
                             internalId = lot.internalId,
                             title = lot.title,
@@ -1474,48 +1474,48 @@ class CnOnPnGpaService(
                             status = lot.status,
                             statusDetails = lot.statusDetails,
                             value = lot.value.let { value ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.Value(
+                                SelectiveCnOnPnResponse.Tender.Lot.Value(
                                     amount = value.amount,
                                     currency = value.currency
                                 )
                             },
                             options = lot.options.map { option ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.Option(
+                                SelectiveCnOnPnResponse.Tender.Lot.Option(
                                     hasOptions = option.hasOptions
                                 )
                             },
                             variants = lot.variants.map { variant ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.Variant(
+                                SelectiveCnOnPnResponse.Tender.Lot.Variant(
                                     hasVariants = variant.hasVariants
                                 )
                             },
                             renewals = lot.renewals.map { renewal ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.Renewal(
+                                SelectiveCnOnPnResponse.Tender.Lot.Renewal(
                                     hasRenewals = renewal.hasRenewals
                                 )
                             },
                             recurrentProcurement = lot.recurrentProcurement.map { recurrentProcurement ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.RecurrentProcurement(
+                                SelectiveCnOnPnResponse.Tender.Lot.RecurrentProcurement(
                                     isRecurrent = recurrentProcurement.isRecurrent
                                 )
                             },
                             contractPeriod = lot.contractPeriod.let { contractPeriod ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.ContractPeriod(
+                                SelectiveCnOnPnResponse.Tender.Lot.ContractPeriod(
                                     startDate = contractPeriod.startDate,
                                     endDate = contractPeriod.endDate
                                 )
                             },
                             placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                                CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance(
+                                SelectiveCnOnPnResponse.Tender.Lot.PlaceOfPerformance(
                                     description = placeOfPerformance.description,
                                     address = placeOfPerformance.address.let { address ->
-                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address(
+                                        SelectiveCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address(
                                             streetAddress = address.streetAddress,
                                             postalCode = address.postalCode,
                                             addressDetails = address.addressDetails.let { addressDetails ->
-                                                CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                SelectiveCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
                                                     country = addressDetails.country.let { country ->
-                                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                        SelectiveCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
                                                             scheme = country.scheme,
                                                             id = country.id,
                                                             description = country.description,
@@ -1523,7 +1523,7 @@ class CnOnPnGpaService(
                                                         )
                                                     },
                                                     region = addressDetails.region.let { region ->
-                                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                        SelectiveCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
                                                             scheme = region.scheme,
                                                             id = region.id,
                                                             description = region.description,
@@ -1531,7 +1531,7 @@ class CnOnPnGpaService(
                                                         )
                                                     },
                                                     locality = addressDetails.locality.let { locality ->
-                                                        CreateCnOnPnGpaResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                        SelectiveCnOnPnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
                                                             scheme = locality.scheme,
                                                             id = locality.id,
                                                             description = locality.description,
@@ -1548,18 +1548,18 @@ class CnOnPnGpaService(
                         )
                     },
                     items = tender.items.map { item ->
-                        CreateCnOnPnGpaResponse.Tender.Item(
+                        SelectiveCnOnPnResponse.Tender.Item(
                             id = item.id,
                             internalId = item.internalId,
                             classification = item.classification.let { classification ->
-                                CreateCnOnPnGpaResponse.Tender.Item.Classification(
+                                SelectiveCnOnPnResponse.Tender.Item.Classification(
                                     scheme = classification.scheme,
                                     id = classification.id,
                                     description = classification.description
                                 )
                             },
                             additionalClassifications = item.additionalClassifications?.map { additionalClassification ->
-                                CreateCnOnPnGpaResponse.Tender.Item.AdditionalClassification(
+                                SelectiveCnOnPnResponse.Tender.Item.AdditionalClassification(
                                     scheme = additionalClassification.scheme,
                                     id = additionalClassification.id,
                                     description = additionalClassification.description
@@ -1567,7 +1567,7 @@ class CnOnPnGpaService(
                             },
                             quantity = item.quantity,
                             unit = item.unit.let { unit ->
-                                CreateCnOnPnGpaResponse.Tender.Item.Unit(
+                                SelectiveCnOnPnResponse.Tender.Item.Unit(
                                     id = unit.id,
                                     name = unit.name
                                 )
@@ -1582,7 +1582,7 @@ class CnOnPnGpaService(
                     submissionMethodRationale = tender.submissionMethodRationale,
                     submissionMethodDetails = tender.submissionMethodDetails,
                     documents = tender.documents.map { document ->
-                        CreateCnOnPnGpaResponse.Tender.Document(
+                        SelectiveCnOnPnResponse.Tender.Document(
                             documentType = document.documentType,
                             id = document.id,
                             title = document.title,
@@ -1592,13 +1592,13 @@ class CnOnPnGpaService(
                     },
                     secondStage = tender.secondStage
                         ?.let { secondStage ->
-                            CreateCnOnPnGpaResponse.Tender.SecondStage(
+                            SelectiveCnOnPnResponse.Tender.SecondStage(
                                 minimumCandidates = secondStage.minimumCandidates,
                                 maximumCandidates = secondStage.maximumCandidates
                             )
                         },
                     otherCriteria = tender.otherCriteria?.let { otherCriteria ->
-                        CreateCnOnPnGpaResponse.Tender.OtherCriteria(
+                        SelectiveCnOnPnResponse.Tender.OtherCriteria(
                             reductionCriteria = otherCriteria.reductionCriteria,
                             qualificationSystemMethods = otherCriteria.qualificationSystemMethods
                         )
