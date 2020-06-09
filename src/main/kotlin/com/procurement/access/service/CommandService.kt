@@ -4,9 +4,9 @@ import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.model.Mode
 import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.model.context.CheckCnOnPnContext
-import com.procurement.access.application.model.context.CheckCnOnPnGpaContext
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
-import com.procurement.access.application.model.context.CreateCnOnPnGpaContext
+import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
+import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.service.CheckedCnOnPn
 import com.procurement.access.application.service.CheckedCnOnPnGpa
@@ -247,7 +247,7 @@ class CommandService(
                     }
 
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
-                        val context = CreateCnOnPnGpaContext(
+                        val context = CreateSelectiveCnOnPnContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
                             stage = cm.stage,
@@ -256,7 +256,7 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val response: SelectiveCnOnPnResponse = selectiveCnOnPnService.createCnOnPnGpa(context = context, data = request)
+                        val response: SelectiveCnOnPnResponse = selectiveCnOnPnService.create(context = context, data = request)
                             .also {
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
@@ -596,7 +596,7 @@ class CommandService(
                     }
 
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
-                        val context = CheckCnOnPnGpaContext(
+                        val context = CheckSelectiveCnOnPnContext(
                             cpid = cm.cpid,
                             previousStage = cm.prevStage,
                             country = cm.country,
@@ -604,7 +604,7 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val result: CheckedCnOnPnGpa = selectiveCnOnPnService.checkCnOnPnGpa(context = context, data = request)
+                        val result: CheckedCnOnPnGpa = selectiveCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Result: ${toJson(result)}")
 

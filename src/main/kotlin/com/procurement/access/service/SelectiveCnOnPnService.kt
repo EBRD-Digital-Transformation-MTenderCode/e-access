@@ -1,7 +1,7 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.context.CheckCnOnPnGpaContext
-import com.procurement.access.application.model.context.CreateCnOnPnGpaContext
+import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
+import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPnGpa
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
@@ -56,7 +56,7 @@ class SelectiveCnOnPnService(
     private val rulesService: RulesService
 ) {
 
-    fun checkCnOnPnGpa(context: CheckCnOnPnGpaContext, data: SelectiveCnOnPnRequest): CheckedCnOnPnGpa {
+    fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedCnOnPnGpa {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -202,7 +202,7 @@ class SelectiveCnOnPnService(
         return CheckedCnOnPnGpa(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun createCnOnPnGpa(context: CreateCnOnPnGpaContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
+    fun create(context: CreateSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -1874,7 +1874,7 @@ class SelectiveCnOnPnService(
      */
     private fun checkBusinessFunctionPeriod(
         procuringEntityRequest: SelectiveCnOnPnRequest.Tender.ProcuringEntity,
-        context: CheckCnOnPnGpaContext
+        context: CheckSelectiveCnOnPnContext
     ) {
         fun dateError(): Nothing = throw ErrorException(
             error = INVALID_PROCURING_ENTITY,
@@ -2233,7 +2233,7 @@ class SelectiveCnOnPnService(
      * VR-1.0.1.7.7
      */
     private fun checkAuctionsAreRequired(
-        context: CheckCnOnPnGpaContext,
+        context: CheckSelectiveCnOnPnContext,
         data: SelectiveCnOnPnRequest,
         mainProcurementCategory: MainProcurementCategory
     ) {
