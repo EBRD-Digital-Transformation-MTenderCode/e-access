@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedCnOnPnGpa
+import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
@@ -55,7 +56,8 @@ import java.time.LocalDateTime
 class SelectiveCnOnPnService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao,
-    private val rulesService: RulesService
+    private val rulesService: RulesService,
+    private val criteriaService: CriteriaService
 ) {
 
     fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedCnOnPnGpa {
@@ -200,6 +202,8 @@ class SelectiveCnOnPnService(
             )
             /** End check Documents */
         }
+
+        criteriaService.check(data)
 
         return CheckedCnOnPnGpa(requireAuction = data.tender.electronicAuctions != null)
     }
