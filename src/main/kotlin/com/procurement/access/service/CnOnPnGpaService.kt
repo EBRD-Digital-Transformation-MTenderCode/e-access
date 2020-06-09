@@ -34,8 +34,8 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
-import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
+import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -203,7 +203,7 @@ class CnOnPnGpaService(
         return CheckedCnOnPnGpa(requireAuction = data.tender.electronicAuctions != null)
     }
 
-    fun createCnOnPnGpa(context: CreateCnOnPnGpaContext, data: CreateCnOnPnGpaRequest): CreateCnOnPnGpaResponse {
+    fun createCnOnPnGpa(context: CreateCnOnPnGpaContext, data: SelectiveCnOnPnRequest): CreateCnOnPnGpaResponse {
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -239,7 +239,7 @@ class CnOnPnGpaService(
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
-        request: CreateCnOnPnGpaRequest,
+        request: SelectiveCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
         //BR-3.6.5
@@ -313,7 +313,7 @@ class CnOnPnGpaService(
         )
     }
 
-    private fun generatePermanentRequirementIds(criteria: List<CreateCnOnPnGpaRequest.Tender.Criteria>?): Map<String, String> =
+    private fun generatePermanentRequirementIds(criteria: List<SelectiveCnOnPnRequest.Tender.Criteria>?): Map<String, String> =
         criteria
             ?.asSequence()
             ?.flatMap { criterion ->
@@ -329,7 +329,7 @@ class CnOnPnGpaService(
             ?: emptyMap()
 
     private fun createTenderBasedPNWithItems(
-        request: CreateCnOnPnGpaRequest,
+        request: SelectiveCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
         /** Begin BR-3.8.3 */
@@ -394,7 +394,7 @@ class CnOnPnGpaService(
 
 
     private fun convertRequestItems(
-        itemsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Item>,
+        itemsFromRequest: List<SelectiveCnOnPnRequest.Tender.Item>,
         relatedTemporalWithPermanentLotId: Map<String, String>,
         relatedTemporalWithPermanentItemId: Map<String, String>
     ): List<CNEntity.Tender.Item> {
@@ -436,7 +436,7 @@ class CnOnPnGpaService(
      * BR-3.8.3
      */
     private fun convertRequestLots(
-        tender: CreateCnOnPnGpaRequest.Tender,
+        tender: SelectiveCnOnPnRequest.Tender,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Lot> {
         return tender.lots.map { lot ->
@@ -523,7 +523,7 @@ class CnOnPnGpaService(
      * BR-3.8.3
      */
     private fun classificationFromRequest(
-        classificationFromRequest: CreateCnOnPnGpaRequest.Tender.Classification
+        classificationFromRequest: SelectiveCnOnPnRequest.Tender.Classification
     ): CNEntity.Tender.Classification {
         return classificationFromRequest.let {
             CNEntity.Tender.Classification(
@@ -715,7 +715,7 @@ class CnOnPnGpaService(
     }
 
     private fun criteriaFromRequest(
-        criteriaFromRequest: List<CreateCnOnPnGpaRequest.Tender.Criteria>?,
+        criteriaFromRequest: List<SelectiveCnOnPnRequest.Tender.Criteria>?,
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Criteria>? {
         return criteriaFromRequest?.map { criterion ->
@@ -752,12 +752,12 @@ class CnOnPnGpaService(
     }
 
     private fun updateDocuments(
-        documentsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Document>,
+        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>,
         documentsFromDB: List<PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return if (documentsFromDB.isNotEmpty()) {
-            val documentsFromRequestById: Map<String, CreateCnOnPnGpaRequest.Tender.Document> =
+            val documentsFromRequestById: Map<String, SelectiveCnOnPnRequest.Tender.Document> =
                 documentsFromRequest.associateBy { document -> document.id }
             val existsDocumentsById: Map<String, PNEntity.Tender.Document> =
                 documentsFromDB.associateBy { document -> document.id }
@@ -768,7 +768,7 @@ class CnOnPnGpaService(
                 relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
             )
 
-            val newDocumentsFromRequest: Set<CreateCnOnPnGpaRequest.Tender.Document> = extractNewDocuments(
+            val newDocumentsFromRequest: Set<SelectiveCnOnPnRequest.Tender.Document> = extractNewDocuments(
                 documentsFromRequest = documentsFromRequest,
                 existsDocumentsById = existsDocumentsById
             )
@@ -788,7 +788,7 @@ class CnOnPnGpaService(
     }
 
     private fun updateExistsDocuments(
-        documentsFromRequestById: Map<String, CreateCnOnPnGpaRequest.Tender.Document>,
+        documentsFromRequestById: Map<String, SelectiveCnOnPnRequest.Tender.Document>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): Set<CNEntity.Tender.Document> {
@@ -828,16 +828,16 @@ class CnOnPnGpaService(
     }
 
     private fun extractNewDocuments(
-        documentsFromRequest: Collection<CreateCnOnPnGpaRequest.Tender.Document>,
+        documentsFromRequest: Collection<SelectiveCnOnPnRequest.Tender.Document>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>
-    ): Set<CreateCnOnPnGpaRequest.Tender.Document> {
+    ): Set<SelectiveCnOnPnRequest.Tender.Document> {
         return documentsFromRequest.asSequence()
             .filter { document -> !existsDocumentsById.containsKey(document.id) }
             .toSet()
     }
 
     private fun convertNewDocuments(
-        newDocumentsFromRequest: Collection<CreateCnOnPnGpaRequest.Tender.Document>,
+        newDocumentsFromRequest: Collection<SelectiveCnOnPnRequest.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return newDocumentsFromRequest.map { document ->
@@ -846,7 +846,7 @@ class CnOnPnGpaService(
     }
 
     private fun convertNewDocument(
-        newDocumentFromRequest: CreateCnOnPnGpaRequest.Tender.Document,
+        newDocumentFromRequest: SelectiveCnOnPnRequest.Tender.Document,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): CNEntity.Tender.Document {
         val relatedLots = getPermanentLotsIds(
@@ -865,7 +865,7 @@ class CnOnPnGpaService(
     }
 
     private fun tender(
-        request: CreateCnOnPnGpaRequest,
+        request: SelectiveCnOnPnRequest,
         pnEntity: PNEntity,
         classification: CNEntity.Tender.Classification,
         criteria: List<CNEntity.Tender.Criteria>?,
@@ -1092,7 +1092,7 @@ class CnOnPnGpaService(
     }
 
     private fun conversionsFromRequest(
-        conversionsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Conversion>?,
+        conversionsFromRequest: List<SelectiveCnOnPnRequest.Tender.Conversion>?,
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Conversion>? {
         return conversionsFromRequest?.map { conversion ->
@@ -1119,7 +1119,7 @@ class CnOnPnGpaService(
     }
 
     private fun convertElectronicAuctionsFromRequest(
-        tenderFromRequest: CreateCnOnPnGpaRequest.Tender,
+        tenderFromRequest: SelectiveCnOnPnRequest.Tender,
         relatedTemporalWithPermanentLotId: Map<String, String> = emptyMap()
     ): CNEntity.Tender.ElectronicAuctions? {
         return tenderFromRequest.electronicAuctions?.let {
@@ -1156,7 +1156,7 @@ class CnOnPnGpaService(
      * Постоянные "ID" (tender/lot/id) лотов формируются как уникальные для данного контрактного процесса
      * 32-символьные идентификаторы.
      */
-    private fun generatePermanentLotId(lots: List<CreateCnOnPnGpaRequest.Tender.Lot>): Map<String, String> {
+    private fun generatePermanentLotId(lots: List<SelectiveCnOnPnRequest.Tender.Lot>): Map<String, String> {
         return lots.asSequence()
             .map { lot ->
                 val permanentId = generationService.generatePermanentLotId() //BR-3.8.6
@@ -1165,7 +1165,7 @@ class CnOnPnGpaService(
             .toMap()
     }
 
-    private fun generatePermanentItemId(itemsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Item>): Map<String, String> {
+    private fun generatePermanentItemId(itemsFromRequest: List<SelectiveCnOnPnRequest.Tender.Item>): Map<String, String> {
         return itemsFromRequest.asSequence()
             .map { item ->
                 val permanentId = generationService.generatePermanentItemId()
@@ -2294,7 +2294,7 @@ class CnOnPnGpaService(
      *      of all lot objects from Request.
      *      eAccess sets "Currency" (tender.value.currency) == "Currency" (tender.lot.value.currency) from Request.
      */
-    private fun calculateTenderValueFromLotsGpaCheck(lotsFromRequest: List<CreateCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.Value {
+    private fun calculateTenderValueFromLotsGpaCheck(lotsFromRequest: List<SelectiveCnOnPnRequest.Tender.Lot>): CNEntity.Tender.Value {
         val currency = lotsFromRequest.elementAt(0).value.currency
         val totalAmount = lotsFromRequest.fold(BigDecimal.ZERO) { acc, lot ->
             acc.plus(lot.value.amount)
@@ -2309,7 +2309,7 @@ class CnOnPnGpaService(
         return CNEntity.Tender.ContractPeriod(startDate, endDate)
     }
 
-    private fun calculationTenderContractPeriodGpaCreate(lots: List<CreateCnOnPnGpaRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
+    private fun calculationTenderContractPeriodGpaCreate(lots: List<SelectiveCnOnPnRequest.Tender.Lot>): CNEntity.Tender.ContractPeriod {
         val contractPeriodSet = lots.asSequence().map { it.contractPeriod }.toSet()
         val startDate = contractPeriodSet.minBy { it.startDate }!!.startDate
         val endDate = contractPeriodSet.maxBy { it.endDate }!!.endDate

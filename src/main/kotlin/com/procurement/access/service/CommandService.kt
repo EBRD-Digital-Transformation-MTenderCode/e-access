@@ -41,10 +41,10 @@ import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.CnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaRequest
 import com.procurement.access.infrastructure.dto.cn.CreateCnOnPnGpaResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
 import com.procurement.access.infrastructure.dto.cn.UpdateSelectiveCnRequest
 import com.procurement.access.infrastructure.dto.cn.update.UpdateCnResponse
@@ -256,7 +256,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: CreateCnOnPnGpaRequest = toObject(CreateCnOnPnGpaRequest::class.java, cm.data)
+                        val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
                         val response: CreateCnOnPnGpaResponse = cnOnPnGpaService.createCnOnPnGpa(context = context, data = request)
                             .also {
                                 if (log.isDebugEnabled)
