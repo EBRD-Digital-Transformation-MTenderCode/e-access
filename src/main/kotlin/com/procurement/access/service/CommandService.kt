@@ -275,7 +275,7 @@ class CommandService(
                         )
                         val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
                         val response: NegotiationCnOnPnResponse =
-                            negotiationCnOnPnService.createNegotiationCnOnPn(context = context, data = request)
+                            negotiationCnOnPnService.create(context = context, data = request)
                                 .also {
                                     if (log.isDebugEnabled)
                                         log.debug("Created CN on PN. Response: ${toJson(it)}")
@@ -582,7 +582,7 @@ class CommandService(
                         )
                         val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
                         val result: CheckedNegotiationCnOnPn =
-                            negotiationCnOnPnService.checkNegotiationCnOnPn(context = context, data = request)
+                            negotiationCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check negotiation CN on PN. Result: ${toJson(result)}")
 
