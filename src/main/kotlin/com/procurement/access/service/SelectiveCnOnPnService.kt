@@ -50,7 +50,7 @@ import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @Service
-class CnOnPnGpaService(
+class SelectiveCnOnPnService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao,
     private val rulesService: RulesService

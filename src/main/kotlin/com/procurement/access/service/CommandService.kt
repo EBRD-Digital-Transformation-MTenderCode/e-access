@@ -97,7 +97,7 @@ class CommandService(
     private val selectiveCNService: SelectiveCNService,
     private val cnOnPinService: CnOnPinService,
     private val cnOnPnService: CnOnPnService,
-    private val cnOnPnGpaService: CnOnPnGpaService,
+    private val selectiveCnOnPnService: SelectiveCnOnPnService,
     private val negotiationCnOnPnService: NegotiationCnOnPnService,
     private val tenderService: TenderService,
     private val lotsService: LotsService,
@@ -256,7 +256,7 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val response: SelectiveCnOnPnResponse = cnOnPnGpaService.createCnOnPnGpa(context = context, data = request)
+                        val response: SelectiveCnOnPnResponse = selectiveCnOnPnService.createCnOnPnGpa(context = context, data = request)
                             .also {
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
@@ -604,7 +604,7 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val result: CheckedCnOnPnGpa = cnOnPnGpaService.checkCnOnPnGpa(context = context, data = request)
+                        val result: CheckedCnOnPnGpa = selectiveCnOnPnService.checkCnOnPnGpa(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Result: ${toJson(result)}")
 
