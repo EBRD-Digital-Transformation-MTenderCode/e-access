@@ -24,13 +24,13 @@ import com.procurement.access.infrastructure.service.command.checkMinMaxValue
 import com.procurement.access.infrastructure.service.command.checkRequirements
 
 interface CriteriaService {
-    fun checkCriteria(data: CnOnPnRequest)
-    fun createCriteria(tender: CnOnPnRequest.Tender): CreatedCriteria
+    fun check(data: CnOnPnRequest)
+    fun create(tender: CnOnPnRequest.Tender): CreatedCriteria
 }
 
 class CriteriaServiceImpl : CriteriaService {
 
-    override fun checkCriteria(data: CnOnPnRequest) {
+    override fun check(data: CnOnPnRequest) {
 
         data.checkConversionWithoutCriteria()
             .checkAwardCriteriaDetailsAreRequired()  // FReq-1.1.1.22
@@ -55,7 +55,7 @@ class CriteriaServiceImpl : CriteriaService {
             .checkArrays()                     // FReq-1.1.1.16
     }
 
-    override fun createCriteria(tender: CnOnPnRequest.Tender): CreatedCriteria =
+    override fun create(tender: CnOnPnRequest.Tender): CreatedCriteria =
         buildCriteria(
             awardCriteria = tender.awardCriteria!!,
             awardCriteriaDetails = tender.awardCriteriaDetails,

@@ -184,7 +184,7 @@ class OpenCnOnPnService(
             /** End check Documents */
         }
 
-        criteriaService.checkCriteria(data)
+        criteriaService.check(data)
 
         return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
@@ -834,7 +834,7 @@ class OpenCnOnPnService(
         if ((request.tender.criteria == null) && (conversions != null))
             throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
 
-        val criteriaWithPermanentId = criteriaService.createCriteria(request.tender)
+        val criteriaWithPermanentId = criteriaService.create(request.tender)
 
         val criteria = convertRequestCriteria(
             criteria = criteriaWithPermanentId.criteria,
@@ -890,7 +890,7 @@ class OpenCnOnPnService(
 
         /** End BR-3.8.3 */
 
-        val criteria = criteriaService.createCriteria(request.tender)
+        val criteria = criteriaService.create(request.tender)
             .criteria
             .map { it.toEntity() }
 
