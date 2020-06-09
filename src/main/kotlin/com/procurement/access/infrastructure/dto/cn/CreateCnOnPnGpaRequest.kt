@@ -14,10 +14,12 @@ import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.Scheme
+import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
@@ -35,13 +37,21 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class CreateCnOnPnGpaRequest(
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item> = emptyList()
 ) {
+
+    data class Item(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+        @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
+    )
+
     data class Tender(
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage?,
-
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification? = null, //NULL if Items in PNEntity is not EMPTY
 
@@ -58,7 +68,7 @@ data class CreateCnOnPnGpaRequest(
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<ProcurementMethodModalities>?,
+        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
@@ -75,16 +85,12 @@ data class CreateCnOnPnGpaRequest(
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage?,
+
         @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria
     ) {
-
-        data class SecondStage(
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("minimumCandidates") @param:JsonProperty("minimumCandidates") val minimumCandidates: Int?,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("maximumCandidates") @param:JsonProperty("maximumCandidates") val maximumCandidates: Int?
-        )
 
         data class Criteria(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
@@ -122,8 +128,12 @@ data class CreateCnOnPnGpaRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
             @field:JsonProperty("coefficients") @param:JsonProperty("coefficients") val coefficients: List<Coefficient>
         ) {
+
             data class Coefficient(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("relatedOption") @param:JsonProperty("relatedOption") val relatedOption: RelatedOption?,
 
                 @JsonDeserialize(using = CoefficientValueDeserializer::class)
                 @JsonSerialize(using = CoefficientValueSerializer::class)
@@ -367,6 +377,13 @@ data class CreateCnOnPnGpaRequest(
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
         )
 
+        data class SecondStage(
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("minimumCandidates") @param:JsonProperty("minimumCandidates") val minimumCandidates: Int?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("maximumCandidates") @param:JsonProperty("maximumCandidates") val maximumCandidates: Int?
+        )
 
         data class OtherCriteria(
             @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
@@ -374,3 +391,4 @@ data class CreateCnOnPnGpaRequest(
         )
     }
 }
+
