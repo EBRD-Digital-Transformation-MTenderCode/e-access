@@ -34,6 +34,7 @@ import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -1582,7 +1583,7 @@ class OpenCnOnPnService(
     }
 
     private fun conversionsFromRequest(
-        conversionsFromRequest: List<OpenCnOnPnRequest.Tender.Conversion>?
+        conversionsFromRequest: List<ConversionRequest>?
     ): List<CNEntity.Tender.Conversion>? {
         return conversionsFromRequest?.map { conversion ->
             CNEntity.Tender.Conversion(

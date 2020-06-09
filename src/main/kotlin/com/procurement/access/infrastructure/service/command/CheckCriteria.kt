@@ -11,6 +11,8 @@ import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
+import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MaxValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
@@ -45,7 +47,7 @@ fun OpenCnOnPnRequest.checkActualItemRelation(): OpenCnOnPnRequest {
         )
     }
 
-    fun OpenCnOnPnRequest.Tender.Criteria.validate(
+    fun CriterionRequest.validate(
         itemsById: Map<String, OpenCnOnPnRequest.Item>,
         itemsByRelatedLot: Map<String, List<OpenCnOnPnRequest.Item>>
     ) {
@@ -56,7 +58,7 @@ fun OpenCnOnPnRequest.checkActualItemRelation(): OpenCnOnPnRequest {
         }
     }
 
-    fun OpenCnOnPnRequest.Tender.Criteria.validateRelation() {
+    fun CriterionRequest.validateRelation() {
         if (this.relatesTo == null && this.relatedItem != null) throw ErrorException(
             error = ErrorType.INVALID_CRITERIA,
             message = "Criteria has reletedItem attribute but missing relatedTo"
@@ -204,7 +206,7 @@ fun OpenCnOnPnRequest.checkRequirements(): OpenCnOnPnRequest {
         .flatMap { it.requirements.asSequence() }
         .groupBy { it.id }
 
-    fun OpenCnOnPnRequest.Tender.Criteria.validateId() {
+    fun CriterionRequest.validateId() {
         val criteriaId = criteriaById.get(this.id)
         if (criteriaId != null && criteriaId.size > 1)
             throw ErrorException(
@@ -213,7 +215,7 @@ fun OpenCnOnPnRequest.checkRequirements(): OpenCnOnPnRequest {
             )
     }
 
-    fun OpenCnOnPnRequest.Tender.Criteria.RequirementGroup.validateId() {
+    fun CriterionRequest.RequirementGroup.validateId() {
         val requirementGroup = requirementGroupById.get(this.id)
         if (requirementGroup != null && requirementGroup.size > 1)
             throw ErrorException(
@@ -231,7 +233,7 @@ fun OpenCnOnPnRequest.checkRequirements(): OpenCnOnPnRequest {
             )
     }
 
-    fun List<OpenCnOnPnRequest.Tender.Criteria.RequirementGroup>.validateRequirementGroupCount() {
+    fun List<CriterionRequest.RequirementGroup>.validateRequirementGroupCount() {
         if (this.size == 0)
             throw ErrorException(
                 ErrorType.INVALID_CRITERIA,
@@ -299,7 +301,7 @@ fun OpenCnOnPnRequest.checkCoefficient(): OpenCnOnPnRequest {
     val COEFFICIENT_MIN = 0.01.toBigDecimal()
     val COEFFICIENT_MAX = 1.toBigDecimal()
 
-    fun OpenCnOnPnRequest.Tender.Conversion.Coefficient.validateCoefficientRate() {
+    fun ConversionRequest.Coefficient.validateCoefficientRate() {
         if (this.coefficient.rate < COEFFICIENT_MIN || this.coefficient.rate > COEFFICIENT_MAX)
             throw ErrorException(
                 ErrorType.INVALID_CONVERSION,
@@ -318,7 +320,7 @@ fun OpenCnOnPnRequest.checkCoefficient(): OpenCnOnPnRequest {
 }
 
 fun OpenCnOnPnRequest.checkCoefficientValueUniqueness(): OpenCnOnPnRequest {
-    fun uniquenessException(coefficients: List<OpenCnOnPnRequest.Tender.Conversion.Coefficient>): Nothing = throw ErrorException(
+    fun uniquenessException(coefficients: List<ConversionRequest.Coefficient>): Nothing = throw ErrorException(
         ErrorType.INVALID_CONVERSION,
         message = "Conversion coefficients value contains not unique element: " +
             "${coefficients.map { it.value }
@@ -327,7 +329,7 @@ fun OpenCnOnPnRequest.checkCoefficientValueUniqueness(): OpenCnOnPnRequest {
                 .filter { it.value.size > 1 }.keys}"
     )
 
-    fun List<OpenCnOnPnRequest.Tender.Conversion.Coefficient>.validateCoefficientValues() {
+    fun List<ConversionRequest.Coefficient>.validateCoefficientValues() {
         when (this[0].value) {
             is CoefficientValue.AsBoolean,
             is CoefficientValue.AsInteger,
@@ -390,7 +392,7 @@ fun OpenCnOnPnRequest.checkCoefficientDataType(): OpenCnOnPnRequest {
             ).last()} -> ${rv}"
         )
 
-    fun RequirementDataType.validateDataType(coefficient: OpenCnOnPnRequest.Tender.Conversion.Coefficient) {
+    fun RequirementDataType.validateDataType(coefficient: ConversionRequest.Coefficient) {
         when (coefficient.value) {
             is CoefficientValue.AsBoolean -> if (this != RequirementDataType.BOOLEAN)
                 mismatchDataTypeException(coefficient.value, this)
@@ -407,7 +409,7 @@ fun OpenCnOnPnRequest.checkCoefficientDataType(): OpenCnOnPnRequest {
     }
 
     fun RequirementValue.validateValueCompatibility(
-        coefficient: OpenCnOnPnRequest.Tender.Conversion.Coefficient,
+        coefficient: ConversionRequest.Coefficient,
         dataType: RequirementDataType
     ) {
         when (coefficient.value) {
@@ -486,10 +488,10 @@ fun OpenCnOnPnRequest.checkCastCoefficient(): OpenCnOnPnRequest {
             message = "cast coefficient in conversion cannot be greater than ${limit} "
         )
 
-    val criteria: List<OpenCnOnPnRequest.Tender.Criteria> = this.tender.criteria ?: return this
-    val requestConversions: List<OpenCnOnPnRequest.Tender.Conversion> = this.tender.conversions ?: return this
+    val criteria: List<CriterionRequest> = this.tender.criteria ?: return this
+    val requestConversions: List<ConversionRequest> = this.tender.conversions ?: return this
 
-    val conversions: List<OpenCnOnPnRequest.Tender.Conversion> = requestConversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
+    val conversions: List<ConversionRequest> = requestConversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
     val items: List<OpenCnOnPnRequest.Item> = this.items
 
     val tenderRequirements = criteria.asSequence()
@@ -502,7 +504,7 @@ fun OpenCnOnPnRequest.checkCastCoefficient(): OpenCnOnPnRequest {
         conversions.filter { it.relatedItem == requirement.id }
     }
 
-    fun OpenCnOnPnRequest.Tender.Criteria.getRelatedItems(items: List<OpenCnOnPnRequest.Item>) =
+    fun CriterionRequest.getRelatedItems(items: List<OpenCnOnPnRequest.Item>) =
         items.filter { it.relatedLot == this.relatedItem }
 
     val criteriaRelatedToLot = criteria.filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
@@ -554,7 +556,7 @@ fun OpenCnOnPnRequest.checkCastCoefficient(): OpenCnOnPnRequest {
 }
 
 fun OpenCnOnPnRequest.checkConversionRelatesToEnum(): OpenCnOnPnRequest {
-    fun OpenCnOnPnRequest.Tender.Conversion.validate() {
+    fun ConversionRequest.validate() {
         when (this.relatesTo) {
             ConversionsRelatesTo.REQUIREMENT -> Unit
         }

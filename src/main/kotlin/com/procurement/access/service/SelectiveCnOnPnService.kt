@@ -35,6 +35,8 @@ import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
+import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -312,7 +314,7 @@ class SelectiveCnOnPnService(
         )
     }
 
-    private fun generatePermanentRequirementIds(criteria: List<SelectiveCnOnPnRequest.Tender.Criteria>?): Map<String, String> =
+    private fun generatePermanentRequirementIds(criteria: List<CriterionRequest>?): Map<String, String> =
         criteria
             ?.asSequence()
             ?.flatMap { criterion ->
@@ -714,7 +716,7 @@ class SelectiveCnOnPnService(
     }
 
     private fun criteriaFromRequest(
-        criteriaFromRequest: List<SelectiveCnOnPnRequest.Tender.Criteria>?,
+        criteriaFromRequest: List<CriterionRequest>?,
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Criteria>? {
         return criteriaFromRequest?.map { criterion ->
@@ -1091,7 +1093,7 @@ class SelectiveCnOnPnService(
     }
 
     private fun conversionsFromRequest(
-        conversionsFromRequest: List<SelectiveCnOnPnRequest.Tender.Conversion>?,
+        conversionsFromRequest: List<ConversionRequest>?,
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Conversion>? {
         return conversionsFromRequest?.map { conversion ->

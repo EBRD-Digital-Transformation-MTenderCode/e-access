@@ -6,30 +6,20 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
-import com.procurement.access.domain.model.coefficient.CoefficientRate
-import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.ConversionsRelatesTo
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.Scheme
-import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
-import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
-import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateSerializer
-import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
-import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueSerializer
-import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
-import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
+import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
@@ -77,10 +67,10 @@ data class OpenCnOnPnRequest(
         @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>?,
+        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<CriterionRequest>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>?,
+        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<ConversionRequest>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
@@ -89,58 +79,6 @@ data class OpenCnOnPnRequest(
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
     ) {
-
-        data class Criteria(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-            @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum?,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
-        ) {
-            data class RequirementGroup(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-
-                @JsonDeserialize(using = RequirementDeserializer::class)
-                @JsonSerialize(using = RequirementSerializer::class)
-                @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
-            )
-        }
-
-        data class Conversion(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: ConversionsRelatesTo,
-            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String,
-            @field:JsonProperty("rationale") @param:JsonProperty("rationale") val rationale: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-            @field:JsonProperty("coefficients") @param:JsonProperty("coefficients") val coefficients: List<Coefficient>
-        ) {
-            data class Coefficient(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("relatedOption") @param:JsonProperty("relatedOption") val relatedOption: RelatedOption?,
-
-                @JsonDeserialize(using = CoefficientValueDeserializer::class)
-                @JsonSerialize(using = CoefficientValueSerializer::class)
-                @field:JsonProperty("value") @param:JsonProperty("value") val value: CoefficientValue,
-
-                @JsonDeserialize(using = CoefficientRateDeserializer::class)
-                @JsonSerialize(using = CoefficientRateSerializer::class)
-                @field:JsonProperty("coefficient") @param:JsonProperty("coefficient") val coefficient: CoefficientRate
-            )
-        }
 
         data class Classification(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
