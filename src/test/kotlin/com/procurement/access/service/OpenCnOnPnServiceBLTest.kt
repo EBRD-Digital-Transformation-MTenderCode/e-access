@@ -9,7 +9,6 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
-import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -38,14 +37,13 @@ class OpenCnOnPnServiceBLTest {
     }
 
     private lateinit var cnOnPnService: OpenCnOnPnService
-    private val criteriaService = CriteriaServiceImpl()
     private val generationService: GenerationService = mock()
     private val tenderProcessDao: TenderProcessDao = mock()
     private val rulesService: RulesService = mock()
 
     @BeforeAll
     fun init() {
-        cnOnPnService = OpenCnOnPnService(generationService, tenderProcessDao, rulesService, criteriaService)
+        cnOnPnService = OpenCnOnPnService(generationService, tenderProcessDao, rulesService)
     }
 
     @AfterEach

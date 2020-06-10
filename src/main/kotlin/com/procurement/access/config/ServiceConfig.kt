@@ -1,8 +1,6 @@
 package com.procurement.access.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.procurement.access.application.service.criteria.CriteriaService
-import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.config.properties.OCDSProperties
 import com.procurement.access.service.validation.JsonValidationService
 import com.procurement.access.service.validation.MedeiaValidationService
@@ -28,7 +26,4 @@ class ServiceConfig {
 
     @Bean
     fun jsonValidationService(): JsonValidationService = MedeiaValidationService(objectMapper)
-
-    @Bean
-    fun criteriaService(): CriteriaService = CriteriaServiceImpl()
 }
