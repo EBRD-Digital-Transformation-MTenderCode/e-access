@@ -30,6 +30,7 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.RelatedLots
+import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
@@ -257,6 +258,9 @@ data class CNEntity(
         ) {
             data class Coefficient(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("relatedOption") @param:JsonProperty("relatedOption") val relatedOption: RelatedOption?,
 
                 @JsonDeserialize(using = CoefficientValueDeserializer::class)
                 @JsonSerialize(using = CoefficientValueSerializer::class)

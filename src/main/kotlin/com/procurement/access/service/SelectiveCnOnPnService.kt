@@ -3,13 +3,15 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
-import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.conversion.buildConversion
+import com.procurement.access.domain.model.criteria.buildCriterion
+import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
+import com.procurement.access.domain.model.criteria.replaceTemporalItemId
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
@@ -36,11 +38,11 @@ import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -203,7 +205,7 @@ class SelectiveCnOnPnService(
             /** End check Documents */
         }
 
-        criteriaService.check(data)
+        check(data)
 
         return CheckedSelectiveCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
@@ -243,10 +245,7 @@ class SelectiveCnOnPnService(
 
 
     /** Begin Business Rules */
-    private fun createTenderBasedPNWithoutItems(
-        request: SelectiveCnOnPnRequest,
-        pnEntity: PNEntity
-    ): CNEntity.Tender {
+    private fun createTenderBasedPNWithoutItems(request: SelectiveCnOnPnRequest, pnEntity: PNEntity): CNEntity.Tender {
         //BR-3.6.5
         val relatedTemporalWithPermanentLotId: Map<String, String> = generatePermanentLotId(request.tender.lots)
         val relatedTemporalWithPermanentItemId: Map<String, String> = generatePermanentItemId(request.tender.items)
@@ -263,31 +262,28 @@ class SelectiveCnOnPnService(
             )
         /** End BR-3.8.3 */
 
-        val relatedTemporalWithPermanentRequirementId: Map<String, String> = generatePermanentRequirementIds(request.tender.criteria)
-        val rawCriteria = criteriaFromRequest(
-            criteriaFromRequest = request.tender.criteria,
-            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
-        )
-        val conversions = conversionsFromRequest(
-            conversionsFromRequest = request.tender.conversions,
-            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
-        )
-        if ((rawCriteria == null) && (conversions != null))
-            throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+        val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
+        val criteria = request.tender.criteria
+            ?.map { criterion ->
+                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                    .replaceTemporalItemId(
+                        relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId,
+                        relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId
+                    )
+            }
 
-        val criteria = rawCriteria?.let {
-            replaceTemporalLotAntItemIds(
-                criteria = it,
-                relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
-                relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
-            )
-        }
+        val conversions = request.tender.conversions
+            ?.map { conversion ->
+                buildConversion(conversion, relatedTemporalWithPermanentRequirementId)
+            }
 
         /** Begin BR-3.8.4 */
         //BR-3.8.14 -> BR-3.6.30
         val value: CNEntity.Tender.Value = calculateTenderValueFromLotsGpaCheck(request.tender.lots)
         //BR-3.8.15 -> BR-3.6.31
-        val contractPeriod: CNEntity.Tender.ContractPeriod = calculationTenderContractPeriodGpaCreate(lots = request.tender.lots)
+        val contractPeriod: CNEntity.Tender.ContractPeriod =
+            calculationTenderContractPeriodGpaCreate(lots = request.tender.lots)
+
         /** End BR-3.8.4 */
 
         //BR-3.8.5 -> BR-3.6.5
@@ -318,21 +314,6 @@ class SelectiveCnOnPnService(
         )
     }
 
-    private fun generatePermanentRequirementIds(criteria: List<CriterionRequest>?): Map<String, String> =
-        criteria
-            ?.asSequence()
-            ?.flatMap { criterion ->
-                criterion.requirementGroups.asSequence()
-            }
-            ?.flatMap { group ->
-                group.requirements.asSequence()
-            }
-            ?.map { requirement ->
-                requirement.id to generationService.requirementId()
-            }
-            ?.toMap()
-            ?: emptyMap()
-
     private fun createTenderBasedPNWithItems(
         request: SelectiveCnOnPnRequest,
         pnEntity: PNEntity
@@ -344,16 +325,16 @@ class SelectiveCnOnPnService(
         val items: List<CNEntity.Tender.Item> = itemsFromPNToCN(itemsFromPN = pnEntity.tender.items)
         /** End BR-3.8.3 */
 
-        val relatedTemporalWithPermanentRequirementId: Map<String, String> = generatePermanentRequirementIds(request.tender.criteria)
-        val criteria = criteriaFromRequest(
-            criteriaFromRequest = request.tender.criteria,
-            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
-        )
-        val conversions = conversionsFromRequest(
-            conversionsFromRequest = request.tender.conversions,
-            relatedTemporalWithPermanentRequirementId = relatedTemporalWithPermanentRequirementId
-        )
-        if ((criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+        val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
+        val criteria = request.tender.criteria
+            ?.map { criterion ->
+                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+            }
+
+        val conversions = request.tender.conversions
+            ?.map { conversion ->
+                buildConversion(conversion, relatedTemporalWithPermanentRequirementId)
+            }
 
         /** Begin BR-3.8.4 */
         val value: CNEntity.Tender.Value = pnEntity.tender.value.let {
@@ -540,48 +521,6 @@ class SelectiveCnOnPnService(
         }
     }
 
-    private fun replaceTemporalLotAntItemIds(
-        criteria: List<CNEntity.Tender.Criteria>,
-        relatedTemporalWithPermanentLotId: Map<String, String>,
-        relatedTemporalWithPermanentItemId: Map<String, String>
-    ): List<CNEntity.Tender.Criteria> {
-        return criteria.map { criterion ->
-            CNEntity.Tender.Criteria(
-                id = criterion.id,
-                title = criterion.title,
-                description = criterion.description,
-                source = criterion.source,
-                requirementGroups = criterion.requirementGroups.map { requirementGroup ->
-                    CNEntity.Tender.Criteria.RequirementGroup(
-                        id = generationService.requirementGroupId(),
-                        description = requirementGroup.description,
-                        requirements = requirementGroup.requirements.map { requirement ->
-                            Requirement(
-                                id = requirement.id,
-                                description = requirement.description,
-                                title = requirement.title,
-                                period = requirement.period?.let { period ->
-                                    Requirement.Period(
-                                        startDate = period.startDate,
-                                        endDate = period.endDate
-                                    )
-                                },
-                                dataType = requirement.dataType,
-                                value = requirement.value
-                            )
-                        }
-                    )
-                },
-                relatesTo = criterion.relatesTo,
-                relatedItem = when (criterion.relatesTo) {
-                    CriteriaRelatesToEnum.LOT  -> relatedTemporalWithPermanentLotId.getValue(criterion.relatedItem!!)
-                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criterion.relatedItem!!)
-                    else                       -> criterion.relatedItem
-                }
-            )
-        }
-    }
-
     /**
      * BR-3.8.3
      */
@@ -724,11 +663,12 @@ class SelectiveCnOnPnService(
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Criteria>? {
         return criteriaFromRequest?.map { criterion ->
+            val source = if(criterion.relatesTo == null || criterion.relatesTo != CriteriaRelatesToEnum.TENDERER) CriteriaSource.TENDERER else null
             CNEntity.Tender.Criteria(
                 id = generationService.criterionId(),
                 title = criterion.title,
                 description = criterion.description,
-                source = if(criterion.relatesTo == null || criterion.relatesTo != CriteriaRelatesToEnum.TENDERER) CriteriaSource.TENDERER else null,
+                source = source,
                 requirementGroups = criterion.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
                         id = generationService.requirementGroupId(),
@@ -1094,33 +1034,6 @@ class SelectiveCnOnPnService(
                 )
             }
         )
-    }
-
-    private fun conversionsFromRequest(
-        conversionsFromRequest: List<ConversionRequest>?,
-        relatedTemporalWithPermanentRequirementId: Map<String, String>
-    ): List<CNEntity.Tender.Conversion>? {
-        return conversionsFromRequest?.map { conversion ->
-            val relatedItem = if(conversion.relatesTo == ConversionsRelatesTo.REQUIREMENT)
-                relatedTemporalWithPermanentRequirementId.getValue(conversion.relatedItem)
-            else
-                conversion.relatedItem
-
-            CNEntity.Tender.Conversion(
-                id = generationService.conversionId(),
-                relatedItem =  relatedItem,
-                relatesTo = conversion.relatesTo,
-                rationale = conversion.rationale,
-                description = conversion.description,
-                coefficients = conversion.coefficients.map { coefficient ->
-                    CNEntity.Tender.Conversion.Coefficient(
-                        id = generationService.coefficientId(),
-                        value = coefficient.value,
-                        coefficient = coefficient.coefficient
-                    )
-                }
-            )
-        }
     }
 
     private fun convertElectronicAuctionsFromRequest(
@@ -2321,5 +2234,16 @@ class SelectiveCnOnPnService(
         return CNEntity.Tender.ContractPeriod(startDate, endDate)
     }
 
+    private fun check(data: SelectiveCnOnPnRequest) {
+        val tender = data.tender
+        checkCriteriaAndConversion(
+            data.mainProcurementCategory,
+            tender.awardCriteria,
+            tender.awardCriteriaDetails,
+            data.items,
+            tender.criteria,
+            tender.conversions
+        )
+    }
 }
 

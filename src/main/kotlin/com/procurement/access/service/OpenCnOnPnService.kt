@@ -1,15 +1,15 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
-import com.procurement.access.application.model.criteria.CreatedCriteria
-import com.procurement.access.application.model.criteria.toEntity
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
-import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.conversion.buildConversion
+import com.procurement.access.domain.model.criteria.buildCriterion
+import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
+import com.procurement.access.domain.model.criteria.replaceTemporalItemId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -34,10 +34,10 @@ import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.lib.uniqueBy
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -54,8 +54,7 @@ import java.util.*
 class OpenCnOnPnService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao,
-    private val rulesService: RulesService,
-    private val criteriaService: CriteriaService
+    private val rulesService: RulesService
 ) {
 
     fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedOpenCnOnPn {
@@ -185,7 +184,7 @@ class OpenCnOnPnService(
             /** End check Documents */
         }
 
-        criteriaService.check(data)
+        check(data)
 
         return CheckedOpenCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
@@ -831,17 +830,20 @@ class OpenCnOnPnService(
 
         /** End BR-3.8.3 */
 
-        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
-        if ((request.tender.criteria == null) && (conversions != null))
-            throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+        val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
+        val criteria = request.tender.criteria
+            ?.map { criterion ->
+                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                    .replaceTemporalItemId(
+                        relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId,
+                        relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId
+                    )
+            }
 
-        val criteriaWithPermanentId = criteriaService.create(request.tender)
-
-        val criteria = convertRequestCriteria(
-            criteria = criteriaWithPermanentId.criteria,
-            relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId,
-            relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
-        )
+        val conversions = request.tender.conversions
+            ?.map { conversion ->
+                buildConversion(conversion, relatedTemporalWithPermanentRequirementId)
+            }
 
         /** Begin BR-3.8.4 */
         //BR-3.8.14 -> BR-3.6.30
@@ -891,12 +893,16 @@ class OpenCnOnPnService(
 
         /** End BR-3.8.3 */
 
-        val criteria = criteriaService.create(request.tender)
-            .criteria
-            .map { it.toEntity() }
+        val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
+        val criteria = request.tender.criteria
+            ?.map { criterion ->
+                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+            }
 
-        val conversions = conversionsFromRequest(conversionsFromRequest = request.tender.conversions)
-        if ((request.tender.criteria == null) && (conversions != null)) throw ErrorException(ErrorType.CONVERSIONS_IS_EMPTY)
+        val conversions = request.tender.conversions
+            ?.map { conversion ->
+                buildConversion(conversion, relatedTemporalWithPermanentRequirementId)
+            }
 
         /** Begin BR-3.8.4 */
         val value: CNEntity.Tender.Value = pnEntity.tender.value.let {
@@ -1384,47 +1390,6 @@ class OpenCnOnPnService(
         }
     }
 
-    private fun convertRequestCriteria(
-        criteria: List<CreatedCriteria.Criteria>,
-        relatedTemporalWithPermanentLotId: Map<String, String>,
-        relatedTemporalWithPermanentItemId: Map<String, String>
-    ): List<CNEntity.Tender.Criteria> {
-        return criteria.map { criterion ->
-            CNEntity.Tender.Criteria(
-                id = criterion.id.toString(),
-                title = criterion.title,
-                description = criterion.description,
-                requirementGroups = criterion.requirementGroups.map { requirementGroup ->
-                    CNEntity.Tender.Criteria.RequirementGroup(
-                        id = requirementGroup.id.toString(),
-                        description = requirementGroup.description,
-                        requirements = requirementGroup.requirements.map { requirement ->
-                            Requirement(
-                                id = requirement.id,
-                                description = requirement.description,
-                                title = requirement.title,
-                                period = requirement.period?.let { period ->
-                                    Requirement.Period(
-                                        startDate = period.startDate,
-                                        endDate = period.endDate
-                                    )
-                                },
-                                dataType = requirement.dataType,
-                                value = requirement.value
-                            )
-                        }
-                    )
-                },
-                relatesTo = criterion.relatesTo,
-                relatedItem = when (criterion.relatesTo) {
-                    CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(criterion.relatedItem!!)
-                    CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(criterion.relatedItem!!)
-                    else -> criterion.relatedItem
-                }
-            )
-        }
-    }
-
     /**
      * BR-3.8.3
      */
@@ -1578,27 +1543,6 @@ class OpenCnOnPnService(
                 id = it.id,
                 description = it.description,
                 uri = null
-            )
-        }
-    }
-
-    private fun conversionsFromRequest(
-        conversionsFromRequest: List<ConversionRequest>?
-    ): List<CNEntity.Tender.Conversion>? {
-        return conversionsFromRequest?.map { conversion ->
-            CNEntity.Tender.Conversion(
-                id = conversion.id,
-                relatedItem = conversion.relatedItem,
-                relatesTo = conversion.relatesTo,
-                rationale = conversion.rationale,
-                description = conversion.description,
-                coefficients = conversion.coefficients.map { coefficient ->
-                    CNEntity.Tender.Conversion.Coefficient(
-                        id = coefficient.id,
-                        value = coefficient.value,
-                        coefficient = coefficient.coefficient
-                    )
-                }
             )
         }
     }
@@ -2171,6 +2115,18 @@ class OpenCnOnPnService(
                     }
                 )
             }
+        )
+    }
+
+    private fun check(data: OpenCnOnPnRequest) {
+        val tender = data.tender
+        checkCriteriaAndConversion(
+            data.mainProcurementCategory,
+            tender.awardCriteria,
+            tender.awardCriteriaDetails,
+            data.items,
+            tender.criteria,
+            tender.conversions
         )
     }
 }

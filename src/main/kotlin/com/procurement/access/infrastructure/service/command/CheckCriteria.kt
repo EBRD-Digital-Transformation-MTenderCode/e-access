@@ -22,6 +22,74 @@ import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.infrastructure.dto.cn.item.ItemReferenceRequest
 import java.math.BigDecimal
 
+fun checkCriteriaAndConversion(
+    mainProcurementCategory: MainProcurementCategory?,
+    awardCriteria: AwardCriteria?,
+    awardCriteriaDetails: AwardCriteriaDetails?,
+    items: List<ItemReferenceRequest>,
+    criteria: List<CriterionRequest>?,
+    conversions: List<ConversionRequest>?
+) {
+
+    checkConversionWithoutCriteria(criteria, conversions)
+
+    // FReq-1.1.1.22
+    checkAwardCriteriaDetailsAreRequired(awardCriteria, awardCriteriaDetails)
+
+    // FReq-1.1.1.23
+    checkCriteriaAndConversionAreRequired(awardCriteria, awardCriteriaDetails, criteria, conversions)
+
+    // FReq-1.1.1.24
+    checkCoefficientValueUniqueness(conversions)
+
+    // FReq-1.1.1.27
+    checkCriteriaWithAwardCriteria(awardCriteria, criteria, conversions)
+
+    // FReq-1.1.1.3
+    checkActualItemRelation(criteria, items)
+
+    // FReq-1.1.1.4
+    checkDatatypeCompliance(criteria)
+
+    // FReq-1.1.1.5
+    checkMinMaxValue(criteria)
+
+    // FReq-1.1.1.6
+    checkDateTime(criteria)
+
+    // FReq-1.1.1.8
+    checkRequirements(criteria)
+
+    // FReq-1.1.1.9  & FReq-1.1.1.10
+    checkConversionRelation(criteria, conversions)
+
+    // FReq-1.1.1.11
+    checkCoefficient(conversions)
+
+    // FReq-1.1.1.12
+    checkCoefficientDataType(criteria, conversions)
+
+    // FReq-1.1.1.13
+    checkCastCoefficient(mainProcurementCategory, criteria, conversions, items)
+
+    // FReq-1.1.1.28
+    checkCoefficientRelatedOption(criteria, conversions)
+
+    // FReq-1.1.1.14
+    checkConversionRelatesToEnum(conversions)
+
+    // FReq-1.1.1.15
+    checkAwardCriteriaEnum(awardCriteria)
+
+    // FReq-1.1.1.15
+    checkAwardCriteriaDetailsEnum(awardCriteriaDetails)
+
+    // FReq-1.1.1.16
+    checkItemArrays(items)
+    checkCriterionArrays(criteria)
+    checkConversionArrays(conversions)
+}
+
 fun checkConversionWithoutCriteria(criteria: List<CriterionRequest>?, conversions: List<ConversionRequest>?) {
     if (criteria == null && conversions != null)
         throw ErrorException(ErrorType.INVALID_CONVERSION, message = "Conversions cannot exists without criteria")

@@ -10,7 +10,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
-import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -78,7 +77,6 @@ class OpenCnOnPnServiceTest {
     private lateinit var generationService: GenerationService
     private lateinit var tenderProcessDao: TenderProcessDao
     private lateinit var rulesService: RulesService
-    private val criteriaService = CriteriaServiceImpl()
 
     private lateinit var service: OpenCnOnPnService
 
@@ -88,7 +86,7 @@ class OpenCnOnPnServiceTest {
         tenderProcessDao = mock()
         rulesService = mock()
 
-        service = OpenCnOnPnService(generationService, tenderProcessDao, rulesService, criteriaService)
+        service = OpenCnOnPnService(generationService, tenderProcessDao, rulesService)
 
         whenever(generationService.generatePermanentTenderId())
             .thenReturn(TENDER_ID)
