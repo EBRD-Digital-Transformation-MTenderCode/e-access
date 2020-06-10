@@ -38,7 +38,6 @@ data class UpdateSelectiveCnData(
         val lots: List<Lot>,
         val items: List<Item>,
         val documents: List<Document>,
-        val secondStage: SecondStage?,
         val otherCriteria: OtherCriteria
     ) {
 

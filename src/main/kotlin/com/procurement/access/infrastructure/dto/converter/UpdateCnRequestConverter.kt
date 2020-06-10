@@ -465,13 +465,6 @@ fun UpdateSelectiveCnRequest.convert() = UpdateSelectiveCnData(
                         message = "The tender contain empty list of the documents."
                     )
                 },
-            secondStage = tender.secondStage
-                ?.let { secondStage ->
-                    UpdateSelectiveCnData.Tender.SecondStage(
-                        minimumCandidates = secondStage.minimumCandidates,
-                        maximumCandidates = secondStage.maximumCandidates
-                    )
-                },
             otherCriteria = tender.otherCriteria
                 .let { otherCriteria ->
                     UpdateSelectiveCnData.Tender.OtherCriteria(
