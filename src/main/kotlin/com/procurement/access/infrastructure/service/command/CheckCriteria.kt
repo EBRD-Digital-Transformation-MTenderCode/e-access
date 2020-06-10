@@ -24,7 +24,7 @@ import java.math.BigDecimal
 
 fun checkCriteriaAndConversion(
     mainProcurementCategory: MainProcurementCategory?,
-    awardCriteria: AwardCriteria?,
+    awardCriteria: AwardCriteria,
     awardCriteriaDetails: AwardCriteriaDetails?,
     items: List<ItemReferenceRequest>,
     criteria: List<CriterionRequest>?,
@@ -319,7 +319,7 @@ fun checkConversionRelation(criteria: List<CriterionRequest>?, conversions: List
         .flatMap { it.requirements.asSequence() }
         .groupBy { it.id }
 
-    val relation: MutableMap<String, List<Requirement>> = kotlin.collections.mutableMapOf()
+    val relation: MutableMap<String, List<Requirement>> = mutableMapOf()
     relation.putAll(requirements)
 
     val conversionsRelatesToRequirement = conversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
@@ -387,11 +387,11 @@ fun checkCoefficientValueUniqueness(conversions: List<ConversionRequest>?) {
 }
 
 fun checkCriteriaWithAwardCriteria(
-    awardCriteria: AwardCriteria?,
+    awardCriteria: AwardCriteria,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?
 ) {
-    if (awardCriteria == null || criteria == null) return
+    if (criteria == null) return
 
     when (awardCriteria) {
         AwardCriteria.PRICE_ONLY -> {
@@ -597,13 +597,12 @@ fun checkConversionRelatesToEnum(conversions: List<ConversionRequest>?) {
     conversions?.forEach { it.validate() }
 }
 
-fun checkAwardCriteriaEnum(awardCriteria: AwardCriteria?) {
+fun checkAwardCriteriaEnum(awardCriteria: AwardCriteria) {
     when (awardCriteria) {
         AwardCriteria.PRICE_ONLY,
         AwardCriteria.COST_ONLY,
         AwardCriteria.QUALITY_ONLY,
         AwardCriteria.RATED_CRITERIA -> Unit
-        null -> Unit
     }
 }
 
@@ -672,7 +671,7 @@ fun checkConversionArrays(conversions: List<ConversionRequest>?) {
     }
 }
 
-fun checkAwardCriteriaDetailsAreRequired(awardCriteria: AwardCriteria?, awardCriteriaDetails: AwardCriteriaDetails?) {
+fun checkAwardCriteriaDetailsAreRequired(awardCriteria: AwardCriteria, awardCriteriaDetails: AwardCriteriaDetails?) {
     when (awardCriteria) {
         AwardCriteria.COST_ONLY,
         AwardCriteria.QUALITY_ONLY,
@@ -690,17 +689,16 @@ fun checkAwardCriteriaDetailsAreRequired(awardCriteria: AwardCriteria?, awardCri
 }
 
 fun checkCriteriaAndConversionAreRequired(
-    awardCriteria: AwardCriteria?,
+    awardCriteria: AwardCriteria,
     awardCriteriaDetails: AwardCriteriaDetails?,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?
 ) {
-    fun isNonPriceCriteria(awardCriteria: AwardCriteria?) = when (awardCriteria) {
+    fun isNonPriceCriteria(awardCriteria: AwardCriteria) = when (awardCriteria) {
         AwardCriteria.COST_ONLY,
         AwardCriteria.QUALITY_ONLY,
         AwardCriteria.RATED_CRITERIA -> true
         AwardCriteria.PRICE_ONLY -> false
-        null -> false
     }
 
     fun isAutomatedCriteria(awardCriteriaDetails: AwardCriteriaDetails?) = when (awardCriteriaDetails) {

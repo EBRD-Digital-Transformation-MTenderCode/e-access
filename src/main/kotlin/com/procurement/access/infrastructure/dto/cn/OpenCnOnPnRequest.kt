@@ -47,8 +47,7 @@ data class OpenCnOnPnRequest(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodAdditionalInfo") @param:JsonProperty("procurementMethodAdditionalInfo") val procurementMethodAdditionalInfo: String? = null,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria?,
+        @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,

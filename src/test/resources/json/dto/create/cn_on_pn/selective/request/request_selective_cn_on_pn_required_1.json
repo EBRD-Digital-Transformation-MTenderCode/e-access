@@ -7,6 +7,7 @@
   "tender": {
     "secondStage": {
     },
+    "awardCriteria": "costOnly",
     "procurementMethodModalities": [
       "electronicAuction"
     ],
