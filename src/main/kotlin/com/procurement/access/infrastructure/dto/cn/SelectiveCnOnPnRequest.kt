@@ -28,7 +28,8 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class SelectiveCnOnPnRequest(
-    @field:JsonProperty("preQualification") @param:JsonProperty("preQualification") val preQualification: PreQualification,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("preQualification") @param:JsonProperty("preQualification") val preQualification: PreQualification?,
 
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
