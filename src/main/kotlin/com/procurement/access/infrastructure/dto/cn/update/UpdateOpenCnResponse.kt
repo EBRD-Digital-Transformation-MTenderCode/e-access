@@ -42,7 +42,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class UpdateCnResponse(
+data class UpdateOpenCnResponse(
     @field:JsonProperty("lotsChanged") @param:JsonProperty("lotsChanged") val lotsChanged: Boolean,
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,

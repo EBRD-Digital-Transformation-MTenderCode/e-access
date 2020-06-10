@@ -11,7 +11,7 @@ import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
 import java.time.LocalDateTime
 
-data class UpdateCnData(
+data class UpdateOpenCnData(
     val planning: Planning?,
     val tender: Tender
 ) {

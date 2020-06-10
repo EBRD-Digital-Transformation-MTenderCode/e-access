@@ -1,40 +1,40 @@
 package com.procurement.access.infrastructure.dto.converter
 
-import com.procurement.access.application.service.cn.update.UpdatedCn
+import com.procurement.access.application.service.cn.update.UpdatedOpenCn
 import com.procurement.access.application.service.cn.update.UpdatedSelectiveCn
-import com.procurement.access.infrastructure.dto.cn.update.UpdateCnResponse
+import com.procurement.access.infrastructure.dto.cn.update.UpdateOpenCnResponse
 import com.procurement.access.infrastructure.dto.cn.update.UpdateSelectiveCnResponse
 
-fun UpdatedCn.convert(): UpdateCnResponse =
-    UpdateCnResponse(
+fun UpdatedOpenCn.convert(): UpdateOpenCnResponse =
+    UpdateOpenCnResponse(
         lotsChanged = this.lotsChanged,
         planning = this.planning.let { planning ->
-            UpdateCnResponse.Planning(
+            UpdateOpenCnResponse.Planning(
                 rationale = planning.rationale,
                 budget = planning.budget.let { budget ->
-                    UpdateCnResponse.Planning.Budget(
+                    UpdateOpenCnResponse.Planning.Budget(
                         description = budget.description,
                         amount = budget.amount,
                         isEuropeanUnionFunded = budget.isEuropeanUnionFunded,
                         budgetBreakdowns = budget.budgetBreakdowns.map { budgetBreakdown ->
-                            UpdateCnResponse.Planning.Budget.BudgetBreakdown(
+                            UpdateOpenCnResponse.Planning.Budget.BudgetBreakdown(
                                 id = budgetBreakdown.id,
                                 description = budgetBreakdown.description,
                                 amount = budgetBreakdown.amount,
                                 period = budgetBreakdown.period.let { period ->
-                                    UpdateCnResponse.Planning.Budget.BudgetBreakdown.Period(
+                                    UpdateOpenCnResponse.Planning.Budget.BudgetBreakdown.Period(
                                         startDate = period.startDate,
                                         endDate = period.endDate
                                     )
                                 },
                                 sourceParty = budgetBreakdown.sourceParty.let { sourceParty ->
-                                    UpdateCnResponse.Planning.Budget.BudgetBreakdown.SourceParty(
+                                    UpdateOpenCnResponse.Planning.Budget.BudgetBreakdown.SourceParty(
                                         id = sourceParty.id,
                                         name = sourceParty.name
                                     )
                                 },
                                 europeanUnionFunding = budgetBreakdown.europeanUnionFunding?.let { europeanUnionFunding ->
-                                    UpdateCnResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                    UpdateOpenCnResponse.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
                                         projectIdentifier = europeanUnionFunding.projectIdentifier,
                                         projectName = europeanUnionFunding.projectName,
                                         uri = europeanUnionFunding.uri
@@ -47,66 +47,66 @@ fun UpdatedCn.convert(): UpdateCnResponse =
             )
         },
         tender = this.tender.let { tender ->
-            UpdateCnResponse.Tender(
+            UpdateOpenCnResponse.Tender(
                 id = tender.id,
                 status = tender.status,
                 statusDetails = tender.statusDetails,
                 title = tender.title,
                 description = tender.description,
                 classification = tender.classification.let { classification ->
-                    UpdateCnResponse.Tender.Classification(
+                    UpdateOpenCnResponse.Tender.Classification(
                         scheme = classification.scheme,
                         id = classification.id,
                         description = classification.description
                     )
                 },
                 tenderPeriod = tender.tenderPeriod.let { tenderPeriod ->
-                    UpdateCnResponse.Tender.TenderPeriod(
+                    UpdateOpenCnResponse.Tender.TenderPeriod(
                         startDate = tenderPeriod.startDate,
                         endDate = tenderPeriod.endDate
                     )
                 },
                 enquiryPeriod = tender.enquiryPeriod
                     ?.let { enquiryPeriod ->
-                        UpdateCnResponse.Tender.EnquiryPeriod(
+                        UpdateOpenCnResponse.Tender.EnquiryPeriod(
                             startDate = enquiryPeriod.startDate,
                             endDate = enquiryPeriod.endDate
                         )
                     },
                 acceleratedProcedure = tender.acceleratedProcedure.let { acceleratedProcedure ->
-                    UpdateCnResponse.Tender.AcceleratedProcedure(
+                    UpdateOpenCnResponse.Tender.AcceleratedProcedure(
                         isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
                     )
                 },
                 designContest = tender.designContest.let { designContest ->
-                    UpdateCnResponse.Tender.DesignContest(
+                    UpdateOpenCnResponse.Tender.DesignContest(
                         serviceContractAward = designContest.serviceContractAward
                     )
                 },
                 electronicWorkflows = tender.electronicWorkflows.let { electronicWorkflows ->
-                    UpdateCnResponse.Tender.ElectronicWorkflows(
+                    UpdateOpenCnResponse.Tender.ElectronicWorkflows(
                         useOrdering = electronicWorkflows.useOrdering,
                         usePayment = electronicWorkflows.usePayment,
                         acceptInvoicing = electronicWorkflows.acceptInvoicing
                     )
                 },
                 jointProcurement = tender.jointProcurement.let { jointProcurement ->
-                    UpdateCnResponse.Tender.JointProcurement(
+                    UpdateOpenCnResponse.Tender.JointProcurement(
                         isJointProcurement = jointProcurement.isJointProcurement
                     )
                 },
                 procedureOutsourcing = tender.procedureOutsourcing.let { procedureOutsourcing ->
-                    UpdateCnResponse.Tender.ProcedureOutsourcing(
+                    UpdateOpenCnResponse.Tender.ProcedureOutsourcing(
                         procedureOutsourced = procedureOutsourcing.procedureOutsourced
                     )
                 },
                 framework = tender.framework.let { framework ->
-                    UpdateCnResponse.Tender.Framework(
+                    UpdateOpenCnResponse.Tender.Framework(
                         isAFramework = framework.isAFramework
                     )
                 },
                 dynamicPurchasingSystem = tender.dynamicPurchasingSystem.let { dynamicPurchasingSystem ->
-                    UpdateCnResponse.Tender.DynamicPurchasingSystem(
+                    UpdateOpenCnResponse.Tender.DynamicPurchasingSystem(
                         hasDynamicPurchasingSystem = dynamicPurchasingSystem.hasDynamicPurchasingSystem
                     )
                 },
@@ -118,20 +118,20 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                 mainProcurementCategory = tender.mainProcurementCategory,
                 eligibilityCriteria = tender.eligibilityCriteria,
                 contractPeriod = tender.contractPeriod.let { tenderPeriod ->
-                    UpdateCnResponse.Tender.ContractPeriod(
+                    UpdateOpenCnResponse.Tender.ContractPeriod(
                         startDate = tenderPeriod.startDate,
                         endDate = tenderPeriod.endDate
                     )
                 },
                 procurementMethodModalities = tender.procurementMethodModalities,
                 electronicAuctions = tender.electronicAuctions?.let { electronicAuctions ->
-                    UpdateCnResponse.Tender.ElectronicAuctions(
+                    UpdateOpenCnResponse.Tender.ElectronicAuctions(
                         details = electronicAuctions.details.map { detail ->
-                            UpdateCnResponse.Tender.ElectronicAuctions.Detail(
+                            UpdateOpenCnResponse.Tender.ElectronicAuctions.Detail(
                                 id = detail.id,
                                 relatedLot = detail.relatedLot,
                                 electronicAuctionModalities = detail.electronicAuctionModalities.map { modality ->
-                                    UpdateCnResponse.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
+                                    UpdateOpenCnResponse.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
                                         eligibleMinimumDifference = modality.eligibleMinimumDifference
                                     )
                                 }
@@ -140,11 +140,11 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                     )
                 },
                 procuringEntity = tender.procuringEntity.let { procuringEntity ->
-                    UpdateCnResponse.Tender.ProcuringEntity(
+                    UpdateOpenCnResponse.Tender.ProcuringEntity(
                         id = procuringEntity.id,
                         name = procuringEntity.name,
                         identifier = procuringEntity.identifier.let { identifier ->
-                            UpdateCnResponse.Tender.ProcuringEntity.Identifier(
+                            UpdateOpenCnResponse.Tender.ProcuringEntity.Identifier(
                                 scheme = identifier.scheme,
                                 id = identifier.id,
                                 legalName = identifier.legalName,
@@ -152,7 +152,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                             )
                         },
                         additionalIdentifiers = procuringEntity.additionalIdentifiers.map { additionalIdentifier ->
-                            UpdateCnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                            UpdateOpenCnResponse.Tender.ProcuringEntity.AdditionalIdentifier(
                                 scheme = additionalIdentifier.scheme,
                                 id = additionalIdentifier.id,
                                 legalName = additionalIdentifier.legalName,
@@ -160,13 +160,13 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                             )
                         },
                         address = procuringEntity.address.let { address ->
-                            UpdateCnResponse.Tender.ProcuringEntity.Address(
+                            UpdateOpenCnResponse.Tender.ProcuringEntity.Address(
                                 streetAddress = address.streetAddress,
                                 postalCode = address.postalCode,
                                 addressDetails = address.addressDetails.let { addressDetails ->
-                                    UpdateCnResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                                    UpdateOpenCnResponse.Tender.ProcuringEntity.Address.AddressDetails(
                                         country = addressDetails.country.let { country ->
-                                            UpdateCnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                            UpdateOpenCnResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
                                                 scheme = country.scheme,
                                                 id = country.id,
                                                 description = country.description,
@@ -174,7 +174,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                                             )
                                         },
                                         region = addressDetails.region.let { region ->
-                                            UpdateCnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                            UpdateOpenCnResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
                                                 scheme = region.scheme,
                                                 id = region.id,
                                                 description = region.description,
@@ -182,7 +182,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                                             )
                                         },
                                         locality = addressDetails.locality.let { locality ->
-                                            UpdateCnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                            UpdateOpenCnResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
                                                 scheme = locality.scheme,
                                                 id = locality.id,
                                                 description = locality.description,
@@ -194,29 +194,29 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                             )
                         },
                         persons = procuringEntity.persons.map { person ->
-                            UpdateCnResponse.Tender.ProcuringEntity.Person(
+                            UpdateOpenCnResponse.Tender.ProcuringEntity.Person(
                                 id = person.id,
                                 title = person.title,
                                 name = person.name,
                                 identifier = person.identifier.let { identifier ->
-                                    UpdateCnResponse.Tender.ProcuringEntity.Person.Identifier(
+                                    UpdateOpenCnResponse.Tender.ProcuringEntity.Person.Identifier(
                                         scheme = identifier.scheme,
                                         id = identifier.id,
                                         uri = identifier.uri
                                     )
                                 },
                                 businessFunctions = person.businessFunctions.map { businessFunction ->
-                                    UpdateCnResponse.Tender.ProcuringEntity.Person.BusinessFunction(
+                                    UpdateOpenCnResponse.Tender.ProcuringEntity.Person.BusinessFunction(
                                         id = businessFunction.id,
                                         type = businessFunction.type,
                                         jobTitle = businessFunction.jobTitle,
                                         period = businessFunction.period.let { period ->
-                                            UpdateCnResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period(
+                                            UpdateOpenCnResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period(
                                                 startDate = period.startDate
                                             )
                                         },
                                         documents = businessFunction.documents.map { document ->
-                                            UpdateCnResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document(
+                                            UpdateOpenCnResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document(
                                                 id = document.id,
                                                 documentType = document.documentType,
                                                 title = document.title,
@@ -228,7 +228,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                             )
                         },
                         contactPoint = procuringEntity.contactPoint.let { contactPoint ->
-                            UpdateCnResponse.Tender.ProcuringEntity.ContactPoint(
+                            UpdateOpenCnResponse.Tender.ProcuringEntity.ContactPoint(
                                 name = contactPoint.name,
                                 email = contactPoint.email,
                                 telephone = contactPoint.telephone,
@@ -240,12 +240,12 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                 },
                 value = tender.value,
                 lotGroups = tender.lotGroups.map { lotGroup ->
-                    UpdateCnResponse.Tender.LotGroup(
+                    UpdateOpenCnResponse.Tender.LotGroup(
                         optionToCombine = lotGroup.optionToCombine
                     )
                 },
                 lots = tender.lots.map { lot ->
-                    UpdateCnResponse.Tender.Lot(
+                    UpdateOpenCnResponse.Tender.Lot(
                         id = lot.id,
                         internalId = lot.internalId,
                         title = lot.title,
@@ -254,41 +254,41 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         statusDetails = lot.statusDetails,
                         value = lot.value,
                         options = lot.options.map { option ->
-                            UpdateCnResponse.Tender.Lot.Option(
+                            UpdateOpenCnResponse.Tender.Lot.Option(
                                 hasOptions = option.hasOptions
                             )
                         },
                         variants = lot.variants.map { variant ->
-                            UpdateCnResponse.Tender.Lot.Variant(
+                            UpdateOpenCnResponse.Tender.Lot.Variant(
                                 hasVariants = variant.hasVariants
                             )
                         },
                         renewals = lot.renewals.map { renewal ->
-                            UpdateCnResponse.Tender.Lot.Renewal(
+                            UpdateOpenCnResponse.Tender.Lot.Renewal(
                                 hasRenewals = renewal.hasRenewals
                             )
                         },
                         recurrentProcurements = lot.recurrentProcurements.map { recurrentProcurement ->
-                            UpdateCnResponse.Tender.Lot.RecurrentProcurement(
+                            UpdateOpenCnResponse.Tender.Lot.RecurrentProcurement(
                                 isRecurrent = recurrentProcurement.isRecurrent
                             )
                         },
                         contractPeriod = lot.contractPeriod.let { contractPeriod ->
-                            UpdateCnResponse.Tender.Lot.ContractPeriod(
+                            UpdateOpenCnResponse.Tender.Lot.ContractPeriod(
                                 startDate = contractPeriod.startDate,
                                 endDate = contractPeriod.endDate
                             )
                         },
                         placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                            UpdateCnResponse.Tender.Lot.PlaceOfPerformance(
+                            UpdateOpenCnResponse.Tender.Lot.PlaceOfPerformance(
                                 address = placeOfPerformance.address.let { address ->
-                                    UpdateCnResponse.Tender.Lot.PlaceOfPerformance.Address(
+                                    UpdateOpenCnResponse.Tender.Lot.PlaceOfPerformance.Address(
                                         streetAddress = address.streetAddress,
                                         postalCode = address.postalCode,
                                         addressDetails = address.addressDetails.let { addressDetails ->
-                                            UpdateCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                            UpdateOpenCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
                                                 country = addressDetails.country.let { country ->
-                                                    UpdateCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                    UpdateOpenCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
                                                         scheme = country.scheme,
                                                         id = country.id,
                                                         description = country.description,
@@ -296,7 +296,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                                                     )
                                                 },
                                                 region = addressDetails.region.let { region ->
-                                                    UpdateCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                    UpdateOpenCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
                                                         scheme = region.scheme,
                                                         id = region.id,
                                                         description = region.description,
@@ -304,7 +304,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                                                     )
                                                 },
                                                 locality = addressDetails.locality.let { locality ->
-                                                    UpdateCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                    UpdateOpenCnResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
                                                         scheme = locality.scheme,
                                                         id = locality.id,
                                                         description = locality.description,
@@ -321,18 +321,18 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                     )
                 },
                 items = tender.items.map { item ->
-                    UpdateCnResponse.Tender.Item(
+                    UpdateOpenCnResponse.Tender.Item(
                         id = item.id,
                         internalId = item.internalId,
                         classification = item.classification.let { classification ->
-                            UpdateCnResponse.Tender.Item.Classification(
+                            UpdateOpenCnResponse.Tender.Item.Classification(
                                 scheme = classification.scheme,
                                 id = classification.id,
                                 description = classification.description
                             )
                         },
                         additionalClassifications = item.additionalClassifications.map { additionalClassification ->
-                            UpdateCnResponse.Tender.Item.AdditionalClassification(
+                            UpdateOpenCnResponse.Tender.Item.AdditionalClassification(
                                 scheme = additionalClassification.scheme,
                                 id = additionalClassification.id,
                                 description = additionalClassification.description
@@ -340,7 +340,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                         },
                         quantity = item.quantity,
                         unit = item.unit.let { unit ->
-                            UpdateCnResponse.Tender.Item.Unit(
+                            UpdateOpenCnResponse.Tender.Item.Unit(
                                 id = unit.id,
                                 name = unit.name
                             )
@@ -354,7 +354,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                 submissionMethodRationale = tender.submissionMethodRationale.toList(),
                 submissionMethodDetails = tender.submissionMethodDetails,
                 documents = tender.documents.map { document ->
-                    UpdateCnResponse.Tender.Document(
+                    UpdateOpenCnResponse.Tender.Document(
                         documentType = document.documentType,
                         id = document.id,
                         title = document.title,
@@ -363,7 +363,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
                     )
                 },
                 otherCriteria = tender.otherCriteria?.let { otherCriteria ->
-                    UpdateCnResponse.Tender.OtherCriteria(
+                    UpdateOpenCnResponse.Tender.OtherCriteria(
                         reductionCriteria = otherCriteria.reductionCriteria,
                         qualificationSystemMethods = otherCriteria.qualificationSystemMethods
                     )
@@ -371,7 +371,7 @@ fun UpdatedCn.convert(): UpdateCnResponse =
             )
         },
         amendment = amendment?.let { amendment ->
-            UpdateCnResponse.Amendment(
+            UpdateOpenCnResponse.Amendment(
                 relatedLots = amendment.relatedLots.toList()
             )
         }

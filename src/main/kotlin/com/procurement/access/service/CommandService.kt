@@ -14,10 +14,11 @@ import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.cn.update.CnCreateContext
-import com.procurement.access.application.service.cn.update.UpdateCnContext
-import com.procurement.access.application.service.cn.update.UpdateCnData
+import com.procurement.access.application.service.cn.update.UpdateOpenCnContext
+import com.procurement.access.application.service.cn.update.UpdateOpenCnData
 import com.procurement.access.application.service.cn.update.UpdateSelectiveCnContext
 import com.procurement.access.application.service.cn.update.UpdateSelectiveCnData
+import com.procurement.access.application.service.cn.update.UpdatedOpenCn
 import com.procurement.access.application.service.cn.update.UpdatedSelectiveCn
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.lot.GetLotContext
@@ -44,9 +45,9 @@ import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.UpdateCnRequest
+import com.procurement.access.infrastructure.dto.cn.UpdateOpenCnRequest
 import com.procurement.access.infrastructure.dto.cn.UpdateSelectiveCnRequest
-import com.procurement.access.infrastructure.dto.cn.update.UpdateCnResponse
+import com.procurement.access.infrastructure.dto.cn.update.UpdateOpenCnResponse
 import com.procurement.access.infrastructure.dto.cn.update.UpdateSelectiveCnResponse
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.converter.toResponseDto
@@ -170,7 +171,7 @@ class CommandService(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
-                        val context = UpdateCnContext(
+                        val context = UpdateOpenCnContext(
                             cpid = cm.cpid,
                             token = cm.token,
                             stage = cm.stage,
@@ -179,13 +180,13 @@ class CommandService(
                             startDate = cm.startDate,
                             isAuction = cm.isAuction
                         )
-                        val request = toObject(UpdateCnRequest::class.java, cm.data)
-                        val data: UpdateCnData = request.convert()
-                        val result = cnService.update(context, data)
+                        val request = toObject(UpdateOpenCnRequest::class.java, cm.data)
+                        val data: UpdateOpenCnData = request.convert()
+                        val result: UpdatedOpenCn = cnService.update(context, data)
                         if (log.isDebugEnabled)
                             log.debug("Update CN. Result: ${toJson(result)}")
 
-                        val response: UpdateCnResponse = result.convert()
+                        val response: UpdateOpenCnResponse = result.convert()
                         if (log.isDebugEnabled)
                             log.debug("Update CN. Response: ${toJson(response)}")
 

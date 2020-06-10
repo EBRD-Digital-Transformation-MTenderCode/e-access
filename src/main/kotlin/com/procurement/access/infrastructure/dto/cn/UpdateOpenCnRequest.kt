@@ -15,7 +15,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
-data class UpdateCnRequest(
+data class UpdateOpenCnRequest(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("planning") @param:JsonProperty("planning") val planning: Planning?,
 

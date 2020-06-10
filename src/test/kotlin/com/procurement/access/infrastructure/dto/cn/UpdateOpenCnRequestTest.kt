@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.dto.cn
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import org.junit.jupiter.api.Test
 
-class UpdateCnRequestTest : AbstractDTOTestBase<UpdateCnRequest>(UpdateCnRequest::class.java) {
+class UpdateOpenCnRequestTest : AbstractDTOTestBase<UpdateOpenCnRequest>(UpdateOpenCnRequest::class.java) {
     @Test
     fun fully() {
         testBindingAndMapping("json/dto/update/cn/ssp/request/request_update_cn_ssp_full.json")

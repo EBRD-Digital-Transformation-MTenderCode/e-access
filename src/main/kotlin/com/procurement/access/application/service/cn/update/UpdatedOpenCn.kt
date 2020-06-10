@@ -23,7 +23,7 @@ import com.procurement.access.domain.model.persone.PersonId
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class UpdatedCn(
+data class UpdatedOpenCn(
     val lotsChanged: Boolean,
     val planning: Planning,
     val tender: Tender,
