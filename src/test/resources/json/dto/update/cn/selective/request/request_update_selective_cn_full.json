@@ -120,10 +120,6 @@
         ]
       }
     ],
-    "secondStage": {
-      "minimumCandidates": 1,
-      "maximumCandidates": 10
-    },
     "otherCriteria": {
       "reductionCriteria": "scoring",
       "qualificationSystemMethods": [

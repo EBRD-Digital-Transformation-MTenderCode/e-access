@@ -59,9 +59,6 @@ data class UpdateSelectiveCnRequest(
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("secondStage") @param:JsonProperty("secondStage") val secondStage: SecondStage?,
-
         @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria
     ) {
 

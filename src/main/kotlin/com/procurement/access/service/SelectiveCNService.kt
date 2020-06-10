@@ -127,7 +127,6 @@ class SelectiveCNServiceImpl(
         else
             cn.tender.procuringEntity
 
-        val updatedSecondStage = updateSecondStage(received = data.tender.secondStage, saved = cn.tender.secondStage)
         val updatedOtherCriteria = updateOtherCriteria(received = data.tender.otherCriteria)
 
         val updatedCN = cn.copy(
@@ -160,7 +159,6 @@ class SelectiveCNServiceImpl(
                 lots = allModifiedLots + unmodifiedLots,
                 items = updatedItems,
                 documents = updatedTenderDocuments, //BR-1.0.1.5.2
-                secondStage = updatedSecondStage,
                 otherCriteria = updatedOtherCriteria
             )
         )
@@ -971,17 +969,6 @@ class SelectiveCNServiceImpl(
                 }
                 ?: documentsById.getValue(id)
         }
-    }
-
-    private fun updateSecondStage(
-        received: UpdateSelectiveCnData.Tender.SecondStage?,
-        saved: CNEntity.Tender.SecondStage?
-    ) = when (received) {
-        null -> saved
-        else -> CNEntity.Tender.SecondStage(
-            minimumCandidates = received.minimumCandidates ?: saved?.minimumCandidates,
-            maximumCandidates = received.maximumCandidates ?: saved?.maximumCandidates
-        )
     }
 
     private fun updateOtherCriteria(received: UpdateSelectiveCnData.Tender.OtherCriteria) =
