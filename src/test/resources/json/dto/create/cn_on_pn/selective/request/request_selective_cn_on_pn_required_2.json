@@ -5,6 +5,7 @@
     }
   },
   "tender": {
+    "awardCriteria": "costOnly",
     "procurementMethodModalities": [
       "electronicAuction"
     ],
