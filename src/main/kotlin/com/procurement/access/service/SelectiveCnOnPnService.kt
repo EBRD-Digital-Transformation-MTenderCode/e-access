@@ -63,6 +63,10 @@ class SelectiveCnOnPnService(
 ) {
 
     fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedSelectiveCnOnPn {
+        //VR-1.0.1.13.1 preQualification
+        if(data.preQualification == null)
+            throw ErrorException(ErrorType.MISSING_ATTRIBUTE, "Missing required an attribute 'preQualification'.")
+
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -124,7 +128,10 @@ class SelectiveCnOnPnService(
             )
 
             //VR-3.8.8(CN on PN)  "Contract Period" (Lot) -> VR-3.6.7(CN)
-            checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest = data)
+            checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(
+                preQualification = data.preQualification,
+                lots = data.tender.lots
+            )
 
             //VR-3.8.10(CN on PN) Lots (tender.lots) -> VR-3.6.9(CN)
             checkLotIdsAsRelatedLotInItems(
@@ -1996,9 +2003,12 @@ class SelectiveCnOnPnService(
      *      from Request, validation is successful;
      *      else { eAccess throws Exception: "Invalid date-time values in lot contract period";
      */
-    private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(tenderFromRequest: SelectiveCnOnPnRequest) {
-        val preQualificationPeriodEndDate = tenderFromRequest.preQualification.period.endDate
-        tenderFromRequest.tender.lots.forEach { lot ->
+    private fun checkContractPeriodInLotsWhenPNWithoutItemsFromRequest(
+        preQualification: SelectiveCnOnPnRequest.PreQualification,
+        lots: List<SelectiveCnOnPnRequest.Tender.Lot>
+    ) {
+        val preQualificationPeriodEndDate = preQualification.period.endDate
+        lots.forEach { lot ->
             checkRangeContractPeriodInLotFromRequest(lot)
             if (lot.contractPeriod.startDate <= preQualificationPeriodEndDate)
                 throw ErrorException(
