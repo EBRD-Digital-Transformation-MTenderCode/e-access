@@ -57,9 +57,7 @@ data class UpdateSelectiveCnRequest(
 
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>,
-
-        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
     ) {
 
         data class ElectronicAuctions(

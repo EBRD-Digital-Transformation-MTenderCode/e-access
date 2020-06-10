@@ -37,8 +37,7 @@ data class UpdateSelectiveCnData(
         val procuringEntity: ProcuringEntity?,
         val lots: List<Lot>,
         val items: List<Item>,
-        val documents: List<Document>,
-        val otherCriteria: OtherCriteria
+        val documents: List<Document>
     ) {
 
         data class ElectronicAuctions(

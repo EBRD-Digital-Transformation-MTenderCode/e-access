@@ -464,13 +464,6 @@ fun UpdateSelectiveCnRequest.convert() = UpdateSelectiveCnData(
                         error = ErrorType.IS_EMPTY,
                         message = "The tender contain empty list of the documents."
                     )
-                },
-            otherCriteria = tender.otherCriteria
-                .let { otherCriteria ->
-                    UpdateSelectiveCnData.Tender.OtherCriteria(
-                        reductionCriteria = otherCriteria.reductionCriteria,
-                        qualificationSystemMethods = otherCriteria.qualificationSystemMethods.toList()
-                    )
                 }
         )
     }

@@ -127,8 +127,6 @@ class SelectiveCNServiceImpl(
         else
             cn.tender.procuringEntity
 
-        val updatedOtherCriteria = updateOtherCriteria(received = data.tender.otherCriteria)
-
         val updatedCN = cn.copy(
             planning = cn.planning.copy(
                 rationale = data.planning?.rationale ?: cn.planning.rationale,
@@ -158,8 +156,7 @@ class SelectiveCNServiceImpl(
                 value = updatedValue, //BR-1.0.1.1.2
                 lots = allModifiedLots + unmodifiedLots,
                 items = updatedItems,
-                documents = updatedTenderDocuments, //BR-1.0.1.5.2
-                otherCriteria = updatedOtherCriteria
+                documents = updatedTenderDocuments //BR-1.0.1.5.2
             )
         )
 
@@ -970,12 +967,6 @@ class SelectiveCNServiceImpl(
                 ?: documentsById.getValue(id)
         }
     }
-
-    private fun updateOtherCriteria(received: UpdateSelectiveCnData.Tender.OtherCriteria) =
-        CNEntity.Tender.OtherCriteria(
-            reductionCriteria = received.reductionCriteria,
-            qualificationSystemMethods = received.qualificationSystemMethods
-        )
 
     private fun <T> getNewElements(received: Set<T>, saved: Set<T>) = received.subtract(saved)
 
