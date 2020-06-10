@@ -13,19 +13,17 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.CnOnPnRequest
+import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
+import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 
 fun buildCriteria(
     awardCriteria: AwardCriteria,
     awardCriteriaDetails: AwardCriteriaDetails?,
-    criteria: List<CnOnPnRequest.Tender.Criteria>,
-    conversions: List<CnOnPnRequest.Tender.Conversion>
+    criteria: List<CriterionRequest>,
+    conversions: List<ConversionRequest>
 ): CreatedCriteria {
-    fun replaceConversionRelation(
-        conversion: CnOnPnRequest.Tender.Conversion,
-        relations: Map<String, String>
-    ): String {
+    fun replaceConversionRelation(conversion: ConversionRequest, relations: Map<String, String>): String {
         if (conversion.relatesTo == ConversionsRelatesTo.REQUIREMENT) return relations.get(conversion.relatedItem)
             ?: throw ErrorException(
                 ErrorType.INVALID_CONVERSION,
@@ -93,7 +91,7 @@ fun buildCriteria(
 }
 
 
-private fun defineSource(criteria: CnOnPnRequest.Tender.Criteria): CriteriaSource? =
+private fun defineSource(criteria: CriterionRequest): CriteriaSource? =
     if (criteria.relatesTo == null || criteria.relatesTo != CriteriaRelatesToEnum.TENDERER)
         CriteriaSource.TENDERER
     else
