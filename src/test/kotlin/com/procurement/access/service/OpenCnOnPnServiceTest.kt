@@ -8,7 +8,7 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
-import com.procurement.access.application.service.CheckedCnOnPn
+import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.criteria.CriteriaServiceImpl
 import com.procurement.access.dao.TenderProcessDao
@@ -380,7 +380,7 @@ class OpenCnOnPnServiceTest {
                 )
 
                 val context: CheckOpenCnOnPnContext = checkContext()
-                val response: CheckedCnOnPn = service.check(context = context, data = requestNode.toObject())
+                val response: CheckedOpenCnOnPn = service.check(context = context, data = requestNode.toObject())
                 assertTrue(response.requireAuction)
             }
 

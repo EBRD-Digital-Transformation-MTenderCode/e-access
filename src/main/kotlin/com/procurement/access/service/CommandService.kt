@@ -8,9 +8,9 @@ import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
-import com.procurement.access.application.service.CheckedCnOnPn
-import com.procurement.access.application.service.CheckedCnOnPnGpa
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
+import com.procurement.access.application.service.CheckedOpenCnOnPn
+import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.cn.update.CnCreateContext
@@ -38,7 +38,9 @@ import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.CheckCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.CheckOpenCnOnPnResponse
+import com.procurement.access.infrastructure.dto.cn.CheckSelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
@@ -549,7 +551,7 @@ class CommandService(
             CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
             CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
             CommandType.CHECK_CN_ON_PN -> {
-                val response: CheckCnOnPnResponse = when (cm.pmd) {
+                when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
@@ -561,17 +563,17 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
-                        val result: CheckedCnOnPn = cnOnPnService.check(context = context, data = request)
+                        val result: CheckedOpenCnOnPn = cnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")
 
-                        val response = CheckCnOnPnResponse(
+                        val response = CheckOpenCnOnPnResponse(
                             requireAuction = result.requireAuction
                         )
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Response: ${toJson(response)}")
 
-                        response
+                        ResponseDto(data = response)
                     }
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
@@ -587,13 +589,14 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Check negotiation CN on PN. Result: ${toJson(result)}")
 
-                        val response = CheckCnOnPnResponse(
-                            requireAuction = result.requireAuction
-                        )
+                        val response =
+                            CheckNegotiationCnOnPnResponse(
+                                requireAuction = result.requireAuction
+                            )
                         if (log.isDebugEnabled)
                             log.debug("Check negotiation CN on PN. Response: ${toJson(response)}")
 
-                        response
+                        ResponseDto(data = response)
                     }
 
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
@@ -605,25 +608,23 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val result: CheckedCnOnPnGpa = selectiveCnOnPnService.check(context = context, data = request)
+                        val result: CheckedSelectiveCnOnPn = selectiveCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Result: ${toJson(result)}")
 
-                        val response = CheckCnOnPnResponse(
+                        val response = CheckSelectiveCnOnPnResponse(
                             requireAuction = result.requireAuction
                         )
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Response: ${toJson(response)}")
 
-                        response
+                        ResponseDto(data = response)
                     }
 
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA ->
                         throw ErrorException(ErrorType.INVALID_PMD)
                 }
-
-                ResponseDto(data = response)
             }
 
             CommandType.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)

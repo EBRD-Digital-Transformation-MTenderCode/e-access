@@ -1,5 +1,5 @@
 package com.procurement.access.application.service
 
-data class CheckedCnOnPnGpa(
+data class CheckedSelectiveCnOnPn(
     val requireAuction: Boolean
 )

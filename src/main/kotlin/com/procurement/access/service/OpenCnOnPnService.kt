@@ -3,7 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.criteria.CreatedCriteria
 import com.procurement.access.application.model.criteria.toEntity
-import com.procurement.access.application.service.CheckedCnOnPn
+import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
@@ -58,7 +58,7 @@ class OpenCnOnPnService(
     private val criteriaService: CriteriaService
 ) {
 
-    fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedCnOnPn {
+    fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedOpenCnOnPn {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -187,7 +187,7 @@ class OpenCnOnPnService(
 
         criteriaService.check(data)
 
-        return CheckedCnOnPn(requireAuction = data.tender.electronicAuctions != null)
+        return CheckedOpenCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
 
     fun create(context: CreateOpenCnOnPnContext, data: OpenCnOnPnRequest): OpenCnOnPnResponse {

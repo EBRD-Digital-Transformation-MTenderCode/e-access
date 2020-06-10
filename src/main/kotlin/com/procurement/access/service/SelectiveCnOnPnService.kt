@@ -2,7 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
-import com.procurement.access.application.service.CheckedCnOnPnGpa
+import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.application.service.criteria.CriteriaService
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
@@ -60,7 +60,7 @@ class SelectiveCnOnPnService(
     private val criteriaService: CriteriaService
 ) {
 
-    fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedCnOnPnGpa {
+    fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedSelectiveCnOnPn {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -205,7 +205,7 @@ class SelectiveCnOnPnService(
 
         criteriaService.check(data)
 
-        return CheckedCnOnPnGpa(requireAuction = data.tender.electronicAuctions != null)
+        return CheckedSelectiveCnOnPn(requireAuction = data.tender.electronicAuctions != null)
     }
 
     fun create(context: CreateSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
