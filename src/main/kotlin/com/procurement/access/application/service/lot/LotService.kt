@@ -95,7 +95,8 @@ class LotServiceImpl(
                     ?.let { requestLot ->
                         if (statusOrStatusDetailsVaries(databaseLot = dbLot, requestLot = requestLot)) {
                             val updatedLot = dbLot.copy(
-                                status = requestLot.status, statusDetails = requestLot.statusDetails
+                                status = requestLot.status,
+                                statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
                             )
                             resultLots.add(updatedLot)
                             updatedLot
@@ -292,6 +293,7 @@ class LotServiceImpl(
             OperationType.UPDATE_PN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_SUBMISSION,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN ->
                 throw ErrorException(
                     error = ErrorType.INVALID_OPERATION_TYPE,

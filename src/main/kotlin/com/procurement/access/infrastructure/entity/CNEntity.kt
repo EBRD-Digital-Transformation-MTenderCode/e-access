@@ -23,11 +23,14 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.RelatedLots
+import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
@@ -174,6 +177,9 @@ data class CNEntity(
         @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
         @field:JsonProperty("lotGroups") @param:JsonProperty("lotGroups") val lotGroups: List<LotGroup>,
 
+        @field:JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria? = null,
+
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>? = null,
 
@@ -202,6 +208,13 @@ data class CNEntity(
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("maximumCandidates") @param:JsonProperty("maximumCandidates") val maximumCandidates: Int?
+        )
+
+        data class OtherCriteria(
+            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
         )
 
         data class Criteria(
@@ -245,6 +258,9 @@ data class CNEntity(
         ) {
             data class Coefficient(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("relatedOption") @param:JsonProperty("relatedOption") val relatedOption: RelatedOption?,
 
                 @JsonDeserialize(using = CoefficientValueDeserializer::class)
                 @JsonSerialize(using = CoefficientValueSerializer::class)

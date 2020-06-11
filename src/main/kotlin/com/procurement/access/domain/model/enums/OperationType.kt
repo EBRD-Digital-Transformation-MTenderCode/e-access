@@ -13,6 +13,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     CREATE_CN_ON_PN("createCNonPN"),
     CREATE_CN_ON_PIN("createCNonPIN"),
     CREATE_PIN_ON_PN("createPINonPN"),
+    CREATE_SUBMISSION("createSubmission"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn");
 
     override fun toString(): String = key

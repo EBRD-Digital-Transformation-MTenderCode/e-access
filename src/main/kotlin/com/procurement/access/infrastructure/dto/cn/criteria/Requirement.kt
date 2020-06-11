@@ -10,14 +10,13 @@ class Requirement(
     val description: String?,
     val period: Period?,
     val dataType: RequirementDataType,
-    val value: RequirementValue?
-)
-
-data class Period(
-    val startDate: LocalDateTime,
-    val endDate: LocalDateTime
-)
-
+    val value: RequirementValue
+) {
+    data class Period(
+        val startDate: LocalDateTime,
+        val endDate: LocalDateTime
+    )
+}
 
 sealed class RequirementValue
 
@@ -73,3 +72,5 @@ sealed class RangeValue : RequirementValue() {
     data class AsNumber(val minValue: BigDecimal, val maxValue: BigDecimal) : RangeValue()
     data class AsInteger(val minValue: Long, val maxValue: Long) : RangeValue()
 }
+
+object NoneValue : RequirementValue()

@@ -5,9 +5,10 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class CriteriaRelatesToEnum(@JsonValue override val key: String) : EnumElementProvider.Key {
-    TENDERER("tenderer"),
+    AWARD("award"),
     ITEM("item"),
-    LOT("lot");
+    LOT("lot"),
+    TENDERER("tenderer");
 
     override fun toString(): String = key
 
