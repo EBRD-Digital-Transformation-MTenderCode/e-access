@@ -5,6 +5,7 @@ import com.procurement.access.application.model.Mode
 import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
+import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
@@ -38,6 +39,7 @@ import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.dto.CheckResponsesRequest
 import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckOpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckSelectiveCnOnPnResponse
@@ -109,7 +111,8 @@ class CommandService(
     private val validationService: ValidationService,
     private val extendTenderService: ExtendTenderService,
     private val ocdsProperties: OCDSProperties,
-    private val medeiaValidationService: JsonValidationService
+    private val medeiaValidationService: JsonValidationService,
+    private val criteriaService: CriteriaService
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(CommandService::class.java)
@@ -624,6 +627,29 @@ class CommandService(
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA ->
                         throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
+            CommandType.CHECK_RESPONSES -> {
+                when (cm.pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                        val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner)
+                        val request: CheckResponsesRequest = toObject(CheckResponsesRequest::class.java, cm.data)
+
+                        criteriaService.checkResponses(context = context, data = request.convert())
+                            .also {
+                                log.debug("Checking response was a success.")
+                            }
+                        ResponseDto(data = "ok")
+                    }
+
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
 

@@ -98,6 +98,8 @@ enum class ErrorType constructor(val code: String, val message: String) {
     NOT_UNIQUE_IDS("10.83", "Elements in collection is not unique by id."),
     INVALID_AWARD_CRITERIA("10.84", "Invalid award criteria."),
     INVALID_COEFFICIENT("10.85", "Invalid coefficient."),
-    INVALID_STAGE("10.78", "Invalid Stage."),
-    MISSING_ATTRIBUTE("10.79", "Missing an attribute.");
+    INVALID_STAGE("10.86", "Invalid Stage."),
+    MISSING_ATTRIBUTE("10.87", "Missing an attribute."),
+    ENTITY_NOT_FOUND("10.88", "No entity found in db with specified parameters."),
+    INVALID_REQUIREMENT_RESPONSE("10.89", "Invalid requirement response.");
 }
