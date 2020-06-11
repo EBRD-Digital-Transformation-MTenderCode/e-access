@@ -41,11 +41,15 @@ class CriteriaServiceImpl(
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
 
+        //FR.COM-1.16.1
         val criteria = cnEntity.tender.criteria
-            ?: throw ErrorException(
-                error = ErrorType.ENTITY_NOT_FOUND,
-                message = "Bid.RequirementResponse object is present in request but no record found in DB."
-            )
+            ?: if (data.bid.requirementResponses.isEmpty())
+                return
+            else
+                throw ErrorException(
+                    error = ErrorType.ENTITY_NOT_FOUND,
+                    message = "Bid.RequirementResponse object is present in request but no record found in DB."
+                )
 
         val requirementResponses = data.bid.requirementResponses
         if (criteria.isNotEmpty() && requirementResponses.isEmpty())

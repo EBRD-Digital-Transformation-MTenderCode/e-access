@@ -12,27 +12,25 @@ import java.time.Clock
 import java.time.LocalDateTime
 
 fun checkRequirementRelationRelevance(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
-
-    if (criteria.isEmpty() && data.bid.requirementResponses.isEmpty()) return
-
-    val requirementsDb = criteria.asSequence()
+    val requirementIds = criteria.asSequence()
         .flatMap { it.requirementGroups.asSequence() }
         .flatMap { it.requirements.asSequence() }
-        .toList()
+        .map { it.id }
+        .toSet()
 
     data.bid.requirementResponses
+        .asSequence()
         .map { it.requirement }
-        .forEach { requirementRequest ->
-            requirementsDb.find { it.id == requirementRequest.id } ?: throw ErrorException(
-                error = ErrorType.INVALID_REQUIREMENT_VALUE,
-                message = "No requirement founded  by passed id=${requirementRequest.id}. "
-            )
+        .forEach { requirement ->
+            if (requirement.id !in requirementIds)
+                throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_VALUE,
+                    message = "No requirement founded by id: '${requirement.id}'."
+                )
         }
 }
 
 fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
-
-    if (criteria.isEmpty() && data.bid.requirementResponses.isEmpty()) return
 
     val lotRequirements = criteria.asSequence()
         .filter { it.relatedItem == data.bid.relatedLots[0] }
@@ -90,9 +88,6 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
 }
 
 fun checkAnsweredOnce(data: CheckResponsesData) {
-
-    if (data.bid.requirementResponses.isEmpty()) return
-
     val requirementIds = data.bid.requirementResponses.asSequence()
         .map { it.requirement }
         .map { it.id }
@@ -121,60 +116,60 @@ fun checkDataTypeValue(data: CheckResponsesData, criteria: List<CNEntity.Tender.
             "ReqirementResponse.requirement.id=${requirementResponse.requirement.id}. "
     )
 
-    if (criteria.isEmpty() && data.bid.requirementResponses.isEmpty()) return
-
     val requirements = criteria.asSequence()
         .flatMap { it.requirementGroups.asSequence() }
         .flatMap { it.requirements.asSequence() }
         .map { requirement -> requirement.id to requirement }
         .toMap()
 
-    data.bid.requirementResponses.forEach { requirementResponse ->
-        val requirement = requirements[requirementResponse.requirement.id]
-            ?: throw ErrorException(
-                error = ErrorType.INVALID_REQUIREMENT_VALUE,
-                message = "Cannot find requirement id DB by id=${requirementResponse.requirement.id}. "
-            )
+    data.bid.requirementResponses
+        .forEach { requirementResponse ->
+            val requirement = requirements[requirementResponse.requirement.id]
+                ?: throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_VALUE,
+                    message = "Cannot find requirement id DB by id=${requirementResponse.requirement.id}. "
+                )
 
-        when (requirementResponse.value) {
-            is RequirementRsValue.AsString -> if (requirement.dataType != RequirementDataType.STRING)
-                dataTypeMismatchException(
-                    requirementResponseDatatype = requirementResponse.value,
-                    requirementDbDataType = requirement.dataType,
-                    requirementResponse = requirementResponse
-                )
-            is RequirementRsValue.AsBoolean -> if (requirement.dataType != RequirementDataType.BOOLEAN)
-                dataTypeMismatchException(
-                    requirementResponseDatatype = requirementResponse.value,
-                    requirementDbDataType = requirement.dataType,
-                    requirementResponse = requirementResponse
-                )
-            is RequirementRsValue.AsInteger -> if (requirement.dataType != RequirementDataType.INTEGER)
-                dataTypeMismatchException(
-                    requirementResponseDatatype = requirementResponse.value,
-                    requirementDbDataType = requirement.dataType,
-                    requirementResponse = requirementResponse
-                )
-            is RequirementRsValue.AsNumber -> if (requirement.dataType != RequirementDataType.NUMBER)
-                dataTypeMismatchException(
-                    requirementResponseDatatype = requirementResponse.value,
-                    requirementDbDataType = requirement.dataType,
-                    requirementResponse = requirementResponse
-                )
+            when (requirementResponse.value) {
+                is RequirementRsValue.AsString -> if (requirement.dataType != RequirementDataType.STRING)
+                    dataTypeMismatchException(
+                        requirementResponseDatatype = requirementResponse.value,
+                        requirementDbDataType = requirement.dataType,
+                        requirementResponse = requirementResponse
+                    )
+                is RequirementRsValue.AsBoolean -> if (requirement.dataType != RequirementDataType.BOOLEAN)
+                    dataTypeMismatchException(
+                        requirementResponseDatatype = requirementResponse.value,
+                        requirementDbDataType = requirement.dataType,
+                        requirementResponse = requirementResponse
+                    )
+                is RequirementRsValue.AsInteger -> if (requirement.dataType != RequirementDataType.INTEGER)
+                    dataTypeMismatchException(
+                        requirementResponseDatatype = requirementResponse.value,
+                        requirementDbDataType = requirement.dataType,
+                        requirementResponse = requirementResponse
+                    )
+                is RequirementRsValue.AsNumber -> if (requirement.dataType != RequirementDataType.NUMBER)
+                    dataTypeMismatchException(
+                        requirementResponseDatatype = requirementResponse.value,
+                        requirementDbDataType = requirement.dataType,
+                        requirementResponse = requirementResponse
+                    )
+            }
         }
-    }
 }
 
 fun checkPeriod(data: CheckResponsesData) {
-    fun invalidPeriodExpection(endDate: LocalDateTime, currentTime: LocalDateTime): Nothing = throw ErrorException(
-        error = ErrorType.INVALID_PERIOD_VALUE,
-        message = "Period.endDate specified in RequirementResponse cannot be greater or equals to current time. " +
-            "EndDate = ${JsonDateTimeSerializer.serialize(endDate)}, Current time = ${JsonDateTimeSerializer.serialize(
-                currentTime
-            )}"
-    )
+    fun invalidPeriodException(endDate: LocalDateTime, currentTime: LocalDateTime): Nothing =
+        throw ErrorException(
+            error = ErrorType.INVALID_PERIOD_VALUE,
+            message = "Period.endDate specified in RequirementResponse cannot be greater or equals to current time. " +
+                "EndDate = ${JsonDateTimeSerializer.serialize(endDate)}, Current time = ${JsonDateTimeSerializer.serialize(
+                    currentTime
+                )}"
+        )
 
-    fun invalidPeriodExpection(period: CheckResponsesData.Bid.RequirementResponse.Period): Nothing =
+    fun invalidPeriodException(period: CheckResponsesData.Bid.RequirementResponse.Period): Nothing =
         throw ErrorException(
             error = ErrorType.INVALID_PERIOD_VALUE,
             message = "Period.startDate specified in RequirementResponse cannot be greater or equals to period.endDate. " +
@@ -182,20 +177,16 @@ fun checkPeriod(data: CheckResponsesData) {
                 "EndDate = ${JsonDateTimeSerializer.serialize(period.endDate)}"
         )
 
-    if (data.bid.requirementResponses.isEmpty()) return
-
     data.bid.requirementResponses
         .mapNotNull { it.period }
         .forEach {
             val currentTime = LocalDateTime.now(Clock.systemUTC())
-            if (it.endDate >= currentTime) invalidPeriodExpection(endDate = it.endDate, currentTime = currentTime)
-            if (it.startDate >= it.endDate) invalidPeriodExpection(period = it)
+            if (it.endDate >= currentTime) invalidPeriodException(endDate = it.endDate, currentTime = currentTime)
+            if (it.startDate >= it.endDate) invalidPeriodException(period = it)
         }
 }
 
 fun checkIdsUniqueness(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
-    if (data.bid.requirementResponses.isEmpty()) return
-
     val requirementResponseIds = data.bid.requirementResponses.map { it.id }
     val requirementResponseUniqueIds = requirementResponseIds.toSet()
     if (requirementResponseIds.size != requirementResponseUniqueIds.size) throw ErrorException(
