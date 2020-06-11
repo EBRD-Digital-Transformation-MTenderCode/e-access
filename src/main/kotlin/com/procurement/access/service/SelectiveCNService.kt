@@ -8,7 +8,6 @@ import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
@@ -65,7 +64,6 @@ class SelectiveCNServiceImpl(
 
         data.checkDocuments(documentsIds) //VR-1.0.1.2.1, VR-1.0.1.2.2, VR-1.0.1.2.9
             .checkLotsValue(budgetCurrency = cn.planning.budget.amount.currency) //VR-1.0.1.4.2
-            .checkLotsContractPeriod(pmd = context.pmd, cn = cn) //VR-1.0.1.4.3
             .checkRelatedLotItems(allLotsIds) //VR-1.0.1.5.4
             .checkRelatedLotsOfDocuments(allLotsIds) //VR-1.0.1.2.6
             .checkIdsProcuringEntity(cn) //VR-1.0.1.10.1
@@ -430,49 +428,6 @@ class SelectiveCNServiceImpl(
                 )
         }
 
-        return this
-    }
-
-    /**
-     * VR-1.0.1.4.3 contractPeriod (lot) (no lots in DB || update lots)
-     * 1. FOR every Lot object from Request eAccess checks startDate && endDate values:
-     *   a. IF startDate && endDate value are present in calendar of current year, validation is successful;
-     *   b. ELSE (startDate && endDate value are not found in calendar) { eAccess throws Exception: "Date doesn't not exist";
-     * 2. FOR every Lot object from Request eAccess compares lot.contractPeriod.startDate && lot.contractPeriod.endDate:
-     *   a. IF value of lot.contractPeriod.startDate < (earlier than) value of lot.contractPeriod.endDate, validation is successful;
-     *   b. ELSE eAccess throws Exception: "Invalid date-time values in lot contract period";
-     * 3. eAccess analyzes pmd value from the context of Request:
-     *   a. IF pmd == "OT" || "SV" || "MV", eAccess checks lot.contractPeriod.startDate in every Lot object from Request:
-     *     i.  IF value of lot.contractPeriod.startDate from Request > (later than) value of tenderPeriod.endDate from Request, validation is successful;
-     *     ii. ELSE eAccess throws Exception: "Invalid date-time values in lot contract period";
-     *   b. ELSE IF (pmd == "DA" || "NP" || "OP") { eAccess checks lot.contractPeriod.startDate in every Lot object from Request:
-     *     i.  IF value of lot.contractPeriod.startDate from Request > (later than) value of startDate from the context of Request, validation is successful;
-     *     ii. ELSE eAccess throws Exception: "Invalid date-time values in lot contract period";
-     */
-    private fun UpdateSelectiveCnData.checkLotsContractPeriod(
-        pmd: ProcurementMethod,
-        cn: CNEntity
-    ): UpdateSelectiveCnData {
-        this.tender.lots.forEach { lot ->
-            if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate)
-                throw ErrorException(error = ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-
-            when (pmd) {
-                ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-                ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-                ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
-                    if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod!!.endDate)
-                        throw ErrorException(error = ErrorType.INVALID_LOT_CONTRACT_PERIOD)
-                }
-
-                ProcurementMethod.DA, ProcurementMethod.TEST_DA,
-                ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                ProcurementMethod.OP, ProcurementMethod.TEST_OP,
-                ProcurementMethod.RT, ProcurementMethod.TEST_RT,
-                ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
-            }
-        }
         return this
     }
 
