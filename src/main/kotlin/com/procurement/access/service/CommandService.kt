@@ -8,6 +8,7 @@ import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
+import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CheckedOpenCnOnPn
@@ -127,7 +128,6 @@ class CommandService(
         .let { prefix ->
             MainMode(prefix = prefix, pattern = prefix.toRegex())
         }
-
 
     fun execute(cm: CommandMessage): ResponseDto {
         var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
@@ -262,11 +262,12 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val response: SelectiveCnOnPnResponse = selectiveCnOnPnService.create(context = context, data = request)
-                            .also {
-                                if (log.isDebugEnabled)
-                                    log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
-                            }
+                        val response: SelectiveCnOnPnResponse =
+                            selectiveCnOnPnService.create(context = context, data = request)
+                                .also {
+                                    if (log.isDebugEnabled)
+                                        log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
+                                }
                         ResponseDto(data = response)
                     }
 
@@ -508,7 +509,7 @@ class CommandService(
                         cpid = cm.cpid,
                         stage = cm.stage
                     )
-                val result = extendTenderService.getAwardCriteria (context = context)
+                val result = extendTenderService.getAwardCriteria(context = context)
                 if (log.isDebugEnabled)
                     log.debug("Tender award criteria. Result: ${toJson(result)}")
 
@@ -611,7 +612,8 @@ class CommandService(
                             startDate = cm.startDate
                         )
                         val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
-                        val result: CheckedSelectiveCnOnPn = selectiveCnOnPnService.check(context = context, data = request)
+                        val result: CheckedSelectiveCnOnPn =
+                            selectiveCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Result: ${toJson(result)}")
 
@@ -687,7 +689,34 @@ class CommandService(
                     log.debug("Lots for auction. Response: ${toJson(dataResponse)}")
                 ResponseDto(data = dataResponse)
             }
+            CommandType.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
+                val response = when (cm.pmd) {
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                        val context = GetAwardCriteriaAndConversionsContext(cpid = cm.cpid, stage = cm.stage)
+                        criteriaService.getAwardCriteriaAndConversions(context = context)
+                            .also { result ->
+                                if (result != null)
+                                    log.debug("Getting criteria. Result: ${toJson(result)}")
+                                else
+                                    log.debug("No criteria.")
+                            }
+                            ?.convert()
+                            ?: Unit
+                    }
+
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> throw ErrorException(ErrorType.INVALID_PMD)
+                }
+                ResponseDto(data = response)
+            }
         }
+
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }

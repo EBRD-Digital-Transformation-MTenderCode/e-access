@@ -1,7 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.model.context.CheckResponsesContext
+import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
 import com.procurement.access.application.model.criteria.GetQualificationCriteriaAndMethod
+import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.application.service.tender.checkAnswerCompleteness
@@ -25,6 +27,8 @@ import org.springframework.stereotype.Service
 
 interface CriteriaService {
     fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData)
+
+    fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult?
 
     fun getQualificationCriteriaAndMethod(params: GetQualificationCriteriaAndMethod.Params): Result<GetQualificationCriteriaAndMethodResult, Fail>
 }
@@ -71,6 +75,36 @@ class CriteriaServiceImpl(
         // FReq-1.2.1.6
         checkIdsUniqueness(data = data, criteria = criteria)
     }
+
+    override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? =
+        tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
+            ?.let { entity ->
+                val cn = toObject(CNEntity::class.java, entity.jsonData)
+                val conversions = cn.tender.conversions
+                    ?.map { conversion ->
+                        GetAwardCriteriaAndConversionsResult.Conversion(
+                            id = conversion.id,
+                            relatesTo = conversion.relatesTo,
+                            relatedItem = conversion.relatedItem,
+                            description = conversion.description,
+                            rationale = conversion.rationale,
+                            coefficients = conversion.coefficients
+                                .map { coefficient ->
+                                    GetAwardCriteriaAndConversionsResult.Conversion.Coefficient(
+                                        id = coefficient.id,
+                                        value = coefficient.value,
+                                        coefficient = coefficient.coefficient
+                                    )
+                                }
+                        )
+                    }
+
+                GetAwardCriteriaAndConversionsResult(
+                    awardCriteria = cn.tender.awardCriteria!!,
+                    awardCriteriaDetails = cn.tender.awardCriteriaDetails!!,
+                    conversions = conversions
+                )
+            }
 
     override fun getQualificationCriteriaAndMethod(params: GetQualificationCriteriaAndMethod.Params): Result<GetQualificationCriteriaAndMethodResult, Fail> {
         val stage = params.ocid.stage
