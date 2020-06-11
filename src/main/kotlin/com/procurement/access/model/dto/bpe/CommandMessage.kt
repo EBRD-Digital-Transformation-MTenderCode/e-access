@@ -132,6 +132,7 @@ enum class CommandType(private val value: String) {
     CREATE_PN("createPn"),
     GET_ACTIVE_LOTS("getActiveLots"),
     GET_AWARD_CRITERIA("getAwardCriteria"),
+    GET_CRITERIA("getCriteria"),
     GET_DATA_FOR_AC("getDataForAc"),
     GET_ITEMS_BY_LOT("getItemsByLot"),
     GET_LOT("getLot"),

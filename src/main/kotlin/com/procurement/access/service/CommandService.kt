@@ -687,6 +687,7 @@ class CommandService(
                     log.debug("Lots for auction. Response: ${toJson(dataResponse)}")
                 ResponseDto(data = dataResponse)
             }
+            CommandType.GET_CRITERIA -> TODO()
         }
         historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
