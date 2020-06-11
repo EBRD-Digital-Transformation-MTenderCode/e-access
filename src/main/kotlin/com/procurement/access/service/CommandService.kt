@@ -626,6 +626,7 @@ class CommandService(
                         throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
+            CommandType.CHECK_RESPONSES -> TODO()
 
             CommandType.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
 
