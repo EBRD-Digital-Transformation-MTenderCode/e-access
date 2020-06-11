@@ -42,8 +42,7 @@ class SelectiveCNServiceImpl(
     private val tenderProcessDao: TenderProcessDao
 ) : SelectiveCNService {
     override fun update(context: UpdateSelectiveCnContext, data: UpdateSelectiveCnData): UpdatedSelectiveCn {
-        data.checkElectronicAuction(context) //VR-1.0.1.7.8
-            .checkLotsIds() //VR-1.0.1.4.1
+        data.checkLotsIds() //VR-1.0.1.4.1
             .checkUniqueIdsItems() // VR-1.0.1.5.1
             .checkIdsPersons() //VR-1.0.1.10.3
             .checkBusinessFunctions(context.startDate) //VR-1.0.1.10.5, VR-1.0.1.10.6, VR-1.0.1.10.7, VR-1.0.1.2.1, VR-1.0.1.2.8
@@ -396,22 +395,6 @@ class SelectiveCNServiceImpl(
     }
 
     /**
-     * VR-1.0.1.7.8 electronicAuction
-     *
-     * eAccess checks isAuction value from the context of Request:
-     * IF [isAuction == FALSE && tender.electronicAuctions != null]
-     *      then: eAccess throws Exception: "Auction should not be launched";
-     */
-    private fun UpdateSelectiveCnData.checkElectronicAuction(context: UpdateSelectiveCnContext): UpdateSelectiveCnData {
-        if (!context.isAuction && this.tender.electronicAuctions != null)
-            throw ErrorException(
-                error = ErrorType.INVALID_AUCTION_IS_NON_EMPTY,
-                message = "The process does not allow electronic auctions."
-            )
-        return this
-    }
-
-    /**
      * VR-1.0.1.4.1 id (lot)
      * eAccess analyzes Lot.ID from Request:
      * a. IF every lot.ID from Request is included once in list from Request, validation is successful;
@@ -477,7 +460,8 @@ class SelectiveCNServiceImpl(
             when (pmd) {
                 ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                 ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                     if (lot.contractPeriod.startDate <= cn.tender.tenderPeriod!!.endDate)
                         throw ErrorException(error = ErrorType.INVALID_LOT_CONTRACT_PERIOD)
                 }
