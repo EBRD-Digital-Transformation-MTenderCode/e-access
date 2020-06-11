@@ -67,6 +67,7 @@ private fun CriterionRequest.defineSource(): CriteriaSource? = when (relatesTo) 
     CriteriaRelatesToEnum.TENDERER -> null
     CriteriaRelatesToEnum.LOT -> CriteriaSource.TENDERER
     CriteriaRelatesToEnum.ITEM -> CriteriaSource.TENDERER
+    CriteriaRelatesToEnum.AWARD -> CriteriaSource.TENDERER
     null -> CriteriaSource.TENDERER
 }
 
@@ -80,6 +81,7 @@ fun CNEntity.Tender.Criteria.replaceTemporalItemId(
         relatedItem = when (relatesTo) {
             CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
             CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
+            CriteriaRelatesToEnum.AWARD -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
             CriteriaRelatesToEnum.TENDERER -> relatedItem
             null -> relatedItem
         }

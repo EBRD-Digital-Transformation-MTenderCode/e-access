@@ -130,6 +130,7 @@ enum class CommandType(private val value: String) {
     CREATE_PIN("createPin"),
     CREATE_PIN_ON_PN("createPinOnPn"),
     CREATE_PN("createPn"),
+    CREATE_REQUESTS_FOR_EV_PANELS("createRequestsForEvPanels"),
     GET_ACTIVE_LOTS("getActiveLots"),
     GET_AWARD_CRITERIA("getAwardCriteria"),
     GET_AWARD_CRITERIA_AND_CONVERSIONS("getAwardCriteriaAndConversions"),
