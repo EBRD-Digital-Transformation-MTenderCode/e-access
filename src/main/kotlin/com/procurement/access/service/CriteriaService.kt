@@ -1,42 +1,33 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.criteria.CreateCriteriaForProcuringEntity
 import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
-import com.procurement.access.application.model.criteria.CriteriaId
-import com.procurement.access.application.model.criteria.GetQualificationCriteriaAndMethod
-import com.procurement.access.application.model.criteria.RequirementGroupId
-import com.procurement.access.application.model.criteria.RequirementId
+import com.procurement.access.application.model.criteria.*
 import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.application.service.tender.checkAnswerCompleteness
-import com.procurement.access.application.service.tender.checkAnsweredOnce
-import com.procurement.access.application.service.tender.checkDataTypeValue
-import com.procurement.access.application.service.tender.checkIdsUniqueness
-import com.procurement.access.application.service.tender.checkPeriod
-import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
+import com.procurement.access.application.service.tender.*
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.infrastructure.dto.converter.create.convertToResponse
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.infrastructure.dto.converter.create.convertToResponse
 import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
-import com.procurement.access.utils.toJson
 import com.procurement.access.model.entity.TenderProcessEntity
+import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
@@ -264,15 +255,15 @@ class CriteriaServiceImpl(
                                             description = requirement.description,
                                             title       = requirement.title,
                                             period      = null,
-                                            value       = null,
+                                            value       = NoneValue,
                                             dataType    = RequirementDataType.BOOLEAN // FR.COM-1.12.2
                                         )
                                     }
                             )
                         },
                     source      = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
-                    relatedItem = null,
-                    relatesTo   = null
+                    relatesTo   = CriteriaRelatesToEnum.AWARD,     // FR.COM-1.12.5
+                    relatedItem = null
                 )
             }
 

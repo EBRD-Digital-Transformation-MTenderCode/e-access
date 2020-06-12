@@ -4,6 +4,7 @@
     "title": "string",
     "description": "string",
     "source": "procuringEntity",
+    "relatesTo": "award",
     "requirementGroups": [
       {
         "id": "MD.TEST_GPA.1.1",
