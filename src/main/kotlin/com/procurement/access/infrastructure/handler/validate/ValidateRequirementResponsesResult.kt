@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
-import com.procurement.dossier.infrastructure.bind.criteria.RequirementValueDeserializer
-import com.procurement.dossier.infrastructure.bind.criteria.RequirementValueSerializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementValueDeserializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementValueSerializer
 
 class ValidateRequirementResponsesResult(values: List<RequirementResponse>) : List<ValidateRequirementResponsesResult.RequirementResponse> by values {
     data class RequirementResponse(
