@@ -4,6 +4,7 @@ import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
 import com.procurement.access.application.model.criteria.CriteriaId
+import com.procurement.access.application.model.criteria.FindCriteria
 import com.procurement.access.application.model.criteria.GetQualificationCriteriaAndMethod
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
@@ -24,12 +25,15 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
@@ -45,6 +49,8 @@ interface CriteriaService {
     fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult?
 
     fun getQualificationCriteriaAndMethod(params: GetQualificationCriteriaAndMethod.Params): Result<GetQualificationCriteriaAndMethodResult, Fail>
+
+    fun findCriteria(params: FindCriteria.Params): Result<FindCriteriaResult, Fail>
 }
 
 @Service
@@ -221,6 +227,30 @@ class CriteriaServiceImpl(
             reductionCriteria = otherCriteria.reductionCriteria
         )
 
-        return Result.success(result)
+        return success(result)
+    }
+
+    override fun findCriteria(params: FindCriteria.Params): Result<FindCriteriaResult, Fail> {
+
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .orForwardFail { error -> return error }
+            ?: return success(FindCriteriaResult(emptyList()))
+
+        val cnEntity = entity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .doReturn { error ->
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+
+        val foundedCriteria = cnEntity.tender.criteria
+            ?.asSequence()
+            ?.filter { it.source == params.source }
+            ?.map { criterion -> criterion.convert() }
+            ?.toList()
+            .orEmpty()
+
+        val result = FindCriteriaResult(foundedCriteria)
+
+        return success(result)
     }
 }
