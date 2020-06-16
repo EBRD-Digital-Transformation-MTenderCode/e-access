@@ -8,6 +8,8 @@ import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
 import com.procurement.access.domain.model.criteria.replaceTemporalItemId
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
@@ -1020,6 +1022,11 @@ class OpenCnOnPnService(
         val statusDetails: TenderStatusDetails = TenderStatusDetails.CLARIFICATION
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
+        val awardCriteriaDetails = if (request.tender.awardCriteria == AwardCriteria.PRICE_ONLY)
+            AwardCriteriaDetails.AUTOMATED
+        else
+            request.tender.awardCriteriaDetails
+
         return CNEntity.Tender(
             id = generationService.generatePermanentTenderId(),
             /** Begin BR-3.8.8 -> BR-3.6.2*/
@@ -1080,7 +1087,7 @@ class OpenCnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria,
-            awardCriteriaDetails = request.tender.awardCriteriaDetails,
+            awardCriteriaDetails = awardCriteriaDetails,
             tenderPeriod = request.tender.tenderPeriod
                 .let { period ->
                     CNEntity.Tender.TenderPeriod(startDate = period.startDate, endDate = period.endDate)

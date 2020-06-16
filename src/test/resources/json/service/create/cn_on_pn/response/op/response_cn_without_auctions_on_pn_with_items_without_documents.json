@@ -48,6 +48,7 @@
     },
     "mainProcurementCategory": "services",
     "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "automated",
     "procurementMethod": "open",
     "procurementMethodDetails": "pn.tender.procurementMethodDetails",
     "procurementMethodRationale": "request.tender.procurementMethodRationale",
