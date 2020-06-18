@@ -35,7 +35,7 @@ val CommandMessage.token: UUID
             try {
                 UUID.fromString(token)
             } catch (exception: Exception) {
-                throw ErrorException(error = ErrorType.INVALID_FORMAT_TOKEN, message = "Invalid token=$token.")
+                throw ErrorException(error = ErrorType.INVALID_FORMAT_TOKEN, message = "Expected token format is UUID, actual token=$token.")
             }
         }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
