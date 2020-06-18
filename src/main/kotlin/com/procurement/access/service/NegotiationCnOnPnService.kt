@@ -44,10 +44,7 @@ class NegotiationCnOnPnService(
     private val tenderProcessDao: TenderProcessDao
 ) {
 
-    fun checkNegotiationCnOnPn(
-        context: CheckNegotiationCnOnPnContext,
-        data: NegotiationCnOnPnRequest
-    ): CheckedNegotiationCnOnPn {
+    fun check(context: CheckNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): CheckedNegotiationCnOnPn {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -141,10 +138,7 @@ class NegotiationCnOnPnService(
         return CheckedNegotiationCnOnPn(requireAuction = false)
     }
 
-    fun createNegotiationCnOnPn(
-        context: CreateNegotiationCnOnPnContext,
-        data: NegotiationCnOnPnRequest
-    ): NegotiationCnOnPnResponse {
+    fun create(context: CreateNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): NegotiationCnOnPnResponse {
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -172,7 +166,10 @@ class NegotiationCnOnPnService(
             )
         )
 
-        return getResponse(cnEntity, tenderProcessEntity.token)
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+        val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
+
+        return getResponse(responseCnEntity, tenderProcessEntity.token)
     }
 
     /**

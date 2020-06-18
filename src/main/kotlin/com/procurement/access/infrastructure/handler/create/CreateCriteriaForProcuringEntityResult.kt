@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.handler.create
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
 
@@ -16,7 +17,9 @@ class CreateCriteriaForProcuringEntityResult(values: List<Criterion>) : List<Cre
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
 
-        @field:JsonProperty("source") @param:JsonProperty("source") val source: CriteriaSource
+        @field:JsonProperty("source") @param:JsonProperty("source") val source: CriteriaSource,
+
+        @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum
     ) {
 
         data class RequirementGroup(

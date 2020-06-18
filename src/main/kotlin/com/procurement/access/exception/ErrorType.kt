@@ -89,5 +89,17 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_RELATED_LOT("10.74", "Invalid related lot."),
     INVALID_LOT("10.75", "Invalid lot."),
     INVALID_FS("10.76", "Invalid FS. "),
-    INVALID_SECOND_STAGE("10.77", "Invalid Second Stage. ");
+    INVALID_SECOND_STAGE("10.77", "Invalid Second Stage. "),
+    INVALID_JSON("10.78", "Invalid json."),
+    INVALID_CRITERIA("10.79", "Invalid criteria value."),
+    INVALID_CONVERSION("10.80", "Invalid conversion value."),
+    INVALID_PERIOD_VALUE("10.81", "Invalid period value."),
+    EMPTY_LIST("10.82", "Collection is empty."),
+    NOT_UNIQUE_IDS("10.83", "Elements in collection is not unique by id."),
+    INVALID_AWARD_CRITERIA("10.84", "Invalid award criteria."),
+    INVALID_COEFFICIENT("10.85", "Invalid coefficient."),
+    INVALID_STAGE("10.86", "Invalid Stage."),
+    MISSING_ATTRIBUTE("10.87", "Missing an attribute."),
+    ENTITY_NOT_FOUND("10.88", "No entity found in db with specified parameters."),
+    INVALID_REQUIREMENT_RESPONSE("10.89", "Invalid requirement response.");
 }

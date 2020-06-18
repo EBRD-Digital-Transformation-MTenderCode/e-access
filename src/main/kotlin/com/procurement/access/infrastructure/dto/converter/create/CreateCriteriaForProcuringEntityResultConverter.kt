@@ -13,6 +13,7 @@ fun CNEntity.Tender.Criteria.convertToResponse(): Criterion {
         title             = this.title,
         description       = this.description,
         source            = this.source!!,
+        relatesTo         = this.relatesTo!!,
         requirementGroups = requirementGroups
     )
 }
