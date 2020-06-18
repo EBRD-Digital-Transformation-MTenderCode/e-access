@@ -28,8 +28,14 @@ class CreateCriteriaForProcuringEntity {
             }
         }
 
-        class Criterion        (val id: String, val description: String?, val title: String, val requirementGroups: List<RequirementGroup>)
-        class RequirementGroup (val id: String, val description: String?, val requirements: List<Requirement>)
-        class Requirement      (val id: String, val description: String?, val title: String)
+        class Criterion(
+            val id: String,
+            val description: String?,
+            val title: String,
+            val requirementGroups: List<RequirementGroup>
+        )
+
+        class RequirementGroup(val id: String, val description: String?, val requirements: List<Requirement>)
+        class Requirement(val id: String, val description: String?, val title: String)
     }
 }
