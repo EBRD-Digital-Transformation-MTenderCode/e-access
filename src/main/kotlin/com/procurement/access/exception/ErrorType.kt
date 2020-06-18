@@ -75,7 +75,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     AUCTION_LOT_HAS_INVALID_CURRENCY_VALUE("10.60", "The lot in auction has an invalid currency value."),
     INVALID_FORMAT_LOT_ID("10.61", "Invalid format the lot id."),
     INVALID_LOT_STATUS_DETAILS("10.62", "Invalid lot status details."),
-    INVALID_FORMAT_TOKEN("10.63", "Invalid format the award id."),
+    INVALID_FORMAT_TOKEN("10.63", "Invalid format the token."),
     INVALID_TENDER_STATUS_DETAILS("10.64", "Invalid tender status details."),
     INVALID_DOCUMENT_TYPE("10.65", "Invalid document type."),
     INVALID_PROCURING_ENTITY("10.66", "Invalid procuring entity."),

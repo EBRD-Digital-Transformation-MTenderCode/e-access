@@ -29,13 +29,16 @@ val CommandMessage.cpid: String
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context.")
 
 val CommandMessage.token: UUID
-    get() = this.context.token?.let { id ->
-        try {
-            UUID.fromString(id)
-        } catch (exception: Exception) {
-            throw ErrorException(error = ErrorType.INVALID_FORMAT_TOKEN)
+    get() = this.context
+        .token
+        ?.let { token ->
+            try {
+                UUID.fromString(token)
+            } catch (exception: Exception) {
+                throw ErrorException(error = ErrorType.INVALID_FORMAT_TOKEN, message = "Expected token format is UUID, actual token=$token.")
+            }
         }
-    } ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
 
 val CommandMessage.owner: String
     get() = this.context.owner
