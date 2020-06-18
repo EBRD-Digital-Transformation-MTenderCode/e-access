@@ -31,6 +31,11 @@ fun checkCriteriaAndConversion(
     conversions: List<ConversionRequest>?
 ) {
 
+    // FReq-1.1.1.16
+    checkItemArrays(items)
+    checkCriterionArrays(criteria)
+    checkConversionArrays(conversions)
+
     checkConversionWithoutCriteria(criteria, conversions)
 
     // FReq-1.1.1.22
@@ -84,10 +89,6 @@ fun checkCriteriaAndConversion(
     // FReq-1.1.1.15
     checkAwardCriteriaDetailsEnum(awardCriteriaDetails)
 
-    // FReq-1.1.1.16
-    checkItemArrays(items)
-    checkCriterionArrays(criteria)
-    checkConversionArrays(conversions)
 }
 
 fun checkConversionWithoutCriteria(criteria: List<CriterionRequest>?, conversions: List<ConversionRequest>?) {
@@ -368,17 +369,18 @@ fun checkCoefficientValueUniqueness(conversions: List<ConversionRequest>?) {
     )
 
     fun List<ConversionRequest.Coefficient>.validateCoefficientValues() {
-        when (this[0].value) {
-            is CoefficientValue.AsBoolean,
-            is CoefficientValue.AsInteger,
-            is CoefficientValue.AsNumber -> {
-                val values = this.map {
-                    if (it.value is CoefficientValue.AsNumber) it.value.value.stripTrailingZeros() else it.value
+            when (this[0].value) {
+                is CoefficientValue.AsBoolean,
+                is CoefficientValue.AsInteger,
+                is CoefficientValue.AsNumber -> {
+                    val values = this.map {
+                        if (it.value is CoefficientValue.AsNumber) it.value.value.stripTrailingZeros() else it.value
+                    }
+                    if (values.toSet().size != values.size) uniquenessException(this)
                 }
-                if (values.toSet().size != values.size) uniquenessException(this)
+                is CoefficientValue.AsString -> Unit
             }
-            is CoefficientValue.AsString -> Unit
-        }
+
     }
 
     conversions?.forEach { conversion ->
@@ -567,8 +569,11 @@ fun checkCastCoefficient(
         }
 
         val castCoefficient = (tenderConversions + lotConversions + itemConversions)
-            .map { conversion -> java.math.BigDecimal(1) - conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate }
-            .fold(java.math.BigDecimal.ZERO, java.math.BigDecimal::add)
+            .map { conversion ->
+                val minCoefficient = conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
+                BigDecimal.ONE - minCoefficient
+            }
+            .fold(BigDecimal.ZERO, java.math.BigDecimal::add)
 
         val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
         val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()

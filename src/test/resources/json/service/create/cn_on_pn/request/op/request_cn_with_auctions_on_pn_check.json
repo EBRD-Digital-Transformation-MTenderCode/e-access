@@ -7,7 +7,7 @@
     },
     "procurementMethodRationale": "request.tender.procurementMethodRationale",
     "procurementMethodAdditionalInfo": "request.tender.procurementMethodAdditionalInfo",
-    "awardCriteria": "costOnly",
+    "awardCriteria": "priceOnly",
     "awardCriteriaDetails": "manual",
     "tenderPeriod": {
       "startDate": "2019-04-01T10:00:00Z",
