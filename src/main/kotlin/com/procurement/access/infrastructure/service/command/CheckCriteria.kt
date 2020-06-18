@@ -31,6 +31,11 @@ fun checkCriteriaAndConversion(
     conversions: List<ConversionRequest>?
 ) {
 
+    // FReq-1.1.1.16
+    checkItemArrays(items)
+    checkCriterionArrays(criteria)
+    checkConversionArrays(conversions)
+
     checkConversionWithoutCriteria(criteria, conversions)
 
     // FReq-1.1.1.22
@@ -84,10 +89,6 @@ fun checkCriteriaAndConversion(
     // FReq-1.1.1.15
     checkAwardCriteriaDetailsEnum(awardCriteriaDetails)
 
-    // FReq-1.1.1.16
-    checkItemArrays(items)
-    checkCriterionArrays(criteria)
-    checkConversionArrays(conversions)
 }
 
 fun checkConversionWithoutCriteria(criteria: List<CriterionRequest>?, conversions: List<ConversionRequest>?) {
@@ -368,7 +369,6 @@ fun checkCoefficientValueUniqueness(conversions: List<ConversionRequest>?) {
     )
 
     fun List<ConversionRequest.Coefficient>.validateCoefficientValues() {
-        if (this.isNotEmpty()) {
             when (this[0].value) {
                 is CoefficientValue.AsBoolean,
                 is CoefficientValue.AsInteger,
@@ -380,7 +380,7 @@ fun checkCoefficientValueUniqueness(conversions: List<ConversionRequest>?) {
                 }
                 is CoefficientValue.AsString -> Unit
             }
-        }
+
     }
 
     conversions?.forEach { conversion ->
@@ -570,11 +570,7 @@ fun checkCastCoefficient(
 
         val castCoefficient = (tenderConversions + lotConversions + itemConversions)
             .map { conversion ->
-                val minCoefficient = if (conversion.coefficients.isNotEmpty()) {
-                    conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
-                } else {
-                    BigDecimal.ZERO
-                }
+                val minCoefficient = conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
                 BigDecimal.ONE - minCoefficient
             }
             .fold(BigDecimal.ZERO, java.math.BigDecimal::add)
