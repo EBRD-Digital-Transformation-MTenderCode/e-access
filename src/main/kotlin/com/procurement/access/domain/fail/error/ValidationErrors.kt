@@ -1,12 +1,14 @@
 package com.procurement.access.domain.fail.error
 
 import com.procurement.access.application.service.Logger
+import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.owner.Owner
+import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.token.Token
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
@@ -126,4 +128,15 @@ sealed class ValidationErrors(
         description = "For relatedCandidate='${candidateId}' that located in requirement response with id='${requirementResponseId}' " +
             "cannot founded in 'organizationIds' array."
     )
+
+    class DuplicatedAnswerOnValidateRequirementResponses(
+        val candidateId: String,
+        val requirementId: RequirementId,
+        val requirementResponses: List<ValidateRequirementResponsesParams.RequirementResponse>
+    ) : ValidationErrors(
+        numberError = "1.10.5",
+        description = "Candidate (id='$candidateId') answered on requirement (id='$requirementId') multiple times " +
+            "by requirement responses: $requirementResponses "
+    )
+
 }
