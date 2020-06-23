@@ -8,16 +8,12 @@ import com.procurement.access.application.model.criteria.FindCriteria
 import com.procurement.access.application.model.criteria.GetQualificationCriteriaAndMethod
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
+import com.procurement.access.application.model.criteria.*
 import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.application.service.tender.checkAnswerCompleteness
-import com.procurement.access.application.service.tender.checkAnsweredOnce
-import com.procurement.access.application.service.tender.checkDataTypeValue
-import com.procurement.access.application.service.tender.checkIdsUniqueness
-import com.procurement.access.application.service.tender.checkPeriod
-import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
+import com.procurement.access.application.service.tender.*
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -30,9 +26,11 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.infrastructure.dto.converter.create.convertToResponse
 import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -49,6 +47,8 @@ interface CriteriaService {
     fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult?
 
     fun getQualificationCriteriaAndMethod(params: GetQualificationCriteriaAndMethod.Params): Result<GetQualificationCriteriaAndMethodResult, Fail>
+
+    fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail>
 
     fun findCriteria(params: FindCriteria.Params): Result<FindCriteriaResult, Fail>
 }
@@ -252,5 +252,67 @@ class CriteriaServiceImpl(
         val result = FindCriteriaResult(foundedCriteria)
 
         return success(result)
+    }
+
+    override fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail> {
+
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .orForwardFail { error -> return error }
+            ?: return Result.failure(
+                ValidationErrors.TenderNotFoundOnCreateCriteriaForProcuringEntity(
+                    cpid = params.cpid,
+                    ocid = params.ocid
+                )
+            )
+
+        val cnEntity = tenderProcessEntity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .doReturn { error ->
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+
+        val createdCriteria = params.criteria
+            .map { criterion ->
+                CNEntity.Tender.Criteria(
+                    id                = criterion.id,
+                    title             = criterion.title,
+                    description       = criterion.description,
+                    requirementGroups = criterion.requirementGroups
+                        .map { requirementGroups ->
+                            CNEntity.Tender.Criteria.RequirementGroup(
+                                id           = requirementGroups.id,
+                                description  = requirementGroups.description,
+                                requirements = requirementGroups.requirements
+                                    .map { requirement ->
+                                        Requirement(
+                                            id          = requirement.id,
+                                            description = requirement.description,
+                                            title       = requirement.title,
+                                            period      = null,
+                                            value       = NoneValue,
+                                            dataType    = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                        )
+                                    }
+                            )
+                        },
+                    source      = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
+                    relatesTo   = CriteriaRelatesToEnum.AWARD,     // FR.COM-1.12.5
+                    relatedItem = null
+                )
+            }
+
+        val result = createdCriteria.map { it.convertToResponse() }
+
+        val updatedCnEntity = cnEntity.copy(
+            tender = cnEntity.tender.copy(
+                criteria = createdCriteria
+            )
+        )
+        val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCnEntity))
+
+        tenderProcessRepository.save(updatedTenderProcessEntity)
+            .orForwardFail { incident -> return incident }
+
+        return success(CreateCriteriaForProcuringEntityResult(result))
     }
 }

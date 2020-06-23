@@ -5,6 +5,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaHandler
+import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityHandler
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
@@ -30,6 +31,7 @@ class CommandService2(
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
     private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler,
     private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
+    private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
@@ -73,6 +75,7 @@ class CommandService2(
             Command2Type.VERIFY_REQUIREMENT_RESPONSE           -> verifyRequirementResponseHandler.handle(node = request)
             Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)
             Command2Type.VALIDATE_REQUIREMENT_RESPONSES        -> validateRequirementResponsesHandler.handle(node = request)
+            Command2Type.CREATE_CRITERIA_FOR_PROCURING_ENTITY  -> createCriteriaForProcuringEntityHandler.handle(node = request)
             Command2Type.FIND_CRITERIA                         -> findCriteriaHandler.handle(node = request)
         }
 

@@ -8,6 +8,8 @@ import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
 import com.procurement.access.domain.model.criteria.replaceTemporalItemId
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
@@ -905,18 +907,20 @@ class OpenCnOnPnService(
             }
 
         /** Begin BR-3.8.4 */
-        val value: CNEntity.Tender.Value = pnEntity.tender.value.let {
-            CNEntity.Tender.Value(
-                amount = it.amount,
-                currency = it.currency
-            )
-        }
-        val contractPeriod: CNEntity.Tender.ContractPeriod = pnEntity.tender.contractPeriod!!.let {
-            CNEntity.Tender.ContractPeriod(
-                startDate = it.startDate,
-                endDate = it.endDate
-            )
-        }
+        val value: CNEntity.Tender.Value = pnEntity.tender.value
+            .let {
+                CNEntity.Tender.Value(
+                    amount = it.amount,
+                    currency = it.currency
+                )
+            }
+        val contractPeriod: CNEntity.Tender.ContractPeriod = pnEntity.tender.contractPeriod!!
+            .let {
+                CNEntity.Tender.ContractPeriod(
+                    startDate = it.startDate,
+                    endDate = it.endDate
+                )
+            }
 
         /** End BR-3.8.4 */
 
@@ -952,44 +956,50 @@ class OpenCnOnPnService(
             rationale = pnEntity.planning.rationale,
             budget = CNEntity.Planning.Budget(
                 description = pnEntity.planning.budget.description,
-                amount = pnEntity.planning.budget.amount.let {
-                    CNEntity.Planning.Budget.Amount(
-                        amount = it.amount,
-                        currency = it.currency
-                    )
-                },
+                amount = pnEntity.planning.budget.amount
+                    .let {
+                        CNEntity.Planning.Budget.Amount(
+                            amount = it.amount,
+                            currency = it.currency
+                        )
+                    },
                 isEuropeanUnionFunded = pnEntity.planning.budget.isEuropeanUnionFunded,
-                budgetBreakdowns = pnEntity.planning.budget.budgetBreakdowns.map { budgetBreakdown ->
-                    CNEntity.Planning.Budget.BudgetBreakdown(
-                        id = budgetBreakdown.id,
-                        description = budgetBreakdown.description,
-                        amount = budgetBreakdown.amount.let {
-                            CNEntity.Planning.Budget.BudgetBreakdown.Amount(
-                                amount = it.amount,
-                                currency = it.currency
-                            )
-                        },
-                        period = budgetBreakdown.period.let {
-                            CNEntity.Planning.Budget.BudgetBreakdown.Period(
-                                startDate = it.startDate,
-                                endDate = it.endDate
-                            )
-                        },
-                        sourceParty = budgetBreakdown.sourceParty.let {
-                            CNEntity.Planning.Budget.BudgetBreakdown.SourceParty(
-                                name = it.name,
-                                id = it.id
-                            )
-                        },
-                        europeanUnionFunding = budgetBreakdown.europeanUnionFunding?.let {
-                            CNEntity.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
-                                projectIdentifier = it.projectIdentifier,
-                                projectName = it.projectName,
-                                uri = it.uri
-                            )
-                        }
-                    )
-                }
+                budgetBreakdowns = pnEntity.planning.budget.budgetBreakdowns
+                    .map { budgetBreakdown ->
+                        CNEntity.Planning.Budget.BudgetBreakdown(
+                            id = budgetBreakdown.id,
+                            description = budgetBreakdown.description,
+                            amount = budgetBreakdown.amount
+                                .let {
+                                    CNEntity.Planning.Budget.BudgetBreakdown.Amount(
+                                        amount = it.amount,
+                                        currency = it.currency
+                                    )
+                                },
+                            period = budgetBreakdown.period
+                                .let {
+                                    CNEntity.Planning.Budget.BudgetBreakdown.Period(
+                                        startDate = it.startDate,
+                                        endDate = it.endDate
+                                    )
+                                },
+                            sourceParty = budgetBreakdown.sourceParty
+                                .let {
+                                    CNEntity.Planning.Budget.BudgetBreakdown.SourceParty(
+                                        name = it.name,
+                                        id = it.id
+                                    )
+                                },
+                            europeanUnionFunding = budgetBreakdown.europeanUnionFunding
+                                ?.let {
+                                    CNEntity.Planning.Budget.BudgetBreakdown.EuropeanUnionFunding(
+                                        projectIdentifier = it.projectIdentifier,
+                                        projectName = it.projectName,
+                                        uri = it.uri
+                                    )
+                                }
+                        )
+                    }
             )
         )
     }
@@ -1012,6 +1022,11 @@ class OpenCnOnPnService(
         val statusDetails: TenderStatusDetails = TenderStatusDetails.CLARIFICATION
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
+        val awardCriteriaDetails = if (request.tender.awardCriteria == AwardCriteria.PRICE_ONLY)
+            AwardCriteriaDetails.AUTOMATED
+        else
+            request.tender.awardCriteriaDetails
+
         return CNEntity.Tender(
             id = generationService.generatePermanentTenderId(),
             /** Begin BR-3.8.8 -> BR-3.6.2*/
@@ -1023,49 +1038,44 @@ class OpenCnOnPnService(
             title = pnEntity.tender.title, //BR-3.8.1
             description = pnEntity.tender.description, //BR-3.8.1
             //BR-3.8.1
-            acceleratedProcedure = pnEntity.tender.acceleratedProcedure.let {
-                CNEntity.Tender.AcceleratedProcedure(
-                    isAcceleratedProcedure = it.isAcceleratedProcedure
-                )
-            },
+            acceleratedProcedure = pnEntity.tender.acceleratedProcedure
+                .let {
+                    CNEntity.Tender.AcceleratedProcedure(isAcceleratedProcedure = it.isAcceleratedProcedure)
+                },
             //BR-3.8.1
-            designContest = pnEntity.tender.designContest.let {
-                CNEntity.Tender.DesignContest(
-                    serviceContractAward = it.serviceContractAward
-                )
-            },
+            designContest = pnEntity.tender.designContest
+                .let {
+                    CNEntity.Tender.DesignContest(serviceContractAward = it.serviceContractAward)
+                },
             //BR-3.8.1
-            electronicWorkflows = pnEntity.tender.electronicWorkflows.let {
-                CNEntity.Tender.ElectronicWorkflows(
-                    useOrdering = it.useOrdering,
-                    usePayment = it.usePayment,
-                    acceptInvoicing = it.acceptInvoicing
-                )
-            },
+            electronicWorkflows = pnEntity.tender.electronicWorkflows
+                .let {
+                    CNEntity.Tender.ElectronicWorkflows(
+                        useOrdering = it.useOrdering,
+                        usePayment = it.usePayment,
+                        acceptInvoicing = it.acceptInvoicing
+                    )
+                },
             //BR-3.8.1
-            jointProcurement = pnEntity.tender.jointProcurement.let {
-                CNEntity.Tender.JointProcurement(
-                    isJointProcurement = it.isJointProcurement
-                )
-            },
+            jointProcurement = pnEntity.tender.jointProcurement
+                .let {
+                    CNEntity.Tender.JointProcurement(isJointProcurement = it.isJointProcurement)
+                },
             //BR-3.8.1
-            procedureOutsourcing = pnEntity.tender.procedureOutsourcing.let {
-                CNEntity.Tender.ProcedureOutsourcing(
-                    procedureOutsourced = it.procedureOutsourced
-                )
-            },
+            procedureOutsourcing = pnEntity.tender.procedureOutsourcing
+                .let {
+                    CNEntity.Tender.ProcedureOutsourcing(procedureOutsourced = it.procedureOutsourced)
+                },
             //BR-3.8.1
-            framework = pnEntity.tender.framework.let {
-                CNEntity.Tender.Framework(
-                    isAFramework = it.isAFramework
-                )
-            },
+            framework = pnEntity.tender.framework
+                .let {
+                    CNEntity.Tender.Framework(isAFramework = it.isAFramework)
+                },
             //BR-3.8.1
-            dynamicPurchasingSystem = pnEntity.tender.dynamicPurchasingSystem.let {
-                CNEntity.Tender.DynamicPurchasingSystem(
-                    hasDynamicPurchasingSystem = it.hasDynamicPurchasingSystem
-                )
-            },
+            dynamicPurchasingSystem = pnEntity.tender.dynamicPurchasingSystem
+                .let {
+                    CNEntity.Tender.DynamicPurchasingSystem(hasDynamicPurchasingSystem = it.hasDynamicPurchasingSystem)
+                },
             legalBasis = pnEntity.tender.legalBasis, //BR-3.8.1
             procurementMethod = pnEntity.tender.procurementMethod, //BR-3.8.1
             procurementMethodDetails = pnEntity.tender.procurementMethodDetails,//BR-3.8.1
@@ -1077,130 +1087,141 @@ class OpenCnOnPnService(
 
             //BR-3.8.17 -> BR-3.6.22 | VR-3.6.16
             awardCriteria = request.tender.awardCriteria,
-            awardCriteriaDetails = request.tender.awardCriteriaDetails,
-            tenderPeriod = request.tender.tenderPeriod.let { period ->
-                CNEntity.Tender.TenderPeriod(
-                    startDate = period.startDate,
-                    endDate = period.endDate
-                )
-            },
+            awardCriteriaDetails = awardCriteriaDetails,
+            tenderPeriod = request.tender.tenderPeriod
+                .let { period ->
+                    CNEntity.Tender.TenderPeriod(startDate = period.startDate, endDate = period.endDate)
+                },
             contractPeriod = contractPeriod,
-            enquiryPeriod = request.tender.enquiryPeriod.let { period ->
-                CNEntity.Tender.EnquiryPeriod(
-                    startDate = period.startDate,
-                    endDate = period.endDate
-                )
-            },
+            enquiryPeriod = request.tender.enquiryPeriod
+                .let { period ->
+                    CNEntity.Tender.EnquiryPeriod(startDate = period.startDate, endDate = period.endDate)
+                },
             procurementMethodModalities = request.tender.procurementMethodModalities,
             electronicAuctions = electronicAuctions, //BR-3.8.5 -> BR-3.6.5
             //BR-3.8.1
-            procuringEntity = pnEntity.tender.procuringEntity.let { procuringEntity ->
-                CNEntity.Tender.ProcuringEntity(
-                    id = procuringEntity.id,
-                    name = procuringEntity.name,
-                    identifier = procuringEntity.identifier.let { identifier ->
-                        CNEntity.Tender.ProcuringEntity.Identifier(
-                            scheme = identifier.scheme,
-                            id = identifier.id,
-                            legalName = identifier.legalName,
-                            uri = identifier.uri
-                        )
-                    },
-                    additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
-                        CNEntity.Tender.ProcuringEntity.AdditionalIdentifier(
-                            scheme = additionalIdentifier.scheme,
-                            id = additionalIdentifier.id,
-                            legalName = additionalIdentifier.legalName,
-                            uri = additionalIdentifier.uri
-                        )
-                    },
-                    address = procuringEntity.address.let { address ->
-                        CNEntity.Tender.ProcuringEntity.Address(
-                            streetAddress = address.streetAddress,
-                            postalCode = address.postalCode,
-                            addressDetails = address.addressDetails.let { addressDetails ->
-                                CNEntity.Tender.ProcuringEntity.Address.AddressDetails(
-                                    country = addressDetails.country.let { country ->
-                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
-                                            scheme = country.scheme,
-                                            id = country.id,
-                                            description = country.description,
-                                            uri = country.uri
-                                        )
-                                    },
-                                    region = addressDetails.region.let { region ->
-                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
-                                            scheme = region.scheme,
-                                            id = region.id,
-                                            description = region.description,
-                                            uri = region.uri
-                                        )
-                                    },
-                                    locality = addressDetails.locality.let { locality ->
-                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
-                                            scheme = locality.scheme,
-                                            id = locality.id,
-                                            description = locality.description,
-                                            uri = locality.uri
-                                        )
-                                    }
+            procuringEntity = pnEntity.tender.procuringEntity
+                .let { procuringEntity ->
+                    CNEntity.Tender.ProcuringEntity(
+                        id = procuringEntity.id,
+                        name = procuringEntity.name,
+                        identifier = procuringEntity.identifier
+                            .let { identifier ->
+                                CNEntity.Tender.ProcuringEntity.Identifier(
+                                    scheme = identifier.scheme,
+                                    id = identifier.id,
+                                    legalName = identifier.legalName,
+                                    uri = identifier.uri
                                 )
-                            }
-                        )
-                    },
-                    contactPoint = procuringEntity.contactPoint.let { contactPoint ->
-                        CNEntity.Tender.ProcuringEntity.ContactPoint(
-                            name = contactPoint.name,
-                            email = contactPoint.email,
-                            telephone = contactPoint.telephone,
-                            faxNumber = contactPoint.faxNumber,
-                            url = contactPoint.url
-                        )
-                    },
-                    persones = request.tender.procuringEntity?.let { _procuringEntity ->
-                        _procuringEntity.persones?.map { person ->
-                            CNEntity.Tender.ProcuringEntity.Persone(
-                                id = PersonId.generate(
-                                    scheme = person.identifier.scheme,
-                                    id = person.identifier.id
-                                ),
-                                title = person.title,
-                                name = person.name,
-                                identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
-                                    scheme = person.identifier.scheme,
-                                    id = person.identifier.id,
-                                    uri = person.identifier.uri
-                                ),
-                                businessFunctions = person.businessFunctions.map { businessFunction ->
-                                    CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
-                                        id = businessFunction.id,
-                                        jobTitle = businessFunction.jobTitle,
-                                        type = businessFunction.type,
-                                        period = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
-                                            startDate = businessFunction.period.startDate
-                                        ),
-                                        documents = businessFunction.documents?.map { document ->
-                                            CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
-                                                id = document.id,
-                                                documentType = document.documentType,
-                                                title = document.title,
-                                                description = document.description
+                            },
+                        additionalIdentifiers = procuringEntity.additionalIdentifiers
+                            ?.map { additionalIdentifier ->
+                                CNEntity.Tender.ProcuringEntity.AdditionalIdentifier(
+                                    scheme = additionalIdentifier.scheme,
+                                    id = additionalIdentifier.id,
+                                    legalName = additionalIdentifier.legalName,
+                                    uri = additionalIdentifier.uri
+                                )
+                            },
+                        address = procuringEntity.address
+                            .let { address ->
+                                CNEntity.Tender.ProcuringEntity.Address(
+                                    streetAddress = address.streetAddress,
+                                    postalCode = address.postalCode,
+                                    addressDetails = address.addressDetails
+                                        .let { addressDetails ->
+                                            CNEntity.Tender.ProcuringEntity.Address.AddressDetails(
+                                                country = addressDetails.country
+                                                    .let { country ->
+                                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                            scheme = country.scheme,
+                                                            id = country.id,
+                                                            description = country.description,
+                                                            uri = country.uri
+                                                        )
+                                                    },
+                                                region = addressDetails.region
+                                                    .let { region ->
+                                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                            scheme = region.scheme,
+                                                            id = region.id,
+                                                            description = region.description,
+                                                            uri = region.uri
+                                                        )
+                                                    },
+                                                locality = addressDetails.locality
+                                                    .let { locality ->
+                                                        CNEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                            scheme = locality.scheme,
+                                                            id = locality.id,
+                                                            description = locality.description,
+                                                            uri = locality.uri
+                                                        )
+                                                    }
                                             )
                                         }
-                                    )
-                                }
-                            )
-                        }
-                    }
-                )
-            },
+                                )
+                            },
+                        contactPoint = procuringEntity.contactPoint
+                            .let { contactPoint ->
+                                CNEntity.Tender.ProcuringEntity.ContactPoint(
+                                    name = contactPoint.name,
+                                    email = contactPoint.email,
+                                    telephone = contactPoint.telephone,
+                                    faxNumber = contactPoint.faxNumber,
+                                    url = contactPoint.url
+                                )
+                            },
+                        persones = request.tender.procuringEntity
+                            ?.let { _procuringEntity ->
+                                _procuringEntity.persones
+                                    ?.map { person ->
+                                        CNEntity.Tender.ProcuringEntity.Persone(
+                                            id = PersonId.generate(
+                                                scheme = person.identifier.scheme,
+                                                id = person.identifier.id
+                                            ),
+                                            title = person.title,
+                                            name = person.name,
+                                            identifier = CNEntity.Tender.ProcuringEntity.Persone.Identifier(
+                                                scheme = person.identifier.scheme,
+                                                id = person.identifier.id,
+                                                uri = person.identifier.uri
+                                            ),
+                                            businessFunctions = person.businessFunctions
+                                                .map { businessFunction ->
+                                                    CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
+                                                        id = businessFunction.id,
+                                                        jobTitle = businessFunction.jobTitle,
+                                                        type = businessFunction.type,
+                                                        period = CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
+                                                            startDate = businessFunction.period.startDate
+                                                        ),
+                                                        documents = businessFunction.documents
+                                                            ?.map { document ->
+                                                                CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
+                                                                    id = document.id,
+                                                                    documentType = document.documentType,
+                                                                    title = document.title,
+                                                                    description = document.description
+                                                                )
+                                                            }
+                                                    )
+                                                }
+                                        )
+                                    }
+                            }
+                    )
+                },
             value = value,
             //BR-3.8.1
-            lotGroups = pnEntity.tender.lotGroups.map {
-                CNEntity.Tender.LotGroup(
-                    optionToCombine = it.optionToCombine
-                )
-            },
+            lotGroups = pnEntity.tender
+                .lotGroups
+                .map {
+                    CNEntity.Tender.LotGroup(
+                        optionToCombine = it.optionToCombine
+                    )
+                },
             requiresElectronicCatalogue = pnEntity.tender.requiresElectronicCatalogue,
             criteria = criteria,
             conversions = conversions,
