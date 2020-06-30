@@ -1,11 +1,26 @@
 package com.procurement.access.json
 
+import com.procurement.access.json.exception.JsonBindingException
 import com.procurement.access.json.exception.JsonCompareException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.fail
 
 inline fun <reified T : Any> testingBindingAndMapping(pathToJsonFile: String) {
     testingBindingAndMapping(pathToJsonFile, T::class.java)
+}
+
+inline fun <reified T : Any> testMappingOnFail(pathToJsonFile: String) {
+    testMappingOnFail(pathToJsonFile, T::class.java)
+}
+
+fun <T : Any> testMappingOnFail(pathToJsonFile: String, target: Class<T>) {
+    val expected = loadJson(pathToJsonFile)
+
+    try {
+        expected.toObject(target)
+        fail<T>("Error testing mapping on fail JSON file by path: '$pathToJsonFile' to an object of type '${target.canonicalName}'.")
+    } catch (ignored: JsonBindingException) {
+    }
 }
 
 fun <T : Any> testingBindingAndMapping(pathToJsonFile: String, target: Class<T>) {
