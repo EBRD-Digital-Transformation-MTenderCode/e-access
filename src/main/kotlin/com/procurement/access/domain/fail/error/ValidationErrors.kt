@@ -129,6 +129,12 @@ sealed class ValidationErrors(
             "cannot founded in 'organizationIds' array."
     )
 
+    class TenderNotFoundOnCreateCriteriaForProcuringEntity(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.12.1",
+        description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
+
     class DuplicatedAnswerOnValidateRequirementResponses(
         val candidateId: String,
         val requirementId: RequirementId,

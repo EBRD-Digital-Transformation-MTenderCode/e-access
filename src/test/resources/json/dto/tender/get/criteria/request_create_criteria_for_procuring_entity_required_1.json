@@ -1,0 +1,21 @@
+{
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "criteria": [
+    {
+      "id": "MD.TEST_GPA.1",
+      "title": "string",
+      "requirementGroups": [
+        {
+          "id": "MD.TEST_GPA.1.1",
+          "requirements": [
+            {
+              "id": "MD.TEST_GPA.1.1.1",
+              "title": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

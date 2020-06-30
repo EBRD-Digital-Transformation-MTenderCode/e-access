@@ -1,0 +1,21 @@
+[
+  {
+    "id": "MD.TEST_GPA.1",
+    "title": "string",
+    "source": "procuringEntity",
+    "relatesTo": "award",
+    "requirementGroups": [
+      {
+        "id": "MD.TEST_GPA.1.1",
+        "requirements": [
+          {
+            "id": "MD.TEST_GPA.1.1.1",
+            "title": "string",
+            "dataType": "boolean"
+          }
+        ]
+      }
+    ]
+  }
+]
+
