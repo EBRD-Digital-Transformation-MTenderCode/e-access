@@ -6,6 +6,8 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.requirement.RequirementId
@@ -134,7 +136,6 @@ sealed class ValidationErrors(
         description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
     )
 
-
     class DuplicatedAnswerOnValidateRequirementResponses(
         val candidateId: String,
         val requirementId: RequirementId,
@@ -145,4 +146,23 @@ sealed class ValidationErrors(
             "by requirement responses: $requirementResponses "
     )
 
+    class TenderStatesNotFound(
+        country: String,
+        pmd: ProcurementMethod,
+        operationType: OperationType
+    ) : ValidationErrors(
+        numberError = "17",
+        description = "Tender states not found by country='$country' and pmd='$pmd' and operationType='$operationType'."
+    )
+
+    class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.17.1",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class TenderStatesIsInvalidOnCheckTenderState(tenderId: String) : ValidationErrors(
+        numberError = "1.17.2",
+        description = "Tender with id='$tenderId' has invalid states.",
+        entityId = tenderId
+    )
 }
