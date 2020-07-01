@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
-import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaHandler
+import com.procurement.access.infrastructure.handler.check.tenderstate.CheckTenderStateHandler
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityHandler
+import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
@@ -40,6 +41,7 @@ class CommandService2(
     private val getOrganizationHandler: GetOrganizationHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
+    private val checkTenderStateHandler: CheckTenderStateHandler,
     private val logger: Logger
 ) {
 
@@ -77,6 +79,7 @@ class CommandService2(
             Command2Type.VALIDATE_REQUIREMENT_RESPONSES        -> validateRequirementResponsesHandler.handle(node = request)
             Command2Type.CREATE_CRITERIA_FOR_PROCURING_ENTITY  -> createCriteriaForProcuringEntityHandler.handle(node = request)
             Command2Type.FIND_CRITERIA                         -> findCriteriaHandler.handle(node = request)
+            Command2Type.CHECK_TENDER_STATE                    -> checkTenderStateHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")
