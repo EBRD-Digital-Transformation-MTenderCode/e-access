@@ -22,6 +22,7 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.domain.util.extension.getDuplicate
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
@@ -256,6 +257,10 @@ class ResponderServiceImpl(
                 )
 
         }
+
+        // VR.COM-1.10.5
+        validateOneAnswerOnRequirementByCandidate(requirementResponsesForTenderer)
+            .orForwardFail { error -> return error }
 
         return success(requirementResponsesForTenderer.convert())
     }
@@ -530,3 +535,24 @@ fun <R, A, K> updateStrategy(
     return updatedElements
 }
 
+
+fun validateOneAnswerOnRequirementByCandidate(
+    requirementResponsesForTenderer: List<ValidateRequirementResponsesParams.RequirementResponse>
+): Result<Unit, ValidationErrors.DuplicatedAnswerOnValidateRequirementResponses> {
+    requirementResponsesForTenderer
+        .groupBy { it.requirement.id }
+        .forEach { (requirementId, requirementResponses) ->
+            val candidatesAnsweredRequirement = requirementResponses.map { it.relatedCandidate }
+            val candidateAnsweredMultipleTimes = candidatesAnsweredRequirement.getDuplicate { it.id }
+
+            if (candidateAnsweredMultipleTimes != null)
+                return failure(
+                    ValidationErrors.DuplicatedAnswerOnValidateRequirementResponses(
+                        candidateId = candidateAnsweredMultipleTimes.id,
+                        requirementId = requirementId,
+                        requirementResponses = requirementResponses.filter { it.relatedCandidate.id == candidateAnsweredMultipleTimes.id }
+                    )
+                )
+        }
+    return success(Unit)
+}

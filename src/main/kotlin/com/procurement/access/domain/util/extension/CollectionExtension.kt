@@ -49,7 +49,16 @@ fun <T> getUnknownElements(received: Set<T>, known: Set<T>) = getNewElements(
     received,
     known
 )
+
 fun <T> getNewElements(received: Set<T>, known: Set<T>) = received.subtract(known)
 
 fun <T> getElementsForUpdate(received: Set<T>, known: Set<T>) = known.intersect(received)
 
+inline fun <T, V> Collection<T>.getDuplicate(selector: (T) -> V): T? {
+    val unique = HashSet<V>()
+    this.forEach { item ->
+        if (!unique.add(selector(item)))
+            return item
+    }
+    return null
+}
