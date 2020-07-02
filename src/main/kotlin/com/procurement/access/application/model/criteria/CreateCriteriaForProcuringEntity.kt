@@ -1,10 +1,12 @@
 package com.procurement.access.application.model.criteria
 
 import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseEnum
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.util.Result
 
 class CreateCriteriaForProcuringEntity {
@@ -12,11 +14,36 @@ class CreateCriteriaForProcuringEntity {
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
-        val criteria: List<Criterion>
+        val criteria: List<Criterion>,
+        val operationType: OperationType
     ) {
         companion object {
 
-            fun tryCreate(cpid: String, ocid: String, criteria: List<Criterion>): Result<Params, DataErrors> {
+            private val allowedOperationType = OperationType.allowedElements
+                .filter {
+                    when (it) {
+                        OperationType.CREATE_CN,
+                        OperationType.CREATE_PN,
+                        OperationType.CREATE_PIN,
+                        OperationType.UPDATE_CN,
+                        OperationType.UPDATE_PN,
+                        OperationType.CREATE_CN_ON_PN,
+                        OperationType.CREATE_CN_ON_PIN,
+                        OperationType.CREATE_PIN_ON_PN,
+                        OperationType.CREATE_SUBMISSION,
+                        OperationType.CREATE_NEGOTIATION_CN_ON_PN -> false
+                        OperationType.SUBMISSION_PERIOD_END,
+                        OperationType.TENDER_PERIOD_END -> true
+                    }
+                }
+                .toSet()
+
+            fun tryCreate(
+                cpid: String,
+                ocid: String,
+                criteria: List<Criterion>,
+                operationType: String
+            ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
                     .orForwardFail { error -> return error }
@@ -24,7 +51,22 @@ class CreateCriteriaForProcuringEntity {
                 val ocidResult = parseOcid(value = ocid)
                     .orForwardFail { error -> return error }
 
-                return Result.success(Params(cpid = cpidResult, ocid = ocidResult, criteria = criteria))
+                val parsedOperationType = parseEnum(
+                    value = operationType,
+                    target = OperationType,
+                    allowedEnums = allowedOperationType,
+                    attributeName = "operationType"
+                )
+                    .orForwardFail { error -> return error }
+
+                return Result.success(
+                    Params(
+                        cpid = cpidResult,
+                        ocid = ocidResult,
+                        criteria = criteria,
+                        operationType = parsedOperationType
+                    )
+                )
             }
         }
 

@@ -3,22 +3,28 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
+import com.procurement.access.application.model.criteria.CreateCriteriaForProcuringEntity
 import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.application.model.criteria.FindCriteria
 import com.procurement.access.application.model.criteria.GetQualificationCriteriaAndMethod
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
-import com.procurement.access.application.model.criteria.*
 import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.application.service.tender.*
+import com.procurement.access.application.service.tender.checkAnswerCompleteness
+import com.procurement.access.application.service.tender.checkAnsweredOnce
+import com.procurement.access.application.service.tender.checkDataTypeValue
+import com.procurement.access.application.service.tender.checkIdsUniqueness
+import com.procurement.access.application.service.tender.checkPeriod
+import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.success
@@ -296,7 +302,20 @@ class CriteriaServiceImpl(
                             )
                         },
                     source      = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
-                    relatesTo   = CriteriaRelatesToEnum.AWARD,     // FR.COM-1.12.5
+                    relatesTo   = when(params.operationType){
+                        OperationType.CREATE_CN,
+                        OperationType.CREATE_PN,
+                        OperationType.CREATE_PIN,
+                        OperationType.UPDATE_CN,
+                        OperationType.UPDATE_PN,
+                        OperationType.CREATE_CN_ON_PN,
+                        OperationType.CREATE_CN_ON_PIN,
+                        OperationType.CREATE_PIN_ON_PN,
+                        OperationType.CREATE_SUBMISSION,
+                        OperationType.CREATE_NEGOTIATION_CN_ON_PN -> null
+                        OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
+                        OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+                    },
                     relatedItem = null
                 )
             }
