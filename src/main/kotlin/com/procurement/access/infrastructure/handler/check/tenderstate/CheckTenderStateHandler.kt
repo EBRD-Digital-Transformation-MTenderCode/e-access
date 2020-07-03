@@ -19,11 +19,9 @@ class CheckTenderStateHandler(
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
 
-        val paramsNode = node.tryGetParams()
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
-
-        val params = paramsNode.tryParamsToObject(CheckTenderStateRequest::class.java)
+        val params = node.tryGetParams()
+            .doReturn { error -> return ValidationResult.error(error) }
+            .tryParamsToObject(CheckTenderStateRequest::class.java)
             .doReturn { error -> return ValidationResult.error(error) }
             .convert()
             .doReturn { error -> return ValidationResult.error(error) }
