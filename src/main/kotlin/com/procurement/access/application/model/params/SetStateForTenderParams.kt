@@ -99,7 +99,7 @@ data class SetStateForTenderParams private constructor(
                         DataErrors.Validation.UnknownValue(
                             name = "Tender.statusDetails",
                             expectedValues = allowedTenderStatusDetails.keysAsStrings(),
-                            actualValue = status
+                            actualValue = statusDetails
                         )
                     )
                 return Tender(status = statusResult, statusDetails = statusDetailsResult)

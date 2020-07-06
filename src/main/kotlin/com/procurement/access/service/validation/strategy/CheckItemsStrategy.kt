@@ -184,6 +184,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
 
             OperationType.CREATE_CN_ON_PIN -> CheckItemsResponse.resultUndefined()
 
+            OperationType.SUBMISSION_PERIOD_END,
+            OperationType.TENDER_PERIOD_END,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.CREATE_SUBMISSION -> throw ErrorException(
