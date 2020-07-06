@@ -12,7 +12,8 @@ fun CreateCriteriaForProcuringEntityRequest.convert(): Result<Params, DataErrors
     return Params.tryCreate(
         cpid     = this.cpid,
         ocid     = this.ocid,
-        criteria = convertedCriteria
+        criteria = convertedCriteria,
+        operationType = this.operationType
     )
 }
 

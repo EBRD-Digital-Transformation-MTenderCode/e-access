@@ -35,7 +35,9 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.CREATE_CN_ON_PN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_PIN_ON_PN,
-                    OperationType.CREATE_NEGOTIATION_CN_ON_PN -> false
+                    OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                    OperationType.SUBMISSION_PERIOD_END,
+                    OperationType.TENDER_PERIOD_END -> false
                 }
             }.toSet()
 
