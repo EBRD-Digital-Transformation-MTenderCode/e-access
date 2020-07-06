@@ -35,7 +35,7 @@ class RulesDao(private val session: Session) {
         val statement = preparedGetDataCQL.bind()
             .apply {
                 this.setString(COLUMN_COUNTRY, country)
-                this.setString(COLUMN_PMD, pmd.key)
+                this.setString(COLUMN_PMD, pmd.name)
                 this.setString(COLUMN_OPERATION_TYPE, operationType.key)
                 this.setString(COLUMN_PARAMETER, parameter)
             }
