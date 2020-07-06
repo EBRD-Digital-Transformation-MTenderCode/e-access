@@ -16,7 +16,9 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     CREATE_SUBMISSION("createSubmission"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn"),
     SUBMISSION_PERIOD_END("submissionPeriodEnd"),
-    TENDER_PERIOD_END("tenderPeriodEnd");
+    TENDER_PERIOD_END("tenderPeriodEnd"),
+    QUALIFICATION("qualification"),
+    QUALIFICATION_CONSIDERATION("qualificationConsideration");
 
     override fun toString(): String = key
 

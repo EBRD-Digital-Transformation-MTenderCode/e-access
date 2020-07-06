@@ -1,7 +1,9 @@
 package com.procurement.access.service.validation
 
+import com.procurement.access.application.model.params.CheckTenderStateParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
+import com.procurement.access.application.service.tender.strategy.check.tenderstate.CheckTenderStateStrategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.enums.LotStatus
@@ -15,6 +17,7 @@ import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.validation.CheckBSRq
 import com.procurement.access.model.dto.validation.CheckBid
+import com.procurement.access.service.RulesService
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy
 import com.procurement.access.service.validation.strategy.CheckLotStrategy
 import com.procurement.access.service.validation.strategy.CheckOwnerAndTokenStrategy
@@ -25,13 +28,15 @@ import org.springframework.stereotype.Service
 @Service
 class ValidationService(
     private val tenderProcessDao: TenderProcessDao,
-    private val tenderProcessRepository: TenderProcessRepository
+    private val tenderProcessRepository: TenderProcessRepository,
+    private val rulesService: RulesService
 ) {
 
     private val checkItemsStrategy = CheckItemsStrategy(tenderProcessDao)
     private val checkAwardStrategy = CheckAwardStrategy(tenderProcessDao)
     private val checkOwnerAndTokenStrategy = CheckOwnerAndTokenStrategy(tenderProcessDao, tenderProcessRepository)
     private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
+    private val checkTenderStateStrategy = CheckTenderStateStrategy(tenderProcessRepository, rulesService)
 
     fun checkBid(cm: CommandMessage): ResponseDto {
         val checkDto = toObject(CheckBid::class.java, cm.data)
@@ -102,7 +107,7 @@ class ValidationService(
             ?: throw ErrorException(
                 error = ErrorType.NO_ACTIVE_LOTS,
                 message = "There is no lot with 'status' == ACTIVE & 'statusDetails' == EMPTY by id ${lotId}"
-                )
+            )
         return ResponseDto(data = "ok")
     }
 
@@ -146,4 +151,7 @@ class ValidationService(
         val response = checkAwardStrategy.check(cm)
         return ResponseDto(id = cm.id, data = response)
     }
+
+    fun checkTenderState(params: CheckTenderStateParams): ValidationResult<Fail> =
+        checkTenderStateStrategy.execute(params)
 }

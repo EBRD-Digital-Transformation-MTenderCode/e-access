@@ -1,6 +1,10 @@
 package com.procurement.access.domain.model.enums
 
 import com.fasterxml.jackson.annotation.JsonValue
+import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.asFailure
+import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.EnumElementProviderException
 
 enum class ProcurementMethod(@JsonValue val key: String) {
@@ -37,6 +41,18 @@ enum class ProcurementMethod(@JsonValue val key: String) {
                 value = name,
                 values = allowedValues.joinToString { it.name }
             )
+        }
+
+        fun tryCreate(name: String): Result<ProcurementMethod, DataErrors> = try {
+            valueOf(name)
+                .asSuccess()
+        } catch (ignored: Exception) {
+            DataErrors.Validation.UnknownValue(
+                name = "pmd",
+                expectedValues = allowedValues.map { it.name },
+                actualValue = name
+            )
+                .asFailure()
         }
     }
 }

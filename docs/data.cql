@@ -49,3 +49,63 @@ INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'G
 INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_GPA', 'goods', 'false');
 INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_GPA', 'services', 'false');
 INSERT INTO ocds.access_rules (country, pmd, parameter, value)  VALUES ('MD', 'TEST_GPA', 'works', 'false');
+
+
+DROP TABLE IF EXISTS ocds.access_rules;
+
+CREATE TABLE IF NOT EXISTS ocds.access_rules
+(
+    country        text,
+    pmd            text,
+    operation_type text,
+    parameter      text,
+    value          text,
+    primary key (country, pmd, operation_type, parameter)
+);
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OT', 'all', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OT', 'all', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OT', 'all', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'SV', 'all', 'goods', 'true');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'SV', 'all', 'services', 'true');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'SV', 'all', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_OT', 'all', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_OT', 'all', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_OT', 'all', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_SV', 'all', 'goods', 'true');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_SV', 'all', 'services', 'true');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_SV', 'all', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'GPA', 'all', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'GPA', 'all', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'GPA', 'all', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_GPA', 'all', 'goods', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_GPA', 'all', 'services', 'false');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_GPA', 'all', 'works', 'false');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
