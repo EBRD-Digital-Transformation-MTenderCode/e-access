@@ -312,7 +312,9 @@ class CriteriaServiceImpl(
                         OperationType.CREATE_CN_ON_PIN,
                         OperationType.CREATE_PIN_ON_PN,
                         OperationType.CREATE_SUBMISSION,
-                        OperationType.CREATE_NEGOTIATION_CN_ON_PN -> null
+                        OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                        OperationType.QUALIFICATION,
+                        OperationType.QUALIFICATION_CONSIDERATION -> null
                         OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
                         OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
                     },
