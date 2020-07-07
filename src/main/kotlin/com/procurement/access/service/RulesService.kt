@@ -6,12 +6,12 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.rule.TenderStatesRule
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.dto.state.States
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
@@ -33,7 +33,7 @@ class RulesService(private val rulesDao: RulesDao) {
         country: String,
         pmd: ProcurementMethod,
         operationType: OperationType
-    ): Result<States, Fail> =
+    ): Result<TenderStatesRule, Fail> =
         getData(country = country, operationType = operationType, pmd = pmd, parameter = VALID_STATES_PARAMETER)
 
     private fun getValue(
@@ -50,7 +50,7 @@ class RulesService(private val rulesDao: RulesDao) {
         pmd: ProcurementMethod,
         operationType: OperationType,
         parameter: String
-    ): Result<States, Fail> {
+    ): Result<TenderStatesRule, Fail> {
         val states = rulesDao.getData(
             country = country,
             pmd = pmd,
@@ -66,8 +66,8 @@ class RulesService(private val rulesDao: RulesDao) {
             .asSuccess()
     }
 
-    private fun String.convert(): Result<States, Fail> =
-        this.tryToObject(States::class.java)
+    private fun String.convert(): Result<TenderStatesRule, Fail> =
+        this.tryToObject(TenderStatesRule::class.java)
             .doReturn { error ->
                 return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
