@@ -8,8 +8,8 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderResult
-import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject
@@ -24,7 +24,7 @@ class SetStateForTenderStrategy(
             .get
 
         val tenderProcess = tenderProcessEntity.jsonData
-            .tryToObject(TenderProcess::class.java)
+            .tryToObject(CNEntity::class.java)
             .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
             .get
 
@@ -37,7 +37,7 @@ class SetStateForTenderStrategy(
             .asSuccess()
     }
 
-    private fun TenderProcess.setTenderStatuses(tender: SetStateForTenderParams.Tender): TenderProcess =
+    private fun CNEntity.setTenderStatuses(tender: SetStateForTenderParams.Tender): CNEntity =
         this.copy(
             tender = this.tender.copy(
                 status = tender.status,
