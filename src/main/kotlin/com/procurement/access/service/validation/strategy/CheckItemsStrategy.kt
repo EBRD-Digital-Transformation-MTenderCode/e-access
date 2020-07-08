@@ -184,9 +184,13 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
 
             OperationType.CREATE_CN_ON_PIN -> CheckItemsResponse.resultUndefined()
 
+            OperationType.SUBMISSION_PERIOD_END,
+            OperationType.TENDER_PERIOD_END,
+            OperationType.QUALIFICATION,
+            OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.CREATE_SUBMISSION -> throw ErrorException(
                 error = ErrorType.INVALID_OPERATION_TYPE,
-                message = "Operation type ${OperationType.CREATE_SUBMISSION} is not allowed for this command"
+                message = "Operation type $operationType is not allowed for this command"
             )
         }
     }

@@ -294,6 +294,10 @@ class LotServiceImpl(
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_SUBMISSION,
+            OperationType.SUBMISSION_PERIOD_END,
+            OperationType.TENDER_PERIOD_END,
+            OperationType.QUALIFICATION,
+            OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN ->
                 throw ErrorException(
                     error = ErrorType.INVALID_OPERATION_TYPE,
