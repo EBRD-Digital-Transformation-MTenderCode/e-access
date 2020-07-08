@@ -326,7 +326,7 @@ class CriteriaServiceImpl(
 
         val updatedCnEntity = cnEntity.copy(
             tender = cnEntity.tender.copy(
-                criteria = createdCriteria
+                criteria = (cnEntity.tender.criteria ?: emptyList()) + createdCriteria
             )
         )
         val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCnEntity))
