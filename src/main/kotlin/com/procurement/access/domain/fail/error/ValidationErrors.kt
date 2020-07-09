@@ -152,7 +152,7 @@ sealed class ValidationErrors(
         operationType: OperationType
     ) : ValidationErrors(
         numberError = "17",
-        description = "Tender states not found by country='$country' and pmd='$pmd' and operationType='$operationType'."
+        description = "Tender states not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
     )
 
     class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid) : ValidationErrors(
