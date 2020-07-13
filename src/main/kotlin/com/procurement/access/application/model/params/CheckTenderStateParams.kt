@@ -24,19 +24,24 @@ data class CheckTenderStateParams private constructor(
             .filter {
                 when (it) {
                     OperationType.CREATE_CN,
-                    OperationType.CREATE_PN,
-                    OperationType.CREATE_PIN,
-                    OperationType.UPDATE_CN,
-                    OperationType.UPDATE_PN,
-                    OperationType.CREATE_CN_ON_PN,
                     OperationType.CREATE_CN_ON_PIN,
-                    OperationType.CREATE_PIN_ON_PN,
-                    OperationType.CREATE_SUBMISSION,
+                    OperationType.CREATE_CN_ON_PN,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                    OperationType.CREATE_PIN,
+                    OperationType.CREATE_PIN_ON_PN,
+                    OperationType.CREATE_PN,
+                    OperationType.CREATE_SUBMISSION,
                     OperationType.SUBMISSION_PERIOD_END,
-                    OperationType.TENDER_PERIOD_END -> false
+                    OperationType.TENDER_PERIOD_END,
+                    OperationType.UPDATE_CN,
+                    OperationType.UPDATE_PN -> false
+
+                    OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.QUALIFICATION,
-                    OperationType.QUALIFICATION_CONSIDERATION -> true
+                    OperationType.QUALIFICATION_CONSIDERATION,
+                    OperationType.QUALIFICATION_PROTOCOL,
+                    OperationType.START_SECONDSTAGE,
+                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> true
                 }
             }
             .toSet()
