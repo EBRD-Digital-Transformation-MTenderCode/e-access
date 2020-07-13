@@ -63,7 +63,9 @@ data class SetStateForTenderParams private constructor(
                         TenderStatusDetails.SUSPENDED,
                         TenderStatusDetails.QUALIFICATION,
                         TenderStatusDetails.QUALIFICATION_STANDSTILL,
-                        TenderStatusDetails.LACK_OF_SUBMISSIONS -> true
+                        TenderStatusDetails.LACK_OF_SUBMISSIONS,
+                        TenderStatusDetails.LACK_OF_QUALIFICATIONS -> true
+
                         TenderStatusDetails.PLANNING,
                         TenderStatusDetails.PLANNED,
                         TenderStatusDetails.CLARIFICATION,
