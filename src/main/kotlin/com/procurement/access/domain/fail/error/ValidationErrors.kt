@@ -17,9 +17,10 @@ import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 
 sealed class ValidationErrors(
     numberError: String,
+    prefix: String = "VR-",
     override val description: String,
     val entityId: String? = null
-) : Fail.Error(prefix = "VR-") {
+) : Fail.Error(prefix = prefix) {
 
     override val code: String = prefix + numberError
 
@@ -152,16 +153,18 @@ sealed class ValidationErrors(
         operationType: OperationType
     ) : ValidationErrors(
         numberError = "17",
-        description = "Tender states not found by country='$country' and pmd='$pmd' and operationType='$operationType'."
+        description = "Tender states not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
     )
 
     class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid) : ValidationErrors(
         numberError = "1.17.1",
+        prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
     class TenderStatesIsInvalidOnCheckTenderState(tenderId: String) : ValidationErrors(
         numberError = "1.17.2",
+        prefix = "VR.COM-",
         description = "Tender with id='$tenderId' has invalid states.",
         entityId = tenderId
     )
