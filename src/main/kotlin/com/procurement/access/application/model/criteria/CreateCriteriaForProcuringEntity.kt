@@ -22,18 +22,23 @@ class CreateCriteriaForProcuringEntity {
             private val allowedOperationType = OperationType.allowedElements
                 .filter {
                     when (it) {
+                        OperationType.APPLY_QUALIFICATION_PROTOCOL,
                         OperationType.CREATE_CN,
-                        OperationType.CREATE_PN,
+                        OperationType.CREATE_CN_ON_PIN,
+                        OperationType.CREATE_CN_ON_PN,
+                        OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                         OperationType.CREATE_PIN,
+                        OperationType.CREATE_PIN_ON_PN,
+                        OperationType.CREATE_PN,
+                        OperationType.CREATE_SUBMISSION,
+                        OperationType.QUALIFICATION,
+                        OperationType.QUALIFICATION_CONSIDERATION,
+                        OperationType.QUALIFICATION_PROTOCOL,
+                        OperationType.START_SECONDSTAGE,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
-                        OperationType.CREATE_CN_ON_PN,
-                        OperationType.CREATE_CN_ON_PIN,
-                        OperationType.CREATE_PIN_ON_PN,
-                        OperationType.CREATE_SUBMISSION,
-                        OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-                        OperationType.QUALIFICATION,
-                        OperationType.QUALIFICATION_CONSIDERATION -> false
+                        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+
                         OperationType.SUBMISSION_PERIOD_END,
                         OperationType.TENDER_PERIOD_END -> true
                     }

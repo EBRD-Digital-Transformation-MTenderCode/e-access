@@ -5,20 +5,24 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class OperationType(@JsonValue override val key: String) : EnumElementProvider.Key {
+    APPLY_QUALIFICATION_PROTOCOL("applyQualificationProtocol"),
     CREATE_CN("createCN"),
-    CREATE_PN("createPN"),
-    CREATE_PIN("createPIN"),
-    UPDATE_CN("updateCN"),
-    UPDATE_PN("updatePN"),
-    CREATE_CN_ON_PN("createCNonPN"),
     CREATE_CN_ON_PIN("createCNonPIN"),
-    CREATE_PIN_ON_PN("createPINonPN"),
-    CREATE_SUBMISSION("createSubmission"),
+    CREATE_CN_ON_PN("createCNonPN"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn"),
+    CREATE_PIN("createPIN"),
+    CREATE_PIN_ON_PN("createPINonPN"),
+    CREATE_PN("createPN"),
+    CREATE_SUBMISSION("createSubmission"),
+    QUALIFICATION("qualification"),
+    QUALIFICATION_CONSIDERATION("qualificationConsideration"),
+    QUALIFICATION_PROTOCOL("qualificationProtocol"),
+    START_SECONDSTAGE("startSecondStage"),
     SUBMISSION_PERIOD_END("submissionPeriodEnd"),
     TENDER_PERIOD_END("tenderPeriodEnd"),
-    QUALIFICATION("qualification"),
-    QUALIFICATION_CONSIDERATION("qualificationConsideration");
+    UPDATE_CN("updateCN"),
+    UPDATE_PN("updatePN"),
+    WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol");
 
     override fun toString(): String = key
 
