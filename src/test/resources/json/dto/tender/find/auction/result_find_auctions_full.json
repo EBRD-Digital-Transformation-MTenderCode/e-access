@@ -1,0 +1,20 @@
+{
+  "tender": {
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "string",
+          "relatedLot": "string",
+          "electronicAuctionModalities": [
+            {
+              "eligibleMinimumDifference": {
+                "amount": 10.00,
+                "currency": "string"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
