@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
@@ -22,6 +23,8 @@ import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.IS_NOT_SUSPENDED
 import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
+import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsResult
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CancellationRs
@@ -81,33 +84,6 @@ class TenderService(
                 process.tender.statusDetails.key,
                 process.tender.procurementMethodModalities,
                 process.tender.electronicAuctions)))
-    }
-
-    fun setPreCancellation(cm: CommandMessage): ResponseDto {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val token = cm.context.token ?: throw ErrorException(CONTEXT)
-        val operationType = cm.context.operationType ?: throw ErrorException(CONTEXT)
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
-        if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        validateTenderStatusForPrepareCancellation(process, operationType)
-        val lotStatusPredicate = getLotStatusPredicateForPrepareCancellation(operationType)
-        val lotsResponseDto = mutableListOf<LotCancellation>()
-        process.tender.apply {
-            statusDetails = TenderStatusDetails.CANCELLATION
-            lots.asSequence()
-                    .filter(lotStatusPredicate)
-                    .forEach { lot ->
-                        lot.statusDetails = LotStatusDetails.CANCELLED
-                        addLotToLotsResponseDto(lotsResponseDto, lot)
-                    }
-        }
-        tenderProcessDao.save(getEntity(process, entity))
-        return ResponseDto(data = CancellationRs(lots = lotsResponseDto))
     }
 
     fun setCancellation(cm: CommandMessage): ResponseDto {
@@ -278,5 +254,46 @@ class TenderService(
                 statusDetails = tender.statusDetails
             ).asSuccess()
         }
+    }
+
+    fun findAuctions(params: FindAuctionsParams): Result<FindAuctionsResult?, Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .orForwardFail { fail -> return fail }
+            ?: return ValidationErrors.TenderNotFoundOnFindAuctions(params.cpid, params.ocid).asFailure()
+
+        val tenderProcess = entity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .doReturn { incident ->
+                return Fail.Incident.DatabaseIncident(incident.exception).asFailure()
+            }
+
+        if (tenderProcess.tender.electronicAuctions == null)
+            return null.asSuccess()
+
+        return FindAuctionsResult(
+            FindAuctionsResult.Tender(
+                FindAuctionsResult.Tender.ElectronicAuctions(
+                    tenderProcess.tender.electronicAuctions.details
+                        .map { detail ->
+                            FindAuctionsResult.Tender.ElectronicAuctions.Detail(
+                                id = detail.id,
+                                relatedLot = detail.relatedLot,
+                                electronicAuctionModalities = detail.electronicAuctionModalities
+                                    .map { modality ->
+                                        FindAuctionsResult.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality(
+                                            modality.eligibleMinimumDifference.let { eligibleMinimumDifference ->
+                                                FindAuctionsResult.Tender.ElectronicAuctions.Detail.ElectronicAuctionModality.EligibleMinimumDifference(
+                                                    amount = eligibleMinimumDifference.amount,
+                                                    currency = eligibleMinimumDifference.currency
+                                                )
+
+                                            }
+                                        )
+                                    }
+                            )
+                        }
+                )
+            )
+        ).asSuccess()
     }
 }
