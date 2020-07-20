@@ -168,4 +168,10 @@ sealed class ValidationErrors(
         description = "Tender with id='$tenderId' has invalid states.",
         entityId = tenderId
     )
+
+    class TenderNotFoundOnFindAuctions(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.19.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
 }
