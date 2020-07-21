@@ -390,7 +390,8 @@ class CommandService(
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = GetActiveLotsContext(
                             cpid = cm.cpid,
                             stage = cm.stage
@@ -400,7 +401,6 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
-                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
@@ -661,7 +661,8 @@ class CommandService(
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner)
                         val request: CheckResponsesRequest = toObject(CheckResponsesRequest::class.java, cm.data)
 
@@ -675,7 +676,6 @@ class CommandService(
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP,
-                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
@@ -719,7 +719,8 @@ class CommandService(
                 val response = when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
                         val context = GetAwardCriteriaAndConversionsContext(cpid = cm.cpid, stage = cm.stage)
                         criteriaService.getAwardCriteriaAndConversions(context = context)
                             .also { result ->
@@ -736,8 +737,7 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
-                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> throw ErrorException(ErrorType.INVALID_PMD)
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
                 ResponseDto(data = response)
             }
