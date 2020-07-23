@@ -5,23 +5,25 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class TenderStatusDetails(@JsonValue override val key: String) : EnumElementProvider.Key {
-    PLANNING("planning"),
-    PLANNED("planned"),
-    CLARIFICATION("clarification"),
-    NEGOTIATION("negotiation"),
-    TENDERING("tendering"),
-    CANCELLATION("cancellation"),
-    SUSPENDED("suspended"),
-    AWARDING("awarding"),
     AUCTION("auction"),
+    AWARDED_CONTRACT_PREPARATION("awardedContractPreparation"),
     AWARDED_STANDSTILL("awardedStandStill"),
     AWARDED_SUSPENDED("awardedSuspended"),
-    AWARDED_CONTRACT_PREPARATION("awardedContractPreparation"),
+    AWARDING("awarding"),
+    CANCELLATION("cancellation"),
+    CLARIFICATION("clarification"),
     COMPLETE("complete"),
     EMPTY("empty"),
-    SUBMISSION("submission"),
+    LACK_OF_QUALIFICATIONS("lackOfQualifications"),
+    LACK_OF_SUBMISSIONS("lackOfSubmissions"),
+    NEGOTIATION("negotiation"),
+    PLANNED("planned"),
+    PLANNING("planning"),
     QUALIFICATION("qualification"),
-    LACK_OF_SUBMISSIONS("lackOfSubmissions");
+    QUALIFICATION_STANDSTILL("qualificationStandstill"),
+    SUBMISSION("submission"),
+    SUSPENDED("suspended"),
+    TENDERING("tendering");
 
 
     override fun toString(): String = key
