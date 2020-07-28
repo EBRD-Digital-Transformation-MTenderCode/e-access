@@ -6,11 +6,9 @@ spring:
     name: e-access
 
 cassandra:
-  contact-points: 127.0.0.1
+  contact-points: localhost
   keyspace-name: ocds
   port: 9042
-  username: cassandra
-  password: cassandra
 
 ocds:
   prefixes:
