@@ -18,6 +18,7 @@ import com.procurement.access.application.service.tender.checkAnsweredOnce
 import com.procurement.access.application.service.tender.checkDataTypeValue
 import com.procurement.access.application.service.tender.checkIdsUniqueness
 import com.procurement.access.application.service.tender.checkPeriod
+import com.procurement.access.application.service.tender.checkProcuringEntityNotAnswered
 import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
@@ -70,35 +71,21 @@ class CriteriaServiceImpl(
         val entity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
+        val criteria = cnEntity.tender.criteria.orEmpty()
 
-        //FR.COM-1.16.1
-        val criteria = cnEntity.tender.criteria
-            ?: if (data.bid.requirementResponses.isEmpty())
-                return
-            else
-                throw ErrorException(
-                    error = ErrorType.ENTITY_NOT_FOUND,
-                    message = "Bid.RequirementResponse object is present in request but no record found in DB."
-                )
-
-        val requirementResponses = data.bid.requirementResponses
-        if (criteria.isNotEmpty() && requirementResponses.isEmpty())
-            throw ErrorException(
-                error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
-                message = "No requirement responses found for requirement from criteria."
-            )
-
-        // FReq-1.2.1.1
+        // FR.COM-1.16.1
         checkRequirementRelationRelevance(data = data, criteria = criteria)
-        // FReq-1.2.1.2
-        checkAnswerCompleteness(data = data, criteria = criteria)
-        // FReq-1.2.1.3
-        checkAnsweredOnce(data = data)
-        // FReq-1.2.1.4
+        // FR.COM-1.16.2
+        checkProcuringEntityNotAnswered(data = data, criteria = criteria)
+        // FR.COM-1.16.3 & FR.COM-1.16.4
+        checkAnswerCompleteness(data = data, criteria = criteria, items = cnEntity.tender.items)
+        // FR.COM-1.16.5
         checkDataTypeValue(data = data, criteria = criteria)
-        // FReq-1.2.1.5 & FReq-1.2.1.7
+        // FR.COM-1.16.6
+        checkAnsweredOnce(data = data)
+        // FR.COM-1.16.7 & FR.COM-1.16.8
         checkPeriod(data = data)
-        // FReq-1.2.1.6
+        // FR.COM-1.16.9
         checkIdsUniqueness(data = data, criteria = criteria)
     }
 
@@ -262,7 +249,10 @@ class CriteriaServiceImpl(
 
     override fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail> {
 
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+            cpid = params.cpid,
+            stage = params.ocid.stage
+        )
             .orForwardFail { error -> return error }
             ?: return Result.failure(
                 ValidationErrors.TenderNotFoundOnCreateCriteriaForProcuringEntity(
@@ -280,29 +270,29 @@ class CriteriaServiceImpl(
         val createdCriteria = params.criteria
             .map { criterion ->
                 CNEntity.Tender.Criteria(
-                    id                = criterion.id,
-                    title             = criterion.title,
-                    description       = criterion.description,
+                    id = criterion.id,
+                    title = criterion.title,
+                    description = criterion.description,
                     requirementGroups = criterion.requirementGroups
                         .map { requirementGroups ->
                             CNEntity.Tender.Criteria.RequirementGroup(
-                                id           = requirementGroups.id,
-                                description  = requirementGroups.description,
+                                id = requirementGroups.id,
+                                description = requirementGroups.description,
                                 requirements = requirementGroups.requirements
                                     .map { requirement ->
                                         Requirement(
-                                            id          = requirement.id,
+                                            id = requirement.id,
                                             description = requirement.description,
-                                            title       = requirement.title,
-                                            period      = null,
-                                            value       = NoneValue,
-                                            dataType    = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                            title = requirement.title,
+                                            period = null,
+                                            value = NoneValue,
+                                            dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
                                         )
                                     }
                             )
                         },
-                    source      = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
-                    relatesTo   = when(params.operationType){
+                    source = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
+                    relatesTo = when (params.operationType) {
                         OperationType.APPLY_QUALIFICATION_PROTOCOL,
                         OperationType.CREATE_CN,
                         OperationType.CREATE_CN_ON_PIN,
