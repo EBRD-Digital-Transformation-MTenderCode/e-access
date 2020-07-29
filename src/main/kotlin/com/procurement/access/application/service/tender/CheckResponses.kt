@@ -2,6 +2,7 @@ package com.procurement.access.application.service.tender
 
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.exception.ErrorException
@@ -30,7 +31,26 @@ fun checkRequirementRelationRelevance(data: CheckResponsesData, criteria: List<C
         }
 }
 
-fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
+fun checkProcuringEntityNotAnswered(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
+    val requirementsById = criteria.asSequence()
+        .filter { it.source == CriteriaSource.PROCURING_ENTITY }
+        .flatMap { it.requirementGroups.asSequence() }
+        .flatMap { it.requirements.asSequence() }
+        .associateBy { it.id }
+
+    data.bid.requirementResponses
+        .asSequence()
+        .map { it.requirement }
+        .forEach { requirement ->
+            if (requirement.id in requirementsById)
+                throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_VALUE,
+                    message = "Must not answer on requirement (id='${requirement.id}') for ${CriteriaSource.PROCURING_ENTITY}."
+                )
+        }
+}
+
+fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>, items: List<CNEntity.Tender.Item>) {
 
     val lotRequirements = criteria.asSequence()
         .filter { it.relatedItem == data.bid.relatedLots[0] }
@@ -39,12 +59,11 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
         .map { it.id }
         .toList()
 
-    val itemsRequirements = data.items
+    val itemsRequirements = items
         .asSequence()
-        .map { item ->
-            criteria.find { it.relatedItem == item.id }
-        }
-        .filterNotNull()
+        .filter { it.relatedLot == data.bid.relatedLots[0] }
+        .map { item -> criteria.filter { it.relatedItem == item.id } }
+        .flatten()
         .flatMap { it.requirementGroups.asSequence() }
         .flatMap { it.requirements.asSequence() }
         .map { it.id }
@@ -58,11 +77,17 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
 
     val totalRequirements = lotRequirements + itemsRequirements
     val answered = (totalRequirements).intersect(requirementRequest)
-    if (answered.size != totalRequirements.size)
+    if (answered.size < totalRequirements.size)
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_VALUE,
             message = "For lots and items founded ${totalRequirements.size} requirement in DB but answered for ${answered.size}. " +
                 "Ignored requirements: ${totalRequirements.minus(answered)} "
+        )
+    if (answered.size > totalRequirements.size)
+        throw ErrorException(
+            error = ErrorType.INVALID_REQUIREMENT_VALUE,
+            message = "For lots and items founded ${totalRequirements.size} requirement in DB but answered for ${answered.size}. " +
+                "Unnecessary requirements: ${answered.minus(totalRequirements)} "
         )
 
     val tenderRequirements = criteria.asSequence()
