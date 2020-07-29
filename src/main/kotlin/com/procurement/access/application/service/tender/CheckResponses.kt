@@ -104,12 +104,6 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
             message = "For tenderer and tender founded ${tenderRequirements.size} requirement in DB but answered for ${answeredTender.size}. " +
                 "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
         )
-
-    if (requirementRequest.size != totalRequirements.size + tenderRequirements.size)
-        throw ErrorException(
-            error = ErrorType.INVALID_REQUIREMENT_VALUE,
-            message = "Need to answer on ${totalRequirements.size + tenderRequirements.size} requirements, but answered on ${requirementRequest.size}. "
-        )
 }
 
 fun checkAnsweredOnce(data: CheckResponsesData) {
