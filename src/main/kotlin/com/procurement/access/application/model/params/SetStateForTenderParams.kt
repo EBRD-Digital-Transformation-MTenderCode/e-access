@@ -60,17 +60,17 @@ data class SetStateForTenderParams private constructor(
                 .filter {
                     when (it) {
                         TenderStatusDetails.EMPTY,
-                        TenderStatusDetails.SUSPENDED,
+                        TenderStatusDetails.LACK_OF_QUALIFICATIONS,
+                        TenderStatusDetails.LACK_OF_SUBMISSIONS,
                         TenderStatusDetails.QUALIFICATION,
                         TenderStatusDetails.QUALIFICATION_STANDSTILL,
-                        TenderStatusDetails.LACK_OF_SUBMISSIONS,
-                        TenderStatusDetails.LACK_OF_QUALIFICATIONS -> true
+                        TenderStatusDetails.SUSPENDED,
+                        TenderStatusDetails.TENDERING -> true
 
                         TenderStatusDetails.PLANNING,
                         TenderStatusDetails.PLANNED,
                         TenderStatusDetails.CLARIFICATION,
                         TenderStatusDetails.NEGOTIATION,
-                        TenderStatusDetails.TENDERING,
                         TenderStatusDetails.CANCELLATION,
                         TenderStatusDetails.AWARDING,
                         TenderStatusDetails.AUCTION,
