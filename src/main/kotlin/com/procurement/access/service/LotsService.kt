@@ -19,6 +19,7 @@ import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.pmd
+import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.lots.ActivationAcLot
 import com.procurement.access.model.dto.lots.ActivationAcRq
 import com.procurement.access.model.dto.lots.ActivationAcRs
@@ -202,7 +203,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
     fun setLotInitialStatus(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = "EV"
+        val stage = cm.stage
         val dto = toObject(CanCancellationRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
