@@ -92,15 +92,22 @@ fun checkAnswerByLotRequirements(
         )
 }
 
-fun checkAnswerByTenderOrTendererRequirements(
+fun checkAnswerByTenderAndTendererRequirements(
     data: CheckResponsesData,
     criteria: List<CNEntity.Tender.Criteria>,
     pmd: ProcurementMethod
 ) = when (pmd) {
     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> checkAnswerByTenderOrTendererRequirements(data, criteria)
-    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+    ProcurementMethod.MV, ProcurementMethod.TEST_MV ->
+        //FR.COM-1.16.4
+        checkAnswerByTenderAndTendererRequirements(data, criteria)
+    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
+        //FR.COM-1.16.10
+        checkAnswerByTenderRequirementsGpa(data, criteria)
+        //FR.COM-1.16.11
+        checkAnswerByTendererRequirementsGpa(data, criteria)
+    }
     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
     ProcurementMethod.OP, ProcurementMethod.TEST_OP,
@@ -108,7 +115,7 @@ fun checkAnswerByTenderOrTendererRequirements(
     ProcurementMethod.FA, ProcurementMethod.TEST_FA -> Unit
 }
 
-private fun checkAnswerByTenderOrTendererRequirements(
+private fun checkAnswerByTenderAndTendererRequirements(
     data: CheckResponsesData,
     criteria: List<CNEntity.Tender.Criteria>
 ) {
@@ -125,8 +132,51 @@ private fun checkAnswerByTenderOrTendererRequirements(
     if (answeredTender.size != tenderRequirements.size)
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_VALUE,
-            message = "For tenderer and tender founded ${tenderRequirements.size} requirement in DB but answered for ${answeredTender.size}. " +
+            message = "Found ${tenderRequirements.size} requirements in DB for tender and tenderer but received answers for ${answeredTender.size}. " +
                 "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
+        )
+}
+
+private fun checkAnswerByTenderRequirementsGpa(
+    data: CheckResponsesData,
+    criteria: List<CNEntity.Tender.Criteria>
+) {
+    val requirementsReceived = data.bid.requirementResponses.map { it.requirement.id }
+
+    val tenderRequirements = criteria.asSequence()
+        .filter { it.relatesTo == null }
+        .flatMap { it.requirementGroups.asSequence() }
+        .flatMap { it.requirements.asSequence() }
+        .map { it.id }
+        .toList()
+
+    val answeredTender = (tenderRequirements).intersect(requirementsReceived)
+    if (answeredTender.size != tenderRequirements.size)
+        throw ErrorException(
+            error = ErrorType.INVALID_REQUIREMENT_VALUE,
+            message = "Found ${tenderRequirements.size} requirements in DB for tender but received answers for ${answeredTender.size}. " +
+                "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
+        )
+}
+
+private fun checkAnswerByTendererRequirementsGpa(
+    data: CheckResponsesData,
+    criteria: List<CNEntity.Tender.Criteria>
+) {
+    val requirementsReceived = data.bid.requirementResponses.map { it.requirement.id }
+
+    val tendererRequirements = criteria.asSequence()
+        .filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        .flatMap { it.requirementGroups.asSequence() }
+        .flatMap { it.requirements.asSequence() }
+        .map { it.id }
+        .toList()
+
+    val answeredTenderer = (tendererRequirements).intersect(requirementsReceived)
+    if (answeredTenderer.isNotEmpty())
+        throw ErrorException(
+            error = ErrorType.INVALID_REQUIREMENT_VALUE,
+            message = "Redundant requirement responses has been provided for tenderer requirement(s) ${answeredTenderer.joinToString()}. "
         )
 }
 

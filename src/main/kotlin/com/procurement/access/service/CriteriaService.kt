@@ -14,7 +14,7 @@ import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.application.service.tender.checkAnswerByLotRequirements
-import com.procurement.access.application.service.tender.checkAnswerByTenderOrTendererRequirements
+import com.procurement.access.application.service.tender.checkAnswerByTenderAndTendererRequirements
 import com.procurement.access.application.service.tender.checkAnsweredOnce
 import com.procurement.access.application.service.tender.checkDataTypeValue
 import com.procurement.access.application.service.tender.checkIdsUniqueness
@@ -80,8 +80,8 @@ class CriteriaServiceImpl(
         checkProcuringEntityNotAnswered(data = data, criteria = criteria)
         // FR.COM-1.16.3
         checkAnswerByLotRequirements(data = data, criteria = criteria, items = cnEntity.tender.items)
-        //FR.COM-1.16.4
-        checkAnswerByTenderOrTendererRequirements(data = data, criteria = criteria, pmd = context.pmd)
+        //FR.COM-1.16.4 & FR.COM-1.16.10 & FR.COM-1.16.11
+        checkAnswerByTenderAndTendererRequirements(data = data, criteria = criteria, pmd = context.pmd)
         // FR.COM-1.16.5
         checkDataTypeValue(data = data, criteria = criteria)
         // FR.COM-1.16.6
