@@ -3,6 +3,7 @@ package com.procurement.access.application.service.tender
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.exception.ErrorException
@@ -50,7 +51,11 @@ fun checkProcuringEntityNotAnswered(data: CheckResponsesData, criteria: List<CNE
         }
 }
 
-fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>, items: List<CNEntity.Tender.Item>) {
+fun checkAnswerByLotRequirements(
+    data: CheckResponsesData,
+    criteria: List<CNEntity.Tender.Criteria>,
+    items: List<CNEntity.Tender.Item>
+) {
 
     val lotRequirements = criteria.asSequence()
         .filter { it.relatedItem == data.bid.relatedLots[0] }
@@ -69,11 +74,7 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
         .map { it.id }
         .toList()
 
-    val requirementRequest = data.bid.requirementResponses
-        .asSequence()
-        .map { it.requirement }
-        .map { it.id }
-        .toList()
+    val requirementRequest = data.bid.requirementResponses.map { it.requirement.id }
 
     val totalRequirements = lotRequirements + itemsRequirements
     val answered = (totalRequirements).intersect(requirementRequest)
@@ -89,6 +90,29 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
             message = "For lots and items founded ${totalRequirements.size} requirement in DB but answered for ${answered.size}. " +
                 "Unnecessary requirements: ${answered.minus(totalRequirements)} "
         )
+}
+
+fun checkAnswerByTenderOrTendererRequirements(
+    data: CheckResponsesData,
+    criteria: List<CNEntity.Tender.Criteria>,
+    pmd: ProcurementMethod
+) = when (pmd) {
+    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+    ProcurementMethod.MV, ProcurementMethod.TEST_MV -> checkAnswerByTenderOrTendererRequirements(data, criteria)
+    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+    ProcurementMethod.FA, ProcurementMethod.TEST_FA -> Unit
+}
+
+private fun checkAnswerByTenderOrTendererRequirements(
+    data: CheckResponsesData,
+    criteria: List<CNEntity.Tender.Criteria>
+) {
+    val requirementsReceived = data.bid.requirementResponses.map { it.requirement.id }
 
     val tenderRequirements = criteria.asSequence()
         .filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER || it.relatesTo == null }
@@ -97,7 +121,7 @@ fun checkAnswerCompleteness(data: CheckResponsesData, criteria: List<CNEntity.Te
         .map { it.id }
         .toList()
 
-    val answeredTender = (tenderRequirements).intersect(requirementRequest)
+    val answeredTender = (tenderRequirements).intersect(requirementsReceived)
     if (answeredTender.size != tenderRequirements.size)
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_VALUE,
@@ -205,7 +229,7 @@ fun checkPeriod(data: CheckResponsesData) {
         }
 }
 
-fun checkIdsUniqueness(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
+fun checkIdsUniqueness(data: CheckResponsesData) {
     val requirementResponseIds = data.bid.requirementResponses.map { it.id }
     val requirementResponseUniqueIds = requirementResponseIds.toSet()
     if (requirementResponseIds.size != requirementResponseUniqueIds.size) throw ErrorException(
