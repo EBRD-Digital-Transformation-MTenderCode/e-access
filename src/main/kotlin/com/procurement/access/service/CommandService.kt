@@ -663,7 +663,7 @@ class CommandService(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
-                        val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner)
+                        val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner, pmd = cm.pmd)
                         val request: CheckResponsesRequest = toObject(CheckResponsesRequest::class.java, cm.data)
 
                         criteriaService.checkResponses(context = context, data = request.convert())
