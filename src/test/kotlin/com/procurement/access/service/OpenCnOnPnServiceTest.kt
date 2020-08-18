@@ -71,6 +71,9 @@ class OpenCnOnPnServiceTest {
         private const val PERMANENT_ITEM_ID_3 = "permanent-item-3"
         private const val PERMANENT_ITEM_ID_4 = "permanent-item-4"
 
+        private const val PERMANENT_AUCTION_ID_1 = "1"
+        private const val PERMANENT_AUCTION_ID_2 = "2"
+
         private const val TENDER_ID = "ocds-t1s2t3-MD-1552650554287"
     }
 
@@ -1424,6 +1427,9 @@ class OpenCnOnPnServiceTest {
             @Test
             fun `without procuringEntity`() {
 
+                whenever(generationService.generatePermanentAuctionId())
+                    .thenReturn(PERMANENT_AUCTION_ID_1, PERMANENT_AUCTION_ID_2)
+
                 requestNode.getObject("tender")
                     .remove("procuringEntity")
 
@@ -1446,6 +1452,9 @@ class OpenCnOnPnServiceTest {
 
             @Test
             fun `with procuringEntity`() {
+
+                whenever(generationService.generatePermanentAuctionId())
+                    .thenReturn(PERMANENT_AUCTION_ID_1, PERMANENT_AUCTION_ID_2)
 
                 val jsonProcuringEntity = requestNode.getObject("tender").getObject("procuringEntity")
                 val requestProcuringEntity = toObject(
@@ -1571,6 +1580,10 @@ class OpenCnOnPnServiceTest {
                 .thenReturn(PERMANENT_LOT_ID_1, PERMANENT_LOT_ID_2)
             whenever(generationService.generatePermanentItemId())
                 .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
+
+            whenever(generationService.generatePermanentAuctionId())
+                .thenReturn(PERMANENT_AUCTION_ID_1, PERMANENT_AUCTION_ID_2)
+
             whenever(rulesService.isAuctionRequired(any(), any(), any()))
                 .thenReturn(testData.isAuctionRequired)
             whenever(

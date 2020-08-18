@@ -1505,7 +1505,7 @@ class OpenCnOnPnService(
         return tenderFromRequest.electronicAuctions?.let {
             val details = it.details.map { detail ->
                 CNEntity.Tender.ElectronicAuctions.Detail(
-                    id = detail.id,
+                    id = generationService.generatePermanentAuctionId(),
                     relatedLot = if (relatedTemporalWithPermanentLotId.isNotEmpty())
                         relatedTemporalWithPermanentLotId.getValue(detail.relatedLot) //BR-3.8.6(CN on PN) -> BR-3.6.5(CN)
                     else
