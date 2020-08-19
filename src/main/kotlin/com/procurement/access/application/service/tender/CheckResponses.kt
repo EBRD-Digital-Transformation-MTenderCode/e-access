@@ -131,7 +131,7 @@ private fun checkAnswerByTenderAndTendererRequirements(
     val answeredTender = (tenderRequirements).intersect(requirementsReceived)
     if (answeredTender.size != tenderRequirements.size)
         throw ErrorException(
-            error = ErrorType.INVALID_REQUIREMENT_VALUE,
+            error = ErrorType.INVALID_SUITE_OF_REQUIREMENTS,
             message = "Found ${tenderRequirements.size} requirements in DB for tender and tenderer but received answers for ${answeredTender.size}. " +
                 "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
         )
@@ -153,7 +153,7 @@ private fun checkAnswerByTenderRequirementsGpa(
     val answeredTender = (tenderRequirements).intersect(requirementsReceived)
     if (answeredTender.size != tenderRequirements.size)
         throw ErrorException(
-            error = ErrorType.INVALID_REQUIREMENT_VALUE,
+            error = ErrorType.INVALID_SUITE_OF_REQUIREMENTS,
             message = "Found ${tenderRequirements.size} requirements in DB for tender but received answers for ${answeredTender.size}. " +
                 "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
         )
@@ -175,7 +175,7 @@ private fun checkAnswerByTendererRequirementsGpa(
     val answeredTenderer = (tendererRequirements).intersect(requirementsReceived)
     if (answeredTenderer.isNotEmpty())
         throw ErrorException(
-            error = ErrorType.INVALID_REQUIREMENT_VALUE,
+            error = ErrorType.INVALID_SUITE_OF_REQUIREMENTS,
             message = "Redundant requirement responses has been provided for tenderer requirement(s) ${answeredTenderer.joinToString()}. "
         )
 }
