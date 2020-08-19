@@ -112,7 +112,10 @@ fun checkAnswerByTenderAndTendererRequirements(
     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
     ProcurementMethod.OP, ProcurementMethod.TEST_OP,
     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
-    ProcurementMethod.FA, ProcurementMethod.TEST_FA -> Unit
+    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+    ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+    ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+    ProcurementMethod.IP, ProcurementMethod.TEST_IP -> Unit
 }
 
 private fun checkAnswerByTenderAndTendererRequirements(
