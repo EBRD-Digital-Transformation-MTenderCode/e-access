@@ -101,5 +101,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_STAGE("10.86", "Invalid Stage."),
     MISSING_ATTRIBUTE("10.87", "Missing an attribute."),
     ENTITY_NOT_FOUND("10.88", "No entity found in db with specified parameters."),
-    INVALID_REQUIREMENT_RESPONSE("10.89", "Invalid requirement response.");
+    INVALID_REQUIREMENT_RESPONSE("10.89", "Invalid requirement response."),
+    INVALID_SUITE_OF_REQUIREMENTS("10.90", "Invalid suite of requirements.");
 }
