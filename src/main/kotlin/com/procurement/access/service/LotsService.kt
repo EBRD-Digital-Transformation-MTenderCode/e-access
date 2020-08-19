@@ -245,7 +245,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             ProcurementMethod.SV, ProcurementMethod.TEST_SV,
             ProcurementMethod.MV, ProcurementMethod.TEST_MV -> "EV"
 
+            ProcurementMethod.CD, ProcurementMethod.TEST_CD,
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+            ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+            ProcurementMethod.IP, ProcurementMethod.TEST_IP,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
             ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "NP"
 

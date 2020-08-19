@@ -9,7 +9,10 @@ object JsonFilePathGenerator {
         ProcurementMethod.SV, ProcurementMethod.TEST_SV,
         ProcurementMethod.MV, ProcurementMethod.TEST_MV -> "op"
 
+        ProcurementMethod.CD, ProcurementMethod.TEST_CD,
         ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+        ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
         ProcurementMethod.NP, ProcurementMethod.TEST_NP,
         ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "lp"
 
