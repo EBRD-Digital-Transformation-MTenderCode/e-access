@@ -298,7 +298,7 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
-                    
+
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
@@ -674,7 +674,7 @@ class CommandService(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner)
+                        val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner, pmd = cm.pmd)
                         val request: CheckResponsesRequest = toObject(CheckResponsesRequest::class.java, cm.data)
 
                         criteriaService.checkResponses(context = context, data = request.convert())
