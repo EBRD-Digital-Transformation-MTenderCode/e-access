@@ -54,6 +54,8 @@ class GenerationService {
         return UUID.randomUUID().toString()
     }
 
+    fun generatePermanentAuctionId(): String = UUID.randomUUID().toString()
+
     fun generateOrganizationId(organizationReference: OrganizationReference): String {
         return organizationReference.identifier.scheme + "-" + organizationReference.identifier.id
     }

@@ -56,6 +56,9 @@ class OpenCnOnPnServiceBLTest {
 
         @Test
         fun `correct tempId to permanentId replacement`() {
+            val PERMANENT_AUCTION_ID_1 = "1"
+            val PERMANENT_AUCTION_ID_2 = "2"
+
             val firstLotIdExcepted = "101"
             val secondLotIdExcepted = "102"
 
@@ -74,6 +77,9 @@ class OpenCnOnPnServiceBLTest {
             whenever(generationService.generatePermanentItemId())
                 .thenReturn(firstItemIdExcepted)
                 .thenReturn(secondItemIdExcepted)
+
+            whenever(generationService.generatePermanentAuctionId())
+                .thenReturn(PERMANENT_AUCTION_ID_1, PERMANENT_AUCTION_ID_2)
 
             val context = createContext()
             val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
