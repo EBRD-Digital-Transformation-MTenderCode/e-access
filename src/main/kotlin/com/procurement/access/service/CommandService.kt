@@ -3,32 +3,10 @@ package com.procurement.access.service
 import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.model.Mode
 import com.procurement.access.application.model.TestMode
-import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
-import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
-import com.procurement.access.application.model.context.CheckResponsesContext
-import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
-import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
-import com.procurement.access.application.model.context.EvPanelsContext
-import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
-import com.procurement.access.application.model.context.GetLotsAuctionContext
-import com.procurement.access.application.service.CheckedNegotiationCnOnPn
-import com.procurement.access.application.service.CheckedOpenCnOnPn
-import com.procurement.access.application.service.CheckedSelectiveCnOnPn
-import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
-import com.procurement.access.application.service.CreateOpenCnOnPnContext
-import com.procurement.access.application.service.cn.update.CnCreateContext
-import com.procurement.access.application.service.cn.update.UpdateOpenCnContext
-import com.procurement.access.application.service.cn.update.UpdateOpenCnData
-import com.procurement.access.application.service.cn.update.UpdateSelectiveCnContext
-import com.procurement.access.application.service.cn.update.UpdateSelectiveCnData
-import com.procurement.access.application.service.cn.update.UpdatedOpenCn
-import com.procurement.access.application.service.cn.update.UpdatedSelectiveCn
-import com.procurement.access.application.service.lot.GetActiveLotsContext
-import com.procurement.access.application.service.lot.GetLotContext
-import com.procurement.access.application.service.lot.LotService
-import com.procurement.access.application.service.lot.LotsForAuctionContext
-import com.procurement.access.application.service.lot.LotsForAuctionData
-import com.procurement.access.application.service.lot.SetLotsStatusUnsuccessfulContext
+import com.procurement.access.application.model.context.*
+import com.procurement.access.application.service.*
+import com.procurement.access.application.service.cn.update.*
+import com.procurement.access.application.service.lot.*
 import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.tender.ExtendTenderService
@@ -42,26 +20,12 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckResponsesRequest
-import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.CheckOpenCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.CheckSelectiveCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.UpdateOpenCnRequest
-import com.procurement.access.infrastructure.dto.cn.UpdateSelectiveCnRequest
+import com.procurement.access.infrastructure.dto.cn.*
 import com.procurement.access.infrastructure.dto.cn.update.UpdateOpenCnResponse
 import com.procurement.access.infrastructure.dto.cn.update.UpdateSelectiveCnResponse
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.converter.toResponseDto
-import com.procurement.access.infrastructure.dto.lot.GetLotResponse
-import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
-import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
-import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulRequest
-import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulResponse
+import com.procurement.access.infrastructure.dto.lot.*
 import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
 import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
 import com.procurement.access.infrastructure.dto.pn.converter.convert
@@ -69,22 +33,7 @@ import com.procurement.access.infrastructure.dto.tender.get.awardCriteria.GetAwa
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationRequest
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
 import com.procurement.access.infrastructure.dto.tender.set.tenderUnsuccessful.SetTenderUnsuccessfulResponse
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.bpe.country
-import com.procurement.access.model.dto.bpe.cpid
-import com.procurement.access.model.dto.bpe.isAuction
-import com.procurement.access.model.dto.bpe.lotId
-import com.procurement.access.model.dto.bpe.operationType
-import com.procurement.access.model.dto.bpe.owner
-import com.procurement.access.model.dto.bpe.phase
-import com.procurement.access.model.dto.bpe.pmd
-import com.procurement.access.model.dto.bpe.prevStage
-import com.procurement.access.model.dto.bpe.stage
-import com.procurement.access.model.dto.bpe.startDate
-import com.procurement.access.model.dto.bpe.testMode
-import com.procurement.access.model.dto.bpe.token
+import com.procurement.access.model.dto.bpe.*
 import com.procurement.access.service.validation.JsonValidationService
 import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toJson
@@ -223,6 +172,11 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -256,6 +210,9 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CreateSelectiveCnOnPnContext(
@@ -276,6 +233,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -304,6 +263,9 @@ class CommandService(
             }
             CommandType.CREATE_REQUESTS_FOR_EV_PANELS -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -319,6 +281,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -395,6 +359,9 @@ class CommandService(
             CommandType.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
             CommandType.GET_ACTIVE_LOTS -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -409,6 +376,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -513,6 +482,9 @@ class CommandService(
 
             CommandType.GET_LOTS_AUCTION -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -527,6 +499,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -613,6 +587,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -640,6 +616,9 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CheckSelectiveCnOnPnContext(
@@ -669,6 +648,9 @@ class CommandService(
             }
             CommandType.CHECK_RESPONSES -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -684,6 +666,8 @@ class CommandService(
                         ResponseDto(data = "ok")
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -730,6 +714,9 @@ class CommandService(
             }
             CommandType.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
                 val response = when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -747,6 +734,8 @@ class CommandService(
                             ?: Unit
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,

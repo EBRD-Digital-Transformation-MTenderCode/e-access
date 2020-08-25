@@ -5,11 +5,7 @@ import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.TenderStatus
-import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.*
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -20,23 +16,7 @@ import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.stage
-import com.procurement.access.model.dto.lots.ActivationAcLot
-import com.procurement.access.model.dto.lots.ActivationAcRq
-import com.procurement.access.model.dto.lots.ActivationAcRs
-import com.procurement.access.model.dto.lots.ActivationAcTender
-import com.procurement.access.model.dto.lots.CanCancellationLot
-import com.procurement.access.model.dto.lots.CanCancellationRq
-import com.procurement.access.model.dto.lots.CanCancellationRs
-import com.procurement.access.model.dto.lots.FinalLot
-import com.procurement.access.model.dto.lots.FinalStatusesRq
-import com.procurement.access.model.dto.lots.FinalStatusesRs
-import com.procurement.access.model.dto.lots.FinalTender
-import com.procurement.access.model.dto.lots.GetItemsByLotRs
-import com.procurement.access.model.dto.lots.ItemDto
-import com.procurement.access.model.dto.lots.UpdateLotByBidRq
-import com.procurement.access.model.dto.lots.UpdateLotByBidRs
-import com.procurement.access.model.dto.lots.UpdateLotsRq
-import com.procurement.access.model.dto.lots.UpdateLotsRs
+import com.procurement.access.model.dto.lots.*
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.asMoney
@@ -254,6 +234,13 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
             ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
             ProcurementMethod.RT, ProcurementMethod.TEST_RT -> "TP"
+
+            ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+            ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+            ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ -> "CO"
+
+            ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+            ProcurementMethod.OF, ProcurementMethod.TEST_OF -> "FE"
 
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
         }
