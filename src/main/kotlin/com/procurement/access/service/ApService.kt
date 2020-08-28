@@ -152,7 +152,9 @@ class ApService(
             //BR-3.1.13
             framework = APEntity.Tender.Framework(isAFramework = true),
             //BR-3.1.14
-            dynamicPurchasingSystem = defineDynamicPurchasingSystem(pmd = pmd),
+            dynamicPurchasingSystem = APEntity.Tender.DynamicPurchasingSystem(
+                hasDynamicPurchasingSystem = hasDynamicPurchasingSystem(pmd = pmd)
+            ),
             legalBasis = tenderRequest.legalBasis,
             procurementMethod = pmd,
             procurementMethodDetails = tenderRequest.procurementMethodDetails,
@@ -242,8 +244,22 @@ class ApService(
         )
     }
 
-    fun defineDynamicPurchasingSystem(pmd: ProcurementMethod): APEntity.Tender.DynamicPurchasingSystem {
-        TODO()
+    fun hasDynamicPurchasingSystem(pmd: ProcurementMethod): Boolean = when (pmd) {
+        ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+        ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+        ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+        ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+        ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+        ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+        ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+        ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+        ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+        ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+        ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+        ProcurementMethod.RT, ProcurementMethod.TEST_RT -> true
+
+        ProcurementMethod.OF, ProcurementMethod.TEST_OF -> false
     }
 
     private fun convertRequestDocument(documentFromRequest: ApCreateData.Tender.Document): APEntity.Tender.Document {
