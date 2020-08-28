@@ -16,6 +16,8 @@ import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
+import com.procurement.access.application.service.ap.create.ApCreateData
+import com.procurement.access.application.service.ap.create.CreateApContext
 import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.application.service.cn.update.UpdateOpenCnContext
 import com.procurement.access.application.service.cn.update.UpdateOpenCnData
@@ -42,6 +44,9 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckResponsesRequest
+import com.procurement.access.infrastructure.dto.ap.ApCreateRequest
+import com.procurement.access.infrastructure.dto.ap.ApCreateResponse
+import com.procurement.access.infrastructure.dto.ap.converter.convert
 import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckOpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckSelectiveCnOnPnResponse
@@ -151,11 +156,32 @@ class CommandService(
                 val data: PnCreateData = request.convert()
                 val result = pnService.createPn(context, data)
                 if (log.isDebugEnabled)
-                    log.debug("Update CN. Result: ${toJson(result)}")
+                    log.debug("Create PN. Result: ${toJson(result)}")
 
                 val response: PnCreateResponse = result.convert()
                 if (log.isDebugEnabled)
-                    log.debug("Update CN. Response: ${toJson(response)}")
+                    log.debug("Create PN. Response: ${toJson(response)}")
+
+                return ResponseDto(data = response)
+            }
+            CommandType.CREATE_AP -> {
+                val context = CreateApContext(
+                    stage = cm.stage,
+                    owner = cm.owner,
+                    pmd = cm.pmd,
+                    country = cm.country,
+                    startDate = cm.startDate,
+                    mode = getMode(cm.testMode)
+                )
+                val request: ApCreateRequest = toObject(ApCreateRequest::class.java, cm.data)
+                val data: ApCreateData = request.convert()
+                val result = apService.createAp(context, data)
+                if (log.isDebugEnabled)
+                    log.debug("Create AP. Result: ${toJson(result)}")
+
+                val response: ApCreateResponse = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Create AP. Response: ${toJson(response)}")
 
                 return ResponseDto(data = response)
             }
