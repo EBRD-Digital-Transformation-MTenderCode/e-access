@@ -31,7 +31,7 @@ class ApService(
 
     fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
         checkValidationRules(request)
-        val apEntity: APEntity = businessRules(contextRequest, request)
+        val apEntity: APEntity = applyBusinessRules(contextRequest, request)
         val cpid = apEntity.ocid
         val token = generationService.generateToken()
         tenderProcessDao.save(
@@ -96,7 +96,7 @@ class ApService(
     /**
      * Business rules
      */
-    private fun businessRules(contextRequest: CreateApContext, request: ApCreateData): APEntity {
+    private fun applyBusinessRules(contextRequest: CreateApContext, request: ApCreateData): APEntity {
 
         val id = generationService.getCpId(country = contextRequest.country, mode = contextRequest.mode)
 
