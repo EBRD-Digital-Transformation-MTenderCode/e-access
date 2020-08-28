@@ -67,18 +67,19 @@ data class SetStateForTenderParams private constructor(
                         TenderStatusDetails.SUSPENDED,
                         TenderStatusDetails.TENDERING -> true
 
-                        TenderStatusDetails.PLANNING,
-                        TenderStatusDetails.PLANNED,
-                        TenderStatusDetails.CLARIFICATION,
-                        TenderStatusDetails.NEGOTIATION,
-                        TenderStatusDetails.CANCELLATION,
-                        TenderStatusDetails.AWARDING,
+                        TenderStatusDetails.AGGREGATION,
                         TenderStatusDetails.AUCTION,
+                        TenderStatusDetails.AWARDED_CONTRACT_PREPARATION,
                         TenderStatusDetails.AWARDED_STANDSTILL,
                         TenderStatusDetails.AWARDED_SUSPENDED,
-                        TenderStatusDetails.AWARDED_CONTRACT_PREPARATION,
-                        TenderStatusDetails.SUBMISSION,
-                        TenderStatusDetails.COMPLETE -> false
+                        TenderStatusDetails.AWARDING,
+                        TenderStatusDetails.CANCELLATION,
+                        TenderStatusDetails.CLARIFICATION,
+                        TenderStatusDetails.COMPLETE,
+                        TenderStatusDetails.NEGOTIATION,
+                        TenderStatusDetails.PLANNED,
+                        TenderStatusDetails.PLANNING,
+                        TenderStatusDetails.SUBMISSION -> false
                     }
                 }
                 .toSetBy { it }
