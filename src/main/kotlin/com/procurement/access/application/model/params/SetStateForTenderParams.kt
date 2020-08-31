@@ -49,9 +49,9 @@ data class SetStateForTenderParams private constructor(
                         TenderStatus.ACTIVE,
                         TenderStatus.CANCELLED,
                         TenderStatus.COMPLETE,
-                        TenderStatus.UNSUCCESSFUL -> true
-                        TenderStatus.PLANNED,
-                        TenderStatus.PLANNING -> false
+                        TenderStatus.UNSUCCESSFUL,
+                        TenderStatus.PLANNING -> true
+                        TenderStatus.PLANNED -> false
                     }
                 }
                 .toSetBy { it }
@@ -65,7 +65,8 @@ data class SetStateForTenderParams private constructor(
                         TenderStatusDetails.QUALIFICATION,
                         TenderStatusDetails.QUALIFICATION_STANDSTILL,
                         TenderStatusDetails.SUSPENDED,
-                        TenderStatusDetails.TENDERING -> true
+                        TenderStatusDetails.TENDERING,
+                        TenderStatusDetails.AGGREGATION_PENDING -> true
 
                         TenderStatusDetails.PLANNING,
                         TenderStatusDetails.PLANNED,
