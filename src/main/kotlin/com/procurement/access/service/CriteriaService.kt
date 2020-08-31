@@ -311,7 +311,8 @@ class CriteriaServiceImpl(
                         OperationType.START_SECONDSTAGE,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
-                        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
+                        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                        OperationType.OUTSOURCING_PN -> null
 
                         OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
                         OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD

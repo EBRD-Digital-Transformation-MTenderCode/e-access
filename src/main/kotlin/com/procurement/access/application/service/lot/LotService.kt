@@ -302,7 +302,8 @@ class LotServiceImpl(
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_PN,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+            OperationType.OUTSOURCING_PN ->
                 throw ErrorException(
                     error = ErrorType.INVALID_OPERATION_TYPE,
                     message = "The 'getLotsForAuction' command does not apply for '${context.operationType.key}' operation type."

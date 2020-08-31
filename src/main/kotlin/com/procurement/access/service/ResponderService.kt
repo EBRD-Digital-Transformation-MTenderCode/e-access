@@ -232,7 +232,8 @@ class ResponderServiceImpl(
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> emptyMap()
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+            OperationType.OUTSOURCING_PN -> emptyMap()
         }
 
         val organizationIdsSet = params.organizationIds.toSet()
