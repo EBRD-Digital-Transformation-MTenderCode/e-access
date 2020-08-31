@@ -109,3 +109,12 @@ INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
 INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'TEST_GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_OF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'CF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_CF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
