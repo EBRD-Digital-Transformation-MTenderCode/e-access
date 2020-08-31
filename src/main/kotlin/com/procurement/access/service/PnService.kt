@@ -123,6 +123,10 @@ class PnService(
 
         val documents = request.tender.documents
 
+        //VR-3.1.1
+        val isUniqueDocuments = documents.uniqueBy { it.id }
+        if(!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
+
         //VR-3.1.10 "Related Lots" (documents)
         checkRelatedLotsInDocuments(lotsIds, documents)
 
