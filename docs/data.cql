@@ -109,3 +109,24 @@ INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
 INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'TEST_GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'DCO', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"planned"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_DCO', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"planned"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'RFQ', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"planned"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_RFQ', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"planned"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'MC', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"planned"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_MC', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"planned"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'CF', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"aggregation"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_CF', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"aggregation"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OF', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"aggregation"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_OF', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"aggregation"}]');

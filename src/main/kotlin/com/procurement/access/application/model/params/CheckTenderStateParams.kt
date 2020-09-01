@@ -41,6 +41,7 @@ data class CheckTenderStateParams private constructor(
                     OperationType.QUALIFICATION_CONSIDERATION,
                     OperationType.QUALIFICATION_PROTOCOL,
                     OperationType.START_SECONDSTAGE,
+                    OperationType.RELATION_AP,
                     OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> true
                 }
             }

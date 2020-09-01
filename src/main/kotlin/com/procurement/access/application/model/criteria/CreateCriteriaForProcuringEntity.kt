@@ -37,6 +37,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.START_SECONDSTAGE,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
+                        OperationType.RELATION_AP,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
 
                         OperationType.SUBMISSION_PERIOD_END,

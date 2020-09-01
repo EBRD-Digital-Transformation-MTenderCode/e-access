@@ -17,6 +17,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     QUALIFICATION("qualification"),
     QUALIFICATION_CONSIDERATION("qualificationConsideration"),
     QUALIFICATION_PROTOCOL("qualificationProtocol"),
+    RELATION_AP("relationAP"),
     START_SECONDSTAGE("startSecondStage"),
     SUBMISSION_PERIOD_END("submissionPeriodEnd"),
     TENDER_PERIOD_END("tenderPeriodEnd"),

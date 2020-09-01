@@ -44,6 +44,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
+                    OperationType.RELATION_AP,
                     OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
                 }
             }.toSet()
