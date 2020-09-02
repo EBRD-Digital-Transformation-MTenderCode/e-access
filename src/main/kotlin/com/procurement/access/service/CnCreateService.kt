@@ -2,7 +2,9 @@ package com.procurement.access.service
 
 import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.EnumElementProviderParser.checkAndParseEnum
 import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -27,6 +29,7 @@ import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.BudgetCnCreate
 import com.procurement.access.model.dto.cn.CnCreate
+import com.procurement.access.model.dto.cn.DocumentCnCreate
 import com.procurement.access.model.dto.cn.ItemCnCreate
 import com.procurement.access.model.dto.cn.LotCnCreate
 import com.procurement.access.model.dto.cn.TenderCnCreate
@@ -64,9 +67,45 @@ import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @Service
-class CnCreateService(private val generationService: GenerationService,
-                      private val tenderProcessDao: TenderProcessDao,
-                      private val rulesService: RulesService) {
+class CnCreateService(
+    private val generationService: GenerationService,
+    private val tenderProcessDao: TenderProcessDao,
+    private val rulesService: RulesService
+) {
+
+    companion object {
+        val allowedTenderDocumentTypes = DocumentType.allowedElements
+            .filter {
+                when (it) {
+                    DocumentType.TENDER_NOTICE,
+                    DocumentType.BIDDING_DOCUMENTS,
+                    DocumentType.TECHNICAL_SPECIFICATIONS,
+                    DocumentType.EVALUATION_CRITERIA,
+                    DocumentType.CLARIFICATIONS,
+                    DocumentType.ELIGIBILITY_CRITERIA,
+                    DocumentType.RISK_PROVISIONS,
+                    DocumentType.BILL_OF_QUANTITY,
+                    DocumentType.CONFLICT_OF_INTEREST,
+                    DocumentType.PROCUREMENT_PLAN,
+                    DocumentType.CONTRACT_DRAFT,
+                    DocumentType.COMPLAINTS,
+                    DocumentType.ILLUSTRATION,
+                    DocumentType.CANCELLATION_DETAILS,
+                    DocumentType.EVALUATION_REPORTS,
+                    DocumentType.SHORTLISTED_FIRMS,
+                    DocumentType.CONTRACT_ARRANGEMENTS,
+                    DocumentType.CONTRACT_GUARANTEES -> true
+
+                    DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                    DocumentType.ENVIRONMENTAL_IMPACT,
+                    DocumentType.FEASIBILITY_STUDY,
+                    DocumentType.HEARING_NOTICE,
+                    DocumentType.MARKET_STUDIES,
+                    DocumentType.NEEDS_ASSESSMENT,
+                    DocumentType.PROJECT_PLAN -> false
+                }
+            }.toSet()
+    }
 
     fun createCn(cm: CommandMessage, context: CnCreateContext): ResponseDto {
         val cnDto = toObject(CnCreate::class.java, cm.data).validate()
@@ -130,7 +169,7 @@ class CnCreateService(private val generationService: GenerationService,
                     lotGroups = listOf(LotGroup(optionToCombine = false)),
                     lots = getLots(tenderDto.lots),
                     items = getItems(tenderDto.items),
-                    documents = getDocuments(tenderDto.documents),
+                    documents = checkAndGetDocuments(tenderDto.documents),
                     procurementMethodModalities = tenderDto.procurementMethodModalities,
                     electronicAuctions = tenderDto.electronicAuctions
                 )
@@ -235,8 +274,6 @@ class CnCreateService(private val generationService: GenerationService,
         }
     }
 
-    private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.creator(pmd)
-
     private fun getValueFromLots(lotsDto: List<LotCnCreate>, budgetValue: Value): Value {
         val currency = budgetValue.currency
         val totalAmount = lotsDto.asSequence()
@@ -250,11 +287,26 @@ class CnCreateService(private val generationService: GenerationService,
         return itemsDto.asSequence().map { convertDtoItemToItem(it) }.toList()
     }
 
-    private fun getDocuments(documentsDto: List<Document>): List<Document>? {
+    private fun checkAndGetDocuments(documentsDto: List<DocumentCnCreate>): List<Document>? {
         val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
         if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
-        return documentsDto
+
+        return documentsDto.map { documentDto ->
+            Document(
+                id = documentDto.id,
+                description = documentDto.description,
+                documentType = checkAndGetDocumentType(documentDto.documentType),
+                relatedLots = documentDto.relatedLots,
+                title = documentDto.title
+            )
+        }
     }
+
+    private fun checkAndGetDocumentType(documentType: String) = checkAndParseEnum(
+        value = documentType,
+        allowedValues = allowedTenderDocumentTypes,
+        target = DocumentType
+    )
 
     private fun getContractPeriod(lotsDto: List<LotCnCreate>, budget: BudgetCnCreate): ContractPeriod {
         val contractPeriodSet = lotsDto.asSequence().map { it.contractPeriod }.toSet()
