@@ -1,13 +1,16 @@
 package com.procurement.access.service.validation
 
+import com.procurement.access.application.model.params.CheckExistenceFAParams
 import com.procurement.access.application.model.params.CheckTenderStateParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
 import com.procurement.access.application.service.tender.strategy.check.tenderstate.CheckTenderStateStrategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -93,6 +96,20 @@ class ValidationService(
             .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.AWARDED }
             ?: throw ErrorException(ErrorType.NO_AWARDED_LOT)
         return ResponseDto(data = "ok")
+    }
+
+    fun checkExistenceFA(params: CheckExistenceFAParams): ValidationResult<Fail> {
+        val cpid = params.cpid
+        val stage = Stage.AP
+
+        tenderProcessRepository
+            .getByCpIdAndStage(cpid, stage)
+            .doReturn { fail -> return ValidationResult.error(fail) }
+            ?: return ValidationResult.error(
+                ValidationErrors.TenderNotFoundOnCheckExistenceFA(cpid, stage)
+            )
+
+        return ValidationResult.ok()
     }
 
     fun checkLotActive(cm: CommandMessage): ResponseDto {

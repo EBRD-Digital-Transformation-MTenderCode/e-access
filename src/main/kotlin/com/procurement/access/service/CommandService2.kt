@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
+import com.procurement.access.infrastructure.handler.check.fa.CheckExistenceFAHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.check.tenderstate.CheckTenderStateHandler
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityHandler
@@ -31,6 +32,7 @@ class CommandService2(
     private val findLotIdsHandler: FindLotIdsHandler,
     private val responderProcessingHandler: ResponderProcessingHandler,
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
+    private val checkExistenceFAHandler: CheckExistenceFAHandler,
     private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler,
     private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
     private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
@@ -83,6 +85,7 @@ class CommandService2(
             Command2Type.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
             Command2Type.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
             Command2Type.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
+            Command2Type.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")
