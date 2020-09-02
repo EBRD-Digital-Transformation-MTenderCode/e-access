@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.ValidationResult
+import com.procurement.access.domain.util.bind
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.model.dto.bpe.Command2Type
@@ -14,17 +15,15 @@ import org.springframework.stereotype.Service
 
 @Service
 class CheckExistenceFAHandler(
-    private val logger: Logger,
+    logger: Logger,
     private val validationService: ValidationService
 ) : AbstractValidationHandler<Command2Type>(logger = logger) {
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
 
         val params = node.tryGetParams()
-            .doReturn { error -> return ValidationResult.error(error) }
-            .tryParamsToObject(CheckExistenceFARequest::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
-            .convert()
+            .bind { it.tryParamsToObject(CheckExistenceFARequest::class.java) }
+            .bind { it.convert() }
             .doReturn { error -> return ValidationResult.error(error) }
 
         return validationService.checkExistenceFA(params = params)
