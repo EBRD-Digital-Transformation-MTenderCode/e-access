@@ -13,7 +13,6 @@ import com.procurement.access.model.dto.databinding.QuantityDeserializer
 import com.procurement.access.model.dto.ocds.BudgetBreakdown
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.ContractPeriod
-import com.procurement.access.model.dto.ocds.Document
 import com.procurement.access.model.dto.ocds.ElectronicAuctions
 import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.model.dto.ocds.Period
@@ -84,7 +83,7 @@ data class TenderCnCreate @JsonCreator constructor(
 
     val items: List<ItemCnCreate>,
 
-    val documents: List<Document>,
+    val documents: List<DocumentCnCreate>,
 
     val procurementMethodModalities: Set<ProcurementMethodModalities>?,
 
@@ -92,6 +91,20 @@ data class TenderCnCreate @JsonCreator constructor(
 
     val awardCriteria: AwardCriteria?
 )
+
+data class DocumentCnCreate@JsonCreator constructor(
+
+    val id: String,
+
+    val documentType: String,
+
+    var title: String?,
+
+    var description: String?,
+
+    var relatedLots: HashSet<String>?
+)
+
 
 data class LotCnCreate @JsonCreator constructor(
 
