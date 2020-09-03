@@ -14,6 +14,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     CREATE_PIN_ON_PN("createPINonPN"),
     CREATE_PN("createPN"),
     CREATE_SUBMISSION("createSubmission"),
+    OUTSOURCING_PN("outsourcingPN"),
     QUALIFICATION("qualification"),
     QUALIFICATION_CONSIDERATION("qualificationConsideration"),
     QUALIFICATION_PROTOCOL("qualificationProtocol"),

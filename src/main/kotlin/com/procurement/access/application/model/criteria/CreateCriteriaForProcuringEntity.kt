@@ -31,6 +31,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.CREATE_PIN_ON_PN,
                         OperationType.CREATE_PN,
                         OperationType.CREATE_SUBMISSION,
+                        OperationType.OUTSOURCING_PN,
                         OperationType.QUALIFICATION,
                         OperationType.QUALIFICATION_CONSIDERATION,
                         OperationType.QUALIFICATION_PROTOCOL,
