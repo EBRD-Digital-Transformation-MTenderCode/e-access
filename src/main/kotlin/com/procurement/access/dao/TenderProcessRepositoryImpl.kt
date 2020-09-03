@@ -50,10 +50,31 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
           ) 
           VALUES(?, ?, ?, ?, ?, ?)
             """
+
+        private const val UPDATE_CQL = """
+               UPDATE $KEY_SPACE.$TABLE_NAME
+                  SET $COLUMN_JSON_DATA=?
+                WHERE $COLUMN_CPID=?
+                  AND $COLUMN_STAGE=?
+                IF EXISTS
+            """
     }
 
     private val preparedGetByCpIdAndStageCQL = session.prepare(GET_BY_CPID_AND_STAGE_CQL)
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
+    private val updateAll = session.prepare(UPDATE_CQL)
+
+    override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database>  {
+        val updateStatement = updateAll.bind()
+            .apply {
+                setString(COLUMN_CPID, entity.cpId)
+                setString(COLUMN_STAGE, entity.stage)
+                setString(COLUMN_JSON_DATA, entity.jsonData)
+            }
+
+        return load(updateStatement)
+            .map { it.wasApplied() }
+    }
 
     override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> {
         val insert = preparedSaveCQL.bind()
