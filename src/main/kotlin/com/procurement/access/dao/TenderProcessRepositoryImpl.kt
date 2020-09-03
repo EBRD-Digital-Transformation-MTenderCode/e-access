@@ -74,7 +74,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
 
-        return load(updateStatement)
+        return tryExecute(updateStatement)
             .map { it.wasApplied() }
     }
 
@@ -88,7 +88,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setTimestamp(COLUMN_CREATION_DATE, entity.createdDate)
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
-        return load(insert)
+        return tryExecute(insert)
             .doOnError { error -> return failure(error) }
     }
 
@@ -99,7 +99,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setString(COLUMN_STAGE, stage.toString())
             }
 
-        return load(query)
+        return tryExecute(query)
             .doOnError { error -> return failure(error) }
             .get
             .one()
@@ -107,7 +107,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .asSuccess()
     }
 
-    protected fun load(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
+    protected fun tryExecute(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
         success(session.execute(statement))
     } catch (expected: Exception) {
         failure(Fail.Incident.Database(expected))
