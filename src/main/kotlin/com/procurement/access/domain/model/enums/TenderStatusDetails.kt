@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class TenderStatusDetails(@JsonValue override val key: String) : EnumElementProvider.Key {
+    AGGREGATED("aggregated"),
+    AGGREGATION_PENDING("aggregationPending"),
     AUCTION("auction"),
     AWARDED_CONTRACT_PREPARATION("awardedContractPreparation"),
     AWARDED_STANDSTILL("awardedStandStill"),
