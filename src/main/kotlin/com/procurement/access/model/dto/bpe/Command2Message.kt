@@ -44,6 +44,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     FIND_CRITERIA("findCriteria"),
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
     CHECK_TENDER_STATE("checkTenderState"),
+    OUTSOURCING_PN("outsourcingPN"),
     FIND_AUCTIONS("findAuctions");
 
     override fun toString(): String = key
