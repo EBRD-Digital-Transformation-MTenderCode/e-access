@@ -27,7 +27,7 @@ import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [DatabaseTestConfiguration::class])
-class TenderProcessRepositoryIT {
+class TenderProcessDaoIT {
     companion object {
         private const val CPID = "cpid-1"
         private const val STAGE_PN = "PN"
