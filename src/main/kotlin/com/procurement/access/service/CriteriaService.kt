@@ -305,14 +305,14 @@ class CriteriaServiceImpl(
                         OperationType.CREATE_PIN_ON_PN,
                         OperationType.CREATE_PN,
                         OperationType.CREATE_SUBMISSION,
+                        OperationType.OUTSOURCING_PN,
                         OperationType.QUALIFICATION,
                         OperationType.QUALIFICATION_CONSIDERATION,
                         OperationType.QUALIFICATION_PROTOCOL,
                         OperationType.START_SECONDSTAGE,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
-                        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                        OperationType.OUTSOURCING_PN -> null
+                        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
 
                         OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
                         OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD

@@ -295,6 +295,7 @@ class LotServiceImpl(
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
             OperationType.CREATE_SUBMISSION,
+            OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.QUALIFICATION_PROTOCOL,
@@ -302,8 +303,7 @@ class LotServiceImpl(
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_PN,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-            OperationType.OUTSOURCING_PN ->
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
                 throw ErrorException(
                     error = ErrorType.INVALID_OPERATION_TYPE,
                     message = "The 'getLotsForAuction' command does not apply for '${context.operationType.key}' operation type."

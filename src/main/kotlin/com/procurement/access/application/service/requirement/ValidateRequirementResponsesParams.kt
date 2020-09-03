@@ -36,6 +36,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
+                    OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
                     OperationType.QUALIFICATION_PROTOCOL,
@@ -44,8 +45,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
-                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                    OperationType.OUTSOURCING_PN -> false
+                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
                 }
             }.toSet()
 
