@@ -206,10 +206,10 @@ private fun asUUID(value: String): Result<UUID, DataErrors> =
         )
     }
 
-fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
+fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, BadRequestErrors.Parsing> {
     return this.tryToObject(clazz)
-        .doOnError { error ->
-            return Result.failure(
+        .doReturn { error ->
+            return failure(
                 BadRequestErrors.Parsing(
                     message = "Can not parse 'params'.",
                     request = this.toString(),
@@ -217,7 +217,6 @@ fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
                 )
             )
         }
-        .get
         .asSuccess()
 }
 
