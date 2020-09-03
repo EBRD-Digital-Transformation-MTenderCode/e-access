@@ -56,19 +56,21 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                   SET $COLUMN_JSON_DATA=?
                 WHERE $COLUMN_CPID=?
                   AND $COLUMN_STAGE=?
+                  AND $COLUMN_TOKEN=?
                 IF EXISTS
             """
     }
 
     private val preparedGetByCpIdAndStageCQL = session.prepare(GET_BY_CPID_AND_STAGE_CQL)
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
-    private val updateAll = session.prepare(UPDATE_CQL)
+    private val updateCQL = session.prepare(UPDATE_CQL)
 
     override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database>  {
-        val updateStatement = updateAll.bind()
+        val updateStatement = updateCQL.bind()
             .apply {
                 setString(COLUMN_CPID, entity.cpId)
                 setString(COLUMN_STAGE, entity.stage)
+                setUUID(COLUMN_TOKEN, entity.token)
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
 
