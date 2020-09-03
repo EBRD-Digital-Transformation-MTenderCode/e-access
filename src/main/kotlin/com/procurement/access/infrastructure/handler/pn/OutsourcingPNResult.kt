@@ -1,9 +1,12 @@
 package com.procurement.access.infrastructure.handler.pn
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.util.Result
+import com.procurement.access.infrastructure.entity.PNEntity
 
 data class OutsourcingPNResult(
     @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>
@@ -16,4 +19,17 @@ data class OutsourcingPNResult(
         @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: String,
         @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
     )
+
+    companion object {
+        fun fromDomain(pnEntity: PNEntity.RelatedProcess): Result<RelatedProcess, DataErrors> =
+            Result.success(
+                RelatedProcess(
+                    id = pnEntity.id,
+                    relationship = pnEntity.relationship,
+                    scheme = pnEntity.scheme,
+                    identifier = pnEntity.identifier,
+                    uri = pnEntity.uri
+                )
+            )
+    }
 }
