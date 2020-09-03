@@ -117,6 +117,7 @@ class CnCreateService(
         val planningDto = cnDto.planning
         val tenderDto = cnDto.tender
         validateDtoRelatedLots(tenderDto)
+        val tenderDocuments = checkAndGetDocuments(tenderDto.documents)
         setItemsId(tenderDto.items)
         setLotsId(tenderDto)
         cnDto.tender.procuringEntity.id = generationService.generateOrganizationId(cnDto.tender.procuringEntity)
@@ -169,7 +170,7 @@ class CnCreateService(
                     lotGroups = listOf(LotGroup(optionToCombine = false)),
                     lots = getLots(tenderDto.lots),
                     items = getItems(tenderDto.items),
-                    documents = checkAndGetDocuments(tenderDto.documents),
+                    documents = tenderDocuments,
                     procurementMethodModalities = tenderDto.procurementMethodModalities,
                     electronicAuctions = tenderDto.electronicAuctions
                 )
