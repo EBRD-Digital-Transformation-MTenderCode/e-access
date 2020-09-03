@@ -82,3 +82,9 @@ fun String.toNode(): Result<JsonNode, Fail.Incident.Transforming> = try {
 } catch (exception: JsonProcessingException) {
     Result.failure(Fail.Incident.Transforming(exception = exception))
 }
+
+fun <R> trySerialization(value: R): Result<String, Fail.Incident.Transforming> = try {
+    Result.success(JsonMapper.mapper.writeValueAsString(value))
+} catch (expected: Exception) {
+    Result.failure(Fail.Incident.Transforming(exception = expected))
+}
