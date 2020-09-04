@@ -44,6 +44,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     FIND_CRITERIA("findCriteria"),
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
     CHECK_TENDER_STATE("checkTenderState"),
+    OUTSOURCING_PN("outsourcingPN"),
     FIND_AUCTIONS("findAuctions");
 
     override fun toString(): String = key
@@ -205,10 +206,10 @@ private fun asUUID(value: String): Result<UUID, DataErrors> =
         )
     }
 
-fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
+fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, BadRequestErrors.Parsing> {
     return this.tryToObject(clazz)
-        .doOnError { error ->
-            return Result.failure(
+        .doReturn { error ->
+            return failure(
                 BadRequestErrors.Parsing(
                     message = "Can not parse 'params'.",
                     request = this.toString(),
@@ -216,7 +217,6 @@ fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, Error> {
                 )
             )
         }
-        .get
         .asSuccess()
 }
 
