@@ -180,4 +180,10 @@ sealed class ValidationErrors(
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
+
+    class TenderNotFoundOnCreateRelationToOtherProcess(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.22.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
 }
