@@ -43,6 +43,7 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
@@ -55,7 +56,10 @@ data class CNEntity(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("amendment") @param:JsonProperty("amendment") val amendment: Amendment? = null
+    @field:JsonProperty("amendment") @param:JsonProperty("amendment") val amendment: Amendment? = null,
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>?
 ) {
 
     data class Planning(
