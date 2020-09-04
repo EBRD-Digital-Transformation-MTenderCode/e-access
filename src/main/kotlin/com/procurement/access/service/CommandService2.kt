@@ -13,6 +13,7 @@ import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotSta
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationHandler
 import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderStateHandler
+import com.procurement.access.infrastructure.handler.pn.OutsourcingPNHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderHandler
@@ -44,6 +45,7 @@ class CommandService2(
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val checkTenderStateHandler: CheckTenderStateHandler,
     private val findAuctionsHandler: FindAuctionsHandler,
+    private val outsourcingPNHandler: OutsourcingPNHandler,
     private val logger: Logger
 ) {
 
@@ -83,6 +85,7 @@ class CommandService2(
             Command2Type.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
             Command2Type.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
             Command2Type.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
+            Command2Type.OUTSOURCING_PN -> outsourcingPNHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")

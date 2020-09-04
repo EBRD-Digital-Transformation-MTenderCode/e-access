@@ -111,6 +111,16 @@ INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'TEST_GPA', 'qualificationConsideration', 'validStates', '[{"status":"active","statusDetails":"qualification"}]');
 
 INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_OF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'CF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'TEST_CF', 'outsourcingPN', 'validStates', '[{"status":"planning","statusDetails":"planning"}]');
+
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'DCO', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"outsourcing"}]');
 INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'TEST_DCO', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"outsourcing"}]');

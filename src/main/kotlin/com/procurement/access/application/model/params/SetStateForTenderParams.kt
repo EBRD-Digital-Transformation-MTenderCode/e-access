@@ -49,9 +49,9 @@ data class SetStateForTenderParams private constructor(
                         TenderStatus.ACTIVE,
                         TenderStatus.CANCELLED,
                         TenderStatus.COMPLETE,
-                        TenderStatus.UNSUCCESSFUL -> true
-                        TenderStatus.PLANNED,
-                        TenderStatus.PLANNING -> false
+                        TenderStatus.PLANNING,
+                        TenderStatus.UNSUCCESSFUL-> true
+                        TenderStatus.PLANNED -> false
                     }
                 }
                 .toSetBy { it }
@@ -59,6 +59,8 @@ data class SetStateForTenderParams private constructor(
             private val allowedTenderStatusDetails = TenderStatusDetails.allowedElements
                 .filter {
                     when (it) {
+                        TenderStatusDetails.AGGREGATED,
+                        TenderStatusDetails.AGGREGATION_PENDING,
                         TenderStatusDetails.EMPTY,
                         TenderStatusDetails.LACK_OF_QUALIFICATIONS,
                         TenderStatusDetails.LACK_OF_SUBMISSIONS,

@@ -37,6 +37,7 @@ data class CheckTenderStateParams private constructor(
                     OperationType.UPDATE_PN -> false
 
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                    OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
                     OperationType.QUALIFICATION_PROTOCOL,

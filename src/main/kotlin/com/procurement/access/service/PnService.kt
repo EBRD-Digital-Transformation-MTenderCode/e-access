@@ -435,7 +435,8 @@ class PnService(
                 contractPeriod = contractPeriod,
                 documents = documents,
                 tenderRequest = request.tender
-            )
+            ),
+            relatedProcesses = null
         )
     }
 

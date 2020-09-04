@@ -231,7 +231,8 @@ class SelectiveCnOnPnService(
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
             planning = planning(pnEntity), //BR-3.8.1
-            tender = tender
+            tender = tender,
+            relatedProcesses = pnEntity.relatedProcesses
         )
 
         tenderProcessDao.save(
