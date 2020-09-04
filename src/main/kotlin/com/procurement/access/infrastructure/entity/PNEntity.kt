@@ -12,17 +12,15 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.RelatedProcessScheme
-import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
-import com.procurement.access.domain.model.process.RelatedProcessId
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
@@ -35,7 +33,7 @@ data class PNEntity(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") var relatedProcesses: List<RelatedProcess>?
+    @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>?
 ) {
 
     data class Planning(
@@ -457,12 +455,4 @@ data class PNEntity(
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: Set<String>?
         )
     }
-
-    data class RelatedProcess(
-        @field:JsonProperty("id") @param:JsonProperty("id") val id: RelatedProcessId,
-        @field:JsonProperty("relationship") @param:JsonProperty("relationship") val relationship: List<RelatedProcessType>,
-        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: RelatedProcessScheme,
-        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: String,
-        @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
-    )
 }

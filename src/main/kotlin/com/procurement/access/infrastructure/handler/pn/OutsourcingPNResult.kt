@@ -6,7 +6,8 @@ import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
 import com.procurement.access.domain.util.Result
-import com.procurement.access.infrastructure.entity.PNEntity
+
+import com.procurement.access.infrastructure.entity.process.RelatedProcess as RelatedProcessDomain
 
 data class OutsourcingPNResult(
     @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>
@@ -21,14 +22,14 @@ data class OutsourcingPNResult(
     )
 
     companion object {
-        fun fromDomain(pnEntity: PNEntity.RelatedProcess): Result<RelatedProcess, DataErrors> =
+        fun fromDomain(relatedProcess: RelatedProcessDomain): Result<RelatedProcess, DataErrors> =
             Result.success(
                 RelatedProcess(
-                    id = pnEntity.id,
-                    relationship = pnEntity.relationship,
-                    scheme = pnEntity.scheme,
-                    identifier = pnEntity.identifier,
-                    uri = pnEntity.uri
+                    id = relatedProcess.id,
+                    relationship = relatedProcess.relationship,
+                    scheme = relatedProcess.scheme,
+                    identifier = relatedProcess.identifier,
+                    uri = relatedProcess.uri
                 )
             )
     }

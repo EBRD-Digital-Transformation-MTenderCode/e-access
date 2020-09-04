@@ -14,6 +14,7 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
@@ -42,7 +43,7 @@ class OutsourcingServiceImpl(
             .orForwardFail { fail -> return fail }
 
         val relatedProcesses = listOf(
-            PNEntity.RelatedProcess(
+            RelatedProcess(
                 id = RelatedProcessId.randomUUID(), // FR.COM-1.21.1
                 relationship = listOf(RelatedProcessType.FRAMEWORK), // FR.COM-1.21.2
                 scheme = RelatedProcessScheme.OCID, // FR.COM-1.21.3
