@@ -228,12 +228,12 @@ class ResponderServiceImpl(
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.QUALIFICATION_PROTOCOL,
+            OperationType.RELATION_AP,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
-            OperationType.RELATION_AP,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> emptyMap()
         }
 
