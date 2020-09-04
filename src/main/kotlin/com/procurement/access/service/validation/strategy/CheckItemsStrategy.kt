@@ -189,6 +189,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.QUALIFICATION_PROTOCOL,
+            OperationType.OUTSOURCING_PN,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
