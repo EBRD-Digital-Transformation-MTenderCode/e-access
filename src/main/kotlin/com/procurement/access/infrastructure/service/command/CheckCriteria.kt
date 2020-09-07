@@ -515,6 +515,10 @@ fun checkCoefficientDataType(criteria: List<CriterionRequest>?, conversions: Lis
     }
 }
 
+val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
+val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
+val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
+
 fun checkCastCoefficient(
     mainProcurementCategory: MainProcurementCategory?,
     criteria: List<CriterionRequest>?,
@@ -530,10 +534,6 @@ fun checkCastCoefficient(
     if (criteria == null || conversions == null) return
 
     val castCoefficients = getCastCoefficients(criteria, conversions, items)
-
-    val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
-    val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
-    val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
 
     when (mainProcurementCategory) {
         MainProcurementCategory.GOODS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_GOODS })
