@@ -121,6 +121,8 @@ fun checkAnswerByTenderAndTendererRequirements(
     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
     ProcurementMethod.IP, ProcurementMethod.TEST_IP -> Unit
 }
 

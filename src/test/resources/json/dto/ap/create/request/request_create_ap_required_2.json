@@ -1,0 +1,57 @@
+{
+  "tender": {
+    "classification": {
+      "scheme": "CPV",
+      "description": "",
+      "id": ""
+    },
+    "mainProcurementCategory": "goods",
+    "submissionMethodRationale": [
+      ""
+    ],
+    "submissionMethodDetails": "",
+    "procurementMethodDetails": "",
+    "title": "",
+    "description": "",
+    "legalBasis": "DIRECTIVE_2014_25_EU",
+    "eligibilityCriteria": "",
+    "tenderPeriod": {
+      "startDate": "2018-12-28T18:26:00Z"
+    },
+    "procuringEntity": {
+      "name": "",
+      "identifier": {
+        "scheme": "",
+        "id": "",
+        "legalName": ""
+      },
+      "address": {
+        "streetAddress": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "region": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": ""
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "",
+        "email": "",
+        "telephone": ""
+      }
+    }
+  }
+}

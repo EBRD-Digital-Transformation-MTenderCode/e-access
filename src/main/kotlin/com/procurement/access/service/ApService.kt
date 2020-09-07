@@ -1,0 +1,444 @@
+package com.procurement.access.service
+
+import com.procurement.access.application.service.ap.create.ApCreateData
+import com.procurement.access.application.service.ap.create.ApCreateResult
+import com.procurement.access.application.service.ap.create.CreateApContext
+import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.SubmissionMethod
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.model.entity.TenderProcessEntity
+import com.procurement.access.utils.toDate
+import com.procurement.access.utils.toJson
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import java.util.*
+
+@Service
+class ApService(
+    private val generationService: GenerationService,
+    private val tenderProcessDao: TenderProcessDao
+) {
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(ApService::class.java)
+    }
+
+    fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
+        checkValidationRules(request)
+        val apEntity: APEntity = applyBusinessRules(contextRequest, request)
+        val cpid = apEntity.ocid
+        val token = generationService.generateToken()
+        tenderProcessDao.save(
+            TenderProcessEntity(
+                cpId = cpid,
+                token = token,
+                stage = contextRequest.stage,
+                owner = contextRequest.owner,
+                createdDate = contextRequest.startDate.toDate(),
+                jsonData = toJson(apEntity)
+            )
+        )
+        return getResponse(apEntity, token)
+    }
+
+    /**
+     * Validation rules
+     */
+    private fun checkValidationRules(request: ApCreateData) {
+        //VR-3.1.16
+        if (request.tender.title.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.title' is empty or blank."
+            )
+
+        //VR-3.1.17
+        if (request.tender.description.isBlank())
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "The attribute 'tender.description' is empty or blank."
+            )
+
+        //VR-3.1.6 Tender Period: Start Date
+        checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
+    }
+
+    /**
+     * VR-3.1.6 Tender Period: Start Date
+     *
+     * eAccess проверяет что, в поле Tender.tenderPeriod.startDate зафиксировано первое календарное число
+     * каждого месяца:
+     *
+     * IF 1 месяц,  tenderPeriod.startDate == "YYYY-01-01Thh:mm:ssZ"
+     * IF 2 месяц,  tenderPeriod.startDate == "YYYY-02-01Thh:mm:ssZ"
+     * IF 3 месяц,  tenderPeriod.startDate == "YYYY-03-01Thh:mm:ssZ"
+     * IF 4 месяц,  tenderPeriod.startDate == "YYYY-04-01Thh:mm:ssZ"
+     * IF 5 месяц,  tenderPeriod.startDate == "YYYY-05-01Thh:mm:ssZ"
+     * IF 6 месяц,  tenderPeriod.startDate == "YYYY-06-01Thh:mm:ssZ"
+     * IF 7 месяц,  tenderPeriod.startDate == "YYYY-07-01Thh:mm:ssZ"
+     * IF 8 месяц,  tenderPeriod.startDate == "YYYY-08-01Thh:mm:ssZ"
+     * IF 9 месяц,  tenderPeriod.startDate == "YYYY-09-01Thh:mm:ssZ"
+     * IF 10 месяц, tenderPeriod.startDate == "YYYY-10-01Thh:mm:ssZ"
+     * IF 11 месяц, tenderPeriod.startDate == "YYYY-11-01Thh:mm:ssZ"
+     * IF 12 месяц, tenderPeriod.startDate == "YYYY-12-01Thh:mm:ssZ"
+     */
+    private fun checkTenderPeriod(tenderPeriod: ApCreateData.Tender.TenderPeriod) {
+        if (tenderPeriod.startDate.dayOfMonth != 1)
+            throw ErrorException(ErrorType.INVALID_START_DATE)
+    }
+
+    /**
+     * Business rules
+     */
+    private fun applyBusinessRules(contextRequest: CreateApContext, request: ApCreateData): APEntity {
+
+        val id = generationService.getCpId(country = contextRequest.country, mode = contextRequest.mode)
+
+        val documents: List<APEntity.Tender.Document>? = request.tender.documents
+            .map { document -> convertRequestDocument(document) }
+
+        return APEntity(
+            ocid = id,
+            tender = tender(
+                pmd = contextRequest.pmd,
+                documents = documents,
+                tenderRequest = request.tender
+            )
+        )
+    }
+
+    private fun tender(
+        pmd: ProcurementMethod,
+        documents: List<APEntity.Tender.Document>?,
+        tenderRequest: ApCreateData.Tender
+    ): APEntity.Tender {
+        return APEntity.Tender(
+            //BR-3.1.4
+            id = generationService.generatePermanentTenderId(),
+            /** Begin BR-3.1.2*/
+            status = TenderStatus.PLANNING,
+            statusDetails = TenderStatusDetails.AGGREGATION,
+            /** End BR-3.1.2*/
+
+            classification = tenderRequest.classification.let { classification ->
+                APEntity.Tender.Classification(
+                    scheme = classification.scheme,
+                    id = classification.id,
+                    description = classification.description
+                )
+            },
+            title = tenderRequest.title,
+            description = tenderRequest.description,
+            //BR-3.1.17
+            acceleratedProcedure = APEntity.Tender.AcceleratedProcedure(isAcceleratedProcedure = false),
+            //BR-3.1.7
+            designContest = APEntity.Tender.DesignContest(serviceContractAward = false),
+            //BR-3.1.8, BR-3.1.9, BR-3.1.10
+            electronicWorkflows = APEntity.Tender.ElectronicWorkflows(
+                useOrdering = false,
+                usePayment = false,
+                acceptInvoicing = false
+            ),
+            //BR-3.1.11
+            jointProcurement = APEntity.Tender.JointProcurement(isJointProcurement = false),
+            //BR-3.1.12
+            procedureOutsourcing = APEntity.Tender.ProcedureOutsourcing(procedureOutsourced = false),
+            //BR-3.1.13
+            framework = APEntity.Tender.Framework(isAFramework = true),
+            //BR-3.1.14
+            dynamicPurchasingSystem = APEntity.Tender.DynamicPurchasingSystem(
+                hasDynamicPurchasingSystem = hasDynamicPurchasingSystem(pmd = pmd)
+            ),
+            legalBasis = tenderRequest.legalBasis,
+            procurementMethod = pmd,
+            procurementMethodDetails = tenderRequest.procurementMethodDetails,
+            procurementMethodRationale = tenderRequest.procurementMethodRationale,
+            mainProcurementCategory = tenderRequest.mainProcurementCategory,
+            eligibilityCriteria = tenderRequest.eligibilityCriteria,
+            tenderPeriod = tenderRequest.tenderPeriod.let { period ->
+                APEntity.Tender.TenderPeriod(
+                    startDate = period.startDate
+                )
+            },
+            procuringEntity = tenderRequest.procuringEntity.let { procuringEntity ->
+                APEntity.Tender.ProcuringEntity(
+                    id = generationService.generateOrganizationId(
+                        identifierScheme = procuringEntity.identifier.scheme,
+                        identifierId = procuringEntity.identifier.id
+                    ),
+                    name = procuringEntity.name,
+                    identifier = procuringEntity.identifier.let { identifier ->
+                        APEntity.Tender.ProcuringEntity.Identifier(
+                            scheme = identifier.scheme,
+                            id = identifier.id,
+                            legalName = identifier.legalName,
+                            uri = identifier.uri
+                        )
+                    },
+                    additionalIdentifiers = procuringEntity.additionalIdentifiers.map { additionalIdentifier ->
+                        APEntity.Tender.ProcuringEntity.AdditionalIdentifier(
+                            scheme = additionalIdentifier.scheme,
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            uri = additionalIdentifier.uri
+                        )
+                    },
+                    address = procuringEntity.address.let { address ->
+                        APEntity.Tender.ProcuringEntity.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails.let { addressDetails ->
+                                APEntity.Tender.ProcuringEntity.Address.AddressDetails(
+                                    country = addressDetails.country.let { country ->
+                                        APEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                            scheme = country.scheme,
+                                            id = country.id,
+                                            description = country.description,
+                                            uri = country.uri
+                                        )
+                                    },
+                                    region = addressDetails.region.let { region ->
+                                        APEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                            scheme = region.scheme,
+                                            id = region.id,
+                                            description = region.description,
+                                            uri = region.uri
+                                        )
+                                    },
+                                    locality = addressDetails.locality.let { locality ->
+                                        APEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                            scheme = locality.scheme,
+                                            id = locality.id,
+                                            description = locality.description,
+                                            uri = locality.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                    contactPoint = procuringEntity.contactPoint.let { contactPoint ->
+                        APEntity.Tender.ProcuringEntity.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            telephone = contactPoint.telephone,
+                            faxNumber = contactPoint.faxNumber,
+                            url = contactPoint.url
+                        )
+                    }
+                )
+            },
+            //BR-3.1.16
+            requiresElectronicCatalogue = false,
+            //BR-3.1.18
+            submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
+            submissionMethodRationale = tenderRequest.submissionMethodRationale,
+            submissionMethodDetails = tenderRequest.submissionMethodDetails,
+            documents = documents
+        )
+    }
+
+    fun hasDynamicPurchasingSystem(pmd: ProcurementMethod): Boolean = when (pmd) {
+        ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+        ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+        ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+        ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+        ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+        ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+        ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+        ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+        ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+        ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+        ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+        ProcurementMethod.RT, ProcurementMethod.TEST_RT -> true
+
+        ProcurementMethod.OF, ProcurementMethod.TEST_OF -> false
+    }
+
+    private fun convertRequestDocument(documentFromRequest: ApCreateData.Tender.Document): APEntity.Tender.Document {
+        return APEntity.Tender.Document(
+            id = documentFromRequest.id,
+            documentType = DocumentType.creator(documentFromRequest.documentType.key),
+            title = documentFromRequest.title,
+            description = documentFromRequest.description
+        )
+    }
+
+    private fun getResponse(cn: APEntity, token: UUID): ApCreateResult {
+        return ApCreateResult(
+            ocid = cn.ocid,
+            token = token.toString(),
+            tender = cn.tender
+                .let { tender ->
+                    ApCreateResult.Tender(
+                        id = tender.id,
+                        status = tender.status,
+                        statusDetails = tender.statusDetails,
+                        title = tender.title,
+                        description = tender.description,
+                        classification = tender.classification
+                            .let { classification ->
+                                ApCreateResult.Tender.Classification(
+                                    scheme = classification.scheme,
+                                    id = classification.id,
+                                    description = classification.description
+                                )
+                            },
+                        tenderPeriod = tender.tenderPeriod
+                            .let { tenderPeriod ->
+                                ApCreateResult.Tender.TenderPeriod(
+                                    startDate = tenderPeriod.startDate
+                                )
+                            },
+                        acceleratedProcedure = tender.acceleratedProcedure
+                            .let { acceleratedProcedure ->
+                                ApCreateResult.Tender.AcceleratedProcedure(
+                                    isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
+                                )
+                            },
+                        designContest = tender.designContest
+                            .let { designContest ->
+                                ApCreateResult.Tender.DesignContest(
+                                    serviceContractAward = designContest.serviceContractAward
+                                )
+                            },
+                        electronicWorkflows = tender.electronicWorkflows
+                            .let { electronicWorkflows ->
+                                ApCreateResult.Tender.ElectronicWorkflows(
+                                    useOrdering = electronicWorkflows.useOrdering,
+                                    usePayment = electronicWorkflows.usePayment,
+                                    acceptInvoicing = electronicWorkflows.acceptInvoicing
+                                )
+                            },
+                        jointProcurement = tender.jointProcurement
+                            .let { jointProcurement ->
+                                ApCreateResult.Tender.JointProcurement(
+                                    isJointProcurement = jointProcurement.isJointProcurement
+                                )
+                            },
+                        procedureOutsourcing = tender.procedureOutsourcing
+                            .let { procedureOutsourcing ->
+                                ApCreateResult.Tender.ProcedureOutsourcing(
+                                    procedureOutsourced = procedureOutsourcing.procedureOutsourced
+                                )
+                            },
+                        framework = tender.framework
+                            .let { framework ->
+                                ApCreateResult.Tender.Framework(
+                                    isAFramework = framework.isAFramework
+                                )
+                            },
+                        dynamicPurchasingSystem = tender.dynamicPurchasingSystem
+                            .let { dynamicPurchasingSystem ->
+                                ApCreateResult.Tender.DynamicPurchasingSystem(
+                                    hasDynamicPurchasingSystem = dynamicPurchasingSystem.hasDynamicPurchasingSystem
+                                )
+                            },
+                        legalBasis = tender.legalBasis,
+                        procurementMethod = tender.procurementMethod,
+                        procurementMethodDetails = tender.procurementMethodDetails,
+                        procurementMethodRationale = tender.procurementMethodRationale,
+                        mainProcurementCategory = tender.mainProcurementCategory,
+                        eligibilityCriteria = tender.eligibilityCriteria,
+                        procuringEntity = tender.procuringEntity
+                            .let { procuringEntity ->
+                                ApCreateResult.Tender.ProcuringEntity(
+                                    id = procuringEntity.id,
+                                    name = procuringEntity.name,
+                                    identifier = procuringEntity.identifier
+                                        .let { identifier ->
+                                            ApCreateResult.Tender.ProcuringEntity.Identifier(
+                                                scheme = identifier.scheme,
+                                                id = identifier.id,
+                                                legalName = identifier.legalName,
+                                                uri = identifier.uri
+                                            )
+                                        },
+                                    additionalIdentifiers = procuringEntity.additionalIdentifiers
+                                        ?.map { additionalIdentifier ->
+                                            ApCreateResult.Tender.ProcuringEntity.AdditionalIdentifier(
+                                                scheme = additionalIdentifier.scheme,
+                                                id = additionalIdentifier.id,
+                                                legalName = additionalIdentifier.legalName,
+                                                uri = additionalIdentifier.uri
+                                            )
+                                        }
+                                        .orEmpty(),
+                                    address = procuringEntity.address
+                                        .let { address ->
+                                            ApCreateResult.Tender.ProcuringEntity.Address(
+                                                streetAddress = address.streetAddress,
+                                                postalCode = address.postalCode,
+                                                addressDetails = address.addressDetails
+                                                    .let { addressDetails ->
+                                                        ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails(
+                                                            country = addressDetails.country
+                                                                .let { country ->
+                                                                    ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                                        scheme = country.scheme,
+                                                                        id = country.id,
+                                                                        description = country.description,
+                                                                        uri = country.uri
+                                                                    )
+                                                                },
+                                                            region = addressDetails.region
+                                                                .let { region ->
+                                                                    ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                                        scheme = region.scheme,
+                                                                        id = region.id,
+                                                                        description = region.description,
+                                                                        uri = region.uri
+                                                                    )
+                                                                },
+                                                            locality = addressDetails.locality
+                                                                .let { locality ->
+                                                                    ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                                        scheme = locality.scheme,
+                                                                        id = locality.id,
+                                                                        description = locality.description,
+                                                                        uri = locality.uri
+                                                                    )
+                                                                }
+
+                                                        )
+                                                    }
+                                            )
+                                        },
+                                    contactPoint = procuringEntity.contactPoint
+                                        .let { contactPoint ->
+                                            ApCreateResult.Tender.ProcuringEntity.ContactPoint(
+                                                name = contactPoint.name,
+                                                email = contactPoint.email,
+                                                telephone = contactPoint.telephone,
+                                                faxNumber = contactPoint.faxNumber,
+                                                url = contactPoint.url
+                                            )
+                                        }
+                                )
+                            },
+                        requiresElectronicCatalogue = tender.requiresElectronicCatalogue,
+                        submissionMethod = tender.submissionMethod,
+                        submissionMethodRationale = tender.submissionMethodRationale,
+                        submissionMethodDetails = tender.submissionMethodDetails,
+                        documents = tender.documents
+                            ?.map { document ->
+                                ApCreateResult.Tender.Document(
+                                    documentType = document.documentType,
+                                    id = document.id,
+                                    title = document.title!!,
+                                    description = document.description
+                                )
+                            }
+                            .orEmpty()
+                    )
+                }
+        )
+    }
+}
