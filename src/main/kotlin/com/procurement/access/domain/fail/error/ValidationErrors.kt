@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
@@ -135,6 +136,11 @@ sealed class ValidationErrors(
     class TenderNotFoundOnCreateCriteriaForProcuringEntity(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
         numberError = "1.12.1",
         description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
+    )
+
+    class TenderNotFoundOnCheckExistenceFA(cpid: Cpid, stage: Stage) : ValidationErrors(
+        numberError = "10.1.21.1",
+        description = "Tender not found by cpid='$cpid' and stage='$stage'."
     )
 
     class DuplicatedAnswerOnValidateRequirementResponses(
