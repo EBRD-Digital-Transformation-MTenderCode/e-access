@@ -143,7 +143,7 @@ class CommandService(
         }
         val response = when (cm.command) {
             CommandType.CREATE_PIN -> pinService.createPin(cm)
-            CommandType.CREATE_PN -> {
+            CommandType.CREATE_PN  -> {
                 val context = CreatePnContext(
                     stage = cm.stage,
                     owner = cm.owner,
@@ -250,6 +250,11 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -285,6 +290,9 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CreateSelectiveCnOnPnContext(
@@ -305,6 +313,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -334,6 +344,9 @@ class CommandService(
             }
             CommandType.CREATE_REQUESTS_FOR_EV_PANELS -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -349,6 +362,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -427,6 +442,9 @@ class CommandService(
             CommandType.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
             CommandType.GET_ACTIVE_LOTS -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -441,6 +459,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -547,6 +567,9 @@ class CommandService(
 
             CommandType.GET_LOTS_AUCTION -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -561,6 +584,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -649,6 +674,8 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -676,6 +703,9 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CheckSelectiveCnOnPnContext(
@@ -707,6 +737,9 @@ class CommandService(
             }
             CommandType.CHECK_RESPONSES -> {
                 when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -722,6 +755,8 @@ class CommandService(
                         ResponseDto(data = "ok")
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -770,6 +805,9 @@ class CommandService(
             }
             CommandType.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
                 val response = when (cm.pmd) {
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV,
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -787,6 +825,8 @@ class CommandService(
                             ?: Unit
                     }
 
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,

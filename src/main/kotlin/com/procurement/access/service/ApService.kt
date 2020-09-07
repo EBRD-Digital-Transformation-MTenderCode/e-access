@@ -245,19 +245,22 @@ class ApService(
     }
 
     fun hasDynamicPurchasingSystem(pmd: ProcurementMethod): Boolean = when (pmd) {
-        ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-        ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-        ProcurementMethod.MV, ProcurementMethod.TEST_MV,
         ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+        ProcurementMethod.CF, ProcurementMethod.TEST_CF,
         ProcurementMethod.DA, ProcurementMethod.TEST_DA,
         ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+        ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
         ProcurementMethod.FA, ProcurementMethod.TEST_FA,
-        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
-        ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-        ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-        ProcurementMethod.OP, ProcurementMethod.TEST_OP,
         ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
-        ProcurementMethod.RT, ProcurementMethod.TEST_RT -> true
+        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+        ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+        ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+        ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+        ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+        ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+        ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+        ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+        ProcurementMethod.SV, ProcurementMethod.TEST_SV -> true
 
         ProcurementMethod.OF, ProcurementMethod.TEST_OF -> false
     }
