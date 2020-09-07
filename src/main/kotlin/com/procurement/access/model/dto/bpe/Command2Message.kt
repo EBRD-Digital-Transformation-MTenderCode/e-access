@@ -41,6 +41,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     SET_STATE_FOR_TENDER("setStateForTender"),
     GET_ORGANIZATION("getOrganization"),
     CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
+    CREATE_RELATION_TO_OTHER_PROCESS("createRelationToOtherProcess"),
     FIND_CRITERIA("findCriteria"),
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
     CHECK_TENDER_STATE("checkTenderState"),
