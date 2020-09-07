@@ -547,6 +547,10 @@ fun checkCastCoefficient(
     }
 }
 
+fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
+fun CriterionRequest.isCriteriaForLot(): Boolean = this.relatesTo == CriteriaRelatesToEnum.LOT
+fun CriterionRequest.isCriteriaForItem(): Boolean = this.relatesTo == CriteriaRelatesToEnum.ITEM
+
 fun getCastCoefficients(
     criteria: List<CriterionRequest>,
     conversions: List<ConversionRequest>,
@@ -565,7 +569,7 @@ fun getCastCoefficients(
     val filteredConversions = conversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
 
     val tenderConversions = criteria.asSequence()
-        .filter { it.relatesTo == null }
+        .filter { it.isCriteriaForTender() }
         .getRelatedConversions(filteredConversions)
         .toList()
 
@@ -573,8 +577,7 @@ fun getCastCoefficients(
     val lotAndItemConversions = lots.map { lotId ->
 
         val lotConversions = criteria.asSequence()
-            .filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
-            .filter { it.relatedItem == lotId }
+            .filter { it.isCriteriaForLot() && it.relatedItem == lotId }
             .getRelatedConversions(filteredConversions)
             .toList()
 
@@ -583,8 +586,7 @@ fun getCastCoefficients(
             .map { it.id }
 
         val itemConversions = criteria.asSequence()
-            .filter { it.relatesTo == CriteriaRelatesToEnum.ITEM }
-            .filter { it.relatedItem in relatedItems }
+            .filter { it.isCriteriaForItem() && it.relatedItem in relatedItems }
             .getRelatedConversions(filteredConversions)
             .toList()
 
@@ -598,14 +600,14 @@ fun getCastCoefficients(
             .map { calculateCastCoefficient(tenderConversions + it) }
 }
 
-fun calculateCastCoefficient(conversions: List<ConversionRequest>): BigDecimal {
-    return conversions
+fun calculateCastCoefficient(conversions: List<ConversionRequest>): BigDecimal =
+    conversions
         .map { conversion ->
             val minCoefficient = conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
             BigDecimal.ONE - minCoefficient
         }
         .fold(BigDecimal.ZERO, java.math.BigDecimal::add)
-}
+
 
 fun checkConversionRelatesToEnum(conversions: List<ConversionRequest>?) {
     fun ConversionRequest.validate() {
