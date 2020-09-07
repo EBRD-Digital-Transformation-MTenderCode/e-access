@@ -1,25 +1,6 @@
 package com.procurement.access.json
 
-import com.procurement.access.domain.model.enums.ProcurementMethod
-
 object JsonFilePathGenerator {
-
-    fun pmdSegment(pmd: ProcurementMethod): String = when (pmd) {
-        ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-        ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-        ProcurementMethod.MV, ProcurementMethod.TEST_MV -> "op"
-
-        ProcurementMethod.CD, ProcurementMethod.TEST_CD,
-        ProcurementMethod.DA, ProcurementMethod.TEST_DA,
-        ProcurementMethod.DC, ProcurementMethod.TEST_DC,
-        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
-        ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-        ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "lp"
-
-        ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
-        ProcurementMethod.RT, ProcurementMethod.TEST_RT,
-        ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw IllegalArgumentException()
-    }
 
     fun auctionSegment(hasAuctions: Boolean): String =
         if (hasAuctions) "with_auctions" else "without_auctions"
