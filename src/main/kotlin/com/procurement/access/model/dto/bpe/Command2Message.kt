@@ -29,23 +29,24 @@ import java.time.LocalDateTime
 import java.util.*
 
 enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
-    FIND_LOT_IDS("findLotIds"),
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
-    GET_LOT_STATE_BY_IDS("getLotStateByIds"),
-    RESPONDER_PROCESSING("responderProcessing"),
+    CHECK_EXISTENCE_FA("checkExistenceFA"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
-    VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse"),
-    VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
+    CHECK_TENDER_STATE("checkTenderState"),
+    CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
+    FIND_AUCTIONS("findAuctions"),
+    FIND_CRITERIA("findCriteria"),
+    FIND_LOT_IDS("findLotIds"),
+    GET_LOT_STATE_BY_IDS("getLotStateByIds"),
+    GET_ORGANIZATION("getOrganization"),
+    GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
     GET_TENDER_STATE("getTenderState"),
+    OUTSOURCING_PN("outsourcingPN"),
+    RESPONDER_PROCESSING("responderProcessing"),
     SET_STATE_FOR_LOTS("setStateForLots"),
     SET_STATE_FOR_TENDER("setStateForTender"),
-    GET_ORGANIZATION("getOrganization"),
-    CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
-    FIND_CRITERIA("findCriteria"),
-    GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
-    CHECK_TENDER_STATE("checkTenderState"),
-    OUTSOURCING_PN("outsourcingPN"),
-    FIND_AUCTIONS("findAuctions");
+    VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
+    VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse");
 
     override fun toString(): String = key
 
