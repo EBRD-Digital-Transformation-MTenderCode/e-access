@@ -186,4 +186,10 @@ sealed class ValidationErrors(
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
+
+    class TenderNotFoundOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.24.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
 }
