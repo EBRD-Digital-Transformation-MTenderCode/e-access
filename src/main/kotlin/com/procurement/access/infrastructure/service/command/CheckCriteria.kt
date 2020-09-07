@@ -88,7 +88,6 @@ fun checkCriteriaAndConversion(
 
     // FReq-1.1.1.15
     checkAwardCriteriaDetailsEnum(awardCriteriaDetails)
-
 }
 
 fun checkConversionWithoutCriteria(criteria: List<CriterionRequest>?, conversions: List<ConversionRequest>?) {
@@ -530,66 +529,82 @@ fun checkCastCoefficient(
 
     if (criteria == null || conversions == null) return
 
+    val castCoefficients = getCastCoefficients(criteria, conversions, items)
+
+    val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
+    val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
+    val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
+
+    when (mainProcurementCategory) {
+        MainProcurementCategory.GOODS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_GOODS })
+            castCoefficientException(MAX_LIMIT_FOR_GOODS)
+
+        MainProcurementCategory.WORKS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_WORKS })
+            castCoefficientException(MAX_LIMIT_FOR_WORKS)
+
+        MainProcurementCategory.SERVICES -> if (castCoefficients.any { it > MAX_LIMIT_FOR_SERVICES })
+            castCoefficientException(MAX_LIMIT_FOR_SERVICES)
+    }
+}
+
+fun getCastCoefficients(
+    criteria: List<CriterionRequest>,
+    conversions: List<ConversionRequest>,
+    items: List<ItemReferenceRequest>
+): List<BigDecimal> {
+
+    fun Sequence<CriterionRequest>.getRelatedConversions(conversions: List<ConversionRequest>): Sequence<ConversionRequest> =
+        this.flatMap { it.requirementGroups.asSequence() }
+            .flatMap { it.requirements.asSequence() }
+            .flatMap { requirement ->
+                conversions
+                    .asSequence()
+                    .filter { it.relatedItem == requirement.id }
+            }
+
     val filteredConversions = conversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
 
-    val tenderRequirements = criteria.asSequence()
+    val tenderConversions = criteria.asSequence()
         .filter { it.relatesTo == null }
-        .flatMap { it.requirementGroups.asSequence() }
-        .flatMap { it.requirements.asSequence() }
+        .getRelatedConversions(filteredConversions)
         .toList()
 
-    val tenderConversions = tenderRequirements.flatMap { requirement ->
-        filteredConversions.filter { it.relatedItem == requirement.id }
+    val lots = items.toSetBy { it.relatedLot }
+    val lotAndItemConversions = lots.map { lotId ->
+
+        val lotConversions = criteria.asSequence()
+            .filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
+            .filter { it.relatedItem == lotId }
+            .getRelatedConversions(filteredConversions)
+            .toList()
+
+        val relatedItems = items.asSequence()
+            .filter { it.relatedLot == lotId }
+            .map { it.id }
+
+        val itemConversions = criteria.asSequence()
+            .filter { it.relatesTo == CriteriaRelatesToEnum.ITEM }
+            .filter { it.relatedItem in relatedItems }
+            .getRelatedConversions(filteredConversions)
+            .toList()
+
+        lotConversions + itemConversions
     }
 
-    fun CriterionRequest.getRelatedItems(items: List<ItemReferenceRequest>) =
-        items.filter { it.relatedLot == this.relatedItem }
+    return if (lotAndItemConversions.isEmpty())
+        listOf(calculateCastCoefficient(tenderConversions))
+    else
+        lotAndItemConversions
+            .map { calculateCastCoefficient(tenderConversions + it) }
+}
 
-    val criteriaRelatedToLot = criteria.filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
-    val criteriaRelatedToItem = criteria.filter { it.relatesTo == CriteriaRelatesToEnum.ITEM }
-
-    criteriaRelatedToLot.forEach { lotCriteria ->
-        val lotRequirement = lotCriteria.requirementGroups
-            .flatMap { it.requirements }
-        val lotConversions = lotRequirement.flatMap { requirement ->
-            filteredConversions.filter { it.relatedItem == requirement.id }
+fun calculateCastCoefficient(conversions: List<ConversionRequest>): BigDecimal {
+    return conversions
+        .map { conversion ->
+            val minCoefficient = conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
+            BigDecimal.ONE - minCoefficient
         }
-
-        val relatedItems = lotCriteria.getRelatedItems(items)
-
-        val itemRequirement = relatedItems.flatMap { item ->
-            criteriaRelatedToItem.asSequence()
-                .filter { it.relatedItem == item.id }
-                .flatMap { it.requirementGroups.asSequence() }
-                .flatMap { it.requirements.asSequence() }
-                .toList()
-        }
-        val itemConversions = itemRequirement.flatMap { requirement ->
-            filteredConversions.filter { it.relatedItem == requirement.id }
-        }
-
-        val castCoefficient = (tenderConversions + lotConversions + itemConversions)
-            .map { conversion ->
-                val minCoefficient = conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
-                BigDecimal.ONE - minCoefficient
-            }
-            .fold(BigDecimal.ZERO, java.math.BigDecimal::add)
-
-        val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
-        val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
-        val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
-
-        when (mainProcurementCategory) {
-            MainProcurementCategory.GOODS -> if (castCoefficient > MAX_LIMIT_FOR_GOODS)
-                castCoefficientException(MAX_LIMIT_FOR_GOODS)
-
-            MainProcurementCategory.WORKS -> if (castCoefficient > MAX_LIMIT_FOR_WORKS)
-                castCoefficientException(MAX_LIMIT_FOR_WORKS)
-
-            MainProcurementCategory.SERVICES -> if (castCoefficient > MAX_LIMIT_FOR_SERVICES)
-                castCoefficientException(MAX_LIMIT_FOR_SERVICES)
-        }
-    }
+        .fold(BigDecimal.ZERO, java.math.BigDecimal::add)
 }
 
 fun checkConversionRelatesToEnum(conversions: List<ConversionRequest>?) {
