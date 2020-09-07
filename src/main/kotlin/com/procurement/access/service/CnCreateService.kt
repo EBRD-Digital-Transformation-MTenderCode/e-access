@@ -133,7 +133,8 @@ class CnCreateService(private val generationService: GenerationService,
                     documents = getDocuments(tenderDto.documents),
                     procurementMethodModalities = tenderDto.procurementMethodModalities,
                     electronicAuctions = tenderDto.electronicAuctions
-                )
+                ),
+                relatedProcesses = null
         )
         val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
         tenderProcessDao.save(entity)

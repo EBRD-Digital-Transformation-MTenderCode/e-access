@@ -8,7 +8,7 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 
-class CriterionRequest(
+data class CriterionRequest(
     @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
     @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
 
