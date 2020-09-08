@@ -10,6 +10,7 @@ enum class RelatedProcessType(@JsonValue override val key: String) : EnumElement
     PARENT("parent"),
     PLANNING("planning"),
     X_CONTRACTING("x_contracting"),
+    X_DEMAND("x_demand"),
     X_EVALUATION("x_evaluation"),
     X_EXECUTION("x_execution"),
     X_EXPENDITURE_ITEM("x_expenditureItem"),
@@ -17,7 +18,8 @@ enum class RelatedProcessType(@JsonValue override val key: String) : EnumElement
     X_NEGOTIATION("x_negotiation"),
     X_PLANNED("x_planned"),
     X_PRESELECTION("x_preselection"),
-    X_PRE_QUALIFICATION("x_prequalification");
+    X_PRE_QUALIFICATION("x_prequalification"),
+    X_SCOPE("x_scope");
 
     override fun toString(): String = key
 

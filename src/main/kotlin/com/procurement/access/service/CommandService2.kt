@@ -7,6 +7,7 @@ import com.procurement.access.infrastructure.handler.check.fa.CheckExistenceFAHa
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.check.tenderstate.CheckTenderStateHandler
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityHandler
+import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessHandler
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodHandler
@@ -48,6 +49,7 @@ class CommandService2(
     private val checkTenderStateHandler: CheckTenderStateHandler,
     private val findAuctionsHandler: FindAuctionsHandler,
     private val outsourcingPNHandler: OutsourcingPNHandler,
+    private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
     private val logger: Logger
 ) {
 
@@ -76,6 +78,7 @@ class CommandService2(
             Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
             Command2Type.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
             Command2Type.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(node = request)
+            Command2Type.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(node = request)
             Command2Type.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
             Command2Type.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
             Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
