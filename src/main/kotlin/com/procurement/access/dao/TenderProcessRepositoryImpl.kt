@@ -12,6 +12,7 @@ import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.domain.util.bind
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
 
@@ -65,7 +66,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
     private val updateCQL = session.prepare(UPDATE_CQL)
 
-    override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database>  {
+    override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident>  {
         val updateStatement = updateCQL.bind()
             .apply {
                 setString(COLUMN_CPID, entity.cpId)
@@ -76,6 +77,18 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
 
         return tryExecute(updateStatement)
             .map { it.wasApplied() }
+            .bind { wasApplied ->
+                if (!wasApplied) {
+                    val mdc = mapOf(
+                        "description" to "Cannot update record",
+                        "cpid" to entity.cpId,
+                        "stage" to entity.stage,
+                        "data" to entity.jsonData
+                    )
+                    failure(Fail.Incident.DatabaseIncident(mdc = mdc))
+                } else
+                    success(wasApplied)
+            }
     }
 
     override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> {

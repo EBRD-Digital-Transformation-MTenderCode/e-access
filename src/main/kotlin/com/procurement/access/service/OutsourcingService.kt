@@ -22,7 +22,6 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessResult
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
-import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
@@ -72,16 +71,8 @@ class OutsourcingServiceImpl(
 
         val updatedEntity = entity.copy(jsonData = updatedJsonData)
 
-        val wasApplied = tenderProcessRepository.update(updatedEntity)
+        tenderProcessRepository.update(updatedEntity)
             .orForwardFail { fail -> return fail }
-
-        if (!wasApplied) {
-            logger.error(
-                "Cannot update record " + "(cpid=${updatedEntity.cpId}, stage=${updatedEntity.stage}). " +
-                    "Data for update='${updatedEntity.jsonData}'"
-            )
-            return failure(Fail.Incident.DatabaseIncident())
-        }
 
         return success(response)
     }
@@ -122,25 +113,6 @@ class OutsourcingServiceImpl(
 
     }
 
-    fun updateRelatedProcess(
-        tenderProcessRepository: TenderProcessRepository,
-        updatedEntity: TenderProcessEntity
-    ): Result<Boolean, Fail.Incident> {
-        val wasApplied = tenderProcessRepository.update(updatedEntity)
-            .orForwardFail { fail -> return fail }
-
-        return if (!wasApplied) {
-            logger.error(
-                String.format(
-                    "Cannot update record (cpid=%s, stage=%s). Data for update='%s'",
-                    updatedEntity.cpId, updatedEntity.stage, updatedEntity.jsonData
-                )
-            )
-            failure(Fail.Incident.DatabaseIncident())
-        } else
-            success(wasApplied)
-    }
-
     override fun createRelationToOtherProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult, Fail> {
 
         val definedRelationship = defineRelationProcessType(params.operationType)
@@ -175,7 +147,7 @@ class OutsourcingServiceImpl(
                     .map { ap ->  ap.copy(relatedProcesses = relatedProcesses) }
                     .bind { updatedAp -> trySerialization(updatedAp) }
                     .map { updatedApJson -> entity.copy(jsonData = updatedApJson) }
-                    .bind { updateRelatedProcess(tenderProcessRepository, it) }
+                    .bind { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
                     .orForwardFail { fail -> return fail }
 
             }

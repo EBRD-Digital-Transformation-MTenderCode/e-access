@@ -9,7 +9,7 @@ import com.procurement.access.model.entity.TenderProcessEntity
 
 interface TenderProcessRepository {
 
-    fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database>
+    fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident>
     fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database>
     fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database>
 }
