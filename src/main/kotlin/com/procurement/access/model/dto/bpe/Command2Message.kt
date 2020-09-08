@@ -31,6 +31,7 @@ import java.util.*
 enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     CHECK_EXISTENCE_FA("checkExistenceFA"),
+    CHECK_RELATION("checkRelation"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
     CHECK_TENDER_STATE("checkTenderState"),
     CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
