@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
@@ -238,7 +237,7 @@ data class UpdateOpenCnRequest(
         )
 
         data class Document(
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
