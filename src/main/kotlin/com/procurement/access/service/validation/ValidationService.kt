@@ -1,6 +1,7 @@
 package com.procurement.access.service.validation
 
 import com.procurement.access.application.model.params.CheckExistenceFAParams
+import com.procurement.access.application.model.params.CheckRelationParams
 import com.procurement.access.application.model.params.CheckTenderStateParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
@@ -8,12 +9,18 @@ import com.procurement.access.application.service.tender.strategy.check.tenderst
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.ValidationResult
+import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
@@ -26,6 +33,7 @@ import com.procurement.access.service.validation.strategy.CheckLotStrategy
 import com.procurement.access.service.validation.strategy.CheckOwnerAndTokenStrategy
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import com.procurement.access.utils.toObject
+import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 @Service
@@ -108,6 +116,105 @@ class ValidationService(
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceFA(cpid, stage)
             )
+
+        return ValidationResult.ok()
+    }
+
+    fun checkRelation(params: CheckRelationParams): ValidationResult<Fail> {
+        val cpid = params.cpid
+        val stage = params.ocid.stage
+
+        val entity = tenderProcessRepository
+            .getByCpIdAndStage(cpid, stage)
+            .doReturn { fail -> return ValidationResult.error(fail) }
+            ?: return ValidationResult.error(
+                ValidationErrors.TenderNotFoundOnCheckRelation(cpid, params.ocid)
+            )
+
+        return when(params.operationType) {
+            OperationType.RELATION_AP -> {
+                val relatedProcesses = entity.jsonData.tryToObject(APEntity::class.java)
+                    .orForwardFail { fail -> return fail.error.asValidationFailure() }
+                    .relatedProcesses
+
+                if (params.existenceRelation)
+                    checkRelationExistsOnAp(relatedProcesses, params)
+                else
+                    checkRelationNotExistsOnAp(relatedProcesses, params)
+            }
+
+            OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.CREATE_CN,
+            OperationType.CREATE_CN_ON_PIN,
+            OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+            OperationType.CREATE_PIN,
+            OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_PN,
+            OperationType.CREATE_SUBMISSION,
+            OperationType.OUTSOURCING_PN,
+            OperationType.QUALIFICATION,
+            OperationType.QUALIFICATION_CONSIDERATION,
+            OperationType.QUALIFICATION_PROTOCOL,
+            OperationType.START_SECONDSTAGE,
+            OperationType.SUBMISSION_PERIOD_END,
+            OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_CN,
+            OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> ValidationResult.ok()
+        }
+    }
+
+
+    val checkRelationExistsOnApPredicate: (RelatedProcess, Cpid) -> Boolean = { relatedProcess, cpid ->
+        relatedProcess.relationship.any { it == RelatedProcessType.FRAMEWORK }
+            && relatedProcess.identifier == cpid.toString()
+    }
+
+    fun checkRelationExistsOnAp(relatedProcesses: List<RelatedProcess>?, params: CheckRelationParams): ValidationResult<ValidationErrors> {
+
+        if (relatedProcesses == null || relatedProcesses.isEmpty())
+            return ValidationResult.error(
+                ValidationErrors.RelatedProcessNotExistsOnCheckRelation(params.cpid, params.ocid)
+            )
+        else {
+            val isMissing = relatedProcesses.none { checkRelationExistsOnApPredicate(it, params.relatedCpid) }
+            if (isMissing)
+                return ValidationResult.error(
+                    ValidationErrors.MissingAttributesOnCheckRelation(
+                        relatedCpid = params.relatedCpid, cpid = params.cpid, ocid = params.ocid
+                    )
+                )
+        }
+
+        return ValidationResult.ok()
+    }
+
+    val checkRelationNotExistsOnApPredicate: (RelatedProcess, Cpid) -> Boolean = { relatedProcess, cpid ->
+        relatedProcess.relationship.any { it == RelatedProcessType.X_SCOPE }
+            && relatedProcess.identifier == cpid.toString()
+    }
+
+    fun checkRelationNotExistsOnAp(
+        relatedProcesses: List<RelatedProcess>?,
+        params: CheckRelationParams
+    ): ValidationResult<ValidationErrors> {
+
+        if (relatedProcesses == null || relatedProcesses.isEmpty())
+            return ValidationResult.ok()
+        else {
+            relatedProcesses.forEach { relatedProcess ->
+                if (checkRelationNotExistsOnApPredicate(relatedProcess, params.relatedCpid))
+                    return ValidationResult.error(
+                        ValidationErrors.UnexpectedAttributesValueOnCheckRelation(
+                            id = relatedProcess.id,
+                            relatedCpid = params.relatedCpid,
+                            cpid = params.cpid,
+                            ocid = params.ocid
+                        )
+                    )
+            }
+        }
 
         return ValidationResult.ok()
     }
