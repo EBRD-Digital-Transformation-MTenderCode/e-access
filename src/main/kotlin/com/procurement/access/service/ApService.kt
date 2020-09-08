@@ -109,7 +109,8 @@ class ApService(
                 pmd = contextRequest.pmd,
                 documents = documents,
                 tenderRequest = request.tender
-            )
+            ),
+            relatedProcesses = null
         )
     }
 

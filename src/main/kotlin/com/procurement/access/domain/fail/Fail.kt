@@ -61,13 +61,13 @@ sealed class Fail {
             }
         }
 
-        class DatabaseIncident(val exception: Exception? = null) : Incident(
+        class DatabaseIncident(val exception: Exception? = null, val mdc: Map<String, String> = emptyMap()) : Incident(
             level = Level.ERROR,
             number = "03",
             description = "Internal Server Error."
         ) {
             override fun logging(logger: Logger) {
-                logger.error(message = message, exception = exception)
+                logger.error(message = message, mdc = mdc, exception = exception)
             }
         }
 

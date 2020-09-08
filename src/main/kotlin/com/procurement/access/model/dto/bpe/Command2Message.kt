@@ -35,6 +35,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     CHECK_TENDER_STATE("checkTenderState"),
     CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
     FIND_AUCTIONS("findAuctions"),
+    CREATE_RELATION_TO_OTHER_PROCESS("createRelationToOtherProcess"),
     FIND_CRITERIA("findCriteria"),
     FIND_LOT_IDS("findLotIds"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
