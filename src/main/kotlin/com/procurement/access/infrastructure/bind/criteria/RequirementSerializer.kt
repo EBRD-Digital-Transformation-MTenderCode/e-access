@@ -17,7 +17,9 @@ import java.io.IOException
 import java.math.BigDecimal
 
 class RequirementSerializer : JsonSerializer<List<Requirement>>() {
+
     companion object {
+
         fun serialize(requirements: List<Requirement>): ArrayNode {
             fun BigDecimal.jsonFormat() = BigDecimal("%.3f".format(this))
 
@@ -47,7 +49,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                         requirementNode.put("expectedValue", requirement.value.value)
                     }
                     is ExpectedValue.AsNumber -> {
-                        requirementNode.put("expectedValue", requirement.value.value.jsonFormat())
+                        requirementNode.put("expectedValue", requirement.value.toString())
                     }
                     is ExpectedValue.AsInteger -> {
                         requirementNode.put("expectedValue", requirement.value.value)
@@ -61,13 +63,13 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                         requirementNode.put("maxValue", requirement.value.maxValue)
                     }
                     is MinValue.AsNumber -> {
-                        requirementNode.put("minValue", requirement.value.value.jsonFormat())
+                        requirementNode.put("minValue", requirement.value.toString())
                     }
                     is MinValue.AsInteger -> {
                         requirementNode.put("minValue", requirement.value.value)
                     }
                     is MaxValue.AsNumber -> {
-                        requirementNode.put("maxValue", requirement.value.value.jsonFormat())
+                        requirementNode.put("maxValue", requirement.value.toString())
                     }
                     is MaxValue.AsInteger -> {
                         requirementNode.put("maxValue", requirement.value.value)
@@ -87,6 +89,5 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
         requirements: List<Requirement>,
         jsonGenerator: JsonGenerator,
         provider: SerializerProvider
-    ) =
-        jsonGenerator.writeTree(serialize(requirements))
+    ) = jsonGenerator.writeTree(serialize(requirements))
 }
