@@ -6,13 +6,7 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.SubmissionMethod
-import com.procurement.access.domain.model.enums.TenderStatus
-import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.*
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -82,12 +76,18 @@ class PnService(
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
+        val documents = request.tender.documents
+
+        //VR-3.1.1
+        val isUniqueDocuments = documents.uniqueBy { it.id }
+        if (!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
+
         val lots: List<PnCreateData.Tender.Lot> = request.tender.lots
         val items = request.tender.items
-        if(items.isEmpty()) {
-            if(lots.isNotEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
+        if (items.isEmpty()) {
+            if (lots.isNotEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
         } else {
-            if(lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
+            if (lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
 
             //VR-3.1.8
             checkQuantityInItems(items)
@@ -115,12 +115,6 @@ class PnService(
 
             //VR-3.1.9 "Contract Period" (Tender)
             checkContractPeriodInTender(lots, request.planning.budget.budgetBreakdowns)
-
-            val documents = request.tender.documents
-
-            //VR-3.1.1
-            val isUniqueDocuments = documents.uniqueBy { it.id }
-            if(!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
 
             //VR-3.1.10 "Related Lots" (documents)
             checkRelatedLotsInDocuments(lotsIds, documents)
