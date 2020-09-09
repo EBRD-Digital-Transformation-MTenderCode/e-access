@@ -8,23 +8,16 @@ import com.procurement.access.domain.model.coefficient.CoefficientValue
 import java.io.IOException
 
 class CoefficientValueSerializer : JsonSerializer<CoefficientValue>() {
-    companion object {
-        fun serialize(coefficientValue: CoefficientValue.AsString): String = coefficientValue.value
-        fun serialize(coefficientValue: CoefficientValue.AsBoolean): Boolean = coefficientValue.value
-        fun serialize(coefficientValue: CoefficientValue.AsNumber): String = "%.3f".format(coefficientValue.value)
-        fun serialize(coefficientValue: CoefficientValue.AsInteger): Long = coefficientValue.value
-    }
 
     @Throws(IOException::class, JsonProcessingException::class)
     override fun serialize(
         coefficientValue: CoefficientValue,
         jsonGenerator: JsonGenerator,
         provider: SerializerProvider
-    ) =
-        when (coefficientValue) {
-            is CoefficientValue.AsString -> jsonGenerator.writeString(serialize(coefficientValue))
-            is CoefficientValue.AsNumber -> jsonGenerator.writeNumber(serialize(coefficientValue))
-            is CoefficientValue.AsBoolean -> jsonGenerator.writeBoolean(serialize(coefficientValue))
-            is CoefficientValue.AsInteger -> jsonGenerator.writeNumber(serialize(coefficientValue))
-        }
+    ) = when (coefficientValue) {
+        is CoefficientValue.AsString -> jsonGenerator.writeString(coefficientValue.value)
+        is CoefficientValue.AsNumber -> jsonGenerator.writeNumber(coefficientValue.toString())
+        is CoefficientValue.AsBoolean -> jsonGenerator.writeBoolean(coefficientValue.value)
+        is CoefficientValue.AsInteger -> jsonGenerator.writeNumber(coefficientValue.value)
+    }
 }
