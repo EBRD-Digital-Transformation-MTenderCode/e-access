@@ -358,7 +358,7 @@ class PnService(
     private fun checkItemIdFromRequest(items: List<PnCreateData.Tender.Item>) {
         val idsAreUniques = items.uniqueBy { it.id }
         if (idsAreUniques.not())
-            throw throw ErrorException(ErrorType.ITEM_ID_IS_DUPLICATED)
+            throw throw ErrorException(ErrorType.ITEM_ID_DUPLICATED)
     }
 
     /**
