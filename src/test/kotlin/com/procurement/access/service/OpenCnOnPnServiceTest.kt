@@ -22,32 +22,12 @@ import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
-import com.procurement.access.json.JsonFilePathGenerator
-import com.procurement.access.json.JsonValidator
-import com.procurement.access.json.deepCopy
-import com.procurement.access.json.getArray
-import com.procurement.access.json.getObject
-import com.procurement.access.json.getString
-import com.procurement.access.json.loadJson
-import com.procurement.access.json.putAttribute
-import com.procurement.access.json.putObject
-import com.procurement.access.json.setAttribute
-import com.procurement.access.json.testingBindingAndMapping
-import com.procurement.access.json.toJson
-import com.procurement.access.json.toNode
-import com.procurement.access.json.toObject
+import com.procurement.access.json.*
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.model.dto.databinding.toLocalDateTime
 import com.procurement.access.utils.toObject
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertDoesNotThrow
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.math.BigDecimal
@@ -802,7 +782,7 @@ class OpenCnOnPnServiceTest {
                     service.check(context = context, data = requestNode.toObject())
                 }
 
-                assertEquals(ErrorType.ITEM_ID_IS_DUPLICATED, exception.error)
+                assertEquals(ErrorType.ITEM_ID_DUPLICATED, exception.error)
             }
 
             @Nested

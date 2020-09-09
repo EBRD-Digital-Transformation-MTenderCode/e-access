@@ -4,12 +4,7 @@ import com.procurement.access.application.service.cn.update.UpdateOpenCnContext
 import com.procurement.access.application.service.cn.update.UpdateOpenCnData
 import com.procurement.access.application.service.cn.update.UpdatedOpenCn
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
-import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.*
 import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
@@ -20,11 +15,7 @@ import com.procurement.access.domain.model.update
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.lib.mapOrEmpty
-import com.procurement.access.lib.orThrow
-import com.procurement.access.lib.takeIfNotNullOrDefault
-import com.procurement.access.lib.toSetBy
-import com.procurement.access.lib.uniqueBy
+import com.procurement.access.lib.*
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -424,7 +415,7 @@ class CNServiceImpl(
     private fun UpdateOpenCnData.checkLotsIds(): UpdateOpenCnData {
         this.tender.lots.isNotUniqueIds {
             ErrorException(
-                error = ErrorType.INVALID_LOT_ID,
+                error = ErrorType.LOT_ID_DUPLICATED,
                 message = "The list lots of tender contain duplicates."
             )
         }
@@ -505,8 +496,8 @@ class CNServiceImpl(
     private fun UpdateOpenCnData.checkUniqueIdsItems(): UpdateOpenCnData {
         this.tender.items.isNotUniqueIds {
             throw ErrorException(
-                error = ErrorType.INVALID_LOT_ID,
-                message = "The list lots of tender contain duplicates."
+                error = ErrorType.ITEM_ID_DUPLICATED,
+                message = "The list items of tender contain duplicates."
             )
         }
         return this
