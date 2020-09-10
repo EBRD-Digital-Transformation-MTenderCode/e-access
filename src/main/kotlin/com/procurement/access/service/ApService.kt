@@ -160,7 +160,6 @@ class ApService(
             procurementMethod = pmd,
             procurementMethodDetails = tenderRequest.procurementMethodDetails,
             procurementMethodRationale = tenderRequest.procurementMethodRationale,
-            mainProcurementCategory = tenderRequest.mainProcurementCategory,
             eligibilityCriteria = tenderRequest.eligibilityCriteria,
             tenderPeriod = tenderRequest.tenderPeriod.let { period ->
                 APEntity.Tender.TenderPeriod(
@@ -349,7 +348,6 @@ class ApService(
                         procurementMethod = tender.procurementMethod,
                         procurementMethodDetails = tender.procurementMethodDetails,
                         procurementMethodRationale = tender.procurementMethodRationale,
-                        mainProcurementCategory = tender.mainProcurementCategory,
                         eligibilityCriteria = tender.eligibilityCriteria,
                         procuringEntity = tender.procuringEntity
                             .let { procuringEntity ->
