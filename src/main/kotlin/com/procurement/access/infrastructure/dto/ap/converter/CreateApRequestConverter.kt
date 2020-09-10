@@ -335,7 +335,6 @@ fun ApCreateRequest.convert() = ApCreateData(
                         )
                     },
                 legalBasis = tender.legalBasis,
-                mainProcurementCategory = tender.mainProcurementCategory,
                 procurementMethodDetails = tender.procurementMethodDetails
                     .takeIfNotEmpty {
                         ErrorException(
