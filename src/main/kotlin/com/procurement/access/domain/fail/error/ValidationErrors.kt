@@ -170,11 +170,11 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderStatesIsInvalidOnCheckTenderState(cpid: String, stage: String) : ValidationErrors(
+    class TenderStatesIsInvalidOnCheckTenderState(cpid: Cpid, stage: Stage) : ValidationErrors(
         numberError = "1.17.2",
         prefix = "VR.COM-",
         description = "Tender with cpid='$cpid' and stage='${stage}' has invalid states.",
-        entityId = cpid
+        entityId = cpid.toString()
     )
 
     class TenderNotFoundOnFindAuctions(cpid: Cpid, ocid: Ocid) : ValidationErrors(

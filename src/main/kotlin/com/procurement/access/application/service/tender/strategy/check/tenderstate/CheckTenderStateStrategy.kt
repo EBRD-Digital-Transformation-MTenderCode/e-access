@@ -75,7 +75,7 @@ class CheckTenderStateStrategy(
 
         allowedStates
             .find { it.status == tenderState.status && it.statusDetails == tenderState.statusDetails }
-            ?: return ValidationErrors.TenderStatesIsInvalidOnCheckTenderState(cpid = tenderEntity.cpId, stage = tenderEntity.stage)
+            ?: return ValidationErrors.TenderStatesIsInvalidOnCheckTenderState(cpid = params.cpid, stage = params.ocid.stage)
                 .asValidationFailure()
 
         return ValidationResult.ok()
