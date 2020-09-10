@@ -77,7 +77,6 @@ fun ApCreateResult.convert(): ApCreateResponse =
                     procurementMethod = tender.procurementMethod,
                     procurementMethodDetails = tender.procurementMethodDetails,
                     procurementMethodRationale = tender.procurementMethodRationale,
-                    mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     procuringEntity = tender.procuringEntity
                         .let { procuringEntity ->

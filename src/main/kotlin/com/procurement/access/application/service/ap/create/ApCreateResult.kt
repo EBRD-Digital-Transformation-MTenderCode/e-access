@@ -3,7 +3,6 @@ package com.procurement.access.application.service.ap.create
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
-import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
@@ -23,8 +22,6 @@ data class ApCreateResult(
         val title: String,
         val description: String,
         val classification: Classification,
-        val mainProcurementCategory: MainProcurementCategory,
-
         val acceleratedProcedure: AcceleratedProcedure,
         val designContest: DesignContest,
         val electronicWorkflows: ElectronicWorkflows,
