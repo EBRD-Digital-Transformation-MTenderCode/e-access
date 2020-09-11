@@ -7,7 +7,9 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.config.properties.UriProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.fail.error.DataErrors.Validation.DataMismatchToPattern
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
@@ -136,10 +138,16 @@ class OutsourcingServiceImpl(
 
         when(params.operationType) {
             OperationType.RELATION_AP -> { // FR.COM-1.22.6
-                val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+                val ocid = Ocid.tryCreate(params.ocid)
+                    .doReturn { fail ->
+                        return failure(
+                            DataMismatchToPattern(name = "ocid", actualValue = params.ocid, pattern = Ocid.pattern)
+                        )
+                    }
+                val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
                     .orForwardFail { fail -> return fail }
                     ?: return failure(
-                        ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, params.ocid)
+                        ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
                     )
 
                 entity.jsonData
