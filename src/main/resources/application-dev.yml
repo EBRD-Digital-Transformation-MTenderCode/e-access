@@ -16,4 +16,4 @@ ocds:
     test: test-t1s2t3
 
 uri:
-  tender: http://dev.public.eprocurement.systems/tender/
+  tender: http://dev.public.eprocurement.systems/tenders
