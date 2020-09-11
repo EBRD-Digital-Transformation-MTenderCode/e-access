@@ -18,26 +18,8 @@ import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
 import com.procurement.access.infrastructure.dto.pn.converter.convert
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
-import com.procurement.access.json.JsonFilePathGenerator
-import com.procurement.access.json.JsonValidator
-import com.procurement.access.json.deepCopy
-import com.procurement.access.json.getArray
-import com.procurement.access.json.getObject
-import com.procurement.access.json.getString
-import com.procurement.access.json.loadJson
-import com.procurement.access.json.putAttribute
-import com.procurement.access.json.putObject
-import com.procurement.access.json.setAttribute
-import com.procurement.access.json.testingBindingAndMapping
-import com.procurement.access.json.toJson
-import com.procurement.access.json.toNode
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
-import com.procurement.access.model.dto.bpe.country
-import com.procurement.access.model.dto.bpe.owner
-import com.procurement.access.model.dto.bpe.pmd
-import com.procurement.access.model.dto.bpe.stage
-import com.procurement.access.model.dto.bpe.startDate
+import com.procurement.access.json.*
+import com.procurement.access.model.dto.bpe.*
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -442,7 +424,7 @@ class PnServiceTest {
                     service.createPn(payload.context, payload.data)
                 }
 
-                assertEquals(ErrorType.ITEM_ID_IS_DUPLICATED, exception.error)
+                assertEquals(ErrorType.ITEM_ID_DUPLICATED, exception.error)
             }
         }
     }

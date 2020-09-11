@@ -8,8 +8,11 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.owner.Owner
+import com.procurement.access.domain.model.process.RelatedProcessId
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.token.Token
@@ -137,6 +140,11 @@ sealed class ValidationErrors(
         description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
     )
 
+    class TenderNotFoundOnCheckExistenceFA(cpid: Cpid, stage: Stage) : ValidationErrors(
+        numberError = "10.1.21.1",
+        description = "Tender not found by cpid='$cpid' and stage='$stage'."
+    )
+
     class DuplicatedAnswerOnValidateRequirementResponses(
         val candidateId: String,
         val requirementId: RequirementId,
@@ -162,11 +170,11 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderStatesIsInvalidOnCheckTenderState(tenderId: String) : ValidationErrors(
+    class TenderStatesIsInvalidOnCheckTenderState(cpid: Cpid, stage: Stage) : ValidationErrors(
         numberError = "1.17.2",
         prefix = "VR.COM-",
-        description = "Tender with id='$tenderId' has invalid states.",
-        entityId = tenderId
+        description = "Tender with cpid='$cpid' and stage='${stage}' has invalid states.",
+        entityId = cpid.toString()
     )
 
     class TenderNotFoundOnFindAuctions(cpid: Cpid, ocid: Ocid) : ValidationErrors(
@@ -174,4 +182,45 @@ sealed class ValidationErrors(
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
+
+    class TenderNotFoundOnOutsourcingPN(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.21.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class TenderNotFoundOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.24.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class TenderNotFoundOnCreateRelationToOtherProcess(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.22.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class RelatedProcessNotExistsOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.24.2",
+        prefix = "VR.COM-",
+        description = "Cannot find relatedProcesses for tender with cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class MissingAttributesOnCheckRelation(relatedCpid: Cpid, cpid: Cpid, ocid: Ocid) :
+        ValidationErrors(
+            numberError = "1.24.3",
+            prefix = "VR.COM-",
+            description = "Missing object in 'relateProcesses' array with attribites 'relationship=${RelatedProcessType.FRAMEWORK}' and 'identifier=${relatedCpid}'. " +
+                "Tender with cpid='$cpid' and ocid='$ocid'."
+        )
+
+    class UnexpectedAttributesValueOnCheckRelation(id: RelatedProcessId, relatedCpid: Cpid, cpid: Cpid, ocid: Ocid) :
+        ValidationErrors(
+            numberError = "1.24.4",
+            prefix = "VR.COM-",
+            description = "Unexpected attributes value in related process with id='${id}': " +
+                "relationship='${RelatedProcessType.X_SCOPE}', identifier='${relatedCpid}'. Tender with cpid='$cpid' and ocid='$ocid'."
+        )
+
 }

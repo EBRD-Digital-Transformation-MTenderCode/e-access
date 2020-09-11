@@ -12,6 +12,7 @@ import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.domain.util.bind
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
 
@@ -50,10 +51,45 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
           ) 
           VALUES(?, ?, ?, ?, ?, ?)
             """
+
+        private const val UPDATE_CQL = """
+               UPDATE $KEY_SPACE.$TABLE_NAME
+                  SET $COLUMN_JSON_DATA=?
+                WHERE $COLUMN_CPID=?
+                  AND $COLUMN_STAGE=?
+                  AND $COLUMN_TOKEN=?
+                IF EXISTS
+            """
     }
 
     private val preparedGetByCpIdAndStageCQL = session.prepare(GET_BY_CPID_AND_STAGE_CQL)
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
+    private val updateCQL = session.prepare(UPDATE_CQL)
+
+    override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident>  {
+        val updateStatement = updateCQL.bind()
+            .apply {
+                setString(COLUMN_CPID, entity.cpId)
+                setString(COLUMN_STAGE, entity.stage)
+                setUUID(COLUMN_TOKEN, entity.token)
+                setString(COLUMN_JSON_DATA, entity.jsonData)
+            }
+
+        return tryExecute(updateStatement)
+            .map { it.wasApplied() }
+            .bind { wasApplied ->
+                if (!wasApplied) {
+                    val mdc = mapOf(
+                        "description" to "Cannot update record",
+                        "cpid" to entity.cpId,
+                        "stage" to entity.stage,
+                        "data" to entity.jsonData
+                    )
+                    failure(Fail.Incident.DatabaseIncident(mdc = mdc))
+                } else
+                    success(wasApplied)
+            }
+    }
 
     override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> {
         val insert = preparedSaveCQL.bind()
@@ -65,7 +101,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setTimestamp(COLUMN_CREATION_DATE, entity.createdDate)
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
-        return load(insert)
+        return tryExecute(insert)
             .doOnError { error -> return failure(error) }
     }
 
@@ -76,7 +112,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setString(COLUMN_STAGE, stage.toString())
             }
 
-        return load(query)
+        return tryExecute(query)
             .doOnError { error -> return failure(error) }
             .get
             .one()
@@ -84,7 +120,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .asSuccess()
     }
 
-    protected fun load(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
+    protected fun tryExecute(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
         success(session.execute(statement))
     } catch (expected: Exception) {
         failure(Fail.Incident.Database(expected))

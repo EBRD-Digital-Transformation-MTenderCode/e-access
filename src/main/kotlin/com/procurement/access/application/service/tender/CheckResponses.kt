@@ -102,12 +102,18 @@ fun checkAnswerByTenderAndTendererRequirements(
     ProcurementMethod.MV, ProcurementMethod.TEST_MV ->
         //FR.COM-1.16.4
         checkAnswerByTenderAndTendererRequirements(data, criteria)
+
+    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
         //FR.COM-1.16.10
         checkAnswerByTenderRequirementsGpa(data, criteria)
         //FR.COM-1.16.11
         checkAnswerByTendererRequirementsGpa(data, criteria)
     }
+    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
     ProcurementMethod.OP, ProcurementMethod.TEST_OP,
@@ -115,6 +121,8 @@ fun checkAnswerByTenderAndTendererRequirements(
     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
     ProcurementMethod.IP, ProcurementMethod.TEST_IP -> Unit
 }
 

@@ -255,6 +255,13 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
             ProcurementMethod.RT, ProcurementMethod.TEST_RT -> "TP"
 
+            ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+            ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+            ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ -> "CO"
+
+            ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+            ProcurementMethod.OF, ProcurementMethod.TEST_OF -> "FE"
+
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
         }
         val dto = toObject(ActivationAcRq::class.java, cm.data)

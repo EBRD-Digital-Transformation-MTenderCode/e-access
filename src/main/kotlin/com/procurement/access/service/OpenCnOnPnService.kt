@@ -8,32 +8,11 @@ import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
 import com.procurement.access.domain.model.criteria.replaceTemporalItemId
-import com.procurement.access.domain.model.enums.AwardCriteria
-import com.procurement.access.domain.model.enums.AwardCriteriaDetails
-import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
-import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.MainProcurementCategory
-import com.procurement.access.domain.model.enums.TenderStatus
-import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.*
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
-import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
-import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
-import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
-import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
-import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
-import com.procurement.access.exception.ErrorType.INVALID_OWNER
-import com.procurement.access.exception.ErrorType.INVALID_PMM
-import com.procurement.access.exception.ErrorType.INVALID_PROCURING_ENTITY
-import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
-import com.procurement.access.exception.ErrorType.INVALID_TOKEN
-import com.procurement.access.exception.ErrorType.ITEM_ID_IS_DUPLICATED
-import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
+import com.procurement.access.exception.ErrorType.*
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
@@ -205,7 +184,8 @@ class OpenCnOnPnService(
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
             planning = planning(pnEntity), //BR-3.8.1
-            tender = tender
+            tender = tender,
+            relatedProcesses = pnEntity.relatedProcesses
         )
 
         tenderProcessDao.save(
@@ -717,7 +697,7 @@ class OpenCnOnPnService(
     private fun checkItemIdFromRequest(itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>) {
         val idsAreUniques = itemsFromRequest.uniqueBy { it.id }
         if (idsAreUniques.not())
-            throw throw ErrorException(ITEM_ID_IS_DUPLICATED)
+            throw throw ErrorException(ITEM_ID_DUPLICATED)
     }
 
     /**

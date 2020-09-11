@@ -2,6 +2,7 @@ package com.procurement.access.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.procurement.access.config.properties.OCDSProperties
+import com.procurement.access.config.properties.UriProperties
 import com.procurement.access.service.validation.JsonValidationService
 import com.procurement.access.service.validation.MedeiaValidationService
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Configuration
         "com.procurement.access.infrastructure.handler"
     ]
 )
-@EnableConfigurationProperties(value = [OCDSProperties::class])
+@EnableConfigurationProperties(value = [OCDSProperties::class, UriProperties::class])
 class ServiceConfig {
 
     @Autowired

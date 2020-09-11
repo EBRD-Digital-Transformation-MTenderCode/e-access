@@ -62,7 +62,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     LOT_ID_DUPLICATED("10.47", "Lot id duplicated."),
     AUCTION_ID_DUPLICATED("10.48", "Auction id duplicated."),
     AUCTIONS_CONTAIN_DUPLICATE_RELATED_LOTS("10.49", "Auctions contain a duplicate related lots."),
-    ITEM_ID_IS_DUPLICATED("10.50", "Item id duplicated."),
+    ITEM_ID_DUPLICATED("10.50", "Item id duplicated."),
     INVALID_ITEMS_QUANTITY("10.51", "Invalid quantity value in item."),
     INVALID_TENDER_AMOUNT("10.52", "Invalid amount of the tender."),
     ITEMS_CPV_CODES_NOT_CONSISTENT("10.53", "CPV codes of all items must have minimum 3 the same starting symbols."),
@@ -102,5 +102,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     MISSING_ATTRIBUTE("10.87", "Missing an attribute."),
     ENTITY_NOT_FOUND("10.88", "No entity found in db with specified parameters."),
     INVALID_REQUIREMENT_RESPONSE("10.89", "Invalid requirement response."),
-    INVALID_SUITE_OF_REQUIREMENTS("10.90", "Invalid suite of requirements.");
+    INVALID_SUITE_OF_REQUIREMENTS("10.90", "Invalid suite of requirements."),
+    DOCUMENT_ID_DUPLICATED("10.91", "Document id duplicated."),
+    INVALID_ITEM_ID("10.92", "Invalid item id.");
 }

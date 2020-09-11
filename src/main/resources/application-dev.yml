@@ -14,3 +14,6 @@ ocds:
   prefixes:
     main: ocds-t1s2t3
     test: test-t1s2t3
+
+uri:
+  tender: http://dev.public.eprocurement.systems/tenders

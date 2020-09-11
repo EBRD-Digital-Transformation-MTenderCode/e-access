@@ -1,0 +1,78 @@
+{
+  "tender": {
+    "classification": {
+      "scheme": "CPV",
+      "description": "",
+      "id": ""
+    },
+    "submissionMethodRationale": [
+      ""
+    ],
+    "submissionMethodDetails": "",
+    "procurementMethodDetails": "",
+    "title": "",
+    "description": "",
+    "legalBasis": "DIRECTIVE_2014_25_EU",
+    "procurementMethodRationale": "",
+    "eligibilityCriteria": "",
+    "tenderPeriod": {
+      "startDate": "2018-12-28T18:26:00Z"
+    },
+    "procuringEntity": {
+      "name": "",
+      "identifier": {
+        "scheme": "",
+        "id": "",
+        "legalName": "",
+        "uri": ""
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "",
+          "id": "",
+          "legalName": "",
+          "uri": ""
+        }
+      ],
+      "address": {
+        "streetAddress": "",
+        "postalCode": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "region": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "",
+        "email": "",
+        "telephone": "",
+        "faxNumber": "",
+        "url": ""
+      }
+    },
+    "documents": [
+      {
+        "documentType": "technicalSpecifications",
+        "id": "",
+        "title": "",
+        "description": ""
+      }
+    ]
+  }
+}

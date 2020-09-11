@@ -6,13 +6,7 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.SubmissionMethod
-import com.procurement.access.domain.model.enums.TenderStatus
-import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.*
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -82,52 +76,52 @@ class PnService(
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
-        if(request.tender.items.isNullOrEmpty()) {
-            if(request.tender.lots.isNullOrEmpty())
-                return
-            else
-                throw ErrorException(ErrorType.EMPTY_ITEMS)
-        } else {
-            if(request.tender.lots.isNullOrEmpty())
-                throw ErrorException(ErrorType.EMPTY_LOTS)
-        }
-
-        if (request.tender.lots.isNullOrEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
-        val lots: List<PnCreateData.Tender.Lot> = request.tender.lots
-
-        //VR-3.1.14
-        checkLotIdFromRequest(lots = lots)
-
-        val items: List<PnCreateData.Tender.Item> = request.tender.items
-
-        //VR-3.1.15
-        checkItemIdFromRequest(items = items)
-
-        //VR-3.1.12 Lots
-        checkLotIdsAsRelatedLotInItems(lots = lots, items = items)
-
-        val lotsIds = lots.asSequence().map { it.id }.toSet()
-
-        //VR-3.1.13 Items
-        checkRelatedLotInItems(lotsIds, items)
-
-        //VR-3.1.4 "Value" (tender)
-        val tenderValue = calculateTenderValueFromLots(lots = lots)
-        checkTenderValue(tenderAmount = tenderValue.amount, budgetAmount = request.planning.budget.amount)
-
-        //VR-3.1.7 "Currency" (lot)
-        checkCurrencyInLotsFromRequest(lots = lots, budget = request.planning.budget)
-
-        //VR-3.1.9 "Contract Period" (Tender)
-        checkContractPeriodInTender(lots, request.planning.budget.budgetBreakdowns)
-
         val documents = request.tender.documents
 
-        //VR-3.1.10 "Related Lots" (documents)
-        checkRelatedLotsInDocuments(lotsIds, documents)
+        //VR-3.1.1
+        val isUniqueDocuments = documents.uniqueBy { it.id }
+        if (!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
 
-        //VR-3.1.11 "Contract Period" (Lot)
-        checkContractPeriodInLots(request.tender)
+        val lots: List<PnCreateData.Tender.Lot> = request.tender.lots
+        val items = request.tender.items
+        if (items.isEmpty()) {
+            if (lots.isNotEmpty()) throw ErrorException(ErrorType.EMPTY_ITEMS)
+        } else {
+            if (lots.isEmpty()) throw ErrorException(ErrorType.EMPTY_LOTS)
+
+            //VR-3.1.8
+            checkQuantityInItems(items)
+
+            //VR-3.1.14
+            checkLotIdFromRequest(lots = lots)
+
+            //VR-3.1.15
+            checkItemIdFromRequest(items = items)
+
+            //VR-3.1.12 Lots
+            checkLotIdsAsRelatedLotInItems(lots = lots, items = items)
+
+            val lotsIds = lots.asSequence().map { it.id }.toSet()
+
+            //VR-3.1.13 Items
+            checkRelatedLotInItems(lotsIds, items)
+
+            //VR-3.1.4 "Value" (tender)
+            val tenderValue = calculateTenderValueFromLots(lots = lots)
+            checkTenderValue(tenderAmount = tenderValue.amount, budgetAmount = request.planning.budget.amount)
+
+            //VR-3.1.7 "Currency" (lot)
+            checkCurrencyInLotsFromRequest(lots = lots, budget = request.planning.budget)
+
+            //VR-3.1.9 "Contract Period" (Tender)
+            checkContractPeriodInTender(lots, request.planning.budget.budgetBreakdowns)
+
+            //VR-3.1.10 "Related Lots" (documents)
+            checkRelatedLotsInDocuments(lotsIds, documents)
+
+            //VR-3.1.11 "Contract Period" (Lot)
+            checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
+        }
     }
 
     /**
@@ -255,9 +249,8 @@ class PnService(
      *   IF startDate && endDate value are present in calendar of current year, validation is successful;
      *   ELSE (startDate && endDate value are not found in calendar) { eAccess throws Exception: "Date is not exist";
      */
-    private fun checkContractPeriodInLots(tender: PnCreateData.Tender) {
-        val tenderPeriodStartDate = tender.tenderPeriod.startDate
-        tender.lots.forEach { lot ->
+    private fun checkContractPeriodInLots(lots: List<PnCreateData.Tender.Lot>, tenderPeriodStartDate: LocalDateTime) {
+        lots.forEach { lot ->
             checkRangeContractPeriodInLot(lot)
 
             if (lot.contractPeriod.startDate <= tenderPeriodStartDate)
@@ -333,6 +326,16 @@ class PnService(
     }
 
     /**
+     * VR-3.1.8
+     */
+    private fun checkQuantityInItems(items: List<PnCreateData.Tender.Item>) {
+        items.forEach {item ->
+            if(item.quantity <= BigDecimal.ZERO)
+                throw ErrorException(ErrorType.INVALID_ITEMS_QUANTITY)
+        }
+    }
+
+    /**
      * VR-3.1.14 Lot.ID
      *
      * eAccess analyzes Lot.ID from Request:
@@ -355,7 +358,7 @@ class PnService(
     private fun checkItemIdFromRequest(items: List<PnCreateData.Tender.Item>) {
         val idsAreUniques = items.uniqueBy { it.id }
         if (idsAreUniques.not())
-            throw throw ErrorException(ErrorType.ITEM_ID_IS_DUPLICATED)
+            throw throw ErrorException(ErrorType.ITEM_ID_DUPLICATED)
     }
 
     /**
@@ -426,7 +429,8 @@ class PnService(
                 contractPeriod = contractPeriod,
                 documents = documents,
                 tenderRequest = request.tender
-            )
+            ),
+            relatedProcesses = null
         )
     }
 
