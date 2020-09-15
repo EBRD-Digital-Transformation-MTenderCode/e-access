@@ -44,9 +44,9 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckResponsesRequest
-import com.procurement.access.infrastructure.dto.ap.ApCreateRequest
-import com.procurement.access.infrastructure.dto.ap.ApCreateResponse
-import com.procurement.access.infrastructure.dto.ap.converter.convert
+import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
+import com.procurement.access.infrastructure.dto.ap.create.ApCreateResponse
+import com.procurement.access.infrastructure.dto.ap.create.converter.convert
 import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckOpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckSelectiveCnOnPnResponse
@@ -173,7 +173,8 @@ class CommandService(
                     startDate = cm.startDate,
                     mode = getMode(cm.testMode)
                 )
-                val request: ApCreateRequest = toObject(ApCreateRequest::class.java, cm.data)
+                val request: ApCreateRequest = toObject(
+                    ApCreateRequest::class.java, cm.data)
                 val data: ApCreateData = request.convert()
                 val result = apService.createAp(context, data)
                 if (log.isDebugEnabled)

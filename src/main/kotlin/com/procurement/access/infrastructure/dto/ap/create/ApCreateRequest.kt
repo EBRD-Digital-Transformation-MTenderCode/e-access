@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.dto.ap
+package com.procurement.access.infrastructure.dto.ap.create
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
