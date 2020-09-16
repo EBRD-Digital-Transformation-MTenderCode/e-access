@@ -18,6 +18,8 @@ import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.ap.create.ApCreateData
 import com.procurement.access.application.service.ap.create.CreateApContext
+import com.procurement.access.application.service.ap.update.ApUpdateData
+import com.procurement.access.application.service.ap.update.UpdateApContext
 import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.application.service.cn.update.UpdateOpenCnContext
 import com.procurement.access.application.service.cn.update.UpdateOpenCnData
@@ -47,6 +49,8 @@ import com.procurement.access.infrastructure.dto.CheckResponsesRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateResponse
 import com.procurement.access.infrastructure.dto.ap.create.converter.convert
+import com.procurement.access.infrastructure.dto.ap.update.ApUpdateRequest
+import com.procurement.access.infrastructure.dto.ap.update.converter.convert
 import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckOpenCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.CheckSelectiveCnOnPnResponse
@@ -103,7 +107,8 @@ class CommandService(
     private val pinService: PinService,
     private val pinOnPnService: PinOnPnService,
     private val pnService: PnService,
-    private val apService: ApService,
+    private val apCreateService: ApCreateService,
+    private val apUpdateService: ApUpdateService,
     private val pnUpdateService: PnUpdateService,
     private val cnCreateService: CnCreateService,
     private val cnService: CNService,
@@ -176,11 +181,28 @@ class CommandService(
                 val request: ApCreateRequest = toObject(
                     ApCreateRequest::class.java, cm.data)
                 val data: ApCreateData = request.convert()
-                val result = apService.createAp(context, data)
+                val result = apCreateService.createAp(context, data)
                 if (log.isDebugEnabled)
                     log.debug("Create AP. Result: ${toJson(result)}")
 
                 val response: ApCreateResponse = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Create AP. Response: ${toJson(response)}")
+
+                return ResponseDto(data = response)
+            }
+            CommandType.UPDATE_AP -> {
+                val context = UpdateApContext(
+                    stage = cm.stage,
+                    owner = cm.owner,
+                    cpid = cm.cpid,
+                    token = cm.token,
+                    startDate = cm.startDate
+                )
+                val request: ApUpdateRequest = toObject(ApUpdateRequest::class.java, cm.data)
+                val data: ApUpdateData = request.convert()
+                val response = apUpdateService.updateAp(context, data)
+
                 if (log.isDebugEnabled)
                     log.debug("Create AP. Response: ${toJson(response)}")
 
