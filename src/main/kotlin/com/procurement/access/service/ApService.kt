@@ -240,7 +240,13 @@ class ApService(
             submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
             submissionMethodRationale = tenderRequest.submissionMethodRationale,
             submissionMethodDetails = tenderRequest.submissionMethodDetails,
-            documents = documents
+            documents = documents,
+
+            items = emptyList(),
+            lots = emptyList(),
+            mainProcurementCategory = null,
+            value = null,
+            contractPeriod = null
         )
     }
 
@@ -270,7 +276,8 @@ class ApService(
             id = documentFromRequest.id,
             documentType = DocumentType.creator(documentFromRequest.documentType.key),
             title = documentFromRequest.title,
-            description = documentFromRequest.description
+            description = documentFromRequest.description,
+            relatedLots = emptyList()
         )
     }
 

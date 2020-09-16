@@ -8,14 +8,23 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.money.Money
+import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
+import com.procurement.access.infrastructure.bind.money.MoneySerializer
+import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
+import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -58,9 +67,155 @@ data class APEntity(
         @field:JsonProperty("submissionMethodRationale") @param:JsonProperty("submissionMethodRationale") val submissionMethodRationale: List<String>,
         @field:JsonProperty("submissionMethodDetails") @param:JsonProperty("submissionMethodDetails") val submissionMethodDetails: String,
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
+
+        @JsonDeserialize(using = MoneyDeserializer::class)
+        @JsonSerialize(using = MoneySerializer::class)
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Money?,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>?,
+
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
     ) {
+
+        data class ContractPeriod(
+            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+            @JsonSerialize(using = JsonDateTimeSerializer::class)
+            @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
+
+            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+            @JsonSerialize(using = JsonDateTimeSerializer::class)
+            @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
+        )
+
+        data class Lot(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
+
+            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+            @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+            @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
+            @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails,
+
+            @JsonDeserialize(using = MoneyDeserializer::class)
+            @JsonSerialize(using = MoneySerializer::class)
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
+
+            @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?
+        ) {
+
+            data class ContractPeriod(
+                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+                @JsonSerialize(using = JsonDateTimeSerializer::class)
+                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
+
+                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
+                @JsonSerialize(using = JsonDateTimeSerializer::class)
+                @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
+            )
+
+            data class PlaceOfPerformance(
+                @field:JsonProperty("address") @param:JsonProperty("address") val address: Address
+            )
+        }
+
+        data class Item(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
+
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("additionalClassifications") @param:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
+
+            @JsonDeserialize(using = QuantityDeserializer::class)
+            @JsonSerialize(using = QuantitySerializer::class)
+            @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal,
+
+            @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit,
+            @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+            @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("deliveryAddress") @param:JsonProperty("deliveryAddress") val deliveryAddress: Address?
+        ) {
+
+            data class Classification(
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String
+            )
+
+            data class AdditionalClassification(
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String
+            )
+
+            data class Unit(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("name") @param:JsonProperty("name") val name: String
+            )
+        }
+
+        data class Address(
+            @field:JsonProperty("streetAddress") @param:JsonProperty("streetAddress") val streetAddress: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("postalCode") @param:JsonProperty("postalCode") val postalCode: String?,
+
+            @field:JsonProperty("addressDetails") @param:JsonProperty("addressDetails") val addressDetails: AddressDetails
+        ) {
+
+            data class AddressDetails(
+                @field:JsonProperty("country") @param:JsonProperty("country") val country: Country,
+                @field:JsonProperty("region") @param:JsonProperty("region") val region: Region,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("locality") @param:JsonProperty("locality") val locality: Locality?
+            ) {
+
+                data class Country(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+                )
+
+                data class Region(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+                )
+
+                data class Locality(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+                )
+            }
+        }
 
         data class Classification(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
@@ -193,7 +348,10 @@ data class APEntity(
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?
+            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
         )
     }
 }
