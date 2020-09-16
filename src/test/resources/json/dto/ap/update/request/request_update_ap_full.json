@@ -18,8 +18,6 @@
         "internalId": "tender.lots[0].internalId",
         "title": "tender.lots[0].title",
         "description": "tender.lots[0].description",
-        "status": "active",
-        "statusDetails": "empty",
         "value": {
           "amount": 1.00,
           "currency": "tender.lots[0].value.currency"
