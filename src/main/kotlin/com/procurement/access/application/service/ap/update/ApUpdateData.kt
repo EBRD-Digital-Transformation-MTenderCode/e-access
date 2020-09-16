@@ -2,8 +2,6 @@ package com.procurement.access.application.service.ap.update
 
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.money.Money
@@ -31,8 +29,6 @@ class ApUpdateData(
             val internalId: String?,
             val title: String,
             val description: String,
-            val status: LotStatus,
-            val statusDetails: LotStatusDetails,
             val value: Money,
             val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance?
