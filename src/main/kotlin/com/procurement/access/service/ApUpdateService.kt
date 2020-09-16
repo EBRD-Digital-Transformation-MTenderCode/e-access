@@ -439,8 +439,6 @@ class ApUpdateServiceImpl(
             description = received.description,
             title = received.title,
             internalId = received.internalId ?: this.internalId,
-            status = received.status,
-            statusDetails = received.statusDetails,
             value = received.value,
             contractPeriod = this.contractPeriod.updateBy(received.contractPeriod)
         )

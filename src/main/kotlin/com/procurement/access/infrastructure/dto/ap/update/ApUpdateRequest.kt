@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.domain.model.enums.LotStatus
-import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.money.Money
@@ -57,8 +55,6 @@ class ApUpdateRequest(
 
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-            @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
-            @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails,
 
             @JsonDeserialize(using = MoneyDeserializer::class)
             @JsonSerialize(using = MoneySerializer::class)
