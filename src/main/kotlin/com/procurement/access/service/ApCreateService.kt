@@ -21,12 +21,12 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class ApService(
+class ApCreateService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
 ) {
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(ApService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(ApCreateService::class.java)
     }
 
     fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
