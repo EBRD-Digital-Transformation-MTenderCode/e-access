@@ -37,11 +37,12 @@ data class CheckRelationParams private constructor(
                     OperationType.QUALIFICATION_CONSIDERATION,
                     OperationType.QUALIFICATION_PROTOCOL,
                     OperationType.START_SECONDSTAGE,
+                    OperationType.SUBMISSION_PERIOD_END,
+                    OperationType.TENDER_PERIOD_END,
+                    OperationType.UPDATE_AP,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
-                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                    OperationType.SUBMISSION_PERIOD_END,
-                    OperationType.TENDER_PERIOD_END -> false
+                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
                 }
             }
             .toSet()

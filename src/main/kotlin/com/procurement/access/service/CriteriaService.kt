@@ -311,6 +311,7 @@ class CriteriaServiceImpl(
                         OperationType.QUALIFICATION_PROTOCOL,
                         OperationType.RELATION_AP,
                         OperationType.START_SECONDSTAGE,
+                        OperationType.UPDATE_AP,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
