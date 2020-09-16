@@ -101,6 +101,7 @@ class OutsourcingServiceImpl(
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
@@ -116,7 +117,6 @@ class OutsourcingServiceImpl(
 
         fun isProcedureOutsourced(operationType: OperationType): Boolean? =
             when (operationType) {
-                OperationType.OUTSOURCING_PN -> true
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
@@ -126,6 +126,7 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,
                 OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN -> true
                 OperationType.QUALIFICATION,
                 OperationType.QUALIFICATION_CONSIDERATION,
                 OperationType.QUALIFICATION_PROTOCOL,
@@ -133,6 +134,7 @@ class OutsourcingServiceImpl(
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null

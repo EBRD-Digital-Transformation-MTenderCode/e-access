@@ -130,6 +130,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 )
             }
 
+            OperationType.UPDATE_AP,
             OperationType.UPDATE_PN -> {
                 val cpid = cm.cpid
                 val stage = cm.stage
