@@ -12,6 +12,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.CheckItemsRequest
 import com.procurement.access.infrastructure.dto.CheckItemsResponse
+import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.dto.bpe.CommandMessage
@@ -130,7 +131,37 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 )
             }
 
-            OperationType.UPDATE_AP,
+            OperationType.UPDATE_AP -> {
+                val cpid = cm.cpid
+                val stage = cm.stage
+                val process: APEntity = loadAP(cpid, stage)
+                if (process.tender.items == null || process.tender.items.isEmpty()) {
+                    val cpvCodes = getCPVCodes(request)
+                        .also {
+                            checkItemsCPVCodes(it)
+                        }
+
+                    val calculatedCPVCode = calculateCPVCode(cpvCodes)
+                        .also {
+                            checkCalculatedCPVCode(
+                                calculatedCPVCode = it,
+                                tenderCPVCode = process.tender.classification.id
+                            )
+                        }
+
+                    CheckItemsResponse(
+                        mdmValidation = true,
+                        itemsAdd = true,
+                        tender = CheckItemsResponse.Tender(
+                            classification = CheckItemsResponse.Tender.Classification(
+                                id = calculatedCPVCode
+                            )
+                        )
+                    )
+                } else {
+                    CheckItemsResponse(mdmValidation = true, itemsAdd = false)
+                }
+            }
             OperationType.UPDATE_PN -> {
                 val cpid = cm.cpid
                 val stage = cm.stage
@@ -206,6 +237,12 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
         val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(TenderProcess::class.java, entity.jsonData)
+    }
+
+    private fun loadAP(cpid: String, stage: String): APEntity {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
+            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        return toObject(APEntity::class.java, entity.jsonData)
     }
 
     private fun loadCN(cpid: String, stage: String): CNEntity {
