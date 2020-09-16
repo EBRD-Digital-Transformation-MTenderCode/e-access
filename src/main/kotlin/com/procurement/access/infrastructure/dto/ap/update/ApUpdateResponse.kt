@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.entity
+package com.procurement.access.infrastructure.dto.ap.update
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -21,19 +21,14 @@ import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
-import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class APEntity(
-    @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>?
+data class ApUpdateResponse(
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
