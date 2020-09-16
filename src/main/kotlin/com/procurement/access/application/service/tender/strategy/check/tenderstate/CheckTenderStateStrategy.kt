@@ -35,6 +35,7 @@ class CheckTenderStateStrategy(
                     .tryToObject(PNEntity::class.java)
                     .map { TenderStatesRule.State(it.tender.status, it.tender.statusDetails) }
 
+            OperationType.UPDATE_AP,
             OperationType.RELATION_AP ->
                 tenderEntity.jsonData
                     .tryToObject(APEntity::class.java)
