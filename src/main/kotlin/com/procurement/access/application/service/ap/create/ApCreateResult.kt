@@ -29,7 +29,7 @@ data class ApCreateResult(
         val procedureOutsourcing: ProcedureOutsourcing,
         val framework: Framework,
         val dynamicPurchasingSystem: DynamicPurchasingSystem,
-        val legalBasis: LegalBasis,
+        val legalBasis: LegalBasis?,
         val procurementMethod: ProcurementMethod,
         val procurementMethodDetails: String,
 
