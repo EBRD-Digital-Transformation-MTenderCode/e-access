@@ -176,29 +176,10 @@ class OutsourcingServiceImpl(
             )
         )
 
-        // FR.COM-1.22.8
-        val isProcedureOutsourced = isProcedureOutsourced(params.operationType)
-
-        val procedureOutsourcing = isProcedureOutsourced
-            ?.let { procedureOutsourced ->
-                CreateRelationToOtherProcessResult.Tender.ProcedureOutsourcing(
-                    procedureOutsourced = procedureOutsourced
-                )
-            }
-
-        val tender = procedureOutsourcing
-            ?.let { _procedureOutsourcing ->
-                CreateRelationToOtherProcessResult.Tender(
-                    procedureOutsourcing = _procedureOutsourcing
-                )
-            }
-
         val response = CreateRelationToOtherProcessResult(
             relatedProcesses = relatedProcesses
                 .mapResult { CreateRelationToOtherProcessResult.fromDomain(it) }
-                .orForwardFail { fail -> return fail },
-            tender = tender // FR.COM-1.22.10
-        )
+                .orForwardFail { fail -> return fail })
 
         when (params.operationType) {
             OperationType.RELATION_AP -> { // FR.COM-1.22.6
