@@ -135,7 +135,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 val cpid = cm.cpid
                 val stage = cm.stage
                 val process: APEntity = loadAP(cpid, stage)
-                if (process.tender.items == null || process.tender.items.isEmpty()) {
+                if (request.items.isNotEmpty()) {
                     val cpvCodes = getCPVCodes(request)
                         .also {
                             checkItemsCPVCodes(it)
