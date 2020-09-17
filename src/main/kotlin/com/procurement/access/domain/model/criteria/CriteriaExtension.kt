@@ -28,14 +28,13 @@ fun buildCriterion(
     criterion: CriterionRequest,
     relatedTemporalWithPermanentRequirementId: Map<String, RequirementId.Permanent>
 ): CNEntity.Tender.Criteria {
-    val source = criterion.defineSource()
     return CNEntity.Tender.Criteria(
         id = CriteriaId.Permanent.generate().toString(),
         title = criterion.title,
         description = criterion.description,
         relatesTo = criterion.relatesTo,
         relatedItem = criterion.relatedItem,
-        source = source,
+        source = CriteriaSource.TENDERER,
         requirementGroups = criterion.requirementGroups
             .map { requirementGroup ->
                 CNEntity.Tender.Criteria.RequirementGroup(
@@ -61,15 +60,6 @@ fun buildCriterion(
                 )
             }
     )
-}
-
-private fun CriterionRequest.defineSource(): CriteriaSource? = when (relatesTo) {
-    CriteriaRelatesToEnum.TENDERER -> null
-    CriteriaRelatesToEnum.LOT,
-    CriteriaRelatesToEnum.ITEM,
-    CriteriaRelatesToEnum.AWARD,
-    CriteriaRelatesToEnum.QUALIFICATION,
-    null -> CriteriaSource.TENDERER
 }
 
 fun CNEntity.Tender.Criteria.replaceTemporalItemId(
