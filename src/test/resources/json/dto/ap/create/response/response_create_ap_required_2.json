@@ -35,7 +35,6 @@
     "dynamicPurchasingSystem": {
       "hasDynamicPurchasingSystem": false
     },
-    "legalBasis": "DIRECTIVE_2014_25_EU",
     "procurementMethod": "selective",
     "procurementMethodDetails": "",
     "eligibilityCriteria": "",
