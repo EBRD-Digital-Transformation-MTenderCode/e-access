@@ -266,9 +266,9 @@ class ApCreateService(
         ProcurementMethod.OT, ProcurementMethod.TEST_OT,
         ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
         ProcurementMethod.RT, ProcurementMethod.TEST_RT,
-        ProcurementMethod.SV, ProcurementMethod.TEST_SV -> true
+        ProcurementMethod.SV, ProcurementMethod.TEST_SV -> false
 
-        ProcurementMethod.OF, ProcurementMethod.TEST_OF -> false
+        ProcurementMethod.OF, ProcurementMethod.TEST_OF -> true
     }
 
     private fun convertRequestDocument(documentFromRequest: ApCreateData.Tender.Document): APEntity.Tender.Document {
