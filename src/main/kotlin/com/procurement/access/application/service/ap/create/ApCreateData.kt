@@ -13,7 +13,7 @@ class ApCreateData(
         val title: String,
         val description: String,
         val classification: Classification,
-        val legalBasis: LegalBasis,
+        val legalBasis: LegalBasis?,
         val procurementMethodDetails: String,
         val procurementMethodRationale: String?,
         val eligibilityCriteria: String,
