@@ -158,6 +158,7 @@ enum class CommandType(private val value: String) {
     START_NEW_STAGE("startNewStage"),
     UPDATE_CN("updateCn"),
     UPDATE_PN("updatePn"),
+    UPDATE_AP("updateAp"),
     VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
 
     @JsonValue

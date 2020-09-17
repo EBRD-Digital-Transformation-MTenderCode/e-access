@@ -1,0 +1,41 @@
+{
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "tenderPeriod": {
+      "startDate": "2018-05-17T15:24:53Z"
+    },
+    "lots": [
+      {
+        "id": "tender.lots[0].id",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "value": {
+          "amount": 1.00,
+          "currency": "tender.lots[0].value.currency"
+        },
+        "contractPeriod": {
+          "startDate": "2020-09-15T12:46:20Z",
+          "endDate": "2020-09-15T12:46:20Z"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "3ddca60c-e227-4654-abb1-5490e53c7f03",
+        "classification": {
+          "id": "tender.items[0].classification.id",
+          "description": "tender.items[0].classification.description",
+          "scheme": "CPVS"
+        },
+        "quantity": 2.213,
+        "unit": {
+          "id": "tender.items[0].unit.id",
+          "name": "tender.items[0].unit.name"
+        },
+        "description": "tender.items[0].description",
+        "relatedLot": "e17ef286-d1b1-44bc-8e84-036c2e7500a4"
+      }
+    ]
+  }
+}

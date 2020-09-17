@@ -21,12 +21,12 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class ApService(
+class ApCreateService(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
 ) {
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(ApService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(ApCreateService::class.java)
     }
 
     fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
@@ -240,7 +240,13 @@ class ApService(
             submissionMethod = listOf(SubmissionMethod.ELECTRONIC_SUBMISSION),
             submissionMethodRationale = tenderRequest.submissionMethodRationale,
             submissionMethodDetails = tenderRequest.submissionMethodDetails,
-            documents = documents
+            documents = documents,
+
+            items = emptyList(),
+            lots = emptyList(),
+            mainProcurementCategory = null,
+            value = null,
+            contractPeriod = null
         )
     }
 
@@ -260,9 +266,9 @@ class ApService(
         ProcurementMethod.OT, ProcurementMethod.TEST_OT,
         ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
         ProcurementMethod.RT, ProcurementMethod.TEST_RT,
-        ProcurementMethod.SV, ProcurementMethod.TEST_SV -> true
+        ProcurementMethod.SV, ProcurementMethod.TEST_SV -> false
 
-        ProcurementMethod.OF, ProcurementMethod.TEST_OF -> false
+        ProcurementMethod.OF, ProcurementMethod.TEST_OF -> true
     }
 
     private fun convertRequestDocument(documentFromRequest: ApCreateData.Tender.Document): APEntity.Tender.Document {
@@ -270,7 +276,8 @@ class ApService(
             id = documentFromRequest.id,
             documentType = DocumentType.creator(documentFromRequest.documentType.key),
             title = documentFromRequest.title,
-            description = documentFromRequest.description
+            description = documentFromRequest.description,
+            relatedLots = emptyList()
         )
     }
 

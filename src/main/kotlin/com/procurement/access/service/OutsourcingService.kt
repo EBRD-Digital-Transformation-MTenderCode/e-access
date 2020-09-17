@@ -24,6 +24,7 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessResult
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
+import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
@@ -100,6 +101,7 @@ class OutsourcingServiceImpl(
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
@@ -113,6 +115,50 @@ class OutsourcingServiceImpl(
                     )
             }
 
+        fun isProcedureOutsourced(operationType: OperationType): Boolean? =
+            when (operationType) {
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN -> true
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
+            }
+
+
+        fun getTenderEntity(
+            tenderProcessRepository: TenderProcessRepository,
+            params: CreateRelationToOtherProcessParams
+        ): Result<TenderProcessEntity, Fail> {
+            val ocid = Ocid.tryCreate(params.ocid)
+                .doReturn { fail ->
+                    return failure(
+                        DataMismatchToPattern(name = "ocid", actualValue = params.ocid, pattern = Ocid.pattern)
+                    )
+                }
+            val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
+                .orForwardFail { fail -> return fail }
+                ?: return failure(
+                    ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
+                )
+
+            return success(entity)
+        }
     }
 
     override fun createRelationToOtherProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult, Fail> {
@@ -133,33 +179,22 @@ class OutsourcingServiceImpl(
         val response = CreateRelationToOtherProcessResult(
             relatedProcesses = relatedProcesses
                 .mapResult { CreateRelationToOtherProcessResult.fromDomain(it) }
-                .orForwardFail { fail -> return fail }
-        )
+                .orForwardFail { fail -> return fail })
 
-        when(params.operationType) {
+        when (params.operationType) {
             OperationType.RELATION_AP -> { // FR.COM-1.22.6
-                val ocid = Ocid.tryCreate(params.ocid)
-                    .doReturn { fail ->
-                        return failure(
-                            DataMismatchToPattern(name = "ocid", actualValue = params.ocid, pattern = Ocid.pattern)
-                        )
-                    }
-                val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
+                val entity = getTenderEntity(tenderProcessRepository, params)
                     .orForwardFail { fail -> return fail }
-                    ?: return failure(
-                        ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
-                    )
 
                 entity.jsonData
                     .tryToObject(APEntity::class.java)
-                    .map { ap ->  ap.copy(relatedProcesses = relatedProcesses) }
+                    .map { ap -> ap.copy(relatedProcesses = relatedProcesses) }
                     .bind { updatedAp -> trySerialization(updatedAp) }
                     .map { updatedApJson -> entity.copy(jsonData = updatedApJson) }
                     .bind { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
                     .orForwardFail { fail -> return fail }
-
             }
-            OperationType.OUTSOURCING_PN,
+
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
@@ -169,12 +204,14 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
             OperationType.CREATE_SUBMISSION,
+            OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.QUALIFICATION_PROTOCOL,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> Unit
@@ -183,5 +220,4 @@ class OutsourcingServiceImpl(
         // FR.COM-1.22.7
         return success(response)
     }
-
 }

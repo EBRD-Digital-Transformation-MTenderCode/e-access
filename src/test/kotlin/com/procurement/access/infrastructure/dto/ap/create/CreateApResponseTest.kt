@@ -1,9 +1,10 @@
-package com.procurement.access.infrastructure.dto.ap
+package com.procurement.access.infrastructure.dto.ap.create
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import org.junit.jupiter.api.Test
 
-class CreateApRequestTest : AbstractDTOTestBase<ApCreateResponse>(ApCreateResponse::class.java) {
+class CreateApResponseTest : AbstractDTOTestBase<ApCreateResponse>(
+    ApCreateResponse::class.java) {
     @Test
     fun fully() {
         testBindingAndMapping("json/dto/ap/create/response/response_create_ap_full.json")

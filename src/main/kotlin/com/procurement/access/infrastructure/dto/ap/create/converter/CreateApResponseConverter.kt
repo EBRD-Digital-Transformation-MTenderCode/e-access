@@ -1,7 +1,7 @@
-package com.procurement.access.infrastructure.dto.ap.converter
+package com.procurement.access.infrastructure.dto.ap.create.converter
 
 import com.procurement.access.application.service.ap.create.ApCreateResult
-import com.procurement.access.infrastructure.dto.ap.ApCreateResponse
+import com.procurement.access.infrastructure.dto.ap.create.ApCreateResponse
 
 fun ApCreateResult.convert(): ApCreateResponse =
     ApCreateResponse(

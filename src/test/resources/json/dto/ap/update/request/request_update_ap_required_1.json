@@ -1,0 +1,95 @@
+{
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "tenderPeriod": {
+      "startDate": "2018-05-17T15:24:53Z"
+    },
+    "lots": [
+      {
+        "id": "tender.lots[0].id",
+        "title": "tender.lots[0].title",
+        "description": "tender.lots[0].description",
+        "value": {
+          "amount": 1.00,
+          "currency": "tender.lots[0].value.currency"
+        },
+        "contractPeriod": {
+          "startDate": "2020-09-15T12:46:20Z",
+          "endDate": "2020-09-15T12:46:20Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "tender.lots[0].placeOfPerformance.address.streetAddress",
+            "addressDetails": {
+              "country": {
+                "scheme": "tender.lots[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "tender.lots[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "tender.lots[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "tender.lots[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "tender.lots[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "tender.lots[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "tender.lots[0].placeOfPerformance.address.addressDetails.locality.description"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "3ddca60c-e227-4654-abb1-5490e53c7f03",
+        "classification": {
+          "id": "tender.items[0].classification.id",
+          "description": "tender.items[0].classification.description",
+          "scheme": "CPVS"
+        },
+        "quantity": 2.213,
+        "unit": {
+          "id": "tender.items[0].unit.id",
+          "name": "tender.items[0].unit.name"
+        },
+        "description": "tender.items[0].description",
+        "relatedLot": "e17ef286-d1b1-44bc-8e84-036c2e7500a4",
+        "deliveryAddress": {
+          "streetAddress": "tender.items[0].deliveryAddress.streetAddress",
+          "postalCode": "tender.items[0].deliveryAddress.postalCode",
+          "addressDetails": {
+            "country": {
+              "scheme": "tender.items[0].deliveryAddress.addressDetails.country.scheme",
+              "id": "tender.items[0].deliveryAddress.addressDetails.country.id",
+              "description": "tender.items[0].deliveryAddress.addressDetails.country.description",
+              "uri": "tender.items[0].deliveryAddress.addressDetails.country.uri"
+            },
+            "region": {
+              "scheme": "tender.items[0].deliveryAddress.addressDetails.region.scheme",
+              "id": "tender.items[0].deliveryAddress.addressDetails.region.id",
+              "description": "tender.items[0].deliveryAddress.addressDetails.region.description",
+              "uri": "tender.items[0].deliveryAddress.addressDetails.region.uri"
+            },
+            "locality": {
+              "scheme": "tender.items[0].deliveryAddress.addressDetails.locality.scheme",
+              "id": "tender.items[0].deliveryAddress.addressDetails.locality.id",
+              "description": "tender.items[0].deliveryAddress.addressDetails.locality.description"
+            }
+          }
+        }
+      }
+    ],
+    "documents": [
+      {
+        "documentType": "biddingDocuments",
+        "id": "tender.documents[0].id",
+        "title": "tender.documents[0].title"
+      }
+    ]
+  }
+}

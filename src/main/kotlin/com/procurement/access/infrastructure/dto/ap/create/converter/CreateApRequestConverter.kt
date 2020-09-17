@@ -1,9 +1,9 @@
-package com.procurement.access.infrastructure.dto.ap.converter
+package com.procurement.access.infrastructure.dto.ap.create.converter
 
 import com.procurement.access.application.service.ap.create.ApCreateData
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.ap.ApCreateRequest
+import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
 import com.procurement.access.lib.errorIfEmpty
 import com.procurement.access.lib.takeIfNotEmpty
 
