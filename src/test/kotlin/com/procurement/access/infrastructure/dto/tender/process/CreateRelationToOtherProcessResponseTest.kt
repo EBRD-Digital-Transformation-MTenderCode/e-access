@@ -12,9 +12,4 @@ class CreateRelationToOtherProcessResponseTest : AbstractDTOTestBase<CreateRelat
     fun fully() {
         testBindingAndMapping(pathToJsonFile = "json/dto/create/relation/create_relation_to_other_process_response_full.json")
     }
-
-    @Test
-    fun required_1() {
-        testBindingAndMapping(pathToJsonFile = "json/dto/create/relation/create_relation_to_other_process_response_required_1.json")
-    }
 }

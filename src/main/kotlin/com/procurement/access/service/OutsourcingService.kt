@@ -140,14 +140,6 @@ class OutsourcingServiceImpl(
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
             }
 
-        fun updateProcedureOutsourcing(pn: PNEntity, isProcedureOutsourced: Boolean) =
-            pn.copy(
-                tender = pn.tender.copy(
-                    procedureOutsourcing = PNEntity.Tender.ProcedureOutsourcing(
-                        procedureOutsourced = isProcedureOutsourced
-                    )
-                )
-            )
 
         fun getTenderEntity(
             tenderProcessRepository: TenderProcessRepository,
@@ -184,29 +176,10 @@ class OutsourcingServiceImpl(
             )
         )
 
-        // FR.COM-1.22.8
-        val isProcedureOutsourced = isProcedureOutsourced(params.operationType)
-
-        val procedureOutsourcing = isProcedureOutsourced
-            ?.let { procedureOutsourced ->
-                CreateRelationToOtherProcessResult.Tender.ProcedureOutsourcing(
-                    procedureOutsourced = procedureOutsourced
-                )
-            }
-
-        val tender = procedureOutsourcing
-            ?.let { _procedureOutsourcing ->
-                CreateRelationToOtherProcessResult.Tender(
-                    procedureOutsourcing = _procedureOutsourcing
-                )
-            }
-
         val response = CreateRelationToOtherProcessResult(
             relatedProcesses = relatedProcesses
                 .mapResult { CreateRelationToOtherProcessResult.fromDomain(it) }
-                .orForwardFail { fail -> return fail },
-            tender = tender // FR.COM-1.22.10
-        )
+                .orForwardFail { fail -> return fail })
 
         when (params.operationType) {
             OperationType.RELATION_AP -> { // FR.COM-1.22.6
@@ -221,18 +194,7 @@ class OutsourcingServiceImpl(
                     .bind { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
                     .orForwardFail { fail -> return fail }
             }
-            OperationType.OUTSOURCING_PN -> { // FR.COM-1.22.9
-                val entity = getTenderEntity(tenderProcessRepository, params)
-                    .orForwardFail { fail -> return fail }
 
-                entity.jsonData
-                    .tryToObject(PNEntity::class.java)
-                    .map { pn -> updateProcedureOutsourcing(pn, isProcedureOutsourced!!) }
-                    .bind { updatedPn -> trySerialization(updatedPn) }
-                    .map { updatedPnJson -> entity.copy(jsonData = updatedPnJson) }
-                    .bind { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
-                    .orForwardFail { fail -> return fail }
-            }
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
@@ -242,12 +204,14 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
             OperationType.CREATE_SUBMISSION,
+            OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.QUALIFICATION_PROTOCOL,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> Unit

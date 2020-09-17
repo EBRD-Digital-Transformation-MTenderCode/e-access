@@ -9,10 +9,5 @@
       "identifier": "string",
       "uri": "string"
     }
-  ],
-  "tender": {
-    "procedureOutsourcing": {
-      "procedureOutsourced": true
-    }
-  }
+  ]
 }
