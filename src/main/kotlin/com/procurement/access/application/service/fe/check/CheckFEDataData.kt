@@ -91,7 +91,7 @@ data class CheckFEDataData(
         data class Document(
             val id: String,
             val documentType: DocumentType,
-            val title: String?,
+            val title: String,
             val description: String?
         )
     }
