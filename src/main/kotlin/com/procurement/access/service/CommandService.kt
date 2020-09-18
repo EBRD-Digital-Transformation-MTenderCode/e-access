@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.model.Mode
 import com.procurement.access.application.model.TestMode
+import com.procurement.access.application.model.context.CheckExistanceItemsAndLotsContext
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.context.CheckResponsesContext
@@ -109,6 +110,7 @@ class CommandService(
     private val pnService: PnService,
     private val apCreateService: ApCreateService,
     private val apUpdateService: ApUpdateService,
+    private val apValidationService: ApValidationService,
     private val pnUpdateService: PnUpdateService,
     private val cnCreateService: CnCreateService,
     private val cnService: CNService,
@@ -284,8 +286,6 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.IP, ProcurementMethod.TEST_IP,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
@@ -336,8 +336,6 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -393,8 +391,6 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.IP, ProcurementMethod.TEST_IP,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
@@ -490,8 +486,6 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.IP, ProcurementMethod.TEST_IP,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
@@ -615,8 +609,6 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.IP, ProcurementMethod.TEST_IP,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
@@ -697,8 +689,6 @@ class CommandService(
                         ResponseDto(data = response)
                     }
 
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
                     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
                     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -786,9 +776,35 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.IP, ProcurementMethod.TEST_IP,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
+
+            CommandType.CHECK_EXISTANCE_ITEMS_AND_LOTS -> {
+                when (cm.pmd) {
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
+                        val context = CheckExistanceItemsAndLotsContext(cpid = cm.cpid, stage = cm.stage)
+                        apValidationService.checkExistanceItemsAndLots(context = context)
+                            .also { log.debug("Checking was a success.") }
+                        ResponseDto()
+                    }
+
+                    ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+                    ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
 
@@ -856,8 +872,6 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
                     ProcurementMethod.IP, ProcurementMethod.TEST_IP,
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
                 ResponseDto(data = response)
