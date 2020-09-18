@@ -786,7 +786,7 @@ class CommandService(
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CheckExistanceItemsAndLotsContext(cpid = cm.cpid, stage = cm.stage)
                         apValidationService.checkExistanceItemsAndLots(context = context)
-                            .also { log.debug("Checking response was a success.") }
+                            .also { log.debug("Checking was a success.") }
                         ResponseDto()
                     }
 
