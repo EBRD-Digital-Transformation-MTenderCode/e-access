@@ -131,7 +131,7 @@ class ApUpdateServiceImpl(
                     }
 
                 val receivedLotsIds = receivedLotsById.keys
-                val availableLotsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
+                val availableLotsIds = tenderProcess.tender.lots.orEmpty().toSetBy { it.id }
                 val newLotsId = receivedLotsIds - availableLotsIds
                 val newLots = newLotsId.map { newLotId ->
                     receivedLotsById.getValue(newLotId).createEntity()
