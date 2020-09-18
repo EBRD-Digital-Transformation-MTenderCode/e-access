@@ -19,7 +19,7 @@ class ApValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
         val cpid = context.cpid
         val stage = context.stage
 
-        val apEntity: APEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val apEntity: APEntity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
             ?.let { apEntity -> toObject(APEntity::class.java, apEntity.jsonData) }
             ?: throw ErrorException( // VR.COM-1.26.1
                 error = ErrorType.ENTITY_NOT_FOUND,
