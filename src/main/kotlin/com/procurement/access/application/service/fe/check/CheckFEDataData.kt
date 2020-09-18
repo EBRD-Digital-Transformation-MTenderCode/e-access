@@ -73,7 +73,7 @@ data class CheckFEDataData(
                         val id: String,
                         val documentType: BusinessFunctionDocumentType,
                         val title: String,
-                        val description: String
+                        val description: String?
                     )
 
                     data class Period(

@@ -34,8 +34,7 @@
                 {
                   "id": "string",
                   "documentType": "regulatoryDocument",
-                  "title": "string",
-                  "description": "string"
+                  "title": "string"
                 }
               ]
             }
