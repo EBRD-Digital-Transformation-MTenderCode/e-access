@@ -59,7 +59,7 @@ data class CheckFEDataData(
                 data class Identifier(
                     val scheme: String,
                     val id: String,
-                    val uri: String
+                    val uri: String?
                 )
 
                 data class BusinessFunction(

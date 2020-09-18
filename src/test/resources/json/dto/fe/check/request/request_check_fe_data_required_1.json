@@ -11,8 +11,7 @@
           "name": "string",
           "identifier": {
             "scheme": "string",
-            "id": "string",
-            "uri": "string"
+            "id": "string"
           },
           "businessFunctions": [
             {
