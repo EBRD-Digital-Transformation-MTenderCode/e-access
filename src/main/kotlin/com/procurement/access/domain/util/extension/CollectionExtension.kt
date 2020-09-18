@@ -45,12 +45,14 @@ fun <T, R, E> List<T>?.mapOptionalResult(block: (T) -> Result<R, E>): Result<Opt
     return Result.success(Option.pure(r))
 }
 
-fun <T> getUnknownElements(received: Set<T>, known: Set<T>) = getNewElements(
-    received,
-    known
-)
+fun <T> getUnknownElements(received: Iterable<T>, known: Iterable<T>) =
+    getNewElements(received = received, known = known)
 
-fun <T> getNewElements(received: Set<T>, known: Set<T>) = received.subtract(known)
+fun <T> getNewElements(received: Iterable<T>, known: Iterable<T>): Set<T> =
+    received.asSet().subtract(known.asSet())
+
+fun <T> getMissingElements(received: Iterable<T>, known: Iterable<T>): Set<T> =
+    known.asSet().subtract(received.asSet())
 
 fun <T> getElementsForUpdate(received: Set<T>, known: Set<T>) = known.intersect(received)
 
@@ -61,4 +63,9 @@ inline fun <T, V> Collection<T>.getDuplicate(selector: (T) -> V): T? {
             return item
     }
     return null
+}
+
+private fun <T> Iterable<T>.asSet(): Set<T> = when (this) {
+    is Set -> this
+    else -> this.toSet()
 }
