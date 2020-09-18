@@ -86,10 +86,12 @@ class OutsourcingServiceImpl(
                 OperationType.OUTSOURCING_PN -> success(RelatedProcessType.X_DEMAND)
                 OperationType.RELATION_AP -> success(RelatedProcessType.X_SCOPE)
 
+                OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_FE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
@@ -127,6 +129,9 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_PN,
                 OperationType.CREATE_SUBMISSION,
                 OperationType.OUTSOURCING_PN -> true
+
+                OperationType.AMEND_FE,
+                OperationType.CREATE_FE,
                 OperationType.QUALIFICATION,
                 OperationType.QUALIFICATION_CONSIDERATION,
                 OperationType.QUALIFICATION_PROTOCOL,
