@@ -143,7 +143,7 @@ class ApUpdateServiceImpl(
                 tenderProcess.tender.lots
             }
 
-        val permanentLotIds = updatedLots.orEmpty().toSetBy { it.id }
+        val receivedPermanentLotIds = data.tender.lots.map { temporalToPermanentLotId[it.id] ?: it.id }
 
         val updatedItems =
             data.tender.items
@@ -157,7 +157,7 @@ class ApUpdateServiceImpl(
                     checkQuantity(items.map { it.quantity })
 
                     // VR.COM-1.26.12
-                    checkItemsRelation(items, permanentLotIds)
+                    checkItemsRelation(items, receivedPermanentLotIds)
 
                     val receivedItemsById = items.associateBy { it.id }
                     val updatedItems = tenderProcess.tender.items.orEmpty()
@@ -180,7 +180,7 @@ class ApUpdateServiceImpl(
         // FR.COM-1.26.4
         val updatedTenderDocuments = updateTenderDocuments(
             tender = tenderProcess.tender,
-            receivedLotsIds = permanentLotIds,
+            receivedLotsIds = receivedPermanentLotIds,
             receivedDocuments = data.tender.documents,
             temporalToPermanentLotId = temporalToPermanentLotId
         )
