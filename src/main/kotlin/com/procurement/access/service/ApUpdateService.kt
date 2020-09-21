@@ -250,7 +250,7 @@ class ApUpdateServiceImpl(
                     )
                 else
                     relatedItems.forEach { relatedItem ->
-                        if (relatedItem.deliveryAddress != null)
+                        if (relatedItem.deliveryAddress == null)
                             throw ErrorException(
                                 error = INCORRECT_VALUE_ATTRIBUTE,
                                 message = "Missing 'deliveryAddress' in item='${relatedItem.id}'."
