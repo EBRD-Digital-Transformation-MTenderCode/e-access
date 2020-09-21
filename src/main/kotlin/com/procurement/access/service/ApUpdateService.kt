@@ -143,34 +143,37 @@ class ApUpdateServiceImpl(
             }
 
         val updatedItems =
-            if (data.tender.items.isNotEmpty()) {
-                // VR.COM-1.26.4
-                checkItemsIdsQniqueness(data.tender.items.map { it.id })
+            data.tender.items
+                .takeIf { it.isNotEmpty() }
+                ?.map { it.copy(relatedLot = temporalToPermanentLotId[it.relatedLot] ?: it.relatedLot) }
+                ?.let { items ->
+                    // VR.COM-1.26.4
+                    checkItemsIdsQniqueness(items.map { it.id })
 
-                // VR.COM-1.26.11
-                checkQuantity(data.tender.items.map { it.quantity })
+                    // VR.COM-1.26.11
+                    checkQuantity(items.map { it.quantity })
 
-                // VR.COM-1.26.12
-                checkItemsRelation(data.tender.items, data.tender.lots.map { it.id })
+                    // VR.COM-1.26.12
+                    checkItemsRelation(items, updatedLots.orEmpty()
+                        .map { it.id })
 
-                val receivedItemsById = data.tender.items.associateBy { it.id }
-                val updatedItems = tenderProcess.tender.items.orEmpty()
-                    .map { itemFromDb ->
-                        receivedItemsById[itemFromDb.id]
-                            ?.let { itemFromDb.updateBy(it) }
-                            ?: itemFromDb.copy(quantity = BigDecimal.ZERO)
+                    val receivedItemsById = items.associateBy { it.id }
+                    val updatedItems = tenderProcess.tender.items.orEmpty()
+                        .map { itemFromDb ->
+                            receivedItemsById[itemFromDb.id]
+                                ?.let { itemFromDb.updateBy(it) }
+                                ?: itemFromDb.copy(quantity = BigDecimal.ZERO)
+                        }
+
+                    val receivedItemsIds = receivedItemsById.keys
+                    val availableItemsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
+                    val newItemsId = receivedItemsIds - availableItemsIds
+                    val newItems = newItemsId.map { newItemId ->
+                        receivedItemsById.getValue(newItemId).createEntity(temporalToPermanentLotId)
                     }
-
-                val receivedItemsIds = receivedItemsById.keys
-                val availableItemsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
-                val newItemsId = receivedItemsIds - availableItemsIds
-                val newItems = newItemsId.map { newItemId ->
-                    receivedItemsById.getValue(newItemId).createEntity(temporalToPermanentLotId)
+                    updatedItems + newItems
                 }
-                updatedItems + newItems
-            } else {
-                tenderProcess.tender.items
-            }
+                ?:tenderProcess.tender.items
 
         // FR.COM-1.26.4
         val updatedTenderDocuments = updateTenderDocuments(
