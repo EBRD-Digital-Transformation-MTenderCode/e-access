@@ -445,8 +445,18 @@ class ApUpdateServiceImpl(
             title = received.title,
             internalId = received.internalId ?: this.internalId,
             value = received.value,
-            contractPeriod = this.contractPeriod.updateBy(received.contractPeriod)
+            contractPeriod = this.contractPeriod.updateBy(received.contractPeriod),
+            placeOfPerformance = received.placeOfPerformance
+                ?.let {
+                    this.placeOfPerformance
+                        ?.updateBy(it)
+                        ?: it.toEntity()
+                }
+                ?: this.placeOfPerformance
         )
+
+    private fun APEntity.Tender.Lot.PlaceOfPerformance.updateBy(received: ApUpdateData.Tender.Lot.PlaceOfPerformance): APEntity.Tender.Lot.PlaceOfPerformance =
+        this.copy(address = this.address.updateBy(received.address))
 
     private fun ApUpdateData.Tender.Lot.createEntity(): APEntity.Tender.Lot =
         APEntity.Tender.Lot(
