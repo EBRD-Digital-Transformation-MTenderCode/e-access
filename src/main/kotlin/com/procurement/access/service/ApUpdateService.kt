@@ -169,7 +169,7 @@ class ApUpdateServiceImpl(
                     val availableItemsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
                     val newItemsId = receivedItemsIds - availableItemsIds
                     val newItems = newItemsId.map { newItemId ->
-                        receivedItemsById.getValue(newItemId).createEntity(temporalToPermanentLotId)
+                        receivedItemsById.getValue(newItemId).createEntity()
                     }
                     updatedItems + newItems
                 }
@@ -544,7 +544,7 @@ class ApUpdateServiceImpl(
                 ?: this.locality
         )
 
-    private fun ApUpdateData.Tender.Item.createEntity(temporalToPermanentLotId: Map<String, String>): APEntity.Tender.Item =
+    private fun ApUpdateData.Tender.Item.createEntity(): APEntity.Tender.Item =
         APEntity.Tender.Item(
             id = generationService.generatePermanentItemId(),
             internalId = this.internalId,
@@ -612,7 +612,7 @@ class ApUpdateServiceImpl(
                             }
                     )
                 },
-            relatedLot = temporalToPermanentLotId.getValue(this.relatedLot)
+            relatedLot = this.relatedLot
         )
 
     private fun ApUpdateData.Tender.Address.toEntity(): APEntity.Tender.Address =
