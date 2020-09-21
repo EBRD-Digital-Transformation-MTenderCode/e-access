@@ -71,10 +71,11 @@ class ApUpdateServiceImpl(
         val updatedValue =
             if (activeLots.isNotEmpty()) {
                 val newAmount = calculateValueByActiveLots(activeLots)
-                if (tenderProcess.tender.value != null)
+                if (tenderProcess.tender.value != null) {
+                    validateLotsCurrency(activeLots, tenderProcess.tender.value)
                     Money(newAmount, tenderProcess.tender.value.currency)
-                else {
-                    checkLotsCurrency(activeLots)
+                } else {
+                    checkLotsCurrencyConsistency(activeLots)
                     Money(newAmount, activeLots.first().value.currency)
                 }
             } else
@@ -287,13 +288,24 @@ class ApUpdateServiceImpl(
         if (startDate.dayOfMonth != 1) throw ErrorException(INVALID_START_DATE)
     }
 
-    private fun checkLotsCurrency(lots: List<ApUpdateData.Tender.Lot>) {
+    private fun checkLotsCurrencyConsistency(lots: List<ApUpdateData.Tender.Lot>) {
         val currencies = lots.toSetBy { it.value.currency }
         if (currencies.size != 1)
             throw ErrorException(
                 error = INVALID_LOT_CURRENCY,
                 message = "Found ${currencies.size} currencies: ${currencies}"
             )
+    }
+
+    private fun validateLotsCurrency(lots: List<ApUpdateData.Tender.Lot>, storedMoney: Money) {
+        val currencies = lots.toSetBy { it.value.currency }
+        currencies.forEach { receivedCurrency ->
+            if (receivedCurrency != storedMoney.currency)
+                throw ErrorException(
+                    error = INVALID_LOT_CURRENCY,
+                    message = "Currency in saved lots: '${storedMoney.currency}'. Currency in request: '$receivedCurrency'."
+                )
+        }
     }
 
     private fun checkLotsContractPeriod(lots: List<ApUpdateData.Tender.Lot>, tenderPeriodStartDate: LocalDateTime) {
@@ -444,7 +456,7 @@ class ApUpdateServiceImpl(
             description = received.description,
             title = received.title,
             internalId = received.internalId ?: this.internalId,
-            value = received.value,
+            value = Money(amount = received.value.amount, currency = this.value.currency),
             contractPeriod = this.contractPeriod.updateBy(received.contractPeriod),
             placeOfPerformance = received.placeOfPerformance
                 ?.let {
