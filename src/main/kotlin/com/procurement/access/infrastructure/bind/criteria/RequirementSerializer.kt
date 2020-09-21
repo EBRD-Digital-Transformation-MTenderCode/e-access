@@ -49,7 +49,7 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                         requirementNode.put("expectedValue", requirement.value.value)
                     }
                     is ExpectedValue.AsNumber -> {
-                        requirementNode.put("expectedValue", requirement.value.toString())
+                        requirementNode.put("expectedValue", BigDecimal(requirement.value.toString()))
                     }
                     is ExpectedValue.AsInteger -> {
                         requirementNode.put("expectedValue", requirement.value.value)
@@ -63,13 +63,13 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                         requirementNode.put("maxValue", requirement.value.maxValue)
                     }
                     is MinValue.AsNumber -> {
-                        requirementNode.put("minValue", requirement.value.toString())
+                        requirementNode.put("minValue", BigDecimal(requirement.value.toString()))
                     }
                     is MinValue.AsInteger -> {
                         requirementNode.put("minValue", requirement.value.value)
                     }
                     is MaxValue.AsNumber -> {
-                        requirementNode.put("maxValue", requirement.value.toString())
+                        requirementNode.put("maxValue", BigDecimal(requirement.value.toString()))
                     }
                     is MaxValue.AsInteger -> {
                         requirementNode.put("maxValue", requirement.value.value)
