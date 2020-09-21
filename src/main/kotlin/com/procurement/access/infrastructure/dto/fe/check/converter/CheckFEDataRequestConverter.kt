@@ -1,7 +1,12 @@
 package com.procurement.access.infrastructure.dto.fe.check.converter
 
 import com.procurement.access.application.service.fe.check.CheckFEDataData
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.fe.check.CheckFEDataRequest
+import com.procurement.access.lib.errorIfEmpty
+import com.procurement.access.lib.mapIfNotEmpty
+import com.procurement.access.lib.orThrow
 
 fun CheckFEDataRequest.convert() = CheckFEDataData(
     tender = this.tender.convert()
@@ -16,9 +21,22 @@ fun CheckFEDataRequest.Tender.convert() = CheckFEDataData.Tender(
     otherCriteria = this.otherCriteria?.convert(),
     procuringEntity = this.procuringEntity?.convert(),
     criteria = this.criteria
+        .errorIfEmpty {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The tender contain empty list of the criteria."
+            )
+        }
         ?.map { it.convert() }
         .orEmpty(),
-    documents = this.documents?.map { it.convert() }
+    documents = this.documents
+        .errorIfEmpty {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The tender contain empty list of the documents."
+            )
+        }
+        ?.map { it.convert() }
         .orEmpty()
 )
 
@@ -39,13 +57,27 @@ fun CheckFEDataRequest.Tender.Criteria.convert() = CheckFEDataData.Tender.Criter
     description = this.description,
     title = this.title,
     relatesTo = this.relatesTo,
-    requirementGroups = this.requirementGroups.map { it.convert() }
+    requirementGroups = this.requirementGroups
+        .mapIfNotEmpty { it.convert() }
+        .orThrow {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The tender.criteria contain empty list of the requirement groups."
+            )
+        }
 )
 
 fun CheckFEDataRequest.Tender.Criteria.RequirementGroup.convert() = CheckFEDataData.Tender.Criteria.RequirementGroup(
     id = this.id,
     description = this.description,
     requirements = this.requirements
+        .mapIfNotEmpty { it }
+        .orThrow {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The criteria.requirements contain empty list of the requirements."
+            )
+        }
 )
 
 fun CheckFEDataRequest.Tender.OtherCriteria.convert() = CheckFEDataData.Tender.OtherCriteria(
@@ -55,7 +87,14 @@ fun CheckFEDataRequest.Tender.OtherCriteria.convert() = CheckFEDataData.Tender.O
 
 fun CheckFEDataRequest.Tender.ProcuringEntity.convert() = CheckFEDataData.Tender.ProcuringEntity(
     id = this.id,
-    persons = this.persons.map { it.convert() }
+    persons = this.persons
+        .mapIfNotEmpty { it.convert() }
+        .orThrow {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The procuringentity contain empty list of the persones."
+            )
+        }
 )
 
 fun CheckFEDataRequest.Tender.ProcuringEntity.Person.convert() = CheckFEDataData.Tender.ProcuringEntity.Person(
@@ -63,7 +102,14 @@ fun CheckFEDataRequest.Tender.ProcuringEntity.Person.convert() = CheckFEDataData
     title = this.title,
     name = this.name,
     identifier = this.identifier.convert(),
-    businessFunctions = this.businessFunctions.map { it.convert() }
+    businessFunctions = this.businessFunctions
+        .mapIfNotEmpty { it.convert() }
+        .orThrow {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The procuringEntity.persons contain empty list of the businessFunctions."
+            )
+        }
 )
 
 fun CheckFEDataRequest.Tender.ProcuringEntity.Person.Identifier.convert() = CheckFEDataData.Tender.ProcuringEntity.Person.Identifier(
@@ -78,6 +124,12 @@ fun CheckFEDataRequest.Tender.ProcuringEntity.Person.BusinessFunction.convert() 
     jobTitle = this.jobTitle,
     period = this.period.convert(),
     documents = this.documents
+        .errorIfEmpty {
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The person business functions contain empty list of the documents."
+            )
+        }
         ?.map { it.convert() }
         .orEmpty()
 )
