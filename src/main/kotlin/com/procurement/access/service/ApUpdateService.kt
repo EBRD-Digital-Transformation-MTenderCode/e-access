@@ -142,6 +142,8 @@ class ApUpdateServiceImpl(
                 tenderProcess.tender.lots
             }
 
+        val permanentLotIds = updatedLots.orEmpty().toSetBy { it.id }
+
         val updatedItems =
             data.tender.items
                 .takeIf { it.isNotEmpty() }
@@ -154,8 +156,7 @@ class ApUpdateServiceImpl(
                     checkQuantity(items.map { it.quantity })
 
                     // VR.COM-1.26.12
-                    checkItemsRelation(items, updatedLots.orEmpty()
-                        .map { it.id })
+                    checkItemsRelation(items, permanentLotIds)
 
                     val receivedItemsById = items.associateBy { it.id }
                     val updatedItems = tenderProcess.tender.items.orEmpty()
@@ -178,6 +179,7 @@ class ApUpdateServiceImpl(
         // FR.COM-1.26.4
         val updatedTenderDocuments = updateTenderDocuments(
             tender = tenderProcess.tender,
+            receivedLotsIds = permanentLotIds,
             receivedDocuments = data.tender.documents,
             temporalToPermanentLotId = temporalToPermanentLotId
         )
@@ -270,7 +272,7 @@ class ApUpdateServiceImpl(
         }
     }
 
-    fun checkItemsRelation(items: List<ApUpdateData.Tender.Item>, receivedLotsIds: List<String>) {
+    fun checkItemsRelation(items: List<ApUpdateData.Tender.Item>, receivedLotsIds: Collection<String>) {
         items.map { it.relatedLot }
             .forEach { relatedLot ->
                 if (relatedLot !in receivedLotsIds)
@@ -304,52 +306,53 @@ class ApUpdateServiceImpl(
 
     private fun updateTenderDocuments(
         tender: APEntity.Tender,
+        receivedLotsIds: Collection<String>,
         receivedDocuments: List<ApUpdateData.Tender.Document>,
         temporalToPermanentLotId: Map<String, String>
     ): List<APEntity.Tender.Document> {
-        if (receivedDocuments.isNotEmpty()) {
-            val uniqDocsId = receivedDocuments.toSetBy { it.id }
-            if (uniqDocsId.size != receivedDocuments.size) throw ErrorException(INVALID_DOCS_ID)
+        receivedDocuments
+            .takeIf { it.isNotEmpty() }
+            ?.map { it.copy(relatedLots = it.relatedLots.map { temporalToPermanentLotId[it] ?: it }) }
+            ?.let { updatedReceivedDocuments ->
+                val uniqDocsId = updatedReceivedDocuments.toSetBy { it.id }
+                if (uniqDocsId.size != updatedReceivedDocuments.size) throw ErrorException(INVALID_DOCS_ID)
 
-            // VR.COM-1.26.7
-            val receivedLotsIds = tender.lots.orEmpty()
-                .toSetBy { it.id }
-            validateDocumentsRelatedLots(receivedDocuments, receivedLotsIds)
+                // VR.COM-1.26.7
+                validateDocumentsRelatedLots(updatedReceivedDocuments, receivedLotsIds)
 
-            return if (tender.documents.orEmpty().isNotEmpty()) {
-                val documentsDb = tender.documents.orEmpty()
+                return if (tender.documents != null && tender.documents.isNotEmpty()) {
+                    val documentsDb = tender.documents.orEmpty()
 
-                // VR.COM-1.26.3
-                val receivedDocumentsIds = receivedDocuments.toSetBy { it.id }
-                val availableDocumentsIds = documentsDb.toSetBy { it.id }
-                if (!receivedDocumentsIds.containsAll(availableDocumentsIds))
-                    throw ErrorException(
-                        error = INVALID_DOCS_ID,
-                        message = "Missing documents ( ids: ${availableDocumentsIds - receivedDocumentsIds}) in request."
-                    )
+                    // VR.COM-1.26.3
+                    val receivedDocumentsIds = updatedReceivedDocuments.toSetBy { it.id }
+                    val availableDocumentsIds = documentsDb.toSetBy { it.id }
+                    if (!receivedDocumentsIds.containsAll(availableDocumentsIds))
+                        throw ErrorException(
+                            error = INVALID_DOCS_ID,
+                            message = "Missing documents ( ids: ${availableDocumentsIds - receivedDocumentsIds}) in request."
+                        )
 
-                val receivedDocumentsById = receivedDocuments.associateBy { it.id }
+                    val receivedDocumentsById = updatedReceivedDocuments.associateBy { it.id }
 
-                val updatedDocuments = documentsDb.map { documentFromDb ->
-                    receivedDocumentsById[documentFromDb.id]
-                        ?.let { documentFromDb.updateBy(it) }
-                        ?: documentFromDb
+                    val updatedDocuments = documentsDb.map { documentFromDb ->
+                        receivedDocumentsById[documentFromDb.id]
+                            ?.let { documentFromDb.updateBy(it) }
+                            ?: documentFromDb
+                    }
+                    val newDocumentsId = receivedDocumentsIds - availableDocumentsIds
+                    val newDocuments = newDocumentsId.map { newDocumentId ->
+                        receivedDocumentsById.getValue(newDocumentId).createEntity()
+                    }
+                    updatedDocuments + newDocuments
+                } else {
+                    updatedReceivedDocuments.map { it.createEntity() }
                 }
-                val newDocumentsId = receivedDocumentsIds - availableDocumentsIds
-                val newDocuments = newDocumentsId.map { newDocumentId ->
-                    receivedDocumentsById.getValue(newDocumentId).createEntity(temporalToPermanentLotId)
-                }
-                updatedDocuments + newDocuments
-            } else {
-                receivedDocuments.map { it.createEntity(temporalToPermanentLotId) }
             }
-        } else {
-            if (tender.documents.orEmpty().isNotEmpty())
+            ?: if (tender.documents != null && tender.documents.isNotEmpty())
                 throw ErrorException(
                     error = EMPTY_DOCS,
                     message = "Missing documents in request."
                 )
-        }
 
         return emptyList()
     }
@@ -402,10 +405,9 @@ class ApUpdateServiceImpl(
             .flatMap { it.relatedLots }
             .toSet()
 
-        if (lotsFromReceivedDocuments.isNotEmpty()) {
-            if (!lotsIds.containsAll(lotsFromReceivedDocuments))
-                throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-        }
+        if (lotsFromReceivedDocuments.isEmpty()) return
+        if (!lotsIds.containsAll(lotsFromReceivedDocuments))
+            throw ErrorException(INVALID_DOCS_RELATED_LOTS)
     }
 
     private fun APEntity.Tender.Document.updateBy(received: ApUpdateData.Tender.Document): APEntity.Tender.Document =
@@ -459,13 +461,13 @@ class ApUpdateServiceImpl(
             placeOfPerformance = this.placeOfPerformance?.toEntity()
         )
 
-    private fun ApUpdateData.Tender.Document.createEntity(temporalToPermanentLotId: Map<String, String>): APEntity.Tender.Document =
+    private fun ApUpdateData.Tender.Document.createEntity(): APEntity.Tender.Document =
         APEntity.Tender.Document(
             id = this.id,
             description = this.description,
             title = this.title,
             documentType = this.documentType,
-            relatedLots = this.relatedLots.map { temporalToPermanentLotId.getValue(it) }
+            relatedLots = this.relatedLots
         )
 
     private fun ApUpdateData.Tender.Lot.ContractPeriod.toEntity(): APEntity.Tender.Lot.ContractPeriod =
