@@ -20,7 +20,7 @@ import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import java.time.LocalDateTime
 
-data class UpdateFEResult(
+data class AmendFEResult(
     val tender: Tender
 ) {
     data class Tender(

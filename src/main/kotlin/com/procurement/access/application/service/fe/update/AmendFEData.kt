@@ -5,7 +5,7 @@ import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
 import java.time.LocalDateTime
 
-data class UpdateFEData(
+data class AmendFEData(
     val tender: Tender
 ) {
     data class Tender(

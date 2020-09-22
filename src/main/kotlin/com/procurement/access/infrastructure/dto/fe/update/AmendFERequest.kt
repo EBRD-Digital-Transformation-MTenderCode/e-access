@@ -13,7 +13,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class UpdateFERequest(
+data class AmendFERequest(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(

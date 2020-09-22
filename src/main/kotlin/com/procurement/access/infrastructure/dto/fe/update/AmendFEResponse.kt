@@ -30,7 +30,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
-data class UpdateFEResponse(
+data class AmendFEResponse(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(

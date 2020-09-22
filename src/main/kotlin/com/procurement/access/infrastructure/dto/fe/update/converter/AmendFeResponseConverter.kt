@@ -1,13 +1,13 @@
 package com.procurement.access.infrastructure.dto.fe.update.converter
 
-import com.procurement.access.application.service.fe.update.UpdateFEResult
-import com.procurement.access.infrastructure.dto.fe.update.UpdateFEResponse
+import com.procurement.access.application.service.fe.update.AmendFEResult
+import com.procurement.access.infrastructure.dto.fe.update.AmendFEResponse
 
-fun UpdateFEResult.convert(): UpdateFEResponse =
-    UpdateFEResponse(tender = this.tender.convert())
+fun AmendFEResult.convert(): AmendFEResponse =
+    AmendFEResponse(tender = this.tender.convert())
 
-fun UpdateFEResult.Tender.convert(): UpdateFEResponse.Tender =
-    UpdateFEResponse.Tender(
+fun AmendFEResult.Tender.convert(): AmendFEResponse.Tender =
+    AmendFEResponse.Tender(
         id = this.id,
         status = this.status,
         statusDetails = this.statusDetails,
@@ -41,78 +41,78 @@ fun UpdateFEResult.Tender.convert(): UpdateFEResponse.Tender =
         criteria = this.criteria?.map { it.convert() }
     )
 
-fun UpdateFEResult.Tender.Classification.convert(): UpdateFEResponse.Tender.Classification =
-    UpdateFEResponse.Tender.Classification(
+fun AmendFEResult.Tender.Classification.convert(): AmendFEResponse.Tender.Classification =
+    AmendFEResponse.Tender.Classification(
         scheme = this.scheme,
         id = this.id,
         description = this.description
     )
 
-fun UpdateFEResult.Tender.AcceleratedProcedure.convert(): UpdateFEResponse.Tender.AcceleratedProcedure =
-    UpdateFEResponse.Tender.AcceleratedProcedure(
+fun AmendFEResult.Tender.AcceleratedProcedure.convert(): AmendFEResponse.Tender.AcceleratedProcedure =
+    AmendFEResponse.Tender.AcceleratedProcedure(
         isAcceleratedProcedure = this.isAcceleratedProcedure
     )
 
-fun UpdateFEResult.Tender.DesignContest.convert(): UpdateFEResponse.Tender.DesignContest =
-    UpdateFEResponse.Tender.DesignContest(
+fun AmendFEResult.Tender.DesignContest.convert(): AmendFEResponse.Tender.DesignContest =
+    AmendFEResponse.Tender.DesignContest(
         serviceContractAward = this.serviceContractAward
     )
 
-fun UpdateFEResult.Tender.ElectronicWorkflows.convert(): UpdateFEResponse.Tender.ElectronicWorkflows =
-    UpdateFEResponse.Tender.ElectronicWorkflows(
+fun AmendFEResult.Tender.ElectronicWorkflows.convert(): AmendFEResponse.Tender.ElectronicWorkflows =
+    AmendFEResponse.Tender.ElectronicWorkflows(
         useOrdering = this.useOrdering,
         usePayment = this.usePayment,
         acceptInvoicing = this.acceptInvoicing
     )
 
-fun UpdateFEResult.Tender.JointProcurement.convert(): UpdateFEResponse.Tender.JointProcurement =
-    UpdateFEResponse.Tender.JointProcurement(
+fun AmendFEResult.Tender.JointProcurement.convert(): AmendFEResponse.Tender.JointProcurement =
+    AmendFEResponse.Tender.JointProcurement(
         isJointProcurement = this.isJointProcurement
     )
 
-fun UpdateFEResult.Tender.ProcedureOutsourcing.convert(): UpdateFEResponse.Tender.ProcedureOutsourcing =
-    UpdateFEResponse.Tender.ProcedureOutsourcing(
+fun AmendFEResult.Tender.ProcedureOutsourcing.convert(): AmendFEResponse.Tender.ProcedureOutsourcing =
+    AmendFEResponse.Tender.ProcedureOutsourcing(
         procedureOutsourced = this.procedureOutsourced
     )
 
-fun UpdateFEResult.Tender.Framework.convert(): UpdateFEResponse.Tender.Framework =
-    UpdateFEResponse.Tender.Framework(
+fun AmendFEResult.Tender.Framework.convert(): AmendFEResponse.Tender.Framework =
+    AmendFEResponse.Tender.Framework(
         isAFramework = this.isAFramework
     )
 
-fun UpdateFEResult.Tender.DynamicPurchasingSystem.convert(): UpdateFEResponse.Tender.DynamicPurchasingSystem =
-    UpdateFEResponse.Tender.DynamicPurchasingSystem(
+fun AmendFEResult.Tender.DynamicPurchasingSystem.convert(): AmendFEResponse.Tender.DynamicPurchasingSystem =
+    AmendFEResponse.Tender.DynamicPurchasingSystem(
         hasDynamicPurchasingSystem = this.hasDynamicPurchasingSystem
     )
 
-fun UpdateFEResult.Tender.Document.convert(): UpdateFEResponse.Tender.Document =
-    UpdateFEResponse.Tender.Document(
+fun AmendFEResult.Tender.Document.convert(): AmendFEResponse.Tender.Document =
+    AmendFEResponse.Tender.Document(
         documentType = this.documentType,
         id = this.id,
         title = this.title,
         description = this.description
     )
 
-fun UpdateFEResult.Tender.SecondStage.convert(): UpdateFEResponse.Tender.SecondStage =
-    UpdateFEResponse.Tender.SecondStage(
+fun AmendFEResult.Tender.SecondStage.convert(): AmendFEResponse.Tender.SecondStage =
+    AmendFEResponse.Tender.SecondStage(
         minimumCandidates = this.minimumCandidates,
         maximumCandidates = this.maximumCandidates
     )
 
-fun UpdateFEResult.Tender.OtherCriteria.convert(): UpdateFEResponse.Tender.OtherCriteria =
-    UpdateFEResponse.Tender.OtherCriteria(
+fun AmendFEResult.Tender.OtherCriteria.convert(): AmendFEResponse.Tender.OtherCriteria =
+    AmendFEResponse.Tender.OtherCriteria(
         reductionCriteria = this.reductionCriteria,
         qualificationSystemMethods = this.qualificationSystemMethods
     )
 
-fun UpdateFEResult.Tender.ContractPeriod.convert(): UpdateFEResponse.Tender.ContractPeriod =
-    UpdateFEResponse.Tender.ContractPeriod(
+fun AmendFEResult.Tender.ContractPeriod.convert(): AmendFEResponse.Tender.ContractPeriod =
+    AmendFEResponse.Tender.ContractPeriod(
         startDate = this.startDate,
         endDate = this.endDate
     )
 
-fun UpdateFEResult.Tender.Criteria.convert(): UpdateFEResponse.Tender.Criteria =
-    UpdateFEResponse.Tender.Criteria(
+fun AmendFEResult.Tender.Criteria.convert(): AmendFEResponse.Tender.Criteria =
+    AmendFEResponse.Tender.Criteria(
         id = this.id,
         title = this.title,
         description = this.description,
@@ -121,15 +121,15 @@ fun UpdateFEResult.Tender.Criteria.convert(): UpdateFEResponse.Tender.Criteria =
         requirementGroups = this.requirementGroups.map { it.convert() }
     )
 
-fun UpdateFEResult.Tender.Criteria.RequirementGroup.convert(): UpdateFEResponse.Tender.Criteria.RequirementGroup =
-    UpdateFEResponse.Tender.Criteria.RequirementGroup(
+fun AmendFEResult.Tender.Criteria.RequirementGroup.convert(): AmendFEResponse.Tender.Criteria.RequirementGroup =
+    AmendFEResponse.Tender.Criteria.RequirementGroup(
         id = this.id,
         description = this.description,
         requirements = this.requirements
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.convert(): UpdateFEResponse.Tender.ProcuringEntity =
-    UpdateFEResponse.Tender.ProcuringEntity(
+fun AmendFEResult.Tender.ProcuringEntity.convert(): AmendFEResponse.Tender.ProcuringEntity =
+    AmendFEResponse.Tender.ProcuringEntity(
         id = this.id,
         name = this.name,
         identifier = this.identifier.convert(),
@@ -139,54 +139,54 @@ fun UpdateFEResult.Tender.ProcuringEntity.convert(): UpdateFEResponse.Tender.Pro
         persons = this.persons.map { it.convert() }
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Identifier.convert(): UpdateFEResponse.Tender.ProcuringEntity.Identifier =
-    UpdateFEResponse.Tender.ProcuringEntity.Identifier(
+fun AmendFEResult.Tender.ProcuringEntity.Identifier.convert(): AmendFEResponse.Tender.ProcuringEntity.Identifier =
+    AmendFEResponse.Tender.ProcuringEntity.Identifier(
         scheme = this.scheme,
         id = this.id,
         legalName = this.legalName,
         uri = this.uri
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Address.convert(): UpdateFEResponse.Tender.ProcuringEntity.Address =
-    UpdateFEResponse.Tender.ProcuringEntity.Address(
+fun AmendFEResult.Tender.ProcuringEntity.Address.convert(): AmendFEResponse.Tender.ProcuringEntity.Address =
+    AmendFEResponse.Tender.ProcuringEntity.Address(
         streetAddress = this.streetAddress,
         postalCode = this.postalCode,
         addressDetails = this.addressDetails.convert()
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Address.AddressDetails.convert(): UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails =
-    UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails(
+fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails =
+    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails(
         country = this.country.convert(),
         region = this.region.convert(),
         locality = this.locality.convert()
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country.convert(): UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Country =
-    UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Country =
+    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
         scheme = this.scheme,
         id = this.id,
         description = this.description,
         uri = this.uri
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region.convert(): UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Region =
-    UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Region =
+    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
         scheme = this.scheme,
         id = this.id,
         description = this.description,
         uri = this.uri
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality.convert(): UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality =
-    UpdateFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality =
+    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
         scheme = this.scheme,
         id = this.id,
         description = this.description,
         uri = this.uri
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.ContactPoint.convert(): UpdateFEResponse.Tender.ProcuringEntity.ContactPoint =
-    UpdateFEResponse.Tender.ProcuringEntity.ContactPoint(
+fun AmendFEResult.Tender.ProcuringEntity.ContactPoint.convert(): AmendFEResponse.Tender.ProcuringEntity.ContactPoint =
+    AmendFEResponse.Tender.ProcuringEntity.ContactPoint(
         name = this.name,
         email = this.email,
         telephone = this.telephone,
@@ -194,8 +194,8 @@ fun UpdateFEResult.Tender.ProcuringEntity.ContactPoint.convert(): UpdateFERespon
         url = this.url
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Person.convert(): UpdateFEResponse.Tender.ProcuringEntity.Person =
-    UpdateFEResponse.Tender.ProcuringEntity.Person(
+fun AmendFEResult.Tender.ProcuringEntity.Person.convert(): AmendFEResponse.Tender.ProcuringEntity.Person =
+    AmendFEResponse.Tender.ProcuringEntity.Person(
         id = this.id,
         title = this.title,
         name = this.name,
@@ -203,15 +203,15 @@ fun UpdateFEResult.Tender.ProcuringEntity.Person.convert(): UpdateFEResponse.Ten
         businessFunctions = this.businessFunctions.map { it.convert() }
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Person.Identifier.convert(): UpdateFEResponse.Tender.ProcuringEntity.Person.Identifier =
-    UpdateFEResponse.Tender.ProcuringEntity.Person.Identifier(
+fun AmendFEResult.Tender.ProcuringEntity.Person.Identifier.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.Identifier =
+    AmendFEResponse.Tender.ProcuringEntity.Person.Identifier(
         id = this.id,
         scheme = this.scheme,
         uri = this.uri
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.convert(): UpdateFEResponse.Tender.ProcuringEntity.Person.BusinessFunction =
-    UpdateFEResponse.Tender.ProcuringEntity.Person.BusinessFunction(
+fun AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction =
+    AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction(
         id = this.id,
         jobTitle = this.jobTitle,
         type = this.type,
@@ -219,15 +219,15 @@ fun UpdateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.convert(): Upd
         documents = this.documents?.map { it.convert() }
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document.convert(): UpdateFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document =
-    UpdateFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document(
+fun AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document =
+    AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document(
         id = this.id,
         documentType = this.documentType,
         title = this.title,
         description = this.description
     )
 
-fun UpdateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period.convert(): UpdateFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period =
-    UpdateFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period(
+fun AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period =
+    AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period(
         startDate = this.startDate
     )
