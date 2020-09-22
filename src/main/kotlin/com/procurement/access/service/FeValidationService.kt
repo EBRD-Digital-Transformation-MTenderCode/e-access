@@ -308,13 +308,13 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
             }
 
 
-            criteria.forEach { _criteria ->
-                _criteria.requirementGroups.validateRequirementGroupCount()
+            criteria.forEach { criterion ->
+                criterion.requirementGroups.validateRequirementGroupCount()
 
                 // FReq-1.1.1.16
-                validateUniquenessBy(_criteria.requirementGroups, "tender.criteria[].requirementGroup[]") { it.id }
+                validateUniquenessBy(criterion.requirementGroups, "tender.criteria[].requirementGroup[]") { it.id }
 
-                _criteria.requirementGroups.forEach { rg ->
+                criterion.requirementGroups.forEach { rg ->
                     rg.requirements.validateRequirementsCount()
 
                     // FReq-1.1.1.16
