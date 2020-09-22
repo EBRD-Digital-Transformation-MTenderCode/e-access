@@ -119,7 +119,7 @@ enum class CommandType(private val value: String) {
     CHECK_BID("checkBid"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),
     CHECK_CN_ON_PN("checkCnOnPn"),
-    CHECK_EXISTANCE_ITEMS_AND_LOTS("checkExistanceItemsAndLots"),
+    CHECK_EXISTANCE_ITEMS_AND_LOTS("checkExistenceItemsAndLots"),
     CHECK_FE_DATA("checkFEData"),
     CHECK_ITEMS("checkItems"),
     CHECK_LOTS_STATUS("checkLotsStatus"),
