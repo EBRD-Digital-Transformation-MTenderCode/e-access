@@ -108,18 +108,16 @@ fun checkAnswerByTenderAndTendererRequirements(
     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
     ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
-    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
+    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+    ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
         //FR.COM-1.16.10
-        checkAnswerByTenderRequirementsGpa(data, criteria)
+        checkAllAnswersReceivedByTenderRequirements(data, criteria)
         //FR.COM-1.16.11
-        checkAnswerByTendererRequirementsGpa(data, criteria)
+        checkNoAnswerReceivedByTendererRequirements(data, criteria)
     }
-    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
     ProcurementMethod.OP, ProcurementMethod.TEST_OP,
-    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -150,7 +148,7 @@ private fun checkAnswerByTenderAndTendererRequirements(
         )
 }
 
-private fun checkAnswerByTenderRequirementsGpa(
+private fun checkAllAnswersReceivedByTenderRequirements(
     data: CheckResponsesData,
     criteria: List<CNEntity.Tender.Criteria>
 ) {
@@ -172,7 +170,7 @@ private fun checkAnswerByTenderRequirementsGpa(
         )
 }
 
-private fun checkAnswerByTendererRequirementsGpa(
+private fun checkNoAnswerReceivedByTendererRequirements(
     data: CheckResponsesData,
     criteria: List<CNEntity.Tender.Criteria>
 ) {
