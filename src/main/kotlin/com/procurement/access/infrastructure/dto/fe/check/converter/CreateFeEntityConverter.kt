@@ -15,6 +15,7 @@ class CreateFeEntityConverter {
 
         private fun fromEntity(entity: FEEntity.Tender): CreateFEResult.Tender =
             CreateFEResult.Tender(
+                id = entity.id,
                 status = entity.status,
                 statusDetails = entity.statusDetails,
                 title = entity.title,

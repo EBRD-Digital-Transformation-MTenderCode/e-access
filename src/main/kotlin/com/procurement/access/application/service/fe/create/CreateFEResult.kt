@@ -26,6 +26,7 @@ data class CreateFEResult(
     val tender: Tender
 ) {
     data class Tender(
+        val id: String,
         val title: String,
         val description: String,
         val status: TenderStatus,
