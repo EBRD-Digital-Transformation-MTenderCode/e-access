@@ -32,7 +32,7 @@ interface FeCreateService {
 class FeCreateServiceImpl(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
-): FeCreateService {
+) : FeCreateService {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(FeCreateService::class.java)
     }
@@ -80,85 +80,17 @@ class FeCreateServiceImpl(
                 statusDetails = TenderStatusDetails.SUBMISSION,  // BR-1.0.1.4.2
                 title = data.tender.title,
                 description = data.tender.description,
-                secondStage = data.tender.secondStage
-                    ?.let { secondStage ->
-                        FEEntity.Tender.SecondStage(
-                            minimumCandidates = secondStage.minimumCandidates,
-                            maximumCandidates = secondStage.maximumCandidates
-                        )
-                    },
+                secondStage = data.tender.secondStage?.convert(),
                 procurementMethodRationale = data.tender.procurementMethodRationale ?: ap.tender.procurementMethodRationale,
                 procuringEntity = FEEntity.Tender.ProcuringEntity(
                     id = ap.tender.procuringEntity.id,
-                    identifier = ap.tender.procuringEntity.identifier
-                        .let { identifier ->
-                            FEEntity.Tender.ProcuringEntity.Identifier(
-                                id = identifier.id,
-                                scheme = identifier.scheme,
-                                legalName = identifier.legalName,
-                                uri = identifier.uri
-                            )
-                        },
+                    identifier = ap.tender.procuringEntity.identifier.convert(),
                     name = ap.tender.procuringEntity.name,
-                    address = ap.tender.procuringEntity.address
-                        .let { address ->
-                            FEEntity.Tender.ProcuringEntity.Address(
-                                streetAddress = address.streetAddress,
-                                postalCode = address.postalCode,
-                                addressDetails = address.addressDetails
-                                    .let { addressDetails ->
-                                        FEEntity.Tender.ProcuringEntity.Address.AddressDetails(
-                                            country = addressDetails.country
-                                                .let { country ->
-                                                    FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
-                                                        id = country.id,
-                                                        scheme = country.scheme,
-                                                        description = country.description,
-                                                        uri = country.uri
-                                                    )
-                                                },
-                                            region = addressDetails.region
-                                                .let { region ->
-                                                    FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
-                                                        id = region.id,
-                                                        scheme = region.scheme,
-                                                        description = region.description,
-                                                        uri = region.uri
-                                                    )
-                                                },
-                                            locality = addressDetails.locality
-                                                .let { locality ->
-                                                    FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
-                                                        id = locality.id,
-                                                        scheme = locality.scheme,
-                                                        description = locality.description,
-                                                        uri = locality.uri
-                                                    )
-                                                }
-                                        )
-                                    }
-                            )
-                        },
+                    address = ap.tender.procuringEntity.address.convert(),
                     additionalIdentifiers = ap.tender.procuringEntity.additionalIdentifiers
-                        ?.map { additionalIdentifier ->
-                            FEEntity.Tender.ProcuringEntity.Identifier(
-                                id = additionalIdentifier.id,
-                                scheme = additionalIdentifier.scheme,
-                                legalName = additionalIdentifier.legalName,
-                                uri = additionalIdentifier.uri
-                            )
-                        }
+                        ?.map { it.convert() }
                         .orEmpty(),
-                    contactPoint = ap.tender.procuringEntity.contactPoint
-                        .let { contactPoint ->
-                            FEEntity.Tender.ProcuringEntity.ContactPoint(
-                                name = contactPoint.name,
-                                email = contactPoint.email,
-                                faxNumber = contactPoint.faxNumber,
-                                telephone = contactPoint.telephone,
-                                url = contactPoint.url
-                            )
-                        },
+                    contactPoint = ap.tender.procuringEntity.contactPoint.convert(),
                     persons = data.tender.procuringEntity?.persons
                         ?.map { person ->
                             FEEntity.Tender.ProcuringEntity.Person(
@@ -237,71 +169,17 @@ class FeCreateServiceImpl(
                                 }
                         )
                     },
-                otherCriteria = data.tender.otherCriteria
-                    ?.let { otherCriteria ->
-                        FEEntity.Tender.OtherCriteria(
-                            reductionCriteria = otherCriteria.reductionCriteria,
-                            qualificationSystemMethods = otherCriteria.qualificationSystemMethods
-                        )
-                    },
+                otherCriteria = data.tender.otherCriteria?.convert(),
                 procurementMethodModalities = data.tender.procurementMethodModalities,
-                documents = data.tender.documents
-                    .map { document ->
-                        FEEntity.Tender.Document(
-                            id = document.id,
-                            description = document.description,
-                            title = document.title,
-                            documentType = document.documentType
-                        )
-                    },
-                classification = ap.tender.classification
-                    .let { classification ->
-                        FEEntity.Tender.Classification(
-                            id = classification.id,
-                            scheme = classification.scheme,
-                            description = classification.description
-                        )
-                    },
+                documents = data.tender.documents.map { it.convert() },
+                classification = ap.tender.classification.convert(),
                 value = ap.tender.value!!,
-                contractPeriod = ap.tender.contractPeriod!!
-                    .let { contractPeriod ->
-                        FEEntity.Tender.ContractPeriod(
-                            startDate = contractPeriod.startDate,
-                            endDate = contractPeriod.endDate
-                        )
-                    },
-                acceleratedProcedure = ap.tender.acceleratedProcedure
-                    .let { acceleratedProcedure ->
-                        FEEntity.Tender.AcceleratedProcedure(
-                            isAcceleratedProcedure = acceleratedProcedure.isAcceleratedProcedure
-                        )
-                    },
-                designContest = ap.tender.designContest
-                    .let { designContest ->
-                        FEEntity.Tender.DesignContest(
-                            serviceContractAward = designContest.serviceContractAward
-                        )
-                    },
-                electronicWorkflows = ap.tender.electronicWorkflows
-                    .let { electronicWorkflows ->
-                        FEEntity.Tender.ElectronicWorkflows(
-                            useOrdering = electronicWorkflows.useOrdering,
-                            acceptInvoicing = electronicWorkflows.acceptInvoicing,
-                            usePayment = electronicWorkflows.usePayment
-                        )
-                    },
-                jointProcurement = ap.tender.jointProcurement
-                    .let { jointProcurement ->
-                        FEEntity.Tender.JointProcurement(
-                            isJointProcurement = jointProcurement.isJointProcurement
-                        )
-                    },
-                dynamicPurchasingSystem = ap.tender.dynamicPurchasingSystem
-                    .let { dynamicPurchasingSystem ->
-                        FEEntity.Tender.DynamicPurchasingSystem(
-                            hasDynamicPurchasingSystem = dynamicPurchasingSystem.hasDynamicPurchasingSystem
-                        )
-                    },
+                contractPeriod = ap.tender.contractPeriod!!.convert(),
+                acceleratedProcedure = ap.tender.acceleratedProcedure.convert(),
+                designContest = ap.tender.designContest.convert(),
+                electronicWorkflows = ap.tender.electronicWorkflows.convert(),
+                jointProcurement = ap.tender.jointProcurement.convert(),
+                dynamicPurchasingSystem = ap.tender.dynamicPurchasingSystem.convert(),
                 legalBasis = ap.tender.legalBasis,
                 procurementMethod = ap.tender.procurementMethod,
                 procurementMethodDetails = ap.tender.procurementMethodDetails,
@@ -310,16 +188,137 @@ class FeCreateServiceImpl(
                 submissionMethod = ap.tender.submissionMethod,
                 submissionMethodDetails = ap.tender.submissionMethodDetails,
                 submissionMethodRationale = ap.tender.submissionMethodRationale,
-                procedureOutsourcing = ap.tender.procedureOutsourcing
-                    .let { procedureOutsourcing ->
-                        FEEntity.Tender.ProcedureOutsourcing(
-                            procedureOutsourced = procedureOutsourcing.procedureOutsourced
-                        )
-                    },
+                procedureOutsourcing = ap.tender.procedureOutsourcing.convert(),
                 mainProcurementCategory = ap.tender.mainProcurementCategory,
-                framework = FEEntity.Tender.Framework(
-                    isAFramework = true
-                )
+                framework = FEEntity.Tender.Framework(isAFramework = true)
             )
+        )
+
+    private fun CreateFEData.Tender.SecondStage.convert(): FEEntity.Tender.SecondStage =
+        FEEntity.Tender.SecondStage(
+            minimumCandidates = this.minimumCandidates,
+            maximumCandidates = this.maximumCandidates
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.Identifier.convert(): FEEntity.Tender.ProcuringEntity.Identifier =
+        FEEntity.Tender.ProcuringEntity.Identifier(
+            id = this.id,
+            scheme = this.scheme,
+            legalName = this.legalName,
+            uri = this.uri
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.AdditionalIdentifier.convert(): FEEntity.Tender.ProcuringEntity.Identifier =
+        FEEntity.Tender.ProcuringEntity.Identifier(
+            id = this.id,
+            scheme = this.scheme,
+            legalName = this.legalName,
+            uri = this.uri
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.Address.convert(): FEEntity.Tender.ProcuringEntity.Address =
+        FEEntity.Tender.ProcuringEntity.Address(
+            streetAddress = this.streetAddress,
+            postalCode = this.postalCode,
+            addressDetails = this.addressDetails.convert()
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails =
+        FEEntity.Tender.ProcuringEntity.Address.AddressDetails(
+            country = this.country.convert(),
+            region = this.region.convert(),
+            locality = this.locality.convert()
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.Country.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country =
+        FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
+            scheme = this.scheme,
+            id = this.id,
+            description = this.description,
+            uri = this.uri
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.Region.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region =
+        FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
+            scheme = this.scheme,
+            id = this.id,
+            description = this.description,
+            uri = this.uri
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality =
+        FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+            scheme = this.scheme,
+            id = this.id,
+            description = this.description,
+            uri = this.uri
+        )
+
+    private fun APEntity.Tender.ProcuringEntity.ContactPoint.convert(): FEEntity.Tender.ProcuringEntity.ContactPoint =
+        FEEntity.Tender.ProcuringEntity.ContactPoint(
+            name = this.name,
+            email = this.email,
+            telephone = this.telephone,
+            faxNumber = this.faxNumber,
+            url = this.url
+        )
+
+    private fun CreateFEData.Tender.OtherCriteria.convert(): FEEntity.Tender.OtherCriteria =
+        FEEntity.Tender.OtherCriteria(
+            reductionCriteria = this.reductionCriteria,
+            qualificationSystemMethods = this.qualificationSystemMethods
+        )
+
+    private fun CreateFEData.Tender.Document.convert(): FEEntity.Tender.Document =
+        FEEntity.Tender.Document(
+            id = this.id,
+            documentType = this.documentType,
+            title = this.title,
+            description = this.description
+        )
+
+    private fun APEntity.Tender.Classification.convert(): FEEntity.Tender.Classification =
+        FEEntity.Tender.Classification(
+            scheme = this.scheme,
+            id = this.id,
+            description = this.description
+        )
+
+    private fun APEntity.Tender.ContractPeriod.convert(): FEEntity.Tender.ContractPeriod =
+        FEEntity.Tender.ContractPeriod(
+            startDate = this.startDate,
+            endDate = this.endDate
+        )
+
+    private fun APEntity.Tender.AcceleratedProcedure.convert(): FEEntity.Tender.AcceleratedProcedure =
+        FEEntity.Tender.AcceleratedProcedure(
+            isAcceleratedProcedure = this.isAcceleratedProcedure
+        )
+
+    private fun APEntity.Tender.DesignContest.convert(): FEEntity.Tender.DesignContest =
+        FEEntity.Tender.DesignContest(
+            serviceContractAward = this.serviceContractAward
+        )
+
+    private fun APEntity.Tender.ElectronicWorkflows.convert(): FEEntity.Tender.ElectronicWorkflows =
+        FEEntity.Tender.ElectronicWorkflows(
+            useOrdering = this.useOrdering,
+            acceptInvoicing = this.acceptInvoicing,
+            usePayment = this.usePayment
+        )
+
+    private fun APEntity.Tender.JointProcurement.convert(): FEEntity.Tender.JointProcurement =
+        FEEntity.Tender.JointProcurement(
+            isJointProcurement = this.isJointProcurement
+        )
+
+    private fun APEntity.Tender.DynamicPurchasingSystem.convert(): FEEntity.Tender.DynamicPurchasingSystem =
+        FEEntity.Tender.DynamicPurchasingSystem(
+            hasDynamicPurchasingSystem = this.hasDynamicPurchasingSystem
+        )
+
+    private fun APEntity.Tender.ProcedureOutsourcing.convert(): FEEntity.Tender.ProcedureOutsourcing =
+        FEEntity.Tender.ProcedureOutsourcing(
+            procedureOutsourced = this.procedureOutsourced
         )
 }
