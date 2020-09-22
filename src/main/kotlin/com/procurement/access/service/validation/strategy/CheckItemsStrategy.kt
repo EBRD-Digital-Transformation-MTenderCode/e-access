@@ -216,7 +216,9 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
 
             OperationType.CREATE_CN_ON_PIN -> CheckItemsResponse.resultUndefined()
 
+            OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.CREATE_FE,
             OperationType.CREATE_SUBMISSION,
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,

@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class OperationType(@JsonValue override val key: String) : EnumElementProvider.Key {
+    AMEND_FE("amendFE"),
     APPLY_QUALIFICATION_PROTOCOL("applyQualificationProtocol"),
     CREATE_CN("createCN"),
     CREATE_CN_ON_PIN("createCNonPIN"),
     CREATE_CN_ON_PN("createCNonPN"),
+    CREATE_FE("createFE"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn"),
     CREATE_PIN("createPIN"),
     CREATE_PIN_ON_PN("createPINonPN"),
