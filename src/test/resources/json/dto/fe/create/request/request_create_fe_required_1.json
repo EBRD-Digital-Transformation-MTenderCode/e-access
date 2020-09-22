@@ -1,0 +1,57 @@
+{
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "procuringEntity": {
+      "id": "string",
+      "persones": [
+        {
+          "title": "string",
+          "id": "string",
+          "name": "string",
+          "identifier": {
+            "scheme": "string",
+            "id": "string"
+          },
+          "businessFunctions": [
+            {
+              "id": "string",
+              "type": "chairman",
+              "jobTitle": "string",
+              "period": {
+                "startDate": "2020-09-15T12:24:54Z"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "criteria": [
+      {
+        "id": "string",
+        "title": "string",
+        "relatesTo": "tenderer",
+        "requirementGroups": [
+          {
+            "id": "string",
+            "description": "string",
+            "requirements": [
+              {
+                "id": "string",
+                "title": "string",
+                "dataType": "number"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "documents": [
+      {
+        "documentType": "contractDraft",
+        "id": "string",
+        "title": "string"
+      }
+    ]
+  }
+}

@@ -6,6 +6,8 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
+import com.procurement.access.domain.util.extension.getMissingElements
+import com.procurement.access.domain.util.extension.getUnknownElements
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -74,21 +76,21 @@ fun checkAnswerByLotRequirements(
         .map { it.id }
         .toList()
 
-    val requirementRequest = data.bid.requirementResponses.map { it.requirement.id }
-
+    val requestRequirements = data.bid.requirementResponses.map { it.requirement.id }
     val totalRequirements = lotRequirements + itemsRequirements
-    val answered = (totalRequirements).intersect(requirementRequest)
-    if (answered.size < totalRequirements.size)
+
+    val unknownRequirements = getUnknownElements(received = requestRequirements, known = totalRequirements)
+    if (unknownRequirements.isNotEmpty())
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_VALUE,
-            message = "For lots and items founded ${totalRequirements.size} requirement in DB but answered for ${answered.size}. " +
-                "Ignored requirements: ${totalRequirements.minus(answered)} "
+            message = "Received redundant requirements: '${unknownRequirements.joinToString()}'"
         )
-    if (answered.size > totalRequirements.size)
+
+    val missingRequirements = getMissingElements(received = requestRequirements, known = totalRequirements)
+    if (missingRequirements.isNotEmpty())
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_VALUE,
-            message = "For lots and items founded ${totalRequirements.size} requirement in DB but answered for ${answered.size}. " +
-                "Unnecessary requirements: ${answered.minus(totalRequirements)} "
+            message = "Missing expected requirements: '${missingRequirements.joinToString()}'"
         )
 }
 
@@ -106,18 +108,16 @@ fun checkAnswerByTenderAndTendererRequirements(
     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
     ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
-    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA -> {
+    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+    ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
         //FR.COM-1.16.10
-        checkAnswerByTenderRequirementsGpa(data, criteria)
+        checkAllAnswersReceivedByTenderRequirements(data, criteria)
         //FR.COM-1.16.11
-        checkAnswerByTendererRequirementsGpa(data, criteria)
+        checkNoAnswerReceivedByTendererRequirements(data, criteria)
     }
-    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
     ProcurementMethod.DA, ProcurementMethod.TEST_DA,
     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
     ProcurementMethod.OP, ProcurementMethod.TEST_OP,
-    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
     ProcurementMethod.FA, ProcurementMethod.TEST_FA,
     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
     ProcurementMethod.DC, ProcurementMethod.TEST_DC,
@@ -148,7 +148,7 @@ private fun checkAnswerByTenderAndTendererRequirements(
         )
 }
 
-private fun checkAnswerByTenderRequirementsGpa(
+private fun checkAllAnswersReceivedByTenderRequirements(
     data: CheckResponsesData,
     criteria: List<CNEntity.Tender.Criteria>
 ) {
@@ -170,7 +170,7 @@ private fun checkAnswerByTenderRequirementsGpa(
         )
 }
 
-private fun checkAnswerByTendererRequirementsGpa(
+private fun checkNoAnswerReceivedByTendererRequirements(
     data: CheckResponsesData,
     criteria: List<CNEntity.Tender.Criteria>
 ) {
