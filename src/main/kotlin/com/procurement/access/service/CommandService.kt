@@ -29,6 +29,8 @@ import com.procurement.access.application.service.cn.update.UpdateSelectiveCnCon
 import com.procurement.access.application.service.cn.update.UpdateSelectiveCnData
 import com.procurement.access.application.service.cn.update.UpdatedOpenCn
 import com.procurement.access.application.service.cn.update.UpdatedSelectiveCn
+import com.procurement.access.application.service.fe.create.CreateFEContext
+import com.procurement.access.application.service.fe.create.CreateFEData
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.lot.GetLotContext
 import com.procurement.access.application.service.lot.LotService
@@ -70,6 +72,9 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.converter.toResponseDto
 import com.procurement.access.infrastructure.dto.fe.check.CheckFEDataRequest
 import com.procurement.access.infrastructure.dto.fe.check.converter.convert
+import com.procurement.access.infrastructure.dto.fe.create.CreateFERequest
+import com.procurement.access.infrastructure.dto.fe.create.CreateFEResponse
+import com.procurement.access.infrastructure.dto.fe.create.converter.convert
 import com.procurement.access.infrastructure.dto.lot.GetLotResponse
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
@@ -112,6 +117,7 @@ class CommandService(
     private val pinOnPnService: PinOnPnService,
     private val pnService: PnService,
     private val apCreateService: ApCreateService,
+    private val feCreateService: FeCreateService,
     private val apUpdateService: ApUpdateService,
     private val apValidationService: ApValidationService,
     private val feValidationService: FeValidationService,
@@ -210,10 +216,53 @@ class CommandService(
                 val response = apUpdateService.updateAp(context, data)
 
                 if (log.isDebugEnabled)
-                    log.debug("Create AP. Response: ${toJson(response)}")
+                    log.debug("Update AP. Response: ${toJson(response)}")
 
                 return ResponseDto(data = response)
             }
+
+            CommandType.CREATE_FE -> {
+                when(cm.pmd) {
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
+                        val context = CreateFEContext(
+                            cpid = cm.cpid,
+                            startDate = cm.startDate,
+                            stage = cm.stage,
+                            prevStage = cm.prevStage,
+                            owner = cm.owner
+                        )
+                        val request: CreateFERequest = toObject(CreateFERequest::class.java, cm.data)
+                        val data: CreateFEData = request.convert()
+                        val result = feCreateService.createFe(context, data)
+                        if (log.isDebugEnabled)
+                            log.debug("Create FE. Result: ${toJson(result)}")
+
+                        val response: CreateFEResponse = result.convert()
+                        if (log.isDebugEnabled)
+                            log.debug("Create FE. Response: ${toJson(response)}")
+
+                        return ResponseDto(data = response)
+                    }
+
+                    ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+                    ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
+
             CommandType.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandType.CREATE_CN -> {
                 val context = CnCreateContext(

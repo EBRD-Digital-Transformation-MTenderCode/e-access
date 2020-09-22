@@ -1,6 +1,5 @@
-package com.procurement.access.infrastructure.entity
+package com.procurement.access.infrastructure.dto.fe.create
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -31,14 +30,12 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class FEEntity(
+data class CreateFEResponse(
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("token") @param:JsonProperty("token") val token: String,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(
-        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
 
@@ -84,14 +81,12 @@ data class FEEntity(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodRationale") @param:JsonProperty("procurementMethodRationale") val procurementMethodRationale: String?,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
+        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>?,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria?,
+        @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
