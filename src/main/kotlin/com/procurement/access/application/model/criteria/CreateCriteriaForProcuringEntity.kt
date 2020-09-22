@@ -22,10 +22,12 @@ class CreateCriteriaForProcuringEntity {
             private val allowedOperationType = OperationType.allowedElements
                 .filter {
                     when (it) {
+                        OperationType.AMEND_FE,
                         OperationType.APPLY_QUALIFICATION_PROTOCOL,
                         OperationType.CREATE_CN,
                         OperationType.CREATE_CN_ON_PIN,
                         OperationType.CREATE_CN_ON_PN,
+                        OperationType.CREATE_FE,
                         OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                         OperationType.CREATE_PIN,
                         OperationType.CREATE_PIN_ON_PN,
@@ -36,8 +38,8 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.QUALIFICATION_CONSIDERATION,
                         OperationType.QUALIFICATION_PROTOCOL,
                         OperationType.RELATION_AP,
-                        OperationType.UPDATE_AP,
                         OperationType.START_SECONDSTAGE,
+                        OperationType.UPDATE_AP,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false

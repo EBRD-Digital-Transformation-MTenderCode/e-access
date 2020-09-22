@@ -11,7 +11,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asSuccess
 
-data class CheckTenderStateParams private constructor(
+class CheckTenderStateParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid,
     val pmd: ProcurementMethod,
@@ -23,9 +23,11 @@ data class CheckTenderStateParams private constructor(
         private val allowedOperationType = OperationType.allowedElements
             .filter {
                 when (it) {
+                    OperationType.AMEND_FE,
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
+                    OperationType.CREATE_FE,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,

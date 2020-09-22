@@ -4,6 +4,7 @@ import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.model.Mode
 import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.model.context.CheckExistanceItemsAndLotsContext
+import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.model.context.CheckResponsesContext
@@ -67,6 +68,8 @@ import com.procurement.access.infrastructure.dto.cn.update.UpdateOpenCnResponse
 import com.procurement.access.infrastructure.dto.cn.update.UpdateSelectiveCnResponse
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.dto.converter.toResponseDto
+import com.procurement.access.infrastructure.dto.fe.check.CheckFEDataRequest
+import com.procurement.access.infrastructure.dto.fe.check.converter.convert
 import com.procurement.access.infrastructure.dto.lot.GetLotResponse
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionRequest
 import com.procurement.access.infrastructure.dto.lot.LotsForAuctionResponse
@@ -111,6 +114,7 @@ class CommandService(
     private val apCreateService: ApCreateService,
     private val apUpdateService: ApUpdateService,
     private val apValidationService: ApValidationService,
+    private val feValidationService: FeValidationService,
     private val pnUpdateService: PnUpdateService,
     private val cnCreateService: CnCreateService,
     private val cnService: CNService,
@@ -786,6 +790,41 @@ class CommandService(
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CheckExistanceItemsAndLotsContext(cpid = cm.cpid, stage = cm.stage)
                         apValidationService.checkExistanceItemsAndLots(context = context)
+                            .also { log.debug("Checking was a success.") }
+                        ResponseDto()
+                    }
+
+                    ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+                    ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+                    ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+                    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+                    ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
+                }
+            }
+
+            CommandType.CHECK_FE_DATA -> {
+                when (cm.pmd) {
+                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+                    ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
+                        val context = CheckFEDataContext(
+                            cpid = cm.cpid,
+                            stage = cm.stage,
+                            prevStage = cm.prevStage,
+                            operationType = cm.operationType,
+                            startDate = cm.startDate
+                        )
+                        val request: CheckFEDataRequest = toObject(CheckFEDataRequest::class.java, cm.data)
+                        feValidationService.checkFEData(context, request.convert())
                             .also { log.debug("Checking was a success.") }
                         ResponseDto()
                     }
