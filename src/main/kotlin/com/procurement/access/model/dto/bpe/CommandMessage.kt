@@ -133,6 +133,7 @@ enum class CommandType(private val value: String) {
     CREATE_CN("createCn"),
     CREATE_CN_ON_PIN("createCnOnPin"),
     CREATE_CN_ON_PN("createCnOnPn"),
+    CREATE_FE("createFE"),
     CREATE_PIN("createPin"),
     CREATE_PIN_ON_PN("createPinOnPn"),
     CREATE_PN("createPn"),
