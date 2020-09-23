@@ -922,7 +922,7 @@ class CommandService(
                         val request: CheckFEDataRequest = toObject(CheckFEDataRequest::class.java, cm.data)
                         feValidationService.checkFEData(context, request.convert())
                             .also { log.debug("Checking was a success.") }
-                        ResponseDto()
+                        ResponseDto(data = "ok")
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
