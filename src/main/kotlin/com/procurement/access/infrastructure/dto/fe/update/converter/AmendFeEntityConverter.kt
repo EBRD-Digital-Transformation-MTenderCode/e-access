@@ -1,20 +1,16 @@
-package com.procurement.access.infrastructure.dto.fe.check.converter
+package com.procurement.access.infrastructure.dto.fe.update.converter
 
-import com.procurement.access.application.service.fe.create.CreateFEResult
+import com.procurement.access.application.service.fe.update.AmendFEResult
 import com.procurement.access.infrastructure.entity.FEEntity
 
-class CreateFeEntityConverter {
+class AmendFeEntityConverter {
     companion object {
 
-        fun fromEntity(entity: FEEntity): CreateFEResult =
-            CreateFEResult(
-                ocid = entity.ocid,
-                token = entity.token,
-                tender = fromEntity(entity.tender)
-            )
+        fun fromEntity(entity: FEEntity): AmendFEResult =
+            AmendFEResult(tender = fromEntity(entity.tender))
 
-        private fun fromEntity(entity: FEEntity.Tender): CreateFEResult.Tender =
-            CreateFEResult.Tender(
+        private fun fromEntity(entity: FEEntity.Tender): AmendFEResult.Tender =
+            AmendFEResult.Tender(
                 id = entity.id,
                 status = entity.status,
                 statusDetails = entity.statusDetails,
@@ -53,78 +49,78 @@ class CreateFeEntityConverter {
                     .orEmpty()
             )
 
-        private fun convert(entity: FEEntity.Tender.Classification): CreateFEResult.Tender.Classification =
-            CreateFEResult.Tender.Classification(
+        private fun convert(entity: FEEntity.Tender.Classification): AmendFEResult.Tender.Classification =
+            AmendFEResult.Tender.Classification(
                 scheme = entity.scheme,
                 id = entity.id,
                 description = entity.description
             )
 
-        private fun convert(entity: FEEntity.Tender.AcceleratedProcedure): CreateFEResult.Tender.AcceleratedProcedure =
-            CreateFEResult.Tender.AcceleratedProcedure(
+        private fun convert(entity: FEEntity.Tender.AcceleratedProcedure): AmendFEResult.Tender.AcceleratedProcedure =
+            AmendFEResult.Tender.AcceleratedProcedure(
                 isAcceleratedProcedure = entity.isAcceleratedProcedure
             )
 
-        private fun convert(entity: FEEntity.Tender.DesignContest): CreateFEResult.Tender.DesignContest =
-            CreateFEResult.Tender.DesignContest(
+        private fun convert(entity: FEEntity.Tender.DesignContest): AmendFEResult.Tender.DesignContest =
+            AmendFEResult.Tender.DesignContest(
                 serviceContractAward = entity.serviceContractAward
             )
 
-        private fun convert(entity: FEEntity.Tender.ElectronicWorkflows): CreateFEResult.Tender.ElectronicWorkflows =
-            CreateFEResult.Tender.ElectronicWorkflows(
+        private fun convert(entity: FEEntity.Tender.ElectronicWorkflows): AmendFEResult.Tender.ElectronicWorkflows =
+            AmendFEResult.Tender.ElectronicWorkflows(
                 useOrdering = entity.useOrdering,
                 usePayment = entity.usePayment,
                 acceptInvoicing = entity.acceptInvoicing
             )
 
-        private fun convert(entity: FEEntity.Tender.JointProcurement): CreateFEResult.Tender.JointProcurement =
-            CreateFEResult.Tender.JointProcurement(
+        private fun convert(entity: FEEntity.Tender.JointProcurement): AmendFEResult.Tender.JointProcurement =
+            AmendFEResult.Tender.JointProcurement(
                 isJointProcurement = entity.isJointProcurement
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcedureOutsourcing): CreateFEResult.Tender.ProcedureOutsourcing =
-            CreateFEResult.Tender.ProcedureOutsourcing(
+        private fun convert(entity: FEEntity.Tender.ProcedureOutsourcing): AmendFEResult.Tender.ProcedureOutsourcing =
+            AmendFEResult.Tender.ProcedureOutsourcing(
                 procedureOutsourced = entity.procedureOutsourced
             )
 
-        private fun convert(entity: FEEntity.Tender.Framework): CreateFEResult.Tender.Framework =
-            CreateFEResult.Tender.Framework(
+        private fun convert(entity: FEEntity.Tender.Framework): AmendFEResult.Tender.Framework =
+            AmendFEResult.Tender.Framework(
                 isAFramework = entity.isAFramework
             )
 
-        private fun convert(entity: FEEntity.Tender.DynamicPurchasingSystem): CreateFEResult.Tender.DynamicPurchasingSystem =
-            CreateFEResult.Tender.DynamicPurchasingSystem(
+        private fun convert(entity: FEEntity.Tender.DynamicPurchasingSystem): AmendFEResult.Tender.DynamicPurchasingSystem =
+            AmendFEResult.Tender.DynamicPurchasingSystem(
                 hasDynamicPurchasingSystem = entity.hasDynamicPurchasingSystem
             )
 
-        private fun convert(entity: FEEntity.Tender.Document): CreateFEResult.Tender.Document =
-            CreateFEResult.Tender.Document(
+        private fun convert(entity: FEEntity.Tender.Document): AmendFEResult.Tender.Document =
+            AmendFEResult.Tender.Document(
                 documentType = entity.documentType,
                 id = entity.id,
                 title = entity.title,
                 description = entity.description
             )
 
-        private fun convert(entity: FEEntity.Tender.SecondStage): CreateFEResult.Tender.SecondStage =
-            CreateFEResult.Tender.SecondStage(
+        private fun convert(entity: FEEntity.Tender.SecondStage): AmendFEResult.Tender.SecondStage =
+            AmendFEResult.Tender.SecondStage(
                 minimumCandidates = entity.minimumCandidates,
                 maximumCandidates = entity.maximumCandidates
             )
 
-        private fun convert(entity: FEEntity.Tender.OtherCriteria): CreateFEResult.Tender.OtherCriteria =
-            CreateFEResult.Tender.OtherCriteria(
+        private fun convert(entity: FEEntity.Tender.OtherCriteria): AmendFEResult.Tender.OtherCriteria =
+            AmendFEResult.Tender.OtherCriteria(
                 reductionCriteria = entity.reductionCriteria,
                 qualificationSystemMethods = entity.qualificationSystemMethods
             )
 
-        private fun convert(entity: FEEntity.Tender.ContractPeriod): CreateFEResult.Tender.ContractPeriod =
-            CreateFEResult.Tender.ContractPeriod(
+        private fun convert(entity: FEEntity.Tender.ContractPeriod): AmendFEResult.Tender.ContractPeriod =
+            AmendFEResult.Tender.ContractPeriod(
                 startDate = entity.startDate,
                 endDate = entity.endDate
             )
 
-        private fun convert(entity: FEEntity.Tender.Criteria): CreateFEResult.Tender.Criteria =
-            CreateFEResult.Tender.Criteria(
+        private fun convert(entity: FEEntity.Tender.Criteria): AmendFEResult.Tender.Criteria =
+            AmendFEResult.Tender.Criteria(
                 id = entity.id,
                 title = entity.title,
                 description = entity.description,
@@ -133,15 +129,15 @@ class CreateFeEntityConverter {
                 requirementGroups = entity.requirementGroups.map { convert(it) }
             )
 
-        private fun convert(entity: FEEntity.Tender.Criteria.RequirementGroup): CreateFEResult.Tender.Criteria.RequirementGroup =
-            CreateFEResult.Tender.Criteria.RequirementGroup(
+        private fun convert(entity: FEEntity.Tender.Criteria.RequirementGroup): AmendFEResult.Tender.Criteria.RequirementGroup =
+            AmendFEResult.Tender.Criteria.RequirementGroup(
                 id = entity.id,
                 description = entity.description,
                 requirements = entity.requirements
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity): CreateFEResult.Tender.ProcuringEntity =
-            CreateFEResult.Tender.ProcuringEntity(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity): AmendFEResult.Tender.ProcuringEntity =
+            AmendFEResult.Tender.ProcuringEntity(
                 id = entity.id,
                 name = entity.name,
                 identifier = convert(entity.identifier),
@@ -153,54 +149,54 @@ class CreateFeEntityConverter {
                 persons = entity.persons.map { convert(it) }
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Identifier): CreateFEResult.Tender.ProcuringEntity.Identifier =
-            CreateFEResult.Tender.ProcuringEntity.Identifier(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Identifier): AmendFEResult.Tender.ProcuringEntity.Identifier =
+            AmendFEResult.Tender.ProcuringEntity.Identifier(
                 scheme = entity.scheme,
                 id = entity.id,
                 legalName = entity.legalName,
                 uri = entity.uri
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address): CreateFEResult.Tender.ProcuringEntity.Address =
-            CreateFEResult.Tender.ProcuringEntity.Address(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address): AmendFEResult.Tender.ProcuringEntity.Address =
+            AmendFEResult.Tender.ProcuringEntity.Address(
                 streetAddress = entity.streetAddress,
                 postalCode = entity.postalCode,
                 addressDetails = convert(entity.addressDetails)
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails): AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails =
+            AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails(
                 country = convert(entity.country),
                 region = convert(entity.region),
                 locality = convert(entity.locality)
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country): AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country =
+            AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country(
                 scheme = entity.scheme,
                 id = entity.id,
                 description = entity.description,
                 uri = entity.uri
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region): AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region =
+            AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region(
                 scheme = entity.scheme,
                 id = entity.id,
                 description = entity.description,
                 uri = entity.uri
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality): AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality =
+            AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality(
                 scheme = entity.scheme,
                 id = entity.id,
                 description = entity.description,
                 uri = entity.uri
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.ContactPoint): CreateFEResult.Tender.ProcuringEntity.ContactPoint =
-            CreateFEResult.Tender.ProcuringEntity.ContactPoint(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.ContactPoint): AmendFEResult.Tender.ProcuringEntity.ContactPoint =
+            AmendFEResult.Tender.ProcuringEntity.ContactPoint(
                 name = entity.name,
                 email = entity.email,
                 telephone = entity.telephone,
@@ -208,8 +204,8 @@ class CreateFeEntityConverter {
                 url = entity.url
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person): CreateFEResult.Tender.ProcuringEntity.Person =
-            CreateFEResult.Tender.ProcuringEntity.Person(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person): AmendFEResult.Tender.ProcuringEntity.Person =
+            AmendFEResult.Tender.ProcuringEntity.Person(
                 id = entity.id,
                 title = entity.title,
                 name = entity.name,
@@ -217,15 +213,15 @@ class CreateFeEntityConverter {
                 businessFunctions = entity.businessFunctions.map { convert(it) }
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.Identifier): CreateFEResult.Tender.ProcuringEntity.Person.Identifier =
-            CreateFEResult.Tender.ProcuringEntity.Person.Identifier(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.Identifier): AmendFEResult.Tender.ProcuringEntity.Person.Identifier =
+            AmendFEResult.Tender.ProcuringEntity.Person.Identifier(
                 id = entity.id,
                 scheme = entity.scheme,
                 uri = entity.uri
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction): CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction =
-            CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction): AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction =
+            AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction(
                 id = entity.id,
                 jobTitle = entity.jobTitle,
                 type = entity.type,
@@ -235,16 +231,16 @@ class CreateFeEntityConverter {
                     .orEmpty()
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document): CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document =
-            CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document): AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document =
+            AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document(
                 id = entity.id,
                 documentType = entity.documentType,
                 title = entity.title,
                 description = entity.description
             )
 
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period): CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period =
-            CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period(
+        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period): AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period =
+            AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period(
                 startDate = entity.startDate
             )
     }

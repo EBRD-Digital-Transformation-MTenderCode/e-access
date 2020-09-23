@@ -1,4 +1,4 @@
-package com.procurement.access.application.service.fe.create
+package com.procurement.access.application.service.fe.update
 
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -20,9 +20,7 @@ import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import java.time.LocalDateTime
 
-data class CreateFEResult(
-    val ocid: String,
-    val token: String,
+data class AmendFEResult(
     val tender: Tender
 ) {
     data class Tender(
@@ -51,12 +49,12 @@ data class CreateFEResult(
         val eligibilityCriteria: String,
         val contractPeriod: ContractPeriod,
         val secondStage: SecondStage?,
-        val procurementMethodModalities: List<ProcurementMethodModalities>,
+        val procurementMethodModalities: List<ProcurementMethodModalities>?,
         val procurementMethodRationale: String?,
         val procuringEntity: ProcuringEntity,
-        val criteria: List<Criteria>,
+        val criteria: List<Criteria>?,
         val otherCriteria: OtherCriteria,
-        val documents: List<Document>
+        val documents: List<Document>?
     ) {
 
         data class Classification(
@@ -125,7 +123,7 @@ data class CreateFEResult(
             val persons: List<Person>,
             val name: String,
             val identifier: Identifier,
-            val additionalIdentifiers: List<Identifier>,
+            val additionalIdentifiers: List<Identifier>?,
             val address: Address,
             val contactPoint: ContactPoint
         ) {
@@ -197,7 +195,7 @@ data class CreateFEResult(
                     val type: BusinessFunctionType,
                     val jobTitle: String,
                     val period: Period,
-                    val documents: List<Document>
+                    val documents: List<Document>?
                 ) {
                     data class Document(
                         val id: String,

@@ -12,6 +12,7 @@ fun CreateFEResult.convert(): CreateFEResponse =
 
 fun CreateFEResult.Tender.convert(): CreateFEResponse.Tender =
     CreateFEResponse.Tender(
+        id = this.id,
         status = this.status,
         statusDetails = this.statusDetails,
         title = this.title,
