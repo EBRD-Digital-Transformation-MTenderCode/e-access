@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.dto.fe.create
+package com.procurement.access.infrastructure.dto.fe.update
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -30,9 +30,7 @@ import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
-data class CreateFEResponse(
-    @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
-    @field:JsonProperty("token") @param:JsonProperty("token") val token: String,
+data class AmendFEResponse(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(

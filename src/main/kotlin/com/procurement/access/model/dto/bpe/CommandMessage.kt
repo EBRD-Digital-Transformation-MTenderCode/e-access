@@ -115,6 +115,7 @@ data class Context @JsonCreator constructor(
 
 enum class CommandType(private val value: String) {
 
+    AMEND_FE("amendFE"),
     CHECK_AWARD("checkAward"),
     CHECK_BID("checkBid"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),

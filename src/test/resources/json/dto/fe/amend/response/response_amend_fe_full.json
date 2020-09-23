@@ -1,6 +1,4 @@
 {
-  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
-  "token": "bd56490f-57ca-4d1a-9210-250cb9b4eed3",
   "tender": {
     "id": "string",
     "title": "string",
@@ -56,28 +54,40 @@
     "legalBasis": "REGULATION_966_2012",
     "procurementMethod": "limited",
     "procurementMethodDetails": "tender.procurementMethodDetails",
+    "mainProcurementCategory": "goods",
     "eligibilityCriteria": "tender.eligibilityCriteria",
     "contractPeriod": {
       "startDate": "2020-09-22T12:32:49Z",
       "endDate": "2020-09-22T12:32:49Z"
     },
+    "procurementMethodModalities": [
+      "electronicAuction"
+    ],
+    "secondStage": {
+      "minimumCandidates": 1,
+      "maximumCandidates": 2
+    },
+    "procurementMethodRationale": "string",
     "procuringEntity": {
       "id": "tender.procuringEntity.id",
       "name": "tender.procuringEntity.name",
       "identifier": {
         "scheme": "tender.procuringEntity.identifier.scheme",
         "id": "tender.procuringEntity.identifier.id",
-        "legalName": "tender.procuringEntity.identifier.legalName"
+        "legalName": "tender.procuringEntity.identifier.legalName",
+        "uri": "tender.procuringEntity.identifier.uri"
       },
       "additionalIdentifiers": [
         {
           "scheme": "tender.procuringEntity.additionalIdentifiers[0].scheme",
           "id": "tender.procuringEntity.additionalIdentifiers[0].id",
-          "legalName": "tender.procuringEntity.additionalIdentifiers[0].legalName"
+          "legalName": "tender.procuringEntity.additionalIdentifiers[0].legalName",
+          "uri": "tender.procuringEntity.additionalIdentifiers[0].uri"
         }
       ],
       "address": {
         "streetAddress": "tender.procuringEntity.address.streetAddress",
+        "postalCode": "tender.procuringEntity.address.postalCode",
         "addressDetails": {
           "country": {
             "scheme": "tender.procuringEntity.address.addressDetails.country.scheme",
@@ -94,14 +104,17 @@
           "locality": {
             "scheme": "tender.procuringEntity.address.addressDetails.locality.scheme",
             "id": "tender.procuringEntity.address.addressDetails.locality.id",
-            "description": "tender.procuringEntity.address.addressDetails.locality.description"
+            "description": "tender.procuringEntity.address.addressDetails.locality.description",
+            "uri": "tender.procuringEntity.address.addressDetails.locality.uri"
           }
         }
       },
       "contactPoint": {
         "name": "tender.procuringEntity.contactPoint.name",
         "email": "tender.procuringEntity.contactPoint.email",
-        "telephone": "tender.procuringEntity.contactPoint.telephone"
+        "telephone": "tender.procuringEntity.contactPoint.telephone",
+        "faxNumber": "tender.procuringEntity.contactPoint.faxNumber",
+        "url": "tender.procuringEntity.contactPoint.url"
       },
       "persones": [
         {
@@ -110,7 +123,8 @@
           "name": "tender.procuringEntity.persones[0].name",
           "identifier": {
             "scheme": "tender.procuringEntity.persones[0].identifier.scheme",
-            "id": "tender.procuringEntity.persones[0].identifier.id"
+            "id": "tender.procuringEntity.persones[0].identifier.id",
+            "uri": "tender.procuringEntity.persones[0].identifier.uri"
           },
           "businessFunctions": [
             {
@@ -124,13 +138,50 @@
                 {
                   "id": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].id",
                   "documentType": "regulatoryDocument",
-                  "title": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].title"
+                  "title": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].title",
+                  "description": "tender.procuringEntity.persones[0].businessFunctions[0].documents[0].description"
                 }
               ]
             }
           ]
         }
       ]
-    }
+    },
+    "criteria": [
+      {
+        "id": "string",
+        "title": "string",
+        "description": "string",
+        "source": "tenderer",
+        "relatesTo": "tenderer",
+        "requirementGroups": [
+          {
+            "id": "string",
+            "description": "string",
+            "requirements": [
+              {
+                "id": "string",
+                "title": "string",
+                "description": "string",
+                "dataType": "number",
+                "period": {
+                  "startDate": "2020-09-22T12:32:49Z",
+                  "endDate": "2020-09-24T12:32:49Z"
+                },
+                "expectedValue": 12.000
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "documents": [
+      {
+        "documentType": "marketStudies",
+        "id": "string",
+        "title": "string",
+        "description": "string"
+      }
+    ]
   }
 }
