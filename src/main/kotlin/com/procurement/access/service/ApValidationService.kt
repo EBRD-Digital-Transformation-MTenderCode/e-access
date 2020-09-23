@@ -17,7 +17,7 @@ class ApValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
     override fun checkExistanceItemsAndLots(context: CheckExistanceItemsAndLotsContext) {
         val cpid = context.cpid
-        val stage = context.stage
+        val stage = context.prevStage
 
         val apEntity: APEntity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
             ?.let { apEntity -> toObject(APEntity::class.java, apEntity.jsonData) }
