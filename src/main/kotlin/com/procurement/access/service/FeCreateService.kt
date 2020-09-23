@@ -50,7 +50,7 @@ class FeCreateServiceImpl(
         val ap = toObject(APEntity::class.java, entity.jsonData)
 
         // BR-1.0.1.21.1
-        val ocid = generationService.generateOcid(cpid = cpid, stage = stage)
+        val ocid = generationService.generateOcid(cpid = cpid, stage = context.stage)
 
         val fe = createEntity(ocid = ocid, token = entity.token, data = request, ap = ap)
 
