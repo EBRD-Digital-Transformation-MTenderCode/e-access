@@ -51,9 +51,6 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
                     // FReq-1.1.1.16
                     // VR-1.0.1.2.1
                     CheckFEDataRules.validateUniquenessBy(businessFunction.documents, "tender.businessFunctions[].documents[]") { it.id }
-
-                    // VR-1.0.1.2.7
-                    CheckFEDataRules.validatePersonDocumentsExistance(businessFunction.documents)
                 }
             }
         }
