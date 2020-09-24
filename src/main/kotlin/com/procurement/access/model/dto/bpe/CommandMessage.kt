@@ -115,25 +115,29 @@ data class Context @JsonCreator constructor(
 
 enum class CommandType(private val value: String) {
 
+    AMEND_FE("amendFE"),
     CHECK_AWARD("checkAward"),
     CHECK_BID("checkBid"),
     CHECK_BUDGET_SOURCES("checkBudgetSources"),
     CHECK_CN_ON_PN("checkCnOnPn"),
+    CHECK_EXISTANCE_ITEMS_AND_LOTS("checkExistenceItemsAndLots"),
+    CHECK_FE_DATA("checkFEData"),
     CHECK_ITEMS("checkItems"),
+    CHECK_LOTS_STATUS("checkLotsStatus"),
     CHECK_LOT_ACTIVE("checkLotActive"),
     CHECK_LOT_AWARDED("checkLotAwarded"),
     CHECK_LOT_STATUS("checkLotStatus"),
-    CHECK_LOTS_STATUS("checkLotsStatus"),
     CHECK_RESPONSES("checkResponses"),
     CHECK_TOKEN("checkToken"),
     COMPLETE_LOTS("completeLots"),
+    CREATE_AP("createAp"),
     CREATE_CN("createCn"),
     CREATE_CN_ON_PIN("createCnOnPin"),
     CREATE_CN_ON_PN("createCnOnPn"),
+    CREATE_FE("createFE"),
     CREATE_PIN("createPin"),
     CREATE_PIN_ON_PN("createPinOnPn"),
     CREATE_PN("createPn"),
-    CREATE_AP("createAp"),
     CREATE_REQUESTS_FOR_EV_PANELS("createRequestsForEvPanels"),
     GET_ACTIVE_LOTS("getActiveLots"),
     GET_AWARD_CRITERIA("getAwardCriteria"),
@@ -156,9 +160,9 @@ enum class CommandType(private val value: String) {
     SET_TENDER_UNSUCCESSFUL("setTenderUnsuccessful"),
     SET_TENDER_UNSUSPENDED("setTenderUnsuspended"),
     START_NEW_STAGE("startNewStage"),
+    UPDATE_AP("updateAp"),
     UPDATE_CN("updateCn"),
     UPDATE_PN("updatePn"),
-    UPDATE_AP("updateAp"),
     VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
 
     @JsonValue

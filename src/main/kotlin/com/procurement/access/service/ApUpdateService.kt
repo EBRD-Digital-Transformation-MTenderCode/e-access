@@ -71,10 +71,11 @@ class ApUpdateServiceImpl(
         val updatedValue =
             if (activeLots.isNotEmpty()) {
                 val newAmount = calculateValueByActiveLots(activeLots)
-                if (tenderProcess.tender.value != null)
+                if (tenderProcess.tender.value != null) {
+                    validateLotsCurrency(activeLots, tenderProcess.tender.value)
                     Money(newAmount, tenderProcess.tender.value.currency)
-                else {
-                    checkLotsCurrency(activeLots)
+                } else {
+                    checkLotsCurrencyConsistency(activeLots)
                     Money(newAmount, activeLots.first().value.currency)
                 }
             } else
@@ -131,7 +132,7 @@ class ApUpdateServiceImpl(
                     }
 
                 val receivedLotsIds = receivedLotsById.keys
-                val availableLotsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
+                val availableLotsIds = tenderProcess.tender.lots.orEmpty().toSetBy { it.id }
                 val newLotsId = receivedLotsIds - availableLotsIds
                 val newLots = newLotsId.map { newLotId ->
                     receivedLotsById.getValue(newLotId).createEntity()
@@ -142,39 +143,44 @@ class ApUpdateServiceImpl(
                 tenderProcess.tender.lots
             }
 
+        val receivedPermanentLotIds = data.tender.lots.map { temporalToPermanentLotId[it.id] ?: it.id }
+
         val updatedItems =
-            if (data.tender.items.isNotEmpty()) {
-                // VR.COM-1.26.4
-                checkItemsIdsQniqueness(data.tender.items.map { it.id })
+            data.tender.items
+                .takeIf { it.isNotEmpty() }
+                ?.map { it.copy(relatedLot = temporalToPermanentLotId[it.relatedLot] ?: it.relatedLot) }
+                ?.let { items ->
+                    // VR.COM-1.26.4
+                    checkItemsIdsQniqueness(items.map { it.id })
 
-                // VR.COM-1.26.11
-                checkQuantity(data.tender.items.map { it.quantity })
+                    // VR.COM-1.26.11
+                    checkQuantity(items.map { it.quantity })
 
-                // VR.COM-1.26.12
-                checkItemsRelation(data.tender.items, data.tender.lots.map { it.id })
+                    // VR.COM-1.26.12
+                    checkItemsRelation(items, receivedPermanentLotIds)
 
-                val receivedItemsById = data.tender.items.associateBy { it.id }
-                val updatedItems = tenderProcess.tender.items.orEmpty()
-                    .map { itemFromDb ->
-                        receivedItemsById[itemFromDb.id]
-                            ?.let { itemFromDb.updateBy(it) }
-                            ?: itemFromDb.copy(quantity = BigDecimal.ZERO)
+                    val receivedItemsById = items.associateBy { it.id }
+                    val updatedItems = tenderProcess.tender.items.orEmpty()
+                        .map { itemFromDb ->
+                            receivedItemsById[itemFromDb.id]
+                                ?.let { itemFromDb.updateBy(it) }
+                                ?: itemFromDb.copy(quantity = BigDecimal.ZERO)
+                        }
+
+                    val receivedItemsIds = receivedItemsById.keys
+                    val availableItemsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
+                    val newItemsId = receivedItemsIds - availableItemsIds
+                    val newItems = newItemsId.map { newItemId ->
+                        receivedItemsById.getValue(newItemId).createEntity()
                     }
-
-                val receivedItemsIds = receivedItemsById.keys
-                val availableItemsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
-                val newItemsId = receivedItemsIds - availableItemsIds
-                val newItems = newItemsId.map { newItemId ->
-                    receivedItemsById.getValue(newItemId).createEntity(temporalToPermanentLotId)
+                    updatedItems + newItems
                 }
-                updatedItems + newItems
-            } else {
-                tenderProcess.tender.items
-            }
+                ?:tenderProcess.tender.items
 
         // FR.COM-1.26.4
         val updatedTenderDocuments = updateTenderDocuments(
             tender = tenderProcess.tender,
+            receivedLotsIds = receivedPermanentLotIds,
             receivedDocuments = data.tender.documents,
             temporalToPermanentLotId = temporalToPermanentLotId
         )
@@ -247,7 +253,7 @@ class ApUpdateServiceImpl(
                     )
                 else
                     relatedItems.forEach { relatedItem ->
-                        if (relatedItem.deliveryAddress != null)
+                        if (relatedItem.deliveryAddress == null)
                             throw ErrorException(
                                 error = INCORRECT_VALUE_ATTRIBUTE,
                                 message = "Missing 'deliveryAddress' in item='${relatedItem.id}'."
@@ -267,7 +273,7 @@ class ApUpdateServiceImpl(
         }
     }
 
-    fun checkItemsRelation(items: List<ApUpdateData.Tender.Item>, receivedLotsIds: List<String>) {
+    fun checkItemsRelation(items: List<ApUpdateData.Tender.Item>, receivedLotsIds: Collection<String>) {
         items.map { it.relatedLot }
             .forEach { relatedLot ->
                 if (relatedLot !in receivedLotsIds)
@@ -282,13 +288,24 @@ class ApUpdateServiceImpl(
         if (startDate.dayOfMonth != 1) throw ErrorException(INVALID_START_DATE)
     }
 
-    private fun checkLotsCurrency(lots: List<ApUpdateData.Tender.Lot>) {
+    private fun checkLotsCurrencyConsistency(lots: List<ApUpdateData.Tender.Lot>) {
         val currencies = lots.toSetBy { it.value.currency }
         if (currencies.size != 1)
             throw ErrorException(
                 error = INVALID_LOT_CURRENCY,
                 message = "Found ${currencies.size} currencies: ${currencies}"
             )
+    }
+
+    private fun validateLotsCurrency(lots: List<ApUpdateData.Tender.Lot>, storedMoney: Money) {
+        val currencies = lots.toSetBy { it.value.currency }
+        currencies.forEach { receivedCurrency ->
+            if (receivedCurrency != storedMoney.currency)
+                throw ErrorException(
+                    error = INVALID_LOT_CURRENCY,
+                    message = "Currency in saved lots: '${storedMoney.currency}'. Currency in request: '$receivedCurrency'."
+                )
+        }
     }
 
     private fun checkLotsContractPeriod(lots: List<ApUpdateData.Tender.Lot>, tenderPeriodStartDate: LocalDateTime) {
@@ -301,52 +318,53 @@ class ApUpdateServiceImpl(
 
     private fun updateTenderDocuments(
         tender: APEntity.Tender,
+        receivedLotsIds: Collection<String>,
         receivedDocuments: List<ApUpdateData.Tender.Document>,
         temporalToPermanentLotId: Map<String, String>
     ): List<APEntity.Tender.Document> {
-        if (receivedDocuments.isNotEmpty()) {
-            val uniqDocsId = receivedDocuments.toSetBy { it.id }
-            if (uniqDocsId.size != receivedDocuments.size) throw ErrorException(INVALID_DOCS_ID)
+        receivedDocuments
+            .takeIf { it.isNotEmpty() }
+            ?.map { it.copy(relatedLots = it.relatedLots.map { temporalToPermanentLotId[it] ?: it }) }
+            ?.let { updatedReceivedDocuments ->
+                val uniqDocsId = updatedReceivedDocuments.toSetBy { it.id }
+                if (uniqDocsId.size != updatedReceivedDocuments.size) throw ErrorException(INVALID_DOCS_ID)
 
-            // VR.COM-1.26.7
-            val receivedLotsIds = tender.lots.orEmpty()
-                .toSetBy { it.id }
-            validateDocumentsRelatedLots(receivedDocuments, receivedLotsIds)
+                // VR.COM-1.26.7
+                validateDocumentsRelatedLots(updatedReceivedDocuments, receivedLotsIds)
 
-            return if (tender.documents.orEmpty().isNotEmpty()) {
-                val documentsDb = tender.documents.orEmpty()
+                return if (tender.documents != null && tender.documents.isNotEmpty()) {
+                    val documentsDb = tender.documents.orEmpty()
 
-                // VR.COM-1.26.3
-                val receivedDocumentsIds = receivedDocuments.toSetBy { it.id }
-                val availableDocumentsIds = documentsDb.toSetBy { it.id }
-                if (!receivedDocumentsIds.containsAll(availableDocumentsIds))
-                    throw ErrorException(
-                        error = INVALID_DOCS_ID,
-                        message = "Missing documents ( ids: ${availableDocumentsIds - receivedDocumentsIds}) in request."
-                    )
+                    // VR.COM-1.26.3
+                    val receivedDocumentsIds = updatedReceivedDocuments.toSetBy { it.id }
+                    val availableDocumentsIds = documentsDb.toSetBy { it.id }
+                    if (!receivedDocumentsIds.containsAll(availableDocumentsIds))
+                        throw ErrorException(
+                            error = INVALID_DOCS_ID,
+                            message = "Missing documents ( ids: ${availableDocumentsIds - receivedDocumentsIds}) in request."
+                        )
 
-                val receivedDocumentsById = receivedDocuments.associateBy { it.id }
+                    val receivedDocumentsById = updatedReceivedDocuments.associateBy { it.id }
 
-                val updatedDocuments = documentsDb.map { documentFromDb ->
-                    receivedDocumentsById[documentFromDb.id]
-                        ?.let { documentFromDb.updateBy(it) }
-                        ?: documentFromDb
+                    val updatedDocuments = documentsDb.map { documentFromDb ->
+                        receivedDocumentsById[documentFromDb.id]
+                            ?.let { documentFromDb.updateBy(it) }
+                            ?: documentFromDb
+                    }
+                    val newDocumentsId = receivedDocumentsIds - availableDocumentsIds
+                    val newDocuments = newDocumentsId.map { newDocumentId ->
+                        receivedDocumentsById.getValue(newDocumentId).createEntity()
+                    }
+                    updatedDocuments + newDocuments
+                } else {
+                    updatedReceivedDocuments.map { it.createEntity() }
                 }
-                val newDocumentsId = receivedDocumentsIds - availableDocumentsIds
-                val newDocuments = newDocumentsId.map { newDocumentId ->
-                    receivedDocumentsById.getValue(newDocumentId).createEntity(temporalToPermanentLotId)
-                }
-                updatedDocuments + newDocuments
-            } else {
-                receivedDocuments.map { it.createEntity(temporalToPermanentLotId) }
             }
-        } else {
-            if (tender.documents.orEmpty().isNotEmpty())
+            ?: if (tender.documents != null && tender.documents.isNotEmpty())
                 throw ErrorException(
                     error = EMPTY_DOCS,
                     message = "Missing documents in request."
                 )
-        }
 
         return emptyList()
     }
@@ -399,10 +417,9 @@ class ApUpdateServiceImpl(
             .flatMap { it.relatedLots }
             .toSet()
 
-        if (lotsFromReceivedDocuments.isNotEmpty()) {
-            if (!lotsIds.containsAll(lotsFromReceivedDocuments))
-                throw ErrorException(INVALID_DOCS_RELATED_LOTS)
-        }
+        if (lotsFromReceivedDocuments.isEmpty()) return
+        if (!lotsIds.containsAll(lotsFromReceivedDocuments))
+            throw ErrorException(INVALID_DOCS_RELATED_LOTS)
     }
 
     private fun APEntity.Tender.Document.updateBy(received: ApUpdateData.Tender.Document): APEntity.Tender.Document =
@@ -439,9 +456,19 @@ class ApUpdateServiceImpl(
             description = received.description,
             title = received.title,
             internalId = received.internalId ?: this.internalId,
-            value = received.value,
-            contractPeriod = this.contractPeriod.updateBy(received.contractPeriod)
+            value = Money(amount = received.value.amount, currency = this.value.currency),
+            contractPeriod = this.contractPeriod.updateBy(received.contractPeriod),
+            placeOfPerformance = received.placeOfPerformance
+                ?.let {
+                    this.placeOfPerformance
+                        ?.updateBy(it)
+                        ?: it.toEntity()
+                }
+                ?: this.placeOfPerformance
         )
+
+    private fun APEntity.Tender.Lot.PlaceOfPerformance.updateBy(received: ApUpdateData.Tender.Lot.PlaceOfPerformance): APEntity.Tender.Lot.PlaceOfPerformance =
+        this.copy(address = this.address.updateBy(received.address))
 
     private fun ApUpdateData.Tender.Lot.createEntity(): APEntity.Tender.Lot =
         APEntity.Tender.Lot(
@@ -456,13 +483,13 @@ class ApUpdateServiceImpl(
             placeOfPerformance = this.placeOfPerformance?.toEntity()
         )
 
-    private fun ApUpdateData.Tender.Document.createEntity(temporalToPermanentLotId: Map<String, String>): APEntity.Tender.Document =
+    private fun ApUpdateData.Tender.Document.createEntity(): APEntity.Tender.Document =
         APEntity.Tender.Document(
             id = this.id,
             description = this.description,
             title = this.title,
             documentType = this.documentType,
-            relatedLots = this.relatedLots.map { temporalToPermanentLotId.getValue(it) }
+            relatedLots = this.relatedLots
         )
 
     private fun ApUpdateData.Tender.Lot.ContractPeriod.toEntity(): APEntity.Tender.Lot.ContractPeriod =
@@ -541,7 +568,7 @@ class ApUpdateServiceImpl(
                 ?: this.locality
         )
 
-    private fun ApUpdateData.Tender.Item.createEntity(temporalToPermanentLotId: Map<String, String>): APEntity.Tender.Item =
+    private fun ApUpdateData.Tender.Item.createEntity(): APEntity.Tender.Item =
         APEntity.Tender.Item(
             id = generationService.generatePermanentItemId(),
             internalId = this.internalId,
@@ -609,7 +636,7 @@ class ApUpdateServiceImpl(
                             }
                     )
                 },
-            relatedLot = temporalToPermanentLotId.getValue(this.relatedLot)
+            relatedLot = this.relatedLot
         )
 
     private fun ApUpdateData.Tender.Address.toEntity(): APEntity.Tender.Address =
