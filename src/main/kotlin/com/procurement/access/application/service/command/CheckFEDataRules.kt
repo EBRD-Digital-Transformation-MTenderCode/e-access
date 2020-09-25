@@ -122,14 +122,6 @@ class CheckFEDataRules {
                 )
         }
 
-        fun validatePersonDocumentsExistance(documents: List<CheckFEDataData.Tender.ProcuringEntity.Person.BusinessFunction.Document>) {
-            if (documents.isEmpty())
-                throw ErrorException(
-                    error = ErrorType.EMPTY_DOCS,
-                    message = "At least one document should be added"
-                )
-        }
-
         fun validatePersonsBusinessFunctions(persons: List<CheckFEDataData.Tender.ProcuringEntity.Person>) {
             persons.forEach { person ->
                 if (person.businessFunctions.isEmpty())
