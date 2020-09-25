@@ -55,9 +55,6 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
             }
         }
 
-        // FR.COM-1.27.4
-        CheckFEDataRules.validateTenderDocumentsExistance(data.tender.documents)     // VR-1.0.1.2.7
-
         // FReq-1.1.1.16
         CheckFEDataRules.validateUniquenessBy(data.tender.documents, "tender.documents[]") { it.id }  // VR-1.0.1.2.1
 
