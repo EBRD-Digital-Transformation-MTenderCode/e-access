@@ -3,6 +3,7 @@ package com.procurement.access.application.service.command
 import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.fe.check.CheckFEDataData
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.exception.ErrorException
@@ -302,6 +303,21 @@ class CheckFEDataRules {
                 }
             }
         }
+
+        fun checkCriteriaRelation(relations: List<CriteriaRelatesToEnum>): Unit =
+            relations.forEach { relation ->
+                when (relation) {
+                    CriteriaRelatesToEnum.TENDERER -> Unit
+                    CriteriaRelatesToEnum.AWARD,
+                    CriteriaRelatesToEnum.ITEM,
+                    CriteriaRelatesToEnum.LOT,
+                    CriteriaRelatesToEnum.QUALIFICATION ->
+                        throw ErrorException(
+                            ErrorType.INVALID_CRITERIA,
+                            message = "Criteria can relates only to '${CriteriaRelatesToEnum.TENDERER}'."
+                        )
+                }
+            }
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
             val cpid = context.cpid
