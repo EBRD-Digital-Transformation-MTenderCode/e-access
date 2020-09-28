@@ -7,7 +7,6 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.databinding.QuantityDeserializer
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.ContractPeriod
-import com.procurement.access.model.dto.ocds.Document
 import com.procurement.access.model.dto.ocds.PlaceOfPerformance
 import com.procurement.access.model.dto.ocds.Unit
 import com.procurement.access.model.dto.ocds.Value
@@ -53,7 +52,20 @@ data class TenderPnUpdate @JsonCreator constructor(
 
         val items: List<ItemPnUpdate>?,
 
-        val documents: List<Document>?
+        val documents: List<PnUpdateDocument>?
+)
+
+data class PnUpdateDocument@JsonCreator constructor(
+
+    val id: String,
+
+    val documentType: String,
+
+    var title: String?,
+
+    var description: String?,
+
+    var relatedLots: HashSet<String>?
 )
 
 data class LotPnUpdate @JsonCreator constructor(
