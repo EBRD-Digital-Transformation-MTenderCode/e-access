@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.fe.check.converter
 
 import com.procurement.access.application.service.fe.check.CheckFEDataData
+import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.fe.check.CheckFEDataRequest
@@ -120,7 +121,21 @@ fun CheckFEDataRequest.Tender.ProcuringEntity.Person.Identifier.convert() = Chec
 
 fun CheckFEDataRequest.Tender.ProcuringEntity.Person.BusinessFunction.convert() = CheckFEDataData.Tender.ProcuringEntity.Person.BusinessFunction(
     id = this.id,
-    type = this.type,
+    type = when(this.type) {
+        BusinessFunctionType.CHAIRMAN,
+        BusinessFunctionType.PROCURMENT_OFFICER,
+        BusinessFunctionType.CONTACT_POINT,
+        BusinessFunctionType.TECHNICAL_EVALUATOR,
+        BusinessFunctionType.TECHNICAL_OPENER,
+        BusinessFunctionType.PRICE_OPENER,
+        BusinessFunctionType.PRICE_EVALUATOR -> this.type
+
+        BusinessFunctionType.AUTHORITY ->
+            throw ErrorException(
+                error = ErrorType.INVALID_BUSINESS_FUNCTION,
+                message = "Invalid business function type '${BusinessFunctionType.AUTHORITY}', use '${BusinessFunctionType.CHAIRMAN}' instead."
+            )
+    },
     jobTitle = this.jobTitle,
     period = this.period.convert(),
     documents = this.documents
