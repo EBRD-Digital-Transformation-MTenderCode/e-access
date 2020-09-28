@@ -126,6 +126,7 @@ class ApUpdateServiceImpl(
                     .map { lotFromDb ->
                         receivedLotsById[lotFromDb.id]
                             ?.let {
+                                // VR.COM-1.26.18
                                 checkLotStatusForUpdate(lotFromDb.status)
                                 lotFromDb.updateBy(it)
                             }
@@ -168,6 +169,7 @@ class ApUpdateServiceImpl(
                         .map { itemFromDb ->
                             receivedItemsById[itemFromDb.id]
                                 ?.let {
+                                    // VR.COM-1.26.17
                                     checkItemQuantityForUpdate(itemFromDb.quantity)
                                     itemFromDb.updateBy(it)
                                 }
