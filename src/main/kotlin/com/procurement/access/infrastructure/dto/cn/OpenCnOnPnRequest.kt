@@ -10,7 +10,6 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.Scheme
@@ -315,7 +314,7 @@ data class OpenCnOnPnRequest(
 
         data class Document(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String?,
