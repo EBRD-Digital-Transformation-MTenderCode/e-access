@@ -4,15 +4,39 @@ import com.procurement.access.application.model.context.CheckSelectiveCnOnPnCont
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.EnumElementProviderParser
 import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
 import com.procurement.access.domain.model.criteria.replaceTemporalItemId
-import com.procurement.access.domain.model.enums.*
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.AwardCriteriaDetails
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.QualificationSystemMethod
+import com.procurement.access.domain.model.enums.ReductionCriteria
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
+import com.procurement.access.exception.ErrorType.INVALID_PMM
+import com.procurement.access.exception.ErrorType.INVALID_PROCURING_ENTITY
+import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
+import com.procurement.access.exception.ErrorType.ITEM_ID_DUPLICATED
+import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
@@ -39,6 +63,38 @@ class SelectiveCnOnPnService(
     private val criteriaService: CriteriaService
 ) {
 
+    private val allowedTenderDocumentTypes = DocumentType.allowedElements
+        .filter {
+            when (it) {
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> true
+
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.MARKET_STUDIES,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.PROJECT_PLAN -> false
+            }
+        }.toSet()
+
     fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedSelectiveCnOnPn {
         //VR-1.0.1.13.1 preQualification
         if(data.preQualification == null)
@@ -55,6 +111,9 @@ class SelectiveCnOnPnService(
 
         //VR-3.8.3 Documents (duplicate)
         checkDocuments(documentsFromRequest = data.tender.documents, documentsFromPN = pnEntity.tender.documents)
+
+        //VR-3.6.1
+        checkTenderDocumentsTypes(data)
 
         data.tender.procuringEntity?.also { requestProcuringEntity ->
             //VR-1.0.1.10.1
@@ -786,7 +845,7 @@ class SelectiveCnOnPnService(
 
         return CNEntity.Tender.Document(
             id = newDocumentFromRequest.id,
-            documentType = DocumentType.creator(newDocumentFromRequest.documentType.key),
+            documentType = DocumentType.creator(newDocumentFromRequest.documentType),
             title = newDocumentFromRequest.title,
             description = newDocumentFromRequest.description,
             //BR-3.6.5(CN)
@@ -1592,6 +1651,17 @@ class SelectiveCnOnPnService(
                         message = "The request is missing a document with id '$id'"
                     )
                 }
+            }
+    }
+
+    private fun checkTenderDocumentsTypes(data: SelectiveCnOnPnRequest) {
+        data.tender.documents
+            .map {
+                EnumElementProviderParser.checkAndParseEnum(
+                    value = it.documentType,
+                    allowedValues = allowedTenderDocumentTypes,
+                    target = DocumentType
+                )
             }
     }
 
