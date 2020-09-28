@@ -282,6 +282,9 @@ class ApUpdateServiceImpl(
         }
     }
 
+    /**
+     * VR.COM-1.26.17
+     */
     fun checkItemQuantityForUpdate(quantity: BigDecimal) {
         if (quantity <= BigDecimal.ZERO)
             throw ErrorException(
@@ -290,6 +293,9 @@ class ApUpdateServiceImpl(
             )
     }
 
+    /**
+     * VR.COM-1.26.18
+     */
     fun checkLotStatusForUpdate(status: LotStatus) {
         when(status) {
             LotStatus.PLANNING -> Unit
