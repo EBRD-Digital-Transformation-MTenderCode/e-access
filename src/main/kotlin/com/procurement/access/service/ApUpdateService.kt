@@ -16,6 +16,7 @@ import com.procurement.access.exception.ErrorType.INVALID_ITEMS_QUANTITY
 import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
+import com.procurement.access.exception.ErrorType.INVALID_LOT_STATUS
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
@@ -124,7 +125,10 @@ class ApUpdateServiceImpl(
                 val updatedLots = tenderProcess.tender.lots.orEmpty()
                     .map { lotFromDb ->
                         receivedLotsById[lotFromDb.id]
-                            ?.let { lotFromDb.updateBy(it) }
+                            ?.let {
+                                checkLotStatusForUpdate(lotFromDb.status)
+                                lotFromDb.updateBy(it)
+                            }
                             ?: lotFromDb.copy(
                                 status = LotStatus.CANCELLED,
                                 statusDetails = LotStatusDetails.EMPTY
@@ -163,7 +167,10 @@ class ApUpdateServiceImpl(
                     val updatedItems = tenderProcess.tender.items.orEmpty()
                         .map { itemFromDb ->
                             receivedItemsById[itemFromDb.id]
-                                ?.let { itemFromDb.updateBy(it) }
+                                ?.let {
+                                    checkItemQuantityForUpdate(itemFromDb.quantity)
+                                    itemFromDb.updateBy(it)
+                                }
                                 ?: itemFromDb.copy(quantity = BigDecimal.ZERO)
                         }
 
@@ -269,6 +276,29 @@ class ApUpdateServiceImpl(
                 throw ErrorException(
                     error = INVALID_ITEMS_QUANTITY,
                     message = "Quantity must be greater than 0."
+                )
+        }
+    }
+
+    fun checkItemQuantityForUpdate(quantity: BigDecimal) {
+        if (quantity <= BigDecimal.ZERO)
+            throw ErrorException(
+                error = INVALID_ITEMS_QUANTITY,
+                message = "Cannot update cancelled item."
+            )
+    }
+
+    fun checkLotStatusForUpdate(status: LotStatus) {
+        when(status) {
+            LotStatus.PLANNING -> Unit
+            LotStatus.PLANNED,
+            LotStatus.ACTIVE,
+            LotStatus.CANCELLED,
+            LotStatus.UNSUCCESSFUL,
+            LotStatus.COMPLETE ->
+                throw ErrorException(
+                    error = INVALID_LOT_STATUS,
+                    message = "Cannot update cancelled lot."
                 )
         }
     }
