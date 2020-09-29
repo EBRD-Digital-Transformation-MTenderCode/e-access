@@ -174,7 +174,8 @@ data class ApUpdateResponse(
         }
 
         data class Address(
-            @field:JsonProperty("streetAddress") @param:JsonProperty("streetAddress") val streetAddress: String,
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("streetAddress") @param:JsonProperty("streetAddress") val streetAddress: String?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("postalCode") @param:JsonProperty("postalCode") val postalCode: String?,

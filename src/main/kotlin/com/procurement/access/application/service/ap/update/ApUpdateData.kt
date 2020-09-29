@@ -150,7 +150,7 @@ class ApUpdateData(
         }
 
         data class Address(
-            val streetAddress: String,
+            val streetAddress: String?,
             val postalCode: String?,
             val addressDetails: AddressDetails
         ) {
