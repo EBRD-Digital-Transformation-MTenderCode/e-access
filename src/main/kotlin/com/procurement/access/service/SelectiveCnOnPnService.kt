@@ -4,7 +4,6 @@ import com.procurement.access.application.model.context.CheckSelectiveCnOnPnCont
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.EnumElementProviderParser
 import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
@@ -845,7 +844,7 @@ class SelectiveCnOnPnService(
 
         return CNEntity.Tender.Document(
             id = newDocumentFromRequest.id,
-            documentType = DocumentType.creator(newDocumentFromRequest.documentType),
+            documentType = DocumentType.creator(newDocumentFromRequest.documentType.key),
             title = newDocumentFromRequest.title,
             description = newDocumentFromRequest.description,
             //BR-3.6.5(CN)
@@ -1656,12 +1655,12 @@ class SelectiveCnOnPnService(
 
     private fun checkTenderDocumentsTypes(data: SelectiveCnOnPnRequest) {
         data.tender.documents
-            .map {
-                EnumElementProviderParser.checkAndParseEnum(
-                    value = it.documentType,
-                    allowedValues = allowedTenderDocumentTypes,
-                    target = DocumentType
-                )
+            .map { document ->
+                if (document.documentType !in allowedTenderDocumentTypes)
+                    throw ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                    )
             }
     }
 
