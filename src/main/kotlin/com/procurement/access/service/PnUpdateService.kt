@@ -1,7 +1,6 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.EnumElementProviderParser
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -38,7 +37,6 @@ import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.dto.pn.ItemPnUpdate
 import com.procurement.access.model.dto.pn.LotPnUpdate
 import com.procurement.access.model.dto.pn.PnUpdate
-import com.procurement.access.model.dto.pn.PnUpdateDocument
 import com.procurement.access.model.dto.pn.TenderPnUpdate
 import com.procurement.access.model.dto.pn.validate
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -208,7 +206,7 @@ class PnUpdateService(private val generationService: GenerationService,
         return ResponseDto(data = tenderProcess)
     }
 
-    private fun checkDocumentsTitle(documents: List<PnUpdateDocument>?) {
+    private fun checkDocumentsTitle(documents: List<Document>?) {
         documents?.forEach { document ->
             val title = document.title
             if (title == null || title.isBlank()) {
@@ -221,13 +219,14 @@ class PnUpdateService(private val generationService: GenerationService,
     }
 
     private fun checkTenderDocumentsTypes(data: PnUpdate) {
-        data.tender.documents?.map {
-            EnumElementProviderParser.checkAndParseEnum(
-                value = it.documentType,
-                allowedValues = allowedTenderDocumentTypes,
-                target = DocumentType
-            )
-        }
+        data.tender.documents
+            ?.map { document ->
+                if (document.documentType !in allowedTenderDocumentTypes)
+                    throw ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                    )
+            }
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {
@@ -361,15 +360,7 @@ class PnUpdateService(private val generationService: GenerationService,
         return itemsTender.map { itemDb -> updateItem(itemDb = itemDb, itemDto = itemsDto.first { it.id == itemDb.id }) }
     }
 
-    private fun updateDocuments(tender: Tender, documentsToUpdate: List<PnUpdateDocument>?): List<Document> {
-        val documentsDto = documentsToUpdate?.map { Document(
-            id = it.id,
-            title = it.title,
-            relatedLots = it.relatedLots,
-            description = it.description,
-            documentType = DocumentType.creator(it.documentType)
-        ) }
-
+    private fun updateDocuments(tender: Tender, documentsDto: List<Document>?): List<Document> {
         if (documentsDto != null && documentsDto.isNotEmpty()) {
             val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
             if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
