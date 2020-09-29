@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
@@ -236,24 +237,23 @@ class TenderService(
     }
 
     fun getTenderState(params: GetTenderStateParams): Result<GetTenderStateResult, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(
-            cpid = params.cpid, stage = params.ocid.stage
-        ).orForwardFail { incident -> return incident }
-            ?: return ValidationErrors.TenderNotFoundOnGetTenderState(
-                cpid = params.cpid, ocid = params.ocid
-            ).asFailure()
+        val entity = tenderProcessRepository
+            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .orForwardFail { incident -> return incident }
+            ?: return ValidationErrors.TenderNotFoundOnGetTenderState(cpid = params.cpid, ocid = params.ocid)
+                .asFailure()
 
-        val tenderProcess = entity.jsonData
-            .tryToObject(TenderProcess::class.java)
-            .doReturn { incident ->
-                return Fail.Incident.DatabaseIncident(incident.exception).asFailure()
+        return entity.jsonData
+            .tryToObject(TenderStateInfo::class.java)
+            .doReturn { incident -> return Fail.Incident.DatabaseIncident(incident.exception).asFailure() }
+            .let {
+                val tender = it.tender
+                GetTenderStateResult(
+                    status = tender.status,
+                    statusDetails = tender.statusDetails
+                )
             }
-        return tenderProcess.tender.let { tender ->
-            GetTenderStateResult(
-                status = tender.status,
-                statusDetails = tender.statusDetails
-            ).asSuccess()
-        }
+            .asSuccess()
     }
 
     fun findAuctions(params: FindAuctionsParams): Result<FindAuctionsResult?, Fail> {
@@ -296,4 +296,13 @@ class TenderService(
             )
         ).asSuccess()
     }
+}
+
+private class TenderStateInfo(
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: TenderState
+) {
+    class TenderState(
+        @field:JsonProperty("status") @param:JsonProperty("status") val status: TenderStatus,
+        @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: TenderStatusDetails
+    )
 }
