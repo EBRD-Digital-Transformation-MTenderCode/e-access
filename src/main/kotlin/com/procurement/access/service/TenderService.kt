@@ -1,6 +1,5 @@
 package com.procurement.access.service
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
@@ -25,6 +24,7 @@ import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.IS_NOT_SUSPENDED
 import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.TenderStateInfo
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsResult
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -296,13 +296,4 @@ class TenderService(
             )
         ).asSuccess()
     }
-}
-
-private class TenderStateInfo(
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: TenderState
-) {
-    class TenderState(
-        @field:JsonProperty("status") @param:JsonProperty("status") val status: TenderStatus,
-        @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: TenderStatusDetails
-    )
 }
