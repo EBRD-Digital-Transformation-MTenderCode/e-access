@@ -91,10 +91,12 @@ class CheckFEDataRules {
                 }
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,
@@ -310,10 +312,12 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE -> context.prevStage
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,

@@ -88,11 +88,13 @@ class OutsourcingServiceImpl(
 
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
                 OperationType.CREATE_FE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,
@@ -116,35 +118,6 @@ class OutsourcingServiceImpl(
                         )
                     )
             }
-
-        fun isProcedureOutsourced(operationType: OperationType): Boolean? =
-            when (operationType) {
-                OperationType.APPLY_QUALIFICATION_PROTOCOL,
-                OperationType.CREATE_CN,
-                OperationType.CREATE_CN_ON_PIN,
-                OperationType.CREATE_CN_ON_PN,
-                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-                OperationType.CREATE_PIN,
-                OperationType.CREATE_PIN_ON_PN,
-                OperationType.CREATE_PN,
-                OperationType.CREATE_SUBMISSION,
-                OperationType.OUTSOURCING_PN -> true
-
-                OperationType.AMEND_FE,
-                OperationType.CREATE_FE,
-                OperationType.QUALIFICATION,
-                OperationType.QUALIFICATION_CONSIDERATION,
-                OperationType.QUALIFICATION_PROTOCOL,
-                OperationType.RELATION_AP,
-                OperationType.START_SECONDSTAGE,
-                OperationType.SUBMISSION_PERIOD_END,
-                OperationType.TENDER_PERIOD_END,
-                OperationType.UPDATE_AP,
-                OperationType.UPDATE_CN,
-                OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
-            }
-
 
         fun getTenderEntity(
             tenderProcessRepository: TenderProcessRepository,

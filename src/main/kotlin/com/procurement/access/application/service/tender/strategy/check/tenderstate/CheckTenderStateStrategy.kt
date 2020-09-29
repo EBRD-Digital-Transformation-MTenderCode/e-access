@@ -11,6 +11,7 @@ import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.service.RulesService
 import com.procurement.access.utils.tryToObject
@@ -39,6 +40,12 @@ class CheckTenderStateStrategy(
             OperationType.RELATION_AP ->
                 tenderEntity.jsonData
                     .tryToObject(APEntity::class.java)
+                    .map { TenderStatesRule.State(it.tender.status, it.tender.statusDetails) }
+
+            OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_PCR ->
+                tenderEntity.jsonData
+                    .tryToObject(FEEntity::class.java)
                     .map { TenderStatesRule.State(it.tender.status, it.tender.statusDetails) }
 
             OperationType.AMEND_FE,
