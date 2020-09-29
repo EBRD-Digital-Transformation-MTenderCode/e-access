@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
@@ -314,7 +315,7 @@ class PnCreateRequest(
 
         data class Document(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
