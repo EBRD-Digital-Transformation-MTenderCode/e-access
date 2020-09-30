@@ -9,7 +9,6 @@ import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 
 class GetOrganization {
@@ -20,22 +19,6 @@ class GetOrganization {
         val role: OrganizationRole
     ) {
         companion object {
-            val allowedStages = Stage.allowedElements
-                .filter { value ->
-                    when (value) {
-                        Stage.EV,
-                        Stage.NP,
-                        Stage.TP -> true
-
-                        Stage.AC,
-                        Stage.AP,
-                        Stage.EI,
-                        Stage.FE,
-                        Stage.FS,
-                        Stage.PN -> false
-                    }
-                }.toSet()
-
             private val allowedRoles = OrganizationRole.allowedElements
                 .filter { value ->
                     when (value) {

@@ -4,7 +4,6 @@ import com.procurement.access.application.model.params.SetStateForLotsParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -238,11 +237,7 @@ class LotServiceImpl(
             Stage.FE,
             Stage.FS ->
                 Result.failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = SetStateForLotsParams.allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
                 )
         }
             .orForwardFail { error -> return error }
@@ -354,16 +349,13 @@ class LotServiceImpl(
                 success(lotIds)
             }
 
+            Stage.FE -> success(emptyList())
+
             Stage.AC,
             Stage.EI,
-            Stage.FE,
             Stage.FS ->
                 Result.failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = FindLotIdsParams.allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
                 )
         }
             .orForwardFail { error -> return error }

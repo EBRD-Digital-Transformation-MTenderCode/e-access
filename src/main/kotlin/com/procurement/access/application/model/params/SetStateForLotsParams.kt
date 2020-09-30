@@ -9,7 +9,6 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
@@ -22,22 +21,6 @@ class SetStateForLotsParams private constructor(
     val lots: List<Lot>
 ) {
     companion object {
-        val allowedStages = Stage.allowedElements
-            .filter { value ->
-                when (value) {
-                    Stage.AP,
-                    Stage.EV,
-                    Stage.NP,
-                    Stage.PN,
-                    Stage.TP -> true
-
-                    Stage.AC,
-                    Stage.EI,
-                    Stage.FE,
-                    Stage.FS -> false
-                }
-            }.toSet()
-
         fun tryCreate(
             cpid: String,
             ocid: String,

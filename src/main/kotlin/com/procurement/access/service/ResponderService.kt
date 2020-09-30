@@ -8,7 +8,6 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
-import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -132,11 +131,7 @@ class ResponderServiceImpl(
             Stage.FS,
             Stage.PN ->
                 failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = ResponderProcessing.Params.allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForResponderProcessing(stage = params.ocid.stage)
                 )
         }
 
@@ -360,14 +355,7 @@ class ResponderServiceImpl(
             Stage.AP,
             Stage.EI,
             Stage.FS,
-            Stage.PN ->
-                failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = GetOrganization.Params.allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
-                )
+            Stage.PN -> failure(ValidationErrors.UnexpectedStageForGetOrganization(stage = stage))
         }
             .orForwardFail { fail -> return fail }
 
@@ -722,11 +710,7 @@ private fun getRequirementToTenderer(
     Stage.FS,
     Stage.PN ->
         failure(
-            DataErrors.Validation.UnknownValue(
-                name = "stage",
-                expectedValues = ValidateRequirementResponsesParams.allowedStages.map { it.toString() },
-                actualValue = stage.toString()
-            )
+            ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
         )
 }
 
@@ -765,11 +749,7 @@ private fun getAllRequirement(
     Stage.FS,
     Stage.PN ->
         failure(
-            DataErrors.Validation.UnknownValue(
-                name = "stage",
-                expectedValues = ValidateRequirementResponsesParams.allowedStages.map { it.toString() },
-                actualValue = stage.toString()
-            )
+            ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
         )
 }
 

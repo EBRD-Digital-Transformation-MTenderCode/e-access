@@ -23,7 +23,6 @@ import com.procurement.access.application.service.tender.checkProcuringEntityNot
 import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
@@ -254,11 +253,7 @@ class CriteriaServiceImpl(
             Stage.FS,
             Stage.PN ->
                 Result.failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = GetQualificationCriteriaAndMethod.Params.allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
                 )
         }
             .orForwardFail { fail -> return fail }
@@ -310,11 +305,7 @@ class CriteriaServiceImpl(
             Stage.FS,
             Stage.PN ->
                 Result.failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = FindCriteria.Params.allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
                 )
         }
             .orForwardFail { fail -> return fail }
