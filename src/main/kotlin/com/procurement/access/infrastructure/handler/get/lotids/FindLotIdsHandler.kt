@@ -7,6 +7,7 @@ import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.bind
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
@@ -28,16 +29,10 @@ class FindLotIdsHandler(
 
     override fun execute(node: JsonNode): Result<List<LotId>, Fail> {
 
-        val paramsNode = node.tryGetParams()
-            .doOnError { error -> return Result.failure(error) }
-            .get
-
-        val params = paramsNode.tryParamsToObject(FindLotIdsRequest::class.java)
-            .doOnError { error -> return Result.failure(error) }
-            .get
-            .convert()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+        val params = node.tryGetParams()
+            .bind { it.tryParamsToObject(FindLotIdsRequest::class.java) }
+            .bind { it.convert() }
+            .orForwardFail { error -> return error }
 
         return lotService.findLotIds(params = params)
     }

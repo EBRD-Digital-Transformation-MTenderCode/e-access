@@ -3,7 +3,6 @@ package com.procurement.access.application.service.tender.strategy.set.statefort
 import com.procurement.access.application.model.params.SetStateForTenderParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -23,25 +22,6 @@ import com.procurement.access.utils.tryToObject
 class SetStateForTenderStrategy(
     private val tenderProcessRepository: TenderProcessRepository
 ) {
-
-    companion object {
-        val allowedStages = Stage.allowedElements
-            .filter {
-                when (it) {
-                    Stage.AP,
-                    Stage.EV,
-                    Stage.FE,
-                    Stage.NP,
-                    Stage.PN,
-                    Stage.TP -> true
-
-                    Stage.AC,
-                    Stage.EI,
-                    Stage.FS -> false
-                }
-            }
-            .toSet()
-    }
 
     fun execute(params: SetStateForTenderParams): Result<SetStateForTenderResult, Fail> {
 
@@ -94,11 +74,7 @@ class SetStateForTenderStrategy(
             Stage.FS,
             Stage.AC ->
                 return Result.failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = allowedStages.map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
                 )
         }
 

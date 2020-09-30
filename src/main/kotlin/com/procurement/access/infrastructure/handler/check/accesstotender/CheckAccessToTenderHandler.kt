@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.ValidationResult
+import com.procurement.access.domain.util.bind
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.model.dto.bpe.Command2Type
@@ -20,16 +21,10 @@ class CheckAccessToTenderHandler(
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
 
-        val paramsNode = node.tryGetParams()
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
-
-        val params = paramsNode.tryParamsToObject(CheckAccessToTenderRequest::class.java)
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
-            .convert()
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
+        val params = node.tryGetParams()
+            .bind { it.tryParamsToObject(CheckAccessToTenderRequest::class.java) }
+            .bind { it.convert() }
+            .doReturn { error -> return ValidationResult.error(error) }
 
         return validationService.checkOwnerAndToken(params = params)
     }

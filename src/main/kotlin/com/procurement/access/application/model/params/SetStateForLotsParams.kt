@@ -15,7 +15,7 @@ import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.lib.toSetBy
 
-data class SetStateForLotsParams private constructor(
+class SetStateForLotsParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid,
     val lots: List<Lot>

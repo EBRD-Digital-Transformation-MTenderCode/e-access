@@ -19,7 +19,6 @@ class GetOrganization {
         val role: OrganizationRole
     ) {
         companion object {
-
             private val allowedRoles = OrganizationRole.allowedElements
                 .filter { value ->
                     when (value) {

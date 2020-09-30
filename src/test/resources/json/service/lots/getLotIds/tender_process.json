@@ -134,7 +134,8 @@
       "endDate": "2020-01-30T10:30:40Z"
     },
     "tenderPeriod": {
-      "startDate": "2019-09-01T10:30:40Z"
+      "startDate": "2019-09-01T10:30:40Z",
+      "endDate": "2019-09-03T10:30:40Z"
     },
     "value": {
       "amount": 10.00,
@@ -155,6 +156,57 @@
         "value": {
           "amount": 10.00,
           "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "pn.tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "pn.tender.lot[0].placeOfPerformance.description"
         }
       },
       {
@@ -166,15 +218,119 @@
         "value": {
           "amount": 10.00,
           "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "pn.tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "pn.tender.lot[0].placeOfPerformance.description"
         }
       },
       {
         "id": "577fd5c4-e314-40a9-aabe-732d7f5269a2",
         "title": "lots title1",
         "description": "lots description",
+        "status": "planned",
+        "statusDetails": "awarded",
         "value": {
           "amount": 10.00,
           "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "pn.tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "pn.tender.lot[0].placeOfPerformance.description"
         }
       },
       {
@@ -182,9 +338,61 @@
         "title": "lots title1",
         "description": "lots description",
         "status": "active",
+        "statusDetails": "unsuccessful",
         "value": {
           "amount": 10.00,
           "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "pn.tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "pn.tender.lot[0].placeOfPerformance.description"
         }
       },
       {
@@ -196,6 +404,57 @@
         "value": {
           "amount": 10.00,
           "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "pn.tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "pn.tender.lot[0].placeOfPerformance.description"
         }
       },
       {
@@ -203,9 +462,61 @@
         "title": "lots title1",
         "description": "lots description",
         "statusDetails": "empty",
+        "status": "unsuccessful",
         "value": {
           "amount": 10.00,
           "currency": "EUR"
+        },
+        "options": [
+          {
+            "hasOptions": false
+          }
+        ],
+        "recurrentProcurement": [
+          {
+            "isRecurrent": false
+          }
+        ],
+        "renewals": [
+          {
+            "hasRenewals": false
+          }
+        ],
+        "variants": [
+          {
+            "hasVariants": false
+          }
+        ],
+        "contractPeriod": {
+          "startDate": "2019-05-01T10:00:00Z",
+          "endDate": "2019-05-10T10:00:00Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "pn.tender.lot[0].placeOfPerformance.address.streetAddress",
+            "postalCode": "pn.tender.lot[0].placeOfPerformance.address.postalCode",
+            "addressDetails": {
+              "country": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.country.uri"
+              },
+              "region": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.region.uri"
+              },
+              "locality": {
+                "scheme": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.scheme",
+                "id": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.id",
+                "description": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.description",
+                "uri": "pn.tender.lot[0].placeOfPerformance.address.addressDetails.locality.uri"
+              }
+            }
+          },
+          "description": "pn.tender.lot[0].placeOfPerformance.description"
         }
       }
     ],
@@ -232,6 +543,7 @@
         },
         "relatedLot": "577fd5c4-e314-40a9-aabe-732d7f5269ad"
       }
-    ]
+    ],
+    "documents": []
   }
 }

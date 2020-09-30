@@ -9,7 +9,9 @@ import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.domain.util.extension.toSetBy
+import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsRequest
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
 
@@ -46,6 +48,23 @@ fun SetStateForLotsRequest.Lot.convert(): Result<SetStateForLotsParams.Lot, Data
 }
 
 fun CNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
+    SetStateForLotsResult(
+        id = id.tryCreateLotId()
+            .orForwardFail { fail -> return fail },
+        status = status,
+        statusDetails = statusDetails
+    ).asSuccess()
+
+fun APEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
+    SetStateForLotsResult(
+        id = id.tryCreateLotId()
+            .orForwardFail { fail -> return fail },
+        status = status,
+        statusDetails = statusDetails
+    ).asSuccess()
+
+
+fun PNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
     SetStateForLotsResult(
         id = id.tryCreateLotId()
             .orForwardFail { fail -> return fail },

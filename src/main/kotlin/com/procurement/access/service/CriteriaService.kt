@@ -28,6 +28,7 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.exception.ErrorException
@@ -38,6 +39,7 @@ import com.procurement.access.infrastructure.dto.converter.create.convertToRespo
 import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
@@ -208,20 +210,53 @@ class CriteriaServiceImpl(
                 )
             )
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+        val result = when (params.ocid.stage) {
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val tender = fe.tender
+                val otherCriteria = tender.otherCriteria!!
+
+                val result = convert(
+                    conversions = emptyList(),
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
+                    reductionCriteria = otherCriteria.reductionCriteria
+                )
+
+                success(result)
             }
 
-        val tender = cnEntity.tender
-        val otherCriteria = tender.otherCriteria!!
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val result = convert(
-            conversions = tender.conversions.orEmpty(),
-            qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
-            reductionCriteria = otherCriteria.reductionCriteria
-        )
+                val tender = cn.tender
+                val otherCriteria = tender.otherCriteria!!
+
+                val result = convert(
+                    conversions = tender.conversions.orEmpty(),
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
+                    reductionCriteria = otherCriteria.reductionCriteria
+                )
+
+                success(result)
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN ->
+                Result.failure(
+                    ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { fail -> return fail }
 
         return success(result)
     }
@@ -232,20 +267,50 @@ class CriteriaServiceImpl(
             .orForwardFail { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+        val foundedCriteriaResult = when (params.ocid.stage) {
+
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val targetCriteria = fe.tender.criteria.orEmpty()
+                    .asSequence()
+                    .filter { it.source == params.source }
+                    .map { criterion -> criterion.convert() }
+                    .toList()
+
+                success(targetCriteria)
             }
 
-        val foundedCriteria = cnEntity.tender.criteria
-            ?.asSequence()
-            ?.filter { it.source == params.source }
-            ?.map { criterion -> criterion.convert() }
-            ?.toList()
-            .orEmpty()
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val result = FindCriteriaResult(foundedCriteria)
+                val targetCriteria = cn.tender.criteria.orEmpty()
+                    .asSequence()
+                    .filter { it.source == params.source }
+                    .map { criterion -> criterion.convert() }
+                    .toList()
+
+                success(targetCriteria)
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN ->
+                Result.failure(
+                    ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { fail -> return fail }
+
+        val result = FindCriteriaResult(foundedCriteriaResult)
 
         return success(result)
     }
