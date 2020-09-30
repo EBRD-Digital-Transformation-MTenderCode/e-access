@@ -256,7 +256,7 @@ class CriteriaServiceImpl(
                 Result.failure(
                     DataErrors.Validation.UnknownValue(
                         name = "stage",
-                        expectedValues = FindCriteria.Params.allowedStages.map { it.toString() },
+                        expectedValues = GetQualificationCriteriaAndMethod.Params.allowedStages.map { it.toString() },
                         actualValue = params.ocid.stage.toString()
                     )
                 )
