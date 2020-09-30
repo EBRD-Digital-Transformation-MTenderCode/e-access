@@ -211,20 +211,57 @@ class CriteriaServiceImpl(
                 )
             )
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+        val result = when (params.ocid.stage) {
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val tender = fe.tender
+                val otherCriteria = tender.otherCriteria!!
+
+                val result = convert(
+                    conversions = emptyList(),
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
+                    reductionCriteria = otherCriteria.reductionCriteria
+                )
+
+                success(result)
             }
 
-        val tender = cnEntity.tender
-        val otherCriteria = tender.otherCriteria!!
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val result = convert(
-            conversions = tender.conversions.orEmpty(),
-            qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
-            reductionCriteria = otherCriteria.reductionCriteria
-        )
+                val tender = cn.tender
+                val otherCriteria = tender.otherCriteria!!
+
+                val result = convert(
+                    conversions = tender.conversions.orEmpty(),
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
+                    reductionCriteria = otherCriteria.reductionCriteria
+                )
+
+                success(result)
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN ->
+                Result.failure(
+                    DataErrors.Validation.UnknownValue(
+                        name = "stage",
+                        expectedValues = FindCriteria.Params.allowedStages.map { it.toString() },
+                        actualValue = params.ocid.stage.toString()
+                    )
+                )
+        }
+            .orForwardFail { fail -> return fail }
 
         return success(result)
     }
