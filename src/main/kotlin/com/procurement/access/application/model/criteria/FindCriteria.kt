@@ -7,12 +7,28 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 
 class FindCriteria {
 
     class Params private constructor(val cpid: Cpid, val ocid: Ocid, val source: CriteriaSource) {
         companion object {
+            val allowedStages = Stage.allowedElements
+                .filter { value ->
+                    when (value) {
+                        Stage.EV,
+                        Stage.FE,
+                        Stage.NP,
+                        Stage.TP -> true
+
+                        Stage.AC,
+                        Stage.AP,
+                        Stage.EI,
+                        Stage.FS,
+                        Stage.PN -> false
+                    }
+                }.toSet()
 
             private val allowedSources = CriteriaSource.allowedElements
                 .filter { source ->
