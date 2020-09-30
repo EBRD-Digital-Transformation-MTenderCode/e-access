@@ -7,6 +7,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.organization.OrganizationId
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
@@ -23,6 +24,22 @@ class ValidateRequirementResponsesParams private constructor(
     val operationType: OperationType
 ) {
     companion object {
+        val allowedStages = Stage.allowedElements
+            .filter { value ->
+                when (value) {
+                    Stage.EV,
+                    Stage.FE,
+                    Stage.NP,
+                    Stage.TP -> true
+
+                    Stage.AC,
+                    Stage.AP,
+                    Stage.EI,
+                    Stage.FS,
+                    Stage.PN -> false
+                }
+            }.toSet()
+
         private val allowedOperationTypes = OperationType.allowedElements
             .filter { value ->
                 when (value) {

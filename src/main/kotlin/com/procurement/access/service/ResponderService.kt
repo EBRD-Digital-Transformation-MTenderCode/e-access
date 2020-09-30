@@ -8,6 +8,7 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
+import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -24,10 +25,12 @@ import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.getDuplicate
 import com.procurement.access.domain.util.extension.toSetBy
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
 import com.procurement.access.infrastructure.dto.converter.validate.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
@@ -54,13 +57,13 @@ class ResponderServiceImpl(
         val stage = params.ocid.stage
 
         val entity = getTenderProcessEntityByCpIdAndStage(cpid = params.cpid, stage = stage)
-            .doOnError { error -> return Result.failure(error) }
+            .doOnError { error -> return failure(error) }
             .get
 
         val cnEntity = entity.jsonData
             .tryToObject(CNEntity::class.java)
             .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
             .get
 
@@ -100,7 +103,7 @@ class ResponderServiceImpl(
             )
         )
             .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
         // FR-10.1.4.12
@@ -195,26 +198,15 @@ class ResponderServiceImpl(
 
     override fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail> {
 
-        val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository
+            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
             .doReturn { error ->
                 return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
             ?: return success(ValidateRequirementResponsesResult(emptyList()))
 
-        val cn = cnEntity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-
         val filteredRequirement = when (params.operationType) {
-            OperationType.CREATE_SUBMISSION           -> cn.tender.criteria
-                ?.asSequence()
-                ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
-                ?.flatMap { it.requirementGroups.asSequence() }
-                ?.flatMap { it.requirements.asSequence() }
-                ?.associateBy { it.id }
-                .orEmpty()
+            OperationType.CREATE_SUBMISSION -> getRequirementToTenderer(tenderProcessEntity, params.ocid.stage)
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -239,8 +231,9 @@ class ResponderServiceImpl(
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> emptyMap()
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> getAllRequirement(tenderProcessEntity, params.ocid.stage)
         }
+            .orForwardFail { fail -> return fail }
 
         val organizationIdsSet = params.organizationIds.toSet()
 
@@ -285,14 +278,14 @@ class ResponderServiceImpl(
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
             .orForwardFail { error -> return error }
-            ?: return Result.failure(
+            ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetOrganization(cpid = params.cpid, ocid = params.ocid)
             )
 
         val cnEntity = entity.jsonData
             .tryToObject(CNEntity::class.java)
             .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
             .get
 
@@ -306,7 +299,7 @@ class ResponderServiceImpl(
 
     private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
         when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD            ->
+            LocationOfPersonsType.AWARD ->
                 BusinessFunctionType.allowedElements
                     .filter {
                         when (it) {
@@ -317,7 +310,7 @@ class ResponderServiceImpl(
                             BusinessFunctionType.TECHNICAL_OPENER,
                             BusinessFunctionType.PRICE_OPENER,
                             BusinessFunctionType.PRICE_EVALUATOR -> true
-                            BusinessFunctionType.AUTHORITY       -> false
+                            BusinessFunctionType.AUTHORITY -> false
                         }
                     }.toSet()
             LocationOfPersonsType.PROCURING_ENTITY ->
@@ -338,7 +331,7 @@ class ResponderServiceImpl(
 
     private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
         when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD            ->
+            LocationOfPersonsType.AWARD ->
                 BusinessFunctionDocumentType.allowedElements
                     .filter {
                         when (it) {
@@ -359,9 +352,9 @@ class ResponderServiceImpl(
         stage: Stage
     ): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
-            .doOnError { error -> return Result.failure(error) }
+            .doOnError { error -> return failure(error) }
             .get
-            ?: return Result.failure(
+            ?: return failure(
                 BadRequestErrors.EntityNotFound(
                     entityName = "TenderProcessEntity",
                     by = "by cpid = '$cpid' and stage = '$stage'"
@@ -517,6 +510,94 @@ private fun createDocument(
         description = received.description
     )
 
+private fun getRequirementToTenderer(
+    entity: TenderProcessEntity,
+    stage: Stage
+): Result<Map<String, Requirement>, Fail> = when (stage) {
+
+    Stage.FE -> entity.jsonData
+        .tryToObject(FEEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.EV,
+    Stage.NP,
+    Stage.TP -> entity.jsonData
+        .tryToObject(CNEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.AC,
+    Stage.AP,
+    Stage.EI,
+    Stage.FS,
+    Stage.PN ->
+        failure(
+            DataErrors.Validation.UnknownValue(
+                name = "stage",
+                expectedValues = ValidateRequirementResponsesParams.allowedStages.map { it.toString() },
+                actualValue = stage.toString()
+            )
+        )
+}
+
+private fun getAllRequirement(
+    entity: TenderProcessEntity,
+    stage: Stage
+): Result<Map<String, Requirement>, Fail> = when (stage) {
+
+    Stage.FE -> entity.jsonData
+        .tryToObject(FEEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.EV,
+    Stage.NP,
+    Stage.TP -> entity.jsonData
+        .tryToObject(CNEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.AC,
+    Stage.AP,
+    Stage.EI,
+    Stage.FS,
+    Stage.PN ->
+        failure(
+            DataErrors.Validation.UnknownValue(
+                name = "stage",
+                expectedValues = ValidateRequirementResponsesParams.allowedStages.map { it.toString() },
+                actualValue = stage.toString()
+            )
+        )
+}
+
 fun <R, A, K> updateStrategy(
     receivedElements: List<R>,
     keyExtractorForReceivedElement: (R) -> K,
@@ -549,7 +630,6 @@ fun <R, A, K> updateStrategy(
 
     return updatedElements
 }
-
 
 fun validateOneAnswerOnRequirementByCandidate(
     requirementResponsesForTenderer: List<ValidateRequirementResponsesParams.RequirementResponse>
