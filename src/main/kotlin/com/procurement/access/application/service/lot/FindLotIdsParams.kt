@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 
@@ -17,6 +18,21 @@ class FindLotIdsParams private constructor(
     val states: List<State>
 ) {
     companion object {
+        val allowedStages = Stage.allowedElements
+            .filter { value ->
+                when (value) {
+                    Stage.EV,
+                    Stage.FE,
+                    Stage.NP,
+                    Stage.PN,
+                    Stage.TP -> true
+
+                    Stage.AC,
+                    Stage.AP,
+                    Stage.EI,
+                    Stage.FS -> false
+                }
+            }.toSet()
 
         private val allowedLotStatuses = LotStatus.allowedElements
             .filter {

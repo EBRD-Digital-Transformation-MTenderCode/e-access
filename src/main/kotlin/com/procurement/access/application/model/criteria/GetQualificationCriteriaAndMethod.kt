@@ -28,7 +28,6 @@ class GetQualificationCriteriaAndMethod {
                     }
                 }.toSet()
 
-
             fun tryCreate(cpid: String, ocid: String): Result<Params, DataErrors> {
                 val cpidResult = parseCpid(value = cpid)
                     .orForwardFail { error -> return error }

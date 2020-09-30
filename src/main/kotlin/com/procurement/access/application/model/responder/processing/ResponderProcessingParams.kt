@@ -10,6 +10,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.util.None
 import com.procurement.access.domain.util.Option
@@ -27,6 +28,22 @@ class ResponderProcessing {
         val responder: Responder
     ) {
         companion object {
+            val allowedStages = Stage.allowedElements
+                .filter { value ->
+                    when (value) {
+                        Stage.EV,
+                        Stage.FE,
+                        Stage.NP,
+                        Stage.TP -> true
+
+                        Stage.AC,
+                        Stage.AP,
+                        Stage.EI,
+                        Stage.FS,
+                        Stage.PN -> false
+                    }
+                }.toSet()
+
             fun tryCreate(
                 cpid: String,
                 ocid: String,
