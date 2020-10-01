@@ -279,5 +279,11 @@ sealed class ValidationErrors(
             description = "Stage '${stage}' not allowed at this command"
         )
 
+    class UnexpectedStageForCreateCriteriaForProcuringEntity(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "1.12.2",
+            description = "Stage '${stage}' not allowed at this command"
+        )
 
 }
