@@ -218,7 +218,9 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_FE,
+            OperationType.CREATE_PCR,
             OperationType.CREATE_SUBMISSION,
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,

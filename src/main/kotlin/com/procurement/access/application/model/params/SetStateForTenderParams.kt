@@ -13,7 +13,7 @@ import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.lib.toSetBy
 
-data class SetStateForTenderParams private constructor(
+class SetStateForTenderParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid,
     val tender: Tender
@@ -38,7 +38,7 @@ data class SetStateForTenderParams private constructor(
         }
     }
 
-    data class Tender private constructor(
+    class Tender private constructor(
         val status: TenderStatus,
         val statusDetails: TenderStatusDetails
     ) {
@@ -62,6 +62,7 @@ data class SetStateForTenderParams private constructor(
                         TenderStatusDetails.AGGREGATED,
                         TenderStatusDetails.AGGREGATION_PENDING,
                         TenderStatusDetails.EMPTY,
+                        TenderStatusDetails.EVALUATION,
                         TenderStatusDetails.LACK_OF_QUALIFICATIONS,
                         TenderStatusDetails.LACK_OF_SUBMISSIONS,
                         TenderStatusDetails.QUALIFICATION,

@@ -6,7 +6,13 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.*
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.SubmissionMethod
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -36,6 +42,38 @@ class PnService(
     companion object {
         private val log: Logger = LoggerFactory.getLogger(PnService::class.java)
     }
+
+    private val allowedTenderDocumentTypes = DocumentType.allowedElements
+        .filter {
+            when (it) {
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> true
+
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.MARKET_STUDIES,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.PROJECT_PLAN -> false
+            }
+        }.toSet()
 
     fun createPn(contextRequest: CreatePnContext, request: PnCreateData): PnCreateResult {
         checkValidationRules(request)
@@ -81,6 +119,9 @@ class PnService(
         //VR-3.1.1
         val isUniqueDocuments = documents.uniqueBy { it.id }
         if (!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
+
+        //VR-3.6.1
+        checkTenderDocumentsTypes(request)
 
         val lots: List<PnCreateData.Tender.Lot> = request.tender.lots
         val items = request.tender.items
@@ -146,6 +187,17 @@ class PnService(
     private fun checkTenderPeriod(tenderPeriod: PnCreateData.Tender.TenderPeriod) {
         if (tenderPeriod.startDate.dayOfMonth != 1)
             throw ErrorException(ErrorType.INVALID_START_DATE)
+    }
+
+    private fun checkTenderDocumentsTypes(data: PnCreateData) {
+        data.tender.documents
+            .map { document ->
+                if (document.documentType !in allowedTenderDocumentTypes)
+                    throw ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                    )
+            }
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -51,6 +52,38 @@ import java.time.LocalDateTime
 class PnUpdateService(private val generationService: GenerationService,
                       private val tenderProcessDao: TenderProcessDao) {
 
+    private val allowedTenderDocumentTypes = DocumentType.allowedElements
+        .filter {
+            when (it) {
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> true
+
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.MARKET_STUDIES,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.PROJECT_PLAN -> false
+            }
+        }.toSet()
+
     fun updatePn(cm: CommandMessage): ResponseDto {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
@@ -74,6 +107,9 @@ class PnUpdateService(private val generationService: GenerationService,
             )
 
         checkDocumentsTitle(documents = pnDto.tender.documents)
+
+        //VR-3.6.1
+        checkTenderDocumentsTypes(pnDto)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
@@ -180,6 +216,17 @@ class PnUpdateService(private val generationService: GenerationService,
                 )
             }
         }
+    }
+
+    private fun checkTenderDocumentsTypes(data: PnUpdate) {
+        data.tender.documents
+            ?.map { document ->
+                if (document.documentType !in allowedTenderDocumentTypes)
+                    throw ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                    )
+            }
     }
 
     private fun validateStartDate(startDate: LocalDateTime) {

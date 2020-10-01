@@ -22,14 +22,20 @@ import com.procurement.access.application.service.tender.checkPeriod
 import com.procurement.access.application.service.tender.checkProcuringEntityNotAnswered
 import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
+import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
@@ -38,6 +44,7 @@ import com.procurement.access.infrastructure.dto.converter.create.convertToRespo
 import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
@@ -201,27 +208,60 @@ class CriteriaServiceImpl(
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
             .orForwardFail { error -> return error }
-            ?: return Result.failure(
+            ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetQualificationCriteriaAndMethod(
                     cpid = params.cpid,
                     ocid = params.ocid
                 )
             )
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+        val result = when (params.ocid.stage) {
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val tender = fe.tender
+                val otherCriteria = tender.otherCriteria!!
+
+                val result = convert(
+                    conversions = emptyList(),
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
+                    reductionCriteria = otherCriteria.reductionCriteria
+                )
+
+                success(result)
             }
 
-        val tender = cnEntity.tender
-        val otherCriteria = tender.otherCriteria!!
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val result = convert(
-            conversions = tender.conversions.orEmpty(),
-            qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
-            reductionCriteria = otherCriteria.reductionCriteria
-        )
+                val tender = cn.tender
+                val otherCriteria = tender.otherCriteria!!
+
+                val result = convert(
+                    conversions = tender.conversions.orEmpty(),
+                    qualificationSystemMethods = otherCriteria.qualificationSystemMethods,
+                    reductionCriteria = otherCriteria.reductionCriteria
+                )
+
+                success(result)
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN ->
+                failure(
+                    ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { fail -> return fail }
 
         return success(result)
     }
@@ -232,111 +272,256 @@ class CriteriaServiceImpl(
             .orForwardFail { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+        val foundedCriteriaResult = when (params.ocid.stage) {
+
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val targetCriteria = fe.tender.criteria.orEmpty()
+                    .asSequence()
+                    .filter { it.source == params.source }
+                    .map { criterion -> criterion.convert() }
+                    .toList()
+
+                success(targetCriteria)
             }
 
-        val foundedCriteria = cnEntity.tender.criteria
-            ?.asSequence()
-            ?.filter { it.source == params.source }
-            ?.map { criterion -> criterion.convert() }
-            ?.toList()
-            .orEmpty()
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val result = FindCriteriaResult(foundedCriteria)
+                val targetCriteria = cn.tender.criteria.orEmpty()
+                    .asSequence()
+                    .filter { it.source == params.source }
+                    .map { criterion -> criterion.convert() }
+                    .toList()
+
+                success(targetCriteria)
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN ->
+                failure(
+                    ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { fail -> return fail }
+
+        val result = FindCriteriaResult(foundedCriteriaResult)
 
         return success(result)
     }
 
     override fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail> {
+        val stage = params.ocid.stage
 
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
             cpid = params.cpid,
-            stage = params.ocid.stage
+            stage = stage
         )
             .orForwardFail { error -> return error }
-            ?: return Result.failure(
+            ?: return failure(
                 ValidationErrors.TenderNotFoundOnCreateCriteriaForProcuringEntity(
                     cpid = params.cpid,
                     ocid = params.ocid
                 )
             )
 
-        val cnEntity = tenderProcessEntity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
+        val result = when (stage) {
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = tenderProcessEntity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val createdCriteria = params.criteria
-            .map { criterion ->
-                CNEntity.Tender.Criteria(
-                    id = criterion.id,
-                    title = criterion.title,
-                    description = criterion.description,
-                    requirementGroups = criterion.requirementGroups
-                        .map { requirementGroups ->
-                            CNEntity.Tender.Criteria.RequirementGroup(
-                                id = requirementGroups.id,
-                                description = requirementGroups.description,
-                                requirements = requirementGroups.requirements
-                                    .map { requirement ->
-                                        Requirement(
-                                            id = requirement.id,
-                                            description = requirement.description,
-                                            title = requirement.title,
-                                            period = null,
-                                            value = NoneValue,
-                                            dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
-                                        )
-                                    }
-                            )
-                        },
-                    source = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
-                    relatesTo = when (params.operationType) {
-                        OperationType.AMEND_FE,
-                        OperationType.APPLY_QUALIFICATION_PROTOCOL,
-                        OperationType.CREATE_CN,
-                        OperationType.CREATE_CN_ON_PIN,
-                        OperationType.CREATE_CN_ON_PN,
-                        OperationType.CREATE_FE,
-                        OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-                        OperationType.CREATE_PIN,
-                        OperationType.CREATE_PIN_ON_PN,
-                        OperationType.CREATE_PN,
-                        OperationType.CREATE_SUBMISSION,
-                        OperationType.OUTSOURCING_PN,
-                        OperationType.QUALIFICATION,
-                        OperationType.QUALIFICATION_CONSIDERATION,
-                        OperationType.QUALIFICATION_PROTOCOL,
-                        OperationType.RELATION_AP,
-                        OperationType.START_SECONDSTAGE,
-                        OperationType.UPDATE_AP,
-                        OperationType.UPDATE_CN,
-                        OperationType.UPDATE_PN,
-                        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
+                val createdCriteria = params.criteria
+                    .map { criterion -> createCriterionForCN(criterion, params.operationType) }
 
-                        OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
-                        OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
-                    },
-                    relatedItem = null
+                val result = createdCriteria.map { it.convertToResponse() }
+
+                val updatedCnEntity = cn.copy(
+                    tender = cn.tender.copy(
+                        criteria = (cn.tender.criteria ?: emptyList()) + createdCriteria
+                    )
                 )
+                val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCnEntity))
+
+                tenderProcessRepository.save(updatedTenderProcessEntity)
+                    .orForwardFail { incident -> return incident }
+
+                success(result)
             }
 
-        val result = createdCriteria.map { it.convertToResponse() }
+            Stage.FE -> {
+                val cn = tenderProcessEntity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val updatedCnEntity = cnEntity.copy(
-            tender = cnEntity.tender.copy(
-                criteria = (cnEntity.tender.criteria ?: emptyList()) + createdCriteria
-            )
-        )
-        val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCnEntity))
+                val createdCriteria = params.criteria
+                    .mapResult { criterion -> createCriterionForFE(criterion, params.operationType) }
+                    .orForwardFail { error -> return error }
 
-        tenderProcessRepository.save(updatedTenderProcessEntity)
-            .orForwardFail { incident -> return incident }
+                val result = createdCriteria.map { it.convertToResponse() }
+
+                val updatedFeEntity = cn.copy(
+                    tender = cn.tender.copy(
+                        criteria = (cn.tender.criteria ?: emptyList()) + createdCriteria
+                    )
+                )
+                val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedFeEntity))
+
+                tenderProcessRepository.save(updatedTenderProcessEntity)
+                    .orForwardFail { incident -> return incident }
+
+                success(result)
+            }
+
+            Stage.AP,
+            Stage.PN,
+            Stage.AC,
+            Stage.EI,
+            Stage.FS ->
+                failure(
+                    ValidationErrors.UnexpectedStageForCreateCriteriaForProcuringEntity(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { error -> return error }
 
         return success(CreateCriteriaForProcuringEntityResult(result))
     }
+
+    private fun createCriterionForCN(
+        criterion: CreateCriteriaForProcuringEntity.Params.Criterion,
+        operationType: OperationType
+    ): CNEntity.Tender.Criteria =
+        CNEntity.Tender.Criteria(
+            id = criterion.id,
+            title = criterion.title,
+            description = criterion.description,
+            requirementGroups = criterion.requirementGroups
+                .map { requirementGroups ->
+                    CNEntity.Tender.Criteria.RequirementGroup(
+                        id = requirementGroups.id,
+                        description = requirementGroups.description,
+                        requirements = requirementGroups.requirements
+                            .map { requirement ->
+                                Requirement(
+                                    id = requirement.id,
+                                    description = requirement.description,
+                                    title = requirement.title,
+                                    period = null,
+                                    value = NoneValue,
+                                    dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                )
+                            }
+                    )
+                },
+            source = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
+            relatesTo = when (operationType) {
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_FE,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
+
+                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
+                OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+            },
+            relatedItem = null
+        )
+
+    private fun createCriterionForFE(
+        criterion: CreateCriteriaForProcuringEntity.Params.Criterion,
+        operationType: OperationType
+    ): Result<FEEntity.Tender.Criteria, DataErrors.Validation.UnknownValue>  {
+
+        return FEEntity.Tender.Criteria(
+            id = criterion.id,
+            title = criterion.title,
+            description = criterion.description,
+            requirementGroups = criterion.requirementGroups
+                .map { requirementGroups ->
+                    FEEntity.Tender.Criteria.RequirementGroup(
+                        id = requirementGroups.id,
+                        description = requirementGroups.description,
+                        requirements = requirementGroups.requirements
+                            .map { requirement ->
+                                Requirement(
+                                    id = requirement.id,
+                                    description = requirement.description,
+                                    title = requirement.title,
+                                    period = null,
+                                    value = NoneValue,
+                                    dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                )
+                            }
+                    )
+                },
+            source = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
+            relatesTo = when (operationType) {
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_FE,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
+                    return failure(
+                        DataErrors.Validation.UnknownValue(
+                            name = "operationType",
+                            expectedValues = CreateCriteriaForProcuringEntity.Params.allowedOperationType.keysAsStrings(),
+                            actualValue = operationType.toString()
+                        )
+                    )
+
+                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
+                OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+            }
+        )
+            .asSuccess()
+    }
+
 }

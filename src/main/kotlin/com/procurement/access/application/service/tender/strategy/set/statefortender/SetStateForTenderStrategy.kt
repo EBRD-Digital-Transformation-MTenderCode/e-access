@@ -3,7 +3,6 @@ package com.procurement.access.application.service.tender.strategy.set.statefort
 import com.procurement.access.application.model.params.SetStateForTenderParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -13,6 +12,7 @@ import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderResult
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -22,6 +22,7 @@ import com.procurement.access.utils.tryToObject
 class SetStateForTenderStrategy(
     private val tenderProcessRepository: TenderProcessRepository
 ) {
+
     fun execute(params: SetStateForTenderParams): Result<SetStateForTenderResult, Fail> {
 
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
@@ -32,7 +33,7 @@ class SetStateForTenderStrategy(
             statusDetails = params.tender.statusDetails
         )
 
-        when (params.ocid.stage) {
+        val updatedTenderJson = when (params.ocid.stage) {
             Stage.PN -> tenderProcessEntity.jsonData
                 .tryToObject(PNEntity::class.java)
                 .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
@@ -41,24 +42,23 @@ class SetStateForTenderStrategy(
                         tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails)
                     )
                 }
-                .also { updatedTenderProcess ->
-                    tenderProcessRepository.save(tenderProcessEntity.copy(jsonData = toJson(updatedTenderProcess)))
-                        .orForwardFail { error -> return error }
-                }
-
+                .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
 
             Stage.AP -> tenderProcessEntity.jsonData
                 .tryToObject(APEntity::class.java)
                 .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
                 .let {
-                    it.copy(
-                        tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails)
-                    )
+                    it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
-                .also { updatedTenderProcess ->
-                    tenderProcessRepository.save(tenderProcessEntity.copy(jsonData = toJson(updatedTenderProcess)))
-                        .orForwardFail { error -> return error }
+                .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
+
+            Stage.FE -> tenderProcessEntity.jsonData
+                .tryToObject(FEEntity::class.java)
+                .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                .let {
+                    it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
+                .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
 
             Stage.EV,
             Stage.TP,
@@ -66,26 +66,20 @@ class SetStateForTenderStrategy(
                 .tryToObject(CNEntity::class.java)
                 .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
                 .let {
-                    it.copy(
-                        tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails)
-                    )
+                    it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
-                .also { updatedTenderProcess ->
-                    tenderProcessRepository.save(tenderProcessEntity.copy(jsonData = toJson(updatedTenderProcess)))
-                        .orForwardFail { error -> return error }
-                }
+                .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
 
             Stage.EI,
             Stage.FS,
             Stage.AC ->
                 return Result.failure(
-                    DataErrors.Validation.UnknownValue(
-                        name = "stage",
-                        expectedValues = listOf(Stage.PN, Stage.AP, Stage.EV, Stage.TP, Stage.NP).map { it.toString() },
-                        actualValue = params.ocid.stage.toString()
-                    )
+                    ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
                 )
         }
+
+        tenderProcessRepository.save(tenderProcessEntity.copy(jsonData = updatedTenderJson))
+            .orForwardFail { error -> return error }
 
         return SetStateForTenderResult(
             status = newState.status,

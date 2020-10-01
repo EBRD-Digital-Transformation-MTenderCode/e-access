@@ -4,10 +4,26 @@ import com.procurement.access.application.model.context.CheckNegotiationCnOnPnCo
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.*
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.exception.ErrorType.*
+import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
+import com.procurement.access.exception.ErrorType.INCORRECT_VALUE_ATTRIBUTE
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
+import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
+import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
+import com.procurement.access.exception.ErrorType.INVALID_OWNER
+import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
+import com.procurement.access.exception.ErrorType.INVALID_TOKEN
+import com.procurement.access.exception.ErrorType.ITEM_ID_DUPLICATED
+import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -29,6 +45,38 @@ class NegotiationCnOnPnService(
     private val tenderProcessDao: TenderProcessDao
 ) {
 
+    private val allowedTenderDocumentTypes = DocumentType.allowedElements
+        .filter {
+            when (it) {
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> true
+
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.MARKET_STUDIES,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.PROJECT_PLAN -> false
+            }
+        }.toSet()
+
     fun check(context: CheckNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): CheckedNegotiationCnOnPn {
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
@@ -41,6 +89,9 @@ class NegotiationCnOnPnService(
 
         //VR-3.8.3 Documents (duplicate)
         checkDocuments(documentsFromRequest = data.tender.documents, documentsFromPN = pnEntity.tender.documents)
+
+        //VR-3.6.1
+        checkTenderDocumentsTypes(data)
 
         if (pnEntity.tender.items.isEmpty()) {
             val lotsIdsFromRequest = data.tender.lots.asSequence()
@@ -213,6 +264,17 @@ class NegotiationCnOnPnService(
                         message = "The request is missing a document with id '$id'"
                     )
                 }
+            }
+    }
+
+    private fun checkTenderDocumentsTypes(data: NegotiationCnOnPnRequest) {
+        data.tender.documents
+            .map { document ->
+                if (document.documentType !in allowedTenderDocumentTypes)
+                    throw ErrorException(
+                        error = INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                    )
             }
     }
 

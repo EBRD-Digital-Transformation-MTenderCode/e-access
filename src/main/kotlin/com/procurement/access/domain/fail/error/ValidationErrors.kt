@@ -223,4 +223,67 @@ sealed class ValidationErrors(
                 "relationship='${RelatedProcessType.X_SCOPE}', identifier='${relatedCpid}'. Tender with cpid='$cpid' and ocid='$ocid'."
         )
 
+    class UnexpectedStageForValidateRequirementResponse(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR-",
+            numberError = "1.24.4",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForFindCriteria(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "1.13.1",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForGetQualificationCriteriaAndMethod(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "1.11.2",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForResponderProcessing(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.4.2",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForSetStateForTender(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.6.2",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForGetOrganization(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "1.9.3",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForFindLotIds(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.2.1",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForSetStateForLots(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.7.2",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class UnexpectedStageForCreateCriteriaForProcuringEntity(stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "1.12.2",
+            description = "Stage '${stage}' not allowed at this command"
+        )
+
 }

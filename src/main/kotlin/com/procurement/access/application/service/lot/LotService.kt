@@ -6,7 +6,9 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -14,6 +16,7 @@ import com.procurement.access.domain.model.lot.TemporalLotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.getUnknownElements
@@ -21,7 +24,9 @@ import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.converter.convertToSetStateForLotsResult
+import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsResult
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
 import com.procurement.access.lib.orThrow
@@ -59,62 +64,185 @@ class LotServiceImpl(
 ) : LotService {
 
     override fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
-            cpid = params.cpid,
-            stage = params.ocid.stage
-        )
-            .doOnError { error -> return Result.failure(error) }
-            .get
+        val tenderProcessEntity = tenderProcessRepository
+            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .doReturn { error -> return Result.failure(error) }
             ?: return Result.failure(
                 ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
             )
 
-        val cnEntity = tenderProcessEntity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
-            .get
-
-        val lotsIds = params.lots
+        val receivedLotsIds = params.lots
             .toSetBy { it.id.toString() }
-        val dbLotsIds: Set<String> = cnEntity.tender.lots
-            .toSetBy { it.id }
 
-        val unknownLotsIds = getUnknownElements(received = lotsIds, known = dbLotsIds)
-        if (unknownLotsIds.isNotEmpty()) {
-            return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds))
-        }
+        val result = when (params.ocid.stage) {
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = tenderProcessEntity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val mapRequestIds = params.lots
-            .associateBy { it.id.toString() }
+                val dbLotsIds: Set<String> = cn.tender.lots
+                    .toSetBy { it.id }
 
-        val resultLots = mutableListOf<CNEntity.Tender.Lot>()
+                val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
+                if (unknownLotsIds.isNotEmpty()) {
+                    return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds))
+                }
 
-        val updatedLots = cnEntity.tender.lots
-            .map { dbLot ->
-                mapRequestIds[dbLot.id]
-                    ?.let { requestLot ->
-                        if (statusOrStatusDetailsVaries(databaseLot = dbLot, requestLot = requestLot)) {
-                            val updatedLot = dbLot.copy(
-                                status = requestLot.status,
-                                statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
-                            )
-                            resultLots.add(updatedLot)
-                            updatedLot
-                        } else dbLot
+                val mapRequestIds = params.lots
+                    .associateBy { it.id.toString() }
+
+                val resultLots = mutableListOf<CNEntity.Tender.Lot>()
+
+                val updatedLots = cn.tender.lots
+                    .map { dbLot ->
+                        mapRequestIds[dbLot.id]
+                            ?.let { requestLot ->
+                                val dbLotState = LotStateInfo(dbLot.status, dbLot.statusDetails)
+                                if (statusOrStatusDetailsVaries(
+                                        databaseLotStateInfo = dbLotState,
+                                        requestLot = requestLot
+                                    )) {
+                                    val updatedLot = dbLot.copy(
+                                        status = requestLot.status,
+                                        statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
+                                    )
+                                    resultLots.add(updatedLot)
+                                    updatedLot
+                                } else dbLot
+                            }
+                            ?: dbLot
                     }
-                    ?: dbLot
+                val updatedCNEntity = cn.copy(
+                    tender = cn.tender.copy(
+                        lots = updatedLots
+                    )
+                )
+
+                val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCNEntity))
+
+                tenderProcessRepository.save(updatedTenderProcessEntity)
+                    .orForwardFail { incident -> return incident }
+
+                resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
             }
-        val updatedCNEntity = cnEntity.copy(
-            tender = cnEntity.tender.copy(
-                lots = updatedLots
-            )
-        )
-        val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCNEntity))
 
-        tenderProcessRepository.save(updatedTenderProcessEntity)
-            .orForwardFail{ incident -> return incident }
+            Stage.AP -> {
+                val ap = tenderProcessEntity.jsonData
+                    .tryToObject(APEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        return resultLots.toList().mapResult { it.convertToSetStateForLotsResult()}
+                val storedLots = ap.tender.lots.orEmpty()
+
+                val dbLotsIds: Set<String> = storedLots
+                    .toSetBy { it.id }
+
+                val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
+                if (unknownLotsIds.isNotEmpty()) {
+                    return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds))
+                }
+
+                val mapRequestIds = params.lots
+                    .associateBy { it.id.toString() }
+
+                val resultLots = mutableListOf<APEntity.Tender.Lot>()
+
+                val updatedLots = storedLots
+                    .map { dbLot ->
+                        mapRequestIds[dbLot.id]
+                            ?.let { requestLot ->
+                                val dbLotState = LotStateInfo(dbLot.status, dbLot.statusDetails)
+                                if (statusOrStatusDetailsVaries(
+                                        databaseLotStateInfo = dbLotState,
+                                        requestLot = requestLot
+                                    )) {
+                                    val updatedLot = dbLot.copy(
+                                        status = requestLot.status,
+                                        statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
+                                    )
+                                    resultLots.add(updatedLot)
+                                    updatedLot
+                                } else dbLot
+                            }
+                            ?: dbLot
+                    }
+                val updatedAPEntity = ap.copy(
+                    tender = ap.tender.copy(
+                        lots = updatedLots
+                    )
+                )
+
+                val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedAPEntity))
+
+                tenderProcessRepository.save(updatedTenderProcessEntity)
+                    .orForwardFail { incident -> return incident }
+
+                resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
+            }
+
+            Stage.PN -> {
+                val pn = tenderProcessEntity.jsonData
+                    .tryToObject(PNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val dbLotsIds: Set<String> = pn.tender.lots
+                    .toSetBy { it.id }
+
+                val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
+                if (unknownLotsIds.isNotEmpty()) {
+                    return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds))
+                }
+
+                val mapRequestIds = params.lots
+                    .associateBy { it.id.toString() }
+
+                val resultLots = mutableListOf<PNEntity.Tender.Lot>()
+
+                val updatedLots = pn.tender.lots
+                    .map { dbLot ->
+                        mapRequestIds[dbLot.id]
+                            ?.let { requestLot ->
+                                val dbLotState = LotStateInfo(dbLot.status, dbLot.statusDetails)
+                                if (statusOrStatusDetailsVaries(
+                                        databaseLotStateInfo = dbLotState,
+                                        requestLot = requestLot
+                                    )) {
+                                    val updatedLot = dbLot.copy(
+                                        status = requestLot.status,
+                                        statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
+                                    )
+                                    resultLots.add(updatedLot)
+                                    updatedLot
+                                } else dbLot
+                            }
+                            ?: dbLot
+                    }
+                val updatedPNEntity = pn.copy(
+                    tender = pn.tender.copy(
+                        lots = updatedLots
+                    )
+                )
+
+                val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedPNEntity))
+
+                tenderProcessRepository.save(updatedTenderProcessEntity)
+                    .orForwardFail { incident -> return incident }
+
+                resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
+            }
+
+            Stage.AC,
+            Stage.EI,
+            Stage.FE,
+            Stage.FS ->
+                Result.failure(
+                    ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { error -> return error }
+
+        return success(result)
     }
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
@@ -153,37 +281,86 @@ class LotServiceImpl(
     }
 
     override fun findLotIds(params: FindLotIdsParams): Result<List<LotId>, Fail> {
+        val stage = params.ocid.stage
 
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
-            cpid = params.cpid,
-            stage = params.ocid.stage
-        )
-            .doOnError { error -> return Result.failure(error) }
-            .get
-            ?: return emptyList<LotId>()
-                .asSuccess()
+        val tenderProcessEntity = tenderProcessRepository
+            .getByCpIdAndStage(cpid = params.cpid, stage = stage)
+            .orForwardFail { error -> return error }
+            ?: return emptyList<LotId>().asSuccess()
 
-        val tenderProcess = tenderProcessEntity.jsonData
-            .tryToObject(TenderProcess::class.java)
-            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
-            .get
+        val result = when (stage) {
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = tenderProcessEntity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-
-        return when {
-            params.states.isEmpty() ->
-                Result.success(
-                    tenderProcess.tender.lots
+                val lotIds = when {
+                    params.states.isEmpty() -> cn.tender.lots
                         .map { lot -> LotId.fromString(lot.id) }
-                )
-            else -> {
-                val sortedStatuses = params.states.sorted()
-                Result.success(
-                    getLotsOnStates(
-                        lots = tenderProcess.tender.lots,
-                        states = sortedStatuses
-                    ).map { lot -> LotId.fromString(lot.id) })
+
+                    else -> {
+                        params.states.sorted()
+                            .let { sortedStatuses -> getLotsOnStates(lots = cn.tender.lots, states = sortedStatuses) }
+                            .map { lot -> LotId.fromString(lot.id) }
+                    }
+                }
+                success(lotIds)
             }
+
+            Stage.AP -> {
+                val ap = tenderProcessEntity.jsonData
+                    .tryToObject(APEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val lots = ap.tender.lots.orEmpty()
+
+                val lotIds = when {
+                    params.states.isEmpty() -> lots
+                        .map { lot -> LotId.fromString(lot.id) }
+
+                    else -> {
+                        params.states.sorted()
+                            .let { sortedStatuses -> getAPLotsOnStates(lots = lots, states = sortedStatuses) }
+                            .map { lot -> LotId.fromString(lot.id) }
+                    }
+                }
+
+                success(lotIds)
+            }
+
+            Stage.PN -> {
+                val pn = tenderProcessEntity.jsonData
+                    .tryToObject(PNEntity::class.java)
+                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val lotIds = when {
+                    params.states.isEmpty() -> pn.tender.lots
+                        .map { lot -> LotId.fromString(lot.id) }
+
+                    else -> {
+                        params.states.sorted()
+                            .let { sortedStatuses -> getPNLotsOnStates(lots = pn.tender.lots, states = sortedStatuses) }
+                            .map { lot -> LotId.fromString(lot.id) }
+                    }
+                }
+
+                success(lotIds)
+            }
+
+            Stage.FE -> success(emptyList())
+
+            Stage.AC,
+            Stage.EI,
+            Stage.FS ->
+                Result.failure(
+                    ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
+                )
         }
+            .orForwardFail { error -> return error }
+
+        return success(result)
     }
 
     override fun getLot(context: GetLotContext): GettedLot {
@@ -289,10 +466,12 @@ class LotServiceImpl(
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+            OperationType.CREATE_PCR,
             OperationType.CREATE_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
@@ -489,7 +668,10 @@ class LotServiceImpl(
             lot
     }
 
-    private fun getLotsOnStates(lots: List<Lot>, states: List<FindLotIdsParams.State>): List<Lot> {
+    private fun getLotsOnStates(
+        lots: List<CNEntity.Tender.Lot>,
+        states: List<FindLotIdsParams.State>
+    ): List<CNEntity.Tender.Lot> {
         return lots.filter { lot ->
             val state = states.firstOrNull { state ->
                 when {
@@ -502,7 +684,44 @@ class LotServiceImpl(
         }
     }
 
+    private fun getAPLotsOnStates(
+        lots: List<APEntity.Tender.Lot>,
+        states: List<FindLotIdsParams.State>
+    ): List<APEntity.Tender.Lot> {
+        return lots.filter { lot ->
+            val state = states.firstOrNull { state ->
+                when {
+                    state.status == null -> lot.statusDetails == state.statusDetails
+                    state.statusDetails == null -> lot.status == state.status
+                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+                }
+            }
+            state != null
+        }
+    }
+
+    private fun getPNLotsOnStates(
+        lots: List<PNEntity.Tender.Lot>,
+        states: List<FindLotIdsParams.State>
+    ): List<PNEntity.Tender.Lot> {
+        return lots.filter { lot ->
+            val state = states.firstOrNull { state ->
+                when {
+                    state.status == null -> lot.statusDetails == state.statusDetails
+                    state.statusDetails == null -> lot.status == state.status
+                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+                }
+            }
+            state != null
+        }
+    }
+
+    private data class LotStateInfo(
+        val status: LotStatus,
+        val statusDetails: LotStatusDetails
+    )
+
     private fun statusOrStatusDetailsVaries(
-        databaseLot: CNEntity.Tender.Lot, requestLot: SetStateForLotsParams.Lot
-    ) = databaseLot.status != requestLot.status || databaseLot.statusDetails != requestLot.statusDetails
+        databaseLotStateInfo: LotStateInfo, requestLot: SetStateForLotsParams.Lot
+    ) = databaseLotStateInfo.status != requestLot.status || databaseLotStateInfo.statusDetails != requestLot.statusDetails
 }

@@ -17,7 +17,6 @@ class FindLotIdsParams private constructor(
     val states: List<State>
 ) {
     companion object {
-
         private val allowedLotStatuses = LotStatus.allowedElements
             .filter {
                 when (it) {

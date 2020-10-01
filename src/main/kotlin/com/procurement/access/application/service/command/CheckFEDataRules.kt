@@ -3,6 +3,8 @@ package com.procurement.access.application.service.command
 import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.fe.check.CheckFEDataData
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.exception.ErrorException
@@ -23,6 +25,38 @@ import java.time.LocalDateTime
 
 class CheckFEDataRules {
     companion object {
+
+        private val allowedTenderDocumentTypes = DocumentType.allowedElements
+            .filter {
+                when (it) {
+                    DocumentType.TENDER_NOTICE,
+                    DocumentType.BIDDING_DOCUMENTS,
+                    DocumentType.TECHNICAL_SPECIFICATIONS,
+                    DocumentType.EVALUATION_CRITERIA,
+                    DocumentType.CLARIFICATIONS,
+                    DocumentType.ELIGIBILITY_CRITERIA,
+                    DocumentType.RISK_PROVISIONS,
+                    DocumentType.BILL_OF_QUANTITY,
+                    DocumentType.CONFLICT_OF_INTEREST,
+                    DocumentType.PROCUREMENT_PLAN,
+                    DocumentType.CONTRACT_DRAFT,
+                    DocumentType.COMPLAINTS,
+                    DocumentType.ILLUSTRATION,
+                    DocumentType.CANCELLATION_DETAILS,
+                    DocumentType.EVALUATION_REPORTS,
+                    DocumentType.SHORTLISTED_FIRMS,
+                    DocumentType.CONTRACT_ARRANGEMENTS,
+                    DocumentType.CONTRACT_GUARANTEES -> true
+
+                    DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                    DocumentType.ENVIRONMENTAL_IMPACT,
+                    DocumentType.FEASIBILITY_STUDY,
+                    DocumentType.HEARING_NOTICE,
+                    DocumentType.MARKET_STUDIES,
+                    DocumentType.NEEDS_ASSESSMENT,
+                    DocumentType.PROJECT_PLAN -> false
+                }
+            }.toSet()
 
         fun validateTitle(title: String) {
             // VR-1.0.1.1.7
@@ -62,6 +96,17 @@ class CheckFEDataRules {
                 )
         }
 
+        fun validateDocumentsTypes(data: CheckFEDataData) {
+            data.tender.documents
+                .map { document ->
+                    if (document.documentType !in allowedTenderDocumentTypes)
+                        throw ErrorException(
+                            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                            message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                        )
+                }
+        }
+
         fun validatePersonsExistence(persons: List<CheckFEDataData.Tender.ProcuringEntity.Person>) {
             if (persons.isEmpty())
                 throw ErrorException(
@@ -91,10 +136,12 @@ class CheckFEDataRules {
                 }
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,
@@ -112,22 +159,6 @@ class CheckFEDataRules {
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_PMD)
             }
-        }
-
-        fun validateTenderDocumentsExistance(documents: List<CheckFEDataData.Tender.Document>) {
-            if (documents.isEmpty())
-                throw ErrorException(
-                    error = ErrorType.EMPTY_DOCS,
-                    message = "At least one document should be added"
-                )
-        }
-
-        fun validatePersonDocumentsExistance(documents: List<CheckFEDataData.Tender.ProcuringEntity.Person.BusinessFunction.Document>) {
-            if (documents.isEmpty())
-                throw ErrorException(
-                    error = ErrorType.EMPTY_DOCS,
-                    message = "At least one document should be added"
-                )
         }
 
         fun validatePersonsBusinessFunctions(persons: List<CheckFEDataData.Tender.ProcuringEntity.Person>) {
@@ -319,6 +350,21 @@ class CheckFEDataRules {
             }
         }
 
+        fun checkCriteriaRelation(relations: List<CriteriaRelatesToEnum>): Unit =
+            relations.forEach { relation ->
+                when (relation) {
+                    CriteriaRelatesToEnum.TENDERER -> Unit
+                    CriteriaRelatesToEnum.AWARD,
+                    CriteriaRelatesToEnum.ITEM,
+                    CriteriaRelatesToEnum.LOT,
+                    CriteriaRelatesToEnum.QUALIFICATION ->
+                        throw ErrorException(
+                            ErrorType.INVALID_CRITERIA,
+                            message = "Criteria can relates only to '${CriteriaRelatesToEnum.TENDERER}'."
+                        )
+                }
+            }
+
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
             val cpid = context.cpid
             val stage = when (context.operationType) {
@@ -326,10 +372,12 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE -> context.prevStage
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,
