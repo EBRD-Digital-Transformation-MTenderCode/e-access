@@ -19,7 +19,7 @@ class CreateCriteriaForProcuringEntity {
     ) {
         companion object {
 
-            private val allowedOperationType = OperationType.allowedElements
+            val allowedOperationType = OperationType.allowedElements
                 .filter {
                     when (it) {
                         OperationType.AMEND_FE,
