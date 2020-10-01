@@ -143,7 +143,7 @@ class ResponderServiceImpl(
                 stage = stage.toString(),
                 owner = entity.owner,
                 createdDate = params.date.toDate(),
-                jsonData = toJson(updatedTenderJson)
+                jsonData = updatedTenderJson
             )
         )
             .doOnError { error ->
