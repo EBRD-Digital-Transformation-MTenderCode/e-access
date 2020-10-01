@@ -134,6 +134,7 @@ class ResponderServiceImpl(
                     ValidationErrors.UnexpectedStageForResponderProcessing(stage = params.ocid.stage)
                 )
         }
+            .orForwardFail { error -> return error }
 
         tenderProcessRepository.save(
             TenderProcessEntity(
