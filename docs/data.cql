@@ -140,3 +140,8 @@ INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'OF', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"aggregation"}]');
 INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'TEST_OF', 'relationAP', 'validStates', '[{"status":"planning","statusDetails":"aggregation"}]');
+
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'OF', 'all', 'maxDurationOfFA', '1460');
+INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
+VALUES ('MD', 'CF', 'all', 'maxDurationOfFA', '1460');
