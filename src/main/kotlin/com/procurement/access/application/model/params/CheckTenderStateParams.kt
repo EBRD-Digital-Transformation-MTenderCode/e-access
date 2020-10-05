@@ -40,6 +40,8 @@ class CheckTenderStateParams private constructor(
                     OperationType.UPDATE_PN -> false
 
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                    OperationType.COMPLETE_QUALIFICATION,
+                    OperationType.CREATE_PCR,
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,

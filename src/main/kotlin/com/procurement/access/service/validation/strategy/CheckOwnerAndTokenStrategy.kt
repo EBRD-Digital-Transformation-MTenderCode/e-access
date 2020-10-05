@@ -44,8 +44,7 @@ class CheckOwnerAndTokenStrategy(
     fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
 
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
+            .doReturn { error -> return ValidationResult.error(error) }
 
         if (tenderProcessEntity.owner != params.owner.toString())
             return ValidationResult.error(ValidationErrors.InvalidOwner(owner = params.owner, cpid = params.cpid))

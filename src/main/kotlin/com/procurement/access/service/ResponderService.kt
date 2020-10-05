@@ -24,10 +24,12 @@ import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.getDuplicate
 import com.procurement.access.domain.util.extension.toSetBy
+import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
 import com.procurement.access.infrastructure.dto.converter.validate.convert
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
@@ -54,40 +56,85 @@ class ResponderServiceImpl(
         val stage = params.ocid.stage
 
         val entity = getTenderProcessEntityByCpIdAndStage(cpid = params.cpid, stage = stage)
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .orForwardFail { error -> return error }
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-            .get
+        val updatedTenderJson = when (stage) {
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        val responder = params.responder
-        val dbPersons = cnEntity.tender.procuringEntity.persones
+                val responder = params.responder
+                val dbPersons = fe.tender.procuringEntity?.persons.orEmpty()
 
-        /**
-         * BR-1.0.1.15.3
-         * BR-1.0.1.15.4
-         * BR-1.0.1.5.3
-         */
-        val updatedPersons = updateStrategy(
-            receivedElements = listOf(responder),
-            keyExtractorForReceivedElement = responderPersonKeyExtractor,
-            availableElements = dbPersons.orEmpty(),
-            keyExtractorForAvailableElement = dbPersonKeyExtractor,
-            updateBlock = CNEntity.Tender.ProcuringEntity.Persone::update,
-            createBlock = ::createPerson
-        )
-
-        val updatedCnEntity = cnEntity.copy(
-            tender = cnEntity.tender.copy(
-                procuringEntity = cnEntity.tender.procuringEntity.copy(
-                    persones = updatedPersons
+                /**
+                 * BR-1.0.1.15.3
+                 * BR-1.0.1.15.4
+                 * BR-1.0.1.5.3
+                 */
+                val updatedPersons = updateStrategy(
+                    receivedElements = listOf(responder),
+                    keyExtractorForReceivedElement = responderPersonKeyExtractor,
+                    availableElements = dbPersons,
+                    keyExtractorForAvailableElement = dbFEPersonKeyExtractor,
+                    updateBlock = FEEntity.Tender.ProcuringEntity.Person::update,
+                    createBlock = ::createFEPerson
                 )
-            )
-        )
+
+                val updatedFe = fe.copy(
+                    tender = fe.tender.copy(
+                        procuringEntity = fe.tender.procuringEntity!!.copy(persons = updatedPersons)
+                    )
+                )
+
+                success(toJson(updatedFe))
+            }
+
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val responder = params.responder
+                val dbPersons = cn.tender.procuringEntity.persones
+
+                /**
+                 * BR-1.0.1.15.3
+                 * BR-1.0.1.15.4
+                 * BR-1.0.1.5.3
+                 */
+                val updatedPersons = updateStrategy(
+                    receivedElements = listOf(responder),
+                    keyExtractorForReceivedElement = responderPersonKeyExtractor,
+                    availableElements = dbPersons.orEmpty(),
+                    keyExtractorForAvailableElement = dbCNPersonKeyExtractor,
+                    updateBlock = CNEntity.Tender.ProcuringEntity.Persone::update,
+                    createBlock = ::createPerson
+                )
+
+                val updatedCn = cn.copy(
+                    tender = cn.tender.copy(
+                        procuringEntity = cn.tender.procuringEntity.copy(
+                            persones = updatedPersons
+                        )
+                    )
+                )
+
+                success(toJson(updatedCn))
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN ->
+                failure(
+                    ValidationErrors.UnexpectedStageForResponderProcessing(stage = params.ocid.stage)
+                )
+        }
+            .orForwardFail { error -> return error }
 
         tenderProcessRepository.save(
             TenderProcessEntity(
@@ -96,15 +143,15 @@ class ResponderServiceImpl(
                 stage = stage.toString(),
                 owner = entity.owner,
                 createdDate = params.date.toDate(),
-                jsonData = toJson(updatedCnEntity)
+                jsonData = updatedTenderJson
             )
         )
             .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
 
         // FR-10.1.4.12
-        return Result.success(params.responder.toReference())
+        return success(params.responder.toReference())
     }
 
     override fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error> {
@@ -195,34 +242,25 @@ class ResponderServiceImpl(
 
     override fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail> {
 
-        val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository
+            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
             .doReturn { error ->
                 return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
             }
             ?: return success(ValidateRequirementResponsesResult(emptyList()))
 
-        val cn = cnEntity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doReturn { error ->
-                return failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-
         val filteredRequirement = when (params.operationType) {
-            OperationType.CREATE_SUBMISSION           -> cn.tender.criteria
-                ?.asSequence()
-                ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
-                ?.flatMap { it.requirementGroups.asSequence() }
-                ?.flatMap { it.requirements.asSequence() }
-                ?.associateBy { it.id }
-                .orEmpty()
+            OperationType.CREATE_SUBMISSION -> getRequirementToTenderer(tenderProcessEntity, params.ocid.stage)
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+            OperationType.CREATE_PCR,
             OperationType.CREATE_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
@@ -237,8 +275,9 @@ class ResponderServiceImpl(
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> emptyMap()
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> getAllRequirement(tenderProcessEntity, params.ocid.stage)
         }
+            .orForwardFail { fail -> return fail }
 
         val organizationIdsSet = params.organizationIds.toSet()
 
@@ -283,28 +322,50 @@ class ResponderServiceImpl(
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
             .orForwardFail { error -> return error }
-            ?: return Result.failure(
+            ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetOrganization(cpid = params.cpid, ocid = params.ocid)
             )
 
-        val cnEntity = entity.jsonData
-            .tryToObject(CNEntity::class.java)
-            .doOnError { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-            .get
-
         // FR.COM-1.9.1
-        val result = when (params.role) {
-            GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(cnEntity.tender.procuringEntity)
-        }
+        val result = when (stage) {
+            Stage.FE -> {
+                val fe = entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
 
-        return result.asSuccess()
+                val organization = when (params.role) {
+                    GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(fe.tender.procuringEntity!!)
+                }
+                success(organization)
+            }
+
+            Stage.EV,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = entity.jsonData
+                    .tryToObject(CNEntity::class.java)
+                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+
+                val organization = when (params.role) {
+                    GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(cn.tender.procuringEntity)
+                }
+                success(organization)
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN -> failure(ValidationErrors.UnexpectedStageForGetOrganization(stage = stage))
+        }
+            .orForwardFail { fail -> return fail }
+
+        return success(result)
     }
 
     private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =
         when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD            ->
+            LocationOfPersonsType.AWARD ->
                 BusinessFunctionType.allowedElements
                     .filter {
                         when (it) {
@@ -315,7 +376,7 @@ class ResponderServiceImpl(
                             BusinessFunctionType.TECHNICAL_OPENER,
                             BusinessFunctionType.PRICE_OPENER,
                             BusinessFunctionType.PRICE_EVALUATOR -> true
-                            BusinessFunctionType.AUTHORITY       -> false
+                            BusinessFunctionType.AUTHORITY -> false
                         }
                     }.toSet()
             LocationOfPersonsType.PROCURING_ENTITY ->
@@ -336,7 +397,7 @@ class ResponderServiceImpl(
 
     private fun getValidDocumentTypesForPersons(params: CheckPersonesStructure.Params) =
         when (params.locationOfPersones) {
-            LocationOfPersonsType.AWARD            ->
+            LocationOfPersonsType.AWARD ->
                 BusinessFunctionDocumentType.allowedElements
                     .filter {
                         when (it) {
@@ -357,25 +418,27 @@ class ResponderServiceImpl(
         stage: Stage
     ): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
-            .doOnError { error -> return Result.failure(error) }
+            .doOnError { error -> return failure(error) }
             .get
-            ?: return Result.failure(
+            ?: return failure(
                 BadRequestErrors.EntityNotFound(
                     entityName = "TenderProcessEntity",
                     by = "by cpid = '$cpid' and stage = '$stage'"
                 )
             )
 
-        return Result.success(entity)
+        return success(entity)
     }
 }
 
-private val responderPersonKeyExtractor
-    : (ResponderProcessing.Params.Responder)
--> String = { it.identifier.id + it.identifier.scheme }
-private val dbPersonKeyExtractor
-    : (CNEntity.Tender.ProcuringEntity.Persone)
--> String = { it.identifier.id + it.identifier.scheme }
+private val responderPersonKeyExtractor: (ResponderProcessing.Params.Responder) -> String =
+    { it.identifier.id + it.identifier.scheme }
+
+private val dbCNPersonKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone) -> String =
+    { it.identifier.id + it.identifier.scheme }
+
+private val dbFEPersonKeyExtractor: (FEEntity.Tender.ProcuringEntity.Person) -> String =
+    { it.identifier.id + it.identifier.scheme }
 
 private fun CNEntity.Tender.ProcuringEntity.Persone.update(
     received: ResponderProcessing.Params.Responder
@@ -435,25 +498,21 @@ private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.update(
     )
 }
 
-private val responderDocumentKeyExtractor
-    : (ResponderProcessing.Params.Responder.BusinessFunction.Document)
--> String = { it.id }
-private val dbDocumentKeyExtractor
-    : (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document)
--> String = { it.id }
+private val responderDocumentKeyExtractor: (ResponderProcessing.Params.Responder.BusinessFunction.Document) -> String =
+    { it.id }
+private val dbDocumentKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document) -> String =
+    { it.id }
 
 private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period.update(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Period
-)
-    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
+): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
         startDate = received.startDate
     )
 
 private fun CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document.update(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Document
-)
-    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
+): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         id = received.id,
         documentType = received.documentType,
@@ -475,8 +534,7 @@ private fun createPerson(
 
 private fun createIdentifier(
     received: ResponderProcessing.Params.Responder.Identifier
-)
-    : CNEntity.Tender.ProcuringEntity.Persone.Identifier =
+): CNEntity.Tender.ProcuringEntity.Persone.Identifier =
     CNEntity.Tender.ProcuringEntity.Persone.Identifier(
         id = received.id,
         scheme = received.scheme,
@@ -485,8 +543,7 @@ private fun createIdentifier(
 
 private fun createBusinessFunction(
     received: ResponderProcessing.Params.Responder.BusinessFunction
-)
-    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction =
+): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction(
         id = received.id,
         type = received.type,
@@ -498,22 +555,204 @@ private fun createBusinessFunction(
 
 private fun createPeriod(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Period
-)
-    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
+): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Period(
         startDate = received.startDate
     )
 
 private fun createDocument(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Document
-)
-    : CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
+): CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document =
     CNEntity.Tender.ProcuringEntity.Persone.BusinessFunction.Document(
         id = received.id,
         title = received.title,
         documentType = received.documentType,
         description = received.description
     )
+
+private fun FEEntity.Tender.ProcuringEntity.Person.update(received: ResponderProcessing.Params.Responder): FEEntity.Tender.ProcuringEntity.Person =
+    FEEntity.Tender.ProcuringEntity.Person(
+        id = received.id.toString(),
+        title = received.title,
+        name = received.name,
+        identifier = this.identifier.update(received.identifier),
+        businessFunctions = updateStrategy(
+            receivedElements = received.businessFunctions,
+            keyExtractorForReceivedElement = responderBusinessFunctionKeyExtractor,
+            availableElements = this.businessFunctions,
+            keyExtractorForAvailableElement = dbFEBusinessFunctionKeyExtractor,
+            updateBlock = FEEntity.Tender.ProcuringEntity.Person.BusinessFunction::update,
+            createBlock = ::createFEBusinessFunction
+        )
+    )
+
+private val dbFEBusinessFunctionKeyExtractor: (FEEntity.Tender.ProcuringEntity.Person.BusinessFunction) -> String =
+    { it.id }
+
+private fun FEEntity.Tender.ProcuringEntity.Person.Identifier.update(received: ResponderProcessing.Params.Responder.Identifier) =
+    FEEntity.Tender.ProcuringEntity.Person.Identifier(
+        id = received.id,
+        scheme = received.scheme,
+        uri = received.uri ?: this.uri
+    )
+
+private fun FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction
+): FEEntity.Tender.ProcuringEntity.Person.BusinessFunction =
+    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction(
+    id = received.id,
+    jobTitle = received.jobTitle,
+    type = received.type,
+    period = this.period.update(received.period),
+    documents = updateStrategy(
+        receivedElements = received.documents,
+        keyExtractorForReceivedElement = responderDocumentKeyExtractor,
+        availableElements = this.documents.orEmpty(),
+        keyExtractorForAvailableElement = dbFEDocumentKeyExtractor,
+        updateBlock = FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document::update,
+        createBlock = ::createFEDocument
+    )
+)
+
+private val dbFEDocumentKeyExtractor: (FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document) -> String =
+    { it.id }
+
+private fun FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Period
+): FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period =
+    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period(startDate = received.startDate)
+
+private fun FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document.update(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Document
+) =
+    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document(
+        id = received.id,
+        documentType = received.documentType,
+        title = received.title,
+        description = received.description ?: this.description
+    )
+
+private fun createFEPerson(received: ResponderProcessing.Params.Responder) =
+    FEEntity.Tender.ProcuringEntity.Person(
+        id = received.id.toString(),
+        title = received.title,
+        name = received.name,
+        identifier = createFEIdentifier(received.identifier),
+        businessFunctions = received.businessFunctions
+            .map { createFEBusinessFunction(it) }
+    )
+
+private fun createFEIdentifier(received: ResponderProcessing.Params.Responder.Identifier) =
+    FEEntity.Tender.ProcuringEntity.Person.Identifier(
+        id = received.id,
+        scheme = received.scheme,
+        uri = received.uri
+    )
+
+private fun createFEBusinessFunction(received: ResponderProcessing.Params.Responder.BusinessFunction) =
+    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction(
+        id = received.id,
+        type = received.type,
+        jobTitle = received.jobTitle,
+        period = createFEPeriod(received.period),
+        documents = received.documents
+            .map { createFEDocument(it) }
+    )
+
+private fun createFEPeriod(received: ResponderProcessing.Params.Responder.BusinessFunction.Period) =
+    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period(
+        startDate = received.startDate
+    )
+
+private fun createFEDocument(
+    received: ResponderProcessing.Params.Responder.BusinessFunction.Document
+) =
+    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document(
+        id = received.id,
+        title = received.title,
+        documentType = received.documentType,
+        description = received.description
+    )
+
+private fun getRequirementToTenderer(
+    entity: TenderProcessEntity,
+    stage: Stage
+): Result<Map<String, Requirement>, Fail> = when (stage) {
+
+    Stage.FE -> entity.jsonData
+        .tryToObject(FEEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.EV,
+    Stage.NP,
+    Stage.TP -> entity.jsonData
+        .tryToObject(CNEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.AC,
+    Stage.AP,
+    Stage.EI,
+    Stage.FS,
+    Stage.PN ->
+        failure(
+            ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
+        )
+}
+
+private fun getAllRequirement(
+    entity: TenderProcessEntity,
+    stage: Stage
+): Result<Map<String, Requirement>, Fail> = when (stage) {
+
+    Stage.FE -> entity.jsonData
+        .tryToObject(FEEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.EV,
+    Stage.NP,
+    Stage.TP -> entity.jsonData
+        .tryToObject(CNEntity::class.java)
+        .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+        .tender.criteria
+        ?.asSequence()
+        ?.flatMap { it.requirementGroups.asSequence() }
+        ?.flatMap { it.requirements.asSequence() }
+        ?.associateBy { it.id }
+        .orEmpty()
+        .asSuccess()
+
+    Stage.AC,
+    Stage.AP,
+    Stage.EI,
+    Stage.FS,
+    Stage.PN ->
+        failure(
+            ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
+        )
+}
 
 fun <R, A, K> updateStrategy(
     receivedElements: List<R>,
@@ -547,7 +786,6 @@ fun <R, A, K> updateStrategy(
 
     return updatedElements
 }
-
 
 fun validateOneAnswerOnRequirementByCandidate(
     requirementResponsesForTenderer: List<ValidateRequirementResponsesParams.RequirementResponse>

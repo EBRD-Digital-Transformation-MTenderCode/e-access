@@ -13,7 +13,6 @@ class FindCriteria {
 
     class Params private constructor(val cpid: Cpid, val ocid: Ocid, val source: CriteriaSource) {
         companion object {
-
             private val allowedSources = CriteriaSource.allowedElements
                 .filter { source ->
                     when (source) {

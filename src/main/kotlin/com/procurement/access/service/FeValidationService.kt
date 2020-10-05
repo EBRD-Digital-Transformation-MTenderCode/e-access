@@ -58,6 +58,9 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
         // FReq-1.1.1.16
         CheckFEDataRules.validateUniquenessBy(data.tender.documents, "tender.documents[]") { it.id }  // VR-1.0.1.2.1
 
+        //VR-3.6.1
+        CheckFEDataRules.validateDocumentsTypes(data)
+
         // FR.COM-1.27.5
         data.tender.secondStage?.let { secondStage ->
             // VR-1.0.1.11.1
@@ -92,6 +95,9 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
                 // FReq-1.1.1.8
                 CheckFEDataRules.checkRequirements(criteria)
+
+                // FReq-1.1.1.29
+                CheckFEDataRules.checkCriteriaRelation(criteria.map { it.relatesTo })
             }
 
         // FR.COM-1.27.7
