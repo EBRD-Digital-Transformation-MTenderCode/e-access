@@ -45,7 +45,7 @@ class RulesService(private val rulesDao: RulesDao) {
         val parameterValue = getValue(country, pmd, OPERATION_TYPE_ALL, MAX_DURATION_OF_FA_PARAMETER)
 
         return try {
-            Duration.ofDays(parameterValue.toLong())
+            Duration.ofSeconds(parameterValue.toLong())
         } catch (exception: NumberFormatException) {
             throw ErrorException(
                 error = ErrorType.RULES_INCORRECT_FORMAT,
