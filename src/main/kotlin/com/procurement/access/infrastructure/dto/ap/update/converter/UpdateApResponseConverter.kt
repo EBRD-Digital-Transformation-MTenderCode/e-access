@@ -12,11 +12,11 @@ fun APEntity.convert() = ApUpdateResponse(
                 description = tender.description,
                 status = tender.status,
                 statusDetails = tender.statusDetails,
-                value = tender.value,
+                value = tender.value!!,
                 mainProcurementCategory = tender.mainProcurementCategory,
                 procurementMethodRationale = tender.procurementMethodRationale,
                 contractPeriod = tender.contractPeriod
-                    ?.let { contractPeriod ->
+                    !!.let { contractPeriod ->
                         ApUpdateResponse.Tender.ContractPeriod(
                             startDate = contractPeriod.startDate,
                             endDate = contractPeriod.endDate
