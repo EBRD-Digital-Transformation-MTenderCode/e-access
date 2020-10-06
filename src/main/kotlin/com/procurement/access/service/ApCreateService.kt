@@ -111,7 +111,7 @@ class ApCreateService(
         if (actualDuration > maxDuration)
             throw ErrorException(
                 error = ErrorType.INVALID_TENDER_CONTRACT_PERIOD,
-                message = "Contract period duration must be less than maximum allowed duration."
+                message = "Contract period duration must be less than or equal to maximum allowed duration."
             )
     }
 
