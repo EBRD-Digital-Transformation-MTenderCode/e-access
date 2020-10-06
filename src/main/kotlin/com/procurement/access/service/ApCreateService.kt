@@ -29,6 +29,38 @@ class ApCreateService(
         private val log: Logger = LoggerFactory.getLogger(ApCreateService::class.java)
     }
 
+    private val allowedTenderDocumentTypes = DocumentType.allowedElements
+        .filter {
+            when (it) {
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> true
+
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.MARKET_STUDIES,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.PROJECT_PLAN -> false
+            }
+        }.toSet()
+
     fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
         checkValidationRules(request)
         val apEntity: APEntity = applyBusinessRules(contextRequest, request)
@@ -67,6 +99,9 @@ class ApCreateService(
 
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
+
+        //VR-3.6.1
+        checkTenderDocumentsTypes(request)
     }
 
     /**
@@ -92,6 +127,17 @@ class ApCreateService(
         if (tenderPeriod.startDate.dayOfMonth != 1)
             throw ErrorException(ErrorType.INVALID_START_DATE)
     }
+
+    private fun checkTenderDocumentsTypes(data: ApCreateData) {
+            data.tender.documents
+                .map { document ->
+                    if (document.documentType !in allowedTenderDocumentTypes)
+                        throw ErrorException(
+                            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                            message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                        )
+                }
+        }
 
     /**
      * Business rules
