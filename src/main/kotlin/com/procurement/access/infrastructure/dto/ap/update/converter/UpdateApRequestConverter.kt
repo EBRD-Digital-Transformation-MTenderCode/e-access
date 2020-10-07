@@ -103,14 +103,6 @@ fun ApUpdateRequest.convert() = ApUpdateData(
                             internalId = lot.internalId,
                             title = lot.title,
                             description = lot.description,
-                            value = lot.value,
-                            contractPeriod = lot.contractPeriod
-                                .let { contractPeriod ->
-                                    ApUpdateData.Tender.Lot.ContractPeriod(
-                                        startDate = contractPeriod.startDate,
-                                        endDate = contractPeriod.endDate
-                                    )
-                                },
                             placeOfPerformance = lot.placeOfPerformance
                                 ?.let { placeOfPerformance ->
                                     ApUpdateData.Tender.Lot.PlaceOfPerformance(

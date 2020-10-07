@@ -56,14 +56,6 @@ fun APEntity.convert() = ApUpdateResponse(
                             status = lot.status,
                             statusDetails = lot.statusDetails,
                             description = lot.description,
-                            value = lot.value,
-                            contractPeriod = lot.contractPeriod
-                                .let { contractPeriod ->
-                                    ApUpdateResponse.Tender.Lot.ContractPeriod(
-                                        startDate = contractPeriod.startDate,
-                                        endDate = contractPeriod.endDate
-                                    )
-                                },
                             placeOfPerformance = lot.placeOfPerformance
                                 ?.let { placeOfPerformance ->
                                     ApUpdateResponse.Tender.Lot.PlaceOfPerformance(
