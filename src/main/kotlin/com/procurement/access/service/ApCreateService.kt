@@ -18,11 +18,13 @@ import com.procurement.access.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.util.*
 
 @Service
 class ApCreateService(
     private val generationService: GenerationService,
+    private val rulesService: RulesService,
     private val tenderProcessDao: TenderProcessDao
 ) {
     companion object {
@@ -62,7 +64,7 @@ class ApCreateService(
         }.toSet()
 
     fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
-        checkValidationRules(request)
+        checkValidationRules(request, contextRequest)
         val apEntity: APEntity = applyBusinessRules(contextRequest, request)
         val cpid = apEntity.ocid
         val token = generationService.generateToken()
@@ -82,7 +84,7 @@ class ApCreateService(
     /**
      * Validation rules
      */
-    private fun checkValidationRules(request: ApCreateData) {
+    private fun checkValidationRules(request: ApCreateData, contextRequest: CreateApContext) {
         //VR-3.1.16
         if (request.tender.title.isBlank())
             throw ErrorException(
@@ -99,6 +101,8 @@ class ApCreateService(
 
         //VR-3.1.6 Tender Period: Start Date
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
+
+        checkContractPeriod(request.tender.contractPeriod, contextRequest)
 
         //VR-3.6.1
         checkTenderDocumentsTypes(request)
@@ -126,6 +130,24 @@ class ApCreateService(
     private fun checkTenderPeriod(tenderPeriod: ApCreateData.Tender.TenderPeriod) {
         if (tenderPeriod.startDate.dayOfMonth != 1)
             throw ErrorException(ErrorType.INVALID_START_DATE)
+    }
+
+
+    private fun checkContractPeriod(contractPeriod: ApCreateData.Tender.ContractPeriod, contextRequest: CreateApContext) {
+        if (contractPeriod.startDate <= contextRequest.startDate)
+            throw ErrorException(
+                error = ErrorType.INVALID_TENDER_CONTRACT_PERIOD,
+                message = "Contract period start date must be greater than context start date."
+            )
+
+        val maxDuration = rulesService.getMaxDurationOfFA(contextRequest.country, contextRequest.pmd)
+        val actualDuration = Duration.between(contractPeriod.startDate, contractPeriod.endDate)
+
+        if (actualDuration > maxDuration)
+            throw ErrorException(
+                error = ErrorType.INVALID_TENDER_CONTRACT_PERIOD,
+                message = "Contract period duration must be less than or equal to maximum allowed duration."
+            )
     }
 
     private fun checkTenderDocumentsTypes(data: ApCreateData) {
@@ -212,6 +234,12 @@ class ApCreateService(
                     startDate = period.startDate
                 )
             },
+            contractPeriod = tenderRequest.contractPeriod.let { period ->
+                APEntity.Tender.ContractPeriod(
+                    startDate = period.startDate,
+                    endDate = period.endDate
+                )
+            },
             procuringEntity = tenderRequest.procuringEntity.let { procuringEntity ->
                 APEntity.Tender.ProcuringEntity(
                     id = generationService.generateOrganizationId(
@@ -291,8 +319,7 @@ class ApCreateService(
             items = emptyList(),
             lots = emptyList(),
             mainProcurementCategory = null,
-            value = null,
-            contractPeriod = null
+            value = null
         )
     }
 
