@@ -334,6 +334,13 @@ class ApCreateService(
                                     startDate = tenderPeriod.startDate
                                 )
                             },
+                        contractPeriod = tender.contractPeriod
+                            !!.let { contractPeriod ->
+                                ApCreateResult.Tender.ContractPeriod(
+                                    startDate = contractPeriod.startDate,
+                                    endDate = contractPeriod.endDate
+                                )
+                            },
                         acceleratedProcedure = tender.acceleratedProcedure
                             .let { acceleratedProcedure ->
                                 ApCreateResult.Tender.AcceleratedProcedure(
