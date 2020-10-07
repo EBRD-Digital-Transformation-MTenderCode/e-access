@@ -46,7 +46,7 @@ class APServiceImpl(
 
         // FR.COM-1.31.2
         val relatedPNProcesses = ap.relatedProcesses.orEmpty()
-            .filter(::pnRelationPredicate)
+            .filter(::isRelatedToPN)
 
         // VR.COM-1.31.2
         if (relatedPNProcesses.isEmpty())
@@ -89,7 +89,7 @@ class APServiceImpl(
         return success(result)
     }
 
-    private fun pnRelationPredicate(relatedProcess: RelatedProcess): Boolean =
+    private fun isRelatedToPN(relatedProcess: RelatedProcess): Boolean =
         relatedProcess.relationship.any { relationship -> relationship == RelatedProcessType.X_SCOPE }
 
 }
