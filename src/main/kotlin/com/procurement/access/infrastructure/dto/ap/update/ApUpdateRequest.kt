@@ -8,9 +8,6 @@ import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
-import com.procurement.access.domain.model.money.Money
-import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
-import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
@@ -56,25 +53,9 @@ class ApUpdateRequest(
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
 
-            @JsonDeserialize(using = MoneyDeserializer::class)
-            @JsonSerialize(using = MoneySerializer::class)
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
-
-            @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
-
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?
         ) {
-
-            data class ContractPeriod(
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
-                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
-                @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-            )
 
             data class PlaceOfPerformance(
                 @field:JsonProperty("address") @param:JsonProperty("address") val address: Address
