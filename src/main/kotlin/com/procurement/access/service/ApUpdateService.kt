@@ -439,8 +439,6 @@ class ApUpdateServiceImpl(
             internalId = this.internalId ?: this.internalId,
             status = LotStatus.PLANNING,
             statusDetails = LotStatusDetails.EMPTY,
-            value = this.value,
-            contractPeriod = this.contractPeriod.toEntity(),
             placeOfPerformance = this.placeOfPerformance?.toEntity()
         )
 
@@ -451,12 +449,6 @@ class ApUpdateServiceImpl(
             title = this.title,
             documentType = this.documentType,
             relatedLots = this.relatedLots
-        )
-
-    private fun ApUpdateData.Tender.Lot.ContractPeriod.toEntity(): APEntity.Tender.Lot.ContractPeriod =
-        APEntity.Tender.Lot.ContractPeriod(
-            startDate = this.startDate,
-            endDate = this.endDate
         )
 
     private fun ApUpdateData.Tender.Lot.PlaceOfPerformance.toEntity(): APEntity.Tender.Lot.PlaceOfPerformance =
