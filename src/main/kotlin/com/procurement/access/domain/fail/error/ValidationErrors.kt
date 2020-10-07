@@ -286,4 +286,16 @@ sealed class ValidationErrors(
             description = "Stage '${stage}' not allowed at this command"
         )
 
+    class TenderNotFoundOnCalculateAPValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.31.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class RelationNotFoundOnCalculateAPValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.31.2",
+        prefix = "VR.COM-",
+        description = "Cannot find relation with PN in AP with cpid='$cpid' and ocid='$ocid'."
+    )
+
 }
