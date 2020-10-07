@@ -37,6 +37,13 @@ fun ApCreateRequest.convert() = ApCreateData(
                             startDate = tenderPeriod.startDate
                         )
                     },
+                contractPeriod = tender.contractPeriod
+                    .let { contractPeriod ->
+                        ApCreateData.Tender.ContractPeriod(
+                            startDate = contractPeriod.startDate,
+                            endDate = contractPeriod.endDate
+                        )
+                    },
                 procuringEntity = tender.procuringEntity
                     .let { procuringEntity ->
                         ApCreateData.Tender.ProcuringEntity(
