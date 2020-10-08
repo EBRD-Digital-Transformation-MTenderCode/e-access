@@ -29,6 +29,13 @@ fun ApCreateResult.convert(): ApCreateResponse =
                                 startDate = tenderPeriod.startDate
                             )
                         },
+                    contractPeriod = tender.contractPeriod
+                        .let { contractPeriod ->
+                            ApCreateResponse.Tender.ContractPeriod(
+                                startDate = contractPeriod.startDate,
+                                endDate = contractPeriod.endDate
+                            )
+                        },
                     acceleratedProcedure = tender.acceleratedProcedure
                         .let { acceleratedProcedure ->
                             ApCreateResponse.Tender.AcceleratedProcedure(
