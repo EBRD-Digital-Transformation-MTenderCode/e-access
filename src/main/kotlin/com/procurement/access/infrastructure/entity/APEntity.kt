@@ -112,26 +112,9 @@ data class APEntity(
             @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
             @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails,
 
-            @JsonDeserialize(using = MoneyDeserializer::class)
-            @JsonSerialize(using = MoneySerializer::class)
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
-
-            @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
-
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?
         ) {
-
-            data class ContractPeriod(
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
-                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
-                @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-            )
-
             data class PlaceOfPerformance(
                 @field:JsonProperty("address") @param:JsonProperty("address") val address: Address
             )

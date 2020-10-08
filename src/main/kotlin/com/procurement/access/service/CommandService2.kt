@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
+import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.fa.CheckExistenceFAHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
@@ -32,26 +33,27 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandService2(
-    private val findLotIdsHandler: FindLotIdsHandler,
-    private val responderProcessingHandler: ResponderProcessingHandler,
-    private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
-    private val checkExistenceFAHandler: CheckExistenceFAHandler,
-    private val checkRelationHandler: CheckRelationHandler,
-    private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler,
-    private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
-    private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
+    private val calculateAPValueHandler: CalculateAPValueHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
+    private val checkExistenceFAHandler: CheckExistenceFAHandler,
+    private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
+    private val checkRelationHandler: CheckRelationHandler,
+    private val checkTenderStateHandler: CheckTenderStateHandler,
+    private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
+    private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
+    private val findAuctionsHandler: FindAuctionsHandler,
+    private val findCriteriaHandler: FindCriteriaHandler,
+    private val findLotIdsHandler: FindLotIdsHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
+    private val getOrganizationHandler: GetOrganizationHandler,
+    private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
+    private val outsourcingPNHandler: OutsourcingPNHandler,
+    private val responderProcessingHandler: ResponderProcessingHandler,
     private val setStateForLotsHandler: SetStateForLotsHandler,
     private val setStateForTenderHandler: SetStateForTenderHandler,
-    private val getOrganizationHandler: GetOrganizationHandler,
-    private val findCriteriaHandler: FindCriteriaHandler,
-    private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
-    private val checkTenderStateHandler: CheckTenderStateHandler,
-    private val findAuctionsHandler: FindAuctionsHandler,
-    private val outsourcingPNHandler: OutsourcingPNHandler,
-    private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
+    private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
+    private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler,
     private val logger: Logger
 ) {
 
@@ -75,10 +77,11 @@ class CommandService2(
             .get
 
         val response = when (action) {
+            Command2Type.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)
             Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
             Command2Type.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
-            Command2Type.CHECK_RELATION -> checkRelationHandler.handle(node = request)
             Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
+            Command2Type.CHECK_RELATION -> checkRelationHandler.handle(node = request)
             Command2Type.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
             Command2Type.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(node = request)
             Command2Type.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(node = request)

@@ -14,12 +14,14 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 @Service
 class RulesService(private val rulesDao: RulesDao) {
 
     companion object {
         private const val VALID_STATES_PARAMETER = "validStates"
+        private const val MAX_DURATION_OF_FA_PARAMETER = "maxDurationOfFA"
         private const val OPERATION_TYPE_ALL = "all"
     }
 
@@ -35,6 +37,22 @@ class RulesService(private val rulesDao: RulesDao) {
         operationType: OperationType
     ): Result<TenderStatesRule, Fail> =
         getData(country = country, operationType = operationType, pmd = pmd, parameter = VALID_STATES_PARAMETER)
+
+    fun getMaxDurationOfFA(
+        country: String,
+        pmd: ProcurementMethod
+    ): Duration {
+        val parameterValue = getValue(country, pmd, OPERATION_TYPE_ALL, MAX_DURATION_OF_FA_PARAMETER)
+
+        return try {
+            Duration.ofSeconds(parameterValue.toLong())
+        } catch (exception: NumberFormatException) {
+            throw ErrorException(
+                error = ErrorType.RULES_INCORRECT_FORMAT,
+                message = "Rule '$MAX_DURATION_OF_FA_PARAMETER' contains incorrect value"
+            )
+        }
+    }
 
     private fun getValue(
         country: String,

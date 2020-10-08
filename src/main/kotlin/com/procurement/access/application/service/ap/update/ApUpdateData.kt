@@ -4,7 +4,6 @@ import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
-import com.procurement.access.domain.model.money.Money
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -29,16 +28,8 @@ class ApUpdateData(
             val internalId: String?,
             val title: String,
             val description: String,
-            val value: Money,
-            val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance?
         ) {
-
-            data class ContractPeriod(
-                val startDate: LocalDateTime,
-                val endDate: LocalDateTime
-            )
-
             data class PlaceOfPerformance(
                 val address: Address
             )

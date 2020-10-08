@@ -104,5 +104,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_REQUIREMENT_RESPONSE("10.89", "Invalid requirement response."),
     INVALID_SUITE_OF_REQUIREMENTS("10.90", "Invalid suite of requirements."),
     DOCUMENT_ID_DUPLICATED("10.91", "Document id duplicated."),
-    INVALID_ITEM_ID("10.92", "Invalid item id.");
+    INVALID_ITEM_ID("10.92", "Invalid item id."),
+    INVALID_TENDER_CONTRACT_PERIOD("10.93", "Invalid tender contract period."),
+    RULES_INCORRECT_FORMAT("10.94", "Incorrect format of rule value.");
 }

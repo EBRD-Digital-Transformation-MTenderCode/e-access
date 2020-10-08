@@ -67,14 +67,11 @@ data class ApUpdateResponse(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
+        @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
 
         @JsonDeserialize(using = MoneyDeserializer::class)
         @JsonSerialize(using = MoneySerializer::class)
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("value") @param:JsonProperty("value") val value: Money?,
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,
@@ -107,26 +104,9 @@ data class ApUpdateResponse(
             @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
             @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails,
 
-            @JsonDeserialize(using = MoneyDeserializer::class)
-            @JsonSerialize(using = MoneySerializer::class)
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
-
-            @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
-
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?
         ) {
-
-            data class ContractPeriod(
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
-                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
-
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
-                @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
-            )
-
             data class PlaceOfPerformance(
                 @field:JsonProperty("address") @param:JsonProperty("address") val address: Address
             )

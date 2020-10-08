@@ -36,6 +36,7 @@ data class ApCreateResult(
         val procurementMethodRationale: String?,
         val eligibilityCriteria: String,
         val tenderPeriod: TenderPeriod,
+        val contractPeriod: ContractPeriod,
         val procuringEntity: ProcuringEntity,
         val requiresElectronicCatalogue: Boolean,
         val submissionMethod: List<SubmissionMethod>,
@@ -82,6 +83,12 @@ data class ApCreateResult(
 
         data class TenderPeriod(
             val startDate: LocalDateTime
+        )
+
+
+        data class ContractPeriod(
+            val startDate: LocalDateTime,
+            val endDate: LocalDateTime
         )
 
         data class ProcuringEntity(
