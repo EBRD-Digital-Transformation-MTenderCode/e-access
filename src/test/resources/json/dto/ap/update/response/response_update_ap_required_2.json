@@ -99,14 +99,6 @@
         "statusDetails": "empty",
         "title": "tender.lots[0].title",
         "description": "tender.lots[0].description",
-        "value": {
-          "amount": 200.00,
-          "currency": "tender.lots[0].value.currency"
-        },
-        "contractPeriod": {
-          "startDate": "2020-09-16T12:16:47Z",
-          "endDate": "2020-09-16T12:16:47Z"
-        },
         "placeOfPerformance": {
           "address": {
             "streetAddress": "tender.lots[0].placeOfPerformance.address.streetAddress",

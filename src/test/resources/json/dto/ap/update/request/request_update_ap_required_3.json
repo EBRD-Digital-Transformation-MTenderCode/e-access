@@ -9,15 +9,7 @@
       {
         "id": "tender.lots[0].id",
         "title": "tender.lots[0].title",
-        "description": "tender.lots[0].description",
-        "value": {
-          "amount": 1.00,
-          "currency": "tender.lots[0].value.currency"
-        },
-        "contractPeriod": {
-          "startDate": "2020-09-15T12:46:20Z",
-          "endDate": "2020-09-15T12:46:20Z"
-        }
+        "description": "tender.lots[0].description"
       }
     ],
     "items": [
