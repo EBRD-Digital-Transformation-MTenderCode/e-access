@@ -3,9 +3,9 @@ package com.procurement.access.service
 import com.procurement.access.application.service.ap.update.ApUpdateData
 import com.procurement.access.application.service.ap.update.UpdateApContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.EMPTY_DOCS
@@ -14,8 +14,6 @@ import com.procurement.access.exception.ErrorType.INVALID_DOCS_ID
 import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_ITEMS_QUANTITY
 import com.procurement.access.exception.ErrorType.INVALID_ITEMS_RELATED_LOTS
-import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
-import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_STATUS
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
@@ -31,7 +29,6 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDateTime
 
 interface ApUpdateService {
@@ -43,6 +40,38 @@ class ApUpdateServiceImpl(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
 ): ApUpdateService {
+
+    private val allowedTenderDocumentTypes = DocumentType.allowedElements
+        .filter {
+            when (it) {
+                DocumentType.TENDER_NOTICE,
+                DocumentType.BIDDING_DOCUMENTS,
+                DocumentType.TECHNICAL_SPECIFICATIONS,
+                DocumentType.EVALUATION_CRITERIA,
+                DocumentType.CLARIFICATIONS,
+                DocumentType.ELIGIBILITY_CRITERIA,
+                DocumentType.RISK_PROVISIONS,
+                DocumentType.BILL_OF_QUANTITY,
+                DocumentType.CONFLICT_OF_INTEREST,
+                DocumentType.PROCUREMENT_PLAN,
+                DocumentType.CONTRACT_DRAFT,
+                DocumentType.COMPLAINTS,
+                DocumentType.ILLUSTRATION,
+                DocumentType.CANCELLATION_DETAILS,
+                DocumentType.EVALUATION_REPORTS,
+                DocumentType.SHORTLISTED_FIRMS,
+                DocumentType.CONTRACT_ARRANGEMENTS,
+                DocumentType.CONTRACT_GUARANTEES -> true
+
+                DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+                DocumentType.ENVIRONMENTAL_IMPACT,
+                DocumentType.FEASIBILITY_STUDY,
+                DocumentType.HEARING_NOTICE,
+                DocumentType.MARKET_STUDIES,
+                DocumentType.NEEDS_ASSESSMENT,
+                DocumentType.PROJECT_PLAN -> false
+            }
+        }.toSet()
 
     override fun updateAp(context: UpdateApContext, data: ApUpdateData): ApUpdateResponse {
 
@@ -59,28 +88,10 @@ class ApUpdateServiceImpl(
         // VR.COM-1.26.6
         validateStartDate(data.tender.tenderPeriod.startDate)
 
+        //VR-3.6.1
+        checkTenderDocumentsTypes(data)
+
         val activeLots = data.tender.lots
-
-        // FR.COM-1.26.8
-        val updatedContractPeriod =
-            if (activeLots.isNotEmpty())
-                calculateContractPeriod(activeLots)
-            else
-                tenderProcess.tender.contractPeriod
-
-        // FR.COM-1.26.9
-        val updatedValue =
-            if (activeLots.isNotEmpty()) {
-                val newAmount = calculateValueByActiveLots(activeLots)
-                if (tenderProcess.tender.value != null) {
-                    validateLotsCurrency(activeLots, tenderProcess.tender.value)
-                    Money(newAmount, tenderProcess.tender.value.currency)
-                } else {
-                    checkLotsCurrencyConsistency(activeLots)
-                    Money(newAmount, activeLots.first().value.currency)
-                }
-            } else
-                tenderProcess.tender.value
 
         // FR.COM-1.26.3
         val updatedTitle = data.tender.title
@@ -114,9 +125,6 @@ class ApUpdateServiceImpl(
 
                 // VR.COM-1.26.4
                 checkLotsIdsQniqueness(data.tender.lots.map { it.id })
-
-                // VR.COM-1.26.10
-                checkLotsContractPeriod(data.tender.lots, updatedTenderPeriod.startDate)
 
                 // VR.COM-1.26.14
                 checkPlaceOfPerformance(activeLots, data.tender.items)
@@ -196,8 +204,6 @@ class ApUpdateServiceImpl(
 
         val updatedTenderProcess = tenderProcess.copy(
             tender = tenderProcess.tender.copy(
-                contractPeriod = updatedContractPeriod,
-                value = updatedValue,
                 title = updatedTitle,
                 description = updatedDescription,
                 procurementMethodRationale = updatedProcurementMethodRationale,
@@ -213,23 +219,6 @@ class ApUpdateServiceImpl(
         tenderProcessDao.save(getEntity(updatedTenderProcess, entity, context.startDate))
         return updatedTenderProcess.convert()
     }
-
-    private fun calculateContractPeriod(activeLots: List<ApUpdateData.Tender.Lot>): APEntity.Tender.ContractPeriod {
-        val contractPeriodSet = activeLots.asSequence()
-            .map { it.contractPeriod }.toSet()
-
-        return contractPeriodSet
-            .let { contractPeriods ->
-                val startDate = contractPeriods.minBy { it.startDate }!!.startDate
-                val endDate = contractPeriods.maxBy { it.endDate }!!.endDate
-                APEntity.Tender.ContractPeriod(startDate, endDate)
-            }
-    }
-
-    private fun calculateValueByActiveLots(activeLots: List<ApUpdateData.Tender.Lot>): BigDecimal =
-        activeLots.asSequence()
-            .sumByDouble { it.value.amount.toDouble() }
-            .toBigDecimal().setScale(2, RoundingMode.HALF_UP)
 
     private fun checkItemsIdsQniqueness(itemsIds: List<String>) {
         val uniqItemsIds = itemsIds.toSetBy { it }
@@ -326,31 +315,14 @@ class ApUpdateServiceImpl(
         if (startDate.dayOfMonth != 1) throw ErrorException(INVALID_START_DATE)
     }
 
-    private fun checkLotsCurrencyConsistency(lots: List<ApUpdateData.Tender.Lot>) {
-        val currencies = lots.toSetBy { it.value.currency }
-        if (currencies.size != 1)
-            throw ErrorException(
-                error = INVALID_LOT_CURRENCY,
-                message = "Found ${currencies.size} currencies: ${currencies}"
-            )
-    }
-
-    private fun validateLotsCurrency(lots: List<ApUpdateData.Tender.Lot>, storedMoney: Money) {
-        val currencies = lots.toSetBy { it.value.currency }
-        currencies.forEach { receivedCurrency ->
-            if (receivedCurrency != storedMoney.currency)
-                throw ErrorException(
-                    error = INVALID_LOT_CURRENCY,
-                    message = "Currency in saved lots: '${storedMoney.currency}'. Currency in request: '$receivedCurrency'."
-                )
-        }
-    }
-
-    private fun checkLotsContractPeriod(lots: List<ApUpdateData.Tender.Lot>, tenderPeriodStartDate: LocalDateTime) {
-        lots.map { it.contractPeriod }
-            .forEach {
-                if (it.startDate >= it.endDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
-                if (it.startDate < tenderPeriodStartDate) throw ErrorException(INVALID_LOT_CONTRACT_PERIOD)
+    private fun checkTenderDocumentsTypes(data: ApUpdateData) {
+        data.tender.documents
+            .map { document ->
+                if (document.documentType !in allowedTenderDocumentTypes)
+                    throw ErrorException(
+                        error = INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
+                    )
             }
     }
 
@@ -494,8 +466,6 @@ class ApUpdateServiceImpl(
             description = received.description,
             title = received.title,
             internalId = received.internalId ?: this.internalId,
-            value = Money(amount = received.value.amount, currency = this.value.currency),
-            contractPeriod = this.contractPeriod.updateBy(received.contractPeriod),
             placeOfPerformance = received.placeOfPerformance
                 ?.let {
                     this.placeOfPerformance
@@ -516,8 +486,6 @@ class ApUpdateServiceImpl(
             internalId = this.internalId ?: this.internalId,
             status = LotStatus.PLANNING,
             statusDetails = LotStatusDetails.EMPTY,
-            value = this.value,
-            contractPeriod = this.contractPeriod.toEntity(),
             placeOfPerformance = this.placeOfPerformance?.toEntity()
         )
 
@@ -530,21 +498,9 @@ class ApUpdateServiceImpl(
             relatedLots = this.relatedLots
         )
 
-    private fun ApUpdateData.Tender.Lot.ContractPeriod.toEntity(): APEntity.Tender.Lot.ContractPeriod =
-        APEntity.Tender.Lot.ContractPeriod(
-            startDate = this.startDate,
-            endDate = this.endDate
-        )
-
     private fun ApUpdateData.Tender.Lot.PlaceOfPerformance.toEntity(): APEntity.Tender.Lot.PlaceOfPerformance =
         APEntity.Tender.Lot.PlaceOfPerformance(
             address = this.address.toEntity()
-        )
-
-    private fun APEntity.Tender.Lot.ContractPeriod.updateBy(received: ApUpdateData.Tender.Lot.ContractPeriod): APEntity.Tender.Lot.ContractPeriod =
-        this.copy(
-            startDate = received.startDate,
-            endDate = received.endDate
         )
 
     private fun APEntity.Tender.Item.Unit.updateBy(received: ApUpdateData.Tender.Item.Unit): APEntity.Tender.Item.Unit =

@@ -42,6 +42,11 @@
     "tenderPeriod": {
       "startDate": "2019-11-06T10:00:00Z"
     },
+    "contractPeriod":
+    {
+      "startDate": "2018-12-28T18:26:00Z",
+      "endDate": "2018-12-29T18:26:00Z"
+    },
     "procuringEntity": {
       "id": "",
       "name": "",
