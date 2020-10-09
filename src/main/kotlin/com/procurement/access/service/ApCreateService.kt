@@ -140,6 +140,12 @@ class ApCreateService(
                 message = "Contract period start date must be greater than context start date."
             )
 
+        if (contractPeriod.startDate >= contractPeriod.endDate)
+            throw ErrorException(
+                error = ErrorType.INVALID_TENDER_CONTRACT_PERIOD,
+                message = "Contract period start date must precede contract period end date."
+            )
+
         val maxDuration = rulesService.getMaxDurationOfFA(contextRequest.country, contextRequest.pmd)
         val actualDuration = Duration.between(contractPeriod.startDate, contractPeriod.endDate)
 
