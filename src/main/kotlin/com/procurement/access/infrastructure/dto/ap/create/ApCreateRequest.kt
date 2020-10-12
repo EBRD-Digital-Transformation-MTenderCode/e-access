@@ -22,6 +22,7 @@ class ApCreateRequest(
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("legalBasis") @param:JsonProperty("legalBasis") val legalBasis: LegalBasis?,
@@ -46,6 +47,10 @@ class ApCreateRequest(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String
+        )
+
+        data class Value(
+            @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
         )
 
         data class TenderPeriod(
