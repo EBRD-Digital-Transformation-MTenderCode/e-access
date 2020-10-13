@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -173,7 +174,9 @@ class FeCreateServiceImpl(
                 procurementMethodModalities = data.tender.procurementMethodModalities,
                 documents = data.tender.documents.map { it.convert() },
                 classification = ap.tender.classification.convert(),
-                value = ap.tender.value!!,
+                value = ap.tender.value.let { value ->
+                    Money(amount = value.amount!!, currency = value.currency)
+                },
                 contractPeriod = ap.tender.contractPeriod!!.convert(),
                 acceleratedProcedure = ap.tender.acceleratedProcedure.convert(),
                 designContest = ap.tender.designContest.convert(),
