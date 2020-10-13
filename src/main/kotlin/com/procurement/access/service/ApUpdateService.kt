@@ -6,7 +6,9 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.EMPTY_DOCS
 import com.procurement.access.exception.ErrorType.INCORRECT_VALUE_ATTRIBUTE
@@ -22,6 +24,7 @@ import com.procurement.access.exception.ErrorType.NOT_UNIQUE_IDS
 import com.procurement.access.infrastructure.dto.ap.update.ApUpdateResponse
 import com.procurement.access.infrastructure.dto.ap.update.converter.convert
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.lib.toSetBy
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
@@ -202,6 +205,9 @@ class ApUpdateServiceImpl(
             temporalToPermanentLotId = temporalToPermanentLotId
         )
 
+        //FR.COM-1.26.7
+        val updatedTenderValue = getUpdatedTenderValue(tenderProcess, data)
+
         val updatedTenderProcess = tenderProcess.copy(
             tender = tenderProcess.tender.copy(
                 title = updatedTitle,
@@ -212,7 +218,8 @@ class ApUpdateServiceImpl(
                 mainProcurementCategory = updatedMainProcurementCategory,
                 lots = updatedLots,
                 items = updatedItems,
-                documents = updatedTenderDocuments
+                documents = updatedTenderDocuments,
+                value = updatedTenderValue
             )
         )
 
@@ -378,6 +385,27 @@ class ApUpdateServiceImpl(
 
         return emptyList()
     }
+
+    private fun getUpdatedTenderValue(tenderProcess: APEntity, data: ApUpdateData): APEntity.Tender.Value =
+        if (data.tender.value?.currency == null)
+            tenderProcess.tender.value
+        else {
+            val relatedPNProcesses = tenderProcess.relatedProcesses.orEmpty()
+                .filter(::isRelatedToPN)
+
+            if (relatedPNProcesses.isNotEmpty())
+                throw ErrorException(
+                    error = ErrorType.INVALID_RELATED_PROCESS_RELATIONSHIP,
+                    message = "RelatedProcesses '${relatedPNProcesses.map { it.id }
+                        .joinToString()}' contain unallowed relationship value"
+                )
+
+            tenderProcess.tender.value.copy(currency = data.tender.value.currency)
+        }
+
+
+    private fun isRelatedToPN(relatedProcess: RelatedProcess): Boolean =
+        relatedProcess.relationship.any { relationship -> relationship == RelatedProcessType.X_SCOPE }
 
     private fun updateAdditionalClassifications(
         received: List<ApUpdateData.Tender.Item.AdditionalClassification>,
