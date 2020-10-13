@@ -256,6 +256,7 @@ class CriteriaServiceImpl(
             Stage.AP,
             Stage.EI,
             Stage.FS,
+            Stage.PC,
             Stage.PN ->
                 failure(
                     ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
@@ -308,6 +309,7 @@ class CriteriaServiceImpl(
             Stage.AP,
             Stage.EI,
             Stage.FS,
+            Stage.PC,
             Stage.PN ->
                 failure(
                     ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
@@ -386,9 +388,10 @@ class CriteriaServiceImpl(
             }
 
             Stage.AP,
-            Stage.PN,
             Stage.AC,
             Stage.EI,
+            Stage.PC,
+            Stage.PN,
             Stage.FS ->
                 failure(
                     ValidationErrors.UnexpectedStageForCreateCriteriaForProcuringEntity(stage = params.ocid.stage)

@@ -132,6 +132,7 @@ class TenderService(
             Stage.AP,
             Stage.EI,
             Stage.FS,
+            Stage.PC,
             Stage.PN ->
                 throw ErrorException(INVALID_STAGE)
         }
