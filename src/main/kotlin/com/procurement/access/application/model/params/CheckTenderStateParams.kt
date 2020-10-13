@@ -33,6 +33,7 @@ class CheckTenderStateParams private constructor(
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
                     OperationType.CREATE_SUBMISSION,
+                    OperationType.CREATE_PCR,
                     OperationType.SUBMISSION_PERIOD_END,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,
@@ -41,7 +42,6 @@ class CheckTenderStateParams private constructor(
 
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.COMPLETE_QUALIFICATION,
-                    OperationType.CREATE_PCR,
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
