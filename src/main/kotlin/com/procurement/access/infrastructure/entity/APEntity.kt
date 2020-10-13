@@ -76,8 +76,7 @@ data class APEntity(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value?,
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,
