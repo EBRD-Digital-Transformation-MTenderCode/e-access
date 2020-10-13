@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.amount.Amount
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
@@ -36,7 +37,6 @@ data class ApUpdateResponse(
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
-        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
 
         @field:JsonProperty("acceleratedProcedure") @param:JsonProperty("acceleratedProcedure") val acceleratedProcedure: AcceleratedProcedure,
         @field:JsonProperty("designContest") @param:JsonProperty("designContest") val designContest: DesignContest,
@@ -69,6 +69,8 @@ data class ApUpdateResponse(
         @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
 
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
+
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,
 
@@ -87,6 +89,14 @@ data class ApUpdateResponse(
             @JsonDeserialize(using = JsonDateTimeDeserializer::class)
             @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
+        )
+
+        data class Value(
+            @JsonDeserialize(using = AmountDeserializer::class)
+            @JsonSerialize(using = AmountSerializer::class)
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: Amount?,
+            @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
         )
 
         data class Lot(
@@ -196,14 +206,6 @@ data class ApUpdateResponse(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
             @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String
-        )
-
-        data class Value(
-            @JsonDeserialize(using = AmountDeserializer::class)
-            @JsonSerialize(using = AmountSerializer::class)
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: Amount?,
-            @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
         )
 
         data class AcceleratedProcedure(

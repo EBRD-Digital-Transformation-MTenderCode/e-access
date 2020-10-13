@@ -12,6 +12,10 @@
       "description": "",
       "id": ""
     },
+    "value":
+    {
+      "currency": ""
+    },
     "acceleratedProcedure": {
       "isAcceleratedProcedure": false
     },

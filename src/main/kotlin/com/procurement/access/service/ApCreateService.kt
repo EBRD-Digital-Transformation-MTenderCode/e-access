@@ -208,6 +208,7 @@ class ApCreateService(
                     description = classification.description
                 )
             },
+            value = APEntity.Tender.Value(amount = null, currency = tenderRequest.value.currency),
             title = tenderRequest.title,
             description = tenderRequest.description,
             //BR-3.1.17
@@ -324,8 +325,7 @@ class ApCreateService(
 
             items = emptyList(),
             lots = emptyList(),
-            mainProcurementCategory = null,
-            value = null
+            mainProcurementCategory = null
         )
     }
 
@@ -380,6 +380,7 @@ class ApCreateService(
                                     description = classification.description
                                 )
                             },
+                        value = ApCreateResult.Tender.Value(currency = tender.value.currency),
                         tenderPeriod = tender.tenderPeriod
                             .let { tenderPeriod ->
                                 ApCreateResult.Tender.TenderPeriod(
