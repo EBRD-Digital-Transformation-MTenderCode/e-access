@@ -19,8 +19,6 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
 import com.procurement.access.infrastructure.bind.amount.AmountSerializer
-import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
-import com.procurement.access.infrastructure.bind.money.MoneySerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
@@ -78,8 +76,6 @@ data class APEntity(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
 
-        @JsonDeserialize(using = MoneyDeserializer::class)
-        @JsonSerialize(using = MoneySerializer::class)
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("value") @param:JsonProperty("value") val value: Value?,
 
