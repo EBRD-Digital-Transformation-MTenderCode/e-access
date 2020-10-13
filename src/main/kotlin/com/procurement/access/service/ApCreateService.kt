@@ -380,7 +380,7 @@ class ApCreateService(
                                     description = classification.description
                                 )
                             },
-                        value = ApCreateResult.Tender.Value(currency = tender.value!!.currency),
+                        value = ApCreateResult.Tender.Value(currency = tender.value.currency),
                         tenderPeriod = tender.tenderPeriod
                             .let { tenderPeriod ->
                                 ApCreateResult.Tender.TenderPeriod(

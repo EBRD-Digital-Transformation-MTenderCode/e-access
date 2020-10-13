@@ -174,7 +174,7 @@ class FeCreateServiceImpl(
                 procurementMethodModalities = data.tender.procurementMethodModalities,
                 documents = data.tender.documents.map { it.convert() },
                 classification = ap.tender.classification.convert(),
-                value = ap.tender.value!!.let { value ->
+                value = ap.tender.value.let { value ->
                     Money(amount = value.amount!!, currency = value.currency)
                 },
                 contractPeriod = ap.tender.contractPeriod!!.convert(),
