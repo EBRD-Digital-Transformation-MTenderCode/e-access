@@ -1,0 +1,121 @@
+{
+  "token": "",
+  "ocid": "ocds-t1s2t3-MD-1552650554287",
+  "tender": {
+    "id": "ocds-t1s2t3-MD-1552650554287",
+    "status": "active",
+    "statusDetails": "negotiation",
+    "title": "tender.title",
+    "description": "tender.description",
+    "classification": {
+      "scheme": "CPVS",
+      "description": "tender.classification.description",
+      "id": "tender.classification.id"
+    },
+    "value": {
+      "currency": "unmatchingTenderCurrency",
+      "amount": 10.00
+    },
+    "acceleratedProcedure": {
+      "isAcceleratedProcedure": false
+    },
+    "designContest": {
+      "serviceContractAward": false
+    },
+    "electronicWorkflows": {
+      "useOrdering": false,
+      "usePayment": false,
+      "acceptInvoicing": false
+    },
+    "jointProcurement": {
+      "isJointProcurement": false
+    },
+    "procedureOutsourcing": {
+      "procedureOutsourced": false
+    },
+    "framework": {
+      "isAFramework": false
+    },
+    "dynamicPurchasingSystem": {
+      "hasDynamicPurchasingSystem": false
+    },
+    "legalBasis": "DIRECTIVE_2014_23_EU",
+    "procurementMethod": "open",
+    "procurementMethodDetails": "",
+    "procurementMethodRationale": "",
+    "mainProcurementCategory": "services",
+    "eligibilityCriteria": "",
+    "tenderPeriod": {
+      "startDate": "2019-05-01T10:00:00Z"
+    },
+    "contractPeriod": {
+      "startDate": "2019-05-01T10:00:00Z",
+      "endDate": "2019-05-23T10:00:00Z"
+    },
+    "procuringEntity": {
+      "id": "",
+      "name": "",
+      "identifier": {
+        "scheme": "",
+        "id": "",
+        "legalName": "",
+        "uri": ""
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "",
+          "id": "",
+          "legalName": "",
+          "uri": ""
+        }
+      ],
+      "address": {
+        "streetAddress": "",
+        "postalCode": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "region": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "",
+        "email": "",
+        "telephone": "",
+        "faxNumber": "",
+        "url": ""
+      }
+    },
+    "requiresElectronicCatalogue": false,
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodRationale": [
+      ""
+    ],
+    "submissionMethodDetails": "",
+    "documents": [
+      {
+        "documentType": "tenderNotice",
+        "id": "",
+        "title": "",
+        "description": ""
+      }
+    ]
+  }
+}

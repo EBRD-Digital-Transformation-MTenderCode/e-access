@@ -64,10 +64,8 @@ class APServiceImpl(
             .map { it.tender.value.amount }
             .fold(BigDecimal.ZERO, BigDecimal::add)
 
-        // FR.COM-1.31.5
-        val apCurrency = relatedPns.first().tender.value.currency
 
-        val apTenderValue = APEntity.Tender.Value(amount = relatedPnsValueSum, currency = apCurrency)
+        val apTenderValue = ap.tender.value.copy(amount = relatedPnsValueSum)
 
         val updatedAp = ap.copy(
             tender = ap.tender.copy(

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
+import com.procurement.access.infrastructure.handler.check.currency.CheckEqualPNAndAPCurrencyHandler
 import com.procurement.access.infrastructure.handler.check.auction.CheckExistenceSignAuctionHandler
 import com.procurement.access.infrastructure.handler.check.fa.CheckExistenceFAHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service
 class CommandService2(
     private val calculateAPValueHandler: CalculateAPValueHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
+    private val checkEqualPNAndAPCurrencyHandler: CheckEqualPNAndAPCurrencyHandler,
     private val checkExistenceFAHandler: CheckExistenceFAHandler,
     private val checkExistenceSignAuctionHandler: CheckExistenceSignAuctionHandler,
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
@@ -81,6 +83,7 @@ class CommandService2(
         val response = when (action) {
             Command2Type.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)
             Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
+            Command2Type.CHECK_EQUAL_PN_AND_AP_CURRENCY  -> checkEqualPNAndAPCurrencyHandler.handle(node = request)
             Command2Type.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
             Command2Type.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(node = request)
             Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
