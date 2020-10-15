@@ -13,6 +13,7 @@ class ApCreateData(
         val title: String,
         val description: String,
         val classification: Classification,
+        val value: Value,
         val legalBasis: LegalBasis?,
         val procurementMethodDetails: String,
         val procurementMethodRationale: String?,
@@ -28,6 +29,10 @@ class ApCreateData(
             val scheme: Scheme,
             val id: CPVCode,
             val description: String
+        )
+
+        data class Value(
+            val currency: String
         )
 
         data class TenderPeriod(
