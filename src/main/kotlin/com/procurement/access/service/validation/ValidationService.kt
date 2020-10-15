@@ -304,10 +304,10 @@ class ValidationService(
         val apEntity = apRecord.jsonData.tryToObject(APEntity::class.java)
             .doReturn { error -> return ValidationResult.error(error) }
 
-        val pnCurrency = pnEntity.tender.value.currency.toUpperCase()
-        val apCurrency = apEntity.tender.value?.currency?.toUpperCase()
+        val pnCurrency = pnEntity.tender.value.currency
+        val apCurrency = apEntity.tender.value.currency
 
-        if (pnCurrency != apCurrency)
+        if (pnCurrency.toUpperCase() != apCurrency.toUpperCase())
             return ValidationResult.error(
                 ValidationErrors.CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency(
                     pnCurrency = pnCurrency,
