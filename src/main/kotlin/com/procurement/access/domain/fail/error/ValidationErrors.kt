@@ -316,4 +316,17 @@ sealed class ValidationErrors(
         description = "PN record currency '$pnCurrency' does not match AP record currency '${apCurrency ?: ""}'."
     )
 
+    class TenderNotFoundOnValidateClassification(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.30.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class InvalidClassificationId(receivedClassificationId: String, storedClassidicationId: String) : ValidationErrors(
+        numberError = "1.30.2",
+        prefix = "VR.COM-",
+        description =  "First three symbols of received classification id '${receivedClassificationId}' does not match stored one '$storedClassidicationId'."
+
+    )
+
 }
