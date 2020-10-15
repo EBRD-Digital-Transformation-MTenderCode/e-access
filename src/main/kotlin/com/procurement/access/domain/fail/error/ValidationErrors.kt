@@ -316,4 +316,22 @@ sealed class ValidationErrors(
         description = "PN record currency '$pnCurrency' does not match AP record currency '${apCurrency ?: ""}'."
     )
 
+    class TenderNotFoundOnCheckExistenceSignAuction(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.32.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class ElectronicAuctionReceivedButNotStored() : ValidationErrors(
+        numberError = "1.32.2",
+        prefix = "VR.COM-",
+        description = "Stored tender must contain 'electronicAuction' in procurementMethodModalities."
+    )
+
+    class ElectronicAuctionNotReceivedButStored() : ValidationErrors(
+        numberError = "1.32.3",
+        prefix = "VR.COM-",
+        description = "Stored tender must not contain 'electronicAuction' in procurementMethodModalities."
+    )
+
 }
