@@ -49,6 +49,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     RESPONDER_PROCESSING("responderProcessing"),
     SET_STATE_FOR_LOTS("setStateForLots"),
     SET_STATE_FOR_TENDER("setStateForTender"),
+    VALIDATE_CLASSIFICATION("validateClassification"),
     VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
     VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse");
 
