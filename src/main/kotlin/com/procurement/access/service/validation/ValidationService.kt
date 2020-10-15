@@ -4,6 +4,7 @@ import com.procurement.access.application.model.params.CheckEqualPNAndAPCurrency
 import com.procurement.access.application.model.params.CheckExistenceFAParams
 import com.procurement.access.application.model.params.CheckRelationParams
 import com.procurement.access.application.model.params.CheckTenderStateParams
+import com.procurement.access.application.model.params.ValidateClassificationParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
 import com.procurement.access.application.service.tender.strategy.check.tenderstate.CheckTenderStateStrategy
@@ -22,6 +23,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -312,6 +314,28 @@ class ValidationService(
                 ValidationErrors.CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency(
                     pnCurrency = pnCurrency,
                     apCurrency = apCurrency
+                )
+            )
+
+        return ValidationResult.ok()
+    }
+
+    fun validateClassification(params: ValidateClassificationParams): ValidationResult<Fail> {
+        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .doReturn { error -> return ValidationResult.error(error) }
+            ?: return ValidationResult.error(
+                ValidationErrors.TenderNotFoundOnValidateClassification(params.cpid, params.ocid)
+            )
+        val tenderInfo = record.jsonData.tryToObject(TenderClassificationInfo::class.java)
+            .doReturn { error -> return ValidationResult.error(error) }
+
+        val receivedClassificationId = params.tender.classification.id
+        val storedClassificationId = tenderInfo.tender.classification.id
+
+        if (!storedClassificationId.startsWith(receivedClassificationId.substring(0..2)))
+            return ValidationResult.error(
+                ValidationErrors.InvalidClassificationId(
+                    receivedClassificationId = receivedClassificationId, storedClassidicationId = storedClassificationId
                 )
             )
 
