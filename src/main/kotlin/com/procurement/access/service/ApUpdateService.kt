@@ -397,7 +397,7 @@ class ApUpdateServiceImpl(
                 throw ErrorException(
                     error = ErrorType.INVALID_RELATED_PROCESS_RELATIONSHIP,
                     message = "Tender currency change is forbidden because relatedProcesses " +
-                        "'${relatedPNProcesses.map { it.id }.joinToString()}' contain link to PN"
+                        "'${relatedPNProcesses.map { it.id }.joinToString()}' is linked to PN"
                 )
 
             tenderProcess.tender.value.copy(currency = data.tender.value.currency)
