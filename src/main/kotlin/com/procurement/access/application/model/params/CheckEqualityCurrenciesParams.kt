@@ -8,7 +8,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.success
 
-class CheckEqualPNAndAPCurrencyParams private constructor(
+class CheckEqualityCurrenciesParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid,
     val cpidAP: Cpid,
@@ -21,7 +21,7 @@ class CheckEqualPNAndAPCurrencyParams private constructor(
             ocid: String,
             cpidAP: String,
             ocidAP: String
-        ): Result<CheckEqualPNAndAPCurrencyParams, DataErrors.Validation.DataMismatchToPattern> {
+        ): Result<CheckEqualityCurrenciesParams, DataErrors.Validation.DataMismatchToPattern> {
             val parsedCpid = parseCpid(value = cpid)
                 .orForwardFail { error -> return error }
 
@@ -35,7 +35,7 @@ class CheckEqualPNAndAPCurrencyParams private constructor(
                 .orForwardFail { error -> return error }
 
             return success(
-                CheckEqualPNAndAPCurrencyParams(
+                CheckEqualityCurrenciesParams(
                     cpid = parsedCpid,
                     ocid = parsedOcid,
                     cpidAP = parsedCpidAP,

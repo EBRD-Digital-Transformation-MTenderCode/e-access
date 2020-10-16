@@ -1,6 +1,6 @@
 package com.procurement.access.service.validation
 
-import com.procurement.access.application.model.params.CheckEqualPNAndAPCurrencyParams
+import com.procurement.access.application.model.params.CheckEqualityCurrenciesParams
 import com.procurement.access.application.model.params.CheckExistenceFAParams
 import com.procurement.access.application.model.params.CheckRelationParams
 import com.procurement.access.application.model.params.CheckTenderStateParams
@@ -286,7 +286,7 @@ class ValidationService(
     fun checkTenderState(params: CheckTenderStateParams): ValidationResult<Fail> =
         checkTenderStateStrategy.execute(params)
 
-    fun checkEqualPNAndAPCurrency(params: CheckEqualPNAndAPCurrencyParams): ValidationResult<Fail> {
+    fun checkEqualityCurrencies(params: CheckEqualityCurrenciesParams): ValidationResult<Fail> {
         val pnRecord = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
             .doReturn { error -> return ValidationResult.error(error) }
             ?: return ValidationResult.error(

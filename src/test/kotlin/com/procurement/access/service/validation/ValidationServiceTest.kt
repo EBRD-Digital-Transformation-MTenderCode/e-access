@@ -2,7 +2,7 @@ package com.procurement.access.service.validation
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.application.model.params.CheckEqualPNAndAPCurrencyParams
+import com.procurement.access.application.model.params.CheckEqualityCurrenciesParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
@@ -43,7 +43,7 @@ class ValidationServiceTest {
     }
 
     @Nested
-    inner class CheckEqualPNAndAPCurrency {
+    inner class CheckEqualityCurrencies {
 
         @Test
         fun currencyMatches_success(){
@@ -59,7 +59,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
                 .thenReturn(success(tenderAPProcessEntity))
 
-            val actual =  validationService.checkEqualPNAndAPCurrency(params = getParams())
+            val actual =  validationService.checkEqualityCurrencies(params = getParams())
 
             assertTrue(actual is ValidationResult.Ok)
         }
@@ -71,7 +71,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(null))
 
-            val actual =  validationService.checkEqualPNAndAPCurrency(params = getParams()).error
+            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
@@ -91,7 +91,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
                 .thenReturn(success(null))
 
-            val actual =  validationService.checkEqualPNAndAPCurrency(params = getParams()).error
+            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.2"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpidAP}' and ocid='${params.ocidAP}'."
@@ -115,7 +115,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
                 .thenReturn(success(tenderAPProcessEntity))
 
-            val actual =  validationService.checkEqualPNAndAPCurrency(params = getParams()).error
+            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.3"
             val expectedErrorMessage = "PN record currency 'tenderCurrency' does not match AP record currency 'unmatchingTenderCurrency'."
@@ -124,7 +124,7 @@ class ValidationServiceTest {
             assertEquals(expectedErrorMessage, actual.description)
         }
 
-        private fun getParams() = CheckEqualPNAndAPCurrencyParams.tryCreate(
+        private fun getParams() = CheckEqualityCurrenciesParams.tryCreate(
             cpid = CPID.toString(),
             ocid = OCID.toString(),
             cpidAP = CPID_AP.toString(),
