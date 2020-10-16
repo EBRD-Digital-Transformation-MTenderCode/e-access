@@ -293,10 +293,10 @@ class ValidationService(
                 ValidationErrors.PNTenderNotFoundOnCheckEqualPNAndAPCurrency(params.cpid, params.ocid)
             )
 
-        val apRecord = tenderProcessRepository.getByCpIdAndStage(params.cpidAP, params.ocidAP.stage)
+        val apRecord = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
             .doReturn { error -> return ValidationResult.error(error) }
             ?: return ValidationResult.error(
-                ValidationErrors.APTenderNotFoundOnCheckEqualPNAndAPCurrency(params.cpidAP, params.ocidAP)
+                ValidationErrors.APTenderNotFoundOnCheckEqualPNAndAPCurrency(params.relatedCpid, params.relatedOcid)
             )
 
         val pnEntity = pnRecord.jsonData.tryToObject(PNEntity::class.java)

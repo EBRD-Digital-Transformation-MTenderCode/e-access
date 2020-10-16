@@ -5,6 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class CheckEqualityCurrenciesRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
-    @field:JsonProperty("cpidAP") @param:JsonProperty("cpidAP") val cpidAP: String,
-    @field:JsonProperty("ocidAP") @param:JsonProperty("ocidAP") val ocidAP: String
+    @field:JsonProperty("relatedCpid") @param:JsonProperty("relatedCpid") val relatedCpid: String,
+    @field:JsonProperty("relatedOcid") @param:JsonProperty("relatedOcid") val relatedOcid: String
 )

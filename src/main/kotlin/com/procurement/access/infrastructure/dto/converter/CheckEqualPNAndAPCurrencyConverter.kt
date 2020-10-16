@@ -8,6 +8,6 @@ import com.procurement.access.infrastructure.handler.check.currency.CheckEqualit
 fun CheckEqualityCurrenciesRequest.convert(): Result<CheckEqualityCurrenciesParams, DataErrors> = CheckEqualityCurrenciesParams.tryCreate(
     cpid = cpid,
     ocid = ocid,
-    ocidAP = ocidAP,
-    cpidAP = cpidAP
+    relatedOcid = relatedOcid,
+    relatedCpid = relatedCpid
 )

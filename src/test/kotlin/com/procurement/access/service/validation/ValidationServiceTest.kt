@@ -56,7 +56,7 @@ class ValidationServiceTest {
 
             val apJson = loadJson("json/service/check/currency/ap_entity.json")
             val tenderAPProcessEntity = TenderProcessEntityGenerator.generate(data = apJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
                 .thenReturn(success(tenderAPProcessEntity))
 
             val actual =  validationService.checkEqualityCurrencies(params = getParams())
@@ -88,13 +88,13 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
                 .thenReturn(success(null))
 
             val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.2"
-            val expectedErrorMessage = "Tender not found by cpid='${params.cpidAP}' and ocid='${params.ocidAP}'."
+            val expectedErrorMessage = "Tender not found by cpid='${params.relatedCpid}' and ocid='${params.relatedOcid}'."
 
             assertEquals(expectedErrorCode, actual.code)
             assertEquals(expectedErrorMessage, actual.description)
@@ -112,7 +112,7 @@ class ValidationServiceTest {
 
             val apJson = loadJson("json/service/check/currency/ap_entity_with_unmatching_currency.json")
             val tenderAPProcessEntity = TenderProcessEntityGenerator.generate(data = apJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
                 .thenReturn(success(tenderAPProcessEntity))
 
             val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
@@ -127,8 +127,8 @@ class ValidationServiceTest {
         private fun getParams() = CheckEqualityCurrenciesParams.tryCreate(
             cpid = CPID.toString(),
             ocid = OCID.toString(),
-            cpidAP = CPID_AP.toString(),
-            ocidAP = OCID_AP.toString()
+            relatedCpid = CPID_AP.toString(),
+            relatedOcid = OCID_AP.toString()
         ).get
     }
 }
