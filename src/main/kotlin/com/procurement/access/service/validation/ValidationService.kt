@@ -1,6 +1,6 @@
 package com.procurement.access.service.validation
 
-import com.procurement.access.application.model.params.CheckEqualPNAndAPCurrencyParams
+import com.procurement.access.application.model.params.CheckEqualityCurrenciesParams
 import com.procurement.access.application.model.params.CheckExistenceFAParams
 import com.procurement.access.application.model.params.CheckRelationParams
 import com.procurement.access.application.model.params.CheckTenderStateParams
@@ -21,7 +21,7 @@ import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
-import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -286,34 +286,29 @@ class ValidationService(
     fun checkTenderState(params: CheckTenderStateParams): ValidationResult<Fail> =
         checkTenderStateStrategy.execute(params)
 
-    fun checkEqualPNAndAPCurrency(params: CheckEqualPNAndAPCurrencyParams): ValidationResult<Fail> {
-        val pnRecord = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+    fun checkEqualityCurrencies(params: CheckEqualityCurrenciesParams): ValidationResult<Fail> {
+        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
             .doReturn { error -> return ValidationResult.error(error) }
             ?: return ValidationResult.error(
-                ValidationErrors.PNTenderNotFoundOnCheckEqualPNAndAPCurrency(params.cpid, params.ocid)
+                ValidationErrors.TenderNotFoundOnCheckEqualityCurrencies(params.cpid, params.ocid)
             )
 
-        val apRecord = tenderProcessRepository.getByCpIdAndStage(params.cpidAP, params.ocidAP.stage)
+        val relatedRecord = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
             .doReturn { error -> return ValidationResult.error(error) }
             ?: return ValidationResult.error(
-                ValidationErrors.APTenderNotFoundOnCheckEqualPNAndAPCurrency(params.cpidAP, params.ocidAP)
+                ValidationErrors.RelatedTenderNotFoundOnCheckEqualityCurrencies(params.relatedCpid, params.relatedOcid)
             )
 
-        val pnEntity = pnRecord.jsonData.tryToObject(PNEntity::class.java)
+        val tenderCurrency = record.jsonData.tryToObject(TenderCurrencyInfo::class.java)
             .doReturn { error -> return ValidationResult.error(error) }
-        val apEntity = apRecord.jsonData.tryToObject(APEntity::class.java)
+        val relatedTenderCurrency = relatedRecord.jsonData.tryToObject(TenderCurrencyInfo::class.java)
             .doReturn { error -> return ValidationResult.error(error) }
 
-        val pnCurrency = pnEntity.tender.value.currency
-        val apCurrency = apEntity.tender.value.currency
+        val currency = tenderCurrency.tender.value.currency
+        val relatedCurrency = relatedTenderCurrency.tender.value.currency
 
-        if (pnCurrency.toUpperCase() != apCurrency.toUpperCase())
-            return ValidationResult.error(
-                ValidationErrors.CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency(
-                    pnCurrency = pnCurrency,
-                    apCurrency = apCurrency
-                )
-            )
+        if (currency.toUpperCase() != relatedCurrency.toUpperCase())
+            return ValidationResult.error(ValidationErrors.CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency())
 
         return ValidationResult.ok()
     }
