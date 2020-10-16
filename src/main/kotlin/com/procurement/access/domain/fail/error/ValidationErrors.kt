@@ -316,4 +316,10 @@ sealed class ValidationErrors(
         description = "PN record currency '$pnCurrency' does not match AP record currency '${apCurrency ?: ""}'."
     )
 
+    class TenderNotFoundOnGetCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.34.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
 }
