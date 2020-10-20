@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
 
 enum class ProcurementMethodModalities(@JsonValue override val key: String) : EnumElementProvider.Key {
-    ELECTRONIC_AUCTION("electronicAuction");
+    ELECTRONIC_AUCTION("electronicAuction"),
+    REQUIRES_ELECTRONIC_CATALOGUE("requiresElectronicCatalogue");
 
     override fun toString(): String = key
 
