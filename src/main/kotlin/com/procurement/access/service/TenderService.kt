@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.model.params.FindAuctionsParams
+import com.procurement.access.application.model.params.GetCurrencyParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
@@ -13,6 +14,7 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.util.Result
+import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.ErrorException
@@ -27,8 +29,10 @@ import com.procurement.access.exception.ErrorType.IS_NOT_SUSPENDED
 import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderStateInfo
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsResult
+import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CancellationRs
@@ -348,5 +352,18 @@ class TenderService(
                 )
             )
         ).asSuccess()
+    }
+
+    fun getCurrency(params: GetCurrencyParams): Result<GetCurrencyResult, Fail> {
+        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .orForwardFail { fail -> return fail }
+            ?: return failure(
+                ValidationErrors.TenderNotFoundOnGetCurrency(params.cpid, params.ocid)
+            )
+
+        val tenderInfo = record.jsonData.tryToObject(TenderCurrencyInfo::class.java)
+            .orForwardFail { fail -> return fail }
+
+        return GetCurrencyResult(GetCurrencyResult.Tender(GetCurrencyResult.Tender.Value(tenderInfo.tender.value.currency))).asSuccess()
     }
 }

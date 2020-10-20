@@ -1,0 +1,7 @@
+{
+  "tender": {
+    "value": {
+      "currency": "string"
+    }
+  }
+}

@@ -298,22 +298,28 @@ sealed class ValidationErrors(
         description = "Cannot find relation with PN in AP with cpid='$cpid' and ocid='$ocid'."
     )
 
-    class PNTenderNotFoundOnCheckEqualPNAndAPCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid) : ValidationErrors(
         numberError = "1.33.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class APTenderNotFoundOnCheckEqualPNAndAPCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class RelatedTenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid) : ValidationErrors(
         numberError = "1.33.2",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency(pnCurrency: String, apCurrency: String?) : ValidationErrors(
+    class CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency() : ValidationErrors(
         numberError = "1.33.3",
         prefix = "VR.COM-",
-        description = "PN record currency '$pnCurrency' does not match AP record currency '${apCurrency ?: ""}'."
+        description = "Tenders' currencies do not match."
+    )
+
+    class TenderNotFoundOnGetCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.34.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
     class TenderNotFoundOnValidateClassification(cpid: Cpid, ocid: Ocid) : ValidationErrors(
