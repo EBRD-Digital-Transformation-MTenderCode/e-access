@@ -14,6 +14,7 @@ import com.procurement.access.infrastructure.handler.create.relation.CreateRelat
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodHandler
+import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationHandler
@@ -46,6 +47,7 @@ class CommandService2(
     private val findAuctionsHandler: FindAuctionsHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
     private val findLotIdsHandler: FindLotIdsHandler,
+    private val getCurrencyHandler: GetCurrencyHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getOrganizationHandler: GetOrganizationHandler,
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
@@ -91,6 +93,7 @@ class CommandService2(
             Command2Type.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
             Command2Type.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
             Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
+            Command2Type.GET_CURRENCY -> getCurrencyHandler.handle(node = request)
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
             Command2Type.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
             Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)

@@ -316,4 +316,10 @@ sealed class ValidationErrors(
         description = "Tenders' currencies do not match."
     )
 
+    class TenderNotFoundOnGetCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.34.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
 }
