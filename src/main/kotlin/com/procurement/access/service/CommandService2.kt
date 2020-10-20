@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
-import com.procurement.access.infrastructure.handler.check.currency.CheckEqualPNAndAPCurrencyHandler
 import com.procurement.access.infrastructure.handler.check.auction.CheckExistenceSignAuctionHandler
+import com.procurement.access.infrastructure.handler.check.currency.CheckEqualityCurrenciesHandler
 import com.procurement.access.infrastructure.handler.check.fa.CheckExistenceFAHandler
 import com.procurement.access.infrastructure.handler.check.persons.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.check.relation.CheckRelationHandler
@@ -15,6 +15,7 @@ import com.procurement.access.infrastructure.handler.create.relation.CreateRelat
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodHandler
+import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyHandler
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationHandler
@@ -37,7 +38,7 @@ import org.springframework.stereotype.Service
 class CommandService2(
     private val calculateAPValueHandler: CalculateAPValueHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
-    private val checkEqualPNAndAPCurrencyHandler: CheckEqualPNAndAPCurrencyHandler,
+    private val checkEqualPNAndAPCurrencyHandler: CheckEqualityCurrenciesHandler,
     private val checkExistenceFAHandler: CheckExistenceFAHandler,
     private val checkExistenceSignAuctionHandler: CheckExistenceSignAuctionHandler,
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
@@ -48,6 +49,7 @@ class CommandService2(
     private val findAuctionsHandler: FindAuctionsHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
     private val findLotIdsHandler: FindLotIdsHandler,
+    private val getCurrencyHandler: GetCurrencyHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getOrganizationHandler: GetOrganizationHandler,
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
@@ -83,7 +85,7 @@ class CommandService2(
         val response = when (action) {
             Command2Type.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)
             Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
-            Command2Type.CHECK_EQUAL_PN_AND_AP_CURRENCY  -> checkEqualPNAndAPCurrencyHandler.handle(node = request)
+            Command2Type.CHECK_EQUALITY_CURRENCIES  -> checkEqualPNAndAPCurrencyHandler.handle(node = request)
             Command2Type.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
             Command2Type.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(node = request)
             Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
@@ -94,6 +96,7 @@ class CommandService2(
             Command2Type.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
             Command2Type.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
             Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
+            Command2Type.GET_CURRENCY -> getCurrencyHandler.handle(node = request)
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
             Command2Type.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
             Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)

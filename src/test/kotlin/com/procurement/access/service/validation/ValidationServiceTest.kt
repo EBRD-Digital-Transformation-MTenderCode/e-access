@@ -2,7 +2,7 @@ package com.procurement.access.service.validation
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.application.model.params.CheckEqualPNAndAPCurrencyParams
+import com.procurement.access.application.model.params.CheckEqualityCurrenciesParams
 import com.procurement.access.application.model.params.CheckExistenceSignAuctionParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
@@ -32,8 +32,10 @@ class ValidationServiceTest {
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
         private val OCID = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
-        private val CPID_AP = Cpid.tryCreateOrNull("ocds-t1s2t3-OT-1565251033097")!!
-        private val OCID_AP = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-FE-1581509653045")!!
+        private val RELATED_CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-OT-1565251033097")!!
+        private val RELATED_OCID = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-FE-1581509653045")!!
+
+
     }
 
     @BeforeEach
@@ -45,35 +47,35 @@ class ValidationServiceTest {
     }
 
     @Nested
-    inner class CheckEqualPNAndAPCurrency {
+    inner class CheckEqualityCurrencies {
 
         @Test
         fun currencyMatches_success() {
             val params = getParams()
 
-            val pnJson = loadJson("json/service/check/currency/pn_entity.json")
-            val tenderPNProcessEntity = TenderProcessEntityGenerator.generate(data = pnJson)
+            val entityJson = loadJson("json/service/check/currency/currency.json")
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = entityJson)
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
-                .thenReturn(success(tenderPNProcessEntity))
+                .thenReturn(success(tenderProcessEntity))
 
-            val apJson = loadJson("json/service/check/currency/ap_entity.json")
-            val tenderAPProcessEntity = TenderProcessEntityGenerator.generate(data = apJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
-                .thenReturn(success(tenderAPProcessEntity))
+            val relatedEntityJson = loadJson("json/service/check/currency/currency.json")
+            val relatedTenderProcessEntity = TenderProcessEntityGenerator.generate(data = relatedEntityJson)
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
+                .thenReturn(success(relatedTenderProcessEntity))
 
-            val actual = validationService.checkEqualPNAndAPCurrency(params = getParams())
+            val actual =  validationService.checkEqualityCurrencies(params = getParams())
 
             assertTrue(actual is ValidationResult.Ok)
         }
 
         @Test
-        fun pnRecordNotFound_fail() {
+        fun recordNotFound_fail(){
             val params = getParams()
 
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(null))
 
-            val actual = validationService.checkEqualPNAndAPCurrency(params = getParams()).error
+            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
@@ -83,20 +85,20 @@ class ValidationServiceTest {
         }
 
         @Test
-        fun apRecordNotFound_fail() {
+        fun relatedRecordNotFound_fail(){
             val params = getParams()
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = "")
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
                 .thenReturn(success(null))
 
-            val actual = validationService.checkEqualPNAndAPCurrency(params = getParams()).error
+            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.2"
-            val expectedErrorMessage = "Tender not found by cpid='${params.cpidAP}' and ocid='${params.ocidAP}'."
+            val expectedErrorMessage = "Tender not found by cpid='${params.relatedCpid}' and ocid='${params.relatedOcid}'."
 
             assertEquals(expectedErrorCode, actual.code)
             assertEquals(expectedErrorMessage, actual.description)
@@ -106,30 +108,30 @@ class ValidationServiceTest {
         fun currencyDoesNotMatch_fail() {
             val params = getParams()
 
-            val pnJson = loadJson("json/service/check/currency/pn_entity.json")
-            val tenderPNProcessEntity = TenderProcessEntityGenerator.generate(data = pnJson)
+            val entityJson = loadJson("json/service/check/currency/currency.json")
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = entityJson)
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
-                .thenReturn(success(tenderPNProcessEntity))
+                .thenReturn(success(tenderProcessEntity))
 
-            val apJson = loadJson("json/service/check/currency/ap_entity_with_unmatching_currency.json")
-            val tenderAPProcessEntity = TenderProcessEntityGenerator.generate(data = apJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpidAP, stage = params.ocidAP.stage))
-                .thenReturn(success(tenderAPProcessEntity))
+            val relatedEntityJson = loadJson("json/service/check/currency/unmatching_currency.json")
+            val relatedTenderProcessEntity = TenderProcessEntityGenerator.generate(data = relatedEntityJson)
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
+                .thenReturn(success(relatedTenderProcessEntity))
 
-            val actual = validationService.checkEqualPNAndAPCurrency(params = getParams()).error
+            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
 
             val expectedErrorCode = "VR.COM-1.33.3"
-            val expectedErrorMessage = "PN record currency 'tenderCurrency' does not match AP record currency 'unmatchingTenderCurrency'."
+            val expectedErrorMessage = "Tenders' currencies do not match."
 
             assertEquals(expectedErrorCode, actual.code)
             assertEquals(expectedErrorMessage, actual.description)
         }
 
-        private fun getParams() = CheckEqualPNAndAPCurrencyParams.tryCreate(
+        private fun getParams() = CheckEqualityCurrenciesParams.tryCreate(
             cpid = CPID.toString(),
             ocid = OCID.toString(),
-            cpidAP = CPID_AP.toString(),
-            ocidAP = OCID_AP.toString()
+            relatedCpid = RELATED_CPID.toString(),
+            relatedOcid = RELATED_OCID.toString()
         ).get
     }
 

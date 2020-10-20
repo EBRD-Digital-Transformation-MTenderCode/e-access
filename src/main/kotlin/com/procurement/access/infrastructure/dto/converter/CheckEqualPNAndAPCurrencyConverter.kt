@@ -1,13 +1,13 @@
 package com.procurement.access.infrastructure.dto.converter
 
-import com.procurement.access.application.model.params.CheckEqualPNAndAPCurrencyParams
+import com.procurement.access.application.model.params.CheckEqualityCurrenciesParams
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Result
-import com.procurement.access.infrastructure.handler.check.currency.CheckEqualPNAndAPCurrencyRequest
+import com.procurement.access.infrastructure.handler.check.currency.CheckEqualityCurrenciesRequest
 
-fun CheckEqualPNAndAPCurrencyRequest.convert(): Result<CheckEqualPNAndAPCurrencyParams, DataErrors> = CheckEqualPNAndAPCurrencyParams.tryCreate(
+fun CheckEqualityCurrenciesRequest.convert(): Result<CheckEqualityCurrenciesParams, DataErrors> = CheckEqualityCurrenciesParams.tryCreate(
     cpid = cpid,
     ocid = ocid,
-    ocidAP = ocidAP,
-    cpidAP = cpidAP
+    relatedOcid = relatedOcid,
+    relatedCpid = relatedCpid
 )

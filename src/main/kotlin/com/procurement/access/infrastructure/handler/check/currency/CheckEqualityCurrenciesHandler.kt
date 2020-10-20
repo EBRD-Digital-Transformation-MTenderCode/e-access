@@ -14,7 +14,7 @@ import com.procurement.access.service.validation.ValidationService
 import org.springframework.stereotype.Service
 
 @Service
-class CheckEqualPNAndAPCurrencyHandler(
+class CheckEqualityCurrenciesHandler(
     private val logger: Logger,
     private val validationService: ValidationService
 ) : AbstractValidationHandler<Command2Type>(logger = logger) {
@@ -22,13 +22,13 @@ class CheckEqualPNAndAPCurrencyHandler(
     override fun execute(node: JsonNode): ValidationResult<Fail> {
 
         val params = node.tryGetParams()
-            .bind { it.tryParamsToObject(CheckEqualPNAndAPCurrencyRequest::class.java) }
+            .bind { it.tryParamsToObject(CheckEqualityCurrenciesRequest::class.java) }
             .bind { it.convert() }
             .doReturn { error -> return ValidationResult.error(error) }
 
-        return validationService.checkEqualPNAndAPCurrency(params = params)
+        return validationService.checkEqualityCurrencies(params = params)
     }
 
     override val action: Command2Type
-        get() = Command2Type.CHECK_EQUAL_PN_AND_AP_CURRENCY
+        get() = Command2Type.CHECK_EQUALITY_CURRENCIES
 }

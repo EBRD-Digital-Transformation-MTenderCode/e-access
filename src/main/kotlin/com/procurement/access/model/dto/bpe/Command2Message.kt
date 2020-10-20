@@ -31,7 +31,7 @@ import java.util.*
 enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
     CALCULATE_AP_VALUE("calculateAPValue"),
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
-    CHECK_EQUAL_PN_AND_AP_CURRENCY("checkEqualPNAndAPCurrency"),
+    CHECK_EQUALITY_CURRENCIES("checkEqualityCurrencies"),
     CHECK_EXISTENCE_FA("checkExistenceFA"),
     CHECK_EXISTENCE_SIGN_AUCTION("checkExistenceSignAuction"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
@@ -42,6 +42,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     FIND_AUCTIONS("findAuctions"),
     FIND_CRITERIA("findCriteria"),
     FIND_LOT_IDS("findLotIds"),
+    GET_CURRENCY("getCurrency"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     GET_ORGANIZATION("getOrganization"),
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),

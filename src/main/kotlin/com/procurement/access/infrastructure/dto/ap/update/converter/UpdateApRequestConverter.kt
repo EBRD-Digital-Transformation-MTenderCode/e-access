@@ -90,6 +90,11 @@ fun ApUpdateRequest.convert() = ApUpdateData(
                                 }
                         )
                     },
+                value = tender.value?.let { value ->
+                    ApUpdateData.Tender.Value(
+                        tender.value.currency
+                    )
+                },
                 lots = tender.lots
                     .errorIfEmpty {
                         ErrorException(
