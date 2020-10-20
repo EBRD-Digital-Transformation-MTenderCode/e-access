@@ -33,6 +33,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     CHECK_EQUALITY_CURRENCIES("checkEqualityCurrencies"),
     CHECK_EXISTENCE_FA("checkExistenceFA"),
+    CHECK_EXISTENCE_SIGN_AUCTION("checkExistenceSignAuction"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
     CHECK_RELATION("checkRelation"),
     CHECK_TENDER_STATE("checkTenderState"),
