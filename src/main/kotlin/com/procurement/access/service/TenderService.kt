@@ -85,10 +85,12 @@ class TenderService(
 
             Stage.FE -> {
                 val process = toObject(FEEntity::class.java, entity.jsonData)
-                if (process.tender.statusDetails == TenderStatusDetails.SUSPENDED)
-                    process.tender.copy(statusDetails = TenderStatusDetails.creator(phase))
-                else
-                    throw ErrorException(IS_NOT_SUSPENDED)
+                    .let { fe ->
+                        if (fe.tender.statusDetails == TenderStatusDetails.SUSPENDED)
+                            fe.copy(tender = fe.tender.copy(statusDetails = TenderStatusDetails.creator(phase)))
+                        else
+                            throw ErrorException(IS_NOT_SUSPENDED)
+                    }
 
                 tenderProcessDao.save(
                     TenderProcessEntity(
