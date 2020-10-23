@@ -33,7 +33,7 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
             // FReq-1.1.1.16
             // VR-1.0.1.10.3
-            CheckFEDataRules.validateUniquenessBy(procuringEntity.persons, "procuringEntity.persones[]") { it.id }
+            CheckFEDataRules.validateUniquenessBy(procuringEntity.persons, "procuringEntity.persones[]") { it.identifier.id }
 
             // VR-1.0.1.10.4
             CheckFEDataRules.validatePersonsBusinessFunctions(procuringEntity.persons)
