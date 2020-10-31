@@ -18,6 +18,7 @@ class ApUpdateData(
         val mainProcurementCategory: MainProcurementCategory?,
         val tenderPeriod: TenderPeriod,
         val classification: Classification?,
+        val value: Value?,
         val lots: List<Lot>,
         val items: List<Item>,
         val documents: List<Document>
@@ -69,6 +70,10 @@ class ApUpdateData(
             val scheme: Scheme,
             val id: CPVCode,
             val description: String
+        )
+
+        data class Value(
+            val currency: String
         )
 
         data class TenderPeriod(

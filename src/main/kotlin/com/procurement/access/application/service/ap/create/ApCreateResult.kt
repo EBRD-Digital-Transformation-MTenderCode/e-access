@@ -22,6 +22,7 @@ data class ApCreateResult(
         val title: String,
         val description: String,
         val classification: Classification,
+        val value: Value,
         val acceleratedProcedure: AcceleratedProcedure,
         val designContest: DesignContest,
         val electronicWorkflows: ElectronicWorkflows,
@@ -49,6 +50,10 @@ data class ApCreateResult(
             val scheme: Scheme,
             val id: CPVCode,
             val description: String
+        )
+
+        data class Value(
+            val currency: String
         )
 
         data class AcceleratedProcedure(

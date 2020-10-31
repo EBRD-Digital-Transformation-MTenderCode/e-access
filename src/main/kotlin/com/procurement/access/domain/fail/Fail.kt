@@ -8,11 +8,11 @@ import com.procurement.access.domain.util.ValidationResult
 
 sealed class Fail {
 
+    abstract val code: String
+    abstract val description: String
     abstract fun logging(logger: Logger)
 
     abstract class Error(val prefix: String) : Fail() {
-        abstract val code: String
-        abstract val description: String
         val message: String
             get() = "ERROR CODE: '$code', DESCRIPTION: '$description'."
 
@@ -27,8 +27,8 @@ sealed class Fail {
         }
     }
 
-    sealed class Incident(val level: Level, number: String, val description: String) : Fail() {
-        val code: String = "INC-$number"
+    sealed class Incident(val level: Level, number: String, override val description: String) : Fail() {
+        override val code: String = "INC-$number"
 
         val message: String
             get() = "INCIDENT CODE: '$code', DESCRIPTION: '$description'."

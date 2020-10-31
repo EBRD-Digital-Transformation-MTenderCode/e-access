@@ -6,6 +6,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.date.tryParseLocalDateTime
+import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.owner.Owner
@@ -96,6 +97,11 @@ fun parseLotId(value: String, attributeName: String): Result<LotId, DataErrors.V
         }
         .get
         .asSuccess()
+
+fun parseProcurementMethodModalities(
+    value: String, allowedEnums: Set<ProcurementMethodModalities>, attributeName: String
+): Result<ProcurementMethodModalities, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = ProcurementMethodModalities)
 
 fun <T> parseEnum(value: String, allowedEnums: Set<T>, attributeName: String, target: EnumElementProvider<T>)
     : Result<T, DataErrors.Validation.UnknownValue> where T : Enum<T>,

@@ -23,6 +23,7 @@ fun ApCreateResult.convert(): ApCreateResponse =
                                 description = classification.description
                             )
                         },
+                    value = ApCreateResponse.Tender.Value(tender.value.currency),
                     tenderPeriod = tender.tenderPeriod
                         .let { tenderPeriod ->
                             ApCreateResponse.Tender.TenderPeriod(

@@ -70,9 +70,10 @@ class SetStateForTenderStrategy(
                 }
                 .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
 
+            Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.AC ->
+            Stage.PC ->
                 return Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
                 )
