@@ -12,7 +12,9 @@ fun APEntity.convert() = ApUpdateResponse(
                 description = tender.description,
                 status = tender.status,
                 statusDetails = tender.statusDetails,
-                value = tender.value!!,
+                value = tender.value.let {value ->
+                    ApUpdateResponse.Tender.Value(amount = value.amount, currency = value.currency)
+                },
                 mainProcurementCategory = tender.mainProcurementCategory,
                 procurementMethodRationale = tender.procurementMethodRationale,
                 contractPeriod = tender.contractPeriod

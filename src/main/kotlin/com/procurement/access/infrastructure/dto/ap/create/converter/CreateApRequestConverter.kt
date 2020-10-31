@@ -334,6 +334,7 @@ fun ApCreateRequest.convert() = ApCreateData(
                                 }
                         )
                     },
+                value = ApCreateData.Tender.Value(tender.value.currency),
                 eligibilityCriteria = tender.eligibilityCriteria
                     .takeIfNotEmpty {
                         ErrorException(

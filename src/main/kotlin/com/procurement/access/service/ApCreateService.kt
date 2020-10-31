@@ -140,6 +140,12 @@ class ApCreateService(
                 message = "Contract period start date must be greater than context start date."
             )
 
+        if (contractPeriod.startDate >= contractPeriod.endDate)
+            throw ErrorException(
+                error = ErrorType.INVALID_TENDER_CONTRACT_PERIOD,
+                message = "Contract period start date must precede contract period end date."
+            )
+
         val maxDuration = rulesService.getMaxDurationOfFA(contextRequest.country, contextRequest.pmd)
         val actualDuration = Duration.between(contractPeriod.startDate, contractPeriod.endDate)
 
@@ -202,6 +208,7 @@ class ApCreateService(
                     description = classification.description
                 )
             },
+            value = APEntity.Tender.Value(amount = null, currency = tenderRequest.value.currency),
             title = tenderRequest.title,
             description = tenderRequest.description,
             //BR-3.1.17
@@ -318,8 +325,7 @@ class ApCreateService(
 
             items = emptyList(),
             lots = emptyList(),
-            mainProcurementCategory = null,
-            value = null
+            mainProcurementCategory = null
         )
     }
 
@@ -374,6 +380,7 @@ class ApCreateService(
                                     description = classification.description
                                 )
                             },
+                        value = ApCreateResult.Tender.Value(currency = tender.value.currency),
                         tenderPeriod = tender.tenderPeriod
                             .let { tenderPeriod ->
                                 ApCreateResult.Tender.TenderPeriod(

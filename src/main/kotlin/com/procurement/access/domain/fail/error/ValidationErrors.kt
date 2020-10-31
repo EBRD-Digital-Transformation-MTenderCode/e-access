@@ -298,4 +298,59 @@ sealed class ValidationErrors(
         description = "Cannot find relation with PN in AP with cpid='$cpid' and ocid='$ocid'."
     )
 
+    class TenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.33.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class RelatedTenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.33.2",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency() : ValidationErrors(
+        numberError = "1.33.3",
+        prefix = "VR.COM-",
+        description = "Tenders' currencies do not match."
+    )
+
+    class TenderNotFoundOnGetCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.34.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class TenderNotFoundOnCheckExistenceSignAuction(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.32.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class ElectronicAuctionReceivedButNotStored() : ValidationErrors(
+        numberError = "1.32.2",
+        prefix = "VR.COM-",
+        description = "Stored tender must contain 'electronicAuction' in procurementMethodModalities."
+    )
+
+    class ElectronicAuctionNotReceivedButStored() : ValidationErrors(
+        numberError = "1.32.3",
+        prefix = "VR.COM-",
+        description = "Stored tender must not contain 'electronicAuction' in procurementMethodModalities."
+    )
+
+    class TenderNotFoundOnValidateClassification(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.30.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class InvalidClassificationId(receivedClassificationId: String, storedClassidicationId: String) : ValidationErrors(
+        numberError = "1.30.2",
+        prefix = "VR.COM-",
+        description =  "First three symbols of received classification id '${receivedClassificationId}' does not match stored one '$storedClassidicationId'."
+
+    )
+
 }

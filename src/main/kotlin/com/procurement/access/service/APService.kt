@@ -8,7 +8,6 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
@@ -65,10 +64,8 @@ class APServiceImpl(
             .map { it.tender.value.amount }
             .fold(BigDecimal.ZERO, BigDecimal::add)
 
-        // FR.COM-1.31.5
-        val apCurrency = relatedPns.first().tender.value.currency
 
-        val apTenderValue = Money(amount = relatedPnsValueSum, currency = apCurrency)
+        val apTenderValue = ap.tender.value.copy(amount = relatedPnsValueSum)
 
         val updatedAp = ap.copy(
             tender = ap.tender.copy(
@@ -84,7 +81,9 @@ class APServiceImpl(
         // FR.COM-1.31.6
         tenderProcessRepository.update(entity = updatedEntity)
 
-        val result = CalculateAPValueResult(CalculateAPValueResult.Tender(apTenderValue))
+        val result = CalculateAPValueResult(CalculateAPValueResult.Tender(value = CalculateAPValueResult.Tender.Value(
+            amount = apTenderValue.amount!!, currency = apTenderValue.currency
+        )))
 
         return success(result)
     }

@@ -1,8 +1,11 @@
 package com.procurement.access.service.validation
 
+import com.procurement.access.application.model.params.CheckEqualityCurrenciesParams
 import com.procurement.access.application.model.params.CheckExistenceFAParams
+import com.procurement.access.application.model.params.CheckExistenceSignAuctionParams
 import com.procurement.access.application.model.params.CheckRelationParams
 import com.procurement.access.application.model.params.CheckTenderStateParams
+import com.procurement.access.application.model.params.ValidateClassificationParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
 import com.procurement.access.application.service.tender.strategy.check.tenderstate.CheckTenderStateStrategy
@@ -13,6 +16,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.ValidationResult
@@ -20,6 +24,9 @@ import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
+import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
+import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
@@ -283,4 +290,78 @@ class ValidationService(
 
     fun checkTenderState(params: CheckTenderStateParams): ValidationResult<Fail> =
         checkTenderStateStrategy.execute(params)
+
+    fun checkEqualityCurrencies(params: CheckEqualityCurrenciesParams): ValidationResult<Fail> {
+        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .doReturn { error -> return ValidationResult.error(error) }
+            ?: return ValidationResult.error(
+                ValidationErrors.TenderNotFoundOnCheckEqualityCurrencies(params.cpid, params.ocid)
+            )
+
+        val relatedRecord = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
+            .doReturn { error -> return ValidationResult.error(error) }
+            ?: return ValidationResult.error(
+                ValidationErrors.RelatedTenderNotFoundOnCheckEqualityCurrencies(params.relatedCpid, params.relatedOcid)
+            )
+
+        val tenderCurrency = record.jsonData.tryToObject(TenderCurrencyInfo::class.java)
+            .doReturn { error -> return ValidationResult.error(error) }
+        val relatedTenderCurrency = relatedRecord.jsonData.tryToObject(TenderCurrencyInfo::class.java)
+            .doReturn { error -> return ValidationResult.error(error) }
+
+        val currency = tenderCurrency.tender.value.currency
+        val relatedCurrency = relatedTenderCurrency.tender.value.currency
+
+        if (currency.toUpperCase() != relatedCurrency.toUpperCase())
+            return ValidationResult.error(ValidationErrors.CurrencyDoesNotMatchOnCheckEqualPNAndAPCurrency())
+
+        return ValidationResult.ok()
+    }
+
+    fun checkExistenceSignAuction(params: CheckExistenceSignAuctionParams): ValidationResult<Fail> {
+        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .doReturn { error -> return ValidationResult.error(error) }
+            ?: return ValidationResult.error(
+                ValidationErrors.TenderNotFoundOnCheckExistenceSignAuction(params.cpid, params.ocid)
+            )
+        val tenderInfo = record.jsonData.tryToObject(TenderProcurementMethodModalitiesInfo::class.java)
+            .doReturn { error -> return ValidationResult.error(error) }
+
+        if (params.containsElectronicAuction() && !tenderInfo.containsElectronicAuction())
+            return ValidationResult.error(ValidationErrors.ElectronicAuctionReceivedButNotStored())
+
+        if (!params.containsElectronicAuction() && tenderInfo.containsElectronicAuction())
+            return ValidationResult.error(ValidationErrors.ElectronicAuctionNotReceivedButStored())
+
+        return ValidationResult.ok()
+    }
+
+    private fun TenderProcurementMethodModalitiesInfo.containsElectronicAuction() =
+        tender.procurementMethodModalities?.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION) ?: false
+
+    private fun CheckExistenceSignAuctionParams.containsElectronicAuction() =
+        tender?.procurementMethodModalities?.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION) ?: false
+
+    fun validateClassification(params: ValidateClassificationParams): ValidationResult<Fail> {
+        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .doReturn { error -> return ValidationResult.error(error) }
+            ?: return ValidationResult.error(
+                ValidationErrors.TenderNotFoundOnValidateClassification(params.cpid, params.ocid)
+            )
+        val tenderInfo = record.jsonData.tryToObject(TenderClassificationInfo::class.java)
+            .doReturn { error -> return ValidationResult.error(error) }
+
+        val receivedClassificationId = params.tender.classification.id
+        val storedClassificationId = tenderInfo.tender.classification.id
+
+        if (!storedClassificationId.startsWith(receivedClassificationId.substring(0..2)))
+            return ValidationResult.error(
+                ValidationErrors.InvalidClassificationId(
+                    receivedClassificationId = receivedClassificationId, storedClassidicationId = storedClassificationId
+                )
+            )
+
+        return ValidationResult.ok()
+    }
+
 }
