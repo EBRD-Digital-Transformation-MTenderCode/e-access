@@ -211,7 +211,7 @@ class CheckFEDataRules {
             if (secondStage.minimumCandidates >= secondStage.maximumCandidates)
                 throw ErrorException(
                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                    message = "MaximumCandidates value should not be zero"
+                    message = "MaximumCandidates value should be more or equal MinimumCandidates"
                 )
         }
 
