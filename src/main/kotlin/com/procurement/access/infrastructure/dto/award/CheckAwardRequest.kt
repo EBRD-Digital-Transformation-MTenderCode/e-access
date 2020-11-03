@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveDeserializer
-import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
+import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
+import com.procurement.access.infrastructure.bind.amount.AmountSerializer
 import java.math.BigDecimal
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,8 +20,8 @@ data class CheckAwardRequest(
         @field:JsonProperty("suppliers") @param:JsonProperty("suppliers") val suppliers: List<Supplier>
     ) {
         data class Value(
-            @JsonDeserialize(using = AmountPositiveDeserializer::class)
-            @JsonSerialize(using = AmountPositiveSerializer::class)
+            @JsonDeserialize(using = AmountDeserializer::class)
+            @JsonSerialize(using = AmountSerializer::class)
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal?,
 
