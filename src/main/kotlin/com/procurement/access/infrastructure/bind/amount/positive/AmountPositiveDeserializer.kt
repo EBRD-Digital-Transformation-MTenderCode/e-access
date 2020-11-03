@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.bind.amount
+package com.procurement.access.infrastructure.bind.amount.positive
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
@@ -9,7 +9,7 @@ import com.procurement.access.infrastructure.exception.AmountValueException
 import java.io.IOException
 import java.math.BigDecimal
 
-class AmountDeserializer : JsonDeserializer<BigDecimal>() {
+class AmountPositiveDeserializer : JsonDeserializer<BigDecimal>() {
     companion object {
         fun deserialize(text: String): BigDecimal {
             val amount = try {
@@ -17,6 +17,10 @@ class AmountDeserializer : JsonDeserializer<BigDecimal>() {
             } catch (exception: Exception) {
                 throw AmountValueException(text, exception.message ?: "")
             }
+
+            if (amount <= BigDecimal.ZERO)
+                throw IllegalArgumentException("The value less then zero.")
+
             return amount
         }
     }
