@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.domain.util.extension.getMissingElements
 import com.procurement.access.domain.util.extension.getUnknownElements
+import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -79,12 +80,31 @@ fun checkAnswerByLotRequirements(
     val requestRequirements = data.bid.requirementResponses.map { it.requirement.id }
     val totalRequirements = lotRequirements + itemsRequirements
 
+
+    val nonBiddedLotsRequirements  = criteria
+        .filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
+        .filter { it.relatedItem != data.bid.relatedLots[0] }
+        .flatMap { it.requirementGroups }
+        .flatMap { it.requirements }
+
+    val nonBiddedItemsRequirements  = items
+        .filter { it.relatedLot != data.bid.relatedLots[0] }
+        .map { item -> criteria.filter { it.relatedItem == item.id } }
+        .flatten()
+        .flatMap { it.requirementGroups }
+        .flatMap { it.requirements }
+
+    val nonTargetRequirementsIds = (nonBiddedLotsRequirements + nonBiddedItemsRequirements).toSetBy { it.id }
+
     val unknownRequirements = getUnknownElements(received = requestRequirements, known = totalRequirements)
-    if (unknownRequirements.isNotEmpty())
+
+    val redundantRequirements = unknownRequirements.intersect(nonTargetRequirementsIds)
+    if (redundantRequirements.isNotEmpty())
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_VALUE,
             message = "Received redundant requirements: '${unknownRequirements.joinToString()}'"
         )
+
 
     val missingRequirements = getMissingElements(received = requestRequirements, known = totalRequirements)
     if (missingRequirements.isNotEmpty())
