@@ -32,6 +32,7 @@ internal class CheckResponsesKtTest {
         }
 
         @Test
+        @DisplayName("Success when response for bidded lot and tenderer")
         fun responseForBiddedLotAndTenderer() {
             Assertions.assertDoesNotThrow {
                 checkAnswerByLotRequirements(responseForBiddedLotAndTenderer, criteria, emptyList())
@@ -39,7 +40,8 @@ internal class CheckResponsesKtTest {
         }
 
         @Test
-        fun responseForAllLotsAndTenderer() {
+        @DisplayName("Error when response for tenderer only")
+        fun responseForOnlyTenderer() {
             val error = assertThrows<ErrorException> {
                 checkAnswerByLotRequirements(responseForOnlyTenderer, criteria, emptyList())
             }
@@ -48,6 +50,7 @@ internal class CheckResponsesKtTest {
         }
 
         @Test
+        @DisplayName("Error when response for non bidded lot and tenderer")
         fun responseForNonBiddedLotsAndTenderer() {
             val error = assertThrows<ErrorException> {
                 checkAnswerByLotRequirements(responseForNonBiddedLotsAndTenderer, criteria, emptyList())
@@ -56,12 +59,18 @@ internal class CheckResponsesKtTest {
             assertTrue(error.message!!.contains("redundant", true))
         }
 
+        private val TARGET_LOT = "some-related-lot-1"
+        private val TARGET_REQUIREMENT = "req-lot-1"
+        private val ANOTHER_LOT = "some-related-lot-2"
+        private val ANOTHER_REQUIREMENT = "req-lot-2"
+        private val TENDERER_REQUIREMENT = "req-tenderer-3"
+
         val responseForOnlyBiddedLot = CheckResponsesData(
             items = emptyList(),
             bid = CheckResponsesData.Bid(
-                relatedLots = listOf("some-related-lot-1"),
+                relatedLots = listOf(TARGET_LOT),
                 requirementResponses = listOf(
-                    createResponse(requirementId = "req-lot-1")
+                    createResponse(requirementId = TARGET_REQUIREMENT)
                 )
             )
         )
@@ -69,10 +78,10 @@ internal class CheckResponsesKtTest {
         val responseForBiddedLotAndTenderer = CheckResponsesData(
             items = emptyList(),
             bid = CheckResponsesData.Bid(
-                relatedLots = listOf("some-related-lot-1"),
+                relatedLots = listOf(TARGET_LOT),
                 requirementResponses = listOf(
-                    createResponse(requirementId = "req-lot-1"),
-                    createResponse(requirementId = "req-tenderer-3")
+                    createResponse(requirementId = TARGET_REQUIREMENT),
+                    createResponse(requirementId = TENDERER_REQUIREMENT)
                 )
             )
         )
@@ -80,27 +89,27 @@ internal class CheckResponsesKtTest {
         val responseForOnlyTenderer = CheckResponsesData(
             items = emptyList(),
             bid = CheckResponsesData.Bid(
-                relatedLots = listOf("some-related-lot-1"),
+                relatedLots = listOf(TARGET_LOT),
                 requirementResponses = listOf(
-                    createResponse(requirementId = "req-tenderer-3")
+                    createResponse(requirementId = TENDERER_REQUIREMENT)
                 )
             )
         )
         val responseForNonBiddedLotsAndTenderer = CheckResponsesData(
             items = emptyList(),
             bid = CheckResponsesData.Bid(
-                relatedLots = listOf("some-related-lot-1"),
+                relatedLots = listOf(TARGET_LOT),
                 requirementResponses = listOf(
-                    createResponse(requirementId = "req-tenderer-3"),
-                    createResponse(requirementId = "req-lot-2")
+                    createResponse(requirementId = TENDERER_REQUIREMENT),
+                    createResponse(requirementId = ANOTHER_REQUIREMENT)
                 )
             )
         )
 
         val criteria = listOf(
-            createCriteria(relatesTo = CriteriaRelatesToEnum.LOT, relatedLot = "some-related-lot-1", requirementId = "req-lot-1"),
-            createCriteria(relatesTo = CriteriaRelatesToEnum.LOT, relatedLot = "some-related-lot-2", requirementId = "req-lot-2"),
-            createCriteria(relatesTo = CriteriaRelatesToEnum.TENDERER, relatedLot = null, requirementId = "req-tenderer-3")
+            createCriteria(relatesTo = CriteriaRelatesToEnum.LOT, relatedLot = TARGET_LOT, requirementId = TARGET_REQUIREMENT),
+            createCriteria(relatesTo = CriteriaRelatesToEnum.LOT, relatedLot = ANOTHER_LOT, requirementId = ANOTHER_REQUIREMENT),
+            createCriteria(relatesTo = CriteriaRelatesToEnum.TENDERER, relatedLot = null, requirementId = TENDERER_REQUIREMENT)
         )
 
         private fun createResponse(requirementId: String) =
