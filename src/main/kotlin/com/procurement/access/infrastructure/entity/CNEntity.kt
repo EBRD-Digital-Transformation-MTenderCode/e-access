@@ -32,8 +32,8 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.domain.model.persone.PersonId
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
+import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveDeserializer
+import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateSerializer
 import com.procurement.access.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
@@ -77,8 +77,8 @@ data class CNEntity(
         ) {
 
             data class Amount(
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
+                @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                @JsonSerialize(using = AmountPositiveSerializer::class)
                 @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                 @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
@@ -98,8 +98,8 @@ data class CNEntity(
             ) {
 
                 data class Amount(
-                    @JsonDeserialize(using = AmountDeserializer::class)
-                    @JsonSerialize(using = AmountSerializer::class)
+                    @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                    @JsonSerialize(using = AmountPositiveSerializer::class)
                     @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                     @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
@@ -360,8 +360,8 @@ data class CNEntity(
                 ) {
 
                     data class EligibleMinimumDifference(
-                        @JsonDeserialize(using = AmountDeserializer::class)
-                        @JsonSerialize(using = AmountSerializer::class)
+                        @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                        @JsonSerialize(using = AmountPositiveSerializer::class)
                         @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                         @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
@@ -496,8 +496,8 @@ data class CNEntity(
         }
 
         data class Value(
-            @JsonDeserialize(using = AmountDeserializer::class)
-            @JsonSerialize(using = AmountSerializer::class)
+            @JsonDeserialize(using = AmountPositiveDeserializer::class)
+            @JsonSerialize(using = AmountPositiveSerializer::class)
             @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
             @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
         )
@@ -526,8 +526,8 @@ data class CNEntity(
         ) {
 
             data class Value(
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
+                @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                @JsonSerialize(using = AmountPositiveSerializer::class)
                 @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                 @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
