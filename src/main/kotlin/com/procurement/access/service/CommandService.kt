@@ -20,6 +20,7 @@ import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.application.service.ap.create.ApCreateData
 import com.procurement.access.application.service.ap.create.CreateApContext
+import com.procurement.access.application.service.ap.get.GetAPTitleAndDescriptionContext
 import com.procurement.access.application.service.ap.update.ApUpdateData
 import com.procurement.access.application.service.ap.update.UpdateApContext
 import com.procurement.access.application.service.cn.update.CnCreateContext
@@ -55,6 +56,7 @@ import com.procurement.access.infrastructure.dto.CheckResponsesRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateResponse
 import com.procurement.access.infrastructure.dto.ap.create.converter.convert
+import com.procurement.access.infrastructure.dto.ap.get.converter.convert
 import com.procurement.access.infrastructure.dto.ap.update.ApUpdateRequest
 import com.procurement.access.infrastructure.dto.ap.update.converter.convert
 import com.procurement.access.infrastructure.dto.cn.CheckNegotiationCnOnPnResponse
@@ -122,6 +124,7 @@ class CommandService(
     private val pinOnPnService: PinOnPnService,
     private val pnService: PnService,
     private val apCreateService: ApCreateService,
+    private val apService: APService,
     private val feCreateService: FeCreateService,
     private val feAmendService: FeAmendService,
     private val apUpdateService: ApUpdateService,
@@ -588,6 +591,23 @@ class CommandService(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
+            }
+
+            CommandType.GET_AP_TITLE_AND_DESCRIPTION -> {
+                val context = GetAPTitleAndDescriptionContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage
+                )
+
+                val result = apService.getAPTitleAndDescription(context = context)
+                if (log.isDebugEnabled)
+                    log.debug("AP title and description was found. Result: ${toJson(result)}")
+
+                val response = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("AP title and description was found. Response: ${toJson(response)}")
+
+                ResponseDto(data = response)
             }
 
             CommandType.GET_LOT -> {
