@@ -81,18 +81,20 @@ fun checkAnswerByLotRequirements(
     val totalRequirements = lotRequirements + itemsRequirements
 
 
-    val nonBiddedLotsRequirements  = criteria
+    val nonBiddedLotsRequirements  = criteria.asSequence()
         .filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
         .filter { it.relatedItem != data.bid.relatedLots[0] }
-        .flatMap { it.requirementGroups }
-        .flatMap { it.requirements }
+        .flatMap { it.requirementGroups.asSequence() }
+        .flatMap { it.requirements.asSequence() }
+        .toList()
 
-    val nonBiddedItemsRequirements  = items
+    val nonBiddedItemsRequirements  = items.asSequence()
         .filter { it.relatedLot != data.bid.relatedLots[0] }
         .map { item -> criteria.filter { it.relatedItem == item.id } }
         .flatten()
-        .flatMap { it.requirementGroups }
-        .flatMap { it.requirements }
+        .flatMap { it.requirementGroups.asSequence() }
+        .flatMap { it.requirements.asSequence() }
+        .toList()
 
     val nonTargetRequirementsIds = (nonBiddedLotsRequirements + nonBiddedItemsRequirements).toSetBy { it.id }
 
