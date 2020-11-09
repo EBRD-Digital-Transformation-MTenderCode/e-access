@@ -18,6 +18,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -249,7 +250,9 @@ class SelectiveCnOnPnService(
 
         check(data)
 
-        return CheckedSelectiveCnOnPn(requireAuction = data.tender.electronicAuctions != null)
+        val requireAuction = isAuctionRequired(data.tender.electronicAuctions, data.tender.procurementMethodModalities)
+
+        return CheckedSelectiveCnOnPn(requireAuction = requireAuction)
     }
 
     fun create(context: CreateSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
@@ -2244,6 +2247,25 @@ class SelectiveCnOnPnService(
                 message = "The tender is unsuccessful."
             )
     }
+
+
+    private fun isAuctionRequired(electronicAuctions: SelectiveCnOnPnRequest.Tender.ElectronicAuctions?, pmm: Set<ProcurementMethodModalities>?): Boolean =
+        // VR-1.0.1.7.9
+        if (electronicAuctions != null) {
+            if (pmm == null || !pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Auction sign must be passed"
+                )
+            true
+        } else {       // VR-1.0.1.7.10
+            if (pmm != null && pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Auction sign must be passed"
+                )
+            false
+        }
 
     /**
      * BR-3.8.14(CN on PN) -> BR-3.6.30(CN)

@@ -16,6 +16,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
@@ -222,7 +223,9 @@ class OpenCnOnPnService(
 
         check(data)
 
-        return CheckedOpenCnOnPn(requireAuction = data.tender.electronicAuctions != null)
+        val requireAuction = isAuctionRequired(data.tender.electronicAuctions, data.tender.procurementMethodModalities)
+
+        return CheckedOpenCnOnPn(requireAuction = requireAuction)
     }
 
     fun create(context: CreateOpenCnOnPnContext, data: OpenCnOnPnRequest): OpenCnOnPnResponse {
@@ -855,6 +858,24 @@ class OpenCnOnPnService(
                 message = "The tender is unsuccessful."
             )
     }
+
+    private fun isAuctionRequired(electronicAuctions: OpenCnOnPnRequest.Tender.ElectronicAuctions?, pmm: Set<ProcurementMethodModalities>?): Boolean =
+        // VR-1.0.1.7.9
+        if (electronicAuctions != null) {
+            if (pmm == null || !pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Auction sign must be passed"
+                )
+            true
+        } else {      // VR-1.0.1.7.10
+            if (pmm != null && pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Auction sign must be passed"
+                )
+            false
+        }
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
