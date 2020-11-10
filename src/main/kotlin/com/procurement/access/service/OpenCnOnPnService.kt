@@ -872,7 +872,7 @@ class OpenCnOnPnService(
             if (pmm != null && pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
                 throw ErrorException(
                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                    message = "Auction sign must be passed"
+                    message = "Auction sign must be not passed"
                 )
             false
         }
