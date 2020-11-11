@@ -1,5 +1,6 @@
 package com.procurement.access.application.model.params
 
+import com.procurement.access.application.model.notEmptyRule
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parseProcurementMethodModalities
@@ -10,6 +11,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.extension.mapResult
+import com.procurement.access.domain.util.validate
 import com.procurement.access.lib.toSetBy
 
 class CheckExistenceSignAuctionParams private constructor(
@@ -39,6 +41,7 @@ class CheckExistenceSignAuctionParams private constructor(
         val procurementMethodModalities: List<ProcurementMethodModalities>
     ) {
         companion object {
+            private const val PROCUREMENT_METHOD_MODALITIES_ATTRIBUTE = "tender.procurementMethodModalities"
             private val allowedProcurementMethodModalities = ProcurementMethodModalities.allowedElements
                 .filter {
                     when (it) {
@@ -51,11 +54,14 @@ class CheckExistenceSignAuctionParams private constructor(
             fun tryCreate(
                 procurementMethodModalities: List<String>
             ): Result<Tender, DataErrors> {
+                procurementMethodModalities.validate(notEmptyRule(PROCUREMENT_METHOD_MODALITIES_ATTRIBUTE))
+                    .orForwardFail { return it }
+
                 val procurementMethodModalitiesResult = procurementMethodModalities.mapResult {
                     parseProcurementMethodModalities(
                         value = it,
                         allowedEnums = allowedProcurementMethodModalities,
-                        attributeName = "tender.procurementMethodModalities"
+                        attributeName = PROCUREMENT_METHOD_MODALITIES_ATTRIBUTE
                     )
                 }.orForwardFail { fail -> return fail }
 
