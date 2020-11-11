@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.command.CheckFEDataRules
+import com.procurement.access.application.service.command.CheckFEDataRules.Companion.isNeedValidate
 import com.procurement.access.application.service.fe.check.CheckFEDataData
 import com.procurement.access.dao.TenderProcessDao
 import org.springframework.stereotype.Service
@@ -62,23 +63,25 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
         CheckFEDataRules.validateDocumentsTypes(data)
 
         // FR.COM-1.27.5
-        data.tender.secondStage?.let { secondStage ->
-            // VR-1.0.1.11.1
-            CheckFEDataRules.validateSecondStageAttributesExistance(secondStage)
+        val receivedSecondStage = data.tender.secondStage
+        if (receivedSecondStage.isNeedValidate(context.operationType))
+            receivedSecondStage?.let { secondStage ->
+                // VR-1.0.1.11.1
+                CheckFEDataRules.validateSecondStageAttributesExistance(secondStage)
 
-            // VR-1.0.1.11.2
-            secondStage.minimumCandidates?.let { CheckFEDataRules.validateMinimumCandidates(it) }
+                // VR-1.0.1.11.2
+                secondStage.minimumCandidates?.let { CheckFEDataRules.validateMinimumCandidates(it) }
 
-            // VR-1.0.1.11.3
-            secondStage.maximumCandidates?.let { CheckFEDataRules.validateMaximumCandidates(it) }
+                // VR-1.0.1.11.3
+                secondStage.maximumCandidates?.let { CheckFEDataRules.validateMaximumCandidates(it) }
 
-            // VR-1.0.1.11.4
-            CheckFEDataRules.validateCandidates(secondStage)
-        }
+                // VR-1.0.1.11.4
+                CheckFEDataRules.validateCandidates(secondStage)
+            }
 
         // FR.COM-1.27.6
         data.tender.criteria
-            .takeIf { it.isNotEmpty() }
+            .takeIf { it.isNeedValidate(context.operationType) && it.isNotEmpty() }
             ?.let { criteria ->
 
                 // FReq-1.1.1.16
@@ -102,6 +105,8 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
         // FR.COM-1.27.7
         // VR-1.0.1.12.1
-        CheckFEDataRules.checkOtherCriteria(data.tender.otherCriteria)
+        val otherCriteria = data.tender.otherCriteria
+        if (otherCriteria.isNeedValidate(context.operationType))
+            otherCriteria.let { CheckFEDataRules.checkOtherCriteria(it) }
     }
 }

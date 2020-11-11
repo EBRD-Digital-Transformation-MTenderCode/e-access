@@ -365,6 +365,96 @@ class CheckFEDataRules {
                 }
             }
 
+        fun CheckFEDataData.Tender.SecondStage?.isNeedValidate(operationType: OperationType) =
+            when(operationType) {
+                OperationType.CREATE_FE -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+            }
+
+        fun List<CheckFEDataData.Tender.Criteria>.isNeedValidate(operationType: OperationType) =
+            when(operationType) {
+                OperationType.CREATE_FE -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+            }
+
+        fun CheckFEDataData.Tender.OtherCriteria?.isNeedValidate(operationType: OperationType) =
+            when(operationType) {
+                OperationType.CREATE_FE -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+            }
+
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
             val cpid = context.cpid
             val stage = when (context.operationType) {
