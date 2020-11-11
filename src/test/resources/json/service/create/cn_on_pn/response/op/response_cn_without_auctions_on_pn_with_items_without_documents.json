@@ -280,68 +280,6 @@
           },
           "description": "pn.tender.lot[1].placeOfPerformance.description"
         }
-      },
-      {
-        "id": "lot-3",
-        "title": "pn.tender.lot[2].title",
-        "description": "pn.tender.lot[2].description",
-        "status": "cancelled",
-        "statusDetails": "empty",
-        "value": {
-          "amount": 250.01,
-          "currency": "pn.planning.budget.amount.currency"
-        },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
-        "contractPeriod": {
-          "startDate": "2019-05-13T10:00:00Z",
-          "endDate": "2019-05-23T10:00:00Z"
-        },
-        "placeOfPerformance": {
-          "address": {
-            "streetAddress": "pn.tender.lot[2].placeOfPerformance.address.streetAddress",
-            "postalCode": "pn.tender.lot[2].placeOfPerformance.address.postalCode",
-            "addressDetails": {
-              "country": {
-                "scheme": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.country.scheme",
-                "id": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.country.id",
-                "description": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.country.description",
-                "uri": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.country.uri"
-              },
-              "region": {
-                "scheme": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.region.scheme",
-                "id": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.region.id",
-                "description": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.region.description",
-                "uri": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.region.uri"
-              },
-              "locality": {
-                "scheme": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.locality.scheme",
-                "id": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.locality.id",
-                "description": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.locality.description",
-                "uri": "pn.tender.lot[2].placeOfPerformance.address.addressDetails.locality.uri"
-              }
-            }
-          },
-          "description": "pn.tender.lot[2].placeOfPerformance.description"
-        }
       }
     ],
     "items": [
