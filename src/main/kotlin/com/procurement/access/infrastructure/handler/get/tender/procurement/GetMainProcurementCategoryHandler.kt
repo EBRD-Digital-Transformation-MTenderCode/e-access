@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.handler.get.procurement
+package com.procurement.access.infrastructure.handler.get.tender.procurement
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger

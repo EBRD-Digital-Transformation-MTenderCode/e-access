@@ -19,7 +19,7 @@ import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyHan
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationHandler
-import com.procurement.access.infrastructure.handler.get.procurement.GetMainProcurementCategoryHandler
+import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryHandler
 import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler

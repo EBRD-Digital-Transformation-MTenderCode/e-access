@@ -35,7 +35,7 @@ import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderStateInfo
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
-import com.procurement.access.infrastructure.handler.get.procurement.GetMainProcurementCategoryResult
+import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryResult
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CancellationRs
