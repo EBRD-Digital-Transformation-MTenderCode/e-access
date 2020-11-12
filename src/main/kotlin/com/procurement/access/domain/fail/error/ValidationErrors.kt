@@ -353,4 +353,9 @@ sealed class ValidationErrors(
 
     )
 
+    class TenderNotFoundOnGetMainProcurementCategory(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.37.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
 }
