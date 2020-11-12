@@ -3,13 +3,16 @@ package com.procurement.access.service
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.params.GetCurrencyParams
+import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
+import com.procurement.access.infrastructure.handler.get.procurement.GetMainProcurementCategoryResult
 import com.procurement.access.json.loadJson
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -71,5 +74,43 @@ internal class TenderServiceTest {
         private fun getParams() = GetCurrencyParams.tryCreate(
             cpid = CPID.toString(), ocid = OCID.toString()
         ).get
+    }
+
+
+    @Nested
+    inner class GetMainProcurementCategory {
+
+        @Test
+        fun getCategory_success() {
+            val params = getParams()
+            val tenderCategoryEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/procurement/category/get/tender_main_procurement_category.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(Result.success(tenderCategoryEntity))
+            val actual = tenderService.getMainProcurementCategory(params).get
+
+            val expected = GetMainProcurementCategoryResult(
+                GetMainProcurementCategoryResult.Tender(MainProcurementCategory.GOODS)
+            )
+
+            Assertions.assertEquals(expected, actual)
+        }
+
+        @Test
+        fun recordNotFound_fail() {
+            val params = getParams()
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(Result.success(null))
+            val actual = tenderService.getMainProcurementCategory(params).error
+
+            val expectedErrorCode = "VR.COM-1.37.1"
+            val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
+
+            Assertions.assertEquals(expectedErrorCode, actual.code)
+            Assertions.assertEquals(expectedErrorMessage, actual.description)
+        }
+
+        private fun getParams() = GetMainProcurementCategoryParams(
+            cpid = CPID, ocid = OCID
+        )
     }
 }
