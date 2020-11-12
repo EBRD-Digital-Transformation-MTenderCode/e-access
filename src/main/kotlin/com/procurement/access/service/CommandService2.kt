@@ -19,6 +19,7 @@ import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyHan
 import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationHandler
+import com.procurement.access.infrastructure.handler.get.procurement.GetMainProcurementCategoryHandler
 import com.procurement.access.infrastructure.handler.get.tender.state.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
@@ -52,6 +53,7 @@ class CommandService2(
     private val findLotIdsHandler: FindLotIdsHandler,
     private val getCurrencyHandler: GetCurrencyHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
+    private val getMainProcurementCategoryHandler: GetMainProcurementCategoryHandler,
     private val getOrganizationHandler: GetOrganizationHandler,
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
@@ -100,6 +102,7 @@ class CommandService2(
             Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
             Command2Type.GET_CURRENCY -> getCurrencyHandler.handle(node = request)
             Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
+            Command2Type.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(node = request)
             Command2Type.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
             Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)
             Command2Type.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
