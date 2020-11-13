@@ -601,22 +601,22 @@ fun getCastCoefficients(
 }
 
 fun getRequirementGroupsCombinations(
-    requirementGroupsPacks: List<List<CriterionRequest.RequirementGroup>>,
-    currentPackIndex: Int,
-    combinationInProgress: List<CriterionRequest.RequirementGroup>
+    criteria: List<CriterionRequest>,
+    currentCriterionIndex: Int,
+    combination: List<CriterionRequest.RequirementGroup>
 ): List<List<CriterionRequest.RequirementGroup>> {
-    if (currentPackIndex == requirementGroupsPacks.size)
-        return listOf(combinationInProgress)
+    if (currentCriterionIndex == criteria.size)
+        return listOf(combination)
 
     val finishedCombinations = mutableListOf<List<CriterionRequest.RequirementGroup>>()
 
-    val packToAddToCombinationFrom = requirementGroupsPacks[currentPackIndex]
-    for (requirementGroup in packToAddToCombinationFrom) {
-        val newCombination = combinationInProgress.toMutableList()
+    val criterionToAddToCombinationFrom = criteria[currentCriterionIndex]
+    for (requirementGroup in criterionToAddToCombinationFrom.requirementGroups) {
+        val newCombination = combination.toMutableList()
         newCombination.add(requirementGroup)
         finishedCombinations.addAll(
             getRequirementGroupsCombinations(
-                requirementGroupsPacks, currentPackIndex + 1, newCombination
+                criteria, currentCriterionIndex + 1, newCombination
             )
         )
     }
@@ -636,9 +636,9 @@ fun main(){ //TODO: delete
     val reqGroup7 =  CriterionRequest.RequirementGroup(id = "7", description = "", requirements = emptyList())
 
 
-    val groupsByCriterion1 = listOf(reqGroup1, reqGroup2)
-    val groupsByCriterion2 = listOf(reqGroup3, reqGroup4, reqGroup5)
-    val groupsByCriterion3 = listOf(reqGroup6, reqGroup7)
+    val groupsByCriterion1 = CriterionRequest(id = "cr1", description = null, title = "", relatedItem = null, relatesTo = null, requirementGroups = listOf(reqGroup1, reqGroup2))
+    val groupsByCriterion2 = CriterionRequest(id = "cr2", description = null, title = "", relatedItem = null, relatesTo = null, requirementGroups =  listOf(reqGroup3, reqGroup4, reqGroup5))
+    val groupsByCriterion3 = CriterionRequest(id = "cr3", description = null, title = "", relatedItem = null, relatesTo = null, requirementGroups = listOf(reqGroup6, reqGroup7))
 
     val groupsByCriteria = listOf(groupsByCriterion1, groupsByCriterion2, groupsByCriterion3)
 
