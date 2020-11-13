@@ -600,6 +600,54 @@ fun getCastCoefficients(
             .map { calculateCastCoefficient(tenderConversions + it) }
 }
 
+fun getRequirementGroupsCombinations(
+    requirementGroupsPacks: List<List<CriterionRequest.RequirementGroup>>,
+    currentPackIndex: Int,
+    combinationInProgress: List<CriterionRequest.RequirementGroup>
+): List<List<CriterionRequest.RequirementGroup>> {
+    if (currentPackIndex == requirementGroupsPacks.size)
+        return listOf(combinationInProgress)
+
+    val finishedCombinations = mutableListOf<List<CriterionRequest.RequirementGroup>>()
+
+    val packToAddToCombinationFrom = requirementGroupsPacks[currentPackIndex]
+    for (requirementGroup in packToAddToCombinationFrom) {
+        val newCombination = combinationInProgress.toMutableList()
+        newCombination.add(requirementGroup)
+        finishedCombinations.addAll(
+            getRequirementGroupsCombinations(
+                requirementGroupsPacks, currentPackIndex + 1, newCombination
+            )
+        )
+    }
+
+    return finishedCombinations
+}
+
+fun main(){ //TODO: delete
+    val reqGroup1 =  CriterionRequest.RequirementGroup(id = "1", description = "", requirements = emptyList())
+    val reqGroup2 =  CriterionRequest.RequirementGroup(id = "2", description = "", requirements = emptyList())
+
+    val reqGroup3 =  CriterionRequest.RequirementGroup(id = "3", description = "", requirements = emptyList())
+    val reqGroup4 =  CriterionRequest.RequirementGroup(id = "4", description = "", requirements = emptyList())
+    val reqGroup5 =  CriterionRequest.RequirementGroup(id = "5", description = "", requirements = emptyList())
+
+    val reqGroup6 =  CriterionRequest.RequirementGroup(id = "6", description = "", requirements = emptyList())
+    val reqGroup7 =  CriterionRequest.RequirementGroup(id = "7", description = "", requirements = emptyList())
+
+
+    val groupsByCriterion1 = listOf(reqGroup1, reqGroup2)
+    val groupsByCriterion2 = listOf(reqGroup3, reqGroup4, reqGroup5)
+    val groupsByCriterion3 = listOf(reqGroup6, reqGroup7)
+
+    val groupsByCriteria = listOf(groupsByCriterion1, groupsByCriterion2, groupsByCriterion3)
+
+    val result = getRequirementGroupsCombinations(groupsByCriteria, 0, emptyList())
+
+    println(result)
+}
+
+
 fun calculateCastCoefficient(conversions: List<ConversionRequest>): BigDecimal =
     conversions
         .map { conversion ->
