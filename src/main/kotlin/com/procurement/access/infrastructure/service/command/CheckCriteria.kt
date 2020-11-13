@@ -600,7 +600,62 @@ fun getCastCoefficients(
             .map { calculateCastCoefficient(tenderConversions + it) }
 }
 
-fun getRequirementGroupsCombinations(
+
+fun getMinimalPriceSharesByLot(
+    criteria: List<CriterionRequest>,
+    conversions: List<ConversionRequest>,
+    items: List<ItemReferenceRequest>
+): Map<String, List<BigDecimal>> {
+
+    val criteriaByAffiliation = criteria.groupBy { it.relatesTo }
+
+    val tenderCriteria = criteriaByAffiliation[null].orEmpty()
+    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesToEnum.TENDERER].orEmpty()
+    val criteriaByItems = criteriaByAffiliation[CriteriaRelatesToEnum.ITEM].orEmpty().groupBy { it.relatedItem }
+    val criteriaByLots = criteriaByAffiliation[CriteriaRelatesToEnum.LOT].orEmpty().groupBy { it.relatedItem }
+
+    val itemsByLots = items.groupBy { it.relatedLot }
+    val lots = itemsByLots.keys
+
+    val allCriteriaByLot = lots.associateWith { lotId ->
+        val lotCriteria = criteriaByLots[lotId].orEmpty()
+
+        val relatedItems = itemsByLots[lotId].orEmpty()
+        val itemsCriteria = relatedItems.flatMap { item -> criteriaByItems[item.id].orEmpty() }
+
+       tenderCriteria + tendererCriteria + lotCriteria + itemsCriteria
+    }
+
+    val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
+
+    val minPriceSharesByLot = allCriteriaByLot.keys.associateWith { lot ->
+        val criteria = allCriteriaByLot.getValue(lot)
+        val requirementGroupsCombinations = getRequirementGroupsCombinations(criteria)
+        val minimalPriceShares = requirementGroupsCombinations.map { requirementGroups ->
+           val requirements = requirementGroups.flatMap { it.requirements }
+            calculateMinimalPriceShare(requirements, conversionsByRelatedItems)
+        }
+        minimalPriceShares
+    }
+
+    return minPriceSharesByLot
+}
+
+private fun calculateMinimalPriceShare(
+    requirements: List<Requirement>,
+    conversionsByRelatedItems: Map<String, ConversionRequest>
+): BigDecimal {
+    val minimumCoefficients = requirements.map { requirement ->
+        val conversion = conversionsByRelatedItems[requirement.id] ?: throw RuntimeException()
+        conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
+    }
+    return minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
+}
+
+fun getRequirementGroupsCombinations(criteria: List<CriterionRequest>) =
+    getRequirementGroupsCombinations(criteria, 0, emptyList())
+
+private fun getRequirementGroupsCombinations(
     criteria: List<CriterionRequest>,
     currentCriterionIndex: Int,
     combination: List<CriterionRequest.RequirementGroup>
@@ -625,6 +680,9 @@ fun getRequirementGroupsCombinations(
 }
 
 fun main(){ //TODO: delete
+
+
+
     val reqGroup1 =  CriterionRequest.RequirementGroup(id = "1", description = "", requirements = emptyList())
     val reqGroup2 =  CriterionRequest.RequirementGroup(id = "2", description = "", requirements = emptyList())
 
@@ -637,7 +695,7 @@ fun main(){ //TODO: delete
 
 
     val groupsByCriterion1 = CriterionRequest(id = "cr1", description = null, title = "", relatedItem = null, relatesTo = null, requirementGroups = listOf(reqGroup1, reqGroup2))
-    val groupsByCriterion2 = CriterionRequest(id = "cr2", description = null, title = "", relatedItem = null, relatesTo = null, requirementGroups =  listOf(reqGroup3, reqGroup4, reqGroup5))
+    val groupsByCriterion2 = CriterionRequest(id = "cr2", description = "desc", title = "", relatedItem = null, relatesTo = null, requirementGroups =  listOf(reqGroup3, reqGroup4, reqGroup5))
     val groupsByCriterion3 = CriterionRequest(id = "cr3", description = null, title = "", relatedItem = null, relatesTo = null, requirementGroups = listOf(reqGroup6, reqGroup7))
 
     val groupsByCriteria = listOf(groupsByCriterion1, groupsByCriterion2, groupsByCriterion3)
