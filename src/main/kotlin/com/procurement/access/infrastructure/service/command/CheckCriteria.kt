@@ -601,55 +601,46 @@ fun getCastCoefficients(
 }
 
 
-fun getMinimalPriceSharesByLot(
+fun calculateAndCheckMinimalPriceShares(
     criteria: List<CriterionRequest>,
     conversions: List<ConversionRequest>,
+    items: List<ItemReferenceRequest>,
+    mainProcurementCategory: MainProcurementCategory?
+){
+    val criteriaCombinations = getCriteriaCombinations(criteria, items)
+
+    val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
+    criteriaCombinations.forEach { criteriaCombination ->
+        val requirementGroupsCombinations = getRequirementGroupsCombinations(criteriaCombination)
+         requirementGroupsCombinations.map { requirementGroups ->
+           val requirements = requirementGroups.flatMap { it.requirements }
+            val minimalPriceShare = calculateMinimalPriceShare(requirements, conversionsByRelatedItems)
+             checkMinimalPriceShare(mainProcurementCategory, requirements, minimalPriceShare)
+        }
+    }
+}
+
+private fun getCriteriaCombinations(
+    criteria: List<CriterionRequest>,
     items: List<ItemReferenceRequest>
-): Map<String, List<BigDecimal>> {
-
+): List<List<CriterionRequest>> {
     val criteriaByAffiliation = criteria.groupBy { it.relatesTo }
-
-    val tenderCriteria = criteriaByAffiliation[null].orEmpty()
-    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesToEnum.TENDERER].orEmpty()
     val criteriaByItems = criteriaByAffiliation[CriteriaRelatesToEnum.ITEM].orEmpty().groupBy { it.relatedItem }
     val criteriaByLots = criteriaByAffiliation[CriteriaRelatesToEnum.LOT].orEmpty().groupBy { it.relatedItem }
 
+    val tenderCriteria = criteriaByAffiliation[null].orEmpty()
+    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesToEnum.TENDERER].orEmpty()
+
     val itemsByLots = items.groupBy { it.relatedLot }
     val lots = itemsByLots.keys
-
-    val allCriteriaByLot = lots.associateWith { lotId ->
+    return lots.map { lotId ->
         val lotCriteria = criteriaByLots[lotId].orEmpty()
 
         val relatedItems = itemsByLots[lotId].orEmpty()
         val itemsCriteria = relatedItems.flatMap { item -> criteriaByItems[item.id].orEmpty() }
 
-       tenderCriteria + tendererCriteria + lotCriteria + itemsCriteria
+        tenderCriteria + tendererCriteria + lotCriteria + itemsCriteria
     }
-
-    val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
-
-    val minPriceSharesByLot = allCriteriaByLot.keys.associateWith { lot ->
-        val criteria = allCriteriaByLot.getValue(lot)
-        val requirementGroupsCombinations = getRequirementGroupsCombinations(criteria)
-        val minimalPriceShares = requirementGroupsCombinations.map { requirementGroups ->
-           val requirements = requirementGroups.flatMap { it.requirements }
-            calculateMinimalPriceShare(requirements, conversionsByRelatedItems)
-        }
-        minimalPriceShares
-    }
-
-    return minPriceSharesByLot
-}
-
-private fun calculateMinimalPriceShare(
-    requirements: List<Requirement>,
-    conversionsByRelatedItems: Map<String, ConversionRequest>
-): BigDecimal {
-    val minimumCoefficients = requirements.map { requirement ->
-        val conversion = conversionsByRelatedItems[requirement.id] ?: throw RuntimeException()
-        conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
-    }
-    return minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
 }
 
 fun getRequirementGroupsCombinations(criteria: List<CriterionRequest>) =
@@ -679,8 +670,37 @@ private fun getRequirementGroupsCombinations(
     return finishedCombinations
 }
 
-fun main(){ //TODO: delete
+private fun calculateMinimalPriceShare(
+    requirements: List<Requirement>,
+    conversionsByRelatedItems: Map<String, ConversionRequest>
+): BigDecimal {
+    val minimumCoefficients = requirements.map { requirement ->
+        val conversion = conversionsByRelatedItems[requirement.id] ?: throw RuntimeException() //TODO change exception
+        conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
+    }
+    return minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
+}
 
+private fun checkMinimalPriceShare(
+    mainProcurementCategory: MainProcurementCategory?,
+    requirements: List<Requirement>,
+    minimalPriceShare: BigDecimal
+) {
+    val limit = when (mainProcurementCategory!!) {
+        MainProcurementCategory.GOODS -> MAX_LIMIT_FOR_GOODS
+        MainProcurementCategory.WORKS -> MAX_LIMIT_FOR_WORKS
+        MainProcurementCategory.SERVICES -> MAX_LIMIT_FOR_SERVICES
+    }
+
+    if (minimalPriceShare > limit)
+        throw  ErrorException(
+            ErrorType.INVALID_CONVERSION,
+            message = "Minimal price share of requirements " +
+                "'${requirements.map { it.id }.joinToString()}' must be less than ${limit} "
+        )
+}
+
+fun main(){ //TODO: delete
 
 
     val reqGroup1 =  CriterionRequest.RequirementGroup(id = "1", description = "", requirements = emptyList())
