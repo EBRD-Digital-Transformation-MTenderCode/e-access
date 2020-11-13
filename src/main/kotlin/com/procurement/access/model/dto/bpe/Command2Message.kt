@@ -46,6 +46,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     GET_ORGANIZATION("getOrganization"),
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
+    GET_MAIN_PROCUREMENT_CATEGORY("getMainProcurementCategory"),
     GET_TENDER_STATE("getTenderState"),
     OUTSOURCING_PN("outsourcingPN"),
     RESPONDER_PROCESSING("responderProcessing"),
