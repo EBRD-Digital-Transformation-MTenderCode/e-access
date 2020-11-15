@@ -18,6 +18,7 @@ import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.cn.item.ItemReferenceRequest
 import com.procurement.access.service.RulesService
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -208,9 +209,12 @@ internal class CheckCriteriaKtTest {
                     works = limit
                 )
             )
-        calculateAndCheckMinSpecificWeightPrice(
-            mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country
-        )
+
+        assertDoesNotThrow {
+            calculateAndCheckMinSpecificWeightPrice(
+                mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country
+            )
+        }
     }
 
     @Test
