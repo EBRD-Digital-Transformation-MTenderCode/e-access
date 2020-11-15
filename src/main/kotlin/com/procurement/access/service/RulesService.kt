@@ -38,8 +38,28 @@ class RulesService(private val rulesDao: RulesDao) {
         country: String,
         pmd: ProcurementMethod,
         operationType: OperationType
-    ): Result<TenderStatesRule, Fail> =
-        getData(country = country, operationType = operationType, pmd = pmd, parameter = VALID_STATES_PARAMETER)
+    ): Result<TenderStatesRule, Fail> {
+        val states = rulesDao.getData(
+            country = country,
+            pmd = pmd,
+            operationType = operationType,
+            parameter = VALID_STATES_PARAMETER
+        )
+            .orForwardFail { fail -> return fail }
+            ?: return ValidationErrors.TenderStatesNotFound(pmd = pmd, operationType = operationType, country = country)
+                .asFailure()
+
+        return states.toTenderStatesRule()
+            .orForwardFail { fail -> return fail }
+            .asSuccess()
+    }
+
+    private fun String.toTenderStatesRule(): Result<TenderStatesRule, Fail> =
+        this.tryToObject(TenderStatesRule::class.java)
+            .doReturn { error ->
+                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
+            }
+            .asSuccess()
 
     fun getMaxDurationOfFA(
         country: String,
@@ -81,31 +101,5 @@ class RulesService(private val rulesDao: RulesDao) {
         rulesDao.getValue(country, pmd, operationType, parameter)
             ?: throw ErrorException(ErrorType.RULES_NOT_FOUND)
 
-    private fun getData(
-        country: String,
-        pmd: ProcurementMethod,
-        operationType: OperationType,
-        parameter: String
-    ): Result<TenderStatesRule, Fail> {
-        val states = rulesDao.getData(
-            country = country,
-            pmd = pmd,
-            operationType = operationType,
-            parameter = parameter
-        )
-            .orForwardFail { fail -> return fail }
-            ?: return ValidationErrors.TenderStatesNotFound(pmd = pmd, operationType = operationType, country = country)
-                .asFailure()
 
-        return states.convert()
-            .orForwardFail { fail -> return fail }
-            .asSuccess()
-    }
-
-    private fun String.convert(): Result<TenderStatesRule, Fail> =
-        this.tryToObject(TenderStatesRule::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-            .asSuccess()
 }
