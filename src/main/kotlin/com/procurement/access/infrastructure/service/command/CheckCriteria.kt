@@ -481,11 +481,12 @@ fun calculateAndCheckMinimalPriceShares(
     if (criteria == null || conversions == null) return
 
     val criteriaCombinations = getCriteriaCombinations(criteria, items)
-
     val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
+
     criteriaCombinations.forEach { criteriaCombination ->
         val requirementGroupsCombinations = getRequirementGroupsCombinations(criteriaCombination)
-         requirementGroupsCombinations.map { requirementGroups ->
+
+         requirementGroupsCombinations.forEach { requirementGroups ->
            val requirements = requirementGroups.flatMap { it.requirements }
             val minimalPriceShare = calculateMinimalPriceShare(requirements, conversionsByRelatedItems)
              checkMinimalPriceShare(mainProcurementCategory, requirements, minimalPriceShare)
