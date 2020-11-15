@@ -6,7 +6,9 @@ import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -20,6 +22,7 @@ import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.infrastructure.dto.cn.item.ItemReferenceRequest
+import com.procurement.access.service.RulesService
 import java.math.BigDecimal
 
 fun checkCriteriaAndConversion(
@@ -28,7 +31,10 @@ fun checkCriteriaAndConversion(
     awardCriteriaDetails: AwardCriteriaDetails?,
     items: List<ItemReferenceRequest>,
     criteria: List<CriterionRequest>?,
-    conversions: List<ConversionRequest>?
+    conversions: List<ConversionRequest>?,
+    rulesService: RulesService,
+    pmd: ProcurementMethod,
+    country: String
 ) {
 
     // FReq-1.1.1.16
@@ -75,7 +81,7 @@ fun checkCriteriaAndConversion(
     checkCoefficientDataType(criteria, conversions)
 
     // FReq-1.1.1.13
-    calculateAndCheckMinimalPriceShares(mainProcurementCategory, criteria, conversions, items)
+    calculateAndCheckMinimalPriceShares(mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country)
 
     // FReq-1.1.1.28
     checkCoefficientRelatedOption(criteria, conversions)
@@ -465,23 +471,23 @@ fun checkCoefficientDataType(criteria: List<CriterionRequest>?, conversions: Lis
     }
 }
 
-val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
-val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
-val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
-
-
 fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
 
 fun calculateAndCheckMinimalPriceShares(
     mainProcurementCategory: MainProcurementCategory?,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?,
-    items: List<ItemReferenceRequest>
+    items: List<ItemReferenceRequest>,
+    rulesService: RulesService,
+    pmd: ProcurementMethod,
+    country: String
 ){
     if (criteria == null || conversions == null) return
 
     val criteriaCombinations = getCriteriaCombinations(criteria, items)
     val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
+
+    val minSpecificWeightPrice = rulesService.getMinSpecificWeightPrice(country, pmd)
 
     criteriaCombinations.forEach { criteriaCombination ->
         val requirementGroupsCombinations = getRequirementGroupsCombinations(criteriaCombination)
@@ -489,7 +495,7 @@ fun calculateAndCheckMinimalPriceShares(
          requirementGroupsCombinations.forEach { requirementGroups ->
            val requirements = requirementGroups.flatMap { it.requirements }
             val minimalPriceShare = calculateMinimalPriceShare(requirements, conversionsByRelatedItems)
-             checkMinimalPriceShare(mainProcurementCategory, requirements, minimalPriceShare)
+             checkMinimalPriceShare(mainProcurementCategory, requirements, minimalPriceShare, minSpecificWeightPrice)
         }
     }
 }
@@ -558,12 +564,13 @@ private fun calculateMinimalPriceShare(
 private fun checkMinimalPriceShare(
     mainProcurementCategory: MainProcurementCategory?,
     requirements: List<Requirement>,
-    minimalPriceShare: BigDecimal
+    minimalPriceShare: BigDecimal,
+    minSpecificWeightPrice: MinSpecificWeightPriceRule
 ) {
     val limit = when (mainProcurementCategory!!) {
-        MainProcurementCategory.GOODS -> MAX_LIMIT_FOR_GOODS
-        MainProcurementCategory.WORKS -> MAX_LIMIT_FOR_WORKS
-        MainProcurementCategory.SERVICES -> MAX_LIMIT_FOR_SERVICES
+        MainProcurementCategory.GOODS -> minSpecificWeightPrice.goods
+        MainProcurementCategory.WORKS -> minSpecificWeightPrice.works
+        MainProcurementCategory.SERVICES -> minSpecificWeightPrice.services
     }
 
     if (minimalPriceShare > limit)

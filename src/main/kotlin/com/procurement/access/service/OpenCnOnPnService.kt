@@ -221,7 +221,7 @@ class OpenCnOnPnService(
             /** End check Documents */
         }
 
-        check(data)
+        check(data, context)
 
         val requireAuction = isAuctionRequired(data.tender.electronicAuctions, data.tender.procurementMethodModalities)
 
@@ -2201,7 +2201,7 @@ class OpenCnOnPnService(
         )
     }
 
-    private fun check(data: OpenCnOnPnRequest) {
+    private fun check(data: OpenCnOnPnRequest, context: CheckOpenCnOnPnContext) {
         val tender = data.tender
         checkCriteriaAndConversion(
             data.mainProcurementCategory,
@@ -2209,7 +2209,10 @@ class OpenCnOnPnService(
             tender.awardCriteriaDetails,
             data.items,
             tender.criteria,
-            tender.conversions
+            tender.conversions,
+            rulesService,
+            context.pmd,
+            context.country
         )
     }
 }

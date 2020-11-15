@@ -248,7 +248,7 @@ class SelectiveCnOnPnService(
             /** End check Documents */
         }
 
-        check(data)
+        check(data, context)
 
         val requireAuction = isAuctionRequired(data.tender.electronicAuctions, data.tender.procurementMethodModalities)
 
@@ -2308,7 +2308,7 @@ class SelectiveCnOnPnService(
         return CNEntity.Tender.ContractPeriod(startDate, endDate)
     }
 
-    private fun check(data: SelectiveCnOnPnRequest) {
+    private fun check(data: SelectiveCnOnPnRequest, context: CheckSelectiveCnOnPnContext) {
         val tender = data.tender
         checkCriteriaAndConversion(
             data.mainProcurementCategory,
@@ -2316,7 +2316,10 @@ class SelectiveCnOnPnService(
             tender.awardCriteriaDetails,
             data.items,
             tender.criteria,
-            tender.conversions
+            tender.conversions,
+            rulesService,
+            context.pmd,
+            context.country
         )
     }
 }
