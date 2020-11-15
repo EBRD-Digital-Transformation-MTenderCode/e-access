@@ -500,7 +500,7 @@ fun calculateAndCheckMinSpecificWeightPrice(
     }
 }
 
-private fun getCriteriaCombinations(
+fun getCriteriaCombinations(
     criteria: List<CriterionRequest>,
     items: List<ItemReferenceRequest>
 ): List<List<CriterionRequest>> {
@@ -558,7 +558,10 @@ private fun calculateMinSpecificWeightPrice(
         .map { requirement -> conversionsByRelatedItems[requirement.id] }
         .filterNotNull()
         .map { conversion -> conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate }
-    return minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
+    return if (minimumCoefficients.isEmpty())
+        BigDecimal.ZERO
+    else
+        minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
 }
 
 private fun checkMinSpecificWeightPrice(
@@ -577,7 +580,7 @@ private fun checkMinSpecificWeightPrice(
         throw  ErrorException(
             ErrorType.INVALID_CONVERSION,
             message = "Minimal price share of requirements " +
-                "'${requirements.map { it.id }.joinToString()}' must be less than ${limit} "
+                "'${requirements.map { it.id }.joinToString()}' must be less than ${limit}. Actual value: '$minimalPriceShare'."
         )
 }
 
