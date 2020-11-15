@@ -554,10 +554,10 @@ private fun calculateMinSpecificWeightPrice(
     requirements: List<Requirement>,
     conversionsByRelatedItems: Map<String, ConversionRequest>
 ): BigDecimal {
-    val minimumCoefficients = requirements.map { requirement ->
-        val conversion = conversionsByRelatedItems[requirement.id] ?: throw RuntimeException() //TODO change exception
-        conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate
-    }
+    val minimumCoefficients = requirements
+        .map { requirement -> conversionsByRelatedItems[requirement.id] }
+        .filterNotNull()
+        .map { conversion -> conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate }
     return minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
 }
 
