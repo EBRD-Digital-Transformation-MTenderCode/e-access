@@ -75,7 +75,7 @@ fun checkCriteriaAndConversion(
     checkCoefficientDataType(criteria, conversions)
 
     // FReq-1.1.1.13
-    checkCastCoefficient(mainProcurementCategory, criteria, conversions, items)
+    calculateAndCheckMinimalPriceShares(mainProcurementCategory, criteria, conversions, items)
 
     // FReq-1.1.1.28
     checkCoefficientRelatedOption(criteria, conversions)
@@ -445,56 +445,6 @@ fun checkCoefficientDataType(criteria: List<CriterionRequest>?, conversions: Lis
         }
     }
 
-    fun RequirementValue.validateValueCompatibility(
-        coefficient: ConversionRequest.Coefficient,
-        dataType: RequirementDataType
-    ) {
-        when (coefficient.value) {
-
-            is CoefficientValue.AsBoolean -> if (this is ExpectedValue.AsBoolean && (coefficient.value.value != this.value))
-                mismatchValueException(coefficient.value, this)
-
-            is CoefficientValue.AsString -> Unit
-
-            is CoefficientValue.AsNumber ->
-                if (dataType == RequirementDataType.INTEGER
-                    || (this is ExpectedValue.AsNumber && (coefficient.value.value.compareTo(this.value) != 0))
-                    || (this is ExpectedValue.AsInteger && (coefficient.value.value.compareTo(BigDecimal(this.value)) != 0))
-
-                    || (this is RangeValue.AsNumber && (coefficient.value.value.compareTo(this.minValue) == -1 || coefficient.value.value.compareTo(
-                        this.maxValue
-                    ) == 1))
-                    || (this is RangeValue.AsInteger
-                        && (coefficient.value.value < BigDecimal(this.minValue) || coefficient.value.value.compareTo(
-                        BigDecimal(this.maxValue)
-                    ) == 1))
-
-                    || (this is MinValue.AsNumber && (coefficient.value.value.compareTo(this.value) == -1))
-                    || (this is MinValue.AsInteger && (coefficient.value.value.compareTo(BigDecimal(this.value)) == -1))
-
-                    || (this is MaxValue.AsNumber && (coefficient.value.value.compareTo(this.value) == 1))
-                    || (this is MaxValue.AsInteger && (coefficient.value.value.compareTo(BigDecimal(this.value)) == 1))
-                ) mismatchValueException(coefficient.value, this)
-
-            is CoefficientValue.AsInteger ->
-                if ((this is ExpectedValue.AsInteger && (coefficient.value.value != this.value))
-                    || (this is ExpectedValue.AsNumber && (BigDecimal(coefficient.value.value).compareTo(this.value) != 0))
-
-                    || ((this is RangeValue.AsInteger) && (coefficient.value.value < this.minValue || coefficient.value.value > this.maxValue))
-                    || ((this is RangeValue.AsNumber)
-                        && (BigDecimal(coefficient.value.value).compareTo(this.minValue) == -1 || BigDecimal(coefficient.value.value).compareTo(
-                        this.maxValue
-                    ) == 1))
-
-                    || (this is MinValue.AsInteger && (coefficient.value.value < this.value))
-                    || (this is MinValue.AsNumber && (BigDecimal(coefficient.value.value).compareTo(this.value) == -1))
-
-                    || (this is MaxValue.AsInteger && (coefficient.value.value > this.value))
-                    || (this is MaxValue.AsNumber && (BigDecimal(coefficient.value.value).compareTo(this.value) == 1))
-                ) mismatchValueException(coefficient.value, this)
-        }
-    }
-
     if (criteria == null || conversions == null) return
 
     val requirements = criteria.asSequence()
@@ -519,94 +469,17 @@ val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
 val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
 val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
 
-fun checkCastCoefficient(
+
+fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
+
+fun calculateAndCheckMinimalPriceShares(
     mainProcurementCategory: MainProcurementCategory?,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?,
     items: List<ItemReferenceRequest>
-) {
-    fun castCoefficientException(limit: BigDecimal): Nothing =
-        throw ErrorException(
-            ErrorType.INVALID_CONVERSION,
-            message = "cast coefficient in conversion cannot be greater than ${limit} "
-        )
-
+){
     if (criteria == null || conversions == null) return
 
-    val castCoefficients = getCastCoefficients(criteria, conversions, items)
-
-    when (mainProcurementCategory) {
-        MainProcurementCategory.GOODS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_GOODS })
-            castCoefficientException(MAX_LIMIT_FOR_GOODS)
-
-        MainProcurementCategory.WORKS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_WORKS })
-            castCoefficientException(MAX_LIMIT_FOR_WORKS)
-
-        MainProcurementCategory.SERVICES -> if (castCoefficients.any { it > MAX_LIMIT_FOR_SERVICES })
-            castCoefficientException(MAX_LIMIT_FOR_SERVICES)
-    }
-}
-
-fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
-fun CriterionRequest.isCriteriaForLot(): Boolean = this.relatesTo == CriteriaRelatesToEnum.LOT
-fun CriterionRequest.isCriteriaForItem(): Boolean = this.relatesTo == CriteriaRelatesToEnum.ITEM
-
-fun getCastCoefficients(
-    criteria: List<CriterionRequest>,
-    conversions: List<ConversionRequest>,
-    items: List<ItemReferenceRequest>
-): List<BigDecimal> {
-
-    fun Sequence<CriterionRequest>.getRelatedConversions(conversions: List<ConversionRequest>): Sequence<ConversionRequest> =
-        this.flatMap { it.requirementGroups.asSequence() }
-            .flatMap { it.requirements.asSequence() }
-            .flatMap { requirement ->
-                conversions
-                    .asSequence()
-                    .filter { it.relatedItem == requirement.id }
-            }
-
-    val filteredConversions = conversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
-
-    val tenderConversions = criteria.asSequence()
-        .filter { it.isCriteriaForTender() }
-        .getRelatedConversions(filteredConversions)
-        .toList()
-
-    val lots = items.toSetBy { it.relatedLot }
-    val lotAndItemConversions = lots.map { lotId ->
-
-        val lotConversions = criteria.asSequence()
-            .filter { it.isCriteriaForLot() && it.relatedItem == lotId }
-            .getRelatedConversions(filteredConversions)
-            .toList()
-
-        val relatedItems = items.asSequence()
-            .filter { it.relatedLot == lotId }
-            .map { it.id }
-
-        val itemConversions = criteria.asSequence()
-            .filter { it.isCriteriaForItem() && it.relatedItem in relatedItems }
-            .getRelatedConversions(filteredConversions)
-            .toList()
-
-        lotConversions + itemConversions
-    }
-
-    return if (lotAndItemConversions.isEmpty())
-        listOf(calculateCastCoefficient(tenderConversions))
-    else
-        lotAndItemConversions
-            .map { calculateCastCoefficient(tenderConversions + it) }
-}
-
-
-fun calculateAndCheckMinimalPriceShares(
-    criteria: List<CriterionRequest>,
-    conversions: List<ConversionRequest>,
-    items: List<ItemReferenceRequest>,
-    mainProcurementCategory: MainProcurementCategory?
-){
     val criteriaCombinations = getCriteriaCombinations(criteria, items)
 
     val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
