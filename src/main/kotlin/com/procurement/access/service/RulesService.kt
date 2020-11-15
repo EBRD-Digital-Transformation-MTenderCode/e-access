@@ -77,7 +77,7 @@ class RulesService(private val rulesDao: RulesDao) {
         }
     }
 
-    fun getMinSpecificWeightPrice(
+    fun getMinSpecificWeightPriceLimits(
         country: String,
         pmd: ProcurementMethod
     ): MinSpecificWeightPriceRule {

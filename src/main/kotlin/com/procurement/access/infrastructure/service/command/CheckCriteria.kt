@@ -81,7 +81,7 @@ fun checkCriteriaAndConversion(
     checkCoefficientDataType(criteria, conversions)
 
     // FReq-1.1.1.13
-    calculateAndCheckMinimalPriceShares(mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country)
+    calculateAndCheckMinSpecificWeightPrice(mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country)
 
     // FReq-1.1.1.28
     checkCoefficientRelatedOption(criteria, conversions)
@@ -473,7 +473,7 @@ fun checkCoefficientDataType(criteria: List<CriterionRequest>?, conversions: Lis
 
 fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
 
-fun calculateAndCheckMinimalPriceShares(
+fun calculateAndCheckMinSpecificWeightPrice(
     mainProcurementCategory: MainProcurementCategory?,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?,
@@ -487,15 +487,15 @@ fun calculateAndCheckMinimalPriceShares(
     val criteriaCombinations = getCriteriaCombinations(criteria, items)
     val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
 
-    val minSpecificWeightPrice = rulesService.getMinSpecificWeightPrice(country, pmd)
+    val priceLimits = rulesService.getMinSpecificWeightPriceLimits(country, pmd)
 
     criteriaCombinations.forEach { criteriaCombination ->
         val requirementGroupsCombinations = getRequirementGroupsCombinations(criteriaCombination)
 
          requirementGroupsCombinations.forEach { requirementGroups ->
            val requirements = requirementGroups.flatMap { it.requirements }
-            val minimalPriceShare = calculateMinimalPriceShare(requirements, conversionsByRelatedItems)
-             checkMinimalPriceShare(mainProcurementCategory, requirements, minimalPriceShare, minSpecificWeightPrice)
+            val minimalPriceShare = calculateMinSpecificWeightPrice(requirements, conversionsByRelatedItems)
+             checkMinSpecificWeightPrice(mainProcurementCategory, requirements, minimalPriceShare, priceLimits)
         }
     }
 }
@@ -550,7 +550,7 @@ private fun getRequirementGroupsCombinations(
     return finishedCombinations
 }
 
-private fun calculateMinimalPriceShare(
+private fun calculateMinSpecificWeightPrice(
     requirements: List<Requirement>,
     conversionsByRelatedItems: Map<String, ConversionRequest>
 ): BigDecimal {
@@ -561,7 +561,7 @@ private fun calculateMinimalPriceShare(
     return minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
 }
 
-private fun checkMinimalPriceShare(
+private fun checkMinSpecificWeightPrice(
     mainProcurementCategory: MainProcurementCategory?,
     requirements: List<Requirement>,
     minimalPriceShare: BigDecimal,
