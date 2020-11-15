@@ -6,12 +6,14 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.domain.rule.TenderStatesRule
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -22,6 +24,7 @@ class RulesService(private val rulesDao: RulesDao) {
     companion object {
         private const val VALID_STATES_PARAMETER = "validStates"
         private const val MAX_DURATION_OF_FA_PARAMETER = "maxDurationOfFA"
+        private const val MIN_SPECIFIC_WEIGHT_PRICE = "minSpecificWeightPrice"
         private const val OPERATION_TYPE_ALL = "all"
     }
 
@@ -50,6 +53,21 @@ class RulesService(private val rulesDao: RulesDao) {
             throw ErrorException(
                 error = ErrorType.RULES_INCORRECT_FORMAT,
                 message = "Rule '$MAX_DURATION_OF_FA_PARAMETER' contains incorrect value"
+            )
+        }
+    }
+
+    fun getMinSpecificWeightPrice(
+        country: String,
+        pmd: ProcurementMethod
+    ): MinSpecificWeightPriceRule {
+        val rule = getValue(country, pmd, OPERATION_TYPE_ALL, MIN_SPECIFIC_WEIGHT_PRICE)
+        return try {
+            toObject(MinSpecificWeightPriceRule::class.java, rule)
+        } catch (exception: Exception) {
+            throw ErrorException(
+                error = ErrorType.RULES_INCORRECT_FORMAT,
+                message = "Rule '$MIN_SPECIFIC_WEIGHT_PRICE' contains incorrect value"
             )
         }
     }
