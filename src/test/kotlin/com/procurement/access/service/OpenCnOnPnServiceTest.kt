@@ -15,6 +15,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
@@ -22,12 +23,32 @@ import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
-import com.procurement.access.json.*
+import com.procurement.access.json.JsonFilePathGenerator
+import com.procurement.access.json.JsonValidator
+import com.procurement.access.json.deepCopy
+import com.procurement.access.json.getArray
+import com.procurement.access.json.getObject
+import com.procurement.access.json.getString
+import com.procurement.access.json.loadJson
+import com.procurement.access.json.putAttribute
+import com.procurement.access.json.putObject
+import com.procurement.access.json.setAttribute
+import com.procurement.access.json.testingBindingAndMapping
+import com.procurement.access.json.toJson
+import com.procurement.access.json.toNode
+import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.model.dto.databinding.toLocalDateTime
 import com.procurement.access.utils.toObject
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.math.BigDecimal
@@ -887,6 +908,9 @@ class OpenCnOnPnServiceTest {
             fun `without procuring entity`() {
                 requestNode.getObject("tender").remove("procuringEntity")
                 val context: CheckOpenCnOnPnContext = checkContext()
+                whenever(rulesService.getMinSpecificWeightPriceLimits(country = context.country, pmd = context.pmd)).thenReturn(
+                    MinSpecificWeightPriceRule(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE)
+                )
 
                 assertDoesNotThrow { service.check(context = context, data = requestNode.toObject()) }
             }
@@ -906,6 +930,10 @@ class OpenCnOnPnServiceTest {
                     businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
 
                     val context: CheckOpenCnOnPnContext = checkContext()
+
+                    whenever(rulesService.getMinSpecificWeightPriceLimits(country = context.country, pmd = context.pmd)).thenReturn(
+                        MinSpecificWeightPriceRule(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE)
+                    )
 
                     assertDoesNotThrow { service.check(context = context, data = requestNode.toObject()) }
                 }
@@ -1089,6 +1117,10 @@ class OpenCnOnPnServiceTest {
                     businessFunction.getObject("period").putAttribute("startDate", ContextGenerator.START_DATE)
 
                     val context: CheckOpenCnOnPnContext = checkContext()
+
+                    whenever(rulesService.getMinSpecificWeightPriceLimits(country = context.country, pmd = context.pmd)).thenReturn(
+                        MinSpecificWeightPriceRule(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE)
+                    )
 
                     assertDoesNotThrow { service.check(context = context, data = requestNode.toObject()) }
                 }
