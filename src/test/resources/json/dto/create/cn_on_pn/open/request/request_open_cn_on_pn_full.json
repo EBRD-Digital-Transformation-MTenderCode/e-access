@@ -1,4 +1,5 @@
 {
+  "mainProcurementCategory": "goods",
   "tender": {
     "classification": {
       "scheme": "CPV",

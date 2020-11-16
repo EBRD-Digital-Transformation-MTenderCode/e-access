@@ -1195,81 +1195,76 @@ class NegotiationCnOnPnService(
      * BR-3.8.3
      */
     private fun lotsFromPNToCN(lotsFromPN: List<PNEntity.Tender.Lot>): List<CNEntity.Tender.Lot> {
-        return lotsFromPN.map { lot ->
-            /** Begin BR-3.8.7 */
-            val status = if (lot.status == LotStatus.PLANNING)
-                LotStatus.ACTIVE
-            else
-                lot.status
-            /** End BR-3.8.7 */
+        return lotsFromPN
+            .filter { lot -> lot.status == LotStatus.PLANNING }
+            .map { lot ->
+                CNEntity.Tender.Lot(
+                    //BR-3.8.5
+                    id = lot.id,
 
-            CNEntity.Tender.Lot(
-                //BR-3.8.5
-                id = lot.id,
-
-                internalId = null,
-                title = lot.title,
-                description = lot.description,
-                /** Begin BR-3.8.7 */
-                status = status,
-                statusDetails = LotStatusDetails.EMPTY,
-                /** End BR-3.8.7 */
-                value = lot.value.let { value ->
-                    CNEntity.Tender.Lot.Value(
-                        amount = value.amount,
-                        currency = value.currency
-                    )
-                },
-                options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
-                recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
-                renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
-                variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
-                contractPeriod = lot.contractPeriod.let { contractPeriod ->
-                    CNEntity.Tender.Lot.ContractPeriod(
-                        startDate = contractPeriod.startDate,
-                        endDate = contractPeriod.endDate
-                    )
-                },
-                placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                    CNEntity.Tender.Lot.PlaceOfPerformance(
-                        address = placeOfPerformance.address.let { address ->
-                            CNEntity.Tender.Lot.PlaceOfPerformance.Address(
-                                streetAddress = address.streetAddress,
-                                postalCode = address.postalCode,
-                                addressDetails = address.addressDetails.let { addressDetails ->
-                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
-                                        country = addressDetails.country.let { country ->
-                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
-                                                scheme = country.scheme, //VR-3.14.1(CheckItem)
-                                                id = country.id,
-                                                description = country.description,
-                                                uri = country.uri
-                                            )
-                                        },
-                                        region = addressDetails.region.let { region ->
-                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
-                                                scheme = region.scheme,
-                                                id = region.id,
-                                                description = region.description,
-                                                uri = region.uri
-                                            )
-                                        },
-                                        locality = addressDetails.locality.let { locality ->
-                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
-                                                scheme = locality.scheme,
-                                                id = locality.id,
-                                                description = locality.description,
-                                                uri = locality.uri
-                                            )
-                                        }
-                                    )
-                                }
-                            )
-                        },
-                        description = placeOfPerformance.description
-                    )
-                }
-            )
+                    internalId = null,
+                    title = lot.title,
+                    description = lot.description,
+                    /** Begin BR-3.8.7 */
+                    status = LotStatus.ACTIVE,
+                    statusDetails = LotStatusDetails.EMPTY,
+                    /** End BR-3.8.7 */
+                    value = lot.value.let { value ->
+                        CNEntity.Tender.Lot.Value(
+                            amount = value.amount,
+                            currency = value.currency
+                        )
+                    },
+                    options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
+                    recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
+                    renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
+                    variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
+                    contractPeriod = lot.contractPeriod.let { contractPeriod ->
+                        CNEntity.Tender.Lot.ContractPeriod(
+                            startDate = contractPeriod.startDate,
+                            endDate = contractPeriod.endDate
+                        )
+                    },
+                    placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                        CNEntity.Tender.Lot.PlaceOfPerformance(
+                            address = placeOfPerformance.address.let { address ->
+                                CNEntity.Tender.Lot.PlaceOfPerformance.Address(
+                                    streetAddress = address.streetAddress,
+                                    postalCode = address.postalCode,
+                                    addressDetails = address.addressDetails.let { addressDetails ->
+                                        CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                            country = addressDetails.country.let { country ->
+                                                CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                    scheme = country.scheme, //VR-3.14.1(CheckItem)
+                                                    id = country.id,
+                                                    description = country.description,
+                                                    uri = country.uri
+                                                )
+                                            },
+                                            region = addressDetails.region.let { region ->
+                                                CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                    scheme = region.scheme,
+                                                    id = region.id,
+                                                    description = region.description,
+                                                    uri = region.uri
+                                                )
+                                            },
+                                            locality = addressDetails.locality.let { locality ->
+                                                CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                    scheme = locality.scheme,
+                                                    id = locality.id,
+                                                    description = locality.description,
+                                                    uri = locality.uri
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            },
+                            description = placeOfPerformance.description
+                        )
+                    }
+                )
         }
     }
 

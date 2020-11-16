@@ -2,7 +2,7 @@
   "award": {
     "description": "request.awards.description",
     "value": {
-      "amount": 10000000.01,
+      "amount": 0.00,
       "currency": "request.awards.value.currency"
     },
     "suppliers": [

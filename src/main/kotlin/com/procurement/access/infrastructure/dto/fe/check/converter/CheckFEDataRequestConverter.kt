@@ -1,7 +1,9 @@
 package com.procurement.access.infrastructure.dto.fe.check.converter
 
 import com.procurement.access.application.service.fe.check.CheckFEDataData
+import com.procurement.access.domain.EnumElementProviderParser
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.fe.check.CheckFEDataRequest
@@ -50,7 +52,7 @@ fun CheckFEDataRequest.Tender.Document.convert() = CheckFEDataData.Tender.Docume
     id = this.id,
     title = this.title,
     description = this.description,
-    documentType = this.documentType
+    documentType = parseTenderDocumentType(this.documentType)
 )
 
 fun CheckFEDataRequest.Tender.Criteria.convert() = CheckFEDataData.Tender.Criteria(
@@ -159,6 +161,41 @@ fun CheckFEDataRequest.Tender.ProcuringEntity.Person.BusinessFunction.Document.c
     description = this.description,
     documentType = this.documentType
 )
+
+private fun parseTenderDocumentType(documentType: String) =
+    EnumElementProviderParser.checkAndParseEnum(documentType, allowedTenderDocumentTypes, DocumentType)
+
+private val allowedTenderDocumentTypes = DocumentType.allowedElements
+    .filter {
+        when (it) {
+            DocumentType.TENDER_NOTICE,
+            DocumentType.BIDDING_DOCUMENTS,
+            DocumentType.TECHNICAL_SPECIFICATIONS,
+            DocumentType.EVALUATION_CRITERIA,
+            DocumentType.CLARIFICATIONS,
+            DocumentType.ELIGIBILITY_CRITERIA,
+            DocumentType.RISK_PROVISIONS,
+            DocumentType.BILL_OF_QUANTITY,
+            DocumentType.CONFLICT_OF_INTEREST,
+            DocumentType.PROCUREMENT_PLAN,
+            DocumentType.CONTRACT_DRAFT,
+            DocumentType.COMPLAINTS,
+            DocumentType.ILLUSTRATION,
+            DocumentType.CANCELLATION_DETAILS,
+            DocumentType.EVALUATION_REPORTS,
+            DocumentType.SHORTLISTED_FIRMS,
+            DocumentType.CONTRACT_ARRANGEMENTS,
+            DocumentType.CONTRACT_GUARANTEES -> true
+
+            DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
+            DocumentType.ENVIRONMENTAL_IMPACT,
+            DocumentType.FEASIBILITY_STUDY,
+            DocumentType.HEARING_NOTICE,
+            DocumentType.MARKET_STUDIES,
+            DocumentType.NEEDS_ASSESSMENT,
+            DocumentType.PROJECT_PLAN -> false
+        }
+    }.toSet()
 
 
 

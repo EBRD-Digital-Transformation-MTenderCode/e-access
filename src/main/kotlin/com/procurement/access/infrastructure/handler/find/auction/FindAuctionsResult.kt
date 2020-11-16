@@ -4,8 +4,8 @@ package com.procurement.access.infrastructure.handler.find.auction
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
+import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveDeserializer
+import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
 import java.math.BigDecimal
 
 data class FindAuctionsResult(
@@ -26,8 +26,8 @@ data class FindAuctionsResult(
                     @param:JsonProperty("eligibleMinimumDifference") @field:JsonProperty("eligibleMinimumDifference") val eligibleMinimumDifference: EligibleMinimumDifference
                 ) {
                     data class EligibleMinimumDifference(
-                        @JsonDeserialize(using = AmountDeserializer::class)
-                        @JsonSerialize(using = AmountSerializer::class)
+                        @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                        @JsonSerialize(using = AmountPositiveSerializer::class)
                         @param:JsonProperty("amount") @field:JsonProperty("amount") val amount: BigDecimal,
 
                         @param:JsonProperty("currency") @field:JsonProperty("currency") val currency: String

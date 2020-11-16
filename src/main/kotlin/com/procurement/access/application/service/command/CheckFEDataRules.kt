@@ -4,7 +4,6 @@ import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.fe.check.CheckFEDataData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
-import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.exception.ErrorException
@@ -25,38 +24,6 @@ import java.time.LocalDateTime
 
 class CheckFEDataRules {
     companion object {
-
-        private val allowedTenderDocumentTypes = DocumentType.allowedElements
-            .filter {
-                when (it) {
-                    DocumentType.TENDER_NOTICE,
-                    DocumentType.BIDDING_DOCUMENTS,
-                    DocumentType.TECHNICAL_SPECIFICATIONS,
-                    DocumentType.EVALUATION_CRITERIA,
-                    DocumentType.CLARIFICATIONS,
-                    DocumentType.ELIGIBILITY_CRITERIA,
-                    DocumentType.RISK_PROVISIONS,
-                    DocumentType.BILL_OF_QUANTITY,
-                    DocumentType.CONFLICT_OF_INTEREST,
-                    DocumentType.PROCUREMENT_PLAN,
-                    DocumentType.CONTRACT_DRAFT,
-                    DocumentType.COMPLAINTS,
-                    DocumentType.ILLUSTRATION,
-                    DocumentType.CANCELLATION_DETAILS,
-                    DocumentType.EVALUATION_REPORTS,
-                    DocumentType.SHORTLISTED_FIRMS,
-                    DocumentType.CONTRACT_ARRANGEMENTS,
-                    DocumentType.CONTRACT_GUARANTEES -> true
-
-                    DocumentType.ASSET_AND_LIABILITY_ASSESSMENT,
-                    DocumentType.ENVIRONMENTAL_IMPACT,
-                    DocumentType.FEASIBILITY_STUDY,
-                    DocumentType.HEARING_NOTICE,
-                    DocumentType.MARKET_STUDIES,
-                    DocumentType.NEEDS_ASSESSMENT,
-                    DocumentType.PROJECT_PLAN -> false
-                }
-            }.toSet()
 
         fun validateTitle(title: String) {
             // VR-1.0.1.1.7
@@ -94,17 +61,6 @@ class CheckFEDataRules {
                     error = ErrorType.NOT_UNIQUE_IDS,
                     message = "$collectionName contains duplicated ids."
                 )
-        }
-
-        fun validateDocumentsTypes(data: CheckFEDataData) {
-            data.tender.documents
-                .map { document ->
-                    if (document.documentType !in allowedTenderDocumentTypes)
-                        throw ErrorException(
-                            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                            message = "Tender document '${document.id}' contains incorrect documentType '${document.documentType}'. Allowed values: '${allowedTenderDocumentTypes.joinToString()}'"
-                        )
-                }
         }
 
         fun validatePersonsExistence(persons: List<CheckFEDataData.Tender.ProcuringEntity.Person>) {
@@ -211,7 +167,7 @@ class CheckFEDataRules {
             if (secondStage.minimumCandidates >= secondStage.maximumCandidates)
                 throw ErrorException(
                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                    message = "MaximumCandidates value should not be zero"
+                    message = "MaximumCandidates value should be more or equal MinimumCandidates"
                 )
         }
 
@@ -363,6 +319,96 @@ class CheckFEDataRules {
                             message = "Criteria can relates only to '${CriteriaRelatesToEnum.TENDERER}'."
                         )
                 }
+            }
+
+        fun CheckFEDataData.Tender.SecondStage?.isNeedValidate(operationType: OperationType) =
+            when(operationType) {
+                OperationType.CREATE_FE -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+            }
+
+        fun List<CheckFEDataData.Tender.Criteria>.isNeedValidate(operationType: OperationType) =
+            when(operationType) {
+                OperationType.CREATE_FE -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+            }
+
+        fun CheckFEDataData.Tender.OtherCriteria?.isNeedValidate(operationType: OperationType) =
+            when(operationType) {
+                OperationType.CREATE_FE -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
