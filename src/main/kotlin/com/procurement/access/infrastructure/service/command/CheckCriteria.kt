@@ -6,7 +6,9 @@ import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -20,6 +22,7 @@ import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.infrastructure.dto.cn.item.ItemReferenceRequest
+import com.procurement.access.service.RulesService
 import java.math.BigDecimal
 
 fun checkCriteriaAndConversion(
@@ -28,7 +31,10 @@ fun checkCriteriaAndConversion(
     awardCriteriaDetails: AwardCriteriaDetails?,
     items: List<ItemReferenceRequest>,
     criteria: List<CriterionRequest>?,
-    conversions: List<ConversionRequest>?
+    conversions: List<ConversionRequest>?,
+    rulesService: RulesService,
+    pmd: ProcurementMethod,
+    country: String
 ) {
 
     // FReq-1.1.1.16
@@ -75,7 +81,7 @@ fun checkCriteriaAndConversion(
     checkCoefficientDataType(criteria, conversions)
 
     // FReq-1.1.1.13
-    checkCastCoefficient(mainProcurementCategory, criteria, conversions, items)
+    calculateAndCheckMinSpecificWeightPrice(mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country)
 
     // FReq-1.1.1.28
     checkCoefficientRelatedOption(criteria, conversions)
@@ -445,56 +451,6 @@ fun checkCoefficientDataType(criteria: List<CriterionRequest>?, conversions: Lis
         }
     }
 
-    fun RequirementValue.validateValueCompatibility(
-        coefficient: ConversionRequest.Coefficient,
-        dataType: RequirementDataType
-    ) {
-        when (coefficient.value) {
-
-            is CoefficientValue.AsBoolean -> if (this is ExpectedValue.AsBoolean && (coefficient.value.value != this.value))
-                mismatchValueException(coefficient.value, this)
-
-            is CoefficientValue.AsString -> Unit
-
-            is CoefficientValue.AsNumber ->
-                if (dataType == RequirementDataType.INTEGER
-                    || (this is ExpectedValue.AsNumber && (coefficient.value.value.compareTo(this.value) != 0))
-                    || (this is ExpectedValue.AsInteger && (coefficient.value.value.compareTo(BigDecimal(this.value)) != 0))
-
-                    || (this is RangeValue.AsNumber && (coefficient.value.value.compareTo(this.minValue) == -1 || coefficient.value.value.compareTo(
-                        this.maxValue
-                    ) == 1))
-                    || (this is RangeValue.AsInteger
-                        && (coefficient.value.value < BigDecimal(this.minValue) || coefficient.value.value.compareTo(
-                        BigDecimal(this.maxValue)
-                    ) == 1))
-
-                    || (this is MinValue.AsNumber && (coefficient.value.value.compareTo(this.value) == -1))
-                    || (this is MinValue.AsInteger && (coefficient.value.value.compareTo(BigDecimal(this.value)) == -1))
-
-                    || (this is MaxValue.AsNumber && (coefficient.value.value.compareTo(this.value) == 1))
-                    || (this is MaxValue.AsInteger && (coefficient.value.value.compareTo(BigDecimal(this.value)) == 1))
-                ) mismatchValueException(coefficient.value, this)
-
-            is CoefficientValue.AsInteger ->
-                if ((this is ExpectedValue.AsInteger && (coefficient.value.value != this.value))
-                    || (this is ExpectedValue.AsNumber && (BigDecimal(coefficient.value.value).compareTo(this.value) != 0))
-
-                    || ((this is RangeValue.AsInteger) && (coefficient.value.value < this.minValue || coefficient.value.value > this.maxValue))
-                    || ((this is RangeValue.AsNumber)
-                        && (BigDecimal(coefficient.value.value).compareTo(this.minValue) == -1 || BigDecimal(coefficient.value.value).compareTo(
-                        this.maxValue
-                    ) == 1))
-
-                    || (this is MinValue.AsInteger && (coefficient.value.value < this.value))
-                    || (this is MinValue.AsNumber && (BigDecimal(coefficient.value.value).compareTo(this.value) == -1))
-
-                    || (this is MaxValue.AsInteger && (coefficient.value.value > this.value))
-                    || (this is MaxValue.AsNumber && (BigDecimal(coefficient.value.value).compareTo(this.value) == 1))
-                ) mismatchValueException(coefficient.value, this)
-        }
-    }
-
     if (criteria == null || conversions == null) return
 
     val requirements = criteria.asSequence()
@@ -515,89 +471,117 @@ fun checkCoefficientDataType(criteria: List<CriterionRequest>?, conversions: Lis
     }
 }
 
-val MAX_LIMIT_FOR_GOODS = 0.6.toBigDecimal()
-val MAX_LIMIT_FOR_WORKS = 0.8.toBigDecimal()
-val MAX_LIMIT_FOR_SERVICES = 0.4.toBigDecimal()
+fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
 
-fun checkCastCoefficient(
+fun calculateAndCheckMinSpecificWeightPrice(
     mainProcurementCategory: MainProcurementCategory?,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?,
-    items: List<ItemReferenceRequest>
-) {
-    fun castCoefficientException(limit: BigDecimal): Nothing =
-        throw ErrorException(
-            ErrorType.INVALID_CONVERSION,
-            message = "cast coefficient in conversion cannot be greater than ${limit} "
-        )
-
+    items: List<ItemReferenceRequest>,
+    rulesService: RulesService,
+    pmd: ProcurementMethod,
+    country: String
+){
     if (criteria == null || conversions == null) return
 
-    val castCoefficients = getCastCoefficients(criteria, conversions, items)
+    val criteriaCombinations = getCriteriaCombinations(criteria, items)
+    val conversionsByRelatedItems = conversions.associateBy { it.relatedItem }
 
-    when (mainProcurementCategory) {
-        MainProcurementCategory.GOODS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_GOODS })
-            castCoefficientException(MAX_LIMIT_FOR_GOODS)
+    val priceLimits = rulesService.getMinSpecificWeightPriceLimits(country, pmd)
 
-        MainProcurementCategory.WORKS -> if (castCoefficients.any { it > MAX_LIMIT_FOR_WORKS })
-            castCoefficientException(MAX_LIMIT_FOR_WORKS)
+    criteriaCombinations.forEach { criteriaCombination ->
+        val requirementGroupsCombinations = getRequirementGroupsCombinations(criteriaCombination)
 
-        MainProcurementCategory.SERVICES -> if (castCoefficients.any { it > MAX_LIMIT_FOR_SERVICES })
-            castCoefficientException(MAX_LIMIT_FOR_SERVICES)
+         requirementGroupsCombinations.forEach { requirementGroups ->
+           val requirements = requirementGroups.flatMap { it.requirements }
+            val minimalPriceShare = calculateMinSpecificWeightPrice(requirements, conversionsByRelatedItems)
+             checkMinSpecificWeightPrice(mainProcurementCategory, requirements, minimalPriceShare, priceLimits)
+        }
     }
 }
 
-fun CriterionRequest.isCriteriaForTender(): Boolean = this.relatesTo == null
-fun CriterionRequest.isCriteriaForLot(): Boolean = this.relatesTo == CriteriaRelatesToEnum.LOT
-fun CriterionRequest.isCriteriaForItem(): Boolean = this.relatesTo == CriteriaRelatesToEnum.ITEM
-
-fun getCastCoefficients(
+fun getCriteriaCombinations(
     criteria: List<CriterionRequest>,
-    conversions: List<ConversionRequest>,
     items: List<ItemReferenceRequest>
-): List<BigDecimal> {
+): List<List<CriterionRequest>> {
+    val criteriaByAffiliation = criteria.groupBy { it.relatesTo }
+    val criteriaByItems = criteriaByAffiliation[CriteriaRelatesToEnum.ITEM].orEmpty().groupBy { it.relatedItem }
+    val criteriaByLots = criteriaByAffiliation[CriteriaRelatesToEnum.LOT].orEmpty().groupBy { it.relatedItem }
 
-    fun Sequence<CriterionRequest>.getRelatedConversions(conversions: List<ConversionRequest>): Sequence<ConversionRequest> =
-        this.flatMap { it.requirementGroups.asSequence() }
-            .flatMap { it.requirements.asSequence() }
-            .flatMap { requirement ->
-                conversions
-                    .asSequence()
-                    .filter { it.relatedItem == requirement.id }
-            }
+    val tenderCriteria = criteriaByAffiliation[null].orEmpty()
+    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesToEnum.TENDERER].orEmpty()
 
-    val filteredConversions = conversions.filter { it.relatesTo == ConversionsRelatesTo.REQUIREMENT }
+    val itemsByLots = items.groupBy { it.relatedLot }
+    val lots = itemsByLots.keys
+    return lots.map { lotId ->
+        val lotCriteria = criteriaByLots[lotId].orEmpty()
 
-    val tenderConversions = criteria.asSequence()
-        .filter { it.isCriteriaForTender() }
-        .getRelatedConversions(filteredConversions)
-        .toList()
+        val relatedItems = itemsByLots[lotId].orEmpty()
+        val itemsCriteria = relatedItems.flatMap { item -> criteriaByItems[item.id].orEmpty() }
 
-    val lots = items.toSetBy { it.relatedLot }
-    val lotAndItemConversions = lots.map { lotId ->
+        tenderCriteria + tendererCriteria + lotCriteria + itemsCriteria
+    }
+}
 
-        val lotConversions = criteria.asSequence()
-            .filter { it.isCriteriaForLot() && it.relatedItem == lotId }
-            .getRelatedConversions(filteredConversions)
-            .toList()
+fun getRequirementGroupsCombinations(criteria: List<CriterionRequest>) =
+    getRequirementGroupsCombinations(criteria, 0, emptyList())
 
-        val relatedItems = items.asSequence()
-            .filter { it.relatedLot == lotId }
-            .map { it.id }
+private fun getRequirementGroupsCombinations(
+    criteria: List<CriterionRequest>,
+    currentCriterionIndex: Int,
+    combination: List<CriterionRequest.RequirementGroup>
+): List<List<CriterionRequest.RequirementGroup>> {
+    if (currentCriterionIndex == criteria.size)
+        return listOf(combination)
 
-        val itemConversions = criteria.asSequence()
-            .filter { it.isCriteriaForItem() && it.relatedItem in relatedItems }
-            .getRelatedConversions(filteredConversions)
-            .toList()
+    val finishedCombinations = mutableListOf<List<CriterionRequest.RequirementGroup>>()
 
-        lotConversions + itemConversions
+    val criterionToAddToCombinationFrom = criteria[currentCriterionIndex]
+    for (requirementGroup in criterionToAddToCombinationFrom.requirementGroups) {
+        val newCombination = combination.toMutableList()
+        newCombination.add(requirementGroup)
+        finishedCombinations.addAll(
+            getRequirementGroupsCombinations(
+                criteria, currentCriterionIndex + 1, newCombination
+            )
+        )
     }
 
-    return if (lotAndItemConversions.isEmpty())
-        listOf(calculateCastCoefficient(tenderConversions))
+    return finishedCombinations
+}
+
+private fun calculateMinSpecificWeightPrice(
+    requirements: List<Requirement>,
+    conversionsByRelatedItems: Map<String, ConversionRequest>
+): BigDecimal {
+    val minimumCoefficients = requirements
+        .map { requirement -> conversionsByRelatedItems[requirement.id] }
+        .filterNotNull()
+        .map { conversion -> conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate }
+    return if (minimumCoefficients.isEmpty())
+        BigDecimal.ZERO
     else
-        lotAndItemConversions
-            .map { calculateCastCoefficient(tenderConversions + it) }
+        minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
+}
+
+private fun checkMinSpecificWeightPrice(
+    mainProcurementCategory: MainProcurementCategory?,
+    requirements: List<Requirement>,
+    minimalPriceShare: BigDecimal,
+    minSpecificWeightPrice: MinSpecificWeightPriceRule
+) {
+    val limit = when (mainProcurementCategory!!) {
+        MainProcurementCategory.GOODS -> minSpecificWeightPrice.goods
+        MainProcurementCategory.WORKS -> minSpecificWeightPrice.works
+        MainProcurementCategory.SERVICES -> minSpecificWeightPrice.services
+    }
+
+    if (minimalPriceShare > limit)
+        throw  ErrorException(
+            ErrorType.INVALID_CONVERSION,
+            message = "Minimal price share of requirements " +
+                "'${requirements.map { it.id }.joinToString()}' must be less than ${limit}. Actual value: '$minimalPriceShare'."
+        )
 }
 
 fun calculateCastCoefficient(conversions: List<ConversionRequest>): BigDecimal =
