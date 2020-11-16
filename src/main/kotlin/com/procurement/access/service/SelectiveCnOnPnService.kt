@@ -18,6 +18,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -247,9 +248,11 @@ class SelectiveCnOnPnService(
             /** End check Documents */
         }
 
-        check(data)
+        check(data, context)
 
-        return CheckedSelectiveCnOnPn(requireAuction = data.tender.electronicAuctions != null)
+        val requireAuction = isAuctionRequired(data.tender.electronicAuctions, data.tender.procurementMethodModalities)
+
+        return CheckedSelectiveCnOnPn(requireAuction = requireAuction)
     }
 
     fun create(context: CreateSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
@@ -606,81 +609,76 @@ class SelectiveCnOnPnService(
      * BR-3.8.3
      */
     private fun lotsFromPNToCN(lotsFromPN: List<PNEntity.Tender.Lot>): List<CNEntity.Tender.Lot> {
-        return lotsFromPN.map { lot ->
-            /** Begin BR-3.8.7 */
-            val status = if (lot.status == LotStatus.PLANNING)
-                LotStatus.ACTIVE
-            else
-                lot.status
-            /** End BR-3.8.7 */
+        return lotsFromPN
+            .filter { lot -> lot.status == LotStatus.PLANNING }
+            .map { lot ->
+                CNEntity.Tender.Lot(
+                    //BR-3.8.5
+                    id = lot.id,
 
-            CNEntity.Tender.Lot(
-                //BR-3.8.5
-                id = lot.id,
-
-                internalId = lot.internalId,
-                title = lot.title,
-                description = lot.description,
-                /** Begin BR-3.8.7 */
-                status = status,
-                statusDetails = LotStatusDetails.EMPTY,
-                /** End BR-3.8.7 */
-                value = lot.value.let { value ->
-                    CNEntity.Tender.Lot.Value(
-                        amount = value.amount,
-                        currency = value.currency
-                    )
-                },
-                options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
-                recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
-                renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
-                variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
-                contractPeriod = lot.contractPeriod.let { contractPeriod ->
-                    CNEntity.Tender.Lot.ContractPeriod(
-                        startDate = contractPeriod.startDate,
-                        endDate = contractPeriod.endDate
-                    )
-                },
-                placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                    CNEntity.Tender.Lot.PlaceOfPerformance(
-                        address = placeOfPerformance.address.let { address ->
-                            CNEntity.Tender.Lot.PlaceOfPerformance.Address(
-                                streetAddress = address.streetAddress,
-                                postalCode = address.postalCode,
-                                addressDetails = address.addressDetails.let { addressDetails ->
-                                    CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
-                                        country = addressDetails.country.let { country ->
-                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
-                                                scheme = country.scheme, //VR-3.14.1(CheckItem)
-                                                id = country.id,
-                                                description = country.description,
-                                                uri = country.uri
-                                            )
-                                        },
-                                        region = addressDetails.region.let { region ->
-                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
-                                                scheme = region.scheme,
-                                                id = region.id,
-                                                description = region.description,
-                                                uri = region.uri
-                                            )
-                                        },
-                                        locality = addressDetails.locality.let { locality ->
-                                            CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
-                                                scheme = locality.scheme,
-                                                id = locality.id,
-                                                description = locality.description,
-                                                uri = locality.uri
-                                            )
-                                        }
-                                    )
-                                }
-                            )
-                        },
-                        description = placeOfPerformance.description
-                    )
-                }
-            )
+                    internalId = lot.internalId,
+                    title = lot.title,
+                    description = lot.description,
+                    /** Begin BR-3.8.7 */
+                    status = LotStatus.ACTIVE,
+                    statusDetails = LotStatusDetails.EMPTY,
+                    /** End BR-3.8.7 */
+                    value = lot.value.let { value ->
+                        CNEntity.Tender.Lot.Value(
+                            amount = value.amount,
+                            currency = value.currency
+                        )
+                    },
+                    options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
+                    recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
+                    renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
+                    variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
+                    contractPeriod = lot.contractPeriod.let { contractPeriod ->
+                        CNEntity.Tender.Lot.ContractPeriod(
+                            startDate = contractPeriod.startDate,
+                            endDate = contractPeriod.endDate
+                        )
+                    },
+                    placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                        CNEntity.Tender.Lot.PlaceOfPerformance(
+                            address = placeOfPerformance.address.let { address ->
+                                CNEntity.Tender.Lot.PlaceOfPerformance.Address(
+                                    streetAddress = address.streetAddress,
+                                    postalCode = address.postalCode,
+                                    addressDetails = address.addressDetails.let { addressDetails ->
+                                        CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                            country = addressDetails.country.let { country ->
+                                                CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                    scheme = country.scheme, //VR-3.14.1(CheckItem)
+                                                    id = country.id,
+                                                    description = country.description,
+                                                    uri = country.uri
+                                                )
+                                            },
+                                            region = addressDetails.region.let { region ->
+                                                CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                    scheme = region.scheme,
+                                                    id = region.id,
+                                                    description = region.description,
+                                                    uri = region.uri
+                                                )
+                                            },
+                                            locality = addressDetails.locality.let { locality ->
+                                                CNEntity.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                    scheme = locality.scheme,
+                                                    id = locality.id,
+                                                    description = locality.description,
+                                                    uri = locality.uri
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            },
+                            description = placeOfPerformance.description
+                        )
+                    }
+                )
         }
     }
 
@@ -2245,6 +2243,25 @@ class SelectiveCnOnPnService(
             )
     }
 
+
+    private fun isAuctionRequired(electronicAuctions: SelectiveCnOnPnRequest.Tender.ElectronicAuctions?, pmm: Set<ProcurementMethodModalities>?): Boolean =
+        // VR-1.0.1.7.9
+        if (electronicAuctions != null) {
+            if (pmm == null || !pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Auction sign must be passed"
+                )
+            true
+        } else {       // VR-1.0.1.7.10
+            if (pmm != null && pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
+                throw ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Auction sign must be not passed"
+                )
+            false
+        }
+
     /**
      * BR-3.8.14(CN on PN) -> BR-3.6.30(CN)
      *
@@ -2291,7 +2308,7 @@ class SelectiveCnOnPnService(
         return CNEntity.Tender.ContractPeriod(startDate, endDate)
     }
 
-    private fun check(data: SelectiveCnOnPnRequest) {
+    private fun check(data: SelectiveCnOnPnRequest, context: CheckSelectiveCnOnPnContext) {
         val tender = data.tender
         checkCriteriaAndConversion(
             data.mainProcurementCategory,
@@ -2299,7 +2316,10 @@ class SelectiveCnOnPnService(
             tender.awardCriteriaDetails,
             data.items,
             tender.criteria,
-            tender.conversions
+            tender.conversions,
+            rulesService,
+            context.pmd,
+            context.country
         )
     }
 }

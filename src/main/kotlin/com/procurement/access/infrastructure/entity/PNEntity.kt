@@ -16,8 +16,8 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
-import com.procurement.access.infrastructure.bind.amount.AmountDeserializer
-import com.procurement.access.infrastructure.bind.amount.AmountSerializer
+import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveDeserializer
+import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
@@ -51,8 +51,8 @@ data class PNEntity(
         ) {
 
             data class Amount(
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
+                @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                @JsonSerialize(using = AmountPositiveSerializer::class)
                 @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                 @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
@@ -72,8 +72,8 @@ data class PNEntity(
             ) {
 
                 data class Amount(
-                    @JsonDeserialize(using = AmountDeserializer::class)
-                    @JsonSerialize(using = AmountSerializer::class)
+                    @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                    @JsonSerialize(using = AmountPositiveSerializer::class)
                     @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                     @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
@@ -285,8 +285,8 @@ data class PNEntity(
         }
 
         data class Value(
-            @JsonDeserialize(using = AmountDeserializer::class)
-            @JsonSerialize(using = AmountSerializer::class)
+            @JsonDeserialize(using = AmountPositiveDeserializer::class)
+            @JsonSerialize(using = AmountPositiveSerializer::class)
             @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
             @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
         )
@@ -323,8 +323,8 @@ data class PNEntity(
         ) {
 
             data class Value(
-                @JsonDeserialize(using = AmountDeserializer::class)
-                @JsonSerialize(using = AmountSerializer::class)
+                @JsonDeserialize(using = AmountPositiveDeserializer::class)
+                @JsonSerialize(using = AmountPositiveSerializer::class)
                 @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal,
 
                 @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String

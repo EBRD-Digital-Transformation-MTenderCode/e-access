@@ -98,18 +98,21 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
      *
      * eAccess executes next steps:
      * 1. Finds tender.lot object in DB by value of ID (lot.ID) from the context of Request;
-     * 2. Get.lot.value.amount from Lot (found on step 1);
-     * 3. Compares lot.value.amount determined previously with award.value.amount from Request:
-     *     IF value of award.value.amount != 0 && <= (less || equal to) lot.value.amount value, validation is successful;
+     * 2. If award.value.amount present in request:
+     *   Get.lot.value.amount from Lot (found on step 1);
+     *   a. Compares lot.value.amount determined previously with award.value.amount from Request:
+     *   b. IF value of award.value.amount != 0 && <= (less || equal to) lot.value.amount value, validation is successful;
      *     ELSE eAccess throws Exception: "Invalid Award value";
-     * 4. Get.lot.value.currency from Lot (found on step 1);
-     * 5. Compares lot.value.currency determined previously with award.value.currency from Request:
+     * 3. Get.lot.value.currency from Lot (found on step 1);
+     * 4. Compares lot.value.currency determined previously with award.value.currency from Request:
      *     IF value of award.value.currency == (equal to) value of lot.value.currency, validation is successful;
      *     ELSE eAccess throws Exception: "Invalid currency value in award";
      */
     private fun checkAwardValue(lot: CNEntity.Tender.Lot, request: CheckAwardRequest) {
-        if (request.award.value.amount == BigDecimal.ZERO || request.award.value.amount > lot.value.amount)
-            throw ErrorException(error = ErrorType.AWARD_HAS_INVALID_AMOUNT_VALUE)
+        request.award.value.amount?.let { amount ->
+            if (amount == BigDecimal.ZERO || amount > lot.value.amount)
+                throw ErrorException(error = ErrorType.AWARD_HAS_INVALID_AMOUNT_VALUE)
+        }
 
         if (request.award.value.currency != lot.value.currency)
             throw ErrorException(error = ErrorType.AWARD_HAS_INVALID_CURRENCY_VALUE)

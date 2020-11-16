@@ -143,6 +143,7 @@ enum class CommandType(private val value: String) {
     GET_AWARD_CRITERIA("getAwardCriteria"),
     GET_AWARD_CRITERIA_AND_CONVERSIONS("getAwardCriteriaAndConversions"),
     GET_DATA_FOR_AC("getDataForAc"),
+    GET_AP_TITLE_AND_DESCRIPTION("getAPTitleAndDescription"),
     GET_ITEMS_BY_LOT("getItemsByLot"),
     GET_LOT("getLot"),
     GET_LOTS_AUCTION("getLotsAuction"),

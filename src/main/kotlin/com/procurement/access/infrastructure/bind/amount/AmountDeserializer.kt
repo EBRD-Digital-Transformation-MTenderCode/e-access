@@ -18,8 +18,6 @@ class AmountDeserializer : JsonDeserializer<BigDecimal>() {
                 throw AmountValueException(text, exception.message ?: "")
             }
 
-            if (amount <= BigDecimal.ZERO)
-                throw IllegalArgumentException("The value less then zero.")
             return amount
         }
     }

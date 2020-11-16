@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.model.params.GetCurrencyParams
+import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
@@ -29,10 +30,12 @@ import com.procurement.access.exception.ErrorType.IS_NOT_SUSPENDED
 import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.TenderCategoryInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderStateInfo
 import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
+import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryResult
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CancellationRs
@@ -367,5 +370,17 @@ class TenderService(
             .orForwardFail { fail -> return fail }
 
         return GetCurrencyResult(GetCurrencyResult.Tender(GetCurrencyResult.Tender.Value(tenderInfo.tender.value.currency))).asSuccess()
+    }
+
+    fun getMainProcurementCategory(params: GetMainProcurementCategoryParams): Result<GetMainProcurementCategoryResult, Fail> {
+        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .orForwardFail { fail -> return fail }
+            ?: return failure(ValidationErrors.TenderNotFoundOnGetMainProcurementCategory(params.cpid, params.ocid))
+
+        val tenderCategory = tenderEntity.jsonData
+            .tryToObject(TenderCategoryInfo::class.java)
+            .doReturn { incident -> return Fail.Incident.DatabaseIncident(incident.exception).asFailure() }
+
+        return GetMainProcurementCategoryResult(tender = GetMainProcurementCategoryResult.Tender(tenderCategory.tender.mainProcurementCategory)).asSuccess()
     }
 }
