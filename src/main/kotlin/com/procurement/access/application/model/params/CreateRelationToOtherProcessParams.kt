@@ -2,15 +2,17 @@ package com.procurement.access.application.model.params
 
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseEnum
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.success
 
 class CreateRelationToOtherProcessParams(
     val cpid: Cpid,
-    val ocid: String,
+    val ocid: Ocid,
     val relatedCpid: Cpid,
     val operationType: OperationType
 ) {
@@ -62,6 +64,9 @@ class CreateRelationToOtherProcessParams(
             val parsedRelationCpid = parseCpid(value = relatedCpid)
                 .orForwardFail { error -> return error }
 
+            val parsedOcid = parseOcid(value = ocid)
+                .orForwardFail { error -> return error }
+
             val parsedOperationType = parseEnum(
                 value = operationType,
                 target = OperationType,
@@ -73,7 +78,7 @@ class CreateRelationToOtherProcessParams(
             return success(
                 CreateRelationToOtherProcessParams(
                     cpid = parsedCpid,
-                    ocid = ocid,
+                    ocid = parsedOcid,
                     relatedCpid = parsedRelationCpid,
                     operationType = parsedOperationType
                 )

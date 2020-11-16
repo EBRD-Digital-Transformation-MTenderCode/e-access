@@ -7,9 +7,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.config.properties.UriProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.fail.error.DataErrors.Validation.DataMismatchToPattern
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
@@ -17,10 +15,14 @@ import com.procurement.access.domain.model.process.RelatedProcessId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
+import com.procurement.access.domain.util.asFailure
+import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.bind
 import com.procurement.access.domain.util.extension.mapResult
+import com.procurement.access.domain.util.extension.toList
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.RelatedProcessesInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessResult
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
@@ -123,16 +125,10 @@ class OutsourcingServiceImpl(
             tenderProcessRepository: TenderProcessRepository,
             params: CreateRelationToOtherProcessParams
         ): Result<TenderProcessEntity, Fail> {
-            val ocid = Ocid.tryCreate(params.ocid)
-                .doReturn { fail ->
-                    return failure(
-                        DataMismatchToPattern(name = "ocid", actualValue = params.ocid, pattern = Ocid.pattern)
-                    )
-                }
-            val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
+            val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
                 .orForwardFail { fail -> return fail }
                 ?: return failure(
-                    ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
+                    ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, params.ocid)
                 )
 
             return success(entity)
@@ -140,6 +136,12 @@ class OutsourcingServiceImpl(
     }
 
     override fun createRelationToOtherProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult, Fail> {
+
+        val storedRelatedProcess = findStoredRelatedProcess(params)
+            .orForwardFail { return it }
+
+        if (storedRelatedProcess != null)
+            return storedRelatedProcess.asSuccess()
 
         val definedRelationship = defineRelationProcessType(params.operationType)
             .orForwardFail { fail -> return fail }
@@ -200,5 +202,26 @@ class OutsourcingServiceImpl(
 
         // FR.COM-1.22.7
         return success(response)
+    }
+
+    private fun findStoredRelatedProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult?, Fail> {
+        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .orForwardFail { fail -> return fail }
+            ?: return null.asSuccess()
+
+        val relatedProcess = tenderEntity.jsonData
+            .tryToObject(RelatedProcessesInfo::class.java)
+            .doReturn { incident -> return Fail.Incident.DatabaseIncident(incident.exception).asFailure() }
+
+        val suitableRelatedProcess = relatedProcess.relatedProcesses?.firstOrNull { it.identifier == params.relatedCpid.toString() }
+
+        return suitableRelatedProcess?.let {
+            CreateRelationToOtherProcessResult(
+                relatedProcesses = CreateRelationToOtherProcessResult
+                    .fromDomain(it)
+                    .orForwardFail { fail -> return fail }
+                    .toList()
+            )
+        }.asSuccess()
     }
 }
