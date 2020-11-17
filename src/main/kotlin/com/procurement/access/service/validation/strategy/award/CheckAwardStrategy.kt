@@ -101,7 +101,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
      * 2. If award.value.amount present in request:
      *   Get.lot.value.amount from Lot (found on step 1);
      *   a. Compares lot.value.amount determined previously with award.value.amount from Request:
-     *   b. IF value of award.value.amount != 0 && <= (less || equal to) lot.value.amount value, validation is successful;
+     *   b. IF value of award.value.amount > 0 && <= (less || equal to) lot.value.amount value, validation is successful;
      *     ELSE eAccess throws Exception: "Invalid Award value";
      * 3. Get.lot.value.currency from Lot (found on step 1);
      * 4. Compares lot.value.currency determined previously with award.value.currency from Request:
@@ -110,7 +110,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
      */
     private fun checkAwardValue(lot: CNEntity.Tender.Lot, request: CheckAwardRequest) {
         request.award.value.amount?.let { amount ->
-            if (amount == BigDecimal.ZERO || amount > lot.value.amount)
+            if (amount <= BigDecimal.ZERO || amount > lot.value.amount)
                 throw ErrorException(error = ErrorType.AWARD_HAS_INVALID_AMOUNT_VALUE)
         }
 
