@@ -18,14 +18,34 @@ import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
 import com.procurement.access.infrastructure.dto.pn.converter.convert
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
-import com.procurement.access.json.*
-import com.procurement.access.model.dto.bpe.*
+import com.procurement.access.json.JsonFilePathGenerator
+import com.procurement.access.json.JsonValidator
+import com.procurement.access.json.deepCopy
+import com.procurement.access.json.getArray
+import com.procurement.access.json.getObject
+import com.procurement.access.json.getString
+import com.procurement.access.json.loadJson
+import com.procurement.access.json.putAttribute
+import com.procurement.access.json.putObject
+import com.procurement.access.json.setAttribute
+import com.procurement.access.json.testingBindingAndMapping
+import com.procurement.access.json.toJson
+import com.procurement.access.json.toNode
+import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.country
+import com.procurement.access.model.dto.bpe.owner
+import com.procurement.access.model.dto.bpe.pmd
+import com.procurement.access.model.dto.bpe.stage
+import com.procurement.access.model.dto.bpe.startDate
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.utils.toObject
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -500,6 +520,42 @@ class PnServiceTest {
                     testOfCreate(pmd = pmd, testData = testData)
                 }
             }
+        }
+
+        @Nested
+        inner class CheckDucumentsRelationWithLot {
+
+            @Test
+            fun missingLot() {
+                val (lot1, lot2) = listOf("1", "2")
+                val (doc1, doc2, doc3) = listOf("doc1", "doc2", "doc3")
+                val receivedLots = setOf(lot1, lot2)
+                val docsWithRelatedLot = mapOf(
+                    doc1 to listOf(lot1),
+                    doc2 to listOf(lot2),
+                    doc3 to listOf("UNKNOWN")
+                )
+
+                val exception = assertThrows<ErrorException> {
+                    service.checkDocumentsRelationWithLot(docsWithRelatedLot, receivedLots)
+                }
+
+                assertEquals(ErrorType.INVALID_DOCS_RELATED_LOTS, exception.error)
+            }
+
+            @Test
+            fun allLotsReceived() {
+                val (lot1, lot2) = listOf("1", "2")
+                val (doc1, doc2) = listOf("doc1", "doc2")
+                val receivedLots = setOf(lot1, lot2)
+                val docsWithRelatedLot = mapOf(
+                    doc1 to listOf(lot1),
+                    doc2 to listOf(lot2)
+                )
+
+                assertDoesNotThrow { service.checkDocumentsRelationWithLot(docsWithRelatedLot, receivedLots) }
+            }
+
         }
 
         private fun testOfCreate(
