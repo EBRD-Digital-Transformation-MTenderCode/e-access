@@ -18,12 +18,29 @@ import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
-import com.procurement.access.json.*
+import com.procurement.access.json.JsonFilePathGenerator
+import com.procurement.access.json.JsonValidator
+import com.procurement.access.json.deepCopy
+import com.procurement.access.json.getArray
+import com.procurement.access.json.getObject
+import com.procurement.access.json.getString
+import com.procurement.access.json.loadJson
+import com.procurement.access.json.putAttribute
+import com.procurement.access.json.putObject
+import com.procurement.access.json.setAttribute
+import com.procurement.access.json.testingBindingAndMapping
+import com.procurement.access.json.toJson
+import com.procurement.access.json.toNode
+import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.model.dto.databinding.toLocalDateTime
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
@@ -36,6 +53,8 @@ class NegotiationCnOnPnServiceTest {
 
         private const val LOT_STATUS = "active"
         private const val LOT_STATUS_DETAILS = "empty"
+
+        private const val PERMANENT_TENDER_ID = "bd56490f-57ca-4d1a-9210-250cb9b4eed3"
 
         private const val PERMANENT_LOT_ID_1 = "permanent-lot-1"
         private const val PERMANENT_LOT_ID_2 = "permanent-lot-2"
@@ -852,6 +871,9 @@ class NegotiationCnOnPnServiceTest {
             val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
             whenever(generationService.generateOcid(cpid = any(), stage = any()))
                 .thenReturn(ocid)
+
+            whenever(generationService.generatePermanentTenderId())
+                .thenReturn(PERMANENT_TENDER_ID)
 
             val actualJson = service.create(context = context, data = data).toJson()
 
