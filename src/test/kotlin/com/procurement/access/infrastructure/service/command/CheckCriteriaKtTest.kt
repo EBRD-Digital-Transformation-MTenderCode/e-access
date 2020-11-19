@@ -200,7 +200,7 @@ internal class CheckCriteriaKtTest {
             ItemReferenceRequest(id = "", relatedLot = lotsCriteria[1].relatedItem!!)
         )
 
-        val limit = 0.8.toBigDecimal()
+        val limit = 0.2.toBigDecimal()
         whenever(rulesService.getMinSpecificWeightPriceLimits(country, pmd))
             .thenReturn(
                 MinSpecificWeightPriceRule(
@@ -251,7 +251,7 @@ internal class CheckCriteriaKtTest {
                 mainProcurementCategory, criteria, conversions, items, rulesService, pmd, country
             )
         }
-        val expectedError = "Invalid conversion value. Minimal price share of requirements 'req1' must be less than 0.69. Actual value: '0.7'."
+        val expectedError = "Invalid conversion value. Minimal price share of requirements 'req1, req2' must be greater than 0.69. Actual value: '0.21'."
         assertEquals(expectedError, result.message)
     }
 

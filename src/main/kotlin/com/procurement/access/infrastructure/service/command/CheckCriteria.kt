@@ -559,7 +559,7 @@ private fun calculateMinSpecificWeightPrice(
         .filterNotNull()
         .map { conversion -> conversion.coefficients.minBy { it.coefficient.rate }!!.coefficient.rate }
     return if (minimumCoefficients.isEmpty())
-        BigDecimal.ZERO
+        BigDecimal.ONE
     else
         minimumCoefficients.fold(BigDecimal.ONE, java.math.BigDecimal::multiply)
 }
@@ -576,11 +576,11 @@ private fun checkMinSpecificWeightPrice(
         MainProcurementCategory.SERVICES -> minSpecificWeightPrice.services
     }
 
-    if (minimalPriceShare > limit)
+    if (minimalPriceShare < limit)
         throw  ErrorException(
             ErrorType.INVALID_CONVERSION,
             message = "Minimal price share of requirements " +
-                "'${requirements.map { it.id }.joinToString()}' must be less than ${limit}. Actual value: '$minimalPriceShare'."
+                "'${requirements.map { it.id }.joinToString()}' must be greater than ${limit}. Actual value: '$minimalPriceShare'."
         )
 }
 
