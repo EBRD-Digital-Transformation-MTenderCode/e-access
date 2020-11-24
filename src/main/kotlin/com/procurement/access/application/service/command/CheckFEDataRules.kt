@@ -456,9 +456,10 @@ class CheckFEDataRules {
                 )
             }
             val allowedScale = 3
-            criteria
-                .flatMap { it.requirementGroups }
-                .flatMap { it.requirements }
+
+            criteria.asSequence()
+                .flatMap { it.requirementGroups.asSequence() }
+                .flatMap { it.requirements.asSequence() }
                 .forEach { requirement ->
                 when(requirement.dataType) {
                     RequirementDataType.NUMBER -> {
