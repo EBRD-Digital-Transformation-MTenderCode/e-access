@@ -434,7 +434,7 @@
         "title": "request.pn.tender.document[0].title",
         "description": "request.pn.tender.document[0].description",
         "relatedLots": [
-          "permanent-lot-1"
+          "permanent-lot-3"
         ]
       }
     ]
