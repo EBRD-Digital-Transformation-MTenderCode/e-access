@@ -795,7 +795,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
+                        val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, OpenCnOnPnRequest::class.java)
                         val result: CheckedOpenCnOnPn = cnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")
@@ -820,7 +820,7 @@ class CommandService(
                             previousStage = cm.prevStage,
                             startDate = cm.startDate
                         )
-                        val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
+                        val request: NegotiationCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, NegotiationCnOnPnRequest::class.java)
                         val result: CheckedNegotiationCnOnPn =
                             negotiationCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
@@ -848,7 +848,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
+                        val request: SelectiveCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, SelectiveCnOnPnRequest::class.java)
                         val result: CheckedSelectiveCnOnPn =
                             selectiveCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
