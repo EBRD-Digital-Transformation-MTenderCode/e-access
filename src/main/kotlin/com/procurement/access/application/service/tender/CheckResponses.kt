@@ -3,8 +3,8 @@ package com.procurement.access.application.service.tender
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
-import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.domain.util.extension.getMissingElements
 import com.procurement.access.domain.util.extension.getUnknownElements
@@ -15,25 +15,6 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.Clock
 import java.time.LocalDateTime
-
-fun checkRequirementRelationRelevance(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
-    val requirementIds = criteria.asSequence()
-        .flatMap { it.requirementGroups.asSequence() }
-        .flatMap { it.requirements.asSequence() }
-        .map { it.id }
-        .toSet()
-
-    data.bid.requirementResponses
-        .asSequence()
-        .map { it.requirement }
-        .forEach { requirement ->
-            if (requirement.id !in requirementIds)
-                throw ErrorException(
-                    error = ErrorType.INVALID_REQUIREMENT_VALUE,
-                    message = "No requirement founded by id: '${requirement.id}'."
-                )
-        }
-}
 
 fun checkProcuringEntityNotAnswered(data: CheckResponsesData, criteria: List<CNEntity.Tender.Criteria>) {
     val requirementsById = criteria.asSequence()
@@ -116,57 +97,84 @@ fun checkAnswerByLotRequirements(
         )
 }
 
-fun checkAnswerByTenderAndTendererRequirements(
-    data: CheckResponsesData,
-    criteria: List<CNEntity.Tender.Criteria>,
-    pmd: ProcurementMethod
-) = when (pmd) {
-    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-    ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-    ProcurementMethod.MV, ProcurementMethod.TEST_MV ->
-        //FR.COM-1.16.4
-        checkAnswerByTenderAndTendererRequirements(data, criteria)
+fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, responses: CheckResponsesData, stage: Stage) {
+    val receivedItems = responses.items.map { it.id }
+    val answeredRequirements = responses.bid.requirementResponses.map { it.requirement.id }
+    val biddedLots = responses.bid.relatedLots
 
-    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
-    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
-    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
-    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
-    ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
-        //FR.COM-1.16.10
-        checkAllAnswersReceivedByTenderRequirements(data, criteria)
-        //FR.COM-1.16.11
-        checkNoAnswerReceivedByTendererRequirements(data, criteria)
+    val criteriaToTender = criteria.filter { it.relatesTo == null }
+    val criteriaToTenderer = criteria.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+    val criteriaToLot = criteria.filter { it.relatedItem in biddedLots }
+    val criteriaToItem = criteria.filter { it.relatedItem in receivedItems }
+
+    when(stage) {
+        Stage.EV -> {
+            val requirementsPackage = (criteriaToTender + criteriaToTenderer + criteriaToLot + criteriaToItem)
+                .flatMap { it.requirementGroups }
+                .flatMap { it.requirements }
+                .map { it.id }
+
+            val nonAnsweredRequirements = requirementsPackage - answeredRequirements
+            if (nonAnsweredRequirements.isNotEmpty())
+                throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                    message = "Need answer on the next requirements: $nonAnsweredRequirements."
+                )
+        }
+        Stage.TP -> {
+            val requirementsPackage = (criteriaToTender + criteriaToLot + criteriaToItem)
+                .flatMap { it.requirementGroups }
+                .flatMap { it.requirements }
+                .map { it.id }
+
+            val nonAnsweredRequirements = requirementsPackage - answeredRequirements
+            if (nonAnsweredRequirements.isNotEmpty())
+                throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                    message = "Need answer on the next requirements: $nonAnsweredRequirements."
+                )
+        }
+        Stage.AC,
+        Stage.AP,
+        Stage.EI,
+        Stage.FE,
+        Stage.FS,
+        Stage.NP,
+        Stage.PC,
+        Stage.PN -> Unit
     }
-    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
-    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-    ProcurementMethod.OP, ProcurementMethod.TEST_OP,
-    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
-    ProcurementMethod.CD, ProcurementMethod.TEST_CD,
-    ProcurementMethod.DC, ProcurementMethod.TEST_DC,
-    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
-    ProcurementMethod.IP, ProcurementMethod.TEST_IP -> Unit
 }
 
-private fun checkAnswerByTenderAndTendererRequirements(
-    data: CheckResponsesData,
-    criteria: List<CNEntity.Tender.Criteria>
-) {
-    val requirementsReceived = data.bid.requirementResponses.map { it.requirement.id }
+fun checkResponsesRelationToOneGroup(criteria: List<CNEntity.Tender.Criteria>, responses: CheckResponsesData) {
+    criteria.forEach { criterion ->
+        val receivedResponsesIds = responses.bid.requirementResponses.map { it.requirement.id }
 
-    val tenderRequirements = criteria.asSequence()
-        .filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER || it.relatesTo == null }
+        val usedGroups = criterion.requirementGroups
+            .associate { it.id to it.requirements.map { it.id } }
+            .filter { (_, requirements) -> receivedResponsesIds.any { it in requirements } }
+
+        if (usedGroups.count() > 1)
+            throw ErrorException(
+                error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                message = "Requirements responses relates to more than one requirement group in criteria '${criterion.id}'."
+            )
+    }
+}
+
+fun checkAnsweredOnlyExpectedRequirement(criteria: List<CNEntity.Tender.Criteria>, responses: CheckResponsesData) {
+    val storedRequirements = criteria.asSequence()
         .flatMap { it.requirementGroups.asSequence() }
         .flatMap { it.requirements.asSequence() }
         .map { it.id }
         .toList()
 
-    val answeredTender = (tenderRequirements).intersect(requirementsReceived)
-    if (answeredTender.size != tenderRequirements.size)
+    val receivedRequirementResponses = responses.bid.requirementResponses.map { it.requirement.id }
+
+    val redundantAnswers = receivedRequirementResponses - storedRequirements
+    if (redundantAnswers.isNotEmpty())
         throw ErrorException(
-            error = ErrorType.INVALID_SUITE_OF_REQUIREMENTS,
-            message = "Found ${tenderRequirements.size} requirements in DB for tender and tenderer but received answers for ${answeredTender.size}. " +
-                "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
+            error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+            message = "Redundant responses for requirements. Requirement ids: ${redundantAnswers}."
         )
 }
 

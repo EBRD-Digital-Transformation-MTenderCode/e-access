@@ -13,14 +13,13 @@ import com.procurement.access.application.model.data.GetAwardCriteriaAndConversi
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.application.service.tender.checkAnswerByLotRequirements
-import com.procurement.access.application.service.tender.checkAnswerByTenderAndTendererRequirements
 import com.procurement.access.application.service.tender.checkAnsweredOnce
+import com.procurement.access.application.service.tender.checkAnsweredOnlyExpectedRequirement
 import com.procurement.access.application.service.tender.checkDataTypeValue
 import com.procurement.access.application.service.tender.checkIdsUniqueness
 import com.procurement.access.application.service.tender.checkPeriod
-import com.procurement.access.application.service.tender.checkProcuringEntityNotAnswered
-import com.procurement.access.application.service.tender.checkRequirementRelationRelevance
+import com.procurement.access.application.service.tender.checkResponsesCompleteness
+import com.procurement.access.application.service.tender.checkResponsesRelationToOneGroup
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
@@ -81,14 +80,15 @@ class CriteriaServiceImpl(
         val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
         val criteria = cnEntity.tender.criteria.orEmpty()
 
-        // FR.COM-1.16.1
-        checkRequirementRelationRelevance(data = data, criteria = criteria)
-        // FR.COM-1.16.2
-        checkProcuringEntityNotAnswered(data = data, criteria = criteria)
-        // FR.COM-1.16.3
-        checkAnswerByLotRequirements(data = data, criteria = criteria, items = cnEntity.tender.items)
-        //FR.COM-1.16.4 & FR.COM-1.16.10 & FR.COM-1.16.11
-        checkAnswerByTenderAndTendererRequirements(data = data, criteria = criteria, pmd = context.pmd)
+        // FR.COM-1.16.12 & FR.COM-1.16.13
+        checkResponsesCompleteness(criteria, data, Stage.creator(context.stage))
+
+        // FR.COM-1.16.14
+        checkResponsesRelationToOneGroup(criteria, data)
+
+        // FR.COM-1.16.15
+        checkAnsweredOnlyExpectedRequirement(criteria, data)
+
         // FR.COM-1.16.5
         checkDataTypeValue(data = data, criteria = criteria)
         // FR.COM-1.16.6
