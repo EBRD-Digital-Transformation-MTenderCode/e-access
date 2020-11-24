@@ -455,6 +455,7 @@ class CheckFEDataRules {
                     message = "Invalid scale ($allowedScale) for 'number' datatype"
                 )
             }
+            val allowedScale = 3
             criteria
                 .flatMap { it.requirementGroups }
                 .flatMap { it.requirements }
@@ -463,14 +464,14 @@ class CheckFEDataRules {
                     RequirementDataType.NUMBER -> {
                         when (requirement.value) {
                             is ExpectedValue.AsNumber ->
-                                if (requirement.value.value.scale() > 3) invalidScale(allowedScale = 3)
+                                if (requirement.value.value.scale() > allowedScale) invalidScale(allowedScale)
                             is MinValue.AsNumber ->
-                                if (requirement.value.value.scale() > 3) invalidScale(allowedScale = 3)
+                                if (requirement.value.value.scale() > allowedScale) invalidScale(allowedScale)
                             is MaxValue.AsNumber ->
-                                if (requirement.value.value.scale() > 3) invalidScale(allowedScale = 3)
+                                if (requirement.value.value.scale() > allowedScale) invalidScale(allowedScale)
                             is RangeValue.AsNumber -> {
-                                if (requirement.value.minValue.scale() > 3) invalidScale(allowedScale = 3)
-                                if (requirement.value.maxValue.scale() > 3) invalidScale(allowedScale = 3)
+                                if (requirement.value.minValue.scale() > allowedScale) invalidScale(allowedScale)
+                                if (requirement.value.maxValue.scale() > allowedScale) invalidScale(allowedScale)
                             }
                             is MinValue.AsInteger,
                             is RangeValue.AsInteger,
