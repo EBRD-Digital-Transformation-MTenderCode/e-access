@@ -447,5 +447,45 @@ class CheckFEDataRules {
                     message = "Cannot found tender (cpid='${cpid}' and stage='${stage}')"
                 )
         }
+
+        fun checkCriteriaValueScale(criteria: List<CheckFEDataData.Tender.Criteria>) {
+            fun invalidScale(allowedScale: Int): Nothing {
+                throw ErrorException(
+                    error = ErrorType.INVALID_CRITERIA,
+                    message = "Invalid scale ($allowedScale) for 'number' datatype"
+                )
+            }
+            criteria
+                .flatMap { it.requirementGroups }
+                .flatMap { it.requirements }
+                .forEach { requirement ->
+                when(requirement.dataType) {
+                    RequirementDataType.NUMBER -> {
+                        when (requirement.value) {
+                            is ExpectedValue.AsNumber ->
+                                if (requirement.value.value.scale() > 3) invalidScale(allowedScale = 3)
+                            is MinValue.AsNumber ->
+                                if (requirement.value.value.scale() > 3) invalidScale(allowedScale = 3)
+                            is MaxValue.AsNumber ->
+                                if (requirement.value.value.scale() > 3) invalidScale(allowedScale = 3)
+                            is RangeValue.AsNumber -> {
+                                if (requirement.value.minValue.scale() > 3) invalidScale(allowedScale = 3)
+                                if (requirement.value.maxValue.scale() > 3) invalidScale(allowedScale = 3)
+                            }
+                            is MinValue.AsInteger,
+                            is RangeValue.AsInteger,
+                            is MaxValue.AsInteger,
+                            is ExpectedValue.AsBoolean,
+                            is ExpectedValue.AsString,
+                            is ExpectedValue.AsInteger,
+                            NoneValue -> Unit
+                        }
+                    }
+                    RequirementDataType.BOOLEAN,
+                    RequirementDataType.STRING,
+                    RequirementDataType.INTEGER -> Unit
+                }
+            }
+        }
     }
 }

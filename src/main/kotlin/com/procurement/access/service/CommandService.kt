@@ -820,7 +820,7 @@ class CommandService(
                             previousStage = cm.prevStage,
                             startDate = cm.startDate
                         )
-                        val request: NegotiationCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, NegotiationCnOnPnRequest::class.java)
+                        val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
                         val result: CheckedNegotiationCnOnPn =
                             negotiationCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
