@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
 import com.procurement.access.utils.toJson
 import com.worldturner.medeia.api.UrlSchemaSource
 import com.worldturner.medeia.api.ValidationFailedException
 import com.worldturner.medeia.api.jackson.MedeiaJacksonApi
 
 interface JsonValidationService {
-    fun validateCriteria(json: JsonNode): OpenCnOnPnRequest
+    fun <T: Any> validateCriteria(json: JsonNode, clazz: Class<T>): T
 }
 
 class MedeiaValidationService(
@@ -24,7 +23,7 @@ class MedeiaValidationService(
 
     private val criteriaValidator = api.loadSchema(criteriaSchema)
 
-    override fun validateCriteria(json: JsonNode): OpenCnOnPnRequest =
+    override fun <T: Any> validateCriteria(json: JsonNode, clazz: Class<T>): T =
         try {
             val unvalidatedParser = objectMapper.factory.createParser(toJson(json))
             val decoratedParser = api.decorateJsonParser(criteriaValidator, unvalidatedParser)
@@ -32,7 +31,7 @@ class MedeiaValidationService(
             /* ¯╰( ´・ω・)つ──☆ ✿✿✿ */ api.parseAll(decoratedParser) /* ✿✿✿  */
 
             val validatedParser = objectMapper.factory.createParser(toJson(json))
-            objectMapper.readValue(validatedParser, OpenCnOnPnRequest::class.java)
+            objectMapper.readValue(validatedParser, clazz)
         } catch (exception: Exception) {
             errorHandling(exception)
         }
