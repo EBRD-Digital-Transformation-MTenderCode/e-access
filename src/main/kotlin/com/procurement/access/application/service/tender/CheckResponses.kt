@@ -138,26 +138,28 @@ fun checkResponsesRelationToOneGroup(criteria: List<CNEntity.Tender.Criteria>, r
             .associate { it.id to it.requirements.map { it.id } }
             .filter { (_, requirements) -> receivedResponsesIds.any { it in requirements } }
 
-        if (usedGroups.count() > 1)
-            throw ErrorException(
-                error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
-                message = "Requirements responses relates to more than one requirement group in criteria '${criterion.id}'."
-            )
-
-        if (usedGroups.count() == 1) {
-            val storedRequirements = usedGroups.values.flatten()
-            if (!receivedResponsesIds.containsAll(storedRequirements))
+        val answeredGroups = usedGroups.count()
+        when {
+            answeredGroups == 0 ->
                 throw ErrorException(
-                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
-                    message = "Need answer on all requirement in specified requirement group '${usedGroups.keys}'."
-                )
-        }
-
-        if (usedGroups.count() == 0)
-            throw ErrorException(
                 error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
                 message = "Need answer on the next criterion: ${criterion.id}."
             )
+
+            answeredGroups == 1 -> {
+                val storedRequirements = usedGroups.values.flatten()
+                if (!receivedResponsesIds.containsAll(storedRequirements))
+                    throw ErrorException(
+                        error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                        message = "Need answer on all requirement in specified requirement group '${usedGroups.keys}'."
+                    )
+            }
+            else ->
+                throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                    message = "Requirements responses relates to more than one requirement group in criteria '${criterion.id}'."
+                )
+        }
     }
 }
 
