@@ -81,9 +81,6 @@ class CriteriaServiceImpl(
         // FR.COM-1.16.12 & FR.COM-1.16.13 && FR.COM-1.16.15 && FR.COM-1.16.14
         checkResponsesCompleteness(criteria, data, Stage.creator(context.stage))
 
-        // FR.COM-1.16.14
-//        checkResponsesRelationToOneGroup(criteria, data)
-
         // FR.COM-1.16.5
         checkDataTypeValue(data = data, criteria = criteria)
         // FR.COM-1.16.6
