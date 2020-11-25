@@ -18,7 +18,6 @@ import com.procurement.access.application.service.tender.checkDataTypeValue
 import com.procurement.access.application.service.tender.checkIdsUniqueness
 import com.procurement.access.application.service.tender.checkPeriod
 import com.procurement.access.application.service.tender.checkResponsesCompleteness
-import com.procurement.access.application.service.tender.checkResponsesRelationToOneGroup
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
@@ -79,11 +78,11 @@ class CriteriaServiceImpl(
         val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
         val criteria = cnEntity.tender.criteria.orEmpty()
 
-        // FR.COM-1.16.12 & FR.COM-1.16.13 && FR.COM-1.16.15
+        // FR.COM-1.16.12 & FR.COM-1.16.13 && FR.COM-1.16.15 && FR.COM-1.16.14
         checkResponsesCompleteness(criteria, data, Stage.creator(context.stage))
 
         // FR.COM-1.16.14
-        checkResponsesRelationToOneGroup(criteria, data)
+//        checkResponsesRelationToOneGroup(criteria, data)
 
         // FR.COM-1.16.5
         checkDataTypeValue(data = data, criteria = criteria)
