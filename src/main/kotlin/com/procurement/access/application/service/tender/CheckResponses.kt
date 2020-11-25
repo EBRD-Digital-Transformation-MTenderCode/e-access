@@ -98,6 +98,13 @@ fun checkAnswerByLotRequirements(
 }
 
 fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, responses: CheckResponsesData, stage: Stage) {
+    fun getRequirementsIds(criteria: List<CNEntity.Tender.Criteria>): List<String> =
+        criteria.asSequence()
+            .flatMap { it.requirementGroups.asSequence() }
+            .flatMap { it.requirements.asSequence() }
+            .map { it.id }
+            .toList()
+
     val receivedItems = responses.items.map { it.id }
     val answeredRequirements = responses.bid.requirementResponses.map { it.requirement.id }
     val biddedLots = responses.bid.relatedLots
@@ -109,10 +116,8 @@ fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, respons
 
     when(stage) {
         Stage.EV -> {
-            val requirementsPackage = (criteriaToTender + criteriaToTenderer + criteriaToLot + criteriaToItem)
-                .flatMap { it.requirementGroups }
-                .flatMap { it.requirements }
-                .map { it.id }
+            val criteriaPackage = (criteriaToTender + criteriaToTenderer + criteriaToLot + criteriaToItem)
+            val requirementsPackage = getRequirementsIds(criteriaPackage)
 
             val nonAnsweredRequirements = requirementsPackage - answeredRequirements
             if (nonAnsweredRequirements.isNotEmpty())
@@ -120,12 +125,12 @@ fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, respons
                     error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
                     message = "Need answer on the next requirements: $nonAnsweredRequirements."
                 )
+
+            checkAnsweredOnlyExpectedRequirement(criteriaPackage, responses)
         }
         Stage.TP -> {
-            val requirementsPackage = (criteriaToTender + criteriaToLot + criteriaToItem)
-                .flatMap { it.requirementGroups }
-                .flatMap { it.requirements }
-                .map { it.id }
+            val criteriaPackage = (criteriaToTender + criteriaToLot + criteriaToItem)
+            val requirementsPackage = getRequirementsIds(criteriaPackage)
 
             val nonAnsweredRequirements = requirementsPackage - answeredRequirements
             if (nonAnsweredRequirements.isNotEmpty())
@@ -133,6 +138,8 @@ fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, respons
                     error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
                     message = "Need answer on the next requirements: $nonAnsweredRequirements."
                 )
+
+            checkAnsweredOnlyExpectedRequirement(criteriaPackage, responses)
         }
         Stage.AC,
         Stage.AP,
@@ -175,49 +182,6 @@ fun checkAnsweredOnlyExpectedRequirement(criteria: List<CNEntity.Tender.Criteria
         throw ErrorException(
             error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
             message = "Redundant responses for requirements. Requirement ids: ${redundantAnswers}."
-        )
-}
-
-private fun checkAllAnswersReceivedByTenderRequirements(
-    data: CheckResponsesData,
-    criteria: List<CNEntity.Tender.Criteria>
-) {
-    val requirementsReceived = data.bid.requirementResponses.map { it.requirement.id }
-
-    val tenderRequirements = criteria.asSequence()
-        .filter { it.relatesTo == null }
-        .flatMap { it.requirementGroups.asSequence() }
-        .flatMap { it.requirements.asSequence() }
-        .map { it.id }
-        .toList()
-
-    val answeredTender = (tenderRequirements).intersect(requirementsReceived)
-    if (answeredTender.size != tenderRequirements.size)
-        throw ErrorException(
-            error = ErrorType.INVALID_SUITE_OF_REQUIREMENTS,
-            message = "Found ${tenderRequirements.size} requirements in DB for tender but received answers for ${answeredTender.size}. " +
-                "Ignored requirements: ${tenderRequirements.minus(answeredTender)} "
-        )
-}
-
-private fun checkNoAnswerReceivedByTendererRequirements(
-    data: CheckResponsesData,
-    criteria: List<CNEntity.Tender.Criteria>
-) {
-    val requirementsReceived = data.bid.requirementResponses.map { it.requirement.id }
-
-    val tendererRequirements = criteria.asSequence()
-        .filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
-        .flatMap { it.requirementGroups.asSequence() }
-        .flatMap { it.requirements.asSequence() }
-        .map { it.id }
-        .toList()
-
-    val answeredTenderer = (tendererRequirements).intersect(requirementsReceived)
-    if (answeredTenderer.isNotEmpty())
-        throw ErrorException(
-            error = ErrorType.INVALID_SUITE_OF_REQUIREMENTS,
-            message = "Redundant requirement responses has been provided for tenderer requirement(s) ${answeredTenderer.joinToString()}. "
         )
 }
 

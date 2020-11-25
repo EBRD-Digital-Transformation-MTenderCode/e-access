@@ -848,7 +848,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: SelectiveCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, SelectiveCnOnPnRequest::class.java)
+                        val request: SelectiveCnOnPnRequest = toObject(SelectiveCnOnPnRequest::class.java, cm.data)
                         val result: CheckedSelectiveCnOnPn =
                             selectiveCnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
