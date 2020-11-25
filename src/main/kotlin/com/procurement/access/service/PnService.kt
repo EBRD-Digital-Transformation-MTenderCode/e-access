@@ -120,6 +120,10 @@ class PnService(
         val isUniqueDocuments = documents.uniqueBy { it.id }
         if (!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
 
+        val documentWithRelatedLots = documents.associate { it.id to it.relatedLots }
+        val receivedLotIds = request.tender.lots.toSetBy { it.id }
+        checkDocumentsRelationWithLot(documentWithRelatedLots, receivedLotIds)
+
         //VR-3.6.1
         checkTenderDocumentsTypes(request)
 
@@ -162,6 +166,18 @@ class PnService(
 
             //VR-3.1.11 "Contract Period" (Lot)
             checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
+        }
+    }
+
+    fun checkDocumentsRelationWithLot(documents: Map<String, List<String>>, lotsIds: Set<String>) {
+        documents.forEach { (documentId, relatedLots)  ->
+            relatedLots.forEach { relatedLot ->
+                if (relatedLot !in lotsIds)
+                    throw ErrorException(
+                        error = ErrorType.INVALID_DOCS_RELATED_LOTS,
+                        message = "Cannot find lot (id '${relatedLot}') assigned to documents['${documentId}'].relatedLot"
+                    )
+            }
         }
     }
 

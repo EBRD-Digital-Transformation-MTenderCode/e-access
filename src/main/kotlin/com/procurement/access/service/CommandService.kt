@@ -795,7 +795,7 @@ class CommandService(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data)
+                        val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, OpenCnOnPnRequest::class.java)
                         val result: CheckedOpenCnOnPn = cnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")

@@ -98,6 +98,9 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
                 // FReq-1.1.1.29
                 CheckFEDataRules.checkCriteriaRelation(criteria.map { it.relatesTo })
+
+                // FReq-1.1.1.25
+                CheckFEDataRules.checkCriteriaValueScale(criteria)
             }
 
         // FR.COM-1.27.7

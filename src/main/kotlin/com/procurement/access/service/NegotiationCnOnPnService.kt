@@ -730,7 +730,7 @@ class NegotiationCnOnPnService(
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
         return CNEntity.Tender(
-            id = pnEntity.tender.id, //BR-3.8.1
+            id = generationService.generatePermanentTenderId(), // BR-1.0.1.4.7
             /** Begin BR-3.8.8 -> BR-3.6.2*/
             status = status,
             statusDetails = statusDetails,

@@ -909,7 +909,7 @@ class OpenCnOnPnServiceTest {
                 requestNode.getObject("tender").remove("procuringEntity")
                 val context: CheckOpenCnOnPnContext = checkContext()
                 whenever(rulesService.getMinSpecificWeightPriceLimits(country = context.country, pmd = context.pmd)).thenReturn(
-                    MinSpecificWeightPriceRule(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE)
+                    MinSpecificWeightPriceRule(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
                 )
 
                 assertDoesNotThrow { service.check(context = context, data = requestNode.toObject()) }
@@ -932,7 +932,7 @@ class OpenCnOnPnServiceTest {
                     val context: CheckOpenCnOnPnContext = checkContext()
 
                     whenever(rulesService.getMinSpecificWeightPriceLimits(country = context.country, pmd = context.pmd)).thenReturn(
-                        MinSpecificWeightPriceRule(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE)
+                        MinSpecificWeightPriceRule(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
                     )
 
                     assertDoesNotThrow { service.check(context = context, data = requestNode.toObject()) }
@@ -1119,7 +1119,7 @@ class OpenCnOnPnServiceTest {
                     val context: CheckOpenCnOnPnContext = checkContext()
 
                     whenever(rulesService.getMinSpecificWeightPriceLimits(country = context.country, pmd = context.pmd)).thenReturn(
-                        MinSpecificWeightPriceRule(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE)
+                        MinSpecificWeightPriceRule(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
                     )
 
                     assertDoesNotThrow { service.check(context = context, data = requestNode.toObject()) }

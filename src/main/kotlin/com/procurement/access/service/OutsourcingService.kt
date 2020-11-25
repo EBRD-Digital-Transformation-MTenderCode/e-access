@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.params.CreateRelationToOtherProcessParams
 import com.procurement.access.application.model.params.OutsourcingPNParams
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Logger
 import com.procurement.access.config.properties.UriProperties
@@ -121,14 +122,46 @@ class OutsourcingServiceImpl(
                     )
             }
 
+        fun isNeedToFindStoredRelatedProcess(operationType: OperationType): Boolean =
+            when (operationType) {
+                OperationType.RELATION_AP -> true
+
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_FE,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+            }
+
         fun getTenderEntity(
             tenderProcessRepository: TenderProcessRepository,
             params: CreateRelationToOtherProcessParams
         ): Result<TenderProcessEntity, Fail> {
-            val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            val ocid = parseOcid(params.ocid).orForwardFail { return it }
+
+            val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
                 .orForwardFail { fail -> return fail }
                 ?: return failure(
-                    ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, params.ocid)
+                    ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
                 )
 
             return success(entity)
@@ -137,11 +170,15 @@ class OutsourcingServiceImpl(
 
     override fun createRelationToOtherProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult, Fail> {
 
-        val storedRelatedProcess = findStoredRelatedProcess(params)
-            .orForwardFail { return it }
+        val isNeedToFindStoredRelatedProcess = isNeedToFindStoredRelatedProcess(params.operationType)
 
-        if (storedRelatedProcess != null)
-            return storedRelatedProcess.asSuccess()
+        if (isNeedToFindStoredRelatedProcess) {
+            val storedRelatedProcess = findStoredRelatedProcess(params)
+                .orForwardFail { return it }
+
+            if (storedRelatedProcess != null)
+                return storedRelatedProcess.asSuccess()
+        }
 
         val definedRelationship = defineRelationProcessType(params.operationType)
             .orForwardFail { fail -> return fail }
@@ -205,7 +242,9 @@ class OutsourcingServiceImpl(
     }
 
     private fun findStoredRelatedProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult?, Fail> {
-        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val ocid = parseOcid(params.ocid).orForwardFail { return it }
+
+        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
             .orForwardFail { fail -> return fail }
             ?: return null.asSuccess()
 
