@@ -14,7 +14,6 @@ import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.application.service.tender.checkAnsweredOnce
-import com.procurement.access.application.service.tender.checkAnsweredOnlyExpectedRequirement
 import com.procurement.access.application.service.tender.checkDataTypeValue
 import com.procurement.access.application.service.tender.checkIdsUniqueness
 import com.procurement.access.application.service.tender.checkPeriod
@@ -80,14 +79,11 @@ class CriteriaServiceImpl(
         val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
         val criteria = cnEntity.tender.criteria.orEmpty()
 
-        // FR.COM-1.16.12 & FR.COM-1.16.13
+        // FR.COM-1.16.12 & FR.COM-1.16.13 && FR.COM-1.16.15
         checkResponsesCompleteness(criteria, data, Stage.creator(context.stage))
 
         // FR.COM-1.16.14
         checkResponsesRelationToOneGroup(criteria, data)
-
-        // FR.COM-1.16.15
-        checkAnsweredOnlyExpectedRequirement(criteria, data)
 
         // FR.COM-1.16.5
         checkDataTypeValue(data = data, criteria = criteria)
