@@ -98,15 +98,7 @@ fun checkAnswerByLotRequirements(
 }
 
 fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, responses: CheckResponsesData, stage: Stage) {
-    fun getRequirementsIds(criteria: List<CNEntity.Tender.Criteria>): List<String> =
-        criteria.asSequence()
-            .flatMap { it.requirementGroups.asSequence() }
-            .flatMap { it.requirements.asSequence() }
-            .map { it.id }
-            .toList()
-
     val receivedItems = responses.items.map { it.id }
-    val answeredRequirements = responses.bid.requirementResponses.map { it.requirement.id }
     val biddedLots = responses.bid.relatedLots
 
     val criteriaToTender = criteria.filter { it.relatesTo == null }
@@ -117,28 +109,14 @@ fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, respons
     when(stage) {
         Stage.EV -> {
             val criteriaPackage = (criteriaToTender + criteriaToTenderer + criteriaToLot + criteriaToItem)
-            val requirementsPackage = getRequirementsIds(criteriaPackage)
 
-            val nonAnsweredRequirements = requirementsPackage - answeredRequirements
-            if (nonAnsweredRequirements.isNotEmpty())
-                throw ErrorException(
-                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
-                    message = "Need answer on the next requirements: $nonAnsweredRequirements."
-                )
-
+            checkResponsesRelationToOneGroup(criteriaPackage, responses)
             checkAnsweredOnlyExpectedRequirement(criteriaPackage, responses)
         }
         Stage.TP -> {
             val criteriaPackage = (criteriaToTender + criteriaToLot + criteriaToItem)
-            val requirementsPackage = getRequirementsIds(criteriaPackage)
 
-            val nonAnsweredRequirements = requirementsPackage - answeredRequirements
-            if (nonAnsweredRequirements.isNotEmpty())
-                throw ErrorException(
-                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
-                    message = "Need answer on the next requirements: $nonAnsweredRequirements."
-                )
-
+            checkResponsesRelationToOneGroup(criteriaPackage, responses)
             checkAnsweredOnlyExpectedRequirement(criteriaPackage, responses)
         }
         Stage.AC,
@@ -160,11 +138,28 @@ fun checkResponsesRelationToOneGroup(criteria: List<CNEntity.Tender.Criteria>, r
             .associate { it.id to it.requirements.map { it.id } }
             .filter { (_, requirements) -> receivedResponsesIds.any { it in requirements } }
 
-        if (usedGroups.count() > 1)
-            throw ErrorException(
+        val answeredGroups = usedGroups.count()
+        when {
+            answeredGroups == 0 ->
+                throw ErrorException(
                 error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
-                message = "Requirements responses relates to more than one requirement group in criteria '${criterion.id}'."
+                message = "Need answer on the next criterion: ${criterion.id}."
             )
+
+            answeredGroups == 1 -> {
+                val storedRequirements = usedGroups.values.flatten()
+                if (!receivedResponsesIds.containsAll(storedRequirements))
+                    throw ErrorException(
+                        error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                        message = "Need answer on all requirement in specified requirement group '${usedGroups.keys}'."
+                    )
+            }
+            else ->
+                throw ErrorException(
+                    error = ErrorType.INVALID_REQUIREMENT_RESPONSE,
+                    message = "Requirements responses relates to more than one requirement group in criteria '${criterion.id}'."
+                )
+        }
     }
 }
 
