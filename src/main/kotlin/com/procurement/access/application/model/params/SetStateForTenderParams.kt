@@ -8,10 +8,10 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForTenderParams private constructor(
     val cpid: Cpid,

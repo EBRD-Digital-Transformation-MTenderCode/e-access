@@ -1,4 +1,4 @@
-package com.procurement.access.domain.util
+package com.procurement.access.lib.functional
 
 fun <E> E.asValidationFailure(): ValidationResult<E> = ValidationResult.error(this)
 

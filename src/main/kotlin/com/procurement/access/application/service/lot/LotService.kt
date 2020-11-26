@@ -15,10 +15,6 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.TemporalLotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.converter.convertToSetStateForLotsResult
@@ -31,6 +27,10 @@ import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.orThrow
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity

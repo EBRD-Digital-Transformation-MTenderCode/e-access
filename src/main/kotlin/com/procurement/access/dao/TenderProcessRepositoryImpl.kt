@@ -8,11 +8,11 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.bind
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asSuccess
+import com.procurement.access.lib.functional.bind
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
 

@@ -10,10 +10,10 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.loadJson
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.service.RulesService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

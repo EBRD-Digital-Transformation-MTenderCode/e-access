@@ -3,9 +3,9 @@ package com.procurement.access.infrastructure.handler.check.persons
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
+import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject

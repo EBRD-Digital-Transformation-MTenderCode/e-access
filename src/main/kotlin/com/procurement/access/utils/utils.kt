@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.bind.jackson.configuration
+import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import java.io.IOException
 import java.time.Instant

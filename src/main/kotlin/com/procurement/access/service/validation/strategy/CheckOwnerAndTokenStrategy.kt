@@ -7,10 +7,10 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.cpid
 import com.procurement.access.model.dto.bpe.owner

@@ -1,4 +1,4 @@
-package com.procurement.access.domain.util
+package com.procurement.access.lib.functional
 
 fun <T, E> T.asSuccess(): Result<T, E> = Result.success(this)
 fun <T, E> E.asFailure(): Result<T, E> = Result.failure(this)

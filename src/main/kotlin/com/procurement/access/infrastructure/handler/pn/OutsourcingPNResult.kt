@@ -5,7 +5,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 
 import com.procurement.access.infrastructure.entity.process.RelatedProcess as RelatedProcessDomain
 

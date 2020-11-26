@@ -9,8 +9,8 @@ import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 import org.springframework.stereotype.Service
 
 @Service

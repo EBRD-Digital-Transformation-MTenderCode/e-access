@@ -5,8 +5,8 @@ import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.success
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.success
 
 class CheckEqualityCurrenciesParams private constructor(
     val cpid: Cpid,

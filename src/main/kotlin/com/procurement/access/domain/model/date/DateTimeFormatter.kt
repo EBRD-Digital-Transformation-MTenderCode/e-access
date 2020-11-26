@@ -1,6 +1,6 @@
 package com.procurement.access.domain.model.date
 
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle

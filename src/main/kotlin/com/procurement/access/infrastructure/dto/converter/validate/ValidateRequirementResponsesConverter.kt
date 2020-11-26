@@ -2,9 +2,9 @@ package com.procurement.access.infrastructure.dto.converter.validate
 
 import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesRequest
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
+import com.procurement.access.lib.functional.Result
 
 fun ValidateRequirementResponsesRequest.convert(): Result<ValidateRequirementResponsesParams, DataErrors> {
     val requirementResponses = this.requirementResponses

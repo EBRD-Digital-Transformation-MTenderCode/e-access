@@ -17,11 +17,6 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.ValidationResult
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
@@ -33,6 +28,11 @@ import com.procurement.access.infrastructure.handler.processing.responder.Respon
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson

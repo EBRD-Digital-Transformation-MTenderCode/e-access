@@ -13,12 +13,6 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.bind
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RelatedProcessesInfo
@@ -27,6 +21,12 @@ import com.procurement.access.infrastructure.handler.create.relation.CreateRelat
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.toList
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
+import com.procurement.access.lib.functional.bind
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject

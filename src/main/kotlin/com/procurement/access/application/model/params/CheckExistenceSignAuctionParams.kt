@@ -8,11 +8,11 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.validate
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
+import com.procurement.access.lib.functional.validate
 
 class CheckExistenceSignAuctionParams private constructor(
     val cpid: Cpid,

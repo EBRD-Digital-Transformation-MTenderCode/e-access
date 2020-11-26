@@ -2,8 +2,8 @@ package com.procurement.access.infrastructure.dto.converter.create
 
 import com.procurement.access.application.model.criteria.CreateCriteriaForProcuringEntity.Params
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityRequest
+import com.procurement.access.lib.functional.Result
 
 fun CreateCriteriaForProcuringEntityRequest.convert(): Result<Params, DataErrors> {
     val convertedCriteria = this.criteria

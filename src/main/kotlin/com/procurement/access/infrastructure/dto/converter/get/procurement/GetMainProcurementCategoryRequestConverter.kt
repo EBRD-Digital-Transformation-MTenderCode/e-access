@@ -4,9 +4,9 @@ import com.procurement.access.application.model.params.GetMainProcurementCategor
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryRequest
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 fun GetMainProcurementCategoryRequest.convert(): Result<GetMainProcurementCategoryParams, DataErrors> {
     val cpidParsed = parseCpid(cpid)

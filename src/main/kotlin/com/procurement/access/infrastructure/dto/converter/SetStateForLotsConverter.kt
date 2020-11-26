@@ -4,9 +4,6 @@ import com.procurement.access.application.model.params.SetStateForLotsParams
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.lot.tryCreateLotId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
@@ -14,6 +11,9 @@ import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateFo
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 
 fun SetStateForLotsRequest.convert(): Result<SetStateForLotsParams, DataErrors> {
 

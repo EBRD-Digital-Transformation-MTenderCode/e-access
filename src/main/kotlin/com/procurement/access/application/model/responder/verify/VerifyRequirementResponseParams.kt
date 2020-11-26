@@ -14,8 +14,8 @@ import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.domain.model.requirement.tryToRequirementId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
 import java.time.LocalDateTime
 
 class VerifyRequirementResponse {

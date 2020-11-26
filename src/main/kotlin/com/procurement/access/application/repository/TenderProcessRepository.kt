@@ -4,7 +4,7 @@ import com.datastax.driver.core.ResultSet
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.entity.TenderProcessEntity
 
 interface TenderProcessRepository {

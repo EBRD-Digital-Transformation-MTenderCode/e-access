@@ -9,11 +9,11 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.MainProcurementCategory
-import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryResult
 import com.procurement.access.json.loadJson
+import com.procurement.access.lib.functional.Result
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested

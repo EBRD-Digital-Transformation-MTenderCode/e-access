@@ -1,7 +1,7 @@
 package com.procurement.access.lib.extension
 
-import com.procurement.access.domain.util.Option
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Option
+import com.procurement.access.lib.functional.Result
 
 fun <T> T?.toList(): List<T> = if (this != null) listOf(this) else emptyList()
 

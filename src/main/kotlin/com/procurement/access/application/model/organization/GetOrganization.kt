@@ -9,7 +9,7 @@ import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 
 class GetOrganization {
 

@@ -8,8 +8,8 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asFailure
 
 class FindLotIdsParams private constructor(
     val cpid: Cpid,

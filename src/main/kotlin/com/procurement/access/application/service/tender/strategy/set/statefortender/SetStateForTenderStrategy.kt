@@ -8,13 +8,13 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.rule.TenderStatesRule
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderResult
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject

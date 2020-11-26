@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.Action
-import com.procurement.access.domain.util.Result
 import com.procurement.access.infrastructure.web.dto.ApiResponse
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
+import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
 import com.procurement.access.utils.toJson

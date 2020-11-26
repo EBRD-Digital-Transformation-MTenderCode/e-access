@@ -6,9 +6,9 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Incident.DatabaseIncident
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.rule.TenderStatesRule
-import com.procurement.access.domain.util.ValidationResult
-import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.infrastructure.entity.TenderStateInfo
+import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.service.RulesService
 import com.procurement.access.utils.tryToObject
 

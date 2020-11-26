@@ -2,10 +2,10 @@ package com.procurement.access.infrastructure.dto.converter.verify
 
 import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseRequest
 import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
 
 fun VerifyRequirementResponseRequest.Params.convert(): Result<VerifyRequirementResponse.Params, DataErrors> {
 
