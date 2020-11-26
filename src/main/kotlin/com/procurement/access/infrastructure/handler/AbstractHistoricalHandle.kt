@@ -5,7 +5,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.Action
-import com.procurement.access.infrastructure.web.dto.ApiResponse
+import com.procurement.access.infrastructure.web.dto.ApiResponseV2
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.dto.bpe.getId
@@ -17,10 +17,10 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
     private val target: Class<ApiSuccessResponse>,
     private val historyRepository: HistoryDao,
     private val logger: Logger
-) : AbstractHandler<ACTION, ApiResponse>(logger = logger) {
+) : AbstractHandler<ACTION, ApiResponseV2>(logger = logger) {
 
 
-    override fun handle(node: JsonNode): ApiResponse {
+    override fun handle(node: JsonNode): ApiResponseV2 {
 
         val id = node.getId().get
         val version = node.getVersion().get

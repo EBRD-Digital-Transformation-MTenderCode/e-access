@@ -18,7 +18,7 @@ import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
-import com.procurement.access.infrastructure.web.dto.ApiResponse
+import com.procurement.access.infrastructure.web.dto.ApiResponseV2
 import com.procurement.access.lib.extension.toList
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
@@ -68,7 +68,7 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     }
 }
 
-fun errorResponse(fail: Fail, id: CommandId, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
+fun errorResponse(fail: Fail, id: CommandId, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponseV2 =
     when (fail) {
         is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
         is Error -> generateErrorResponse(id = id, version = version, fail = fail)

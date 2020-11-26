@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @JsonPropertyOrder("version", "id", "status", "result")
-sealed class ApiResponse(
+sealed class ApiResponseV2(
     @field:JsonProperty("id") @param:JsonProperty("id") val id: CommandId,
 
     @field:JsonProperty("version") @param:JsonProperty("version") val version: ApiVersion,
@@ -25,7 +25,7 @@ class ApiSuccessResponse(
     version: ApiVersion,
     id: CommandId,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any? = null
-) : ApiResponse(
+) : ApiResponseV2(
     version = version,
     result = result,
     id = id
@@ -38,7 +38,7 @@ class ApiErrorResponse(
     version: ApiVersion,
     id: CommandId,
     result: List<Error>
-) : ApiResponse(
+) : ApiResponseV2(
     version = version,
     result = result,
     id = id
@@ -73,7 +73,7 @@ class ApiIncidentResponse(
     version: ApiVersion,
     id: CommandId,
     result: Incident
-) : ApiResponse(
+) : ApiResponseV2(
     version = version,
     result = result,
     id = id

@@ -6,7 +6,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
-import com.procurement.access.infrastructure.web.dto.ApiResponse
+import com.procurement.access.infrastructure.web.dto.ApiResponseV2
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
@@ -30,7 +30,7 @@ class Command2Controller(
     @PostMapping
     fun command(
         @RequestBody requestBody: String
-    ): ResponseEntity<ApiResponse> {
+    ): ResponseEntity<ApiResponseV2> {
 
         logger.info("RECEIVED COMMAND: '${requestBody}'.")
 
@@ -67,7 +67,7 @@ class Command2Controller(
         expected: Fail,
         id: CommandId,
         version: ApiVersion = GlobalProperties.App.apiVersion
-    ): ResponseEntity<ApiResponse> {
+    ): ResponseEntity<ApiResponseV2> {
         expected.logging(logger)
         val response = errorResponse(fail = expected, id = id, version = version)
         return ResponseEntity(response, HttpStatus.OK)
