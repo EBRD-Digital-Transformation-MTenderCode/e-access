@@ -14,6 +14,7 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -50,8 +51,8 @@ import com.procurement.access.model.dto.tender.UnsuspendedTender
 import com.procurement.access.model.dto.tender.UnsuspendedTenderRs
 import com.procurement.access.model.dto.tender.UpdateTenderStatusRs
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.localNowUTC
-import com.procurement.access.utils.toDate
+
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
@@ -101,7 +102,7 @@ class TenderService(
                         token = entity.token,
                         stage = entity.stage,
                         owner = entity.owner,
-                        createdDate = localNowUTC().toDate(),
+                        createdDate = nowDefaultUTC(),
                         jsonData = toJson(process)
                     )
                 )
@@ -289,12 +290,12 @@ class TenderService(
                           entity: TenderProcessEntity): TenderProcessEntity {
 
         return TenderProcessEntity(
-                cpId = entity.cpId,
-                token = entity.token,
-                stage = entity.stage,
-                owner = entity.owner,
-                createdDate = localNowUTC().toDate(),
-                jsonData = toJson(process)
+            cpId = entity.cpId,
+            token = entity.token,
+            stage = entity.stage,
+            owner = entity.owner,
+            createdDate = nowDefaultUTC(),
+            jsonData = toJson(process)
         )
     }
 

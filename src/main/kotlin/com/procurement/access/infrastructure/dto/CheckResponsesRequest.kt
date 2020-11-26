@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.infrastructure.bind.criteria.RequirementValueDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementValueSerializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
+
+
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -50,12 +50,8 @@ data class CheckResponsesRequest(
             )
 
             data class Period(
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
                 @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
                 @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
             )
         }

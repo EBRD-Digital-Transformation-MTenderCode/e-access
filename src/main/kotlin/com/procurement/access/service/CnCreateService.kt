@@ -59,7 +59,7 @@ import com.procurement.access.model.dto.ocds.Value
 import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.dto.ocds.validate
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -362,12 +362,12 @@ class CnCreateService(
                           dateTime: LocalDateTime,
                           owner: String): TenderProcessEntity {
         return TenderProcessEntity(
-                cpId = cpId,
-                token = generationService.generateRandomUUID(),
-                stage = stage,
-                owner = owner,
-                createdDate = dateTime.toDate(),
-                jsonData = toJson(tp)
+            cpId = cpId,
+            token = generationService.generateRandomUUID(),
+            stage = stage,
+            owner = owner,
+            createdDate = dateTime,
+            jsonData = toJson(tp)
         )
     }
 }

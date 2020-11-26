@@ -17,7 +17,7 @@ import com.procurement.access.infrastructure.dto.fe.check.converter.CreateFeEnti
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.slf4j.Logger
@@ -63,7 +63,7 @@ class FeCreateServiceImpl(
                 token = entity.token,
                 stage = context.stage,
                 owner = context.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(fe)
             )
         )

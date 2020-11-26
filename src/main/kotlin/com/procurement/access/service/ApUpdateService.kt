@@ -26,7 +26,7 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -658,7 +658,7 @@ class ApUpdateServiceImpl(
             token = entity.token,
             stage = entity.stage,
             owner = entity.owner,
-            createdDate = dateTime.toDate(),
+            createdDate = dateTime,
             jsonData = toJson(tender)
         )
 }

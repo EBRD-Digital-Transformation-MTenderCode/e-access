@@ -21,8 +21,8 @@ import com.procurement.access.infrastructure.bind.amount.positive.AmountPositive
 import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
+
+
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -82,12 +82,8 @@ data class ApUpdateResponse(
     ) {
 
         data class ContractPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
         )
 
@@ -239,8 +235,6 @@ data class ApUpdateResponse(
         )
 
         data class TenderPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
         )
 

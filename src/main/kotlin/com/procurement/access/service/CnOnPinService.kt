@@ -15,15 +15,16 @@ import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.startDate
 import com.procurement.access.model.dto.cn.CnUpdate
 import com.procurement.access.model.dto.cn.TenderCnUpdate
 import com.procurement.access.model.dto.cn.validate
 import com.procurement.access.model.dto.ocds.Tender
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
+
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -36,7 +37,7 @@ class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.startDate
         val cnDto = toObject(CnUpdate::class.java, cm.data).validate()
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, previousStage) ?: throw ErrorException(DATA_NOT_FOUND)
@@ -84,12 +85,12 @@ class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
                           entity: TenderProcessEntity,
                           dateTime: LocalDateTime): TenderProcessEntity {
         return TenderProcessEntity(
-                cpId = entity.cpId,
-                token = entity.token,
-                stage = entity.stage,
-                owner = entity.owner,
-                createdDate = dateTime.toDate(),
-                jsonData = toJson(tp)
+            cpId = entity.cpId,
+            token = entity.token,
+            stage = entity.stage,
+            owner = entity.owner,
+            createdDate = dateTime,
+            jsonData = toJson(tp)
         )
     }
 }

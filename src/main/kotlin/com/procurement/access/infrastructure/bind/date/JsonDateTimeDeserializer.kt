@@ -1,17 +1,15 @@
-package com.procurement.access.model.dto.databinding
+package com.procurement.access.infrastructure.bind.date
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import java.time.LocalDateTime
 
 class JsonDateTimeDeserializer : JsonDeserializer<LocalDateTime>() {
-    companion object {
-        fun deserialize(value: String): LocalDateTime = LocalDateTime.parse(value, JsonDateTimeFormatter.formatter)
-    }
 
     override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): LocalDateTime =
-        deserialize(jsonParser.text)
+        jsonParser.text
+            .toLocalDateTime()
+            .orThrow { it.reason }
 }
-
-fun String.toLocalDateTime(): LocalDateTime = JsonDateTimeDeserializer.deserialize(this)

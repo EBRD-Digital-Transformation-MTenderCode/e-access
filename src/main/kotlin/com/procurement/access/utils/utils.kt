@@ -6,12 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.bind.jackson.configuration
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import java.io.IOException
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.*
 
 private object JsonMapper {
 
@@ -19,25 +14,6 @@ private object JsonMapper {
         configuration()
     }
 }
-
-/*Date utils*/
-fun String.toLocal(): LocalDateTime {
-    return LocalDateTime.parse(this, JsonDateTimeFormatter.formatter)
-}
-
-fun LocalDateTime.toDate(): Date {
-    return Date.from(this.toInstant(ZoneOffset.UTC))
-}
-
-fun localNowUTC(): LocalDateTime {
-    return LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
-}
-
-fun milliNowUTC(): Long {
-    return localNowUTC().toInstant(ZoneOffset.UTC).toEpochMilli()
-}
-
-fun LocalDateTime.toMilliseconds(): Long = this.toInstant(ZoneOffset.UTC).toEpochMilli()
 
 /*Json utils*/
 

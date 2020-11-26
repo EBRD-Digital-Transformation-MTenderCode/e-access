@@ -4,11 +4,11 @@ import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder.eq
 import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
+import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.entity.HistoryEntity
-import com.procurement.access.utils.localNowUTC
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import org.springframework.stereotype.Service
 
@@ -24,18 +24,18 @@ class HistoryDao(private val session: Session) {
                 .limit(1)
         val row = session.execute(query).one()
         return if (row != null) HistoryEntity(
-                row.getString(OPERATION_ID),
-                row.getString(COMMAND),
-                row.getTimestamp(OPERATION_DATE),
-                row.getString(JSON_DATA)) else null
+            row.getString(OPERATION_ID),
+            row.getString(COMMAND),
+            row.getTimestamp(OPERATION_DATE).toLocalDateTime(),
+            row.getString(JSON_DATA)) else null
     }
 
     fun saveHistory(operationId: String, command: String, response: ResponseDto): HistoryEntity {
         val entity = HistoryEntity(
-                operationId = operationId,
-                command = command,
-                operationDate = localNowUTC().toDate(),
-                jsonData = toJson(response))
+            operationId = operationId,
+            command = command,
+            operationDate = nowDefaultUTC(),
+            jsonData = toJson(response))
 
         val insert = insertInto(HISTORY_TABLE)
                 .value(OPERATION_ID, entity.operationId)
@@ -50,7 +50,7 @@ class HistoryDao(private val session: Session) {
         val entity = HistoryEntity(
             operationId = operationId,
             command = command,
-            operationDate = localNowUTC().toDate(),
+            operationDate = nowDefaultUTC(),
             jsonData = toJson(response))
 
         val insert = insertInto(HISTORY_TABLE)

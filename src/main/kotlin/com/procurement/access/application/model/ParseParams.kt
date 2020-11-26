@@ -3,9 +3,9 @@ package com.procurement.access.application.model
 import com.procurement.access.domain.EnumElementProvider
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.fail.error.DataTimeError
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.date.tryParseLocalDateTime
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
@@ -13,6 +13,7 @@ import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.owner.tryCreateOwner
 import com.procurement.access.domain.model.token.Token
 import com.procurement.access.domain.model.token.tryCreateToken
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
 import java.time.LocalDateTime
@@ -58,16 +59,22 @@ fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMis
             )
         }
 
-fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation.DataFormatMismatch> =
-    value.tryParseLocalDateTime()
-        .mapFailure { expectedFormat ->
-            DataErrors.Validation.DataFormatMismatch(
-                name = "startDate",
-                actualValue = value,
-                expectedFormat = expectedFormat
-            )
-        }
+fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation> {
+    val name = "startDate"
+    return value.toLocalDateTime()
+        .mapFailure { fail ->
+            when (fail) {
+                is DataTimeError.InvalidFormat -> DataErrors.Validation.DataFormatMismatch(
+                    name = name,
+                    actualValue = value,
+                    expectedFormat = fail.pattern
+                )
 
+                is DataTimeError.InvalidDateTime ->
+                    DataErrors.Validation.InvalidDateTime(name = name, actualValue = value)
+            }
+        }
+}
 
 fun parseLotId(value: String, attributeName: String): Result<LotId, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateLotId()

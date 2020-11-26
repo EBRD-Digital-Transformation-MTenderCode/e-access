@@ -35,7 +35,7 @@ import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
@@ -146,7 +146,7 @@ class ResponderServiceImpl(
                 token = entity.token,
                 stage = stage.toString(),
                 owner = entity.owner,
-                createdDate = params.date.toDate(),
+                createdDate = params.date,
                 jsonData = updatedTenderJson
             )
         )

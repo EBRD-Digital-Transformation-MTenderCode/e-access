@@ -34,7 +34,6 @@ import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
@@ -531,7 +530,7 @@ class LotServiceImpl(
                 token = entity.token,
                 stage = context.stage,
                 owner = entity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(updatedCN)
             )
         )

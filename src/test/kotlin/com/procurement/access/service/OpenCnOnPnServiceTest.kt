@@ -16,6 +16,8 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
+import com.procurement.access.domain.util.extension.asString
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
@@ -37,8 +39,7 @@ import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
-import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
-import com.procurement.access.model.dto.databinding.toLocalDateTime
+
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -281,9 +282,7 @@ class OpenCnOnPnServiceTest {
                             .map {
                                 it.getObject("contractPeriod").getString("startDate").asText()
                             }
-                            .map {
-                                LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                            }
+                            .map { it.toLocalDateTime().orThrow { it.reason } }
                             .min()!!
                     }
 
@@ -292,11 +291,11 @@ class OpenCnOnPnServiceTest {
                 requestNode.getObject("tender", "tenderPeriod")
                     .setAttribute(
                         name = "startDate",
-                        value = tenderPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                        value = tenderPeriodStartDate.asString()
                     )
                     .setAttribute(
                         name = "endDate",
-                        value = tenderPeriodEndDate.format(JsonDateTimeFormatter.formatter)
+                        value = tenderPeriodEndDate.asString()
                     )
 
                 mockGetByCpIdAndStage(
@@ -514,9 +513,7 @@ class OpenCnOnPnServiceTest {
                                 .map {
                                     it.getObject("contractPeriod").getString("startDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .min()!!
                         }
 
@@ -525,7 +522,7 @@ class OpenCnOnPnServiceTest {
                         .getArray("budgetBreakdown")
                         .getObject(0)
                         .getObject("period")
-                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.asString())
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
@@ -550,9 +547,7 @@ class OpenCnOnPnServiceTest {
                                 .map {
                                     it.getObject("contractPeriod").getString("endDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .max()!!
                         }
 
@@ -565,11 +560,11 @@ class OpenCnOnPnServiceTest {
                         .getObject("period") {
                             putAttribute(
                                 "startDate",
-                                budgetBreakdownPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodStartDate.asString()
                             )
                             putAttribute(
                                 "endDate",
-                                budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodEndDate.asString()
                             )
                         }
 
@@ -1636,7 +1631,7 @@ class OpenCnOnPnServiceTest {
         previousStage = ContextGenerator.PREV_STAGE,
         country = ContextGenerator.COUNTRY,
         pmd = ProcurementMethod.SV,
-        startDate = startDate.toLocalDateTime()
+        startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
 
     fun createContext(
@@ -1647,7 +1642,7 @@ class OpenCnOnPnServiceTest {
         stage = ContextGenerator.STAGE,
         country = ContextGenerator.COUNTRY,
         pmd = ProcurementMethod.SV,
-        startDate = startDate.toLocalDateTime()
+        startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
 
     class WhenTestData(

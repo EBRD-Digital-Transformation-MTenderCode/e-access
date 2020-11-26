@@ -6,13 +6,14 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.procurement.access.domain.util.extension.asString
 import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MaxValue
 import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
 import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
 import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
+
 import java.io.IOException
 import java.math.BigDecimal
 
@@ -36,10 +37,9 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
 
                 requirement.period?.let {
                     requirementNode.putObject("period")
-                        .put("startDate", JsonDateTimeSerializer.serialize(it.startDate))
-                        .put("endDate", JsonDateTimeSerializer.serialize(it.endDate))
+                        .put("startDate", it.startDate.asString())
+                        .put("endDate", it.endDate.asString())
                 }
-
 
                 when (requirement.value) {
                     is ExpectedValue.AsString -> {

@@ -2,8 +2,8 @@ package com.procurement.access.domain.model
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.model.country.CountryId
+import com.procurement.access.domain.util.extension.toMilliseconds
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.utils.toMilliseconds
 import java.time.LocalDateTime
 
 class Cpid private constructor(private val value: String) {

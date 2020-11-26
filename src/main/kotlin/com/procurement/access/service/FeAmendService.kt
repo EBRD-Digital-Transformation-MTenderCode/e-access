@@ -16,7 +16,7 @@ import com.procurement.access.lib.extension.getMissingElements
 import com.procurement.access.lib.extension.getNewElements
 import com.procurement.access.lib.takeIfNotNullOrDefault
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.slf4j.Logger
@@ -77,7 +77,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
                 token = entity.token,
                 stage = stage,
                 owner = entity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(updatedFE)
             )
         )

@@ -31,7 +31,7 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -198,7 +198,7 @@ class NegotiationCnOnPnService(
                 token = tenderProcessEntity.token,
                 stage = context.stage,
                 owner = tenderProcessEntity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(cnEntity)
             )
         )

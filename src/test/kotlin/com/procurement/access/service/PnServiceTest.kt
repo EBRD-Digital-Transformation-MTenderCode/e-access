@@ -11,6 +11,8 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.util.extension.asString
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
@@ -38,7 +40,7 @@ import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.bpe.startDate
-import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
+
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -205,9 +207,7 @@ class PnServiceTest {
                                 .map { lot ->
                                     lot.getObject("contractPeriod").getString("startDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .min()!!
                         }
                     val budgetBreakdownPeriodEndDate = minStartDateOfContractPeriod.minusDays(1)
@@ -215,7 +215,7 @@ class PnServiceTest {
                         .getArray("budgetBreakdown")
                         .getObject(0)
                         .getObject("period")
-                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.asString())
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
@@ -235,9 +235,7 @@ class PnServiceTest {
                             .map { lot ->
                                 lot.getObject("contractPeriod").getString("endDate").asText()
                             }
-                            .map {
-                                LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                            }
+                            .map { it.toLocalDateTime().orThrow { it.reason } }
                             .max()!!
                     }
                     val budgetBreakdownPeriodStartDate = maxStartDateOfContractPeriod.plusDays(1)
@@ -248,11 +246,11 @@ class PnServiceTest {
                         .getObject("period") {
                             putAttribute(
                                 "startDate",
-                                budgetBreakdownPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodStartDate.asString()
                             )
                             putAttribute(
                                 "endDate",
-                                budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodEndDate.asString()
                             )
                         }
 
@@ -324,9 +322,7 @@ class PnServiceTest {
                                 .map {
                                     it.getObject("contractPeriod").getString("startDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .min()!!
                         }
 
@@ -338,7 +334,7 @@ class PnServiceTest {
                     }
 
                     requestNode.getObject("tender", "tenderPeriod")
-                        .setAttribute("startDate", tenderPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                        .setAttribute("startDate", tenderPeriodEndDate.asString())
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)

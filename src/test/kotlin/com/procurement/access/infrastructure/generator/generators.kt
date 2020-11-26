@@ -1,12 +1,14 @@
 package com.procurement.access.infrastructure.generator
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.Context
 import com.procurement.access.model.entity.TenderProcessEntity
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
@@ -84,7 +86,7 @@ object TenderProcessEntityGenerator {
         token: UUID = ContextGenerator.TOKEN,
         owner: String = ContextGenerator.OWNER,
         stage: String = ContextGenerator.STAGE,
-        createdDate: Date = LocalDate.now().toDate(),
+        createdDate: LocalDateTime = nowDefaultUTC(),
         data: String
     ): TenderProcessEntity {
         return TenderProcessEntity(

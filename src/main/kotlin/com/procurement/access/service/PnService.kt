@@ -21,11 +21,12 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
+import com.procurement.access.model.dto.bpe.startDate
 import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
+
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -86,7 +87,7 @@ class PnService(
                 token = token,
                 stage = contextRequest.stage,
                 owner = contextRequest.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = contextRequest.startDate,
                 jsonData = toJson(pnEntity)
             )
         )
@@ -910,8 +911,7 @@ class PnService(
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'country' attribute in context.")
         val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) }
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
-        val startDate: LocalDateTime = cm.context.startDate?.toLocal()
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
+        val startDate: LocalDateTime = cm.startDate
         val testMode: Boolean = cm.testMode
 
         return ContextRequest(

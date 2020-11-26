@@ -1,16 +1,16 @@
 package com.procurement.access.model.entity
 
-import java.util.*
+import java.time.LocalDateTime
 
 data class HistoryEntity(
 
-        var operationId: String,
+    var operationId: String,
 
-        var command: String,
+    var command: String,
 
-        var operationDate: Date,
+    var operationDate: LocalDateTime,
 
-        var jsonData: String
+    var jsonData: String
 )
 
 

@@ -8,6 +8,8 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
+import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
@@ -98,7 +100,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setUUID(COLUMN_TOKEN, entity.token)
                 setString(COLUMN_OWNER, entity.owner)
                 setString(COLUMN_STAGE, entity.stage)
-                setTimestamp(COLUMN_CREATION_DATE, entity.createdDate)
+                setTimestamp(COLUMN_CREATION_DATE, entity.createdDate.toCassandraTimestamp())
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
         return tryExecute(insert)
@@ -130,7 +132,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             this.getUUID(COLUMN_TOKEN),
             this.getString(COLUMN_OWNER),
             this.getString(COLUMN_STAGE),
-            this.getTimestamp(COLUMN_CREATION_DATE),
+            this.getTimestamp(COLUMN_CREATION_DATE).toLocalDateTime(),
             this.getString(COLUMN_JSON_DATA)
         )
     }

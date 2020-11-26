@@ -13,7 +13,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,7 +42,7 @@ class ApCreateService(
                 token = token,
                 stage = contextRequest.stage,
                 owner = contextRequest.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = contextRequest.startDate,
                 jsonData = toJson(apEntity)
             )
         )

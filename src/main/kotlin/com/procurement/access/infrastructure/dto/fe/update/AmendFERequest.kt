@@ -3,13 +3,9 @@ package com.procurement.access.infrastructure.dto.fe.update
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
-import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -69,8 +65,6 @@ data class AmendFERequest(
                     )
 
                     data class Period(
-                        @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                        @JsonSerialize(using = JsonDateTimeSerializer::class)
                         @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
                     )
                 }

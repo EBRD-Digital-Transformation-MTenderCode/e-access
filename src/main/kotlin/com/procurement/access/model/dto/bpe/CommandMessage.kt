@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.lot.LotId
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
-import com.procurement.access.utils.toLocal
 import java.time.LocalDateTime
 import java.util.*
 
@@ -74,7 +74,9 @@ val CommandMessage.operationType: OperationType
         )
 
 val CommandMessage.startDate: LocalDateTime
-    get() = this.context.startDate?.toLocal()
+    get() = this.context.startDate
+        ?.toLocalDateTime()
+        ?.orThrow { it.reason }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'startDate' attribute in context.")
 
 val CommandMessage.testMode: Boolean

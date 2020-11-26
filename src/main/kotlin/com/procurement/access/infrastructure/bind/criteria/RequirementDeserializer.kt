@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
@@ -16,7 +17,7 @@ import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
 import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
-import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
+
 import java.io.IOException
 import java.math.BigDecimal
 
@@ -30,10 +31,10 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                 val description: String? = requirement.takeIf { it.has("description") }?.get("description")?.asText()
                 val dataType: RequirementDataType = RequirementDataType.creator(requirement.get("dataType").asText())
                 val period: Requirement.Period? = requirement.takeIf { it.has("period") }
-                    ?.let {
-                        val period = it.get("period")
-                        val startDate = JsonDateTimeDeserializer.deserialize(period.get("startDate").asText())
-                        val endDate = JsonDateTimeDeserializer.deserialize(period.get("endDate").asText())
+                    ?.let { node ->
+                        val period = node.get("period")
+                        val startDate = period.get("startDate").asText().toLocalDateTime().orThrow { it.reason }
+                        val endDate = period.get("endDate").asText().toLocalDateTime().orThrow { it.reason }
                         Requirement.Period(
                             startDate = startDate,
                             endDate = endDate

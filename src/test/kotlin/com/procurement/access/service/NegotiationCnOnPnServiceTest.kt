@@ -11,6 +11,8 @@ import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.TenderStatus
+import com.procurement.access.domain.util.extension.asString
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
@@ -32,8 +34,6 @@ import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
-import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
-import com.procurement.access.model.dto.databinding.toLocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
@@ -214,13 +214,11 @@ class NegotiationCnOnPnServiceTest {
                             .map {
                                 it.getObject("contractPeriod").getString("startDate").asText()
                             }
-                            .map {
-                                LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                            }
+                            .map { it.toLocalDateTime().orThrow { it.reason } }
                             .min()!!
                     }
 
-                val startDate = minStartDateOfContractPeriod.plusDays(1).format(JsonDateTimeFormatter.formatter)
+                val startDate = minStartDateOfContractPeriod.plusDays(1).asString()
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
@@ -438,9 +436,7 @@ class NegotiationCnOnPnServiceTest {
                                 .map {
                                     it.getObject("contractPeriod").getString("startDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .min()!!
                         }
                     val budgetBreakdownPeriodEndDate = minStartDateOfContractPeriod.minusDays(1)
@@ -449,7 +445,7 @@ class NegotiationCnOnPnServiceTest {
                         .getArray("budgetBreakdown")
                         .getObject(0)
                         .getObject("period")
-                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.asString())
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
@@ -474,9 +470,7 @@ class NegotiationCnOnPnServiceTest {
                                 .map {
                                     it.getObject("contractPeriod").getString("endDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .max()!!
                         }
 
@@ -488,11 +482,11 @@ class NegotiationCnOnPnServiceTest {
                         .getObject("period") {
                             putAttribute(
                                 "startDate",
-                                budgetBreakdownPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodStartDate.asString()
                             )
                             putAttribute(
                                 "endDate",
-                                budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodEndDate.asString()
                             )
                         }
 
@@ -893,7 +887,7 @@ class NegotiationCnOnPnServiceTest {
     ): CheckNegotiationCnOnPnContext = CheckNegotiationCnOnPnContext(
         cpid = ContextGenerator.CPID,
         previousStage = ContextGenerator.PREV_STAGE,
-        startDate = startDate.toLocalDateTime()
+        startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
 
     fun createContext(
@@ -902,7 +896,7 @@ class NegotiationCnOnPnServiceTest {
         cpid = ContextGenerator.CPID,
         previousStage = ContextGenerator.PREV_STAGE,
         stage = ContextGenerator.STAGE,
-        startDate = startDate.toLocalDateTime()
+        startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
 
     class WhenTestData(val hasItemsInPN: Boolean, val hasDocumentsInPN: Boolean) {

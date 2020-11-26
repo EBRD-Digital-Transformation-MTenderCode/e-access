@@ -23,6 +23,7 @@ import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.model.dto.bpe.startDate
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
 import com.procurement.access.model.dto.ocds.Document
@@ -41,9 +42,9 @@ import com.procurement.access.model.dto.pn.PnUpdate
 import com.procurement.access.model.dto.pn.TenderPnUpdate
 import com.procurement.access.model.dto.pn.validate
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
+
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 import java.math.RoundingMode
@@ -90,7 +91,7 @@ class PnUpdateService(private val generationService: GenerationService,
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
-        val dateTime = cm.context.startDate?.toLocal() ?: throw ErrorException(CONTEXT)
+        val dateTime = cm.startDate
         val pnDto = toObject(PnUpdate::class.java, cm.data).validate()
 
         //VR-3.2.21
@@ -467,12 +468,12 @@ class PnUpdateService(private val generationService: GenerationService,
                           entity: TenderProcessEntity,
                           dateTime: LocalDateTime): TenderProcessEntity {
         return TenderProcessEntity(
-                cpId = entity.cpId,
-                token = entity.token,
-                stage = entity.stage,
-                owner = entity.owner,
-                createdDate = dateTime.toDate(),
-                jsonData = toJson(tp)
+            cpId = entity.cpId,
+            token = entity.token,
+            stage = entity.stage,
+            owner = entity.owner,
+            createdDate = dateTime,
+            jsonData = toJson(tp)
         )
     }
 }
