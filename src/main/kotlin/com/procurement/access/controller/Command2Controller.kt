@@ -5,8 +5,8 @@ import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.web.dto.ApiResponse
-import com.procurement.access.model.dto.bpe.NaN
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
 
 @RestController
 @RequestMapping("/command2")
@@ -38,6 +37,7 @@ class Command2Controller(
         val node = requestBody.toNode()
             .onFailure {
                 return responseEntity(
+                    id = CommandId.NaN,
                     expected = BadRequestErrors.Parsing(
                         message = "Invalid request data",
                         request = requestBody,
@@ -48,13 +48,12 @@ class Command2Controller(
 
         val version = node.getVersion()
             .onFailure { versionError ->
-                val id = node.getId()
-                    .onFailure { return responseEntity(expected = versionError.reason) }
+                val id = node.getId().getOrElse(CommandId.NaN)
                 return responseEntity(expected = versionError.reason, id = id)
             }
 
         val id = node.getId()
-            .onFailure { return responseEntity(expected = it.reason, version = version) }
+            .onFailure { return responseEntity(expected = it.reason, version = version, id = CommandId.NaN) }
 
         val response = commandService2.execute(request = node)
             .also { response ->
@@ -66,7 +65,7 @@ class Command2Controller(
 
     private fun responseEntity(
         expected: Fail,
-        id: UUID = NaN,
+        id: CommandId,
         version: ApiVersion = GlobalProperties.App.apiVersion
     ): ResponseEntity<ApiResponse> {
         expected.logging(logger)

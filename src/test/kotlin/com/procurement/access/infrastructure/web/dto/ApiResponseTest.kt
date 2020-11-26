@@ -2,11 +2,11 @@ package com.procurement.access.infrastructure.web.dto
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toJson
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class ApiResponseTest : AbstractDTOTestBase<ApiSuccessResponse>(ApiSuccessResponse::class.java) {
 
@@ -77,5 +77,5 @@ internal class ApiResponseTest : AbstractDTOTestBase<ApiSuccessResponse>(ApiSucc
     )
 
     private fun getApiVersion() = ApiVersion(2, 0, 0)
-    private fun getId() = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+    private fun getId() = CommandId("3fa85f64-5717-4562-b3fc-2c963f66afa6")
 }

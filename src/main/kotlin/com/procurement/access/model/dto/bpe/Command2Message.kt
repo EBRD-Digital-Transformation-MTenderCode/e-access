@@ -15,6 +15,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.util.Action
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
@@ -67,14 +68,14 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
     }
 }
 
-fun errorResponse(fail: Fail, id: UUID = NaN, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
+fun errorResponse(fail: Fail, id: CommandId, version: ApiVersion = GlobalProperties.App.apiVersion): ApiResponse =
     when (fail) {
         is DataErrors.Validation -> generateDataErrorResponse(id = id, version = version, fail = fail)
         is Error -> generateErrorResponse(id = id, version = version, fail = fail)
         is Fail.Incident -> generateIncidentResponse(id = id, version = version, fail = fail)
     }
 
-fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Validation): ApiErrorResponse =
+fun generateDataErrorResponse(id: CommandId, version: ApiVersion, fail: DataErrors.Validation): ApiErrorResponse =
     ApiErrorResponse(
         version = version,
         id = id,
@@ -87,7 +88,7 @@ fun generateDataErrorResponse(id: UUID, version: ApiVersion, fail: DataErrors.Va
         )
     )
 
-fun generateValidationErrorResponse(id: UUID, version: ApiVersion, fail: ValidationErrors): ApiErrorResponse =
+fun generateValidationErrorResponse(id: CommandId, version: ApiVersion, fail: ValidationErrors): ApiErrorResponse =
     ApiErrorResponse(
         version = version,
         id = id,
@@ -100,7 +101,7 @@ fun generateValidationErrorResponse(id: UUID, version: ApiVersion, fail: Validat
         )
     )
 
-fun generateErrorResponse(id: UUID, version: ApiVersion, fail: Error): ApiErrorResponse =
+fun generateErrorResponse(id: CommandId, version: ApiVersion, fail: Error): ApiErrorResponse =
     ApiErrorResponse(
         version = version,
         id = id,
@@ -112,7 +113,7 @@ fun generateErrorResponse(id: UUID, version: ApiVersion, fail: Error): ApiErrorR
         )
     )
 
-fun generateIncidentResponse(id: UUID, version: ApiVersion, fail: Fail.Incident): ApiIncidentResponse =
+fun generateIncidentResponse(id: CommandId, version: ApiVersion, fail: Fail.Incident): ApiIncidentResponse =
     ApiIncidentResponse(
         id = id,
         version = version,
@@ -138,12 +139,7 @@ fun generateIncidentResponse(id: UUID, version: ApiVersion, fail: Fail.Incident)
 val NaN: UUID
     get() = UUID(0, 0)
 
-fun JsonNode.getId(): Result<UUID, DataErrors> {
-    return this.tryGetStringAttribute("id")
-        .flatMap { value ->
-            asUUID(value)
-        }
-}
+fun JsonNode.getId(): Result<CommandId, DataErrors> = tryGetStringAttribute("id").map { CommandId(it) }
 
 fun JsonNode.getVersion(): Result<ApiVersion, DataErrors> {
     val name = "version"

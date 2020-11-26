@@ -6,12 +6,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.enums.ResponseStatus
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import java.time.LocalDateTime
 import java.util.*
 
 @JsonPropertyOrder("version", "id", "status", "result")
 sealed class ApiResponse(
-    @field:JsonProperty("id") @param:JsonProperty("id") val id: UUID,
+    @field:JsonProperty("id") @param:JsonProperty("id") val id: CommandId,
 
     @field:JsonProperty("version") @param:JsonProperty("version") val version: ApiVersion,
 
@@ -22,7 +23,7 @@ sealed class ApiResponse(
 
 class ApiSuccessResponse(
     version: ApiVersion,
-    id: UUID,
+    id: CommandId,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any? = null
 ) : ApiResponse(
     version = version,
@@ -35,7 +36,7 @@ class ApiSuccessResponse(
 
 class ApiErrorResponse(
     version: ApiVersion,
-    id: UUID,
+    id: CommandId,
     result: List<Error>
 ) : ApiResponse(
     version = version,
@@ -70,7 +71,7 @@ class ApiErrorResponse(
 
 class ApiIncidentResponse(
     version: ApiVersion,
-    id: UUID,
+    id: CommandId,
     result: Incident
 ) : ApiResponse(
     version = version,
