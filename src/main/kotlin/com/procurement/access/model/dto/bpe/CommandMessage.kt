@@ -19,7 +19,7 @@ import java.util.*
 data class CommandMessage @JsonCreator constructor(
 
     val id: String,
-    val command: CommandType,
+    val command: CommandTypeV1,
     val context: Context,
     val data: JsonNode,
     val version: ApiVersion
@@ -114,7 +114,7 @@ data class Context @JsonCreator constructor(
     val testMode: Boolean?
 )
 
-enum class CommandType(private val value: String) {
+enum class CommandTypeV1(private val value: String) {
 
     AMEND_FE("amendFE"),
     CHECK_AWARD("checkAward"),

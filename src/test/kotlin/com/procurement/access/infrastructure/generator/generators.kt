@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.generator
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.dto.bpe.Context
 import com.procurement.access.model.entity.TenderProcessEntity
 import java.time.LocalDate
@@ -17,7 +17,7 @@ object CommandMessageGenerator {
     fun generate(
         id: String = COMMAND_ID,
         version: ApiVersion = COMMAND_VERSION,
-        command: CommandType,
+        command: CommandTypeV1,
         context: Context,
         data: JsonNode
     ): CommandMessage {

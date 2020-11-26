@@ -32,7 +32,7 @@ import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
@@ -597,7 +597,7 @@ class PnServiceTest {
             operationId = "124124"
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.CREATE_PN,
+            command = CommandTypeV1.CREATE_PN,
             context = context,
             data = data
         )

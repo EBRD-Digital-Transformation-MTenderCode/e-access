@@ -26,7 +26,7 @@ import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -273,7 +273,7 @@ class CheckAwardStrategyTest {
             id = lotId
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.CHECK_AWARD,
+            command = CommandTypeV1.CHECK_AWARD,
             context = context,
             data = data
         )

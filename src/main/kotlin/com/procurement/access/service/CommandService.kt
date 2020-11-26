@@ -95,7 +95,7 @@ import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.Pre
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
 import com.procurement.access.infrastructure.dto.tender.set.tenderUnsuccessful.SetTenderUnsuccessfulResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.cpid
@@ -168,8 +168,8 @@ class CommandService(
             return toObject(ResponseDto::class.java, historyEntity.jsonData)
         }
         val response = when (cm.command) {
-            CommandType.CREATE_PIN -> pinService.createPin(cm)
-            CommandType.CREATE_PN  -> {
+            CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
+            CommandTypeV1.CREATE_PN -> {
                 val context = CreatePnContext(
                     stage = cm.stage,
                     owner = cm.owner,
@@ -190,7 +190,7 @@ class CommandService(
 
                 return ResponseDto(data = response)
             }
-            CommandType.CREATE_AP -> {
+            CommandTypeV1.CREATE_AP -> {
                 val context = CreateApContext(
                     stage = cm.stage,
                     owner = cm.owner,
@@ -212,7 +212,7 @@ class CommandService(
 
                 return ResponseDto(data = response)
             }
-            CommandType.UPDATE_AP -> {
+            CommandTypeV1.UPDATE_AP -> {
                 val context = UpdateApContext(
                     stage = cm.stage,
                     owner = cm.owner,
@@ -230,8 +230,8 @@ class CommandService(
                 return ResponseDto(data = response)
             }
 
-            CommandType.CREATE_FE -> {
-                when(cm.pmd) {
+            CommandTypeV1.CREATE_FE -> {
+                when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CreateFEContext(
@@ -272,8 +272,8 @@ class CommandService(
                 }
             }
 
-            CommandType.AMEND_FE -> {
-                when(cm.pmd) {
+            CommandTypeV1.AMEND_FE -> {
+                when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = AmendFEContext(
@@ -313,8 +313,8 @@ class CommandService(
                 }
             }
 
-            CommandType.UPDATE_PN -> pnUpdateService.updatePn(cm)
-            CommandType.CREATE_CN -> {
+            CommandTypeV1.UPDATE_PN -> pnUpdateService.updatePn(cm)
+            CommandTypeV1.CREATE_CN -> {
                 val context = CnCreateContext(
                     stage = cm.stage,
                     owner = cm.owner,
@@ -327,7 +327,7 @@ class CommandService(
 
                 cnCreateService.createCn(cm, context)
             }
-            CommandType.UPDATE_CN -> {
+            CommandTypeV1.UPDATE_CN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
@@ -392,9 +392,9 @@ class CommandService(
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-            CommandType.CREATE_PIN_ON_PN -> pinOnPnService.createPinOnPn(cm)
-            CommandType.CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
-            CommandType.CREATE_CN_ON_PN -> {
+            CommandTypeV1.CREATE_PIN_ON_PN -> pinOnPnService.createPinOnPn(cm)
+            CommandTypeV1.CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
+            CommandTypeV1.CREATE_CN_ON_PN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
@@ -466,7 +466,7 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-            CommandType.CREATE_REQUESTS_FOR_EV_PANELS -> {
+            CommandTypeV1.CREATE_REQUESTS_FOR_EV_PANELS -> {
                 when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
                     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
@@ -498,9 +498,9 @@ class CommandService(
                 }
             }
 
-            CommandType.SET_TENDER_SUSPENDED -> tenderService.setSuspended(cm)
-            CommandType.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
-            CommandType.SET_TENDER_UNSUCCESSFUL -> {
+            CommandTypeV1.SET_TENDER_SUSPENDED -> tenderService.setSuspended(cm)
+            CommandTypeV1.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
+            CommandTypeV1.SET_TENDER_UNSUCCESSFUL -> {
                 val context = SetTenderUnsuccessfulContext(
                     cpid = cm.cpid,
                     stage = cm.stage,
@@ -517,7 +517,7 @@ class CommandService(
                 ResponseDto(data = dataResponse)
 //                tenderService.setUnsuccessful(cm)
             }
-            CommandType.SET_TENDER_PRECANCELLATION -> {
+            CommandTypeV1.SET_TENDER_PRECANCELLATION -> {
                 val context = PrepareCancellationContext(
                     cpid = cm.cpid,
                     token = cm.token,
@@ -555,14 +555,14 @@ class CommandService(
                     log.debug("Award was evaluate. Response: ${toJson(dataResponse)}")
                 ResponseDto(data = dataResponse)
             }
-            CommandType.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
-            CommandType.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
-            CommandType.GET_TENDER_OWNER -> tenderService.getTenderOwner(cm)
-            CommandType.GET_DATA_FOR_AC -> tenderService.getDataForAc(cm)
-            CommandType.START_NEW_STAGE -> stageService.startNewStage(cm)
+            CommandTypeV1.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
+            CommandTypeV1.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
+            CommandTypeV1.GET_TENDER_OWNER -> tenderService.getTenderOwner(cm)
+            CommandTypeV1.GET_DATA_FOR_AC -> tenderService.getDataForAc(cm)
+            CommandTypeV1.START_NEW_STAGE -> stageService.startNewStage(cm)
 
-            CommandType.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
-            CommandType.GET_ACTIVE_LOTS -> {
+            CommandTypeV1.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
+            CommandTypeV1.GET_ACTIVE_LOTS -> {
                 when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
                     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
@@ -593,7 +593,7 @@ class CommandService(
                 }
             }
 
-            CommandType.GET_AP_TITLE_AND_DESCRIPTION -> {
+            CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
                     cpid = cm.cpid,
                     stage = cm.stage
@@ -610,7 +610,7 @@ class CommandService(
                 ResponseDto(data = response)
             }
 
-            CommandType.GET_LOT -> {
+            CommandTypeV1.GET_LOT -> {
                 val context = GetLotContext(
                     cpid = cm.cpid,
                     stage = cm.stage,
@@ -702,7 +702,7 @@ class CommandService(
                 ResponseDto(data = dataResponse)
             }
 
-            CommandType.GET_LOTS_AUCTION -> {
+            CommandTypeV1.GET_LOTS_AUCTION -> {
                 when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
                     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
@@ -732,7 +732,7 @@ class CommandService(
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-            CommandType.GET_AWARD_CRITERIA -> {
+            CommandTypeV1.GET_AWARD_CRITERIA -> {
                 val context =
                     GetAwardCriteriaContext(
                         cpid = cm.cpid,
@@ -748,9 +748,9 @@ class CommandService(
                 ResponseDto(data = dataResponse)
 //                lotsService.getAwardCriteria(cm)
             }
-            CommandType.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
-            CommandType.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
-            CommandType.SET_LOTS_UNSUCCESSFUL -> {
+            CommandTypeV1.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
+            CommandTypeV1.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
+            CommandTypeV1.SET_LOTS_UNSUCCESSFUL -> {
                 val context = SetLotsStatusUnsuccessfulContext(
                     cpid = cm.cpid,
                     stage = cm.stage,
@@ -770,20 +770,20 @@ class CommandService(
                     log.debug("Lots statuses have been changed. Response: ${toJson(dataResponse)}")
                 ResponseDto(data = dataResponse)
             }
-            CommandType.SET_FINAL_STATUSES -> lotsService.setFinalStatuses(cm)
-            CommandType.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
-            CommandType.COMPLETE_LOTS -> lotsService.completeLots(cm)
+            CommandTypeV1.SET_FINAL_STATUSES -> lotsService.setFinalStatuses(cm)
+            CommandTypeV1.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
+            CommandTypeV1.COMPLETE_LOTS -> lotsService.completeLots(cm)
 
-            CommandType.CHECK_AWARD -> validationService.checkAward(cm)
-            CommandType.CHECK_LOT_ACTIVE -> validationService.checkLotActive(cm)
-            CommandType.CHECK_LOT_STATUS -> validationService.checkLotStatus(cm)
-            CommandType.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
-            CommandType.CHECK_LOT_AWARDED -> validationService.checkLotAwarded(cm)
-            CommandType.CHECK_BID -> validationService.checkBid(cm)
-            CommandType.CHECK_ITEMS -> validationService.checkItems(cm)
-            CommandType.CHECK_TOKEN -> validationService.checkToken(cm)
-            CommandType.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
-            CommandType.CHECK_CN_ON_PN -> {
+            CommandTypeV1.CHECK_AWARD -> validationService.checkAward(cm)
+            CommandTypeV1.CHECK_LOT_ACTIVE -> validationService.checkLotActive(cm)
+            CommandTypeV1.CHECK_LOT_STATUS -> validationService.checkLotStatus(cm)
+            CommandTypeV1.CHECK_LOTS_STATUS -> validationService.checkLotsStatus(cm)
+            CommandTypeV1.CHECK_LOT_AWARDED -> validationService.checkLotAwarded(cm)
+            CommandTypeV1.CHECK_BID -> validationService.checkBid(cm)
+            CommandTypeV1.CHECK_ITEMS -> validationService.checkItems(cm)
+            CommandTypeV1.CHECK_TOKEN -> validationService.checkToken(cm)
+            CommandTypeV1.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
+            CommandTypeV1.CHECK_CN_ON_PN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
@@ -868,7 +868,7 @@ class CommandService(
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-            CommandType.CHECK_RESPONSES -> {
+            CommandTypeV1.CHECK_RESPONSES -> {
                 when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
                     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
@@ -900,7 +900,7 @@ class CommandService(
                 }
             }
 
-            CommandType.CHECK_EXISTANCE_ITEMS_AND_LOTS -> {
+            CommandTypeV1.CHECK_EXISTANCE_ITEMS_AND_LOTS -> {
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
@@ -928,7 +928,7 @@ class CommandService(
                 }
             }
 
-            CommandType.CHECK_FE_DATA -> {
+            CommandTypeV1.CHECK_FE_DATA -> {
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
@@ -963,9 +963,9 @@ class CommandService(
                 }
             }
 
-            CommandType.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
+            CommandTypeV1.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
 
-            CommandType.GET_LOTS_FOR_AUCTION -> {
+            CommandTypeV1.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
                     cpid = cm.cpid,
                     stage = cm.stage,
@@ -997,7 +997,7 @@ class CommandService(
                     log.debug("Lots for auction. Response: ${toJson(dataResponse)}")
                 ResponseDto(data = dataResponse)
             }
-            CommandType.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
+            CommandTypeV1.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
                 val response = when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
                     ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,

@@ -25,7 +25,7 @@ import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -466,7 +466,7 @@ class CheckItemsStrategyTest {
             operationType = operationName
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.CHECK_ITEMS,
+            command = CommandTypeV1.CHECK_ITEMS,
             context = context,
             data = data
         )

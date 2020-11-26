@@ -16,7 +16,7 @@ import com.procurement.access.json.putAttribute
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
+import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -141,7 +141,7 @@ class PnUpdateServiceTest {
             operationId = "124124"
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.UPDATE_PN,
+            command = CommandTypeV1.UPDATE_PN,
             context = context,
             data = data
         )
