@@ -5,9 +5,9 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
-import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
@@ -20,7 +20,7 @@ class GetLotStateByIdsHandler(
     private val historyDao: HistoryDao,
     private val lotService: LotService
 ) : AbstractHistoricalHandler<Command2Type, List<GetLotStateByIdsResult>>(
-    target = ApiSuccessResponse::class.java,
+    target = ApiResponseV2.Success::class.java,
     historyRepository = historyDao,
     logger = logger
 ) {

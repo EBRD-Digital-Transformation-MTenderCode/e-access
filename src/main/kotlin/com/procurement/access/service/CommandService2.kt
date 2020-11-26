@@ -2,7 +2,9 @@ package com.procurement.access.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
+import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.auction.CheckExistenceSignAuctionHandler
@@ -29,7 +31,6 @@ import com.procurement.access.infrastructure.handler.set.statefortender.SetState
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.validate.tender.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseHandler
-import com.procurement.access.infrastructure.web.dto.ApiResponseV2
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getAction
@@ -73,7 +74,7 @@ class CommandService2(
         val version = request.getVersion()
             .onFailure { versionError ->
                 val id = request.getId().getOrElse(CommandId.NaN)
-                return errorResponse(fail = versionError.reason, id = id)
+                return errorResponse(fail = versionError.reason, id = id, version = ApiVersion.NaN)
             }
 
         val id = request.getId()

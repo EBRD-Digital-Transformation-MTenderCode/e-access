@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.procurement.access.infrastructure.bind.api.command.id.CommandIdModule
+import com.procurement.access.infrastructure.bind.api.v2.incident.IncidentModule
 import com.procurement.access.infrastructure.bind.api.version.ApiVersionModule
 import com.procurement.access.infrastructure.bind.money.MoneyModule
 import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
@@ -26,6 +27,7 @@ fun ObjectMapper.configuration() {
     this.registerModule(MoneyModule())
     this.registerModule(ApiVersionModule())
     this.registerModule(CommandIdModule())
+    this.registerModule(IncidentModule())
     this.registerModule(KotlinModule())
     this.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
     this.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)

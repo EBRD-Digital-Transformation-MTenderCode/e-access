@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.Action
-import com.procurement.access.infrastructure.web.dto.ApiResponseV2
-import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
+import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
@@ -24,7 +23,7 @@ abstract class AbstractQueryHandler<ACTION : Action, R : Any?>
             is Result.Success -> {
                 if (logger.isDebugEnabled)
                     logger.debug("${action.key} has been executed. Result: ${toJson(result.get)}")
-                return ApiSuccessResponse(version = version, id = id, result = result.get)
+                return ApiResponseV2.Success(version = version, id = id, result = result.get)
             }
             is Result.Failure -> responseError(fail = result.reason, version = version, id = id)
         }

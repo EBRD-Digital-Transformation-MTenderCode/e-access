@@ -3,12 +3,13 @@ package com.procurement.access.infrastructure.web.dto
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
+import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toJson
 import org.junit.jupiter.api.Test
 
-internal class ApiResponseTest : AbstractDTOTestBase<ApiSuccessResponse>(ApiSuccessResponse::class.java) {
+internal class ApiResponseTest : AbstractDTOTestBase<ApiResponseV2.Success>(ApiResponseV2.Success::class.java) {
 
     companion object {
         private const val JSON_RESPONSE_WITH_NO_RESULT = "json/dto/api/api_response_no_result.json"
@@ -70,7 +71,7 @@ internal class ApiResponseTest : AbstractDTOTestBase<ApiSuccessResponse>(ApiSucc
         testBindingAndMapping(JSON_RESPONSE_WITH_RESULT_LIST)
     }
 
-    private fun getApiResponse(result: Any?) = ApiSuccessResponse(
+    private fun getApiResponse(result: Any?) = ApiResponseV2.Success(
         version = getApiVersion(),
         id = getId(),
         result = result

@@ -6,7 +6,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
-import com.procurement.access.infrastructure.web.dto.ApiResponseV2
+import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion

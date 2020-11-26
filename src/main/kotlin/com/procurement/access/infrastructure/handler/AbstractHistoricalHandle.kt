@@ -5,8 +5,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.util.Action
-import com.procurement.access.infrastructure.web.dto.ApiResponseV2
-import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
+import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.model.dto.bpe.getId
 import com.procurement.access.model.dto.bpe.getVersion
@@ -14,7 +13,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject
 
 abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
-    private val target: Class<ApiSuccessResponse>,
+    private val target: Class<ApiResponseV2.Success>,
     private val historyRepository: HistoryDao,
     private val logger: Logger
 ) : AbstractHandler<ACTION, ApiResponseV2>(logger = logger) {
@@ -39,7 +38,7 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
         }
 
         return when (val serviceResult = execute(node)) {
-            is Result.Success -> ApiSuccessResponse(id = id, version = version, result = serviceResult.get)
+            is Result.Success -> ApiResponseV2.Success(id = id, version = version, result = serviceResult.get)
                 .also {
                     logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
                     historyRepository.saveHistory(id.toString(), action.key, it)
