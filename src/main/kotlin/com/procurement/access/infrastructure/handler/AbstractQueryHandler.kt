@@ -26,9 +26,7 @@ abstract class AbstractQueryHandler<ACTION : Action, R : Any?>
                     logger.debug("${action.key} has been executed. Result: ${toJson(result.get)}")
                 return ApiSuccessResponse(version = version, id = id, result = result.get)
             }
-            is Result.Failure -> responseError(
-                fail = result.error, version = version, id = id
-            )
+            is Result.Failure -> responseError(fail = result.reason, version = version, id = id)
         }
     }
 

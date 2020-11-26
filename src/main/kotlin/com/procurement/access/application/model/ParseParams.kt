@@ -14,89 +14,71 @@ import com.procurement.access.domain.model.owner.tryCreateOwner
 import com.procurement.access.domain.model.token.Token
 import com.procurement.access.domain.model.token.tryCreateToken
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import java.time.LocalDateTime
 
 fun parseCpid(value: String): Result<Cpid, DataErrors.Validation.DataMismatchToPattern> =
     Cpid.tryCreate(value = value)
-        .doOnError { expectedPattern ->
-            return Result.failure(
-                DataErrors.Validation.DataMismatchToPattern(
-                    name = "cpid",
-                    pattern = expectedPattern,
-                    actualValue = value
-                )
+        .mapFailure { expectedPattern ->
+            DataErrors.Validation.DataMismatchToPattern(
+                name = "cpid",
+                pattern = expectedPattern,
+                actualValue = value
             )
         }
-        .get
-        .asSuccess()
 
 fun parseOcid(value: String): Result<Ocid, DataErrors.Validation.DataMismatchToPattern> =
     Ocid.tryCreate(value = value)
-        .doOnError { expectedPattern ->
-            return Result.failure(
-                DataErrors.Validation.DataMismatchToPattern(
-                    name = "ocid",
-                    pattern = expectedPattern,
-                    actualValue = value
-                )
+        .mapFailure { expectedPattern ->
+            DataErrors.Validation.DataMismatchToPattern(
+                name = "ocid",
+                pattern = expectedPattern,
+                actualValue = value
             )
+
         }
-        .get
-        .asSuccess()
 
 fun parseOwner(value: String): Result<Owner, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateOwner()
-        .doOnError { pattern ->
-            return DataErrors.Validation.DataFormatMismatch(
+        .mapFailure { pattern ->
+            DataErrors.Validation.DataFormatMismatch(
                 actualValue = value,
                 name = "owner",
                 expectedFormat = pattern
-            ).asFailure()
+            )
         }
-        .get
-        .asSuccess()
 
 fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateToken()
-        .doOnError { pattern ->
-            return DataErrors.Validation.DataFormatMismatch(
+        .mapFailure { pattern ->
+            DataErrors.Validation.DataFormatMismatch(
                 actualValue = value,
                 name = "token",
                 expectedFormat = pattern
-            ).asFailure()
+            )
         }
-        .get
-        .asSuccess()
 
 fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation.DataFormatMismatch> =
     value.tryParseLocalDateTime()
-        .doOnError { expectedFormat ->
-            return Result.failure(
-                DataErrors.Validation.DataFormatMismatch(
-                    name = "startDate",
-                    actualValue = value,
-                    expectedFormat = expectedFormat
-                )
+        .mapFailure { expectedFormat ->
+            DataErrors.Validation.DataFormatMismatch(
+                name = "startDate",
+                actualValue = value,
+                expectedFormat = expectedFormat
             )
         }
-        .get
-        .asSuccess()
+
 
 fun parseLotId(value: String, attributeName: String): Result<LotId, DataErrors.Validation.DataFormatMismatch> =
     value.tryCreateLotId()
-        .doOnError { incident ->
-            return Result.failure(
-                DataErrors.Validation.DataFormatMismatch(
-                    name = attributeName,
-                    actualValue = value,
-                    expectedFormat = "uuid"
-                )
+        .mapFailure {
+            DataErrors.Validation.DataFormatMismatch(
+                name = attributeName,
+                actualValue = value,
+                expectedFormat = "uuid"
             )
+
         }
-        .get
-        .asSuccess()
 
 fun parseProcurementMethodModalities(
     value: String, allowedEnums: Set<ProcurementMethodModalities>, attributeName: String

@@ -13,10 +13,10 @@ class FindAuctionsParams private constructor(val cpid: Cpid, val ocid: Ocid) {
 
         fun tryCreate(cpid: String, ocid: String): Result<FindAuctionsParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return FindAuctionsParams(cpid = cpidParsed, ocid = ocidParsed).asSuccess()
         }

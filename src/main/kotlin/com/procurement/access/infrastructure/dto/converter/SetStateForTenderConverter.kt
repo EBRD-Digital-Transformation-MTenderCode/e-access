@@ -4,14 +4,12 @@ import com.procurement.access.application.model.params.SetStateForTenderParams
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderRequest
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.asFailure
 
 fun SetStateForTenderRequest.convert(): Result<SetStateForTenderParams, DataErrors> {
 
     val tender = this.tender
         .convert()
-        .doOnError { error -> return error.asFailure() }
-        .get
+        .onFailure { return it }
     return SetStateForTenderParams.tryCreate(cpid = this.cpid, ocid = this.ocid, tender = tender)
 }
 

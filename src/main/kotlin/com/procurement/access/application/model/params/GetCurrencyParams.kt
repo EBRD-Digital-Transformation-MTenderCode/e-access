@@ -13,10 +13,10 @@ class GetCurrencyParams private constructor(val cpid: Cpid, val ocid: Ocid) {
 
         fun tryCreate(cpid: String, ocid: String): Result<GetCurrencyParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return GetCurrencyParams(cpid = cpidParsed, ocid = ocidParsed).asSuccess()
         }

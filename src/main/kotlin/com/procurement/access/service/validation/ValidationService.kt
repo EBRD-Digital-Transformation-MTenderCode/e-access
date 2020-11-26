@@ -120,7 +120,7 @@ class ValidationService(
 
         tenderProcessRepository
             .getByCpIdAndStage(cpid, stage)
-            .doReturn { fail -> return ValidationResult.error(fail) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceFA(cpid, stage)
             )
@@ -134,7 +134,7 @@ class ValidationService(
 
         val entity = tenderProcessRepository
             .getByCpIdAndStage(cpid, stage)
-            .doReturn { fail -> return ValidationResult.error(fail) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckRelation(cpid, params.ocid)
             )
@@ -142,7 +142,7 @@ class ValidationService(
         return when(params.operationType) {
             OperationType.RELATION_AP -> {
                 val relatedProcesses = entity.jsonData.tryToObject(APEntity::class.java)
-                    .orForwardFail { fail -> return fail.error.asValidationFailure() }
+                    .onFailure { return it.reason.asValidationFailure() }
                     .relatedProcesses
 
                 if (params.existenceRelation)
@@ -294,21 +294,23 @@ class ValidationService(
 
     fun checkEqualityCurrencies(params: CheckEqualityCurrenciesParams): ValidationResult<Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckEqualityCurrencies(params.cpid, params.ocid)
             )
 
         val relatedRecord = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.RelatedTenderNotFoundOnCheckEqualityCurrencies(params.relatedCpid, params.relatedOcid)
             )
 
-        val tenderCurrency = record.jsonData.tryToObject(TenderCurrencyInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
-        val relatedTenderCurrency = relatedRecord.jsonData.tryToObject(TenderCurrencyInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
+        val tenderCurrency = record.jsonData
+            .tryToObject(TenderCurrencyInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
+        val relatedTenderCurrency = relatedRecord.jsonData
+            .tryToObject(TenderCurrencyInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
 
         val currency = tenderCurrency.tender.value.currency
         val relatedCurrency = relatedTenderCurrency.tender.value.currency
@@ -321,12 +323,13 @@ class ValidationService(
 
     fun checkExistenceSignAuction(params: CheckExistenceSignAuctionParams): ValidationResult<Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceSignAuction(params.cpid, params.ocid)
             )
-        val tenderInfo = record.jsonData.tryToObject(TenderProcurementMethodModalitiesInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
+        val tenderInfo = record.jsonData
+            .tryToObject(TenderProcurementMethodModalitiesInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
 
         if (params.containsElectronicAuction() && !tenderInfo.containsElectronicAuction())
             return ValidationResult.error(ValidationErrors.ElectronicAuctionReceivedButNotStored())
@@ -345,12 +348,13 @@ class ValidationService(
 
     fun validateClassification(params: ValidateClassificationParams): ValidationResult<Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnValidateClassification(params.cpid, params.ocid)
             )
-        val tenderInfo = record.jsonData.tryToObject(TenderClassificationInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
+        val tenderInfo = record.jsonData
+            .tryToObject(TenderClassificationInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
 
         val receivedClassificationId = params.tender.classification.id
         val storedClassificationId = tenderInfo.tender.classification.id

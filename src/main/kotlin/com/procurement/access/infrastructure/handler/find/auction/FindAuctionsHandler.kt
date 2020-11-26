@@ -21,12 +21,12 @@ class FindAuctionsHandler(
     override fun execute(node: JsonNode): Result<FindAuctionsResult?, Fail> {
 
         val paramsNode = node.tryGetParams()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         val params = paramsNode.tryParamsToObject(FindAuctionsRequest::class.java)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             .convert()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return tenderService.findAuctions(params = params)
     }

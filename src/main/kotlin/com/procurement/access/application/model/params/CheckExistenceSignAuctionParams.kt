@@ -27,10 +27,10 @@ class CheckExistenceSignAuctionParams private constructor(
             tender: Tender?
         ): Result<CheckExistenceSignAuctionParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { fail -> return fail }
+                .onFailure { fail -> return fail }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { fail -> return fail }
+                .onFailure { fail -> return fail }
 
             return CheckExistenceSignAuctionParams(cpid = cpidParsed, ocid = ocidParsed, tender = tender)
                 .asSuccess()
@@ -55,7 +55,7 @@ class CheckExistenceSignAuctionParams private constructor(
                 procurementMethodModalities: List<String>
             ): Result<Tender, DataErrors> {
                 procurementMethodModalities.validate(notEmptyRule(PROCUREMENT_METHOD_MODALITIES_ATTRIBUTE))
-                    .orForwardFail { return it }
+                    .onFailure { return it }
 
                 val procurementMethodModalitiesResult = procurementMethodModalities.mapResult {
                     parseProcurementMethodModalities(
@@ -63,7 +63,7 @@ class CheckExistenceSignAuctionParams private constructor(
                         allowedEnums = allowedProcurementMethodModalities,
                         attributeName = PROCUREMENT_METHOD_MODALITIES_ATTRIBUTE
                     )
-                }.orForwardFail { fail -> return fail }
+                }.onFailure { fail -> return fail }
 
                 return Tender(procurementMethodModalitiesResult)
                     .asSuccess()

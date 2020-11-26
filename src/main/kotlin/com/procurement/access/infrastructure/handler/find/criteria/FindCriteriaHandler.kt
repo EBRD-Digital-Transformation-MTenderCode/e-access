@@ -8,7 +8,7 @@ import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.bind
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
@@ -29,9 +29,9 @@ class FindCriteriaHandler(
     override fun execute(node: JsonNode): Result<FindCriteriaResult, Fail> {
 
         val params = node.tryGetParams()
-            .bind { it.tryParamsToObject(FindCriteriaRequest::class.java) }
-            .bind { it.convert() }
-            .orForwardFail { error -> return error }
+            .flatMap { it.tryParamsToObject(FindCriteriaRequest::class.java) }
+            .flatMap { it.convert() }
+            .onFailure { error -> return error }
 
         return criteriaService.findCriteria(params = params)
     }

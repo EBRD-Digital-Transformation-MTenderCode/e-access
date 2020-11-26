@@ -301,13 +301,14 @@ class TenderService(
     fun getTenderState(params: GetTenderStateParams): Result<GetTenderStateResult, Fail> {
         val entity = tenderProcessRepository
             .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
-            .orForwardFail { incident -> return incident }
+            .onFailure { incident -> return incident }
             ?: return ValidationErrors.TenderNotFoundOnGetTenderState(cpid = params.cpid, ocid = params.ocid)
                 .asFailure()
 
         return entity.jsonData
             .tryToObject(TenderStateInfo::class.java)
-            .doReturn { incident -> return Fail.Incident.DatabaseIncident(incident.exception).asFailure() }
+            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
+            .onFailure { return it }
             .let {
                 val tender = it.tender
                 GetTenderStateResult(
@@ -320,14 +321,13 @@ class TenderService(
 
     fun findAuctions(params: FindAuctionsParams): Result<FindAuctionsResult?, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return ValidationErrors.TenderNotFoundOnFindAuctions(params.cpid, params.ocid).asFailure()
 
         val tenderProcess = entity.jsonData
             .tryToObject(CNEntity::class.java)
-            .doReturn { incident ->
-                return Fail.Incident.DatabaseIncident(incident.exception).asFailure()
-            }
+            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
+            .onFailure { return it }
 
         if (tenderProcess.tender.electronicAuctions == null)
             return null.asSuccess()
@@ -361,25 +361,26 @@ class TenderService(
 
     fun getCurrency(params: GetCurrencyParams): Result<GetCurrencyResult, Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetCurrency(params.cpid, params.ocid)
             )
 
         val tenderInfo = record.jsonData.tryToObject(TenderCurrencyInfo::class.java)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         return GetCurrencyResult(GetCurrencyResult.Tender(GetCurrencyResult.Tender.Value(tenderInfo.tender.value.currency))).asSuccess()
     }
 
     fun getMainProcurementCategory(params: GetMainProcurementCategoryParams): Result<GetMainProcurementCategoryResult, Fail> {
         val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return failure(ValidationErrors.TenderNotFoundOnGetMainProcurementCategory(params.cpid, params.ocid))
 
         val tenderCategory = tenderEntity.jsonData
             .tryToObject(TenderCategoryInfo::class.java)
-            .doReturn { incident -> return Fail.Incident.DatabaseIncident(incident.exception).asFailure() }
+            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
+            .onFailure { return it }
 
         return GetMainProcurementCategoryResult(tender = GetMainProcurementCategoryResult.Tender(tenderCategory.tender.mainProcurementCategory)).asSuccess()
     }

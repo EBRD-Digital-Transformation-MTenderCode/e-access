@@ -5,13 +5,12 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseRequest
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.Result.Companion.failure
 
 fun VerifyRequirementResponseRequest.Params.convert(): Result<VerifyRequirementResponse.Params, DataErrors> {
 
     val convertedResponder = this.responder
         .convert()
-        .orForwardFail { error -> return error }
+        .onFailure { error -> return error }
 
     return VerifyRequirementResponse.Params.tryCreate(
         cpid = this.cpid,
@@ -26,13 +25,11 @@ fun VerifyRequirementResponseRequest.Params.convert(): Result<VerifyRequirementR
 private fun VerifyRequirementResponseRequest.Params.Responder.convert(): Result<VerifyRequirementResponse.Params.Responder, DataErrors> {
     val identifier = this.identifier
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     val businessFunctions = this.businessFunctions
         .mapResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return VerifyRequirementResponse.Params.Responder.tryCreate(
         title = this.title,
@@ -45,13 +42,11 @@ private fun VerifyRequirementResponseRequest.Params.Responder.convert(): Result<
 private fun VerifyRequirementResponseRequest.Params.Responder.BusinessFunction.convert(): Result<VerifyRequirementResponse.Params.Responder.BusinessFunction, DataErrors> {
     val period = this.period
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     val documents = this.documents
         ?.mapResult { it.convert() }
-        ?.doOnError { error -> return failure(error) }
-        ?.get
+        ?.onFailure { return it }
 
     return VerifyRequirementResponse.Params.Responder.BusinessFunction.tryCreate(
         id = this.id,

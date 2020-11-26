@@ -12,7 +12,7 @@ import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.asSuccess
-import com.procurement.access.lib.functional.bind
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
 
@@ -77,7 +77,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
 
         return tryExecute(updateStatement)
             .map { it.wasApplied() }
-            .bind { wasApplied ->
+            .flatMap { wasApplied ->
                 if (!wasApplied) {
                     val mdc = mapOf(
                         "description" to "Cannot update record",
@@ -102,7 +102,6 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
         return tryExecute(insert)
-            .doOnError { error -> return failure(error) }
     }
 
     override fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database> {
@@ -113,8 +112,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             }
 
         return tryExecute(query)
-            .doOnError { error -> return failure(error) }
-            .get
+            .onFailure { return it }
             .one()
             ?.convertToTenderProcessEntity()
             .asSuccess()

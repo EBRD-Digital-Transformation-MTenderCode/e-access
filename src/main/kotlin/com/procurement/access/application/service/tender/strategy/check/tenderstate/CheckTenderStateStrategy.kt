@@ -22,21 +22,22 @@ class CheckTenderStateStrategy(
         val ocid = params.ocid
 
         val tenderEntity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
-            .doReturn { fail -> return ValidationResult.error(fail) }
+            .onFailure { return ValidationResult.error(it.reason) }
             ?: return ValidationErrors.TenderNotFoundOnCheckTenderState(cpid = cpid, ocid = ocid)
                 .asValidationFailure()
 
         val currentTenderState = tenderEntity.jsonData
             .tryToObject(TenderStateInfo::class.java)
             .map { TenderStatesRule.State(it.tender.status, it.tender.statusDetails) }
-            .doReturn { error -> return DatabaseIncident(exception = error.exception).asValidationFailure() }
+            .onFailure { return DatabaseIncident(exception = it.reason.exception).asValidationFailure() }
 
-        val allowedStates = rulesService.getTenderStates(
-            pmd = params.pmd,
-            country = params.country,
-            operationType = params.operationType
-        )
-            .doReturn { fail -> return fail.asValidationFailure() }
+        val allowedStates = rulesService
+            .getTenderStates(
+                pmd = params.pmd,
+                country = params.country,
+                operationType = params.operationType
+            )
+            .onFailure { return it.reason.asValidationFailure() }
 
         allowedStates
             .find { it.status == currentTenderState.status && it.statusDetails == currentTenderState.statusDetails }

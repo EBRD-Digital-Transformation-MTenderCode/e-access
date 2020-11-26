@@ -25,10 +25,10 @@ class FindCriteria {
 
             fun tryCreate(cpid: String, ocid: String, source: String): Result<Params, DataErrors> {
                 val cpidResult = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val parsedSource = parseEnum(
                     value = source,
@@ -36,7 +36,7 @@ class FindCriteria {
                     allowedEnums = allowedSources,
                     target = CriteriaSource.Companion
                 )
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(Params(cpid = cpidResult, ocid = ocidResult, source = parsedSource))
             }

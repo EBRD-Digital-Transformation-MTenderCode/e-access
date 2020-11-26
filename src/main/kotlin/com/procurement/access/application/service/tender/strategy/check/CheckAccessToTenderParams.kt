@@ -27,25 +27,13 @@ class CheckAccessToTenderParams private constructor(
         ): Result<CheckAccessToTenderParams, DataErrors> {
 
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val ownerResult = parseOwner(value = owner)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val tokenResult = parseToken(value = token)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
 
             return CheckAccessToTenderParams(
                 cpid = cpidResult,

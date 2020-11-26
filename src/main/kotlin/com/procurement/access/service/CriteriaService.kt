@@ -199,7 +199,7 @@ class CriteriaServiceImpl(
         val stage = params.ocid.stage
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetQualificationCriteriaAndMethod(
                     cpid = params.cpid,
@@ -211,7 +211,8 @@ class CriteriaServiceImpl(
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val tender = fe.tender
                 val otherCriteria = tender.otherCriteria!!
@@ -230,7 +231,8 @@ class CriteriaServiceImpl(
             Stage.TP -> {
                 val cn = entity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val tender = cn.tender
                 val otherCriteria = tender.otherCriteria!!
@@ -254,7 +256,7 @@ class CriteriaServiceImpl(
                     ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         return success(result)
     }
@@ -262,7 +264,7 @@ class CriteriaServiceImpl(
     override fun findCriteria(params: FindCriteria.Params): Result<FindCriteriaResult, Fail> {
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
         val foundedCriteriaResult = when (params.ocid.stage) {
@@ -270,7 +272,8 @@ class CriteriaServiceImpl(
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val targetCriteria = fe.tender.criteria.orEmpty()
                     .asSequence()
@@ -286,7 +289,8 @@ class CriteriaServiceImpl(
             Stage.TP -> {
                 val cn = entity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val targetCriteria = cn.tender.criteria.orEmpty()
                     .asSequence()
@@ -307,7 +311,7 @@ class CriteriaServiceImpl(
                     ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         val result = FindCriteriaResult(foundedCriteriaResult)
 
@@ -321,7 +325,7 @@ class CriteriaServiceImpl(
             cpid = params.cpid,
             stage = stage
         )
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnCreateCriteriaForProcuringEntity(
                     cpid = params.cpid,
@@ -335,7 +339,8 @@ class CriteriaServiceImpl(
             Stage.TP -> {
                 val cn = tenderProcessEntity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val createdCriteria = params.criteria
                     .map { criterion -> createCriterionForCN(criterion, params.operationType) }
@@ -350,7 +355,7 @@ class CriteriaServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCnEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 success(result)
             }
@@ -358,11 +363,12 @@ class CriteriaServiceImpl(
             Stage.FE -> {
                 val cn = tenderProcessEntity.jsonData
                     .tryToObject(FEEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val createdCriteria = params.criteria
                     .mapResult { criterion -> createCriterionForFE(criterion, params.operationType) }
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val result = createdCriteria.map { it.convertToResponse() }
 
@@ -374,7 +380,7 @@ class CriteriaServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedFeEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 success(result)
             }
@@ -389,7 +395,7 @@ class CriteriaServiceImpl(
                     ValidationErrors.UnexpectedStageForCreateCriteriaForProcuringEntity(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return success(CreateCriteriaForProcuringEntityResult(result))
     }

@@ -9,6 +9,7 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.failure
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryResult
@@ -62,7 +63,7 @@ internal class TenderServiceTest {
             val params = getParams()
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(Result.success(null))
-            val actual = tenderService.getCurrency(params).error
+            val actual = tenderService.getCurrency(params).failure()
 
             val expectedErrorCode = "VR.COM-1.34.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
@@ -100,7 +101,7 @@ internal class TenderServiceTest {
             val params = getParams()
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(Result.success(null))
-            val actual = tenderService.getMainProcurementCategory(params).error
+            val actual = tenderService.getMainProcurementCategory(params).failure()
 
             val expectedErrorCode = "VR.COM-1.37.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."

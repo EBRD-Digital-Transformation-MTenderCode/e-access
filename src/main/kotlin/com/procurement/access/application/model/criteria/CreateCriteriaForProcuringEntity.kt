@@ -60,10 +60,10 @@ class CreateCriteriaForProcuringEntity {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val parsedOperationType = parseEnum(
                     value = operationType,
@@ -71,7 +71,7 @@ class CreateCriteriaForProcuringEntity {
                     allowedEnums = allowedOperationType,
                     attributeName = "operationType"
                 )
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(
                     Params(

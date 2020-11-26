@@ -26,7 +26,7 @@ class SetStateForTenderStrategy(
     fun execute(params: SetStateForTenderParams): Result<SetStateForTenderResult, Fail> {
 
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         val newState = TenderStatesRule.State(
             status = params.tender.status,
@@ -36,7 +36,8 @@ class SetStateForTenderStrategy(
         val updatedTenderJson = when (params.ocid.stage) {
             Stage.PN -> tenderProcessEntity.jsonData
                 .tryToObject(PNEntity::class.java)
-                .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                .onFailure { return it }
                 .let {
                     it.copy(
                         tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails)
@@ -46,7 +47,8 @@ class SetStateForTenderStrategy(
 
             Stage.AP -> tenderProcessEntity.jsonData
                 .tryToObject(APEntity::class.java)
-                .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                .onFailure { return it }
                 .let {
                     it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
@@ -54,7 +56,8 @@ class SetStateForTenderStrategy(
 
             Stage.FE -> tenderProcessEntity.jsonData
                 .tryToObject(FEEntity::class.java)
-                .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                .onFailure { return it }
                 .let {
                     it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
@@ -64,7 +67,8 @@ class SetStateForTenderStrategy(
             Stage.TP,
             Stage.NP -> tenderProcessEntity.jsonData
                 .tryToObject(CNEntity::class.java)
-                .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                .onFailure { return it }
                 .let {
                     it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
@@ -80,7 +84,7 @@ class SetStateForTenderStrategy(
         }
 
         tenderProcessRepository.save(tenderProcessEntity.copy(jsonData = updatedTenderJson))
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return SetStateForTenderResult(
             status = newState.status,
@@ -91,7 +95,7 @@ class SetStateForTenderStrategy(
 
     private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return Result.failure(ValidationErrors.TenderNotFoundSetStateForTender(cpid = cpid, ocid = ocid))
 
         return Result.success(entity)

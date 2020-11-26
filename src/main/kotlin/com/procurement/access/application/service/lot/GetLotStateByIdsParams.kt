@@ -23,27 +23,22 @@ class GetLotStateByIdsParams private constructor(
             ocid: String
         ): Result<GetLotStateByIdsParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
 
             val lotIdsResult = if (lotIds.isNotEmpty()) {
                 lotIds.map { lotId ->
                     lotId.tryCreateLotId()
-                        .doOnError {
-                            return DataErrors.Validation.DataFormatMismatch(
+                        .mapFailure {
+                            DataErrors.Validation.DataFormatMismatch(
                                 actualValue = lotId,
                                 name = "lotIds",
                                 expectedFormat = "uuid"
-                            ).asFailure()
+                            )
                         }
-                        .get
+                        .onFailure { return it }
+
                 }
             } else {
                 return DataErrors.Validation.EmptyArray(name = "lotIds")

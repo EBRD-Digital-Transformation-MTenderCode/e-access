@@ -6,6 +6,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.dto.converter.verify.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
@@ -20,14 +21,11 @@ class VerifyRequirementResponseHandler(
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
         val params = node.tryGetParams()
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
+            .onFailure { return it.reason.asValidationFailure() }
             .tryParamsToObject(VerifyRequirementResponseRequest.Params::class.java)
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
+            .onFailure { return it.reason.asValidationFailure() }
             .convert()
-            .doOnError { error -> return ValidationResult.error(error) }
-            .get
+            .onFailure { return it.reason.asValidationFailure() }
 
         return responderService.verifyRequirementResponse(params = params)
     }

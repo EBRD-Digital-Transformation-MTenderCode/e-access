@@ -20,10 +20,10 @@ class ValidateClassificationParams private constructor(
             tender: Tender
         ): Result<ValidateClassificationParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return ValidateClassificationParams(
                 cpid = cpidParsed,

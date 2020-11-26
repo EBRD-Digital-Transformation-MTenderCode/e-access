@@ -28,15 +28,12 @@ class SetStateForTenderHandler(
     override fun execute(node: JsonNode): Result<SetStateForTenderResult, Fail> {
 
         val paramsNode = node.tryGetParams()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
 
         val params = paramsNode.tryParamsToObject(SetStateForTenderRequest::class.java)
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
             .convert()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
 
         return tenderService.setStateForTender(params = params)
     }

@@ -10,7 +10,6 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForTenderParams private constructor(
@@ -26,12 +25,10 @@ class SetStateForTenderParams private constructor(
             tender: Tender
         ): Result<SetStateForTenderParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             return SetStateForTenderParams(cpid = cpidResult, ocid = ocidResult, tender = tender)
                 .asSuccess()

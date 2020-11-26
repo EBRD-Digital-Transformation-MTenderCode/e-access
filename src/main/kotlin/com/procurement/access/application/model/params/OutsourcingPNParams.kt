@@ -17,10 +17,10 @@ class OutsourcingPNParams(
     companion object {
         fun tryCreate(cpid: String, ocid: String, cpidFA: String): Result<OutsourcingPNParams, DataErrors.Validation.DataMismatchToPattern> {
             val cpidResult = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidResult = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return success(OutsourcingPNParams(cpid = cpidResult, ocid = ocidResult, cpidFA = cpidFA))
         }

@@ -41,7 +41,7 @@ class RulesDao(private val session: Session) {
             }
 
         return load(statement)
-            .orForwardFail { fail-> return fail }
+            .onFailure { fail -> return fail }
             .one()
             ?.convert()
             .asSuccess()

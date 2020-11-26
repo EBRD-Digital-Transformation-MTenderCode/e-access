@@ -10,10 +10,10 @@ import com.procurement.access.lib.functional.asSuccess
 
 fun GetMainProcurementCategoryRequest.convert(): Result<GetMainProcurementCategoryParams, DataErrors> {
     val cpidParsed = parseCpid(cpid)
-        .orForwardFail { return it }
+        .onFailure { return it }
 
     val ocidParsed = parseOcid(ocid)
-        .orForwardFail { return it }
+        .onFailure { return it }
 
     return GetMainProcurementCategoryParams(
         cpid = cpidParsed, ocid = ocidParsed

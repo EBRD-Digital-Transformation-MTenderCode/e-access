@@ -37,8 +37,7 @@ fun SetStateForLotsRequest.convert(): Result<SetStateForLotsParams, DataErrors> 
 
     val lotsResult = this.lots
         .mapResult { it.convert() }
-        .doOnError { error -> return error.asFailure() }
-        .get
+        .onFailure { return it }
 
     return SetStateForLotsParams.tryCreate(cpid = this.cpid, ocid = this.ocid, lots = lotsResult)
 }
@@ -50,7 +49,7 @@ fun SetStateForLotsRequest.Lot.convert(): Result<SetStateForLotsParams.Lot, Data
 fun CNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
     SetStateForLotsResult(
         id = id.tryCreateLotId()
-            .orForwardFail { fail -> return fail },
+            .onFailure { fail -> return fail },
         status = status,
         statusDetails = statusDetails
     ).asSuccess()
@@ -58,7 +57,7 @@ fun CNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsR
 fun APEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
     SetStateForLotsResult(
         id = id.tryCreateLotId()
-            .orForwardFail { fail -> return fail },
+            .onFailure { fail -> return fail },
         status = status,
         statusDetails = statusDetails
     ).asSuccess()
@@ -67,7 +66,7 @@ fun APEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsR
 fun PNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsResult, Fail.Incident.Parsing> =
     SetStateForLotsResult(
         id = id.tryCreateLotId()
-            .orForwardFail { fail -> return fail },
+            .onFailure { fail -> return fail },
         status = status,
         statusDetails = statusDetails
     ).asSuccess()

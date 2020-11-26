@@ -16,10 +16,10 @@ class CalculateAPValueParams(
     companion object {
         fun tryCreate(cpid: String, ocid: String): Result<CalculateAPValueParams, DataErrors.Validation.DataMismatchToPattern> {
             val parsedCpid = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOcid = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return success(CalculateAPValueParams(cpid = parsedCpid, ocid = parsedOcid))
         }

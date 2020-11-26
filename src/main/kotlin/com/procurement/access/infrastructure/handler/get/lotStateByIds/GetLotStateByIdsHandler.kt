@@ -26,14 +26,11 @@ class GetLotStateByIdsHandler(
 ) {
     override fun execute(node: JsonNode): Result<List<GetLotStateByIdsResult>, Fail> {
         val paramsNode = node.tryGetParams()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
         val params = paramsNode.tryParamsToObject(GetLotStateByIdsRequest::class.java)
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
             .convert()
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
         return lotService.getLotStateByIds(params = params)
     }
 

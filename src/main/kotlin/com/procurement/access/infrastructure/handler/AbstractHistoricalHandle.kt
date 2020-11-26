@@ -28,15 +28,14 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
         val history = historyRepository.getHistory(id.toString(), action.key)
         if (history != null) {
             val data = history.jsonData
-            val result = data.tryToObject(target)
-                .doOnError {
+            return data.tryToObject(target)
+                .onFailure {
                     return responseError(
                         id = id,
                         version = version,
                         fail = Fail.Incident.ParsingIncident()
                     )
                 }
-            return result.get
         }
 
         return when (val serviceResult = execute(node)) {
@@ -45,7 +44,7 @@ abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
                     logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
                     historyRepository.saveHistory(id.toString(), action.key, it)
                 }
-            is Result.Failure -> responseError(id = id, version = version, fail = serviceResult.error)
+            is Result.Failure -> responseError(id = id, version = version, fail = serviceResult.reason)
         }
     }
 

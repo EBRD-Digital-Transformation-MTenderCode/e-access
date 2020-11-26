@@ -36,29 +36,25 @@ class Command2Controller(
         logger.info("RECEIVED COMMAND: '${requestBody}'.")
 
         val node = requestBody.toNode()
-            .doOnError { error ->
+            .onFailure {
                 return responseEntity(
                     expected = BadRequestErrors.Parsing(
                         message = "Invalid request data",
                         request = requestBody,
-                        exception = error.exception
+                        exception = it.reason.exception
                     )
                 )
             }
-            .get
 
         val version = node.getVersion()
-            .doOnError { versionError ->
+            .onFailure { versionError ->
                 val id = node.getId()
-                    .doOnError { idError -> return responseEntity(expected = versionError) }
-                    .get
-                return responseEntity(expected = versionError, id = id)
+                    .onFailure { return responseEntity(expected = versionError.reason) }
+                return responseEntity(expected = versionError.reason, id = id)
             }
-            .get
 
         val id = node.getId()
-            .doOnError { error -> return responseEntity(expected = error, version = version) }
-            .get
+            .onFailure { return responseEntity(expected = it.reason, version = version) }
 
         val response = commandService2.execute(request = node)
             .also { response ->

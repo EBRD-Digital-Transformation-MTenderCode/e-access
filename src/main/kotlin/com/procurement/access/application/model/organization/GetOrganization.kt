@@ -33,10 +33,10 @@ class GetOrganization {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val roleParsed = parseEnum(
                     value = role,
@@ -44,7 +44,7 @@ class GetOrganization {
                     attributeName = "role",
                     target = OrganizationRole
                 )
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(Params(cpid = cpidResult, ocid = ocidResult, role = roleParsed))
             }

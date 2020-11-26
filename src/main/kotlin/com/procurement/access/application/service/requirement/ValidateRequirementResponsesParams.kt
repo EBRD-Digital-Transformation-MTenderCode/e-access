@@ -63,10 +63,10 @@ class ValidateRequirementResponsesParams private constructor(
             operationType: String
         ): Result<ValidateRequirementResponsesParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val operationTypeParsed = parseEnum(
                 value = operationType,
@@ -74,7 +74,7 @@ class ValidateRequirementResponsesParams private constructor(
                 allowedEnums = allowedOperationTypes,
                 target = OperationType.Companion
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return ValidateRequirementResponsesParams(
                 cpid = cpidParsed,
@@ -114,7 +114,7 @@ class ValidateRequirementResponsesParams private constructor(
             companion object {
                 fun tryCreate(id: String): Result<Requirement, DataErrors> {
                     val parsedId = id.tryToRequirementId()
-                        .orForwardFail { error -> return error }
+                        .onFailure { error -> return error }
                     return Requirement(parsedId).asSuccess()
                 }
             }

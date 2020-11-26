@@ -59,13 +59,13 @@ class CheckRelationParams private constructor(
             existenceRelation: Boolean
         ): Result<CheckRelationParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val relatedCpidParsed = parseCpid(value = relatedCpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
@@ -73,7 +73,7 @@ class CheckRelationParams private constructor(
                 allowedEnums = allowedOperationType,
                 attributeName = "operationType"
             )
-                .orForwardFail { fail -> return fail }
+                .onFailure { fail -> return fail }
 
             return CheckRelationParams(
                 cpid = cpidParsed,

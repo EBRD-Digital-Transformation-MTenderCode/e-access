@@ -27,11 +27,11 @@ class ValidateRequirementResponsesHandler(
 
     override fun execute(node: JsonNode): Result<ValidateRequirementResponsesResult, Fail> {
         val params = node.tryGetParams()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             .tryParamsToObject(ValidateRequirementResponsesRequest::class.java)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             .convert()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return responderService.validateRequirementResponses(params = params)
     }

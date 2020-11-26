@@ -23,16 +23,16 @@ class CheckEqualityCurrenciesParams private constructor(
             relatedOcid: String
         ): Result<CheckEqualityCurrenciesParams, DataErrors.Validation.DataMismatchToPattern> {
             val parsedCpid = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOcid = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedCpidAP = parseCpid(value = relatedCpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOcidAP = parseOcid(value = relatedOcid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return success(
                 CheckEqualityCurrenciesParams(

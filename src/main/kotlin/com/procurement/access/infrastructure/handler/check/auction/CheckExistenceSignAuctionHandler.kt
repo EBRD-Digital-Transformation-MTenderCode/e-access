@@ -6,7 +6,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.lib.functional.ValidationResult
-import com.procurement.access.lib.functional.bind
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
@@ -22,9 +22,9 @@ class CheckExistenceSignAuctionHandler(
     override fun execute(node: JsonNode): ValidationResult<Fail> {
 
         val params = node.tryGetParams()
-            .bind { it.tryParamsToObject(CheckExistenceSignAuctionRequest::class.java) }
-            .bind { it.convert() }
-            .doReturn { error -> return ValidationResult.error(error) }
+            .flatMap { it.tryParamsToObject(CheckExistenceSignAuctionRequest::class.java) }
+            .flatMap { it.convert() }
+            .onFailure { return ValidationResult.error(it.reason) }
 
         return validationService.checkExistenceSignAuction(params = params)
     }

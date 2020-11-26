@@ -8,7 +8,7 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.web.dto.ApiSuccessResponse
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.bind
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.dto.bpe.Command2Type
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
@@ -28,9 +28,9 @@ class CalculateAPValueHandler(
 
     override fun execute(node: JsonNode): Result<CalculateAPValueResult, Fail> {
         val params = node.tryGetParams()
-            .bind { it.tryParamsToObject(CalculateAPValueRequest::class.java) }
-            .bind { it.convert() }
-            .orForwardFail { error -> return error }
+            .flatMap { it.tryParamsToObject(CalculateAPValueRequest::class.java) }
+            .flatMap { it.convert() }
+            .onFailure { error -> return error }
 
         return apService.calculateAPValue(params = params)
     }

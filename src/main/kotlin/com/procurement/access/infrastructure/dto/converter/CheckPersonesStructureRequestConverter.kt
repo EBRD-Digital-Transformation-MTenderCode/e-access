@@ -6,14 +6,12 @@ import com.procurement.access.infrastructure.handler.check.persons.CheckPersones
 import com.procurement.access.lib.extension.mapOptionalResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.Result.Companion.failure
 
 fun CheckPersonesStructureRequest.Params.convert(): Result<CheckPersonesStructure.Params, DataErrors> {
 
     val convertedPersones = this.persones
         .mapResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return CheckPersonesStructure.Params.tryCreate(
         cpid = this.cpid,
@@ -26,13 +24,11 @@ fun CheckPersonesStructureRequest.Params.convert(): Result<CheckPersonesStructur
 private fun CheckPersonesStructureRequest.Params.Person.convert(): Result<CheckPersonesStructure.Params.Person, DataErrors> {
     val identifier = this.identifier
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     val businessFunctions = this.businessFunctions
         .mapResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return CheckPersonesStructure.Params.Person.tryCreate(
         id = this.id,
@@ -46,13 +42,11 @@ private fun CheckPersonesStructureRequest.Params.Person.convert(): Result<CheckP
 private fun CheckPersonesStructureRequest.Params.Person.BusinessFunction.convert(): Result<CheckPersonesStructure.Params.Person.BusinessFunction, DataErrors> {
     val period = this.period
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     val documents = this.documents
         .mapOptionalResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return CheckPersonesStructure.Params.Person.BusinessFunction.tryCreate(
         id = this.id,

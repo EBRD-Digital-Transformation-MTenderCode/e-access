@@ -6,14 +6,12 @@ import com.procurement.access.infrastructure.handler.processing.responder.Respon
 import com.procurement.access.lib.extension.mapOptionalResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.Result.Companion.failure
 
 fun ResponderProcessingRequest.Params.convert(): Result<ResponderProcessing.Params, DataErrors> {
 
     val responder = this.responder
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return ResponderProcessing.Params.tryCreate(
         cpid = this.cpid,
@@ -26,13 +24,11 @@ fun ResponderProcessingRequest.Params.convert(): Result<ResponderProcessing.Para
 private fun ResponderProcessingRequest.Params.Responder.convert(): Result<ResponderProcessing.Params.Responder, DataErrors> {
     val identifier = this.identifier
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     val businessFunctions = this.businessFunctions
         .mapResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return ResponderProcessing.Params.Responder.tryCreate(
         id = this.id,
@@ -46,13 +42,11 @@ private fun ResponderProcessingRequest.Params.Responder.convert(): Result<Respon
 private fun ResponderProcessingRequest.Params.Responder.BusinessFunction.convert(): Result<ResponderProcessing.Params.Responder.BusinessFunction, DataErrors> {
     val period = this.period
         .convert()
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     val documents = this.documents
         .mapOptionalResult { it.convert() }
-        .doOnError { error -> return failure(error) }
-        .get
+        .onFailure { return it }
 
     return ResponderProcessing.Params.Responder.BusinessFunction.tryCreate(
         id = this.id,

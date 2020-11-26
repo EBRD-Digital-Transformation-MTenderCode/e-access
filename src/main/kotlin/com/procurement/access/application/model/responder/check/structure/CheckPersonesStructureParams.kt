@@ -44,12 +44,10 @@ class CheckPersonesStructure {
             ): Result<Params, DataErrors> {
 
                 val parsedCpid = parseCpid(value = cpid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val parsedOcid = parseOcid(value = ocid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val parsedLocationOfPersones = locationOfPersones
                     .let {
@@ -96,7 +94,7 @@ class CheckPersonesStructure {
                     return Result.success(
                         Person(
                             id = PersonId.tryCreate(id)
-                                .orForwardFail { return it },
+                                .onFailure { return it },
                             title = title,
                             name = name,
                             identifier = identifier,
@@ -195,8 +193,7 @@ class CheckPersonesStructure {
                         ): Result<Period, DataErrors> {
 
                             val startDateParsed = parseStartDate(startDate)
-                                .doOnError { error -> return failure(error) }
-                                .get
+                                .onFailure { return it }
 
                             return Result.success(
                                 Period(startDate = startDateParsed)

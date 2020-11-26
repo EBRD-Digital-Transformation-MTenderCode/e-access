@@ -35,16 +35,13 @@ class ResponderProcessing {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val dateParsed = parseStartDate(date)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 return Result.success(
                     Params(
@@ -77,7 +74,7 @@ class ResponderProcessing {
                     return Result.success(
                         Responder(
                             id = PersonId.tryCreate(id)
-                                .orForwardFail { return it },
+                                .onFailure { return it },
                             title = title,
                             name = name,
                             identifier = identifier,
@@ -171,8 +168,7 @@ class ResponderProcessing {
                         ): Result<Period, DataErrors> {
 
                             val startDateParsed = parseStartDate(startDate)
-                                .doOnError { error -> return failure(error) }
-                                .get
+                                .onFailure { return it }
 
                             return Result.success(
                                 Period(startDate = startDateParsed)

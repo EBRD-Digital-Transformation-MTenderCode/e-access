@@ -8,7 +8,7 @@ import com.procurement.access.lib.functional.Result
 fun CheckExistenceSignAuctionRequest.convert(): Result<CheckExistenceSignAuctionParams, DataErrors> = CheckExistenceSignAuctionParams.tryCreate(
     cpid = this.cpid,
     ocid = this.ocid,
-    tender = tender?.convert()?.orForwardFail { fail -> return fail }
+    tender = tender?.convert()?.onFailure { fail -> return fail }
 )
 
 private fun CheckExistenceSignAuctionRequest.Tender.convert() = CheckExistenceSignAuctionParams.Tender.tryCreate(

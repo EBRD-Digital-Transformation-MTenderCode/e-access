@@ -70,21 +70,17 @@ class CommandService2(
     fun execute(request: JsonNode): ApiResponse {
 
         val version = request.getVersion()
-            .doOnError { versionError ->
+            .onFailure { versionError ->
                 val id = request.getId()
-                    .doOnError { idError -> return errorResponse(fail = versionError) }
-                    .get
-                return errorResponse(fail = versionError, id = id)
+                    .onFailure { return errorResponse(fail = versionError.reason) }
+                return errorResponse(fail = versionError.reason, id = id)
             }
-            .get
 
         val id = request.getId()
-            .doOnError { error -> return errorResponse(fail = error, version = version) }
-            .get
+            .onFailure { return errorResponse(fail = it.reason, version = version) }
 
         val action = request.getAction()
-            .doOnError { error -> return errorResponse(id = id, version = version, fail = error) }
-            .get
+            .onFailure { return errorResponse(id = id, version = version, fail = it.reason) }
 
         val response = when (action) {
             Command2Type.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)

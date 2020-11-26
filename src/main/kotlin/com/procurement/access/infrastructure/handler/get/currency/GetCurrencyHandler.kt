@@ -28,12 +28,12 @@ class GetCurrencyHandler(
     override fun execute(node: JsonNode): Result<GetCurrencyResult, Fail> {
 
         val paramsNode = node.tryGetParams()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         val params = paramsNode.tryParamsToObject(GetCurrencyRequest::class.java)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             .convert()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return tenderService.getCurrency(params = params)
     }

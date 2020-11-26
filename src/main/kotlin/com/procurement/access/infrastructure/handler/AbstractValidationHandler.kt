@@ -24,7 +24,7 @@ abstract class AbstractValidationHandler<ACTION : Action>(
                 .also {
                     logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
                 }
-            is ValidationResult.Fail -> responseError(id = id, version = version, fail = result.error)
+            is ValidationResult.Error -> responseError(id = id, version = version, fail = result.reason)
         }
     }
 

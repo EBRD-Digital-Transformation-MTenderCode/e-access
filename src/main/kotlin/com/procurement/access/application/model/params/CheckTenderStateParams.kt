@@ -61,13 +61,13 @@ class CheckTenderStateParams private constructor(
             operationType: String
         ): Result<CheckTenderStateParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val pmdParsed = ProcurementMethod.tryCreate(name = pmd)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val operationTypeParsed = parseEnum(
                 value = operationType,
@@ -75,7 +75,7 @@ class CheckTenderStateParams private constructor(
                 allowedEnums = allowedOperationType,
                 target = OperationType
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return CheckTenderStateParams(
                 cpid = cpidParsed,

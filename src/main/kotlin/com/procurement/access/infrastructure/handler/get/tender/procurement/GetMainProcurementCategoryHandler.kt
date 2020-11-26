@@ -28,12 +28,12 @@ class GetMainProcurementCategoryHandler(
     override fun execute(node: JsonNode): Result<GetMainProcurementCategoryResult, Fail> {
 
         val paramsNode = node.tryGetParams()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         val params = paramsNode.tryParamsToObject(GetMainProcurementCategoryRequest::class.java)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             .convert()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return tenderService.getMainProcurementCategory(params = params)
     }

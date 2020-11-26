@@ -10,7 +10,7 @@ fun ValidateRequirementResponsesRequest.convert(): Result<ValidateRequirementRes
     val requirementResponses = this.requirementResponses
         .map { requirementResponses ->
             requirementResponses.convert()
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
         }
 
     return ValidateRequirementResponsesParams.tryCreate(
@@ -25,7 +25,7 @@ fun ValidateRequirementResponsesRequest.convert(): Result<ValidateRequirementRes
 fun ValidateRequirementResponsesRequest.RequirementResponse.convert():
     Result<ValidateRequirementResponsesParams.RequirementResponse, DataErrors> {
     val requirement = requirement.convert()
-        .orForwardFail { error -> return error }
+        .onFailure { error -> return error }
 
     val relatedCandidate = this.relatedCandidate.convert()
 

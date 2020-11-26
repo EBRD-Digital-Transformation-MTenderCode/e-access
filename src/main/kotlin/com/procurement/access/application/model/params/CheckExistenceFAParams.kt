@@ -12,7 +12,7 @@ data class CheckExistenceFAParams private constructor(
     companion object {
         fun tryCreate(cpid: String): Result<CheckExistenceFAParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return CheckExistenceFAParams(cpid = cpidParsed).asSuccess()
         }

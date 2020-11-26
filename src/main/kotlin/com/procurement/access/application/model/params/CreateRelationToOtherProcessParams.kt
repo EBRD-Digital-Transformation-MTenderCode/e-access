@@ -57,10 +57,10 @@ class CreateRelationToOtherProcessParams(
             operationType: String
         ): Result<CreateRelationToOtherProcessParams, DataErrors.Validation> {
             val parsedCpid = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedRelationCpid = parseCpid(value = relatedCpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
@@ -68,7 +68,7 @@ class CreateRelationToOtherProcessParams(
                 allowedEnums = allowedOperationType,
                 attributeName = "operationType"
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return success(
                 CreateRelationToOtherProcessParams(

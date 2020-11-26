@@ -28,12 +28,12 @@ class GetQualificationCriteriaAndMethodHandler(
     override fun execute(node: JsonNode): Result<GetQualificationCriteriaAndMethodResult, Fail> {
 
         val paramsNode = node.tryGetParams()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         val params = paramsNode.tryParamsToObject(GetQualificationCriteriaAndMethodRequest::class.java)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             .convert()
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return criteriaService.getQualificationCriteriaAndMethod(params = params)
     }

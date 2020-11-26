@@ -12,7 +12,6 @@ import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForLotsParams private constructor(
@@ -27,12 +26,10 @@ class SetStateForLotsParams private constructor(
             lots: List<Lot>
         ): Result<SetStateForLotsParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
 
             return SetStateForLotsParams(cpid = cpidResult, ocid = ocidResult, lots = lots)
@@ -76,8 +73,7 @@ class SetStateForLotsParams private constructor(
                 statusDetails: String?
             ): Result<Lot, DataErrors> {
                 val idResult = parseLotId(value = id, attributeName = "Lot.id")
-                    .doOnError { error -> return error.asFailure() }
-                    .get
+                    .onFailure { return it }
 
                 val statusResult = LotStatus.orNull(key = status)
                     ?.takeIf { it in allowedLotStatuses }

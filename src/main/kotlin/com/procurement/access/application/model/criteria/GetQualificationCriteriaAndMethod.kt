@@ -13,10 +13,10 @@ class GetQualificationCriteriaAndMethod {
         companion object {
             fun tryCreate(cpid: String, ocid: String): Result<Params, DataErrors> {
                 val cpidResult = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(Params(cpid = cpidResult, ocid = ocidResult))
             }

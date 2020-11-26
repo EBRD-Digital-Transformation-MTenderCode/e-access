@@ -23,7 +23,7 @@ import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.asSuccess
-import com.procurement.access.lib.functional.bind
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.utils.tryToObject
 import java.time.LocalDateTime
 import java.util.*
@@ -139,17 +139,17 @@ val NaN: UUID
 
 fun JsonNode.getId(): Result<UUID, DataErrors> {
     return this.tryGetStringAttribute("id")
-        .bind { value ->
+        .flatMap { value ->
             asUUID(value)
         }
 }
 
 fun JsonNode.getVersion(): Result<ApiVersion, DataErrors> {
     return this.tryGetStringAttribute("version")
-        .bind { version ->
+        .flatMap { version ->
             when (val result = ApiVersion.tryOf(version)) {
                 is Result.Success -> result
-                is Result.Failure -> result.mapError {
+                is Result.Failure -> result.mapFailure {
                     DataErrors.Validation.DataFormatMismatch(
                         name = "version",
                         actualValue = version,
@@ -175,7 +175,7 @@ private fun <T> JsonNode.tryGetEnumAttribute(name: String, enumProvider: EnumEle
     : Result<T, DataErrors> where T : Enum<T>,
                                   T : EnumElementProvider.Key =
     this.tryGetStringAttribute(name)
-        .bind { enum ->
+        .flatMap { enum ->
             enumProvider.orNull(enum)
                 ?.asSuccess<T, DataErrors>()
                 ?: failure(
@@ -189,7 +189,7 @@ private fun <T> JsonNode.tryGetEnumAttribute(name: String, enumProvider: EnumEle
 
 private fun JsonNode.tryGetAttribute(name: String, type: JsonNodeType): Result<JsonNode, DataErrors> =
     getAttribute(name = name)
-        .bind { node ->
+        .flatMap { node ->
             if (node.nodeType == type)
                 success(node)
             else
@@ -215,19 +215,15 @@ private fun asUUID(value: String): Result<UUID, DataErrors> =
         )
     }
 
-fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, BadRequestErrors.Parsing> {
-    return this.tryToObject(clazz)
-        .doReturn { error ->
-            return failure(
-                BadRequestErrors.Parsing(
-                    message = "Can not parse 'params'.",
-                    request = this.toString(),
-                    exception = error.exception
-                )
-            )
+fun <T : Any> JsonNode.tryParamsToObject(clazz: Class<T>): Result<T, BadRequestErrors.Parsing> =
+    this.tryToObject(clazz)
+        .mapFailure {
+            BadRequestErrors.Parsing(
+                message = "Can not parse 'params'.",
+                request = this.toString(),
+                exception = it.exception)
         }
-        .asSuccess()
-}
+
 
 fun JsonNode.getAttribute(name: String): Result<JsonNode, DataErrors> {
     return if (has(name)) {
