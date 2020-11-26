@@ -6,7 +6,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractQueryHandler
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.TenderService
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
 class FindAuctionsHandler(
     private val tenderService: TenderService,
     logger: Logger
-) : AbstractQueryHandler<Command2Type, FindAuctionsResult?>(logger = logger) {
+) : AbstractQueryHandler<CommandTypeV2, FindAuctionsResult?>(logger = logger) {
 
     override fun execute(node: JsonNode): Result<FindAuctionsResult?, Fail> {
 
@@ -31,6 +31,6 @@ class FindAuctionsHandler(
         return tenderService.findAuctions(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.FIND_AUCTIONS
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.FIND_AUCTIONS
 }

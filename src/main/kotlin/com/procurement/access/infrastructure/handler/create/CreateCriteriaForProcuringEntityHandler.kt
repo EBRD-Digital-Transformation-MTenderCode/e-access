@@ -8,7 +8,7 @@ import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.dto.converter.create.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.CriteriaService
@@ -19,7 +19,7 @@ class CreateCriteriaForProcuringEntityHandler(
     private val criteriaService: CriteriaService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, CreateCriteriaForProcuringEntityResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, CreateCriteriaForProcuringEntityResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -38,6 +38,6 @@ class CreateCriteriaForProcuringEntityHandler(
         return criteriaService.createCriteriaForProcuringEntity(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.CREATE_CRITERIA_FOR_PROCURING_ENTITY
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY
 }

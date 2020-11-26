@@ -31,7 +31,7 @@ import com.procurement.access.infrastructure.handler.set.statefortender.SetState
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.validate.tender.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseHandler
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getAction
 import com.procurement.access.model.dto.bpe.getId
@@ -84,32 +84,32 @@ class CommandService2(
             .onFailure { return errorResponse(id = id, version = version, fail = it.reason) }
 
         val response = when (action) {
-            Command2Type.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)
-            Command2Type.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
-            Command2Type.CHECK_EQUALITY_CURRENCIES  -> checkEqualPNAndAPCurrencyHandler.handle(node = request)
-            Command2Type.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
-            Command2Type.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(node = request)
-            Command2Type.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
-            Command2Type.CHECK_RELATION -> checkRelationHandler.handle(node = request)
-            Command2Type.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
-            Command2Type.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(node = request)
-            Command2Type.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(node = request)
-            Command2Type.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
-            Command2Type.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
-            Command2Type.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
-            Command2Type.GET_CURRENCY -> getCurrencyHandler.handle(node = request)
-            Command2Type.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
-            Command2Type.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(node = request)
-            Command2Type.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
-            Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)
-            Command2Type.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
-            Command2Type.OUTSOURCING_PN -> outsourcingPNHandler.handle(node = request)
-            Command2Type.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
-            Command2Type.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
-            Command2Type.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
-            Command2Type.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(node = request)
-            Command2Type.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(node = request)
-            Command2Type.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(node = request)
+            CommandTypeV2.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)
+            CommandTypeV2.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
+            CommandTypeV2.CHECK_EQUALITY_CURRENCIES  -> checkEqualPNAndAPCurrencyHandler.handle(node = request)
+            CommandTypeV2.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
+            CommandTypeV2.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(node = request)
+            CommandTypeV2.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
+            CommandTypeV2.CHECK_RELATION -> checkRelationHandler.handle(node = request)
+            CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
+            CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(node = request)
+            CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(node = request)
+            CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
+            CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
+            CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
+            CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(node = request)
+            CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
+            CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(node = request)
+            CommandTypeV2.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
+            CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)
+            CommandTypeV2.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
+            CommandTypeV2.OUTSOURCING_PN -> outsourcingPNHandler.handle(node = request)
+            CommandTypeV2.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
+            CommandTypeV2.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
+            CommandTypeV2.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
+            CommandTypeV2.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(node = request)
+            CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(node = request)
+            CommandTypeV2.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(node = request)
         }
 
         logger.info("DataOfResponse: '$response'.")

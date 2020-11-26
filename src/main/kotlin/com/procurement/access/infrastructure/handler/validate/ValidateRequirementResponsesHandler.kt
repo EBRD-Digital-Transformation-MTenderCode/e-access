@@ -8,7 +8,7 @@ import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.dto.converter.validate.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.ResponderService
@@ -19,7 +19,7 @@ class ValidateRequirementResponsesHandler(
     private val responderService: ResponderService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, ValidateRequirementResponsesResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, ValidateRequirementResponsesResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -36,6 +36,6 @@ class ValidateRequirementResponsesHandler(
         return responderService.validateRequirementResponses(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.VALIDATE_REQUIREMENT_RESPONSES
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES
 }

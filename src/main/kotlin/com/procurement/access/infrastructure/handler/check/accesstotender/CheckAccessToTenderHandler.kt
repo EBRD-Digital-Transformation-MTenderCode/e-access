@@ -7,7 +7,7 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.validation.ValidationService
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 class CheckAccessToTenderHandler(
     private val logger: Logger,
     private val validationService: ValidationService
-) : AbstractValidationHandler<Command2Type>(logger = logger) {
+) : AbstractValidationHandler<CommandTypeV2>(logger = logger) {
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
 
@@ -29,6 +29,6 @@ class CheckAccessToTenderHandler(
         return validationService.checkOwnerAndToken(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.CHECK_ACCESS_TO_TENDER
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.CHECK_ACCESS_TO_TENDER
 }

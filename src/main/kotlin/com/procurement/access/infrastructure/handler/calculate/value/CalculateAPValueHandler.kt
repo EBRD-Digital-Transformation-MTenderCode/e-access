@@ -9,7 +9,7 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.APService
@@ -20,7 +20,7 @@ class CalculateAPValueHandler(
     private val apService: APService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, CalculateAPValueResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, CalculateAPValueResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -35,6 +35,6 @@ class CalculateAPValueHandler(
         return apService.calculateAPValue(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.CALCULATE_AP_VALUE
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.CALCULATE_AP_VALUE
 }

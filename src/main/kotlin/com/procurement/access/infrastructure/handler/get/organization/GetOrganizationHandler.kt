@@ -9,7 +9,7 @@ import com.procurement.access.infrastructure.dto.converter.get.organization.conv
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.ResponderService
@@ -20,7 +20,7 @@ class GetOrganizationHandler(
     private val responderService: ResponderService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, GetOrganizationResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, GetOrganizationResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -36,6 +36,6 @@ class GetOrganizationHandler(
         return responderService.getOrganization(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.GET_ORGANIZATION
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.GET_ORGANIZATION
 }

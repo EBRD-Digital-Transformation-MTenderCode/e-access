@@ -8,7 +8,7 @@ import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.dto.converter.get.currency.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.TenderService
@@ -19,7 +19,7 @@ class GetCurrencyHandler(
     private val tenderService: TenderService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, GetCurrencyResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, GetCurrencyResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -38,6 +38,6 @@ class GetCurrencyHandler(
         return tenderService.getCurrency(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.GET_QUALIFICATION_CRITERIA_AND_METHOD
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD
 }

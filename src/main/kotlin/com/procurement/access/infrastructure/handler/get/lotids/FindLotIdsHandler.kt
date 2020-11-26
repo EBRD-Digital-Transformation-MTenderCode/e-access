@@ -11,7 +11,7 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import org.springframework.stereotype.Service
@@ -21,7 +21,7 @@ class FindLotIdsHandler(
     private val lotService: LotService,
     private val historyDao: HistoryDao,
     private val logger: Logger
-) : AbstractHistoricalHandler<Command2Type, List<LotId>>(
+) : AbstractHistoricalHandler<CommandTypeV2, List<LotId>>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -37,6 +37,6 @@ class FindLotIdsHandler(
         return lotService.findLotIds(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.FIND_LOT_IDS
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.FIND_LOT_IDS
 }

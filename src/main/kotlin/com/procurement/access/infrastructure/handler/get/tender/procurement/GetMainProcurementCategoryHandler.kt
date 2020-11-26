@@ -8,7 +8,7 @@ import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.dto.converter.get.procurement.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.TenderService
@@ -19,7 +19,7 @@ class GetMainProcurementCategoryHandler(
     private val tenderService: TenderService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, GetMainProcurementCategoryResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, GetMainProcurementCategoryResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -38,6 +38,6 @@ class GetMainProcurementCategoryHandler(
         return tenderService.getMainProcurementCategory(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.GET_MAIN_PROCUREMENT_CATEGORY
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY
 }

@@ -9,7 +9,7 @@ import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.CriteriaService
@@ -20,7 +20,7 @@ class FindCriteriaHandler(
     private val criteriaService: CriteriaService,
     historyDao: HistoryDao,
     logger: Logger
-) : AbstractHistoricalHandler<Command2Type, FindCriteriaResult>(
+) : AbstractHistoricalHandler<CommandTypeV2, FindCriteriaResult>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -36,6 +36,6 @@ class FindCriteriaHandler(
         return criteriaService.findCriteria(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.FIND_CRITERIA
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.FIND_CRITERIA
 }

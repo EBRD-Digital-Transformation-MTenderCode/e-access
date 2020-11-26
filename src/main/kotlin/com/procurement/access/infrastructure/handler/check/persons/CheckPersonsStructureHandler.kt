@@ -7,7 +7,7 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractValidationHandler
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asValidationFailure
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.ResponderService
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 class CheckPersonsStructureHandler(
     private val responderService: ResponderService,
     logger: Logger
-) : AbstractValidationHandler<Command2Type>(logger) {
+) : AbstractValidationHandler<CommandTypeV2>(logger) {
 
     override fun execute(node: JsonNode): ValidationResult<Fail> {
         val params = node.tryGetParams()
@@ -30,6 +30,6 @@ class CheckPersonsStructureHandler(
         return responderService.checkPersonesStructure(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.CHECK_PERSONES_STRUCTURE
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.CHECK_PERSONES_STRUCTURE
 }

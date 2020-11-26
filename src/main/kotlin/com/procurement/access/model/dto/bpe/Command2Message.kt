@@ -28,7 +28,7 @@ import com.procurement.access.utils.tryToObject
 import java.time.LocalDateTime
 import java.util.*
 
-enum class Command2Type(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
+enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
     CALCULATE_AP_VALUE("calculateAPValue"),
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     CHECK_EQUALITY_CURRENCIES("checkEqualityCurrencies"),
@@ -58,11 +58,11 @@ enum class Command2Type(@JsonValue override val key: String) : EnumElementProvid
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<Command2Type>(info = info()) {
+    companion object : EnumElementProvider<CommandTypeV2>(info = info()) {
 
         @JvmStatic
         @JsonCreator
-        fun creator(name: String) = Command2Type.orThrow(name)
+        fun creator(name: String) = CommandTypeV2.orThrow(name)
     }
 }
 
@@ -153,8 +153,8 @@ fun JsonNode.getVersion(): Result<ApiVersion, DataErrors> {
         }
 }
 
-fun JsonNode.getAction(): Result<Command2Type, DataErrors> {
-    return this.tryGetEnumAttribute(name = "action", enumProvider = Command2Type)
+fun JsonNode.getAction(): Result<CommandTypeV2, DataErrors> {
+    return this.tryGetEnumAttribute(name = "action", enumProvider = CommandTypeV2)
 }
 
 private fun JsonNode.tryGetStringAttribute(name: String): Result<String, DataErrors> {

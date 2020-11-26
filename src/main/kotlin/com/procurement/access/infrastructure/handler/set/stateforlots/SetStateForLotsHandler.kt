@@ -10,7 +10,7 @@ import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.Command2Type
+import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ class SetStateForLotsHandler(
     private val lotService: LotService,
     private val historyDao: HistoryDao,
     private val logger: Logger
-) : AbstractHistoricalHandler<Command2Type, List<SetStateForLotsResult>>(
+) : AbstractHistoricalHandler<CommandTypeV2, List<SetStateForLotsResult>>(
     historyRepository = historyDao,
     target = ApiResponseV2.Success::class.java,
     logger = logger
@@ -36,6 +36,6 @@ class SetStateForLotsHandler(
         return lotService.setStateForLots(params = params)
     }
 
-    override val action: Command2Type
-        get() = Command2Type.SET_STATE_FOR_LOTS
+    override val action: CommandTypeV2
+        get() = CommandTypeV2.SET_STATE_FOR_LOTS
 }
