@@ -13,6 +13,7 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
 import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
 import com.procurement.access.infrastructure.dto.pn.converter.convert
@@ -32,7 +33,6 @@ import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd

@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.json.JsonValidator
@@ -16,7 +17,6 @@ import com.procurement.access.json.putAttribute
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

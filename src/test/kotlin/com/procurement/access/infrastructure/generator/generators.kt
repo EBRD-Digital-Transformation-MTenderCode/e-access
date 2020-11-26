@@ -2,8 +2,8 @@ package com.procurement.access.infrastructure.generator
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.dto.bpe.Context
 import com.procurement.access.model.entity.TenderProcessEntity
 import java.time.LocalDate

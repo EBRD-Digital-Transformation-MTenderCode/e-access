@@ -3,7 +3,6 @@ package com.procurement.access.model.dto.bpe
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -12,6 +11,7 @@ import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.utils.toLocal
 import java.time.LocalDateTime
 import java.util.*
@@ -113,69 +113,6 @@ data class Context @JsonCreator constructor(
     val id: String?,
     val testMode: Boolean?
 )
-
-enum class CommandTypeV1(private val value: String) {
-
-    AMEND_FE("amendFE"),
-    CHECK_AWARD("checkAward"),
-    CHECK_BID("checkBid"),
-    CHECK_BUDGET_SOURCES("checkBudgetSources"),
-    CHECK_CN_ON_PN("checkCnOnPn"),
-    CHECK_EXISTANCE_ITEMS_AND_LOTS("checkExistenceItemsAndLots"),
-    CHECK_FE_DATA("checkFEData"),
-    CHECK_ITEMS("checkItems"),
-    CHECK_LOTS_STATUS("checkLotsStatus"),
-    CHECK_LOT_ACTIVE("checkLotActive"),
-    CHECK_LOT_AWARDED("checkLotAwarded"),
-    CHECK_LOT_STATUS("checkLotStatus"),
-    CHECK_RESPONSES("checkResponses"),
-    CHECK_TOKEN("checkToken"),
-    COMPLETE_LOTS("completeLots"),
-    CREATE_AP("createAp"),
-    CREATE_CN("createCn"),
-    CREATE_CN_ON_PIN("createCnOnPin"),
-    CREATE_CN_ON_PN("createCnOnPn"),
-    CREATE_FE("createFE"),
-    CREATE_PIN("createPin"),
-    CREATE_PIN_ON_PN("createPinOnPn"),
-    CREATE_PN("createPn"),
-    CREATE_REQUESTS_FOR_EV_PANELS("createRequestsForEvPanels"),
-    GET_ACTIVE_LOTS("getActiveLots"),
-    GET_AWARD_CRITERIA("getAwardCriteria"),
-    GET_AWARD_CRITERIA_AND_CONVERSIONS("getAwardCriteriaAndConversions"),
-    GET_DATA_FOR_AC("getDataForAc"),
-    GET_AP_TITLE_AND_DESCRIPTION("getAPTitleAndDescription"),
-    GET_ITEMS_BY_LOT("getItemsByLot"),
-    GET_LOT("getLot"),
-    GET_LOTS_AUCTION("getLotsAuction"),
-    GET_LOTS_FOR_AUCTION("getLotsForAuction"),
-    GET_TENDER_OWNER("getTenderOwner"),
-    SET_FINAL_STATUSES("setFinalStatuses"),
-    SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),
-    SET_LOTS_SD_AWARDED("setLotsStatusDetailsAwarded"),
-    SET_LOTS_SD_UNSUCCESSFUL("setLotsStatusDetailsUnsuccessful"),
-    SET_LOTS_UNSUCCESSFUL("setLotsStatusUnsuccessful"),
-    SET_TENDER_CANCELLATION("setTenderCancellation"),
-    SET_TENDER_PRECANCELLATION("setTenderPreCancellation"),
-    SET_TENDER_STATUS_DETAILS("setTenderStatusDetails"),
-    SET_TENDER_SUSPENDED("setTenderSuspended"),
-    SET_TENDER_UNSUCCESSFUL("setTenderUnsuccessful"),
-    SET_TENDER_UNSUSPENDED("setTenderUnsuspended"),
-    START_NEW_STAGE("startNewStage"),
-    UPDATE_AP("updateAp"),
-    UPDATE_CN("updateCn"),
-    UPDATE_PN("updatePn"),
-    VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    override fun toString(): String {
-        return this.value
-    }
-}
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ResponseDto(

@@ -52,6 +52,7 @@ import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.dto.CheckResponsesRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateResponse
@@ -95,7 +96,6 @@ import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.Pre
 import com.procurement.access.infrastructure.dto.tender.prepare.cancellation.PrepareCancellationResponse
 import com.procurement.access.infrastructure.dto.tender.set.tenderUnsuccessful.SetTenderUnsuccessfulResponse
 import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandTypeV1
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.country
 import com.procurement.access.model.dto.bpe.cpid
@@ -163,7 +163,7 @@ class CommandService(
         }
 
     fun execute(cm: CommandMessage): ResponseDto {
-        var historyEntity = historyDao.getHistory(cm.id, cm.command.value())
+        var historyEntity = historyDao.getHistory(cm.id, cm.command.key)
         if (historyEntity != null) {
             return toObject(ResponseDto::class.java, historyEntity.jsonData)
         }
@@ -1033,7 +1033,7 @@ class CommandService(
             }
         }
 
-        historyEntity = historyDao.saveHistory(cm.id, cm.command.value(), response)
+        historyEntity = historyDao.saveHistory(cm.id, cm.command.key, response)
         return toObject(ResponseDto::class.java, historyEntity.jsonData)
     }
 
