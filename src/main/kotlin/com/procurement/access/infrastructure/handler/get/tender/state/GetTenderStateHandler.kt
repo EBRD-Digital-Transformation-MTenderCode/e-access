@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
 import com.procurement.access.domain.fail.Fail
+import com.procurement.access.infrastructure.api.v2.CommandTypeV2
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractQueryHandler
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.tryGetParams
 import com.procurement.access.model.dto.bpe.tryParamsToObject
 import com.procurement.access.service.TenderService

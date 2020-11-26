@@ -5,6 +5,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
+import com.procurement.access.infrastructure.api.v2.CommandTypeV2
 import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.check.accesstotender.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.check.auction.CheckExistenceSignAuctionHandler
@@ -31,7 +32,6 @@ import com.procurement.access.infrastructure.handler.set.statefortender.SetState
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.validate.tender.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseHandler
-import com.procurement.access.model.dto.bpe.CommandTypeV2
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getAction
 import com.procurement.access.model.dto.bpe.getId
