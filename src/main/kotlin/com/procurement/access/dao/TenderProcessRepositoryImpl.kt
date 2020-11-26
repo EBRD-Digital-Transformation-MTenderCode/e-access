@@ -1,6 +1,5 @@
 package com.procurement.access.dao
 
-import com.datastax.driver.core.BoundStatement
 import com.datastax.driver.core.ResultSet
 import com.datastax.driver.core.Row
 import com.datastax.driver.core.Session
@@ -10,6 +9,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
+import com.procurement.access.infrastructure.extension.cassandra.tryExecute
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
@@ -68,19 +68,17 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     private val preparedSaveCQL = session.prepare(SAVE_CQL)
     private val updateCQL = session.prepare(UPDATE_CQL)
 
-    override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident>  {
-        val updateStatement = updateCQL.bind()
+    override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident> =
+        updateCQL.bind()
             .apply {
                 setString(COLUMN_CPID, entity.cpId)
                 setString(COLUMN_STAGE, entity.stage)
                 setUUID(COLUMN_TOKEN, entity.token)
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
-
-        return tryExecute(updateStatement)
-            .map { it.wasApplied() }
-            .flatMap { wasApplied ->
-                if (!wasApplied) {
+            .tryExecute(session)
+            .flatMap {
+                if (!it.wasApplied()) {
                     val mdc = mapOf(
                         "description" to "Cannot update record",
                         "cpid" to entity.cpId,
@@ -89,12 +87,11 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                     )
                     failure(Fail.Incident.DatabaseIncident(mdc = mdc))
                 } else
-                    success(wasApplied)
+                    success(it.wasApplied())
             }
-    }
 
-    override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> {
-        val insert = preparedSaveCQL.bind()
+    override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> =
+        preparedSaveCQL.bind()
             .apply {
                 setString(COLUMN_CPID, entity.cpId)
                 setUUID(COLUMN_TOKEN, entity.token)
@@ -103,28 +100,19 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setTimestamp(COLUMN_CREATION_DATE, entity.createdDate.toCassandraTimestamp())
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
-        return tryExecute(insert)
-    }
+            .tryExecute(session)
 
-    override fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database> {
-        val query = preparedGetByCpIdAndStageCQL.bind()
+    override fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database> =
+        preparedGetByCpIdAndStageCQL.bind()
             .apply {
                 setString(COLUMN_CPID, cpid.toString())
                 setString(COLUMN_STAGE, stage.toString())
             }
-
-        return tryExecute(query)
+            .tryExecute(session)
             .onFailure { return it }
             .one()
             ?.convertToTenderProcessEntity()
             .asSuccess()
-    }
-
-    protected fun tryExecute(statement: BoundStatement): Result<ResultSet, Fail.Incident.Database> = try {
-        success(session.execute(statement))
-    } catch (expected: Exception) {
-        failure(Fail.Incident.Database(expected))
-    }
 
     private fun Row.convertToTenderProcessEntity(): TenderProcessEntity {
         return TenderProcessEntity(
