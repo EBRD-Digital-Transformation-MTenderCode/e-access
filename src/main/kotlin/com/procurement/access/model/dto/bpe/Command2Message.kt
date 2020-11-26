@@ -14,14 +14,15 @@ import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.util.Action
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.web.dto.ApiErrorResponse
 import com.procurement.access.infrastructure.web.dto.ApiIncidentResponse
 import com.procurement.access.infrastructure.web.dto.ApiResponse
-import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.lib.extension.toList
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.utils.tryToObject
@@ -145,18 +146,16 @@ fun JsonNode.getId(): Result<UUID, DataErrors> {
 }
 
 fun JsonNode.getVersion(): Result<ApiVersion, DataErrors> {
-    return this.tryGetStringAttribute("version")
+    val name = "version"
+    return tryGetStringAttribute(name)
         .flatMap { version ->
-            when (val result = ApiVersion.tryOf(version)) {
-                is Result.Success -> result
-                is Result.Failure -> result.mapFailure {
-                    DataErrors.Validation.DataFormatMismatch(
-                        name = "version",
-                        actualValue = version,
-                        expectedFormat = "00.00.00"
-                    )
-                }
-            }
+            ApiVersion.orNull(version)
+                ?.asSuccess<ApiVersion, DataErrors>()
+                ?: DataErrors.Validation.DataFormatMismatch(
+                    name = name,
+                    expectedFormat = ApiVersion.pattern,
+                    actualValue = version
+                ).asFailure()
         }
 }
 

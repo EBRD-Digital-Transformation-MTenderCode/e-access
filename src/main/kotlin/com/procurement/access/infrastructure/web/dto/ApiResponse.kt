@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.enums.ResponseStatus
+import com.procurement.access.infrastructure.api.ApiVersion
 import java.time.LocalDateTime
 import java.util.*
 

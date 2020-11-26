@@ -1,7 +1,7 @@
 package com.procurement.access.config
 
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.io.orThrow
-import com.procurement.access.infrastructure.web.dto.ApiVersion
 import java.util.*
 
 object GlobalProperties {

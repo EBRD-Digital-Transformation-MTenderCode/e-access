@@ -4,8 +4,8 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.BadRequestErrors
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.web.dto.ApiResponse
-import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.model.dto.bpe.NaN
 import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.model.dto.bpe.getId

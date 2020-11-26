@@ -11,6 +11,7 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.utils.toLocal
 import java.time.LocalDateTime
 import java.util.*
@@ -165,19 +166,6 @@ enum class CommandType(private val value: String) {
     UPDATE_CN("updateCn"),
     UPDATE_PN("updatePn"),
     VALIDATE_OWNER_AND_TOKEN("validateOwnerAndToken");
-
-    @JsonValue
-    fun value(): String {
-        return this.value
-    }
-
-    override fun toString(): String {
-        return this.value
-    }
-}
-
-enum class ApiVersion(private val value: String) {
-    V_0_0_1("0.0.1");
 
     @JsonValue
     fun value(): String {

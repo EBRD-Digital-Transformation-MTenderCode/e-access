@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.web.dto
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toJson

@@ -5,8 +5,8 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.util.Action
+import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.web.dto.ApiResponse
-import com.procurement.access.infrastructure.web.dto.ApiVersion
 import com.procurement.access.model.dto.bpe.generateDataErrorResponse
 import com.procurement.access.model.dto.bpe.generateErrorResponse
 import com.procurement.access.model.dto.bpe.generateIncidentResponse
