@@ -12,6 +12,7 @@ import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.CnUpdate
@@ -58,10 +59,12 @@ class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun validateDocumentsRelatedLots(tender: Tender, tenderDto: TenderCnUpdate) {
-        val lotsFromPin = tender.lots.asSequence().map { it.id }.toHashSet()
-        val lotsFromDocuments = tenderDto.documents.asSequence()
-                .filter { it.relatedLots != null }
-                .flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        val lotsFromPin = tender.lots.toSet { it.id }
+        val lotsFromDocuments = tenderDto.documents
+            .asSequence()
+            .filter { it.relatedLots != null }
+            .flatMap { it.relatedLots!!.asSequence() }
+            .toSet()
         if (lotsFromDocuments.isNotEmpty()) {
             if (lotsFromDocuments.size > lotsFromPin.size) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
             if (!lotsFromPin.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)

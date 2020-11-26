@@ -7,13 +7,13 @@ import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.extension.mapResult
-import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsRequest
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
+import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.extension.toSet
 
 fun SetStateForLotsRequest.convert(): Result<SetStateForLotsParams, DataErrors> {
 
@@ -25,7 +25,7 @@ fun SetStateForLotsRequest.convert(): Result<SetStateForLotsParams, DataErrors> 
     val lotsId = this.lots
         .map { it.id }
     val uniqueLotsId = this.lots
-        .toSetBy { it.id }
+        .toSet { it.id }
         .toList()
     val nonUniqueLotsId = lotsId - uniqueLotsId
     if (nonUniqueLotsId.isNotEmpty()) {

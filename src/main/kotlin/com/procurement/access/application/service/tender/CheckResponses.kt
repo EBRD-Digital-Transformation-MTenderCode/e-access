@@ -6,12 +6,12 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
-import com.procurement.access.domain.util.extension.getMissingElements
-import com.procurement.access.domain.util.extension.getUnknownElements
-import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.lib.extension.getMissingElements
+import com.procurement.access.lib.extension.getUnknownElements
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.time.Clock
 import java.time.LocalDateTime
@@ -77,7 +77,7 @@ fun checkAnswerByLotRequirements(
         .flatMap { it.requirements.asSequence() }
         .toList()
 
-    val nonTargetRequirementsIds = (nonBiddedLotsRequirements + nonBiddedItemsRequirements).toSetBy { it.id }
+    val nonTargetRequirementsIds = (nonBiddedLotsRequirements + nonBiddedItemsRequirements).toSet { it.id }
 
     val unknownRequirements = getUnknownElements(received = requestRequirements, known = totalRequirements)
 

@@ -1,4 +1,4 @@
-package com.procurement.access.domain.util.extension
+package com.procurement.access.lib.extension
 
 import com.procurement.access.domain.util.Option
 import com.procurement.access.domain.util.Result
@@ -13,13 +13,33 @@ inline fun <T, V> Collection<T>.isUnique(selector: (T) -> V): Boolean {
     return true
 }
 
-inline fun <T, V> Collection<T>.toSetBy(selector: (T) -> V): Set<V> {
+inline fun <T, V> Collection<T>.toSet(selector: (T) -> V): Set<V> {
     val collections = LinkedHashSet<V>()
     forEach {
         collections.add(selector(it))
     }
     return collections
 }
+
+inline fun <T, R> Collection<T>.mapIfNotEmpty(transform: (T) -> R): List<R>? =
+    if (this.isNotEmpty())
+        this.map(transform)
+    else
+        null
+
+inline fun <T, R> Collection<T>?.mapOrEmpty(transform: (T) -> R): List<R> = this?.map(transform) ?: emptyList()
+
+inline fun <T, C : Collection<T>, E : RuntimeException> C?.errorIfEmpty(exceptionBuilder: () -> E): C? =
+    if (this != null && this.isEmpty())
+        throw exceptionBuilder()
+    else
+        this
+
+inline fun <T, reified C : Collection<T>, E : RuntimeException> C?.orThrow(exceptionBuilder: () -> E): C =
+    this ?: throw exceptionBuilder()
+
+inline fun <reified T, E : RuntimeException> T?.orThrow(exceptionBuilder: () -> E): T =
+    this ?: throw exceptionBuilder()
 
 fun <T, R, E> List<T>.mapResult(block: (T) -> Result<R, E>): Result<List<R>, E> {
     val r = mutableListOf<R>()

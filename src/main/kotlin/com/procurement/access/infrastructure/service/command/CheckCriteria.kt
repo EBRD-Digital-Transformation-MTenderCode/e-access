@@ -9,7 +9,6 @@ import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
-import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
@@ -22,6 +21,7 @@ import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.infrastructure.dto.cn.item.ItemReferenceRequest
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.service.RulesService
 import java.math.BigDecimal
 
@@ -637,7 +637,7 @@ inline fun <reified T> List<T>.validateNotEmpty() {
 fun checkItemArrays(items: List<ItemReferenceRequest>) {
     items.apply {
         validateNotEmpty()
-        validateUniqueness(uniques = items.toSetBy { it.id })
+        validateUniqueness(uniques = items.toSet { it.id })
     }
 }
 
@@ -645,18 +645,18 @@ fun checkCriterionArrays(criteria: List<CriterionRequest>?) {
     if (criteria == null) return
     criteria.apply {
         validateNotEmpty()
-        validateUniqueness(uniques = criteria.toSetBy { it.id })
+        validateUniqueness(uniques = criteria.toSet { it.id })
     }
     criteria.forEach { criterion ->
         criterion.requirementGroups.apply {
             validateNotEmpty()
-            validateUniqueness(uniques = criterion.requirementGroups.toSetBy { it.id })
+            validateUniqueness(uniques = criterion.requirementGroups.toSet { it.id })
         }
 
         criterion.requirementGroups.forEach { requirementGroup ->
             requirementGroup.requirements.apply {
                 validateNotEmpty()
-                validateUniqueness(uniques = requirementGroup.requirements.toSetBy { it.id })
+                validateUniqueness(uniques = requirementGroup.requirements.toSet { it.id })
             }
         }
     }
@@ -666,13 +666,13 @@ fun checkConversionArrays(conversions: List<ConversionRequest>?) {
     if (conversions == null) return
     conversions.apply {
         validateNotEmpty()
-        validateUniqueness(uniques = conversions.toSetBy { it.id })
+        validateUniqueness(uniques = conversions.toSet { it.id })
     }
 
     conversions.forEach { conversion ->
         conversion.coefficients.apply {
             validateNotEmpty()
-            validateUniqueness(uniques = conversion.coefficients.toSetBy { it.id })
+            validateUniqueness(uniques = conversion.coefficients.toSet { it.id })
         }
     }
 }

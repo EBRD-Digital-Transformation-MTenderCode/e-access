@@ -9,9 +9,9 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.cn.UpdateOpenCnRequest
 import com.procurement.access.infrastructure.dto.cn.UpdateSelectiveCnRequest
-import com.procurement.access.lib.errorIfEmpty
-import com.procurement.access.lib.mapIfNotEmpty
-import com.procurement.access.lib.orThrow
+import com.procurement.access.lib.extension.errorIfEmpty
+import com.procurement.access.lib.extension.mapIfNotEmpty
+import com.procurement.access.lib.extension.orThrow
 import com.procurement.access.lib.takeIfNotEmpty
 
 fun UpdateOpenCnRequest.convert() = UpdateOpenCnData(

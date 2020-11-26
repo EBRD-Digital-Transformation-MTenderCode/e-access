@@ -16,6 +16,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.bpe.pmd
@@ -43,7 +44,6 @@ import com.procurement.access.model.dto.ocds.asMoney
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class LotsService(private val tenderProcessDao: TenderProcessDao) {
@@ -308,7 +308,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
     private fun setLotsStatusDetails(lots: List<Lot>, updateLotsDto: UpdateLotsRq, statusDetails: LotStatusDetails) {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsIds = updateLotsDto.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
+        val lotsIds = updateLotsDto.unsuccessfulLots?.toSet { it.id } ?: emptySet()
         lots.forEach { lot ->
             if (lot.id in lotsIds) lot.statusDetails = statusDetails
         }

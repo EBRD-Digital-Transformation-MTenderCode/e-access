@@ -22,8 +22,6 @@ import com.procurement.access.domain.util.Result.Companion.failure
 import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.extension.getDuplicate
-import com.procurement.access.domain.util.extension.toSetBy
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.dto.converter.get.organization.convert
 import com.procurement.access.infrastructure.dto.converter.toReference
@@ -33,6 +31,8 @@ import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
+import com.procurement.access.lib.extension.getDuplicate
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -767,7 +767,7 @@ fun <R, A, K> updateStrategy(
     createBlock: (R) -> A
 ): List<A> {
     val receivedElementsById = receivedElements.associateBy { keyExtractorForReceivedElement(it) }
-    val availableElementsIds = availableElements.toSetBy { keyExtractorForAvailableElement(it) }
+    val availableElementsIds = availableElements.toSet { keyExtractorForAvailableElement(it) }
 
     val updatedElements: MutableList<A> = mutableListOf()
 

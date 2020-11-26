@@ -17,7 +17,6 @@ import com.procurement.access.model.dto.ocds.Unit
 import com.procurement.access.model.dto.ocds.Value
 import com.procurement.access.model.dto.ocds.validate
 import java.math.BigDecimal
-import java.util.*
 
 data class CnUpdate @JsonCreator constructor(
 
@@ -86,22 +85,22 @@ data class LotCnUpdate @JsonCreator constructor(
 
 data class ItemCnUpdate @JsonCreator constructor(
 
-        var id: String,
+    var id: String,
 
-        val internalId: String?,
+    val internalId: String?,
 
-        val description: String,
+    val description: String,
 
-        val classification: Classification,
+    val classification: Classification,
 
-        val additionalClassifications: HashSet<Classification>?,
+    val additionalClassifications: List<Classification>?,
 
-        @field:JsonDeserialize(using = QuantityDeserializer::class)
-        val quantity: BigDecimal,
+    @field:JsonDeserialize(using = QuantityDeserializer::class)
+    val quantity: BigDecimal,
 
-        val unit: Unit,
+    val unit: Unit,
 
-        var relatedLot: String
+    var relatedLot: String
 )
 
 fun CnUpdate.validate(): CnUpdate {

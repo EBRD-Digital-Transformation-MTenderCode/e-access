@@ -4,8 +4,8 @@ import com.procurement.access.application.model.responder.verify.VerifyRequireme
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseRequest
+import com.procurement.access.lib.extension.mapResult
 
 fun VerifyRequirementResponseRequest.Params.convert(): Result<VerifyRequirementResponse.Params, DataErrors> {
 

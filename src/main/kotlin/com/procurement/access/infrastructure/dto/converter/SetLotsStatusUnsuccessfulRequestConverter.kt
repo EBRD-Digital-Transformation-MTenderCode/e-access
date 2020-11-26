@@ -4,8 +4,8 @@ import com.procurement.access.application.service.lot.SetLotsStatusUnsuccessfulD
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.lot.SetLotsStatusUnsuccessfulRequest
-import com.procurement.access.lib.mapIfNotEmpty
-import com.procurement.access.lib.orThrow
+import com.procurement.access.lib.extension.mapIfNotEmpty
+import com.procurement.access.lib.extension.orThrow
 
 fun SetLotsStatusUnsuccessfulRequest.convert() = SetLotsStatusUnsuccessfulData(
     lots = this.lots

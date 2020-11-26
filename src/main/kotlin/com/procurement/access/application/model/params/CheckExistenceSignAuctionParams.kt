@@ -10,9 +10,9 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.domain.util.validate
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.extension.toSet
 
 class CheckExistenceSignAuctionParams private constructor(
     val cpid: Cpid,
@@ -49,7 +49,7 @@ class CheckExistenceSignAuctionParams private constructor(
                         ProcurementMethodModalities.REQUIRES_ELECTRONIC_CATALOGUE -> true
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             fun tryCreate(
                 procurementMethodModalities: List<String>

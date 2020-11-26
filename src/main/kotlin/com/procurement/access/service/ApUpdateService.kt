@@ -24,7 +24,7 @@ import com.procurement.access.infrastructure.dto.ap.update.ApUpdateResponse
 import com.procurement.access.infrastructure.dto.ap.update.converter.convert
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
@@ -112,7 +112,7 @@ class ApUpdateServiceImpl(
                     }
 
                 val receivedLotsIds = receivedLotsById.keys
-                val availableLotsIds = tenderProcess.tender.lots.orEmpty().toSetBy { it.id }
+                val availableLotsIds = tenderProcess.tender.lots.orEmpty().toSet { it.id }
                 val newLotsId = receivedLotsIds - availableLotsIds
                 val newLots = newLotsId.map { newLotId ->
                     receivedLotsById.getValue(newLotId).createEntity()
@@ -152,7 +152,7 @@ class ApUpdateServiceImpl(
                         }
 
                     val receivedItemsIds = receivedItemsById.keys
-                    val availableItemsIds = tenderProcess.tender.items.orEmpty().toSetBy { it.id }
+                    val availableItemsIds = tenderProcess.tender.items.orEmpty().toSet { it.id }
                     val newItemsId = receivedItemsIds - availableItemsIds
                     val newItems = newItemsId.map { newItemId ->
                         receivedItemsById.getValue(newItemId).createEntity()
@@ -192,7 +192,7 @@ class ApUpdateServiceImpl(
     }
 
     private fun checkItemsIdsQniqueness(itemsIds: List<String>) {
-        val uniqItemsIds = itemsIds.toSetBy { it }
+        val uniqItemsIds = itemsIds.toSet { it }
         if (uniqItemsIds.size != itemsIds.size)
             throw ErrorException(
                 error = NOT_UNIQUE_IDS,
@@ -201,7 +201,7 @@ class ApUpdateServiceImpl(
     }
 
     private fun checkLotsIdsQniqueness(lotsIds: List<String>) {
-        val uniqLotsIds = lotsIds.toSetBy { it }
+        val uniqLotsIds = lotsIds.toSet { it }
         if (uniqLotsIds.size != lotsIds.size)
             throw ErrorException(
                 error = NOT_UNIQUE_IDS,
@@ -296,7 +296,7 @@ class ApUpdateServiceImpl(
             .takeIf { it.isNotEmpty() }
             ?.map { it.copy(relatedLots = it.relatedLots.map { temporalToPermanentLotId[it] ?: it }) }
             ?.let { updatedReceivedDocuments ->
-                val uniqDocsId = updatedReceivedDocuments.toSetBy { it.id }
+                val uniqDocsId = updatedReceivedDocuments.toSet { it.id }
                 if (uniqDocsId.size != updatedReceivedDocuments.size) throw ErrorException(INVALID_DOCS_ID)
 
                 // VR.COM-1.26.7
@@ -306,8 +306,8 @@ class ApUpdateServiceImpl(
                     val documentsDb = tender.documents.orEmpty()
 
                     // VR.COM-1.26.3
-                    val receivedDocumentsIds = updatedReceivedDocuments.toSetBy { it.id }
-                    val availableDocumentsIds = documentsDb.toSetBy { it.id }
+                    val receivedDocumentsIds = updatedReceivedDocuments.toSet { it.id }
+                    val availableDocumentsIds = documentsDb.toSet { it.id }
                     if (!receivedDocumentsIds.containsAll(availableDocumentsIds))
                         throw ErrorException(
                             error = INVALID_DOCS_ID,
@@ -374,7 +374,7 @@ class ApUpdateServiceImpl(
                 }
 
             val receivedAcIds = receivedAcById.keys
-            val availableAcIds = stored.toSetBy { it.id }
+            val availableAcIds = stored.toSet { it.id }
             val newAcsId = receivedAcIds - availableAcIds
             val newAc = newAcsId.map { newAcId ->
                 receivedAcById.getValue(newAcId).toDomain()

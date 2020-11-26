@@ -4,9 +4,9 @@ import com.procurement.access.application.model.responder.processing.ResponderPr
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.extension.mapOptionalResult
-import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingRequest
+import com.procurement.access.lib.extension.mapOptionalResult
+import com.procurement.access.lib.extension.mapResult
 
 fun ResponderProcessingRequest.Params.convert(): Result<ResponderProcessing.Params, DataErrors> {
 

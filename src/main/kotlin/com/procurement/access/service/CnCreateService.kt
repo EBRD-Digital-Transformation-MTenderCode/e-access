@@ -25,6 +25,7 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.cn.BudgetCnCreate
@@ -214,7 +215,7 @@ class CnCreateService(
     }
 
     private fun setItemsId(items: List<ItemCnCreate>) {
-        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        val itemsId = items.toSet { it.id }
         if (itemsId.size != items.size) throw ErrorException(INVALID_ITEMS)
         items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
@@ -246,20 +247,23 @@ class CnCreateService(
     }
 
     private fun validateDtoRelatedLots(tender: TenderCnCreate) {
-        val lotsIdSet = tender.lots.asSequence().map { it.id }.toHashSet()
+        val lotsIdSet = tender.lots.toSet { it.id }
         if (lotsIdSet.size != tender.lots.size) throw ErrorException(INVALID_LOT_ID)
-        val lotsFromItemsSet = tender.items.asSequence().map { it.relatedLot }.toHashSet()
+        val lotsFromItemsSet = tender.items.toSet { it.relatedLot }
         if (lotsIdSet.size != lotsFromItemsSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        val lotsFromDocuments = tender.documents.asSequence()
-                .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        val lotsFromDocuments = tender.documents
+            .asSequence()
+            .filter { it.relatedLots != null }
+            .flatMap { it.relatedLots!!.asSequence() }
+            .toSet()
         if (lotsFromDocuments.isNotEmpty()) {
             if (!lotsIdSet.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
         tender.electronicAuctions?.let { auctions ->
-            val auctionIds = auctions.details.asSequence().map { it.id }.toHashSet()
+            val auctionIds = auctions.details.toSet { it.id }
             if (auctionIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_ID)
-            val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+            val lotsFromAuctions = auctions.details.toSet { it.relatedLot }
             if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
@@ -290,7 +294,7 @@ class CnCreateService(
     }
 
     private fun checkAndGetDocuments(documentsDto: List<DocumentCnCreate>): List<Document>? {
-        val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
+        val docsId = documentsDto.toSet { it.id }
         if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
 
         return documentsDto.map { documentDto ->

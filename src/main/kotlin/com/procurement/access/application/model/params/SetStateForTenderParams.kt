@@ -11,7 +11,7 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.toSet
 
 class SetStateForTenderParams private constructor(
     val cpid: Cpid,
@@ -50,11 +50,11 @@ class SetStateForTenderParams private constructor(
                         TenderStatus.CANCELLED,
                         TenderStatus.COMPLETE,
                         TenderStatus.PLANNING,
-                        TenderStatus.UNSUCCESSFUL-> true
+                        TenderStatus.UNSUCCESSFUL -> true
                         TenderStatus.PLANNED -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             private val allowedTenderStatusDetails = TenderStatusDetails.allowedElements
                 .filter {
@@ -85,7 +85,7 @@ class SetStateForTenderParams private constructor(
                         TenderStatusDetails.SUBMISSION -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             fun tryCreate(
                 status: String,

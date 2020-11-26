@@ -9,7 +9,7 @@ import com.procurement.access.model.dto.ocds.Lot
 
 data class UpdateLotsRq @JsonCreator constructor(
 
-        val unsuccessfulLots: HashSet<UpdateLotDto>?
+    val unsuccessfulLots: List<UpdateLotDto>?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

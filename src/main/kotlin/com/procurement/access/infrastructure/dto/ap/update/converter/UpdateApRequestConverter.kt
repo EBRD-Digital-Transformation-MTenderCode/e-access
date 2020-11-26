@@ -6,7 +6,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.ap.update.ApUpdateRequest
-import com.procurement.access.lib.errorIfEmpty
+import com.procurement.access.lib.extension.errorIfEmpty
 import com.procurement.access.lib.takeIfNotEmpty
 
 fun ApUpdateRequest.convert() = ApUpdateData(

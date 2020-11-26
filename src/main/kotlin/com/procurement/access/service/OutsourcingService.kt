@@ -19,14 +19,14 @@ import com.procurement.access.domain.util.Result.Companion.success
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.domain.util.bind
-import com.procurement.access.domain.util.extension.mapResult
-import com.procurement.access.domain.util.extension.toList
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RelatedProcessesInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessResult
 import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
+import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.extension.toList
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject

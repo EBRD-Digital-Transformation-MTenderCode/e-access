@@ -24,10 +24,11 @@ import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
-import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.lots.CheckLotStatusRq
@@ -277,8 +278,8 @@ class ValidationService(
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, "EV") ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val bbIds = process.planning.budget.budgetBreakdown.asSequence().map { it.id }.toHashSet()
-        val bsIds = bsDto.planning.budget.budgetSource.asSequence().map { it.budgetBreakdownID }.toHashSet()
+        val bbIds = process.planning.budget.budgetBreakdown.toSet { it.id }
+        val bsIds = bsDto.planning.budget.budgetSource.toSet { it.budgetBreakdownID }
         if (!bbIds.containsAll(bsIds)) throw ErrorException(ErrorType.INVALID_BS)
         return ResponseDto(data = "Budget sources are valid.")
     }

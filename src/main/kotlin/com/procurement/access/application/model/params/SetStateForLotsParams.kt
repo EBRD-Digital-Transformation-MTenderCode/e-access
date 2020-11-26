@@ -13,7 +13,7 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.Result
 import com.procurement.access.domain.util.asFailure
 import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.toSet
 
 class SetStateForLotsParams private constructor(
     val cpid: Cpid,
@@ -57,7 +57,7 @@ class SetStateForLotsParams private constructor(
                         LotStatus.PLANNED -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             private val allowedLotStatusDetails = LotStatusDetails.allowedElements
                 .filter {
@@ -68,7 +68,7 @@ class SetStateForLotsParams private constructor(
                         LotStatusDetails.CANCELLED -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             fun tryCreate(
                 id: String,

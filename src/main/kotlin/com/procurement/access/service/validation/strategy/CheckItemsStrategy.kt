@@ -14,7 +14,7 @@ import com.procurement.access.infrastructure.dto.CheckItemsRequest
 import com.procurement.access.infrastructure.dto.CheckItemsResponse
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.cpid
 import com.procurement.access.model.dto.bpe.operationType
@@ -328,8 +328,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
      *   b. ELSE eAccess throws Exception: "Incorrect Items list";
      */
     private fun checkItems(request: CheckItemsRequest, cn: CNEntity) {
-        val idsSavedItems = cn.tender.items.toSetBy { it.id }
-        val idsReceivedItems = request.items.toSetBy { it.id }
+        val idsSavedItems = cn.tender.items.toSet { it.id }
+        val idsReceivedItems = request.items.toSet { it.id }
         if (!idsSavedItems.containsAll(idsReceivedItems))
             throw ErrorException(error = ErrorType.INVALID_ITEMS, message = "Incorrect Items list.")
     }

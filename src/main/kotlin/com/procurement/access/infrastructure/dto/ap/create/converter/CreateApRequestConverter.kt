@@ -6,7 +6,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
-import com.procurement.access.lib.errorIfEmpty
+import com.procurement.access.lib.extension.errorIfEmpty
 import com.procurement.access.lib.takeIfNotEmpty
 
 fun ApCreateRequest.convert() = ApCreateData(
