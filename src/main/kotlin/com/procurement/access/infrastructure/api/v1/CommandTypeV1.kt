@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.api.v1
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider
-import com.procurement.access.domain.util.Action
+import com.procurement.access.infrastructure.api.Action
 
 enum class CommandTypeV1(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
 

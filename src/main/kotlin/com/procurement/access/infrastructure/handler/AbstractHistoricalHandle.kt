@@ -1,51 +1,45 @@
 package com.procurement.access.infrastructure.handler
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
+import com.procurement.access.application.service.Transform
+import com.procurement.access.application.service.tryDeserialization
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.util.Action
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
+import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.getId
-import com.procurement.access.model.dto.bpe.getVersion
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.tryToObject
 
-abstract class AbstractHistoricalHandler<ACTION : Action, R : Any>(
-    private val target: Class<ApiResponseV2.Success>,
+abstract class AbstractHistoricalHandler<R : Any>(
+    private val transform: Transform,
     private val historyRepository: HistoryDao,
     private val logger: Logger
-) : AbstractHandler<ACTION, ApiResponseV2>(logger = logger) {
+) : AbstractHandler<ApiResponseV2>(logger = logger) {
 
+    override fun handle(descriptor: CommandDescriptor): ApiResponseV2 {
 
-    override fun handle(node: JsonNode): ApiResponseV2 {
-
-        val id = node.getId().get
-        val version = node.getVersion().get
-
-        val history = historyRepository.getHistory(id.toString(), action.key)
+        val history = historyRepository.getHistory(descriptor.id.underlying, action.key)
         if (history != null) {
             val data = history.jsonData
-            return data.tryToObject(target)
+            return data.tryDeserialization<ApiResponseV2.Success>(transform)
                 .onFailure {
                     return responseError(
-                        id = id,
+                        id = descriptor.id,
                         version = version,
-                        fail = Fail.Incident.ParsingIncident()
+                        fail = Fail.Incident.ParsingIncident() //TODO
                     )
                 }
         }
 
-        return when (val serviceResult = execute(node)) {
-            is Result.Success -> ApiResponseV2.Success(id = id, version = version, result = serviceResult.get)
+        return when (val result = execute(descriptor)) {
+            is Result.Success -> ApiResponseV2.Success(id = descriptor.id, version = version, result = result.value)
                 .also {
                     logger.info("'${action.key}' has been executed. Result: '${toJson(it)}'")
-                    historyRepository.saveHistory(id.toString(), action.key, it)
+                    historyRepository.saveHistory(descriptor.id.underlying, action.key, it)
                 }
-            is Result.Failure -> responseError(id = id, version = version, fail = serviceResult.reason)
+            is Result.Failure -> responseError(id = descriptor.id, version = version, fail = result.reason)
         }
     }
 
-    abstract fun execute(node: JsonNode): Result<R, Fail>
+    abstract fun execute(descriptor: CommandDescriptor): Result<R, Fail>
 }

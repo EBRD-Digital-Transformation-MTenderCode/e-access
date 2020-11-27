@@ -6,5 +6,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 
 @Configuration
 @EnableSwagger2
-@ComponentScan(basePackages = ["com.procurement.access.controller"])
+@ComponentScan(
+    basePackages = [
+        "com.procurement.access.controller"
+    ]
+)
 class WebConfig

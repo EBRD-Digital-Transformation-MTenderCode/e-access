@@ -41,22 +41,16 @@ fun <T> toObject(clazz: Class<T>, json: JsonNode): T {
     }
 }
 
-fun <T : Any> JsonNode.tryToObject(target: Class<T>): Result<T, Fail.Incident.Parsing> = try {
+fun <T : Any> JsonNode.tryToObject(target: Class<T>): Result<T, Fail.Incident.Transform.Parsing> = try {
     Result.success(JsonMapper.mapper.treeToValue(this, target))
 } catch (expected: Exception) {
-    Result.failure(Fail.Incident.Parsing(className = target.canonicalName, exception = expected))
+    Result.failure(Fail.Incident.Transform.Parsing(className = target.canonicalName, exception = expected))
 }
 
-fun <T : Any> String.tryToObject(target: Class<T>): Result<T, Fail.Incident.Parsing> = try {
+fun <T : Any> String.tryToObject(target: Class<T>): Result<T, Fail.Incident.Transform.Parsing> = try {
     Result.success(JsonMapper.mapper.readValue(this, target))
 } catch (expected: Exception) {
-    Result.failure(Fail.Incident.Parsing(className = target.canonicalName, exception = expected))
-}
-
-fun String.toNode(): Result<JsonNode, Fail.Incident.Transforming> = try {
-    Result.success(JsonMapper.mapper.readTree(this))
-} catch (exception: JsonProcessingException) {
-    Result.failure(Fail.Incident.Transforming(exception = exception))
+    Result.failure(Fail.Incident.Transform.Parsing(className = target.canonicalName, exception = expected))
 }
 
 fun <R> trySerialization(value: R): Result<String, Fail.Incident.Transforming> = try {

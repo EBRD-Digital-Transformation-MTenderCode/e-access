@@ -1,9 +1,6 @@
 package com.procurement.access.service
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.procurement.access.application.service.Logger
-import com.procurement.access.infrastructure.api.ApiVersion
-import com.procurement.access.infrastructure.api.command.id.CommandId
+import com.procurement.access.domain.fail.error.BadRequest
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
 import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueHandler
@@ -29,13 +26,11 @@ import com.procurement.access.infrastructure.handler.pn.OutsourcingPNHandler
 import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderHandler
+import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.validate.tender.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseHandler
 import com.procurement.access.model.dto.bpe.errorResponse
-import com.procurement.access.model.dto.bpe.getAction
-import com.procurement.access.model.dto.bpe.getId
-import com.procurement.access.model.dto.bpe.getVersion
 import org.springframework.stereotype.Service
 
 @Service
@@ -65,54 +60,45 @@ class CommandService2(
     private val setStateForTenderHandler: SetStateForTenderHandler,
     private val validateClassificationHandler: ValidateClassificationHandler,
     private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
-    private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler,
-    private val logger: Logger
+    private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler
 ) {
 
-    fun execute(request: JsonNode): ApiResponseV2 {
+        fun execute(descriptor: CommandDescriptor): ApiResponseV2 =
+            when (descriptor.action) {
+                    CommandTypeV2.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_EQUALITY_CURRENCIES -> checkEqualPNAndAPCurrencyHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_RELATION -> checkRelationHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(descriptor)
+                    CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(descriptor)
+                    CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(descriptor)
+                    CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(descriptor)
+                    CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(descriptor)
+                    CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(descriptor)
+                    CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(descriptor)
+                    CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
+                    CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(descriptor)
+                    CommandTypeV2.GET_ORGANIZATION -> getOrganizationHandler.handle(descriptor)
+                    CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(descriptor)
+                    CommandTypeV2.GET_TENDER_STATE -> getTenderStateHandler.handle(descriptor)
+                    CommandTypeV2.OUTSOURCING_PN -> outsourcingPNHandler.handle(descriptor)
+                    CommandTypeV2.RESPONDER_PROCESSING -> responderProcessingHandler.handle(descriptor)
+                    CommandTypeV2.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(descriptor)
+                    CommandTypeV2.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(descriptor)
+                    CommandTypeV2.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(descriptor)
+                    CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(descriptor)
+                    CommandTypeV2.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(descriptor)
 
-        val version = request.getVersion()
-            .onFailure { versionError ->
-                val id = request.getId().getOrElse(CommandId.NaN)
-                return errorResponse(fail = versionError.reason, id = id, version = ApiVersion.NaN)
+                    else -> {
+                            val errorDescription = "Unknown action '${descriptor.action.key}'."
+                            errorResponse(
+                                fail = BadRequest(description = errorDescription, exception = RuntimeException(errorDescription)),
+                                id = descriptor.id,
+                                version = descriptor.version
+                            )
+                    }
             }
-
-        val id = request.getId()
-            .onFailure { return errorResponse(fail = it.reason, version = version, id = CommandId.NaN) }
-
-        val action = request.getAction()
-            .onFailure { return errorResponse(id = id, version = version, fail = it.reason) }
-
-        val response = when (action) {
-            CommandTypeV2.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(node = request)
-            CommandTypeV2.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(node = request)
-            CommandTypeV2.CHECK_EQUALITY_CURRENCIES  -> checkEqualPNAndAPCurrencyHandler.handle(node = request)
-            CommandTypeV2.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(node = request)
-            CommandTypeV2.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(node = request)
-            CommandTypeV2.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(node = request)
-            CommandTypeV2.CHECK_RELATION -> checkRelationHandler.handle(node = request)
-            CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(node = request)
-            CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(node = request)
-            CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(node = request)
-            CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(node = request)
-            CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(node = request)
-            CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(node = request)
-            CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(node = request)
-            CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(node = request)
-            CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(node = request)
-            CommandTypeV2.GET_ORGANIZATION -> getOrganizationHandler.handle(node = request)
-            CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(node = request)
-            CommandTypeV2.GET_TENDER_STATE -> getTenderStateHandler.handle(node = request)
-            CommandTypeV2.OUTSOURCING_PN -> outsourcingPNHandler.handle(node = request)
-            CommandTypeV2.RESPONDER_PROCESSING -> responderProcessingHandler.handle(node = request)
-            CommandTypeV2.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(node = request)
-            CommandTypeV2.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(node = request)
-            CommandTypeV2.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(node = request)
-            CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(node = request)
-            CommandTypeV2.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(node = request)
-        }
-
-        logger.info("DataOfResponse: '$response'.")
-        return response
-    }
 }

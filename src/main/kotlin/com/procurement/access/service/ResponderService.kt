@@ -7,7 +7,6 @@ import com.procurement.access.application.model.responder.verify.VerifyRequireme
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.fail.error.BadRequestErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -32,6 +31,7 @@ import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -420,12 +420,8 @@ class ResponderServiceImpl(
     ): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
             .onFailure { return it }
-            ?: return failure(
-                BadRequestErrors.EntityNotFound(
-                    entityName = "TenderProcessEntity",
-                    by = "by cpid = '$cpid' and stage = '$stage'"
-                )
-            )
+            ?: return ValidationErrors.TenderNotFoundForResponderProcessing(cpid = cpid, stage = stage)
+                .asFailure()
 
         return success(entity)
     }

@@ -244,6 +244,13 @@ sealed class ValidationErrors(
             description = "Stage '${stage}' not allowed at this command"
         )
 
+    class TenderNotFoundForResponderProcessing(cpid: Cpid, stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.4.1",
+            description = "Tender not found by cpid='$cpid' and stage='${stage.key}'."
+        )
+
     class UnexpectedStageForResponderProcessing(stage: Stage) :
         ValidationErrors(
             prefix = "VR.COM-",

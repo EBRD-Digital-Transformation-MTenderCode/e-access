@@ -1,39 +1,34 @@
 package com.procurement.access.infrastructure.handler.get.lotStateByIds
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
+import com.procurement.access.application.service.Transform
 import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
 import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.handler.AbstractHistoricalHandler
+import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 import com.procurement.access.lib.functional.Result
-import com.procurement.access.model.dto.bpe.tryGetParams
-import com.procurement.access.model.dto.bpe.tryParamsToObject
+import com.procurement.access.lib.functional.flatMap
 import org.springframework.stereotype.Service
 
 @Service
 class GetLotStateByIdsHandler(
-    private val logger: Logger,
-    private val historyDao: HistoryDao,
+    transform: Transform,
+    logger: Logger,
+    historyDao: HistoryDao,
     private val lotService: LotService
-) : AbstractHistoricalHandler<CommandTypeV2, List<GetLotStateByIdsResult>>(
-    target = ApiResponseV2.Success::class.java,
-    historyRepository = historyDao,
-    logger = logger
-) {
-    override fun execute(node: JsonNode): Result<List<GetLotStateByIdsResult>, Fail> {
-        val paramsNode = node.tryGetParams()
-            .onFailure { return it }
-        val params = paramsNode.tryParamsToObject(GetLotStateByIdsRequest::class.java)
-            .onFailure { return it }
-            .convert()
-            .onFailure { return it }
-        return lotService.getLotStateByIds(params = params)
-    }
+) : AbstractHistoricalHandler<List<GetLotStateByIdsResult>>(transform, historyDao, logger) {
 
     override val action: CommandTypeV2
         get() = CommandTypeV2.GET_LOT_STATE_BY_IDS
+
+    override fun execute(descriptor: CommandDescriptor): Result<List<GetLotStateByIdsResult>, Fail> {
+        val params = descriptor.body.asJsonNode
+            .params<GetLotStateByIdsRequest>()
+            .flatMap { it.convert() }
+            .onFailure { return it }
+        return lotService.getLotStateByIds(params = params)
+    }
 }
