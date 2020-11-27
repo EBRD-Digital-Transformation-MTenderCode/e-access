@@ -3,6 +3,7 @@ package com.procurement.access.infrastructure.generator
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.api.v1.Context
@@ -13,11 +14,11 @@ import java.time.ZoneId
 import java.util.*
 
 object CommandMessageGenerator {
-    const val COMMAND_ID = "COMMAND_ID"
+    val COMMAND_ID = CommandId(UUID.randomUUID().toString())
     val COMMAND_VERSION: ApiVersion = ApiVersion(1, 0, 0)
 
     fun generate(
-        id: String = COMMAND_ID,
+        id: CommandId = COMMAND_ID,
         version: ApiVersion = COMMAND_VERSION,
         command: CommandTypeV1,
         context: Context,

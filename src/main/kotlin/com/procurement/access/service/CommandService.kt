@@ -47,7 +47,6 @@ import com.procurement.access.application.service.tender.strategy.get.awardCrite
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
-import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -68,6 +67,7 @@ import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.api.v1.token
 import com.procurement.access.infrastructure.configuration.properties.OCDSProperties
+import com.procurement.access.infrastructure.handler.HistoryRepository
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.converter.toResponseDto
 import com.procurement.access.infrastructure.handler.v1.model.request.AmendFERequest
@@ -112,7 +112,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandService(
-    private val historyDao: HistoryDao,
+    private val historyRepository: HistoryRepository,
     private val pinService: PinService,
     private val pinOnPnService: PinOnPnService,
     private val pnService: PnService,
@@ -156,9 +156,10 @@ class CommandService(
         }
 
     fun execute(cm: CommandMessage): ResponseDto {
-        var historyEntity = historyDao.getHistory(cm.id, cm.command.key)
-        if (historyEntity != null) {
-            return toObject(ResponseDto::class.java, historyEntity.jsonData)
+        val history = historyRepository.getHistory(cm.id, cm.command)
+            .orThrow { it.exception }
+        if (history != null) {
+            return toObject(ResponseDto::class.java, history)
         }
         val response = when (cm.command) {
             CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
@@ -222,7 +223,6 @@ class CommandService(
 
                 return ResponseDto(data = response)
             }
-
             CommandTypeV1.CREATE_FE -> {
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -264,7 +264,6 @@ class CommandService(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.AMEND_FE -> {
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -305,7 +304,6 @@ class CommandService(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandTypeV1.CREATE_CN -> {
                 val context = CnCreateContext(
@@ -490,7 +488,6 @@ class CommandService(
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.SET_TENDER_SUSPENDED -> tenderService.setSuspended(cm)
             CommandTypeV1.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
             CommandTypeV1.SET_TENDER_UNSUCCESSFUL -> {
@@ -553,7 +550,6 @@ class CommandService(
             CommandTypeV1.GET_TENDER_OWNER -> tenderService.getTenderOwner(cm)
             CommandTypeV1.GET_DATA_FOR_AC -> tenderService.getDataForAc(cm)
             CommandTypeV1.START_NEW_STAGE -> stageService.startNewStage(cm)
-
             CommandTypeV1.GET_ITEMS_BY_LOT -> lotsService.getItemsByLot(cm)
             CommandTypeV1.GET_ACTIVE_LOTS -> {
                 when (cm.pmd) {
@@ -585,7 +581,6 @@ class CommandService(
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
                     cpid = cm.cpid,
@@ -602,7 +597,6 @@ class CommandService(
 
                 ResponseDto(data = response)
             }
-
             CommandTypeV1.GET_LOT -> {
                 val context = GetLotContext(
                     cpid = cm.cpid,
@@ -694,7 +688,6 @@ class CommandService(
                     log.debug("Lot was found. Response: ${toJson(dataResponse)}")
                 ResponseDto(data = dataResponse)
             }
-
             CommandTypeV1.GET_LOTS_AUCTION -> {
                 when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
@@ -766,7 +759,6 @@ class CommandService(
             CommandTypeV1.SET_FINAL_STATUSES -> lotsService.setFinalStatuses(cm)
             CommandTypeV1.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
             CommandTypeV1.COMPLETE_LOTS -> lotsService.completeLots(cm)
-
             CommandTypeV1.CHECK_AWARD -> validationService.checkAward(cm)
             CommandTypeV1.CHECK_LOT_ACTIVE -> validationService.checkLotActive(cm)
             CommandTypeV1.CHECK_LOT_STATUS -> validationService.checkLotStatus(cm)
@@ -892,7 +884,6 @@ class CommandService(
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.CHECK_EXISTANCE_ITEMS_AND_LOTS -> {
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -920,7 +911,6 @@ class CommandService(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.CHECK_FE_DATA -> {
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -955,9 +945,7 @@ class CommandService(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-
             CommandTypeV1.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
-
             CommandTypeV1.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
                     cpid = cm.cpid,
@@ -1026,8 +1014,8 @@ class CommandService(
             }
         }
 
-        historyEntity = historyDao.saveHistory(cm.id, cm.command.key, response)
-        return toObject(ResponseDto::class.java, historyEntity.jsonData)
+        historyRepository.saveHistory(cm.id, cm.command, toJson(response))
+        return response
     }
 
     fun getMode(isTestMode: Boolean): Mode = if (isTestMode) testMode else mainMode

@@ -3,9 +3,9 @@ package com.procurement.access.infrastructure.handler.v2
 import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.Transform
 import com.procurement.access.application.service.lot.LotService
-import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
+import com.procurement.access.infrastructure.handler.HistoryRepository
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.base.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.handler.v2.model.request.GetLotStateByIdsRequest
@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service
 class GetLotStateByIdsHandler(
     transform: Transform,
     logger: Logger,
-    historyDao: HistoryDao,
+    historyRepository: HistoryRepository,
     private val lotService: LotService
-) : AbstractHistoricalHandler<List<GetLotStateByIdsResult>>(transform, historyDao, logger) {
+) : AbstractHistoricalHandler<List<GetLotStateByIdsResult>>(transform, historyRepository, logger) {
 
     override val action: CommandTypeV2
         get() = CommandTypeV2.GET_LOT_STATE_BY_IDS

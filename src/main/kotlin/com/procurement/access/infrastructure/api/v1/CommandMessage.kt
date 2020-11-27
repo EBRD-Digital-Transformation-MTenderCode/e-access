@@ -12,12 +12,13 @@ import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import java.time.LocalDateTime
 import java.util.*
 
 data class CommandMessage @JsonCreator constructor(
 
-    val id: String,
+    val id: CommandId,
     val command: CommandTypeV1,
     val context: Context,
     val data: JsonNode,
@@ -122,7 +123,7 @@ data class ResponseDto(
 
     val data: Any? = null,
 
-    val id: String? = null
+    val id: CommandId? = null
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -144,7 +145,7 @@ fun getExceptionResponseDto(exception: Exception): ResponseDto {
     )
 }
 
-fun getErrorExceptionResponseDto(exception: ErrorException, id: String? = null): ResponseDto {
+fun getErrorExceptionResponseDto(exception: ErrorException, id: CommandId? = null): ResponseDto {
     return ResponseDto(
         errors = listOf(
             ResponseErrorDto(
@@ -156,7 +157,7 @@ fun getErrorExceptionResponseDto(exception: ErrorException, id: String? = null):
     )
 }
 
-fun getEnumExceptionResponseDto(error: EnumElementProviderException, id: String? = null): ResponseDto {
+fun getEnumExceptionResponseDto(error: EnumElementProviderException, id: CommandId? = null): ResponseDto {
     return ResponseDto(
         errors = listOf(
             ResponseErrorDto(
