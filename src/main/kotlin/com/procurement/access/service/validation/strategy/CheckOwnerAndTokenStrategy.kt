@@ -9,13 +9,13 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.owner
+import com.procurement.access.infrastructure.api.v1.token
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asValidationFailure
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.cpid
-import com.procurement.access.model.dto.bpe.owner
-import com.procurement.access.model.dto.bpe.token
 import com.procurement.access.model.entity.TenderProcessEntity
 
 class CheckOwnerAndTokenStrategy(

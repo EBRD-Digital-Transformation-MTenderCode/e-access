@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.domain.fail.error.BadRequest
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
+import com.procurement.access.infrastructure.api.v2.errorResponse
 import com.procurement.access.infrastructure.handler.v2.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.v2.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.v2.CheckEqualityCurrenciesHandler
@@ -30,7 +31,6 @@ import com.procurement.access.infrastructure.handler.v2.SetStateForTenderHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.v2.VerifyRequirementResponseHandler
-import com.procurement.access.model.dto.bpe.errorResponse
 import org.springframework.stereotype.Service
 
 @Service

@@ -17,16 +17,14 @@ import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.startDate
+import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.startDate
-import com.procurement.access.model.dto.bpe.testMode
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import com.procurement.access.utils.toJson
-
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

@@ -10,6 +10,7 @@ import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
+import com.procurement.access.infrastructure.api.v2.errorResponse
 import com.procurement.access.infrastructure.extension.tryGetAttributeAsEnum
 import com.procurement.access.infrastructure.extension.tryGetTextAttribute
 import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
@@ -18,7 +19,6 @@ import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.errorResponse
 import com.procurement.access.service.CommandService2
 import com.procurement.access.utils.toJson
 import org.springframework.http.HttpStatus

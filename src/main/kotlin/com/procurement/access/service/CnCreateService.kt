@@ -25,6 +25,8 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.ResponseDto
 import com.procurement.access.infrastructure.handler.v1.model.request.BudgetCnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.CnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.DocumentCnCreate
@@ -33,8 +35,6 @@ import com.procurement.access.infrastructure.handler.v1.model.request.LotCnCreat
 import com.procurement.access.infrastructure.handler.v1.model.request.TenderCnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.validate
 import com.procurement.access.lib.extension.toSet
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod

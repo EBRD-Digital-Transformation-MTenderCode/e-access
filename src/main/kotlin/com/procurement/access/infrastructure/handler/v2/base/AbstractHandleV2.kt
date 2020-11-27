@@ -9,6 +9,10 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
+import com.procurement.access.infrastructure.api.v2.generateDataErrorResponse
+import com.procurement.access.infrastructure.api.v2.generateErrorResponse
+import com.procurement.access.infrastructure.api.v2.generateIncidentResponse
+import com.procurement.access.infrastructure.api.v2.generateValidationErrorResponse
 import com.procurement.access.infrastructure.extension.tryGetAttribute
 import com.procurement.access.infrastructure.handler.Handler
 import com.procurement.access.lib.functional.Result
@@ -16,10 +20,6 @@ import com.procurement.access.lib.functional.Result.Failure
 import com.procurement.access.lib.functional.Result.Success
 import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.model.dto.bpe.generateDataErrorResponse
-import com.procurement.access.model.dto.bpe.generateErrorResponse
-import com.procurement.access.model.dto.bpe.generateIncidentResponse
-import com.procurement.access.model.dto.bpe.generateValidationErrorResponse
 import com.procurement.access.utils.tryToObject
 
 abstract class AbstractHandler<R : Any>(

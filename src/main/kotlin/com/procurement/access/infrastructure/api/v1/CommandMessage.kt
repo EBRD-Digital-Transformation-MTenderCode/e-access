@@ -1,4 +1,4 @@
-package com.procurement.access.model.dto.bpe
+package com.procurement.access.infrastructure.api.v1
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -12,7 +12,6 @@ import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.ApiVersion
-import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import java.time.LocalDateTime
 import java.util.*
 

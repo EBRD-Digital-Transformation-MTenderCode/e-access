@@ -5,9 +5,9 @@ import com.datastax.driver.core.querybuilder.QueryBuilder.eq
 import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import com.procurement.access.domain.util.extension.nowDefaultUTC
+import com.procurement.access.infrastructure.api.v1.ResponseDto
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
-import com.procurement.access.model.dto.bpe.ResponseDto
 import com.procurement.access.model.entity.HistoryEntity
 import com.procurement.access.utils.toJson
 import org.springframework.stereotype.Service

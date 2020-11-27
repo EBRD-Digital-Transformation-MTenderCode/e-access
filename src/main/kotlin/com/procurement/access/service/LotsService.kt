@@ -16,6 +16,10 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.pmd
+import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcLot
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRq
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRs
@@ -34,10 +38,6 @@ import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLots
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRs
 import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsByLotRs
 import com.procurement.access.lib.extension.toSet
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.bpe.pmd
-import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.asMoney

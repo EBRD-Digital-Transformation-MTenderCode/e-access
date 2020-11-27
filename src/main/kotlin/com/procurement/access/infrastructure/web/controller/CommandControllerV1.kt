@@ -2,11 +2,11 @@ package com.procurement.access.infrastructure.web.controller
 
 import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.bpe.getEnumExceptionResponseDto
-import com.procurement.access.model.dto.bpe.getErrorExceptionResponseDto
-import com.procurement.access.model.dto.bpe.getExceptionResponseDto
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.getEnumExceptionResponseDto
+import com.procurement.access.infrastructure.api.v1.getErrorExceptionResponseDto
+import com.procurement.access.infrastructure.api.v1.getExceptionResponseDto
 import com.procurement.access.service.CommandService
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
