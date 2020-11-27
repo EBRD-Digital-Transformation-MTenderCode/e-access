@@ -8,7 +8,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 @EnableSwagger2
 @ComponentScan(
     basePackages = [
-        "com.procurement.access.controller"
+        "com.procurement.access.controller",
+        "com.procurement.access.infrastructure.web.controller"
     ]
 )
 class WebConfig

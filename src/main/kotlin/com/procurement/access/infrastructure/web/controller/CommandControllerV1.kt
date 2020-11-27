@@ -1,4 +1,4 @@
-package com.procurement.access.controller
+package com.procurement.access.infrastructure.web.controller
 
 import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/command")
-class CommandController(private val commandService: CommandService) {
+class CommandControllerV1(private val commandService: CommandService) {
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(CommandController::class.java)
+        private val log: Logger = LoggerFactory.getLogger(CommandControllerV1::class.java)
     }
 
     @PostMapping
