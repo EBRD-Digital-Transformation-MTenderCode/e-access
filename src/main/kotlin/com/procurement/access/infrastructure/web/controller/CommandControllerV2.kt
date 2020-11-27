@@ -1,4 +1,4 @@
-package com.procurement.access.controller
+package com.procurement.access.infrastructure.web.controller
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.application.service.Logger
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/command2")
-class Command2Controller(
+class CommandControllerV2(
     private val commandService2: CommandService2,
     private val transform: Transform,
     private val logger: Logger
