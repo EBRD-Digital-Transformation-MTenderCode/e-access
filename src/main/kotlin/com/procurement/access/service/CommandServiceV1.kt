@@ -112,7 +112,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class CommandService(
+class CommandServiceV1(
     private val historyRepository: HistoryRepository,
     private val pinService: PinService,
     private val pinOnPnService: PinOnPnService,
@@ -143,7 +143,7 @@ class CommandService(
     private val criteriaService: CriteriaService
 ) {
     companion object {
-        private val log = LoggerFactory.getLogger(CommandService::class.java)
+        private val log = LoggerFactory.getLogger(CommandServiceV1::class.java)
     }
 
     private val testMode = ocdsProperties.prefixes!!.test!!

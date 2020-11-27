@@ -7,7 +7,7 @@ import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.service.CommandService
+import com.procurement.access.service.CommandServiceV1
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.slf4j.Logger
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/command")
-class CommandControllerV1(private val commandService: CommandService) {
+class CommandControllerV1(private val commandService: CommandServiceV1) {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(CommandControllerV1::class.java)
     }

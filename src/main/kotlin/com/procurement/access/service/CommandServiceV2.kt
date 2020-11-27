@@ -34,7 +34,7 @@ import com.procurement.access.infrastructure.handler.v2.VerifyRequirementRespons
 import org.springframework.stereotype.Service
 
 @Service
-class CommandService2(
+class CommandServiceV2(
     private val calculateAPValueHandler: CalculateAPValueHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val checkEqualPNAndAPCurrencyHandler: CheckEqualityCurrenciesHandler,

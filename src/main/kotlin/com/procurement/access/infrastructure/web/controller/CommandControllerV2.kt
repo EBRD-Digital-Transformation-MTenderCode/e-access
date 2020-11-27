@@ -19,7 +19,7 @@ import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.flatMap
-import com.procurement.access.service.CommandService2
+import com.procurement.access.service.CommandServiceV2
 import com.procurement.access.utils.toJson
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/command2")
 class CommandControllerV2(
-    private val commandService2: CommandService2,
+    private val commandService2: CommandServiceV2,
     private val transform: Transform,
     private val logger: Logger
 ) {
