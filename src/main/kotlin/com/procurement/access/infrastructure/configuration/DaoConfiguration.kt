@@ -1,9 +1,9 @@
-package com.procurement.access.config
+package com.procurement.access.infrastructure.configuration
 
 import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.Session
-import com.procurement.access.config.properties.CassandraProperties
+import com.procurement.access.infrastructure.configuration.properties.CassandraProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -33,4 +33,3 @@ class DaoConfiguration constructor(private val cassandraProperties: CassandraPro
         return cluster.connect(cassandraProperties.keyspaceName)
     }
 }
-

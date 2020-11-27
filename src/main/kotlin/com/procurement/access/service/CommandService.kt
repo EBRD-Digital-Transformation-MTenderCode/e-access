@@ -47,12 +47,12 @@ import com.procurement.access.application.service.tender.strategy.get.awardCrite
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
-import com.procurement.access.config.properties.OCDSProperties
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
+import com.procurement.access.infrastructure.configuration.properties.OCDSProperties
 import com.procurement.access.infrastructure.dto.CheckResponsesRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateRequest
 import com.procurement.access.infrastructure.dto.ap.create.ApCreateResponse

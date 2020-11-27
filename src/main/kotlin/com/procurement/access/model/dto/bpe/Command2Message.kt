@@ -1,6 +1,5 @@
 package com.procurement.access.model.dto.bpe
 
-import com.procurement.access.config.GlobalProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -8,6 +7,7 @@ import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.api.v2.IncidentId
+import com.procurement.access.infrastructure.configuration.properties.GlobalProperties
 import com.procurement.access.lib.extension.toList
 import java.time.LocalDateTime
 

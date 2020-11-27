@@ -1,4 +1,4 @@
-package com.procurement.access.config
+package com.procurement.access.infrastructure.configuration
 
 import com.procurement.access.application.service.Logger
 import com.procurement.access.infrastructure.service.CustomLogger

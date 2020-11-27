@@ -1,4 +1,4 @@
-package com.procurement.access.config.properties
+package com.procurement.access.infrastructure.configuration.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

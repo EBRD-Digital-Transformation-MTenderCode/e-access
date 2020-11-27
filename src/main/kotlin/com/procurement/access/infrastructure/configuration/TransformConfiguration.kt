@@ -1,4 +1,4 @@
-package com.procurement.access.config
+package com.procurement.access.infrastructure.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.procurement.access.application.service.Transform

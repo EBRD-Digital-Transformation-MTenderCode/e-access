@@ -1,8 +1,8 @@
-package com.procurement.access.config
+package com.procurement.access.infrastructure.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.procurement.access.config.properties.OCDSProperties
-import com.procurement.access.config.properties.UriProperties
+import com.procurement.access.infrastructure.configuration.properties.OCDSProperties
+import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.service.validation.JsonValidationService
 import com.procurement.access.service.validation.MedeiaValidationService
 import org.springframework.beans.factory.annotation.Autowired

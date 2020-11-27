@@ -1,6 +1,6 @@
 package com.procurement.access
 
-import com.procurement.access.config.ApplicationConfig
+import com.procurement.access.infrastructure.configuration.ApplicationConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 

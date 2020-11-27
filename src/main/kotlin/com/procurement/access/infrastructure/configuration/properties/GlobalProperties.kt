@@ -1,4 +1,4 @@
-package com.procurement.access.config
+package com.procurement.access.infrastructure.configuration.properties
 
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.io.orThrow

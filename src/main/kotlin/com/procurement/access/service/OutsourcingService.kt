@@ -5,7 +5,6 @@ import com.procurement.access.application.model.params.OutsourcingPNParams
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Logger
-import com.procurement.access.config.properties.UriProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -13,6 +12,7 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RelatedProcessesInfo

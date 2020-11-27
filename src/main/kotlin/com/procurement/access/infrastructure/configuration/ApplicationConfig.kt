@@ -1,4 +1,4 @@
-package com.procurement.access.config
+package com.procurement.access.infrastructure.configuration
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
