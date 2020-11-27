@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.converter.verify
 
 import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.infrastructure.handler.verify.VerifyRequirementResponseRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.VerifyRequirementResponseRequest
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
 

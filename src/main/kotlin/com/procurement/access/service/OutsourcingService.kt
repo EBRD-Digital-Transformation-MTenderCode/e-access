@@ -17,8 +17,8 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RelatedProcessesInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessResult
-import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToOtherProcessResult
+import com.procurement.access.infrastructure.handler.v2.model.response.OutsourcingPNResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.toList
 import com.procurement.access.lib.functional.Result

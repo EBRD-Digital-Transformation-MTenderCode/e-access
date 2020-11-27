@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.model.params.SetStateForTenderParams
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.SetStateForTenderRequest
 import com.procurement.access.lib.functional.Result
 
 fun SetStateForTenderRequest.convert(): Result<SetStateForTenderParams, DataErrors> {

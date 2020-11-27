@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.dto.converter.get.criteria
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetQualificationCriteriaAndMethodResult
 
 fun convert(
     conversions: List<CNEntity.Tender.Conversion>,

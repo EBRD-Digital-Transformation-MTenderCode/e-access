@@ -22,9 +22,9 @@ import com.procurement.access.infrastructure.dto.converter.toReference
 import com.procurement.access.infrastructure.dto.converter.validate.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
-import com.procurement.access.infrastructure.handler.get.organization.GetOrganizationResult
-import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
-import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationResult
+import com.procurement.access.infrastructure.handler.v2.model.response.ResponderProcessingResult
+import com.procurement.access.infrastructure.handler.v2.model.response.ValidateRequirementResponsesResult
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result

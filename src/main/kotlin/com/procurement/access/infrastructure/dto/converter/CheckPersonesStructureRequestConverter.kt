@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.infrastructure.handler.check.persons.CheckPersonesStructureRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.CheckPersonesStructureRequest
 import com.procurement.access.lib.extension.mapOptionalResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result

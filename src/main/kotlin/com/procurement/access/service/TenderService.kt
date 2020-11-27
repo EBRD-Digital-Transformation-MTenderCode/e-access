@@ -30,9 +30,9 @@ import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.TenderCategoryInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderStateInfo
-import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsResult
-import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
-import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryResult
+import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.asFailure

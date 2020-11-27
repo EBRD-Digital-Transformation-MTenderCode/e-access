@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.converter.find.criteria
 
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
-import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
+import com.procurement.access.infrastructure.handler.v2.model.response.FindCriteriaResult
 
 fun CNEntity.Tender.Criteria.convert(): FindCriteriaResult.Criterion {
     val requirementGroups = this.requirementGroups

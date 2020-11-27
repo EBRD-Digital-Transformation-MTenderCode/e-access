@@ -2,8 +2,8 @@ package com.procurement.access.infrastructure.dto.converter.validate
 
 import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesRequest
-import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
+import com.procurement.access.infrastructure.handler.v2.model.request.ValidateRequirementResponsesRequest
+import com.procurement.access.infrastructure.handler.v2.model.response.ValidateRequirementResponsesResult
 import com.procurement.access.lib.functional.Result
 
 fun ValidateRequirementResponsesRequest.convert(): Result<ValidateRequirementResponsesParams, DataErrors> {

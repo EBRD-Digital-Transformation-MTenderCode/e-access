@@ -11,8 +11,8 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.failure
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
-import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyResult
-import com.procurement.access.infrastructure.handler.get.tender.procurement.GetMainProcurementCategoryResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result
 import org.junit.jupiter.api.Assertions

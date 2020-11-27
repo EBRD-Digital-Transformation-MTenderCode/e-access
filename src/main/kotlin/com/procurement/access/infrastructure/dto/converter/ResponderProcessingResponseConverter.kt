@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
-import com.procurement.access.infrastructure.handler.processing.responder.ResponderProcessingResult
+import com.procurement.access.infrastructure.handler.v2.model.response.ResponderProcessingResult
 
 fun ResponderProcessing.Params.Responder.toReference(): ResponderProcessingResult =
     ResponderProcessingResult( // FR-10.1.4.7

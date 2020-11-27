@@ -21,8 +21,8 @@ import com.procurement.access.infrastructure.dto.converter.convertToSetStateForL
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsResult
-import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetLotStateByIdsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
 import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.orThrow

@@ -15,7 +15,7 @@ import com.procurement.access.application.service.tender.strategy.set.tenderUnsu
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulStrategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderResult
+import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForTenderResult
 import com.procurement.access.lib.functional.Result
 import org.springframework.stereotype.Service
 

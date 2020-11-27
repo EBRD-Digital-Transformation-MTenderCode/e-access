@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.model.params.CheckExistenceSignAuctionParams
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.infrastructure.handler.check.auction.CheckExistenceSignAuctionRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.CheckExistenceSignAuctionRequest
 import com.procurement.access.lib.functional.Result
 
 fun CheckExistenceSignAuctionRequest.convert(): Result<CheckExistenceSignAuctionParams, DataErrors> = CheckExistenceSignAuctionParams.tryCreate(

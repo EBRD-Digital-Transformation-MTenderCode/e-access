@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.dto.converter.create
 import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
-import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult.Criterion
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateCriteriaForProcuringEntityResult.Criterion
 
 fun CNEntity.Tender.Criteria.convertToResponse(): Criterion {
     val requirementGroups = this.requirementGroups

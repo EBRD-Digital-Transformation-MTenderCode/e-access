@@ -2,7 +2,7 @@ package com.procurement.access.infrastructure.dto.converter
 
 import com.procurement.access.application.service.lot.FindLotIdsParams
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.infrastructure.handler.get.lotids.FindLotIdsRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.FindLotIdsRequest
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
 

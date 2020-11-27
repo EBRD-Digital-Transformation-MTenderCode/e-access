@@ -37,9 +37,9 @@ import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
 import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
-import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
-import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
-import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateCriteriaForProcuringEntityResult
+import com.procurement.access.infrastructure.handler.v2.model.response.FindCriteriaResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetQualificationCriteriaAndMethodResult
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure

@@ -12,7 +12,7 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderResult
+import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForTenderResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.entity.TenderProcessEntity

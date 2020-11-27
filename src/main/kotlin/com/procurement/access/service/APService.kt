@@ -16,7 +16,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CalculateAPValueResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
