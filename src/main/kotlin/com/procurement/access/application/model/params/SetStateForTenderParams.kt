@@ -8,10 +8,9 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForTenderParams private constructor(
     val cpid: Cpid,
@@ -26,12 +25,10 @@ class SetStateForTenderParams private constructor(
             tender: Tender
         ): Result<SetStateForTenderParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             return SetStateForTenderParams(cpid = cpidResult, ocid = ocidResult, tender = tender)
                 .asSuccess()
@@ -50,11 +47,11 @@ class SetStateForTenderParams private constructor(
                         TenderStatus.CANCELLED,
                         TenderStatus.COMPLETE,
                         TenderStatus.PLANNING,
-                        TenderStatus.UNSUCCESSFUL-> true
+                        TenderStatus.UNSUCCESSFUL -> true
                         TenderStatus.PLANNED -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             private val allowedTenderStatusDetails = TenderStatusDetails.allowedElements
                 .filter {
@@ -85,7 +82,7 @@ class SetStateForTenderParams private constructor(
                         TenderStatusDetails.SUBMISSION -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             fun tryCreate(
                 status: String,

@@ -10,7 +10,6 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 
@@ -44,7 +43,7 @@ class SetTenderUnsuccessfulStrategy(
                 token = entity.token,
                 stage = context.stage,
                 owner = entity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(updatedCN)
             )
         )

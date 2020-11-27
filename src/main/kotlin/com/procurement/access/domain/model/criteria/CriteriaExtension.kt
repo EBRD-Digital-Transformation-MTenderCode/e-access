@@ -5,9 +5,9 @@ import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
-import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
 
 fun generatePermanentRequirementIds(criteria: List<CriterionRequest>?): Map<String, RequirementId.Permanent> =
     criteria

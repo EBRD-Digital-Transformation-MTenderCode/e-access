@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.Result
-import com.procurement.access.utils.toMilliseconds
+import com.procurement.access.domain.util.extension.toMilliseconds
+import com.procurement.access.lib.functional.Result
 import java.io.Serializable
 import java.time.LocalDateTime
 

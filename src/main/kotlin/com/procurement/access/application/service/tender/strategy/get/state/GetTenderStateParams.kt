@@ -5,8 +5,8 @@ import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class GetTenderStateParams private constructor(
     val cpid: Cpid, val ocid: Ocid
@@ -16,9 +16,9 @@ class GetTenderStateParams private constructor(
             cpid: String, ocid: String
         ): Result<GetTenderStateParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
             val ocidResult = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return GetTenderStateParams(
                 cpid = cpidResult,

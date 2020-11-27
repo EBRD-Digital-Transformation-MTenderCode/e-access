@@ -13,10 +13,10 @@ import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.token.Token
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 
 sealed class ValidationErrors(
     numberError: String,
@@ -242,6 +242,13 @@ sealed class ValidationErrors(
             prefix = "VR.COM-",
             numberError = "1.11.2",
             description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class TenderNotFoundForResponderProcessing(cpid: Cpid, stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.4.1",
+            description = "Tender not found by cpid='$cpid' and stage='${stage.key}'."
         )
 
     class UnexpectedStageForResponderProcessing(stage: Stage) :

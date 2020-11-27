@@ -8,11 +8,11 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.domain.rule.TenderStatesRule
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
@@ -45,21 +45,18 @@ class RulesService(private val rulesDao: RulesDao) {
             operationType = operationType,
             parameter = VALID_STATES_PARAMETER
         )
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return ValidationErrors.TenderStatesNotFound(pmd = pmd, operationType = operationType, country = country)
                 .asFailure()
 
         return states.toTenderStatesRule()
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             .asSuccess()
     }
 
     private fun String.toTenderStatesRule(): Result<TenderStatesRule, Fail> =
         this.tryToObject(TenderStatesRule::class.java)
-            .doReturn { error ->
-                return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception))
-            }
-            .asSuccess()
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
 
     fun getMaxDurationOfFA(
         country: String,

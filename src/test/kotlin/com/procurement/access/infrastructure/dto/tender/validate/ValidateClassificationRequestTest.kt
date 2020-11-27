@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.tender.validate
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.validate.tender.ValidateClassificationRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.ValidateClassificationRequest
 import org.junit.jupiter.api.Test
 
 class ValidateClassificationRequestTest

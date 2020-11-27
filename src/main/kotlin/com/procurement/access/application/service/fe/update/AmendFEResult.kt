@@ -17,7 +17,7 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
 data class AmendFEResult(

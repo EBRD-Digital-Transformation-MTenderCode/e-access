@@ -5,7 +5,6 @@ import com.procurement.access.application.model.params.OutsourcingPNParams
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Logger
-import com.procurement.access.config.properties.UriProperties
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
@@ -13,20 +12,20 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.bind
-import com.procurement.access.domain.util.extension.mapResult
-import com.procurement.access.domain.util.extension.toList
+import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RelatedProcessesInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessResult
-import com.procurement.access.infrastructure.handler.pn.OutsourcingPNResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToOtherProcessResult
+import com.procurement.access.infrastructure.handler.v2.model.response.OutsourcingPNResult
+import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.extension.toList
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asSuccess
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
@@ -47,13 +46,13 @@ class OutsourcingServiceImpl(
     override fun outsourcingPN(params: OutsourcingPNParams): Result<OutsourcingPNResult, Fail> {
 
         val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnOutsourcingPN(params.cpid, params.ocid)
             )
 
         val pnEntity = entity.jsonData.tryToObject(PNEntity::class.java)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         val relatedProcesses = listOf(
             RelatedProcess(
@@ -69,16 +68,16 @@ class OutsourcingServiceImpl(
         val response = OutsourcingPNResult(
             relatedProcesses = relatedProcesses
                 .mapResult { OutsourcingPNResult.fromDomain(it) }
-                .orForwardFail { fail -> return fail }
+                .onFailure { fail -> return fail }
         )
 
         val updatedJsonData = trySerialization(updatedPn)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         val updatedEntity = entity.copy(jsonData = updatedJsonData)
 
         tenderProcessRepository.update(updatedEntity)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         return success(response)
     }
@@ -156,10 +155,10 @@ class OutsourcingServiceImpl(
             tenderProcessRepository: TenderProcessRepository,
             params: CreateRelationToOtherProcessParams
         ): Result<TenderProcessEntity, Fail> {
-            val ocid = parseOcid(params.ocid).orForwardFail { return it }
+            val ocid = parseOcid(params.ocid).onFailure { return it }
 
             val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
-                .orForwardFail { fail -> return fail }
+                .onFailure { fail -> return fail }
                 ?: return failure(
                     ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
                 )
@@ -174,14 +173,14 @@ class OutsourcingServiceImpl(
 
         if (isNeedToFindStoredRelatedProcess) {
             val storedRelatedProcess = findStoredRelatedProcess(params)
-                .orForwardFail { return it }
+                .onFailure { return it }
 
             if (storedRelatedProcess != null)
                 return storedRelatedProcess.asSuccess()
         }
 
         val definedRelationship = defineRelationProcessType(params.operationType)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         val relatedProcesses = listOf(
             RelatedProcess(
@@ -196,20 +195,20 @@ class OutsourcingServiceImpl(
         val response = CreateRelationToOtherProcessResult(
             relatedProcesses = relatedProcesses
                 .mapResult { CreateRelationToOtherProcessResult.fromDomain(it) }
-                .orForwardFail { fail -> return fail })
+                .onFailure { fail -> return fail })
 
         when (params.operationType) {
             OperationType.RELATION_AP -> { // FR.COM-1.22.6
                 val entity = getTenderEntity(tenderProcessRepository, params)
-                    .orForwardFail { fail -> return fail }
+                    .onFailure { fail -> return fail }
 
                 entity.jsonData
                     .tryToObject(APEntity::class.java)
                     .map { ap -> ap.copy(relatedProcesses = ap.relatedProcesses.orEmpty() + relatedProcesses) }
-                    .bind { updatedAp -> trySerialization(updatedAp) }
+                    .flatMap { updatedAp -> trySerialization(updatedAp) }
                     .map { updatedApJson -> entity.copy(jsonData = updatedApJson) }
-                    .bind { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
-                    .orForwardFail { fail -> return fail }
+                    .flatMap { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
+                    .onFailure { fail -> return fail }
             }
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -242,15 +241,16 @@ class OutsourcingServiceImpl(
     }
 
     private fun findStoredRelatedProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult?, Fail> {
-        val ocid = parseOcid(params.ocid).orForwardFail { return it }
+        val ocid = parseOcid(params.ocid).onFailure { return it }
 
         val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return null.asSuccess()
 
         val relatedProcess = tenderEntity.jsonData
             .tryToObject(RelatedProcessesInfo::class.java)
-            .doReturn { incident -> return Fail.Incident.DatabaseIncident(incident.exception).asFailure() }
+            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
+            .onFailure { return it }
 
         val suitableRelatedProcess = relatedProcess.relatedProcesses?.firstOrNull { it.identifier == params.relatedCpid.toString() }
 
@@ -258,7 +258,7 @@ class OutsourcingServiceImpl(
             CreateRelationToOtherProcessResult(
                 relatedProcesses = CreateRelationToOtherProcessResult
                     .fromDomain(it)
-                    .orForwardFail { fail -> return fail }
+                    .onFailure { fail -> return fail }
                     .toList()
             )
         }.asSuccess()

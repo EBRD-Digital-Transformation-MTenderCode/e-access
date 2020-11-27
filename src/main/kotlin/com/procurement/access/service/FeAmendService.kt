@@ -7,16 +7,15 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.persone.PersonId
-import com.procurement.access.domain.util.extension.getElementsForUpdate
-import com.procurement.access.domain.util.extension.getMissingElements
-import com.procurement.access.domain.util.extension.getNewElements
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.fe.update.converter.AmendFeEntityConverter
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.handler.v1.converter.AmendFeEntityConverter
+import com.procurement.access.lib.extension.getElementsForUpdate
+import com.procurement.access.lib.extension.getMissingElements
+import com.procurement.access.lib.extension.getNewElements
 import com.procurement.access.lib.takeIfNotNullOrDefault
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.slf4j.Logger
@@ -77,7 +76,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
                 token = entity.token,
                 stage = stage,
                 owner = entity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(updatedFE)
             )
         )

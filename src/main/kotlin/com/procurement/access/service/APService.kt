@@ -11,16 +11,16 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.bind
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CalculateAPValueResult
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
@@ -42,13 +42,13 @@ class APServiceImpl(
 
         // FR.COM-1.31.1
         val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
             ?: return failure( // VR.COM-1.31.1
                 ValidationErrors.TenderNotFoundOnCalculateAPValue(params.cpid, params.ocid)
             )
 
         val ap = entity.jsonData.tryToObject(APEntity::class.java)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         // FR.COM-1.31.2
         val relatedPNProcesses = ap.relatedProcesses.orEmpty()
@@ -60,9 +60,9 @@ class APServiceImpl(
 
         val relatedPns = relatedPNProcesses.map { pnProcess ->
             parseCpid(pnProcess.identifier)
-                .bind { parsedCpid -> tenderProcessRepository.getByCpIdAndStage(parsedCpid, Stage.PN) }
-                .bind { pnEntity -> pnEntity!!.jsonData.tryToObject(PNEntity::class.java) }
-                .orForwardFail { fail -> return fail }
+                .flatMap { parsedCpid -> tenderProcessRepository.getByCpIdAndStage(parsedCpid, Stage.PN) }
+                .flatMap { pnEntity -> pnEntity!!.jsonData.tryToObject(PNEntity::class.java) }
+                .onFailure { fail -> return fail }
         }
 
         // FR.COM-1.31.3
@@ -80,7 +80,7 @@ class APServiceImpl(
         )
 
         val updatedJsonData = trySerialization(updatedAp)
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         val updatedEntity = entity.copy(jsonData = updatedJsonData)
 

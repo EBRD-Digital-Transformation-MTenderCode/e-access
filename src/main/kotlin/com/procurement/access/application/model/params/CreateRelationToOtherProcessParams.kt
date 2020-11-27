@@ -5,8 +5,8 @@ import com.procurement.access.application.model.parseEnum
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.success
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.success
 
 class CreateRelationToOtherProcessParams(
     val cpid: Cpid,
@@ -57,10 +57,10 @@ class CreateRelationToOtherProcessParams(
             operationType: String
         ): Result<CreateRelationToOtherProcessParams, DataErrors.Validation> {
             val parsedCpid = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedRelationCpid = parseCpid(value = relatedCpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
@@ -68,7 +68,7 @@ class CreateRelationToOtherProcessParams(
                 allowedEnums = allowedOperationType,
                 attributeName = "operationType"
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return success(
                 CreateRelationToOtherProcessParams(

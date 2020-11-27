@@ -11,11 +11,11 @@ import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.persone.PersonId
-import com.procurement.access.domain.util.None
-import com.procurement.access.domain.util.Option
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Some
+import com.procurement.access.lib.functional.None
+import com.procurement.access.lib.functional.Option
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Some
 import java.time.LocalDateTime
 
 class ResponderProcessing {
@@ -35,16 +35,13 @@ class ResponderProcessing {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val dateParsed = parseStartDate(date)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 return Result.success(
                     Params(
@@ -77,7 +74,7 @@ class ResponderProcessing {
                     return Result.success(
                         Responder(
                             id = PersonId.tryCreate(id)
-                                .orForwardFail { return it },
+                                .onFailure { return it },
                             title = title,
                             name = name,
                             identifier = identifier,
@@ -171,8 +168,7 @@ class ResponderProcessing {
                         ): Result<Period, DataErrors> {
 
                             val startDateParsed = parseStartDate(startDate)
-                                .doOnError { error -> return failure(error) }
-                                .get
+                                .onFailure { return it }
 
                             return Result.success(
                                 Period(startDate = startDateParsed)

@@ -9,8 +9,8 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.token.Token
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class CheckAccessToTenderParams private constructor(
     val cpid: Cpid,
@@ -27,25 +27,13 @@ class CheckAccessToTenderParams private constructor(
         ): Result<CheckAccessToTenderParams, DataErrors> {
 
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val ownerResult = parseOwner(value = owner)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val tokenResult = parseToken(value = token)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
 
             return CheckAccessToTenderParams(
                 cpid = cpidResult,

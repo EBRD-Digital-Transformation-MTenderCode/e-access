@@ -8,14 +8,16 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.award.CheckAwardRequest
-import com.procurement.access.infrastructure.dto.award.CheckAwardResponse
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator.OWNER
 import com.procurement.access.infrastructure.generator.ContextGenerator.TOKEN
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
 import com.procurement.access.json.JSON
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
@@ -25,8 +27,6 @@ import com.procurement.access.json.setAttribute
 import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -273,7 +273,7 @@ class CheckAwardStrategyTest {
             id = lotId
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.CHECK_AWARD,
+            command = CommandTypeV1.CHECK_AWARD,
             context = context,
             data = data
         )

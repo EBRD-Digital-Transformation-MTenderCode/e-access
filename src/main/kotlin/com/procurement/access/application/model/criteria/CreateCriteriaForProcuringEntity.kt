@@ -7,7 +7,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 
 class CreateCriteriaForProcuringEntity {
 
@@ -60,10 +60,10 @@ class CreateCriteriaForProcuringEntity {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val parsedOperationType = parseEnum(
                     value = operationType,
@@ -71,7 +71,7 @@ class CreateCriteriaForProcuringEntity {
                     allowedEnums = allowedOperationType,
                     attributeName = "operationType"
                 )
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(
                     Params(

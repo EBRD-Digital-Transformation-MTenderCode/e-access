@@ -5,8 +5,8 @@ import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class ValidateClassificationParams private constructor(
     val cpid: Cpid,
@@ -20,10 +20,10 @@ class ValidateClassificationParams private constructor(
             tender: Tender
         ): Result<ValidateClassificationParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return ValidateClassificationParams(
                 cpid = cpidParsed,

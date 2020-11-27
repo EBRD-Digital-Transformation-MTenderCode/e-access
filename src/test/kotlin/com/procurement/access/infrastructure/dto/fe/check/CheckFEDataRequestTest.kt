@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.fe.check
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckFEDataRequest
 import org.junit.jupiter.api.Test
 
 class CheckFEDataRequestTest : AbstractDTOTestBase<CheckFEDataRequest>(CheckFEDataRequest::class.java) {

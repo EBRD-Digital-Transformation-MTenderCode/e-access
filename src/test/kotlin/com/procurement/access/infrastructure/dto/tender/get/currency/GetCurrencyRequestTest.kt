@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.tender.get.currency
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.get.currency.GetCurrencyRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.GetCurrencyRequest
 import org.junit.jupiter.api.Test
 
 class GetCurrencyRequestTest :

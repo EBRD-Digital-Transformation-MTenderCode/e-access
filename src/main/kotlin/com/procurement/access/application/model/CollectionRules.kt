@@ -1,8 +1,8 @@
 package com.procurement.access.application.model
 
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.util.ValidationResult
-import com.procurement.access.domain.util.ValidationRule
+import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.ValidationRule
 
 
 fun <T : Collection<Any>?> notEmptyRule(attributeName: String): ValidationRule<T, DataErrors.Validation> =

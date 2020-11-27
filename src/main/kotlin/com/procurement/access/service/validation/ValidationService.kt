@@ -19,20 +19,22 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.ValidationResult
-import com.procurement.access.domain.util.asValidationFailure
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
-import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.lots.CheckLotStatusRq
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckBSRq
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckLotStatusRq
+import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.validation.CheckBSRq
 import com.procurement.access.model.dto.validation.CheckBid
 import com.procurement.access.service.RulesService
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy
@@ -56,7 +58,7 @@ class ValidationService(
     private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
     private val checkTenderStateStrategy = CheckTenderStateStrategy(tenderProcessRepository, rulesService)
 
-    fun checkBid(cm: CommandMessage): ResponseDto {
+    fun checkBid(cm: CommandMessage): ApiResponseV1.Success {
         val checkDto = toObject(CheckBid::class.java, cm.data)
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
@@ -74,29 +76,29 @@ class ValidationService(
                 )
             }
         }
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkItems(cm: CommandMessage): ResponseDto {
+    fun checkItems(cm: CommandMessage): ApiResponseV1.Success {
         val response = checkItemsStrategy.check(cm)
-        return ResponseDto(data = response)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
     }
 
-    fun checkToken(cm: CommandMessage): ResponseDto {
+    fun checkToken(cm: CommandMessage): ApiResponseV1.Success {
         checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkOwnerAndToken(cm: CommandMessage): ResponseDto {
+    fun checkOwnerAndToken(cm: CommandMessage): ApiResponseV1.Success {
         checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
     fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
         return checkOwnerAndTokenStrategy.checkOwnerAndToken(params)
     }
 
-    fun checkLotStatus(cm: CommandMessage): ResponseDto {
+    fun checkLotStatus(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
@@ -110,7 +112,7 @@ class ValidationService(
         process.tender.lots.asSequence()
             .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.AWARDED }
             ?: throw ErrorException(ErrorType.NO_AWARDED_LOT)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
     fun checkExistenceFA(params: CheckExistenceFAParams): ValidationResult<Fail> {
@@ -119,7 +121,7 @@ class ValidationService(
 
         tenderProcessRepository
             .getByCpIdAndStage(cpid, stage)
-            .doReturn { fail -> return ValidationResult.error(fail) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceFA(cpid, stage)
             )
@@ -133,7 +135,7 @@ class ValidationService(
 
         val entity = tenderProcessRepository
             .getByCpIdAndStage(cpid, stage)
-            .doReturn { fail -> return ValidationResult.error(fail) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckRelation(cpid, params.ocid)
             )
@@ -141,7 +143,7 @@ class ValidationService(
         return when(params.operationType) {
             OperationType.RELATION_AP -> {
                 val relatedProcesses = entity.jsonData.tryToObject(APEntity::class.java)
-                    .orForwardFail { fail -> return fail.error.asValidationFailure() }
+                    .onFailure { return it.reason.asValidationFailure() }
                     .relatedProcesses
 
                 if (params.existenceRelation)
@@ -231,7 +233,7 @@ class ValidationService(
         return ValidationResult.ok()
     }
 
-    fun checkLotActive(cm: CommandMessage): ResponseDto {
+    fun checkLotActive(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
@@ -244,10 +246,10 @@ class ValidationService(
                 error = ErrorType.NO_ACTIVE_LOTS,
                 message = "There is no lot with 'status' == ACTIVE & 'statusDetails' == EMPTY by id ${lotId}"
             )
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkLotsStatus(cm: CommandMessage): ResponseDto {
+    fun checkLotsStatus(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
@@ -263,29 +265,29 @@ class ValidationService(
         } else {
             throw ErrorException(ErrorType.LOT_NOT_FOUND)
         }
-        return ResponseDto(data = "Lot status valid.")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "Lot status valid.")
     }
 
-    fun checkLotAwarded(cm: CommandMessage): ResponseDto {
+    fun checkLotAwarded(cm: CommandMessage): ApiResponseV1.Success {
         checkLotStrategy.check(cm)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkBudgetSources(cm: CommandMessage): ResponseDto {
+    fun checkBudgetSources(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val bsDto = toObject(CheckBSRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, "EV") ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val bbIds = process.planning.budget.budgetBreakdown.asSequence().map { it.id }.toHashSet()
-        val bsIds = bsDto.planning.budget.budgetSource.asSequence().map { it.budgetBreakdownID }.toHashSet()
+        val bbIds = process.planning.budget.budgetBreakdown.toSet { it.id }
+        val bsIds = bsDto.planning.budget.budgetSource.toSet { it.budgetBreakdownID }
         if (!bbIds.containsAll(bsIds)) throw ErrorException(ErrorType.INVALID_BS)
-        return ResponseDto(data = "Budget sources are valid.")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "Budget sources are valid.")
     }
 
-    fun checkAward(cm: CommandMessage): ResponseDto {
+    fun checkAward(cm: CommandMessage): ApiResponseV1.Success {
         val response = checkAwardStrategy.check(cm)
-        return ResponseDto(id = cm.id, data = response)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
     }
 
     fun checkTenderState(params: CheckTenderStateParams): ValidationResult<Fail> =
@@ -293,21 +295,23 @@ class ValidationService(
 
     fun checkEqualityCurrencies(params: CheckEqualityCurrenciesParams): ValidationResult<Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckEqualityCurrencies(params.cpid, params.ocid)
             )
 
         val relatedRecord = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.RelatedTenderNotFoundOnCheckEqualityCurrencies(params.relatedCpid, params.relatedOcid)
             )
 
-        val tenderCurrency = record.jsonData.tryToObject(TenderCurrencyInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
-        val relatedTenderCurrency = relatedRecord.jsonData.tryToObject(TenderCurrencyInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
+        val tenderCurrency = record.jsonData
+            .tryToObject(TenderCurrencyInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
+        val relatedTenderCurrency = relatedRecord.jsonData
+            .tryToObject(TenderCurrencyInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
 
         val currency = tenderCurrency.tender.value.currency
         val relatedCurrency = relatedTenderCurrency.tender.value.currency
@@ -320,12 +324,13 @@ class ValidationService(
 
     fun checkExistenceSignAuction(params: CheckExistenceSignAuctionParams): ValidationResult<Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceSignAuction(params.cpid, params.ocid)
             )
-        val tenderInfo = record.jsonData.tryToObject(TenderProcurementMethodModalitiesInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
+        val tenderInfo = record.jsonData
+            .tryToObject(TenderProcurementMethodModalitiesInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
 
         if (params.containsElectronicAuction() && !tenderInfo.containsElectronicAuction())
             return ValidationResult.error(ValidationErrors.ElectronicAuctionReceivedButNotStored())
@@ -344,12 +349,13 @@ class ValidationService(
 
     fun validateClassification(params: ValidateClassificationParams): ValidationResult<Fail> {
         val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnValidateClassification(params.cpid, params.ocid)
             )
-        val tenderInfo = record.jsonData.tryToObject(TenderClassificationInfo::class.java)
-            .doReturn { error -> return ValidationResult.error(error) }
+        val tenderInfo = record.jsonData
+            .tryToObject(TenderClassificationInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
 
         val receivedClassificationId = params.tender.classification.id
         val storedClassificationId = tenderInfo.tender.classification.id
