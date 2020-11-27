@@ -1,5 +1,6 @@
 package com.procurement.access.infrastructure.entity
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -22,13 +23,11 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-
-
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)

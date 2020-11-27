@@ -10,10 +10,10 @@ import com.procurement.access.domain.model.startsWithPattern
 import com.procurement.access.domain.model.toCPVCode
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.CheckItemsRequest
-import com.procurement.access.infrastructure.dto.CheckItemsResponse
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckItemsRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CheckItemsResponse
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.cpid

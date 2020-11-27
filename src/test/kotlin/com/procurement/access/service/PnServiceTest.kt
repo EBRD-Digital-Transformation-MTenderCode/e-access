@@ -16,11 +16,11 @@ import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
-import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
-import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
-import com.procurement.access.infrastructure.dto.pn.converter.convert
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
+import com.procurement.access.infrastructure.handler.v1.converter.convert
+import com.procurement.access.infrastructure.handler.v1.model.request.PnCreateRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.PnCreateResponse
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -40,7 +40,6 @@ import com.procurement.access.model.dto.bpe.owner
 import com.procurement.access.model.dto.bpe.pmd
 import com.procurement.access.model.dto.bpe.stage
 import com.procurement.access.model.dto.bpe.startDate
-
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals

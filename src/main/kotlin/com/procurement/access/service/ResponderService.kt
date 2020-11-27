@@ -16,12 +16,11 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.infrastructure.dto.converter.get.organization.convert
-import com.procurement.access.infrastructure.dto.converter.toReference
-import com.procurement.access.infrastructure.dto.converter.validate.convert
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.handler.v1.converter.convert
+import com.procurement.access.infrastructure.handler.v1.converter.toReference
 import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationResult
 import com.procurement.access.infrastructure.handler.v2.model.response.ResponderProcessingResult
 import com.procurement.access.infrastructure.handler.v2.model.response.ValidateRequirementResponsesResult
@@ -35,7 +34,6 @@ import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service

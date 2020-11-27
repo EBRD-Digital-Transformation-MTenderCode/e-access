@@ -3,7 +3,7 @@ package com.procurement.access.infrastructure.handler.v2
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
-import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.base.AbstractQueryHandlerV2
 import com.procurement.access.infrastructure.handler.v2.model.request.FindAuctionsRequest
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult

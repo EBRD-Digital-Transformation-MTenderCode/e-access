@@ -20,13 +20,12 @@ import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.NOT_UNIQUE_IDS
-import com.procurement.access.infrastructure.dto.ap.update.ApUpdateResponse
-import com.procurement.access.infrastructure.dto.ap.update.converter.convert
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
+import com.procurement.access.infrastructure.handler.v1.converter.convert
+import com.procurement.access.infrastructure.handler.v1.model.response.ApUpdateResponse
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service

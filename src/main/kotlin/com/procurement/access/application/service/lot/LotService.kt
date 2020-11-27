@@ -17,10 +17,10 @@ import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.handler.v1.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetLotStateByIdsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
 import com.procurement.access.lib.extension.getUnknownElements

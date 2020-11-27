@@ -26,14 +26,14 @@ import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckBSRq
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckLotStatusRq
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.lots.CheckLotStatusRq
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.validation.CheckBSRq
 import com.procurement.access.model.dto.validation.CheckBid
 import com.procurement.access.service.RulesService
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy

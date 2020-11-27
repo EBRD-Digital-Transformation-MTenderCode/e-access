@@ -25,16 +25,16 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
+import com.procurement.access.infrastructure.handler.v1.model.request.BudgetCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.CnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.DocumentCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.ItemCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.LotCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.TenderCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.validate
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.BudgetCnCreate
-import com.procurement.access.model.dto.cn.CnCreate
-import com.procurement.access.model.dto.cn.DocumentCnCreate
-import com.procurement.access.model.dto.cn.ItemCnCreate
-import com.procurement.access.model.dto.cn.LotCnCreate
-import com.procurement.access.model.dto.cn.TenderCnCreate
-import com.procurement.access.model.dto.cn.validate
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
@@ -59,7 +59,6 @@ import com.procurement.access.model.dto.ocds.Value
 import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.dto.ocds.validate
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service

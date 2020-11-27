@@ -9,12 +9,12 @@ import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
-import com.procurement.access.infrastructure.dto.CheckItemsRequest
-import com.procurement.access.infrastructure.dto.CheckItemsResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckItemsRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CheckItemsResponse
 import com.procurement.access.json.JSON
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray

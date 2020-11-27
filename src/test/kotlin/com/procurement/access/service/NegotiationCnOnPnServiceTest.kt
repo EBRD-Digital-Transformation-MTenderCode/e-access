@@ -15,11 +15,11 @@ import com.procurement.access.domain.util.extension.asString
 import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy

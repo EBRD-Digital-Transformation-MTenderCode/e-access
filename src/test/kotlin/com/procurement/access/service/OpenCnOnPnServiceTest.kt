@@ -20,11 +20,11 @@ import com.procurement.access.domain.util.extension.asString
 import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -39,7 +39,6 @@ import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
-
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow

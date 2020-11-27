@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.criteria
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.dto.cn.GetCriteriaResponse
+import com.procurement.access.infrastructure.handler.v1.model.response.GetCriteriaResponse
 import org.junit.jupiter.api.Test
 
 class GetCriteriaResponseTest : AbstractDTOTestBase<GetCriteriaResponse>(GetCriteriaResponse::class.java) {

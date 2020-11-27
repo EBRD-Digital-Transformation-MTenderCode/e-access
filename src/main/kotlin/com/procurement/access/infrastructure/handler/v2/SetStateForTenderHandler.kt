@@ -6,7 +6,7 @@ import com.procurement.access.application.service.tender.ExtendTenderService
 import com.procurement.access.dao.HistoryDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
-import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.base.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.handler.v2.model.request.SetStateForTenderRequest
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForTenderResult

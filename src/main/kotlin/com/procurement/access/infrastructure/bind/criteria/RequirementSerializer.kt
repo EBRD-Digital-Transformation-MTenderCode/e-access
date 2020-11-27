@@ -6,14 +6,13 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.procurement.access.domain.model.requirement.ExpectedValue
+import com.procurement.access.domain.model.requirement.MaxValue
+import com.procurement.access.domain.model.requirement.MinValue
+import com.procurement.access.domain.model.requirement.NoneValue
+import com.procurement.access.domain.model.requirement.RangeValue
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.util.extension.asString
-import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
-import com.procurement.access.infrastructure.dto.cn.criteria.MaxValue
-import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
-import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
-import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-
 import java.io.IOException
 import java.math.BigDecimal
 

@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.model.params.GetCurrencyParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
@@ -30,6 +31,15 @@ import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.TenderCategoryInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderStateInfo
+import com.procurement.access.infrastructure.handler.v1.model.request.CancellationRs
+import com.procurement.access.infrastructure.handler.v1.model.request.GetDataForAcRq
+import com.procurement.access.infrastructure.handler.v1.model.request.GetDataForAcRs
+import com.procurement.access.infrastructure.handler.v1.model.request.GetDataForAcTender
+import com.procurement.access.infrastructure.handler.v1.model.request.LotCancellation
+import com.procurement.access.infrastructure.handler.v1.model.response.GetTenderOwnerRs
+import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTender
+import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTenderRs
+import com.procurement.access.infrastructure.handler.v1.model.response.UpdateTenderStatusRs
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
@@ -39,20 +49,9 @@ import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.dto.bpe.CommandMessage
 import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.lots.CancellationRs
-import com.procurement.access.model.dto.lots.LotCancellation
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.tender.GetDataForAcRq
-import com.procurement.access.model.dto.tender.GetDataForAcRs
-import com.procurement.access.model.dto.tender.GetDataForAcTender
-import com.procurement.access.model.dto.tender.GetTenderOwnerRs
-import com.procurement.access.model.dto.tender.UnsuspendedTender
-import com.procurement.access.model.dto.tender.UnsuspendedTenderRs
-import com.procurement.access.model.dto.tender.UpdateTenderStatusRs
 import com.procurement.access.model.entity.TenderProcessEntity
-
-
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject

@@ -4,7 +4,7 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
-import com.procurement.access.infrastructure.dto.converter.convert
+import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.base.AbstractQueryHandlerV2
 import com.procurement.access.infrastructure.handler.v2.model.request.GetTenderStateRequest
 import com.procurement.access.lib.functional.Result

@@ -24,6 +24,7 @@ import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -37,17 +38,15 @@ import com.procurement.access.exception.ErrorType.INVALID_PROCURING_ENTITY
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.ITEM_ID_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.SelectiveCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.criteria.CriterionRequest
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.SelectiveCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service

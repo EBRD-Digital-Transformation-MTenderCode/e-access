@@ -6,8 +6,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.lot.LotId
-import com.procurement.access.infrastructure.dto.converter.convert
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.model.request.FindLotIdsRequest
 import com.procurement.access.json.JSON
 import com.procurement.access.json.loadJson

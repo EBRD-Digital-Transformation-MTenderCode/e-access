@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 
 class FindCriteriaResult(values: List<Criterion>) : List<FindCriteriaResult.Criterion> by values {
     data class Criterion(

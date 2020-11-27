@@ -9,14 +9,14 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
-import com.procurement.access.infrastructure.dto.award.CheckAwardRequest
-import com.procurement.access.infrastructure.dto.award.CheckAwardResponse
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator.OWNER
 import com.procurement.access.infrastructure.generator.ContextGenerator.TOKEN
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
 import com.procurement.access.json.JSON
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
