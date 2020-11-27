@@ -21,8 +21,9 @@ import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
@@ -57,7 +58,7 @@ class ValidationService(
     private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
     private val checkTenderStateStrategy = CheckTenderStateStrategy(tenderProcessRepository, rulesService)
 
-    fun checkBid(cm: CommandMessage): ResponseDto {
+    fun checkBid(cm: CommandMessage): ApiResponseV1.Success {
         val checkDto = toObject(CheckBid::class.java, cm.data)
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
@@ -75,29 +76,29 @@ class ValidationService(
                 )
             }
         }
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkItems(cm: CommandMessage): ResponseDto {
+    fun checkItems(cm: CommandMessage): ApiResponseV1.Success {
         val response = checkItemsStrategy.check(cm)
-        return ResponseDto(data = response)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
     }
 
-    fun checkToken(cm: CommandMessage): ResponseDto {
+    fun checkToken(cm: CommandMessage): ApiResponseV1.Success {
         checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkOwnerAndToken(cm: CommandMessage): ResponseDto {
+    fun checkOwnerAndToken(cm: CommandMessage): ApiResponseV1.Success {
         checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
     fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
         return checkOwnerAndTokenStrategy.checkOwnerAndToken(params)
     }
 
-    fun checkLotStatus(cm: CommandMessage): ResponseDto {
+    fun checkLotStatus(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
@@ -111,7 +112,7 @@ class ValidationService(
         process.tender.lots.asSequence()
             .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.AWARDED }
             ?: throw ErrorException(ErrorType.NO_AWARDED_LOT)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
     fun checkExistenceFA(params: CheckExistenceFAParams): ValidationResult<Fail> {
@@ -232,7 +233,7 @@ class ValidationService(
         return ValidationResult.ok()
     }
 
-    fun checkLotActive(cm: CommandMessage): ResponseDto {
+    fun checkLotActive(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
@@ -245,10 +246,10 @@ class ValidationService(
                 error = ErrorType.NO_ACTIVE_LOTS,
                 message = "There is no lot with 'status' == ACTIVE & 'statusDetails' == EMPTY by id ${lotId}"
             )
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkLotsStatus(cm: CommandMessage): ResponseDto {
+    fun checkLotsStatus(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
@@ -264,15 +265,15 @@ class ValidationService(
         } else {
             throw ErrorException(ErrorType.LOT_NOT_FOUND)
         }
-        return ResponseDto(data = "Lot status valid.")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "Lot status valid.")
     }
 
-    fun checkLotAwarded(cm: CommandMessage): ResponseDto {
+    fun checkLotAwarded(cm: CommandMessage): ApiResponseV1.Success {
         checkLotStrategy.check(cm)
-        return ResponseDto(data = "ok")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkBudgetSources(cm: CommandMessage): ResponseDto {
+    fun checkBudgetSources(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val bsDto = toObject(CheckBSRq::class.java, cm.data)
 
@@ -281,12 +282,12 @@ class ValidationService(
         val bbIds = process.planning.budget.budgetBreakdown.toSet { it.id }
         val bsIds = bsDto.planning.budget.budgetSource.toSet { it.budgetBreakdownID }
         if (!bbIds.containsAll(bsIds)) throw ErrorException(ErrorType.INVALID_BS)
-        return ResponseDto(data = "Budget sources are valid.")
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "Budget sources are valid.")
     }
 
-    fun checkAward(cm: CommandMessage): ResponseDto {
+    fun checkAward(cm: CommandMessage): ApiResponseV1.Success {
         val response = checkAwardStrategy.check(cm)
-        return ResponseDto(id = cm.id, data = response)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
     }
 
     fun checkTenderState(params: CheckTenderStateParams): ValidationResult<Fail> =

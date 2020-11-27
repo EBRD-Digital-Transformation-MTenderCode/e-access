@@ -1,14 +1,12 @@
 package com.procurement.access.infrastructure.api.v1
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.extension.toLocalDateTime
-import com.procurement.access.exception.EnumElementProviderException
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.ApiVersion
@@ -17,13 +15,15 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class CommandMessage @JsonCreator constructor(
-
     val id: CommandId,
     val command: CommandTypeV1,
     val context: Context,
     val data: JsonNode,
     val version: ApiVersion
 )
+
+val CommandMessage.commandId: CommandId
+    get() = this.id
 
 val CommandMessage.cpid: String
     get() = this.context.cpid
@@ -115,56 +115,3 @@ data class Context @JsonCreator constructor(
     val id: String?,
     val testMode: Boolean?
 )
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ResponseDto(
-
-    val errors: List<ResponseErrorDto>? = null,
-
-    val data: Any? = null,
-
-    val id: CommandId? = null
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ResponseErrorDto(
-
-    val code: String,
-
-    val description: String?
-)
-
-fun getExceptionResponseDto(exception: Exception): ResponseDto {
-    return ResponseDto(
-        errors = listOf(
-            ResponseErrorDto(
-                code = "400.03.00",
-                description = exception.message ?: exception.toString()
-            )
-        )
-    )
-}
-
-fun getErrorExceptionResponseDto(exception: ErrorException, id: CommandId? = null): ResponseDto {
-    return ResponseDto(
-        errors = listOf(
-            ResponseErrorDto(
-                code = "400.03." + exception.error.code,
-                description = exception.message
-            )
-        ),
-        id = id
-    )
-}
-
-fun getEnumExceptionResponseDto(error: EnumElementProviderException, id: CommandId? = null): ResponseDto {
-    return ResponseDto(
-        errors = listOf(
-            ResponseErrorDto(
-                code = "400.03." + error.code,
-                description = error.message
-            )
-        ),
-        id = id
-    )
-}

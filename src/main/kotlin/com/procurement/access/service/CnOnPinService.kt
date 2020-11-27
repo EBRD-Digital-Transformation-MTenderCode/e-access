@@ -12,8 +12,9 @@ import com.procurement.access.exception.ErrorType.INVALID_DOCS_RELATED_LOTS
 import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.handler.v1.model.request.CnUpdate
 import com.procurement.access.infrastructure.handler.v1.model.request.TenderCnUpdate
@@ -30,7 +31,7 @@ import java.time.LocalDateTime
 @Service
 class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
 
-    fun createCnOnPin(cm: CommandMessage): ResponseDto {
+    fun createCnOnPin(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val previousStage = cm.context.prevStage ?: throw ErrorException(CONTEXT)
@@ -48,7 +49,7 @@ class CnOnPinService(private val tenderProcessDao: TenderProcessDao) {
         tenderProcess.tender.tenderPeriod = null
         setStatuses(tenderProcess.tender)
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
-        return ResponseDto(data = tenderProcess)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tenderProcess)
     }
 
     private fun validatePeriod(pinTender: Tender, dateTime: LocalDateTime) {

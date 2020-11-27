@@ -25,8 +25,9 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.handler.v1.model.request.BudgetCnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.CnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.DocumentCnCreate
@@ -107,7 +108,7 @@ class CnCreateService(
             }.toSet()
     }
 
-    fun createCn(cm: CommandMessage, context: CnCreateContext): ResponseDto {
+    fun createCn(cm: CommandMessage, context: CnCreateContext): ApiResponseV1.Success {
         val cnDto = toObject(CnCreate::class.java, cm.data).validate()
         validateAuctionsDto(context.country, context.pmd, cnDto)
 
@@ -179,7 +180,7 @@ class CnCreateService(
         val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
-        return ResponseDto(data = tp)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tp)
     }
 
     private fun validateAuctionsDto(country: String, pmd: ProcurementMethod, cnDto: CnCreate) {

@@ -50,9 +50,10 @@ import com.procurement.access.application.service.tender.strategy.set.tenderUnsu
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
-import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.country
 import com.procurement.access.infrastructure.api.v1.cpid
 import com.procurement.access.infrastructure.api.v1.isAuction
@@ -155,13 +156,13 @@ class CommandService(
             MainMode(prefix = prefix, pattern = prefix.toRegex())
         }
 
-    fun execute(cm: CommandMessage): ResponseDto {
-        val history = historyRepository.getHistory(cm.id, cm.command)
+    fun execute(cm: CommandMessage): ApiResponseV1.Success {
+        val history = historyRepository.getHistory(cm.commandId, cm.command)
             .orThrow { it.exception }
         if (history != null) {
-            return toObject(ResponseDto::class.java, history)
+            return toObject(ApiResponseV1.Success::class.java, history)
         }
-        val response = when (cm.command) {
+        val response: ApiResponseV1.Success = when (cm.command) {
             CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
             CommandTypeV1.CREATE_PN -> {
                 val context = CreatePnContext(
@@ -182,7 +183,7 @@ class CommandService(
                 if (log.isDebugEnabled)
                     log.debug("Create PN. Response: ${toJson(response)}")
 
-                return ResponseDto(data = response)
+                return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.CREATE_AP -> {
                 val context = CreateApContext(
@@ -204,7 +205,7 @@ class CommandService(
                 if (log.isDebugEnabled)
                     log.debug("Create AP. Response: ${toJson(response)}")
 
-                return ResponseDto(data = response)
+                return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.UPDATE_AP -> {
                 val context = UpdateApContext(
@@ -221,7 +222,7 @@ class CommandService(
                 if (log.isDebugEnabled)
                     log.debug("Update AP. Response: ${toJson(response)}")
 
-                return ResponseDto(data = response)
+                return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.CREATE_FE -> {
                 when (cm.pmd) {
@@ -244,7 +245,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Create FE. Response: ${toJson(response)}")
 
-                        return ResponseDto(data = response)
+                        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
@@ -284,7 +285,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Amend FE. Response: ${toJson(response)}")
 
-                        return ResponseDto(data = response)
+                        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
@@ -342,7 +343,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Update CN. Response: ${toJson(response)}")
 
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
@@ -366,7 +367,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Update selective CN. Response: ${toJson(response)}")
 
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
@@ -404,7 +405,7 @@ class CommandService(
                                 if (log.isDebugEnabled)
                                     log.debug("Created CN on PN. Response: ${toJson(it)}")
                             }
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
@@ -427,7 +428,7 @@ class CommandService(
                                     if (log.isDebugEnabled)
                                         log.debug("Created CN on PN (GPA). Response: ${toJson(it)}")
                                 }
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
@@ -449,7 +450,7 @@ class CommandService(
                                     if (log.isDebugEnabled)
                                         log.debug("Created CN on PN. Response: ${toJson(it)}")
                                 }
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -474,7 +475,7 @@ class CommandService(
                                     log.debug("Requests for EV panels was created. Result: ${toJson(result)}")
                             }
                             .convert()
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -504,8 +505,7 @@ class CommandService(
                 val dataResponse: SetTenderUnsuccessfulResponse = result.convert()
                 if (log.isDebugEnabled)
                     log.debug("Tender status have been changed. Response: ${toJson(dataResponse)}")
-                ResponseDto(data = dataResponse)
-//                tenderService.setUnsuccessful(cm)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.SET_TENDER_PRECANCELLATION -> {
                 val context = PrepareCancellationContext(
@@ -543,7 +543,7 @@ class CommandService(
                     )
                 if (log.isDebugEnabled)
                     log.debug("Award was evaluate. Response: ${toJson(dataResponse)}")
-                ResponseDto(data = dataResponse)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.SET_TENDER_CANCELLATION -> tenderService.setCancellation(cm)
             CommandTypeV1.SET_TENDER_STATUS_DETAILS -> tenderService.setStatusDetails(cm)
@@ -567,7 +567,7 @@ class CommandService(
                         )
                         val serviceResponse = lotsService.getActiveLots(context = context)
                         val response = serviceResponse.convert()
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -595,7 +595,7 @@ class CommandService(
                 if (log.isDebugEnabled)
                     log.debug("AP title and description was found. Response: ${toJson(response)}")
 
-                ResponseDto(data = response)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.GET_LOT -> {
                 val context = GetLotContext(
@@ -686,7 +686,7 @@ class CommandService(
                 }
                 if (log.isDebugEnabled)
                     log.debug("Lot was found. Response: ${toJson(dataResponse)}")
-                ResponseDto(data = dataResponse)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.GET_LOTS_AUCTION -> {
                 when (cm.pmd) {
@@ -704,7 +704,7 @@ class CommandService(
                         )
                         val serviceResponse = lotsService.getLotsAuction(context = context)
                         val response = serviceResponse.toResponseDto()
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -731,8 +731,7 @@ class CommandService(
                 val dataResponse: GetAwardCriteriaResponse = result.convert()
                 if (log.isDebugEnabled)
                     log.debug("Tender award criteria. Response: ${toJson(dataResponse)}")
-                ResponseDto(data = dataResponse)
-//                lotsService.getAwardCriteria(cm)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.SET_LOTS_SD_UNSUCCESSFUL -> lotsService.setLotsStatusDetailsUnsuccessful(cm)
             CommandTypeV1.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
@@ -754,7 +753,7 @@ class CommandService(
                 val dataResponse: SetLotsStatusUnsuccessfulResponse = result.convert()
                 if (log.isDebugEnabled)
                     log.debug("Lots statuses have been changed. Response: ${toJson(dataResponse)}")
-                ResponseDto(data = dataResponse)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.SET_FINAL_STATUSES -> lotsService.setFinalStatuses(cm)
             CommandTypeV1.SET_LOTS_INITIAL_STATUS -> lotsService.setLotInitialStatus(cm)
@@ -791,7 +790,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Response: ${toJson(response)}")
 
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
@@ -818,7 +817,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Check negotiation CN on PN. Response: ${toJson(response)}")
 
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
@@ -845,7 +844,7 @@ class CommandService(
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN (GPA). Response: ${toJson(response)}")
 
-                        ResponseDto(data = response)
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
                     }
 
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -870,7 +869,7 @@ class CommandService(
                             .also {
                                 log.debug("Checking response was a success.")
                             }
-                        ResponseDto(data = "ok")
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
                     }
 
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
@@ -891,7 +890,7 @@ class CommandService(
                         val context = CheckExistanceItemsAndLotsContext(cpid = cm.cpid, prevStage = cm.prevStage)
                         apValidationService.checkExistanceItemsAndLots(context = context)
                             .also { log.debug("Checking was a success.") }
-                        ResponseDto(data = "ok")
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
@@ -925,7 +924,7 @@ class CommandService(
                         val request: CheckFEDataRequest = toObject(CheckFEDataRequest::class.java, cm.data)
                         feValidationService.checkFEData(context, request.convert())
                             .also { log.debug("Checking was a success.") }
-                        ResponseDto(data = "ok")
+                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
                     }
 
                     ProcurementMethod.CD, ProcurementMethod.TEST_CD,
@@ -976,7 +975,7 @@ class CommandService(
                 )
                 if (log.isDebugEnabled)
                     log.debug("Lots for auction. Response: ${toJson(dataResponse)}")
-                ResponseDto(data = dataResponse)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
                 val response = when (cm.pmd) {
@@ -1010,11 +1009,11 @@ class CommandService(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
-                ResponseDto(data = response)
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
         }
 
-        historyRepository.saveHistory(cm.id, cm.command, toJson(response))
+        historyRepository.saveHistory(cm.commandId, cm.command, toJson(this))
         return response
     }
 

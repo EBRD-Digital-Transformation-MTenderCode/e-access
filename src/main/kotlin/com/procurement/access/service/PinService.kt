@@ -1,8 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service
 class PinService(private val generationService: GenerationService,
                  private val tenderProcessDao: TenderProcessDao) {
 
-    fun createPin(cm: CommandMessage): ResponseDto {
+    fun createPin(cm: CommandMessage): ApiResponseV1.Success {
 //        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
 //        val country = cm.context.country ?: throw ErrorException(CONTEXT)
 //        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
@@ -31,7 +32,7 @@ class PinService(private val generationService: GenerationService,
 //        val entity = getEntity(pin, cpId, stage, dateTime, owner)
 //        tenderProcessDao.save(getEntity(pin, cpId, stage, dateTime, owner))
 //        pin.token = entity.token.toString()
-        return ResponseDto(data = pin)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = pin)
     }
 
 //    private fun validateFields(pin: PinProcess) {

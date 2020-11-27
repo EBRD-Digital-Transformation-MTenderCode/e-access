@@ -20,8 +20,9 @@ import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_START_DATE
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.ResponseDto
+import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.ocds.Budget
@@ -84,7 +85,7 @@ class PnUpdateService(private val generationService: GenerationService,
             }
         }.toSet()
 
-    fun updatePn(cm: CommandMessage): ResponseDto {
+    fun updatePn(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
@@ -193,7 +194,7 @@ class PnUpdateService(private val generationService: GenerationService,
             if (!tenderProcess.tender.lots.any { it.status == LotStatus.PLANNING }) throw ErrorException(NO_ACTIVE_LOTS)
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
-        return ResponseDto(data = tenderProcess)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tenderProcess)
     }
 
     private fun checkDocumentsTitle(documents: List<Document>?) {
