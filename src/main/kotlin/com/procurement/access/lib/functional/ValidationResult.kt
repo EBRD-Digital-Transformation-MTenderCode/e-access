@@ -28,6 +28,10 @@ sealed class ValidationResult<out E> {
         is Error -> function(reason)
     }
 
+    inline fun doOnError(block: (E) -> Unit) {
+        if (this is Error) block(this.reason)
+    }
+
     object Ok : ValidationResult<Nothing>() {
         override val isOk: Boolean = true
         override val isError: Boolean = !isOk
