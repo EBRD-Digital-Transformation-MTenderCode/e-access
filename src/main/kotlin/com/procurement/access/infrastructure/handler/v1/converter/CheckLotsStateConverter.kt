@@ -18,14 +18,14 @@ val allowedPmd = ProcurementMethod.values()
     .filter {
         when (it) {
             ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+            ProcurementMethod.DC, ProcurementMethod.TEST_DC,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
             ProcurementMethod.CD, ProcurementMethod.TEST_CD,
-            ProcurementMethod.IP, ProcurementMethod.TEST_IP -> true //TODO add CD
+            ProcurementMethod.IP, ProcurementMethod.TEST_IP -> true
 
             ProcurementMethod.OT, ProcurementMethod.TEST_OT,
             ProcurementMethod.SV, ProcurementMethod.TEST_SV,
             ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-            ProcurementMethod.DC, ProcurementMethod.TEST_DC,
             ProcurementMethod.OP, ProcurementMethod.TEST_OP,
             ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
