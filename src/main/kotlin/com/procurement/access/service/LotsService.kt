@@ -349,12 +349,12 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             ?: return ValidationErrors.TenderNotFoundOnCheckLotsState(cpid = params.cpid, ocid = params.ocid)
                 .asValidationFailure()
 
-        val tender = tenderProcessEntity.jsonData
+        val tenderProcess = tenderProcessEntity.jsonData
             .tryToObject(TenderLotsInfo::class.java)
             .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
             .onFailure { return it.reason.asValidationFailure() }
 
-        val storedLotsById = tender.lots.orEmpty().associateBy { it.id }
+        val storedLotsById = tenderProcess.tender.lots.orEmpty().associateBy { it.id }
         val receivedLotsIds = params.tender.lots.toSet { it.id }
 
         val validStates = rulesService.getValidLotStates(params.country, params.pmd, params.operationType)
@@ -370,13 +370,13 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
         return ValidationResult.ok()
     }
 
-    private fun checkLotState(lot: TenderLotsInfo.Lot, validStates: LotStatesRule): ValidationResult<ValidationErrors> =
+    private fun checkLotState(lot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): ValidationResult<ValidationErrors> =
         if (lotStateIsValid(lot, validStates))
             ValidationResult.ok()
         else ValidationErrors.InvalidLotState(lot.id).asValidationFailure()
 
 
-    private fun lotStateIsValid(storedLot: TenderLotsInfo.Lot, validStates: LotStatesRule): Boolean =
+    private fun lotStateIsValid(storedLot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): Boolean =
         validStates.any { validState -> storedLot.status == validState.status
             && storedLot.statusDetails == validState.statusDetails }
 
