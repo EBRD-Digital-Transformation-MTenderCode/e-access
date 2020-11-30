@@ -6,6 +6,8 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.DataTimeError
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
@@ -91,6 +93,27 @@ fun parseProcurementMethodModalities(
     value: String, allowedEnums: Set<ProcurementMethodModalities>, attributeName: String
 ): Result<ProcurementMethodModalities, DataErrors> =
     parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = ProcurementMethodModalities)
+
+fun parseOperationType(
+    value: String, allowedEnums: Set<OperationType>
+): Result<OperationType, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = "operationType", target = OperationType)
+
+fun parsePmd(value: String, allowedEnums: Set<ProcurementMethod>): Result<ProcurementMethod, DataErrors> {
+    fun getFailureResult() = Result.failure(
+        DataErrors.Validation.UnknownValue(
+            name = "pmd",
+            expectedValues = allowedEnums.map { it.name },
+            actualValue = value
+        )
+    )
+
+    return ProcurementMethod.tryCreate(value)
+        .onFailure { return getFailureResult() }
+        .takeIf { it in allowedEnums }
+        ?.asSuccess()
+        ?: getFailureResult()
+}
 
 fun <T> parseEnum(value: String, allowedEnums: Set<T>, attributeName: String, target: EnumElementProvider<T>)
     : Result<T, DataErrors.Validation.UnknownValue> where T : Enum<T>,
