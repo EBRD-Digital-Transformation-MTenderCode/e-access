@@ -328,6 +328,7 @@ class CheckFEDataRules {
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
@@ -378,7 +379,8 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_AWARD-> false
             }
 
         fun CheckFEDataData.Tender.OtherCriteria?.isNeedValidate(operationType: OperationType) =
@@ -388,6 +390,7 @@ class CheckFEDataRules {
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
@@ -408,7 +411,8 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_AWARD -> false
             }
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
@@ -439,7 +443,8 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_PMD)
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_AWARD -> throw ErrorException(ErrorType.INVALID_PMD)
             }
             return tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
                 ?: throw ErrorException(

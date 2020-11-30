@@ -251,6 +251,7 @@ class ResponderServiceImpl(
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_AWARD,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
