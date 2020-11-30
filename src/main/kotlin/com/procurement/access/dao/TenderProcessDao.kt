@@ -8,6 +8,7 @@ import com.datastax.driver.core.querybuilder.QueryBuilder.eq
 import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import com.procurement.access.application.exception.repository.ReadEntityException
+import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.springframework.stereotype.Service
@@ -42,7 +43,7 @@ class TenderProcessDao(private val session: Session) {
             .value(columnToken, entity.token)
             .value(columnOwner, entity.owner)
             .value(columnStage, entity.stage)
-            .value(columnCreateDate, entity.createdDate)
+            .value(columnCreateDate, entity.createdDate.toCassandraTimestamp())
             .value(columnJsonData, entity.jsonData)
         session.execute(insert)
     }
