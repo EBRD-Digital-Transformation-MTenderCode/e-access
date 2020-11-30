@@ -12,6 +12,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     CHECK_EQUALITY_CURRENCIES("checkEqualityCurrencies"),
     CHECK_EXISTENCE_FA("checkExistenceFA"),
     CHECK_EXISTENCE_SIGN_AUCTION("checkExistenceSignAuction"),
+    CHECK_LOTS_STATE("checkLotsState"),
     CHECK_PERSONES_STRUCTURE("checkPersonesStructure"),
     CHECK_RELATION("checkRelation"),
     CHECK_TENDER_STATE("checkTenderState"),
