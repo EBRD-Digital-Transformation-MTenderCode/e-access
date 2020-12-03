@@ -29,12 +29,15 @@ internal class LotsServiceTest {
     private lateinit var lotsService: LotsService
     private lateinit var tenderProcessDao: TenderProcessDao
     private lateinit var tenderProcessRepository: TenderProcessRepository
+    private lateinit var rulesService: RulesService
+
 
     @BeforeEach
     fun init() {
         tenderProcessDao = mock()
         tenderProcessRepository = mock()
-        lotsService = LotsService(tenderProcessDao, tenderProcessRepository)
+        rulesService = mock()
+        lotsService = LotsService(tenderProcessDao, tenderProcessRepository, rulesService)
     }
 
     @Nested

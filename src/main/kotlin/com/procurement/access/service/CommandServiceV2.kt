@@ -9,6 +9,7 @@ import com.procurement.access.infrastructure.handler.v2.CheckAccessToTenderHandl
 import com.procurement.access.infrastructure.handler.v2.CheckEqualityCurrenciesHandler
 import com.procurement.access.infrastructure.handler.v2.CheckExistenceFAHandler
 import com.procurement.access.infrastructure.handler.v2.CheckExistenceSignAuctionHandler
+import com.procurement.access.infrastructure.handler.v2.CheckLotsStateHandler
 import com.procurement.access.infrastructure.handler.v2.CheckPersonsStructureHandler
 import com.procurement.access.infrastructure.handler.v2.CheckRelationHandler
 import com.procurement.access.infrastructure.handler.v2.CheckTenderStateHandler
@@ -49,6 +50,7 @@ class CommandServiceV2(
     private val findAuctionsHandler: FindAuctionsHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
     private val findLotIdsHandler: FindLotIdsHandler,
+    private val checkLotsStateHandler: CheckLotsStateHandler,
     private val getCurrencyHandler: GetCurrencyHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getLotsValueHandler: GetLotsValueHandler,
@@ -80,6 +82,7 @@ class CommandServiceV2(
                     CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(descriptor)
                     CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(descriptor)
                     CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_LOTS_STATE -> checkLotsStateHandler.handle(descriptor)
                     CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(descriptor)
                     CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_LOTS_VALUE -> getLotsValueHandler.handle(descriptor)

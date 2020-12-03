@@ -6,6 +6,7 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.rule.LotStatesRule
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.domain.rule.TenderStatesRule
 import com.procurement.access.exception.ErrorException
@@ -23,6 +24,7 @@ class RulesService(private val rulesDao: RulesDao) {
 
     companion object {
         private const val VALID_STATES_PARAMETER = "validStates"
+        private const val VALID_LOT_STATES_PARAMETER = "validLotStates"
         private const val MAX_DURATION_OF_FA_PARAMETER = "maxDurationOfFA"
         private const val MIN_SPECIFIC_WEIGHT_PRICE = "minSpecificWeightPrice"
         private const val OPERATION_TYPE_ALL = "all"
@@ -46,12 +48,26 @@ class RulesService(private val rulesDao: RulesDao) {
             parameter = VALID_STATES_PARAMETER
         )
             .onFailure { fail -> return fail }
-            ?: return ValidationErrors.TenderStatesNotFound(pmd = pmd, operationType = operationType, country = country)
+            ?: return ValidationErrors.RulesNotFound(VALID_STATES_PARAMETER, country, pmd, operationType)
                 .asFailure()
 
         return states.toTenderStatesRule()
             .onFailure { fail -> return fail }
             .asSuccess()
+    }
+
+    fun getValidLotStates(
+        country: String,
+        pmd: ProcurementMethod,
+        operationType: OperationType
+    ): Result<LotStatesRule, Fail> {
+        val states = rulesDao.getData(country, pmd,operationType,VALID_LOT_STATES_PARAMETER)
+            .onFailure { fail -> return fail }
+            ?: return ValidationErrors.RulesNotFound(VALID_LOT_STATES_PARAMETER, country, pmd, operationType)
+                .asFailure()
+
+        return states.tryToObject(LotStatesRule::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
     }
 
     private fun String.toTenderStatesRule(): Result<TenderStatesRule, Fail> =

@@ -11,6 +11,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.process.RelatedProcessId
 import com.procurement.access.domain.model.requirement.Requirement
@@ -155,13 +156,14 @@ sealed class ValidationErrors(
             "by requirement responses: $requirementResponses "
     )
 
-    class TenderStatesNotFound(
+    class RulesNotFound(
+        parameter: String,
         country: String,
         pmd: ProcurementMethod,
         operationType: OperationType
     ) : ValidationErrors(
         numberError = "17",
-        description = "Tender states not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
+        description = "Parameter '$parameter' not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
     )
 
     class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid) : ValidationErrors(
@@ -376,5 +378,20 @@ sealed class ValidationErrors(
         numberError = "1.38.2",
         prefix = "VR.COM-",
         description = "Lot(s) by id(s) '${lotIds.joinToString()}' not found."
+    )
+
+    class TenderNotFoundOnCheckLotsState(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.36.1",
+        description = "Tender not found by cpid '$cpid' and '$ocid'."
+    )
+
+    class LotNotFoundOnCheckLotsState(val lotId: LotId) : ValidationErrors(
+        numberError = "1.36.2",
+        description = "Lot not found by id '$lotId'."
+    )
+
+    class InvalidLotState(val lotId: String) : ValidationErrors(
+        numberError = "1.36.3",
+        description = "State of lot'$lotId' is invalid."
     )
 }
