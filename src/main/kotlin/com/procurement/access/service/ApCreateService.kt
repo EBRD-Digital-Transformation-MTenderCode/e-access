@@ -71,6 +71,24 @@ class ApCreateService(
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
         checkContractPeriod(request.tender.contractPeriod, contextRequest)
+
+        // VR.COM-1.20.1
+        checkDocuments(request.tender.documents)
+    }
+
+    private fun checkDocuments(documents: List<ApCreateData.Tender.Document>) {
+        val docsIds = documents.map { it.id }
+
+        checkDocumentsIds(docsIds)
+    }
+
+    private fun checkDocumentsIds(ids: List<String>) {
+        val uniqIds = ids.toSet()
+        if (ids.size != uniqIds.size)
+            throw ErrorException(
+                error = ErrorType.NOT_UNIQUE_IDS,
+                message = "Tender documents contains duplicated ids."
+            )
     }
 
     /**

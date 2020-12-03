@@ -1013,7 +1013,7 @@ class CommandServiceV1(
             }
         }
 
-        historyRepository.saveHistory(cm.commandId, cm.command, toJson(this))
+        historyRepository.saveHistory(cm.commandId, cm.command, toJson(response))
         return response
     }
 

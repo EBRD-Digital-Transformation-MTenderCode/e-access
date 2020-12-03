@@ -58,6 +58,7 @@ class SetStateForTenderParams private constructor(
                     when (it) {
                         TenderStatusDetails.AGGREGATED,
                         TenderStatusDetails.AGGREGATION_PENDING,
+                        TenderStatusDetails.AWARDING,
                         TenderStatusDetails.EMPTY,
                         TenderStatusDetails.EVALUATION,
                         TenderStatusDetails.LACK_OF_QUALIFICATIONS,
@@ -72,7 +73,6 @@ class SetStateForTenderParams private constructor(
                         TenderStatusDetails.AWARDED_CONTRACT_PREPARATION,
                         TenderStatusDetails.AWARDED_STANDSTILL,
                         TenderStatusDetails.AWARDED_SUSPENDED,
-                        TenderStatusDetails.AWARDING,
                         TenderStatusDetails.CANCELLATION,
                         TenderStatusDetails.CLARIFICATION,
                         TenderStatusDetails.COMPLETE,

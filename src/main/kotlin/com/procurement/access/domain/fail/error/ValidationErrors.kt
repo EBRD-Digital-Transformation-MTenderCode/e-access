@@ -368,6 +368,18 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
+    class TenderNotFoundOnGetLotsValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.38.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class LotNotFoundOnGetLotsValue(val lotIds: Set<String>) : ValidationErrors(
+        numberError = "1.38.2",
+        prefix = "VR.COM-",
+        description = "Lot(s) by id(s) '${lotIds.joinToString()}' not found."
+    )
+
     class TenderNotFoundOnCheckLotsState(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
         numberError = "1.36.1",
         description = "Tender not found by cpid '$cpid' and '$ocid'."

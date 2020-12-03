@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.model.params.CheckLotsStateParams
+import com.procurement.access.application.model.params.GetLotsValueParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
@@ -26,6 +27,7 @@ import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.pmd
 import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.entity.TenderLotValueInfo
 import com.procurement.access.infrastructure.entity.TenderLotsInfo
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcLot
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRq
@@ -44,8 +46,13 @@ import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotB
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRq
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRs
 import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsByLotRs
+import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
+import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
@@ -343,6 +350,30 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             .apply { statusDetails = lotStatusDetails }
     }
 
+    fun getLotsValue(params: GetLotsValueParams): Result<GetLotsValueResult, Fail> {
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { return it }
+            ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
+
+        val tenderProcess = tenderProcessEntity.jsonData
+            .tryToObject(TenderLotValueInfo::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
+
+        val storedLotsById = tenderProcess.tender.lots.orEmpty().associateBy { it.id }
+        val receivedLotsIds = params.tender.lots.toSet { it.id.toString() }
+
+        val unknownLots = getUnknownElements(received = receivedLotsIds, known = storedLotsById.keys)
+        if (unknownLots.isNotEmpty())
+            return ValidationErrors.LotNotFoundOnGetLotsValue(unknownLots).asFailure()
+
+        return receivedLotsIds
+            .map { id -> storedLotsById.getValue(id).toResult() }
+            .let { lots -> GetLotsValueResult(GetLotsValueResult.Tender(lots)) }
+            .asSuccess()
+    }
+
+
     fun checkLotsState(params: CheckLotsStateParams): ValidationResult<Fail> {
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
             .onFailure { return it.reason.asValidationFailure() }
@@ -366,9 +397,19 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             checkLotState(storedLot, validStates)
                 .doOnError { return it.asValidationFailure() }
         }
-
         return ValidationResult.ok()
     }
+
+    private fun TenderLotValueInfo.Tender.Lot.toResult() =
+        GetLotsValueResult.Tender.Lot(
+            id = id,
+            value = value.let { value ->
+                GetLotsValueResult.Tender.Lot.Value(
+                    amount = value.amount,
+                    currency = value.currency
+                )
+            }
+        )
 
     private fun checkLotState(lot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): ValidationResult<ValidationErrors> =
         if (lotStateIsValid(lot, validStates))
