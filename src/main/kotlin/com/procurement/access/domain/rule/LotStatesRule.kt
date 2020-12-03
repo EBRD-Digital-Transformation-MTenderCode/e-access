@@ -8,6 +8,6 @@ class LotStatesRule(states: List<State>) : List<LotStatesRule.State> by states {
 
     data class State(
         @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
-        @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails
+        @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails?
     )
 }
