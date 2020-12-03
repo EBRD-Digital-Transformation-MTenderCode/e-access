@@ -416,9 +416,9 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             ValidationResult.ok()
         else ValidationErrors.InvalidLotState(lot.id).asValidationFailure()
 
-
     private fun lotStateIsValid(storedLot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): Boolean =
-        validStates.any { validState -> storedLot.status == validState.status
-            && storedLot.statusDetails == validState.statusDetails }
-
+        validStates.any { validState ->
+            storedLot.status == validState.status
+                && validState.statusDetails?.equals(storedLot.statusDetails) ?: true
+        }
 }
