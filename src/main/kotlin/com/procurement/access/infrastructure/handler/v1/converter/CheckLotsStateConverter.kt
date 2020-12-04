@@ -74,7 +74,7 @@ fun CheckLotsStateRequest.convert(): Result<CheckLotsStateParams, DataErrors> {
     val cpidParsed = parseCpid(cpid).onFailure { return it }
     val ocidParsed = parseOcid(ocid).onFailure { return it }
     val pmdParsed = parsePmd(pmd, allowedPmd).onFailure { return it }
-    val operationTypeParsed = parseOperationType(pmd, allowedOperationType).onFailure { return it }
+    val operationTypeParsed = parseOperationType(operationType, allowedOperationType).onFailure { return it }
     val tender = tender.convert().onFailure { return it }
 
     return CheckLotsStateParams(
