@@ -20,6 +20,7 @@ class CreateRelationToOtherProcessParams(
         val allowedOperationType = OperationType.allowedElements
             .filter {
                 when (it) {
+                    OperationType.CREATE_PCR,
                     OperationType.OUTSOURCING_PN,
                     OperationType.RELATION_AP -> true
 
@@ -31,7 +32,6 @@ class CreateRelationToOtherProcessParams(
                     OperationType.CREATE_CN_ON_PN,
                     OperationType.CREATE_FE,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-                    OperationType.CREATE_PCR,
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
