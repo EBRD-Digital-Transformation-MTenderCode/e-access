@@ -85,6 +85,7 @@ class OutsourcingServiceImpl(
     companion object CreateRelationToOtherProcess {
         fun defineRelationProcessType(operationType: OperationType): Result<RelatedProcessType, DataErrors.Validation.UnknownValue> =
             when (operationType) {
+                OperationType.CREATE_PCR -> success(RelatedProcessType.X_PCR)
                 OperationType.OUTSOURCING_PN -> success(RelatedProcessType.X_DEMAND)
                 OperationType.RELATION_AP -> success(RelatedProcessType.X_SCOPE)
 
@@ -97,7 +98,6 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_CN_ON_PN,
                 OperationType.CREATE_FE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-                OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
                 OperationType.CREATE_PIN_ON_PN,
                 OperationType.CREATE_PN,
