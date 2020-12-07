@@ -184,13 +184,19 @@ class OutsourcingServiceImpl(
         val definedRelationship = defineRelationProcessType(params.operationType)
             .onFailure { fail -> return fail }
 
+        val definedIdentifier = defineIdentifier(params)
+            .onFailure { fail -> return fail }
+
+        val definedUri = defineUri(params)
+            .onFailure { fail -> return fail }
+
         val relatedProcesses = listOf(
             RelatedProcess(
                 id = RelatedProcessId.randomUUID(), // FR.COM-1.22.1
                 relationship = listOf(definedRelationship), // FR.COM-1.22.2
                 scheme = RelatedProcessScheme.OCID, // FR.COM-1.22.3
-                identifier = params.relatedCpid.toString(), // FR.COM-1.22.4
-                uri = "${uriProperties.tender}/${params.relatedCpid}/${params.relatedCpid}" //FR.COM-1.22.5
+                identifier = definedIdentifier, // FR.COM-1.22.4
+                uri = definedUri //FR.COM-1.22.5
             )
         )
 
@@ -215,6 +221,7 @@ class OutsourcingServiceImpl(
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_AWARD,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
@@ -242,6 +249,45 @@ class OutsourcingServiceImpl(
         return success(response)
     }
 
+    private fun defineUri(params: CreateRelationToOtherProcessParams): Result<String, DataErrors.Validation.UnknownValue> =
+    when (params.operationType) {
+        OperationType.CREATE_PCR -> "${uriProperties.tender}/${params.relatedCpid}/${params.relatedOcid}".asSuccess()
+        OperationType.OUTSOURCING_PN,
+        OperationType.RELATION_AP -> "${uriProperties.tender}/${params.relatedCpid}/${params.relatedCpid}".asSuccess()
+
+        OperationType.AMEND_FE,
+        OperationType.APPLY_QUALIFICATION_PROTOCOL,
+        OperationType.COMPLETE_QUALIFICATION,
+        OperationType.CREATE_AWARD,
+        OperationType.CREATE_CN,
+        OperationType.CREATE_CN_ON_PIN,
+        OperationType.CREATE_CN_ON_PN,
+        OperationType.CREATE_FE,
+        OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+        OperationType.CREATE_PIN,
+        OperationType.CREATE_PIN_ON_PN,
+        OperationType.CREATE_PN,
+        OperationType.CREATE_SUBMISSION,
+        OperationType.QUALIFICATION,
+        OperationType.QUALIFICATION_CONSIDERATION,
+        OperationType.QUALIFICATION_PROTOCOL,
+        OperationType.START_SECONDSTAGE,
+        OperationType.SUBMISSION_PERIOD_END,
+        OperationType.TENDER_PERIOD_END,
+        OperationType.UPDATE_AP,
+        OperationType.UPDATE_CN,
+        OperationType.UPDATE_PN,
+        OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
+        failure(
+            DataErrors.Validation.UnknownValue(
+                name = "operationType",
+                actualValue = params.operationType.toString(),
+                expectedValues = CreateRelationToOtherProcessParams.allowedOperationType
+                    .map { it.toString() }
+            )
+        )
+    }
+
     private fun findStoredRelatedProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult?, Fail> {
         val ocid = parseOcid(params.ocid).onFailure { return it }
 
@@ -265,4 +311,43 @@ class OutsourcingServiceImpl(
             )
         }.asSuccess()
     }
+
+    private fun defineIdentifier(params: CreateRelationToOtherProcessParams): Result<String, DataErrors.Validation.UnknownValue> =
+        when (params.operationType) {
+            OperationType.CREATE_PCR -> params.relatedOcid.toString().asSuccess()
+            OperationType.OUTSOURCING_PN,
+            OperationType.RELATION_AP -> params.relatedCpid.toString().asSuccess()
+
+            OperationType.AMEND_FE,
+            OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_AWARD,
+            OperationType.CREATE_CN,
+            OperationType.CREATE_CN_ON_PIN,
+            OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_FE,
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+            OperationType.CREATE_PIN,
+            OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_PN,
+            OperationType.CREATE_SUBMISSION,
+            OperationType.QUALIFICATION,
+            OperationType.QUALIFICATION_CONSIDERATION,
+            OperationType.QUALIFICATION_PROTOCOL,
+            OperationType.START_SECONDSTAGE,
+            OperationType.SUBMISSION_PERIOD_END,
+            OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AP,
+            OperationType.UPDATE_CN,
+            OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
+                failure(
+                    DataErrors.Validation.UnknownValue(
+                        name = "operationType",
+                        actualValue = params.operationType.toString(),
+                        expectedValues = CreateRelationToOtherProcessParams.allowedOperationType
+                            .map { it.toString() }
+                    )
+                )
+        }
 }
