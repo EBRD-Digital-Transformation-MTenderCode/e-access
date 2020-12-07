@@ -28,6 +28,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     SUBMISSION_PERIOD_END("submissionPeriodEnd"),
     TENDER_PERIOD_END("tenderPeriodEnd"),
     UPDATE_AP("updateAP"),
+    UPDATE_AWARD("updateAward"),
     UPDATE_CN("updateCN"),
     UPDATE_PN("updatePN"),
     WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol");

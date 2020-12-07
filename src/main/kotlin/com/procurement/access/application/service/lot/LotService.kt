@@ -495,6 +495,7 @@ class LotServiceImpl(
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
                 throw ErrorException(

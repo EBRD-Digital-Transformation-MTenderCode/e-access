@@ -448,6 +448,7 @@ class CriteriaServiceImpl(
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
@@ -508,6 +509,7 @@ class CriteriaServiceImpl(
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
