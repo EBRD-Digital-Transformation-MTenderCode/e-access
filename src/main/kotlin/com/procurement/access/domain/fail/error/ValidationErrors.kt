@@ -203,6 +203,12 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
+    class RelatedOcidIsAbsent() : ValidationErrors(
+        numberError = "1.22.2",
+        prefix = "VR.COM-",
+        description = "Parameter 'relatedOcid' hasn't been received."
+    )
+
     class RelatedProcessNotExistsOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
         numberError = "1.24.2",
         prefix = "VR.COM-",
