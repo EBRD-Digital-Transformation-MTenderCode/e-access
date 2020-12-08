@@ -167,7 +167,7 @@ class PnService(
             checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
 
             //VR-3.1.18
-            checkProcuringEntity(request.tender.procuringEntity)
+            checkAdditionalIdentifiersInProcuringEntity(request.tender.procuringEntity)
         }
     }
 
@@ -331,7 +331,7 @@ class PnService(
         }
     }
 
-    private fun checkProcuringEntity(procuringEntity: PnCreateData.Tender.ProcuringEntity) {
+    private fun checkAdditionalIdentifiersInProcuringEntity(procuringEntity: PnCreateData.Tender.ProcuringEntity) {
         val isAdditionalIdentifiersUnique = procuringEntity.additionalIdentifiers.isUnique { Pair(it.scheme, it.id) }
         if (!isAdditionalIdentifiersUnique)
             throw ErrorException(ErrorType.INVALID_PROCURING_ENTITY, "Additional identifiers of procuring entity are duplicated")
