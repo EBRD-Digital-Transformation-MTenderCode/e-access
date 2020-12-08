@@ -165,6 +165,9 @@ class PnService(
 
             //VR-3.1.11 "Contract Period" (Lot)
             checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
+
+            //VR-3.1.18
+            checkAdditionalIdentifiersInProcuringEntity(request.tender.procuringEntity)
         }
     }
 
@@ -326,6 +329,12 @@ class PnService(
                     message = "The start date [${lot.contractPeriod.startDate}] of the contract period of the lot [${lot.id}] before or eq that the end date of the tender period [$tenderPeriodStartDate]."
                 )
         }
+    }
+
+    private fun checkAdditionalIdentifiersInProcuringEntity(procuringEntity: PnCreateData.Tender.ProcuringEntity) {
+        val isAdditionalIdentifiersUnique = procuringEntity.additionalIdentifiers.isUnique { Pair(it.scheme, it.id) }
+        if (!isAdditionalIdentifiersUnique)
+            throw ErrorException(ErrorType.INVALID_PROCURING_ENTITY, "Additional identifiers of procuring entity are duplicated")
     }
 
     private fun checkRangeContractPeriodInLot(lot: PnCreateData.Tender.Lot) {
