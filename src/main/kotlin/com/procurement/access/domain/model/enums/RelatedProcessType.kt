@@ -16,6 +16,7 @@ enum class RelatedProcessType(@JsonValue override val key: String) : EnumElement
     X_EXPENDITURE_ITEM("x_expenditureItem"),
     X_FUNDING_SOURCE("x_fundingSource"),
     X_NEGOTIATION("x_negotiation"),
+    X_PCR("x_pcr"),
     X_PLANNED("x_planned"),
     X_PRESELECTION("x_preselection"),
     X_PRE_QUALIFICATION("x_prequalification"),
