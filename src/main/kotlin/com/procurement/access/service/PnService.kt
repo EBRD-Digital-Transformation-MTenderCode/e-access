@@ -334,7 +334,7 @@ class PnService(
     private fun checkProcuringEntity(procuringEntity: PnCreateData.Tender.ProcuringEntity) {
         val isAdditionalIdentifiersUnique = procuringEntity.additionalIdentifiers.isUnique { Pair(it.scheme, it.id) }
         if (!isAdditionalIdentifiersUnique)
-            throw ErrorException(ErrorType.PROCURING_ENTITY_ADDITIONAL_IDENTIFIERS_ARE_DUPLICATED)
+            throw ErrorException(ErrorType.INVALID_PROCURING_ENTITY, "Additional identifiers of procuring entity are duplicated")
     }
 
     private fun checkRangeContractPeriodInLot(lot: PnCreateData.Tender.Lot) {
