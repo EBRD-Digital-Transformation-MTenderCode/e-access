@@ -247,6 +247,7 @@ class OutsourcingServiceImpl(
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
@@ -264,8 +265,8 @@ class OutsourcingServiceImpl(
                     ValidationErrors.RelatedOcidIsAbsent().asValidationFailure()
                 else ValidationResult.ok()
 
-            OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.AMEND_FE,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_AWARD,
             OperationType.CREATE_CN,
@@ -285,6 +286,7 @@ class OutsourcingServiceImpl(
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
@@ -318,6 +320,7 @@ class OutsourcingServiceImpl(
         OperationType.START_SECONDSTAGE,
         OperationType.SUBMISSION_PERIOD_END,
         OperationType.TENDER_PERIOD_END,
+        OperationType.UPDATE_AWARD,
         OperationType.UPDATE_AP,
         OperationType.UPDATE_CN,
         OperationType.UPDATE_PN,
@@ -373,6 +376,7 @@ class OutsourcingServiceImpl(
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
