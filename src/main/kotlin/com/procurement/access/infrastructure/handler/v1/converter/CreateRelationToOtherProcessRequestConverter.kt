@@ -10,5 +10,6 @@ fun CreateRelationToOtherProcessRequest.convert(): Result<CreateRelationToOtherP
         cpid = this.cpid,
         ocid = this.ocid,
         relatedCpid = this.relatedCpid,
+        relatedOcid = this.relatedOcid,
         operationType = this.operationType
     )
