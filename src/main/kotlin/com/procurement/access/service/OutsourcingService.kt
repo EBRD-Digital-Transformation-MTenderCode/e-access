@@ -290,7 +290,7 @@ class OutsourcingServiceImpl(
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> generateOperationTypeError(params).asValidationFailure()
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> ValidationResult.ok()
         }
 
 
