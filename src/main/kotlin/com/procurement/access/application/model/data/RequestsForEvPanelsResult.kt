@@ -2,7 +2,7 @@ package com.procurement.access.application.model.data
 
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.CriteriaSource
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.domain.model.requirement.Requirement
 
 data class RequestsForEvPanelsResult(
     val criteria: Criteria

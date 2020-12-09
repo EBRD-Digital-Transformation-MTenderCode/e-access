@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.cn
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.validate.ValidateRequirementResponsesResult
+import com.procurement.access.infrastructure.handler.v2.model.response.ValidateRequirementResponsesResult
 import org.junit.jupiter.api.Test
 
 class ValidateRequirementResponsesResultTest : AbstractDTOTestBase<ValidateRequirementResponsesResult>(

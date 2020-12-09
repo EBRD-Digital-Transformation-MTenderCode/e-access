@@ -7,7 +7,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 
 class CreateCriteriaForProcuringEntity {
 
@@ -25,6 +25,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.AMEND_FE,
                         OperationType.APPLY_QUALIFICATION_PROTOCOL,
                         OperationType.COMPLETE_QUALIFICATION,
+                        OperationType.CREATE_AWARD,
                         OperationType.CREATE_CN,
                         OperationType.CREATE_CN_ON_PIN,
                         OperationType.CREATE_CN_ON_PN,
@@ -42,6 +43,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.RELATION_AP,
                         OperationType.START_SECONDSTAGE,
                         OperationType.UPDATE_AP,
+                        OperationType.UPDATE_AWARD,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
@@ -60,10 +62,10 @@ class CreateCriteriaForProcuringEntity {
             ): Result<Params, DataErrors> {
 
                 val cpidResult = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val parsedOperationType = parseEnum(
                     value = operationType,
@@ -71,7 +73,7 @@ class CreateCriteriaForProcuringEntity {
                     allowedEnums = allowedOperationType,
                     attributeName = "operationType"
                 )
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(
                     Params(

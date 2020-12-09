@@ -10,10 +10,9 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.lot.LotId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForLotsParams private constructor(
     val cpid: Cpid,
@@ -27,12 +26,10 @@ class SetStateForLotsParams private constructor(
             lots: List<Lot>
         ): Result<SetStateForLotsParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
 
             return SetStateForLotsParams(cpid = cpidResult, ocid = ocidResult, lots = lots)
@@ -57,7 +54,7 @@ class SetStateForLotsParams private constructor(
                         LotStatus.PLANNED -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             private val allowedLotStatusDetails = LotStatusDetails.allowedElements
                 .filter {
@@ -68,7 +65,7 @@ class SetStateForLotsParams private constructor(
                         LotStatusDetails.CANCELLED -> false
                     }
                 }
-                .toSetBy { it }
+                .toSet { it }
 
             fun tryCreate(
                 id: String,
@@ -76,8 +73,7 @@ class SetStateForLotsParams private constructor(
                 statusDetails: String?
             ): Result<Lot, DataErrors> {
                 val idResult = parseLotId(value = id, attributeName = "Lot.id")
-                    .doOnError { error -> return error.asFailure() }
-                    .get
+                    .onFailure { return it }
 
                 val statusResult = LotStatus.orNull(key = status)
                     ?.takeIf { it in allowedLotStatuses }

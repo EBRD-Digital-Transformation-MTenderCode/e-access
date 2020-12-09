@@ -1,6 +1,6 @@
 package com.procurement.access.domain.model.owner
 
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 import java.util.*
 
 typealias Owner = UUID

@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.tender.set.statefortender
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.set.statefortender.SetStateForTenderRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.SetStateForTenderRequest
 import org.junit.jupiter.api.Test
 
 class SetStateForTenderRequestTest : AbstractDTOTestBase<SetStateForTenderRequest>(SetStateForTenderRequest::class.java) {

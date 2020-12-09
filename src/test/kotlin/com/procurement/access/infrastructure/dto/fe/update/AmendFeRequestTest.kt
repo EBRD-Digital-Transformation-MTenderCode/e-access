@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.fe.update
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
+import com.procurement.access.infrastructure.handler.v1.model.request.AmendFERequest
 import org.junit.jupiter.api.Test
 
 class AmendFeRequestTest : AbstractDTOTestBase<AmendFERequest>(AmendFERequest::class.java) {

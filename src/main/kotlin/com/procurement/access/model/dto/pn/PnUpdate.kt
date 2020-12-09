@@ -13,7 +13,6 @@ import com.procurement.access.model.dto.ocds.Unit
 import com.procurement.access.model.dto.ocds.Value
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
 
 data class PnUpdate @JsonCreator constructor(
 
@@ -75,22 +74,22 @@ data class LotPnUpdate @JsonCreator constructor(
 
 data class ItemPnUpdate @JsonCreator constructor(
 
-        var id: String,
+    var id: String,
 
-        val internalId: String?,
+    val internalId: String?,
 
-        val description: String,
+    val description: String,
 
-        val classification: Classification,
+    val classification: Classification,
 
-        val additionalClassifications: HashSet<Classification>?,
+    val additionalClassifications: List<Classification>?,
 
-        @field:JsonDeserialize(using = QuantityDeserializer::class)
-        val quantity: BigDecimal,
+    @field:JsonDeserialize(using = QuantityDeserializer::class)
+    val quantity: BigDecimal,
 
-        val unit: Unit,
+    val unit: Unit,
 
-        var relatedLot: String
+    var relatedLot: String
 )
 
 data class PeriodPnUpdate @JsonCreator constructor(

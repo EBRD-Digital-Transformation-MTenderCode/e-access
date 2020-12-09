@@ -71,5 +71,7 @@ sealed class DataErrors(numberError: String, override val description: String) :
         class UnexpectedAttribute(name: String) :
             Validation(numberError = "12", description = "Unexpected attribute.", name = name)
 
+        class InvalidDateTime(name: String, actualValue: String) :
+            Validation(numberError = "13", description = "Invalid date-time: '$actualValue'.", name = name)
     }
 }

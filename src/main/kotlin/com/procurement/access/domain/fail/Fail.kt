@@ -3,8 +3,8 @@ package com.procurement.access.domain.fail
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.application.service.Logger
 import com.procurement.access.domain.EnumElementProvider
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.ValidationResult
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.ValidationResult
 
 sealed class Fail {
 
@@ -49,6 +49,37 @@ sealed class Fail {
             override fun logging(logger: Logger) {
                 logger.error(message = message, exception = exception)
             }
+        }
+
+        sealed class Transform(val number: String, override val description: String) :
+            Incident(level = Level.ERROR, number = number, description = description) {
+
+            abstract val exception: Exception?
+
+            override fun logging(logger: Logger) {
+                logger.error(message = message, exception = exception)
+            }
+
+            class ParseFromDatabaseIncident(val jsonData: String, override val exception: Exception) : Transform(
+                number = "2.1",
+                description = "Could not parse data stored in database."
+            ) {
+                override fun logging(logger: Logger) {
+                    logger.error(message = message, mdc = mapOf("jsonData" to jsonData), exception = exception)
+                }
+            }
+
+            class Parsing(className: String, override val exception: Exception) :
+                Transform(number = "2.2", description = "Error parsing to $className.")
+
+            class Mapping(description: String, override val exception: Exception? = null) :
+                Transform(number = "2.4", description = description)
+
+            class Deserialization(description: String, override val exception: Exception) :
+                Transform(number = "2.5", description = description)
+
+            class Serialization(description: String, override val exception: Exception) :
+                Transform(number = "2.6", description = description)
         }
 
         class Parsing(val className: String, val exception: Exception) : Incident(

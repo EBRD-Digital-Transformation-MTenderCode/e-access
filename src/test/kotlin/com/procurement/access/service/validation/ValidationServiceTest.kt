@@ -10,10 +10,11 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.ValidationResult
+import com.procurement.access.failure
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.json.loadJson
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.service.RulesService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -77,7 +78,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(null))
 
-            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
+            val actual = validationService.checkEqualityCurrencies(params = getParams()).failure()
 
             val expectedErrorCode = "VR.COM-1.33.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
@@ -97,7 +98,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
                 .thenReturn(success(null))
 
-            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
+            val actual = validationService.checkEqualityCurrencies(params = getParams()).failure()
 
             val expectedErrorCode = "VR.COM-1.33.2"
             val expectedErrorMessage = "Tender not found by cpid='${params.relatedCpid}' and ocid='${params.relatedOcid}'."
@@ -120,7 +121,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
                 .thenReturn(success(relatedTenderProcessEntity))
 
-            val actual =  validationService.checkEqualityCurrencies(params = getParams()).error
+            val actual = validationService.checkEqualityCurrencies(params = getParams()).failure()
 
             val expectedErrorCode = "VR.COM-1.33.3"
             val expectedErrorMessage = "Tenders' currencies do not match."
@@ -151,7 +152,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(entity))
 
-            val actual = validationService.checkExistenceSignAuction(params).error
+            val actual = validationService.checkExistenceSignAuction(params).failure()
 
             val expectedErrorCode = "VR.COM-1.32.2"
             val expectedErrorMessage = "Stored tender must contain 'electronicAuction' in procurementMethodModalities."
@@ -187,7 +188,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(entity))
 
-            val actual = validationService.checkExistenceSignAuction(params).error
+            val actual = validationService.checkExistenceSignAuction(params).failure()
 
             val expectedErrorCode = "VR.COM-1.32.3"
             val expectedErrorMessage = "Stored tender must not contain 'electronicAuction' in procurementMethodModalities."
@@ -217,7 +218,7 @@ class ValidationServiceTest {
             val params = getParams(ProcurementMethodModalities.ELECTRONIC_AUCTION)
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(null))
-            val actual = validationService.checkExistenceSignAuction(params).error
+            val actual = validationService.checkExistenceSignAuction(params).failure()
 
             val expectedErrorCode = "VR.COM-1.32.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
@@ -245,7 +246,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(null))
 
-            val actual =  validationService.validateClassification(params).error
+            val actual = validationService.validateClassification(params).failure()
 
             val expectedErrorCode = "VR.COM-1.30.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
@@ -264,7 +265,7 @@ class ValidationServiceTest {
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
 
-            val actual =  validationService.validateClassification(params).error
+            val actual = validationService.validateClassification(params).failure()
 
             val expectedErrorCode = "VR.COM-1.30.2"
             val expectedErrorMessage = "First three symbols of received classification id '${params.tender.classification.id}' does not match stored one '$STORED_CLASSIFICATION_ID'."

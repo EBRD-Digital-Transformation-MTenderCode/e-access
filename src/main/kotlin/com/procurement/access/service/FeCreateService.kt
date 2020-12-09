@@ -10,14 +10,13 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.infrastructure.dto.fe.check.converter.CreateFeEntityConverter
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.handler.v1.converter.CreateFeEntityConverter
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.slf4j.Logger
@@ -63,7 +62,7 @@ class FeCreateServiceImpl(
                 token = entity.token,
                 stage = context.stage,
                 owner = context.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(fe)
             )
         )

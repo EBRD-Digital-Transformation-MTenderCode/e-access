@@ -12,15 +12,15 @@ import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.json.getObject
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
 import com.procurement.access.json.toObject
-import com.procurement.access.model.dto.databinding.toLocalDateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -141,5 +141,5 @@ fun createContext(
     stage = ContextGenerator.STAGE,
     country = ContextGenerator.COUNTRY,
     pmd = ProcurementMethod.SV,
-    startDate = startDate.toLocalDateTime()
+    startDate = startDate.toLocalDateTime().orThrow { it.reason }
 )

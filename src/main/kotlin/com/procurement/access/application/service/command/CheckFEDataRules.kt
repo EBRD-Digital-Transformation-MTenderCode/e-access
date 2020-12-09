@@ -6,15 +6,15 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.requirement.ExpectedValue
+import com.procurement.access.domain.model.requirement.MaxValue
+import com.procurement.access.domain.model.requirement.MinValue
+import com.procurement.access.domain.model.requirement.NoneValue
+import com.procurement.access.domain.model.requirement.RangeValue
+import com.procurement.access.domain.model.requirement.Requirement
+import com.procurement.access.domain.model.requirement.RequirementValue
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
-import com.procurement.access.infrastructure.dto.cn.criteria.MaxValue
-import com.procurement.access.infrastructure.dto.cn.criteria.MinValue
-import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
-import com.procurement.access.infrastructure.dto.cn.criteria.RangeValue
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.infrastructure.dto.cn.criteria.RequirementValue
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -328,6 +328,7 @@ class CheckFEDataRules {
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
@@ -346,6 +347,7 @@ class CheckFEDataRules {
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
@@ -376,9 +378,11 @@ class CheckFEDataRules {
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_AWARD-> false
             }
 
         fun CheckFEDataData.Tender.OtherCriteria?.isNeedValidate(operationType: OperationType) =
@@ -388,6 +392,7 @@ class CheckFEDataRules {
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
@@ -406,9 +411,11 @@ class CheckFEDataRules {
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_AWARD -> false
             }
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
@@ -437,9 +444,11 @@ class CheckFEDataRules {
                 OperationType.SUBMISSION_PERIOD_END,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_PMD)
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                OperationType.CREATE_AWARD -> throw ErrorException(ErrorType.INVALID_PMD)
             }
             return tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
                 ?: throw ErrorException(

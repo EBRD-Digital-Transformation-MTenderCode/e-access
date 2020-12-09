@@ -2,6 +2,7 @@ package com.procurement.access.actions
 
 import com.procurement.access.application.service.requirement.ValidateRequirementResponsesParams.RequirementResponse
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
+import com.procurement.access.failure
 import com.procurement.access.service.validateOneAnswerOnRequirementByCandidate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -26,12 +27,10 @@ class ValidateRequirementResponsesTest {
             RequirementResponseFactory.create(relatedCandidate = SECOND_CANDIDATE_ID)
         )
 
-        val result = validateOneAnswerOnRequirementByCandidate(requirementResponses)
+        val result = validateOneAnswerOnRequirementByCandidate(requirementResponses).failure()
 
-        assertTrue(result.isFail)
-        val fail = result.error
-        assertEquals(FIRST_CANDIDATE_ID, fail.candidateId)
-        assertEquals(requirementResponses[0].requirement.id, fail.requirementId)
+        assertEquals(FIRST_CANDIDATE_ID, result.candidateId)
+        assertEquals(requirementResponses[0].requirement.id, result.requirementId)
     }
 
     @Test

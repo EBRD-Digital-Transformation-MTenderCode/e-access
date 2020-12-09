@@ -28,23 +28,22 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.enums.Stage
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.extension.mapResult
+import com.procurement.access.domain.model.requirement.NoneValue
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.criteria.NoneValue
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
-import com.procurement.access.infrastructure.dto.converter.create.convertToResponse
-import com.procurement.access.infrastructure.dto.converter.find.criteria.convert
-import com.procurement.access.infrastructure.dto.converter.get.criteria.convert
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
-import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
-import com.procurement.access.infrastructure.handler.find.criteria.FindCriteriaResult
-import com.procurement.access.infrastructure.handler.get.criteria.GetQualificationCriteriaAndMethodResult
+import com.procurement.access.infrastructure.handler.v1.converter.convert
+import com.procurement.access.infrastructure.handler.v1.converter.convertToResponse
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateCriteriaForProcuringEntityResult
+import com.procurement.access.infrastructure.handler.v2.model.response.FindCriteriaResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetQualificationCriteriaAndMethodResult
+import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
@@ -199,7 +198,7 @@ class CriteriaServiceImpl(
         val stage = params.ocid.stage
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetQualificationCriteriaAndMethod(
                     cpid = params.cpid,
@@ -211,7 +210,8 @@ class CriteriaServiceImpl(
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val tender = fe.tender
                 val otherCriteria = tender.otherCriteria!!
@@ -230,7 +230,8 @@ class CriteriaServiceImpl(
             Stage.TP -> {
                 val cn = entity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val tender = cn.tender
                 val otherCriteria = tender.otherCriteria!!
@@ -254,7 +255,7 @@ class CriteriaServiceImpl(
                     ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         return success(result)
     }
@@ -262,7 +263,7 @@ class CriteriaServiceImpl(
     override fun findCriteria(params: FindCriteria.Params): Result<FindCriteriaResult, Fail> {
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
         val foundedCriteriaResult = when (params.ocid.stage) {
@@ -270,7 +271,8 @@ class CriteriaServiceImpl(
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val targetCriteria = fe.tender.criteria.orEmpty()
                     .asSequence()
@@ -286,7 +288,8 @@ class CriteriaServiceImpl(
             Stage.TP -> {
                 val cn = entity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val targetCriteria = cn.tender.criteria.orEmpty()
                     .asSequence()
@@ -307,7 +310,7 @@ class CriteriaServiceImpl(
                     ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { fail -> return fail }
+            .onFailure { fail -> return fail }
 
         val result = FindCriteriaResult(foundedCriteriaResult)
 
@@ -321,7 +324,7 @@ class CriteriaServiceImpl(
             cpid = params.cpid,
             stage = stage
         )
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnCreateCriteriaForProcuringEntity(
                     cpid = params.cpid,
@@ -335,7 +338,8 @@ class CriteriaServiceImpl(
             Stage.TP -> {
                 val cn = tenderProcessEntity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val createdCriteria = params.criteria
                     .map { criterion -> createCriterionForCN(criterion, params.operationType) }
@@ -350,7 +354,7 @@ class CriteriaServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCnEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 success(result)
             }
@@ -358,11 +362,12 @@ class CriteriaServiceImpl(
             Stage.FE -> {
                 val cn = tenderProcessEntity.jsonData
                     .tryToObject(FEEntity::class.java)
-                    .doReturn { error -> return failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val createdCriteria = params.criteria
                     .mapResult { criterion -> createCriterionForFE(criterion, params.operationType) }
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val result = createdCriteria.map { it.convertToResponse() }
 
@@ -374,7 +379,7 @@ class CriteriaServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedFeEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 success(result)
             }
@@ -389,7 +394,7 @@ class CriteriaServiceImpl(
                     ValidationErrors.UnexpectedStageForCreateCriteriaForProcuringEntity(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return success(CreateCriteriaForProcuringEntityResult(result))
     }
@@ -425,6 +430,7 @@ class CriteriaServiceImpl(
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
@@ -442,6 +448,7 @@ class CriteriaServiceImpl(
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
@@ -484,6 +491,7 @@ class CriteriaServiceImpl(
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
@@ -501,6 +509,7 @@ class CriteriaServiceImpl(
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->

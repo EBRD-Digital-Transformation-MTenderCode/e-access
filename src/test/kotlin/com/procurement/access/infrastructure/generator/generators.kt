@@ -1,23 +1,26 @@
 package com.procurement.access.infrastructure.generator
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.procurement.access.model.dto.bpe.ApiVersion
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
-import com.procurement.access.model.dto.bpe.Context
+import com.procurement.access.domain.util.extension.nowDefaultUTC
+import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
+import com.procurement.access.infrastructure.api.v1.Context
 import com.procurement.access.model.entity.TenderProcessEntity
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
 object CommandMessageGenerator {
-    const val COMMAND_ID = "COMMAND_ID"
-    val COMMAND_VERSION: ApiVersion = ApiVersion.V_0_0_1
+    val COMMAND_ID = CommandId(UUID.randomUUID().toString())
+    val COMMAND_VERSION: ApiVersion = ApiVersion(1, 0, 0)
 
     fun generate(
-        id: String = COMMAND_ID,
+        id: CommandId = COMMAND_ID,
         version: ApiVersion = COMMAND_VERSION,
-        command: CommandType,
+        command: CommandTypeV1,
         context: Context,
         data: JsonNode
     ): CommandMessage {
@@ -84,7 +87,7 @@ object TenderProcessEntityGenerator {
         token: UUID = ContextGenerator.TOKEN,
         owner: String = ContextGenerator.OWNER,
         stage: String = ContextGenerator.STAGE,
-        createdDate: Date = LocalDate.now().toDate(),
+        createdDate: LocalDateTime = nowDefaultUTC(),
         data: String
     ): TenderProcessEntity {
         return TenderProcessEntity(

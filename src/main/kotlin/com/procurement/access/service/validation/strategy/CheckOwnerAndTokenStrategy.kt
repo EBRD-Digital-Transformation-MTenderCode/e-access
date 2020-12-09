@@ -7,14 +7,15 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.ValidationResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.cpid
-import com.procurement.access.model.dto.bpe.owner
-import com.procurement.access.model.dto.bpe.token
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.owner
+import com.procurement.access.infrastructure.api.v1.token
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
 
 class CheckOwnerAndTokenStrategy(
@@ -44,7 +45,7 @@ class CheckOwnerAndTokenStrategy(
     fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
 
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
-            .doReturn { error -> return ValidationResult.error(error) }
+            .onFailure { return it.reason.asValidationFailure() }
 
         if (tenderProcessEntity.owner != params.owner.toString())
             return ValidationResult.error(ValidationErrors.InvalidOwner(owner = params.owner, cpid = params.cpid))
@@ -57,8 +58,7 @@ class CheckOwnerAndTokenStrategy(
 
     private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
             ?: return Result.failure(ValidationErrors.TenderNotFoundCheckAccessToTender(cpid = cpid, ocid = ocid))
 
         return Result.success(entity)

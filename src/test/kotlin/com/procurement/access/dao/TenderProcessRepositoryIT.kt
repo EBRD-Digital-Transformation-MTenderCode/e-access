@@ -10,7 +10,7 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -33,7 +33,7 @@ class TenderProcessRepositoryIT {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
         private val STAGE = Stage.PN
         private val TOKEN = UUID.randomUUID()
-        private val DATE = LocalDateTime.now().toDate()
+        private val DATE = LocalDateTime.now()
 
         private val RANDOM_UUID = UUID.randomUUID()
 

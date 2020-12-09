@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.cn.update
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.dto.cn.UpdateSelectiveCnRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.UpdateSelectiveCnRequest
 import org.junit.jupiter.api.Test
 
 class UpdateSelectiveCnRequestTest : AbstractDTOTestBase<UpdateSelectiveCnRequest>(UpdateSelectiveCnRequest::class.java) {

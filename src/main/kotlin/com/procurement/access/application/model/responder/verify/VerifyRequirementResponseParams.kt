@@ -14,8 +14,8 @@ import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.domain.model.requirement.tryToRequirementId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
 import java.time.LocalDateTime
 
 class VerifyRequirementResponse {
@@ -39,13 +39,13 @@ class VerifyRequirementResponse {
             ): Result<Params, DataErrors> {
 
                 val parsedCpid = parseCpid(value = cpid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val parsedOcid = parseOcid(value = ocid)
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 val parsedRequirementId = requirementId.tryToRequirementId()
-                    .orForwardFail { error -> return error }
+                    .onFailure { error -> return error }
 
                 return Result.success(
                     Params(
@@ -172,8 +172,7 @@ class VerifyRequirementResponse {
                         ): Result<Period, DataErrors> {
 
                             val startDateParsed = parseStartDate(startDate)
-                                .doOnError { error -> return failure(error) }
-                                .get
+                                .onFailure { return it }
 
                             return Result.success(
                                 Period(startDate = startDateParsed)

@@ -1,9 +1,12 @@
 package com.procurement.access.infrastructure.handler
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.procurement.access.domain.util.Action
+import com.procurement.access.infrastructure.api.Action
+import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 
-interface Handler<T : Action, R: Any> {
-    val action: T
-    fun handle(node: JsonNode): R
+interface Handler<R : Any> {
+    val version: ApiVersion
+    val action: Action
+
+    fun handle(descriptor: CommandDescriptor): R
 }

@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.criteria
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.create.CreateCriteriaForProcuringEntityResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateCriteriaForProcuringEntityResult
 import org.junit.jupiter.api.Test
 
 class CreateCriteriaForProcuringEntityResultTest : AbstractDTOTestBase<CreateCriteriaForProcuringEntityResult>(

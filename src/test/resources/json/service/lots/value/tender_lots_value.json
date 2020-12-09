@@ -1,0 +1,20 @@
+{
+  "tender": {
+    "lots": [
+      {
+        "id": "801d927c-1477-4aca-b545-b5afce3326e6",
+        "value": {
+          "amount": 0.00,
+          "currency": "currency"
+        }
+      },
+      {
+        "id": "3456a5dc-e8c1-48eb-88f7-e03c5161fb0f",
+        "value": {
+          "amount": 1.00,
+          "currency": "currency"
+        }
+      }
+    ]
+  }
+}

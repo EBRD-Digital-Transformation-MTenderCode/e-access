@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.tender.process
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.create.relation.CreateRelationToOtherProcessRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.CreateRelationToOtherProcessRequest
 import org.junit.jupiter.api.Test
 
 class CreateRelationToOtherProcessRequestTest : AbstractDTOTestBase<CreateRelationToOtherProcessRequest>(
@@ -11,5 +11,10 @@ class CreateRelationToOtherProcessRequestTest : AbstractDTOTestBase<CreateRelati
     @Test
     fun fully() {
         testBindingAndMapping(pathToJsonFile = "json/dto/create/relation/create_relation_to_other_process_request_full.json")
+    }
+
+    @Test
+    fun required() {
+        testBindingAndMapping(pathToJsonFile = "json/dto/create/relation/create_relation_to_other_process_request_required.json")
     }
 }

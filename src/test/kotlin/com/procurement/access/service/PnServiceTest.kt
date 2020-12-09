@@ -11,13 +11,22 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.util.extension.asString
+import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.pn.PnCreateRequest
-import com.procurement.access.infrastructure.dto.pn.PnCreateResponse
-import com.procurement.access.infrastructure.dto.pn.converter.convert
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
+import com.procurement.access.infrastructure.api.v1.country
+import com.procurement.access.infrastructure.api.v1.owner
+import com.procurement.access.infrastructure.api.v1.pmd
+import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
+import com.procurement.access.infrastructure.handler.v1.converter.convert
+import com.procurement.access.infrastructure.handler.v1.model.request.PnCreateRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.PnCreateResponse
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -31,14 +40,6 @@ import com.procurement.access.json.setAttribute
 import com.procurement.access.json.testingBindingAndMapping
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
-import com.procurement.access.model.dto.bpe.country
-import com.procurement.access.model.dto.bpe.owner
-import com.procurement.access.model.dto.bpe.pmd
-import com.procurement.access.model.dto.bpe.stage
-import com.procurement.access.model.dto.bpe.startDate
-import com.procurement.access.model.dto.databinding.JsonDateTimeFormatter
 import com.procurement.access.utils.toObject
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -205,9 +206,7 @@ class PnServiceTest {
                                 .map { lot ->
                                     lot.getObject("contractPeriod").getString("startDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .min()!!
                         }
                     val budgetBreakdownPeriodEndDate = minStartDateOfContractPeriod.minusDays(1)
@@ -215,7 +214,7 @@ class PnServiceTest {
                         .getArray("budgetBreakdown")
                         .getObject(0)
                         .getObject("period")
-                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                        .putAttribute("endDate", budgetBreakdownPeriodEndDate.asString())
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
@@ -235,9 +234,7 @@ class PnServiceTest {
                             .map { lot ->
                                 lot.getObject("contractPeriod").getString("endDate").asText()
                             }
-                            .map {
-                                LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                            }
+                            .map { it.toLocalDateTime().orThrow { it.reason } }
                             .max()!!
                     }
                     val budgetBreakdownPeriodStartDate = maxStartDateOfContractPeriod.plusDays(1)
@@ -248,11 +245,11 @@ class PnServiceTest {
                         .getObject("period") {
                             putAttribute(
                                 "startDate",
-                                budgetBreakdownPeriodStartDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodStartDate.asString()
                             )
                             putAttribute(
                                 "endDate",
-                                budgetBreakdownPeriodEndDate.format(JsonDateTimeFormatter.formatter)
+                                budgetBreakdownPeriodEndDate.asString()
                             )
                         }
 
@@ -324,9 +321,7 @@ class PnServiceTest {
                                 .map {
                                     it.getObject("contractPeriod").getString("startDate").asText()
                                 }
-                                .map {
-                                    LocalDateTime.parse(it, JsonDateTimeFormatter.formatter)
-                                }
+                                .map { it.toLocalDateTime().orThrow { it.reason } }
                                 .min()!!
                         }
 
@@ -338,7 +333,7 @@ class PnServiceTest {
                     }
 
                     requestNode.getObject("tender", "tenderPeriod")
-                        .setAttribute("startDate", tenderPeriodEndDate.format(JsonDateTimeFormatter.formatter))
+                        .setAttribute("startDate", tenderPeriodEndDate.asString())
 
                     val cm = commandMessage(pmd = pmd.name, data = requestNode)
                     val payload = getCreatePnPayload(cm)
@@ -597,7 +592,7 @@ class PnServiceTest {
             operationId = "124124"
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.CREATE_PN,
+            command = CommandTypeV1.CREATE_PN,
             context = context,
             data = data
         )

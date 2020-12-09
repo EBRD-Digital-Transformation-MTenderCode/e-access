@@ -6,8 +6,8 @@ import com.procurement.access.application.model.criteria.RequirementId
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.criteria.ConversionRequest
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.handler.v1.model.request.ConversionRequest
 
 fun buildConversion(
     conversion: ConversionRequest,

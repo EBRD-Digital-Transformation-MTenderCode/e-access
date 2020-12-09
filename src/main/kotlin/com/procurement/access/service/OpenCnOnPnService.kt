@@ -20,6 +20,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
@@ -35,16 +36,14 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.ITEM_ID_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.OpenCnOnPnResponse
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
-import com.procurement.access.lib.toSetBy
-import com.procurement.access.lib.uniqueBy
+import com.procurement.access.lib.extension.isUnique
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -213,7 +212,7 @@ class OpenCnOnPnService(
 
             /** Begin check Documents*/
             //VR-3.8.17(CN on PN)  "Related Lots"(documents) -> VR-3.7.13(Update CNEntity)
-            val lotsIdsFromPN = pnEntity.tender.lots.toSetBy { it.id }
+            val lotsIdsFromPN = pnEntity.tender.lots.toSet { it.id }
             checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
                 lotsIdsFromPN = lotsIdsFromPN,
                 documentsFromRequest = data.tender.documents
@@ -252,7 +251,7 @@ class OpenCnOnPnService(
                 token = tenderProcessEntity.token,
                 stage = context.stage,
                 owner = tenderProcessEntity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(cnEntity)
             )
         )
@@ -306,11 +305,11 @@ class OpenCnOnPnService(
         documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
-        val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSetBy { it.id }
+        val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSet { it.id }
         if (uniqueIdsDocumentsFromRequest.size != documentsFromRequest.size)
             throw ErrorException(INVALID_DOCS_ID)
 
-        documentsFromPN?.toSetBy { it.id }
+        documentsFromPN?.toSet { it.id }
             ?.forEach { id ->
                 if (id !in uniqueIdsDocumentsFromRequest) {
                     throw ErrorException(
@@ -418,7 +417,7 @@ class OpenCnOnPnService(
                     error = INVALID_PROCURING_ENTITY,
                     message = "At least one businessFunctions detalization should be added. "
                 )
-                if (businessfunctions.toSetBy { it.id }.size != businessfunctions.size) throw ErrorException(
+                if (businessfunctions.toSet { it.id }.size != businessfunctions.size) throw ErrorException(
                     error = INVALID_PROCURING_ENTITY,
                     message = "businessFunctions objects should be unique in every Person from Request. "
                 )
@@ -711,7 +710,7 @@ class OpenCnOnPnService(
         if (lotsIdsFromRequest.isEmpty())
             throw ErrorException(ErrorType.EMPTY_LOTS)
 
-        val itemsRelatedLots: Set<String> = itemsFromRequest.toSetBy { it.relatedLot }
+        val itemsRelatedLots: Set<String> = itemsFromRequest.toSet { it.relatedLot }
         lotsIdsFromRequest.forEach { lotId ->
             if (lotId !in itemsRelatedLots)
                 throw ErrorException(
@@ -750,7 +749,7 @@ class OpenCnOnPnService(
      * ELSE eAccess throws Exception;
      */
     private fun checkLotIdFromRequest(lotsFromRequest: List<OpenCnOnPnRequest.Tender.Lot>) {
-        val idsAreUniques = lotsFromRequest.uniqueBy { it.id }
+        val idsAreUniques = lotsFromRequest.isUnique { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(LOT_ID_DUPLICATED)
     }
@@ -764,7 +763,7 @@ class OpenCnOnPnService(
      * ELSE eAccess throws Exception;
      */
     private fun checkItemIdFromRequest(itemsFromRequest: List<OpenCnOnPnRequest.Tender.Item>) {
-        val idsAreUniques = itemsFromRequest.uniqueBy { it.id }
+        val idsAreUniques = itemsFromRequest.isUnique { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ITEM_ID_DUPLICATED)
     }

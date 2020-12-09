@@ -27,7 +27,6 @@ import com.procurement.access.model.dto.ocds.OrganizationReference
 import com.procurement.access.model.dto.ocds.Period
 import com.procurement.access.model.dto.ocds.ProcedureOutsourcing
 import com.procurement.access.model.dto.ocds.Value
-import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PinTender @JsonCreator constructor(
@@ -86,13 +85,13 @@ data class PinTender @JsonCreator constructor(
 
     var lots: List<PinLot>?,
 
-    val items: HashSet<Item>?,
+    val items: List<Item>?,
 
     val awardCriteria: AwardCriteria,
 
     @field:JsonDeserialize(using = BooleansDeserializer::class)
-        @get:JsonProperty("requiresElectronicCatalogue")
-        val requiresElectronicCatalogue: Boolean?,
+    @get:JsonProperty("requiresElectronicCatalogue")
+    val requiresElectronicCatalogue: Boolean?,
 
     val submissionMethod: List<SubmissionMethod>,
 

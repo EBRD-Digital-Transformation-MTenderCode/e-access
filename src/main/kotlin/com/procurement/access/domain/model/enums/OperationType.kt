@@ -8,6 +8,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     AMEND_FE("amendFE"),
     APPLY_QUALIFICATION_PROTOCOL("applyQualificationProtocol"),
     COMPLETE_QUALIFICATION("completeQualification"),
+    CREATE_AWARD("createAward"),
     CREATE_CN("createCN"),
     CREATE_CN_ON_PIN("createCNonPIN"),
     CREATE_CN_ON_PN("createCNonPN"),
@@ -27,6 +28,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     SUBMISSION_PERIOD_END("submissionPeriodEnd"),
     TENDER_PERIOD_END("tenderPeriodEnd"),
     UPDATE_AP("updateAP"),
+    UPDATE_AWARD("updateAward"),
     UPDATE_CN("updateCN"),
     UPDATE_PN("updatePN"),
     WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol");

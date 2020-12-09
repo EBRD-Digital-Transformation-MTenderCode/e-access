@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.lot
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.SetStateForLotsRequest
 import org.junit.jupiter.api.Test
 
 class SetStateForLotsRequestTest : AbstractDTOTestBase<SetStateForLotsRequest>(

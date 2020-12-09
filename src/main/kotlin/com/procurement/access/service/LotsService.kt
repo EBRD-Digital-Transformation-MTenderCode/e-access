@@ -2,52 +2,71 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
+import com.procurement.access.application.model.params.CheckLotsStateParams
+import com.procurement.access.application.model.params.GetLotsValueParams
+import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.fail.Fail
+import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
+import com.procurement.access.domain.rule.LotStatesRule
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.bpe.pmd
-import com.procurement.access.model.dto.bpe.stage
-import com.procurement.access.model.dto.lots.ActivationAcLot
-import com.procurement.access.model.dto.lots.ActivationAcRq
-import com.procurement.access.model.dto.lots.ActivationAcRs
-import com.procurement.access.model.dto.lots.ActivationAcTender
-import com.procurement.access.model.dto.lots.CanCancellationLot
-import com.procurement.access.model.dto.lots.CanCancellationRq
-import com.procurement.access.model.dto.lots.CanCancellationRs
-import com.procurement.access.model.dto.lots.FinalLot
-import com.procurement.access.model.dto.lots.FinalStatusesRq
-import com.procurement.access.model.dto.lots.FinalStatusesRs
-import com.procurement.access.model.dto.lots.FinalTender
-import com.procurement.access.model.dto.lots.GetItemsByLotRs
-import com.procurement.access.model.dto.lots.ItemDto
-import com.procurement.access.model.dto.lots.UpdateLotByBidRq
-import com.procurement.access.model.dto.lots.UpdateLotByBidRs
-import com.procurement.access.model.dto.lots.UpdateLotsRq
-import com.procurement.access.model.dto.lots.UpdateLotsRs
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.api.v1.pmd
+import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.entity.TenderLotValueInfo
+import com.procurement.access.infrastructure.entity.TenderLotsInfo
+import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcLot
+import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRq
+import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRs
+import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcTender
+import com.procurement.access.infrastructure.handler.v1.model.request.CanCancellationLot
+import com.procurement.access.infrastructure.handler.v1.model.request.CanCancellationRq
+import com.procurement.access.infrastructure.handler.v1.model.request.CanCancellationRs
+import com.procurement.access.infrastructure.handler.v1.model.request.FinalLot
+import com.procurement.access.infrastructure.handler.v1.model.request.FinalStatusesRq
+import com.procurement.access.infrastructure.handler.v1.model.request.FinalStatusesRs
+import com.procurement.access.infrastructure.handler.v1.model.request.FinalTender
+import com.procurement.access.infrastructure.handler.v1.model.request.ItemDto
+import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotByBidRq
+import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotByBidRs
+import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRq
+import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRs
+import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsByLotRs
+import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
+import com.procurement.access.lib.extension.getUnknownElements
+import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
+import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.asMoney
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
+import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
-class LotsService(private val tenderProcessDao: TenderProcessDao) {
-
+class LotsService(private val tenderProcessDao: TenderProcessDao,
+                  private val tenderProcessRepository: TenderProcessRepository,
+                  private val rulesService: RulesService
+) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
@@ -89,7 +108,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
@@ -101,7 +120,9 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(
+        return ApiResponseV1.Success(
+            version = cm.version,
+            id = cm.commandId,
             data = UpdateLotsRs(
                 tenderStatus = process.tender.status,
                 tenderStatusDetails = process.tender.statusDetails,
@@ -111,7 +132,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    fun setLotsStatusDetailsAwarded(cm: CommandMessage): ResponseDto {
+    fun setLotsStatusDetailsAwarded(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dto = toObject(UpdateLotByBidRq::class.java, cm.data)
@@ -126,10 +147,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val updatedLot = setLotsStatusDetails(process.tender.lots, dto.lotId, statusDetails)
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(data = UpdateLotByBidRs(updatedLot))
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = UpdateLotByBidRs(updatedLot))
     }
 
-    fun setFinalStatuses(cm: CommandMessage): ResponseDto {
+    fun setFinalStatuses(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val dto = toObject(FinalStatusesRq::class.java, cm.data)
@@ -171,7 +192,9 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         } else {
             val completeLot = lots.asSequence().firstOrNull { it.status == LotStatus.COMPLETE }
             if (completeLot != null) {
-                if (lots.asSequence().filter { it.id != completeLot.id }.all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED || it.status == LotStatus.COMPLETE }) {
+                if (lots.asSequence()
+                        .filter { it.id != completeLot.id }
+                        .all { it.status == LotStatus.UNSUCCESSFUL || it.status == LotStatus.CANCELLED || it.status == LotStatus.COMPLETE }) {
                     process.tender.apply {
                         status = TenderStatus.COMPLETE
                         statusDetails = TenderStatusDetails.EMPTY
@@ -189,7 +212,9 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
                 status = process.tender.status,
                 statusDetails = process.tender.statusDetails
             )
-        return ResponseDto(
+        return ApiResponseV1.Success(
+            version = cm.version,
+            id = cm.commandId,
             data = FinalStatusesRs(
                 stageEnd = stageEnd,
                 cpSuccess = cpSuccess,
@@ -201,7 +226,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    fun setLotInitialStatus(cm: CommandMessage): ResponseDto {
+    fun setLotInitialStatus(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.stage
         val dto = toObject(CanCancellationRq::class.java, cm.data)
@@ -215,7 +240,9 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(
+        return ApiResponseV1.Success(
+            version = cm.version,
+            id = cm.commandId,
             data = CanCancellationRs(
                 lot = CanCancellationLot(
                     id = lot.id,
@@ -226,7 +253,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         )
     }
 
-    fun getItemsByLot(cm: CommandMessage): ResponseDto {
+    fun getItemsByLot(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val lotId = cm.context.id ?: throw ErrorException(CONTEXT)
@@ -235,10 +262,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val items = process.tender.items.filter { it.relatedLot == lotId }
             .map { ItemDto(id = it.id) }
-        return ResponseDto(data = GetItemsByLotRs(items = items))
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = GetItemsByLotRs(items = items))
     }
 
-    fun completeLots(cm: CommandMessage): ResponseDto {
+    fun completeLots(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val stage = when (cm.pmd) {
             ProcurementMethod.OT, ProcurementMethod.TEST_OT,
@@ -288,7 +315,9 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
         }
         entity.jsonData = toJson(process)
         tenderProcessDao.save(entity)
-        return ResponseDto(
+        return ApiResponseV1.Success(
+            version = cm.version,
+            id = cm.commandId,
             data = ActivationAcRs(
                 tender = ActivationAcTender(
                     status = process.tender.status,
@@ -308,7 +337,7 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
 
     private fun setLotsStatusDetails(lots: List<Lot>, updateLotsDto: UpdateLotsRq, statusDetails: LotStatusDetails) {
         if (lots.isEmpty()) throw ErrorException(NO_ACTIVE_LOTS)
-        val lotsIds = updateLotsDto.unsuccessfulLots?.asSequence()?.map { it.id }?.toHashSet() ?: HashSet()
+        val lotsIds = updateLotsDto.unsuccessfulLots?.toSet { it.id } ?: emptySet()
         lots.forEach { lot ->
             if (lot.id in lotsIds) lot.statusDetails = statusDetails
         }
@@ -320,4 +349,76 @@ class LotsService(private val tenderProcessDao: TenderProcessDao) {
             .first()
             .apply { statusDetails = lotStatusDetails }
     }
+
+    fun getLotsValue(params: GetLotsValueParams): Result<GetLotsValueResult, Fail> {
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { return it }
+            ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
+
+        val tenderProcess = tenderProcessEntity.jsonData
+            .tryToObject(TenderLotValueInfo::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
+
+        val storedLotsById = tenderProcess.tender.lots.orEmpty().associateBy { it.id }
+        val receivedLotsIds = params.tender.lots.toSet { it.id.toString() }
+
+        val unknownLots = getUnknownElements(received = receivedLotsIds, known = storedLotsById.keys)
+        if (unknownLots.isNotEmpty())
+            return ValidationErrors.LotNotFoundOnGetLotsValue(unknownLots).asFailure()
+
+        return receivedLotsIds
+            .map { id -> storedLotsById.getValue(id).toResult() }
+            .let { lots -> GetLotsValueResult(GetLotsValueResult.Tender(lots)) }
+            .asSuccess()
+    }
+
+
+    fun checkLotsState(params: CheckLotsStateParams): ValidationResult<Fail> {
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { return it.reason.asValidationFailure() }
+            ?: return ValidationErrors.TenderNotFoundOnCheckLotsState(cpid = params.cpid, ocid = params.ocid)
+                .asValidationFailure()
+
+        val tenderProcess = tenderProcessEntity.jsonData
+            .tryToObject(TenderLotsInfo::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val storedLotsById = tenderProcess.tender.lots.orEmpty().associateBy { it.id }
+        val receivedLotsIds = params.tender.lots.toSet { it.id }
+
+        val validStates = rulesService.getValidLotStates(params.country, params.pmd, params.operationType)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        receivedLotsIds.forEach { id ->
+            val storedLot = storedLotsById[id.toString()]
+                ?: return ValidationErrors.LotNotFoundOnCheckLotsState(id).asValidationFailure()
+            checkLotState(storedLot, validStates)
+                .doOnError { return it.asValidationFailure() }
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun TenderLotValueInfo.Tender.Lot.toResult() =
+        GetLotsValueResult.Tender.Lot(
+            id = id,
+            value = value.let { value ->
+                GetLotsValueResult.Tender.Lot.Value(
+                    amount = value.amount,
+                    currency = value.currency
+                )
+            }
+        )
+
+    private fun checkLotState(lot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): ValidationResult<ValidationErrors> =
+        if (lotStateIsValid(lot, validStates))
+            ValidationResult.ok()
+        else ValidationErrors.InvalidLotState(lot.id).asValidationFailure()
+
+    private fun lotStateIsValid(storedLot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): Boolean =
+        validStates.any { validState ->
+            storedLot.status == validState.status
+                && validState.statusDetails?.equals(storedLot.statusDetails) ?: true
+        }
 }

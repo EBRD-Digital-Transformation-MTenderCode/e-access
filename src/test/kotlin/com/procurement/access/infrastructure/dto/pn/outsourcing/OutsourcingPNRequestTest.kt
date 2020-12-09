@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.pn.outsourcing
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.pn.OutsourcingPNRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.OutsourcingPNRequest
 import org.junit.jupiter.api.Test
 
 class OutsourcingPNRequestTest : AbstractDTOTestBase<OutsourcingPNRequest>(OutsourcingPNRequest::class.java) {
