@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.ap.update
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
+import com.procurement.access.infrastructure.handler.v1.model.request.ApUpdateRequest
 import org.junit.jupiter.api.Test
 
 class UpdateApRequestTest : AbstractDTOTestBase<ApUpdateRequest>(ApUpdateRequest::class.java) {

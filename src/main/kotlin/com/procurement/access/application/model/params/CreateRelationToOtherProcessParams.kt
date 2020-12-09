@@ -2,16 +2,19 @@ package com.procurement.access.application.model.params
 
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseEnum
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.success
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.success
 
 class CreateRelationToOtherProcessParams(
     val cpid: Cpid,
     val ocid: String,
     val relatedCpid: Cpid,
+    val relatedOcid: Ocid?,
     val operationType: OperationType
 ) {
 
@@ -20,6 +23,7 @@ class CreateRelationToOtherProcessParams(
         val allowedOperationType = OperationType.allowedElements
             .filter {
                 when (it) {
+                    OperationType.CREATE_PCR,
                     OperationType.OUTSOURCING_PN,
                     OperationType.RELATION_AP -> true
 
@@ -31,7 +35,6 @@ class CreateRelationToOtherProcessParams(
                     OperationType.CREATE_CN_ON_PN,
                     OperationType.CREATE_FE,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-                    OperationType.CREATE_PCR,
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
@@ -43,9 +46,11 @@ class CreateRelationToOtherProcessParams(
                     OperationType.SUBMISSION_PERIOD_END,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,
+                    OperationType.UPDATE_AWARD,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
-                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
+                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
+                    OperationType.CREATE_AWARD-> false
                 }
             }
             .toSet()
@@ -54,13 +59,19 @@ class CreateRelationToOtherProcessParams(
             cpid: String,
             ocid: String,
             relatedCpid: String,
+            relatedOcid: String?,
             operationType: String
         ): Result<CreateRelationToOtherProcessParams, DataErrors.Validation> {
             val parsedCpid = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedRelationCpid = parseCpid(value = relatedCpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
+
+            val parsedRelationOcid = relatedOcid?.let {
+                parseOcid(value = relatedOcid)
+                    .onFailure { error -> return error }
+            }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
@@ -68,13 +79,14 @@ class CreateRelationToOtherProcessParams(
                 allowedEnums = allowedOperationType,
                 attributeName = "operationType"
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return success(
                 CreateRelationToOtherProcessParams(
                     cpid = parsedCpid,
                     ocid = ocid,
                     relatedCpid = parsedRelationCpid,
+                    relatedOcid = parsedRelationOcid,
                     operationType = parsedOperationType
                 )
             )

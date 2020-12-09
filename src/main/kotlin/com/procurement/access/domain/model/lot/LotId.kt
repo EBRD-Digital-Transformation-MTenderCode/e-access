@@ -1,7 +1,7 @@
 package com.procurement.access.domain.model.lot
 
 import com.procurement.access.domain.fail.Fail
-import com.procurement.access.domain.util.Result
+import com.procurement.access.lib.functional.Result
 import java.util.*
 
 typealias LotId = UUID

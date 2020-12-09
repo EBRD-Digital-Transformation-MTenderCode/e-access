@@ -8,8 +8,8 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class CheckTenderStateParams private constructor(
     val cpid: Cpid,
@@ -36,11 +36,13 @@ class CheckTenderStateParams private constructor(
                     OperationType.SUBMISSION_PERIOD_END,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,
+                    OperationType.UPDATE_AWARD,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN -> false
 
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.COMPLETE_QUALIFICATION,
+                    OperationType.CREATE_AWARD,
                     OperationType.CREATE_PCR,
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
@@ -61,13 +63,13 @@ class CheckTenderStateParams private constructor(
             operationType: String
         ): Result<CheckTenderStateParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val pmdParsed = ProcurementMethod.tryCreate(name = pmd)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val operationTypeParsed = parseEnum(
                 value = operationType,
@@ -75,7 +77,7 @@ class CheckTenderStateParams private constructor(
                 allowedEnums = allowedOperationType,
                 target = OperationType
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return CheckTenderStateParams(
                 cpid = cpidParsed,

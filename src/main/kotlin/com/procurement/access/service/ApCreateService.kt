@@ -13,7 +13,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
+
 import com.procurement.access.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,7 +42,7 @@ class ApCreateService(
                 token = token,
                 stage = contextRequest.stage,
                 owner = contextRequest.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = contextRequest.startDate,
                 jsonData = toJson(apEntity)
             )
         )
@@ -71,6 +71,24 @@ class ApCreateService(
         checkTenderPeriod(tenderPeriod = request.tender.tenderPeriod)
 
         checkContractPeriod(request.tender.contractPeriod, contextRequest)
+
+        // VR.COM-1.20.1
+        checkDocuments(request.tender.documents)
+    }
+
+    private fun checkDocuments(documents: List<ApCreateData.Tender.Document>) {
+        val docsIds = documents.map { it.id }
+
+        checkDocumentsIds(docsIds)
+    }
+
+    private fun checkDocumentsIds(ids: List<String>) {
+        val uniqIds = ids.toSet()
+        if (ids.size != uniqIds.size)
+            throw ErrorException(
+                error = ErrorType.NOT_UNIQUE_IDS,
+                message = "Tender documents contains duplicated ids."
+            )
     }
 
     /**

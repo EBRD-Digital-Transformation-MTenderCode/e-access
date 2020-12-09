@@ -12,11 +12,11 @@ import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.persone.PersonId
-import com.procurement.access.domain.util.None
-import com.procurement.access.domain.util.Option
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Some
+import com.procurement.access.lib.functional.None
+import com.procurement.access.lib.functional.Option
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Some
 import java.time.LocalDateTime
 
 class CheckPersonesStructure {
@@ -44,12 +44,10 @@ class CheckPersonesStructure {
             ): Result<Params, DataErrors> {
 
                 val parsedCpid = parseCpid(value = cpid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val parsedOcid = parseOcid(value = ocid)
-                    .doOnError { error -> return failure(error) }
-                    .get
+                    .onFailure { return it }
 
                 val parsedLocationOfPersones = locationOfPersones
                     .let {
@@ -96,7 +94,7 @@ class CheckPersonesStructure {
                     return Result.success(
                         Person(
                             id = PersonId.tryCreate(id)
-                                .orForwardFail { return it },
+                                .onFailure { return it },
                             title = title,
                             name = name,
                             identifier = identifier,
@@ -195,8 +193,7 @@ class CheckPersonesStructure {
                         ): Result<Period, DataErrors> {
 
                             val startDateParsed = parseStartDate(startDate)
-                                .doOnError { error -> return failure(error) }
-                                .get
+                                .onFailure { return it }
 
                             return Result.success(
                                 Period(startDate = startDateParsed)

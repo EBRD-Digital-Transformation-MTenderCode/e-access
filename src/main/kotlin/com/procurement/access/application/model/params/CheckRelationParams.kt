@@ -7,8 +7,8 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class CheckRelationParams private constructor(
     val cpid: Cpid,
@@ -26,6 +26,7 @@ class CheckRelationParams private constructor(
                     OperationType.AMEND_FE,
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.COMPLETE_QUALIFICATION,
+                    OperationType.CREATE_AWARD,
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
@@ -44,6 +45,7 @@ class CheckRelationParams private constructor(
                     OperationType.SUBMISSION_PERIOD_END,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,
+                    OperationType.UPDATE_AWARD,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
                     OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
@@ -59,13 +61,13 @@ class CheckRelationParams private constructor(
             existenceRelation: Boolean
         ): Result<CheckRelationParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val relatedCpidParsed = parseCpid(value = relatedCpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
@@ -73,7 +75,7 @@ class CheckRelationParams private constructor(
                 allowedEnums = allowedOperationType,
                 attributeName = "operationType"
             )
-                .orForwardFail { fail -> return fail }
+                .onFailure { fail -> return fail }
 
             return CheckRelationParams(
                 cpid = cpidParsed,

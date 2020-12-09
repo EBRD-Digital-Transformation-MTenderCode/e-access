@@ -3,9 +3,9 @@ package com.procurement.access.domain.model.persone
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.fail.error.DataErrors
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.failure
-import com.procurement.access.domain.util.Result.Companion.success
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
+import com.procurement.access.lib.functional.Result.Companion.success
 
 class PersonId private constructor(private val value: String) {
 

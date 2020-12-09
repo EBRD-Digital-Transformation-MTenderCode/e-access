@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.fa.check
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.check.fa.CheckExistenceFARequest
+import com.procurement.access.infrastructure.handler.v2.model.request.CheckExistenceFARequest
 import org.junit.jupiter.api.Test
 
 class CheckExistenceFARequestTest

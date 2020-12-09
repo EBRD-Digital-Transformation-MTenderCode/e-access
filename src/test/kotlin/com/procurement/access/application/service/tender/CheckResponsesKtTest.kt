@@ -3,11 +3,11 @@ package com.procurement.access.application.service.tender
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.requirement.ExpectedValue
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.cn.criteria.ExpectedValue
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals

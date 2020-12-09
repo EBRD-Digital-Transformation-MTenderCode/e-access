@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.cn.update
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
+import com.procurement.access.infrastructure.handler.v1.model.response.UpdateOpenCnResponse
 import org.junit.jupiter.api.Test
 
 class UpdateOpenCnResponseTest : AbstractDTOTestBase<UpdateOpenCnResponse>(UpdateOpenCnResponse::class.java) {

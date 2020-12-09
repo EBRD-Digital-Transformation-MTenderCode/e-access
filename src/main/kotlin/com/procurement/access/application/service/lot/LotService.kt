@@ -15,26 +15,25 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.TemporalLotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.money.Money
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.Result.Companion.success
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
-import com.procurement.access.domain.util.extension.getUnknownElements
-import com.procurement.access.domain.util.extension.mapResult
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
-import com.procurement.access.infrastructure.dto.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.infrastructure.handler.get.lotStateByIds.GetLotStateByIdsResult
-import com.procurement.access.infrastructure.handler.set.stateforlots.SetStateForLotsResult
-import com.procurement.access.lib.orThrow
-import com.procurement.access.lib.toSetBy
+import com.procurement.access.infrastructure.handler.v1.converter.convertToSetStateForLotsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetLotStateByIdsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
+import com.procurement.access.lib.extension.getUnknownElements
+import com.procurement.access.lib.extension.mapResult
+import com.procurement.access.lib.extension.orThrow
+import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
@@ -66,13 +65,13 @@ class LotServiceImpl(
     override fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail> {
         val tenderProcessEntity = tenderProcessRepository
             .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
-            .doReturn { error -> return Result.failure(error) }
+            .onFailure { return it }
             ?: return Result.failure(
                 ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
             )
 
         val receivedLotsIds = params.lots
-            .toSetBy { it.id.toString() }
+            .toSet { it.id.toString() }
 
         val result = when (params.ocid.stage) {
             Stage.EV,
@@ -80,10 +79,13 @@ class LotServiceImpl(
             Stage.TP -> {
                 val cn = tenderProcessEntity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure {
+                        Fail.Incident.DatabaseIncident(exception = it.exception)
+                    }
+                    .onFailure { return it }
 
                 val dbLotsIds: Set<String> = cn.tender.lots
-                    .toSetBy { it.id }
+                    .toSet { it.id }
 
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
@@ -123,7 +125,7 @@ class LotServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedCNEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
             }
@@ -131,12 +133,15 @@ class LotServiceImpl(
             Stage.AP -> {
                 val ap = tenderProcessEntity.jsonData
                     .tryToObject(APEntity::class.java)
-                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure {
+                        Fail.Incident.DatabaseIncident(exception = it.exception)
+                    }
+                    .onFailure { return it }
 
                 val storedLots = ap.tender.lots.orEmpty()
 
                 val dbLotsIds: Set<String> = storedLots
-                    .toSetBy { it.id }
+                    .toSet { it.id }
 
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
@@ -176,7 +181,7 @@ class LotServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedAPEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
             }
@@ -184,10 +189,11 @@ class LotServiceImpl(
             Stage.PN -> {
                 val pn = tenderProcessEntity.jsonData
                     .tryToObject(PNEntity::class.java)
-                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val dbLotsIds: Set<String> = pn.tender.lots
-                    .toSetBy { it.id }
+                    .toSet { it.id }
 
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
@@ -227,7 +233,7 @@ class LotServiceImpl(
                 val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedPNEntity))
 
                 tenderProcessRepository.save(updatedTenderProcessEntity)
-                    .orForwardFail { incident -> return incident }
+                    .onFailure { incident -> return incident }
 
                 resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
             }
@@ -241,7 +247,7 @@ class LotServiceImpl(
                     ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return success(result)
     }
@@ -252,22 +258,21 @@ class LotServiceImpl(
             cpid = params.cpid,
             stage = params.ocid.stage
         )
-            .doOnError { error -> return Result.failure(error) }
-            .get
+            .onFailure { return it }
             ?: return Result.failure(
                 ValidationErrors.TenderNotFoundGetLotStateByIds(cpid = params.cpid, ocid = params.ocid)
             )
 
         val tenderProcess = tenderProcessEntity.jsonData
             .tryToObject(TenderProcess::class.java)
-            .doOnError { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
-            .get
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
 
-        val receivedLotIds = params.lotIds.toSetBy { it.toString() }
+        val receivedLotIds = params.lotIds.toSet { it.toString() }
 
         val filteredLots = tenderProcess.tender.lots.filter { lot -> receivedLotIds.contains(lot.id) }
 
-        val knownLots = filteredLots.toSetBy { it.id }
+        val knownLots = filteredLots.toSet { it.id }
         val unknownLots = receivedLotIds - knownLots
         if (unknownLots.isNotEmpty())
             return ValidationErrors.LotsNotFoundGetLotStateByIds(unknownLots)
@@ -275,8 +280,7 @@ class LotServiceImpl(
 
         return filteredLots.map {
             it.convertToGetLotStateByIdsResult()
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
         }
             .asSuccess()
     }
@@ -286,7 +290,7 @@ class LotServiceImpl(
 
         val tenderProcessEntity = tenderProcessRepository
             .getByCpIdAndStage(cpid = params.cpid, stage = stage)
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
             ?: return emptyList<LotId>().asSuccess()
 
         val result = when (stage) {
@@ -295,7 +299,8 @@ class LotServiceImpl(
             Stage.TP -> {
                 val cn = tenderProcessEntity.jsonData
                     .tryToObject(CNEntity::class.java)
-                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val lotIds = when {
                     params.states.isEmpty() -> cn.tender.lots
@@ -313,7 +318,8 @@ class LotServiceImpl(
             Stage.AP -> {
                 val ap = tenderProcessEntity.jsonData
                     .tryToObject(APEntity::class.java)
-                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val lots = ap.tender.lots.orEmpty()
 
@@ -334,7 +340,8 @@ class LotServiceImpl(
             Stage.PN -> {
                 val pn = tenderProcessEntity.jsonData
                     .tryToObject(PNEntity::class.java)
-                    .doReturn { error -> return Result.failure(Fail.Incident.DatabaseIncident(exception = error.exception)) }
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
                 val lotIds = when {
                     params.states.isEmpty() -> pn.tender.lots
@@ -360,7 +367,7 @@ class LotServiceImpl(
                     ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
                 )
         }
-            .orForwardFail { error -> return error }
+            .onFailure { error -> return error }
 
         return success(result)
     }
@@ -469,6 +476,7 @@ class LotServiceImpl(
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_AWARD,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_FE,
@@ -487,6 +495,7 @@ class LotServiceImpl(
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
                 throw ErrorException(
@@ -505,7 +514,7 @@ class LotServiceImpl(
 
         val cn: CNEntity = toObject(CNEntity::class.java, entity.jsonData)
 
-        val idsUnsuccessfulLots: Set<LotId> = data.lots.toSetBy { it.id }
+        val idsUnsuccessfulLots: Set<LotId> = data.lots.toSet { it.id }
         val updatedLots: List<CNEntity.Tender.Lot> = cn.tender.lots.setUnsuccessfulStatus(ids = idsUnsuccessfulLots)
         val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
 
@@ -523,7 +532,7 @@ class LotServiceImpl(
                 token = entity.token,
                 stage = context.stage,
                 owner = entity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(updatedCN)
             )
         )
@@ -545,11 +554,8 @@ class LotServiceImpl(
     private fun Lot.convertToGetLotStateByIdsResult(): Result<GetLotStateByIdsResult, Fail> {
 
         val lotId = this.id.tryCreateLotId()
-            .doOnError { error ->
-                return Fail.Incident.DatabaseIncident(exception = error.exception)
-                    .asFailure()
-            }
-            .get
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
 
         return GetLotStateByIdsResult(
             id = lotId,

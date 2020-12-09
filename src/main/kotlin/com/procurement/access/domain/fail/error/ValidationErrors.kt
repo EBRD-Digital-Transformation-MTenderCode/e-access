@@ -11,12 +11,13 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.token.Token
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 
 sealed class ValidationErrors(
     numberError: String,
@@ -155,13 +156,14 @@ sealed class ValidationErrors(
             "by requirement responses: $requirementResponses "
     )
 
-    class TenderStatesNotFound(
+    class RulesNotFound(
+        parameter: String,
         country: String,
         pmd: ProcurementMethod,
         operationType: OperationType
     ) : ValidationErrors(
         numberError = "17",
-        description = "Tender states not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
+        description = "Parameter '$parameter' not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
     )
 
     class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid) : ValidationErrors(
@@ -199,6 +201,12 @@ sealed class ValidationErrors(
         numberError = "1.22.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class RelatedOcidIsAbsent() : ValidationErrors(
+        numberError = "1.22.2",
+        prefix = "VR.COM-",
+        description = "Parameter 'relatedOcid' hasn't been received."
     )
 
     class RelatedProcessNotExistsOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
@@ -242,6 +250,13 @@ sealed class ValidationErrors(
             prefix = "VR.COM-",
             numberError = "1.11.2",
             description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class TenderNotFoundForResponderProcessing(cpid: Cpid, stage: Stage) :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.4.1",
+            description = "Tender not found by cpid='$cpid' and stage='${stage.key}'."
         )
 
     class UnexpectedStageForResponderProcessing(stage: Stage) :
@@ -357,5 +372,32 @@ sealed class ValidationErrors(
         numberError = "1.37.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class TenderNotFoundOnGetLotsValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.38.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class LotNotFoundOnGetLotsValue(val lotIds: Set<String>) : ValidationErrors(
+        numberError = "1.38.2",
+        prefix = "VR.COM-",
+        description = "Lot(s) by id(s) '${lotIds.joinToString()}' not found."
+    )
+
+    class TenderNotFoundOnCheckLotsState(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        numberError = "1.36.1",
+        description = "Tender not found by cpid '$cpid' and '$ocid'."
+    )
+
+    class LotNotFoundOnCheckLotsState(val lotId: LotId) : ValidationErrors(
+        numberError = "1.36.2",
+        description = "Lot not found by id '$lotId'."
+    )
+
+    class InvalidLotState(val lotId: String) : ValidationErrors(
+        numberError = "1.36.3",
+        description = "State of lot'$lotId' is invalid."
     )
 }

@@ -7,7 +7,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
+import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
 data class CreateFEData(

@@ -1,19 +1,20 @@
 package com.procurement.access.model.entity
 
+import java.time.LocalDateTime
 import java.util.*
 
 
 data class TenderProcessEntity(
 
-        var cpId: String,
+    var cpId: String,
 
-        var token: UUID,
+    var token: UUID,
 
-        var owner: String,
+    var owner: String,
 
-        var stage: String,
+    var stage: String,
 
-        var createdDate: Date,
+    var createdDate: LocalDateTime,
 
-        var jsonData: String
+    var jsonData: String
 )

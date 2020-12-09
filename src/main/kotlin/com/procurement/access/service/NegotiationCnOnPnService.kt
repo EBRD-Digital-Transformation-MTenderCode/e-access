@@ -24,14 +24,13 @@ import com.procurement.access.exception.ErrorType.INVALID_TENDER_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
 import com.procurement.access.exception.ErrorType.ITEM_ID_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
-import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnRequest
-import com.procurement.access.infrastructure.dto.cn.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.lib.toSetBy
-import com.procurement.access.lib.uniqueBy
+import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
+import com.procurement.access.lib.extension.isUnique
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -164,7 +163,7 @@ class NegotiationCnOnPnService(
 
             /** Begin check Documents*/
             //VR-3.8.17(CN on PN)  "Related Lots"(documents) -> VR-3.7.13(Update CNEntity)
-            val lotsIdsFromPN = pnEntity.tender.lots.toSetBy { it.id }
+            val lotsIdsFromPN = pnEntity.tender.lots.toSet { it.id }
             checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
                 lotsIdsFromPN = lotsIdsFromPN,
                 documentsFromRequest = data.tender.documents
@@ -198,7 +197,7 @@ class NegotiationCnOnPnService(
                 token = tenderProcessEntity.token,
                 stage = context.stage,
                 owner = tenderProcessEntity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(cnEntity)
             )
         )
@@ -252,11 +251,11 @@ class NegotiationCnOnPnService(
         documentsFromRequest: List<NegotiationCnOnPnRequest.Tender.Document>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
-        val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSetBy { it.id }
+        val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSet { it.id }
         if (uniqueIdsDocumentsFromRequest.size != documentsFromRequest.size)
             throw ErrorException(INVALID_DOCS_ID)
 
-        documentsFromPN?.toSetBy { it.id }
+        documentsFromPN?.toSet { it.id }
             ?.forEach { id ->
                 if (id !in uniqueIdsDocumentsFromRequest) {
                     throw ErrorException(
@@ -463,7 +462,7 @@ class NegotiationCnOnPnService(
         if (lotsIdsFromRequest.isEmpty())
             throw ErrorException(ErrorType.EMPTY_LOTS)
 
-        val itemsRelatedLots: Set<String> = itemsFromRequest.toSetBy { it.relatedLot }
+        val itemsRelatedLots: Set<String> = itemsFromRequest.toSet { it.relatedLot }
         lotsIdsFromRequest.forEach { lotId ->
             if (lotId !in itemsRelatedLots)
                 throw ErrorException(
@@ -502,7 +501,7 @@ class NegotiationCnOnPnService(
      * ELSE eAccess throws Exception;
      */
     private fun checkLotIdFromRequest(lotsFromRequest: List<NegotiationCnOnPnRequest.Tender.Lot>) {
-        val idsAreUniques = lotsFromRequest.uniqueBy { it.id }
+        val idsAreUniques = lotsFromRequest.isUnique { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(LOT_ID_DUPLICATED)
     }
@@ -516,7 +515,7 @@ class NegotiationCnOnPnService(
      * ELSE eAccess throws Exception;
      */
     private fun checkItemIdFromRequest(itemsFromRequest: List<NegotiationCnOnPnRequest.Tender.Item>) {
-        val idsAreUniques = itemsFromRequest.uniqueBy { it.id }
+        val idsAreUniques = itemsFromRequest.isUnique { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ITEM_ID_DUPLICATED)
     }

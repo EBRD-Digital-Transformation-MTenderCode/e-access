@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.tender.find.auction
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.find.auction.FindAuctionsRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.FindAuctionsRequest
 import org.junit.jupiter.api.Test
 
 class FindAuctionsRequestTest :

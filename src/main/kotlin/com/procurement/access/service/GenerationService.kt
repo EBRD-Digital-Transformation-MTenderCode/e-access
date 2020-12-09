@@ -5,18 +5,18 @@ import com.procurement.access.application.model.Mode
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.domain.util.extension.nowDefaultUTC
+import com.procurement.access.domain.util.extension.toMilliseconds
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.OrganizationReference
-import com.procurement.access.utils.localNowUTC
-import com.procurement.access.utils.milliNowUTC
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class GenerationService {
 
-    fun getCpId(country: String, mode: Mode): String = mode.prefix + "-" + country + "-" + milliNowUTC()
+    fun getCpId(country: String, mode: Mode): String = mode.prefix + "-" + country + "-" + nowDefaultUTC().toMilliseconds()
 
     fun generatePermanentTenderId(): String {
         return UUID.randomUUID().toString()
@@ -67,7 +67,7 @@ class GenerationService {
         val stageParsed = Stage.orNull(stage)
             ?: throw ErrorException(ErrorType.INVALID_STAGE)
 
-        return Ocid.generate(cpid = cpidParsed, stage = stageParsed, timestamp = localNowUTC())
+        return Ocid.generate(cpid = cpidParsed, stage = stageParsed, timestamp = nowDefaultUTC())
     }
 
     fun criterionId(): String = UUID.randomUUID().toString()

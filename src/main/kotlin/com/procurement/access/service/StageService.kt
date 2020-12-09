@@ -1,14 +1,15 @@
 package com.procurement.access.service
 
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.commandId
 import org.springframework.stereotype.Service
 
 @Service
 class StageService(private val tenderProcessDao: TenderProcessDao) {
 
-    fun startNewStage(cm: CommandMessage): ResponseDto {
+    fun startNewStage(cm: CommandMessage): ApiResponseV1.Success {
 //        val cpId = cm.context.country ?: throw ErrorException(CONTEXT)
 //        val token = cm.context.pmd ?: throw ErrorException(CONTEXT)
 //        val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
@@ -32,7 +33,7 @@ class StageService(private val tenderProcessDao: TenderProcessDao) {
 //        tenderProcessDao.save(newEntity)
 //        process.token = newEntity.token.toString()
 //        return ResponseDto(true, null, process)
-        return ResponseDto(data = null)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = null)
     }
 //
 //    private fun isHaveActiveLots(lots: List<Lot>): Boolean {

@@ -15,9 +15,12 @@ import com.procurement.access.domain.model.update
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.lib.*
+import com.procurement.access.lib.extension.isUnique
+import com.procurement.access.lib.extension.mapOrEmpty
+import com.procurement.access.lib.extension.orThrow
+import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.takeIfNotNullOrDefault
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -53,7 +56,7 @@ class CNServiceImpl(
         val receivedLotsByIds: Map<LotId, UpdateOpenCnData.Tender.Lot> = data.tender.lots.associateBy { it.id }
         val savedLotsByIds: Map<LotId, CNEntity.Tender.Lot> = cn.tender.lots.associateBy { LotId.fromString(it.id) }
         val allLotsIds: Set<LotId> = receivedLotsByIds.keys + savedLotsByIds.keys
-        val documentsIds: Set<String> = cn.tender.documents.toSetBy { it.id }
+        val documentsIds: Set<String> = cn.tender.documents.toSet { it.id }
 
         data.checkDocuments(documentsIds) //VR-1.0.1.2.1, VR-1.0.1.2.2, VR-1.0.1.2.9
             .checkLotsValue(budgetCurrency = cn.planning.budget.amount.currency) //VR-1.0.1.4.2
@@ -161,7 +164,7 @@ class CNServiceImpl(
                 token = entity.token,
                 stage = context.stage,
                 owner = entity.owner,
-                createdDate = context.startDate.toDate(),
+                createdDate = context.startDate,
                 jsonData = toJson(updatedCN)
             )
         )
@@ -379,7 +382,7 @@ class CNServiceImpl(
             .toSet()
 
         val itemsRelatedLots: Set<LotId> = this.tender.items
-            .toSetBy { item ->
+            .toSet { item ->
                 item.relatedLot
             }
 
@@ -597,7 +600,7 @@ class CNServiceImpl(
      * b. ELSE eAccess throws Exception: "Persones objects should be unique in Request";
      */
     private fun UpdateOpenCnData.checkIdsPersons(): UpdateOpenCnData {
-        val isUnique = this.tender.procuringEntity?.persons?.uniqueBy {
+        val isUnique = this.tender.procuringEntity?.persons?.isUnique {
             Pair(it.identifier.scheme, it.identifier.id)
         } ?: true
 

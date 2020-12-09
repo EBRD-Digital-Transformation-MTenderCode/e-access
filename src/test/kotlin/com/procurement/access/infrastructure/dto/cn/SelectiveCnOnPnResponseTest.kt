@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.dto.cn
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
+import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
 import org.junit.jupiter.api.Test
 
 class SelectiveCnOnPnResponseTest : AbstractDTOTestBase<SelectiveCnOnPnResponse>(SelectiveCnOnPnResponse::class.java) {

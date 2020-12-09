@@ -7,9 +7,9 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 
 class GetLotStateByIdsParams private constructor(
     val lotIds: List<LotId>,
@@ -23,27 +23,22 @@ class GetLotStateByIdsParams private constructor(
             ocid: String
         ): Result<GetLotStateByIdsParams, DataErrors> {
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error ->
-                    return Result.failure(error)
-                }
-                .get
+                .onFailure { return it }
 
             val lotIdsResult = if (lotIds.isNotEmpty()) {
                 lotIds.map { lotId ->
                     lotId.tryCreateLotId()
-                        .doOnError {
-                            return DataErrors.Validation.DataFormatMismatch(
+                        .mapFailure {
+                            DataErrors.Validation.DataFormatMismatch(
                                 actualValue = lotId,
                                 name = "lotIds",
                                 expectedFormat = "uuid"
-                            ).asFailure()
+                            )
                         }
-                        .get
+                        .onFailure { return it }
+
                 }
             } else {
                 return DataErrors.Validation.EmptyArray(name = "lotIds")

@@ -17,15 +17,14 @@ import com.procurement.access.domain.model.money.Money
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.startDate
+import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.lib.toSetBy
-import com.procurement.access.lib.uniqueBy
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.testMode
+import com.procurement.access.lib.extension.isUnique
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
-import com.procurement.access.utils.toLocal
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -86,7 +85,7 @@ class PnService(
                 token = token,
                 stage = contextRequest.stage,
                 owner = contextRequest.owner,
-                createdDate = contextRequest.startDate.toDate(),
+                createdDate = contextRequest.startDate,
                 jsonData = toJson(pnEntity)
             )
         )
@@ -117,11 +116,11 @@ class PnService(
         val documents = request.tender.documents
 
         //VR-3.1.1
-        val isUniqueDocuments = documents.uniqueBy { it.id }
+        val isUniqueDocuments = documents.isUnique { it.id }
         if (!isUniqueDocuments) throw ErrorException(ErrorType.DOCUMENT_ID_DUPLICATED)
 
         val documentWithRelatedLots = documents.associate { it.id to it.relatedLots }
-        val receivedLotIds = request.tender.lots.toSetBy { it.id }
+        val receivedLotIds = request.tender.lots.toSet { it.id }
         checkDocumentsRelationWithLot(documentWithRelatedLots, receivedLotIds)
 
         //VR-3.6.1
@@ -166,6 +165,9 @@ class PnService(
 
             //VR-3.1.11 "Contract Period" (Lot)
             checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
+
+            //VR-3.1.18
+            checkAdditionalIdentifiersInProcuringEntity(request.tender.procuringEntity)
         }
     }
 
@@ -329,6 +331,12 @@ class PnService(
         }
     }
 
+    private fun checkAdditionalIdentifiersInProcuringEntity(procuringEntity: PnCreateData.Tender.ProcuringEntity) {
+        val isAdditionalIdentifiersUnique = procuringEntity.additionalIdentifiers.isUnique { Pair(it.scheme, it.id) }
+        if (!isAdditionalIdentifiersUnique)
+            throw ErrorException(ErrorType.INVALID_PROCURING_ENTITY, "Additional identifiers of procuring entity are duplicated")
+    }
+
     private fun checkRangeContractPeriodInLot(lot: PnCreateData.Tender.Lot) {
         if (lot.contractPeriod.startDate >= lot.contractPeriod.endDate)
             throw ErrorException(ErrorType.INVALID_LOT_CONTRACT_PERIOD)
@@ -360,8 +368,8 @@ class PnService(
         if (lots.isEmpty())
             throw ErrorException(ErrorType.EMPTY_LOTS)
 
-        val lotsIds = lots.toSetBy { it.id }
-        val itemsRelatedLots: Set<String> = items.toSetBy { it.relatedLot }
+        val lotsIds = lots.toSet { it.id }
+        val itemsRelatedLots: Set<String> = items.toSet { it.relatedLot }
         lotsIds.forEach { lotId ->
             if (lotId !in itemsRelatedLots)
                 throw ErrorException(
@@ -411,7 +419,7 @@ class PnService(
      * ELSE eAccess throws Exception;
      */
     private fun checkLotIdFromRequest(lots: List<PnCreateData.Tender.Lot>) {
-        val idsAreUniques = lots.uniqueBy { it.id }
+        val idsAreUniques = lots.isUnique { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ErrorType.LOT_ID_DUPLICATED)
     }
@@ -424,7 +432,7 @@ class PnService(
      * ELSE eAccess throws Exception;
      */
     private fun checkItemIdFromRequest(items: List<PnCreateData.Tender.Item>) {
-        val idsAreUniques = items.uniqueBy { it.id }
+        val idsAreUniques = items.isUnique { it.id }
         if (idsAreUniques.not())
             throw throw ErrorException(ErrorType.ITEM_ID_DUPLICATED)
     }
@@ -910,8 +918,7 @@ class PnService(
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'country' attribute in context.")
         val pmd: ProcurementMethod = cm.context.pmd?.let { getPmd(it) }
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'pmd' attribute in context.")
-        val startDate: LocalDateTime = cm.context.startDate?.toLocal()
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'startDate' attribute in context.")
+        val startDate: LocalDateTime = cm.startDate
         val testMode: Boolean = cm.testMode
 
         return ContextRequest(

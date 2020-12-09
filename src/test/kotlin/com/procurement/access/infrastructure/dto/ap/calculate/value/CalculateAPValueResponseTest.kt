@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.ap.calculate.value
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.calculate.value.CalculateAPValueResult
+import com.procurement.access.infrastructure.handler.v2.model.response.CalculateAPValueResult
 import org.junit.jupiter.api.Test
 
 class CalculateAPValueResponseTest : AbstractDTOTestBase<CalculateAPValueResult>(CalculateAPValueResult::class.java) {

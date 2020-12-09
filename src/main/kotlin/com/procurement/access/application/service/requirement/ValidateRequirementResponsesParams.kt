@@ -12,8 +12,8 @@ import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import com.procurement.access.domain.model.requirement.tryToRequirementId
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asSuccess
+import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asSuccess
 
 class ValidateRequirementResponsesParams private constructor(
     val cpid: Cpid,
@@ -31,6 +31,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.AMEND_FE,
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.COMPLETE_QUALIFICATION,
+                    OperationType.CREATE_AWARD,
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
@@ -49,6 +50,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.SUBMISSION_PERIOD_END,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,
+                    OperationType.UPDATE_AWARD,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
                     OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
@@ -63,10 +65,10 @@ class ValidateRequirementResponsesParams private constructor(
             operationType: String
         ): Result<ValidateRequirementResponsesParams, DataErrors> {
             val cpidParsed = parseCpid(value = cpid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val ocidParsed = parseOcid(value = ocid)
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             val operationTypeParsed = parseEnum(
                 value = operationType,
@@ -74,7 +76,7 @@ class ValidateRequirementResponsesParams private constructor(
                 allowedEnums = allowedOperationTypes,
                 target = OperationType.Companion
             )
-                .orForwardFail { error -> return error }
+                .onFailure { error -> return error }
 
             return ValidateRequirementResponsesParams(
                 cpid = cpidParsed,
@@ -114,7 +116,7 @@ class ValidateRequirementResponsesParams private constructor(
             companion object {
                 fun tryCreate(id: String): Result<Requirement, DataErrors> {
                     val parsedId = id.tryToRequirementId()
-                        .orForwardFail { error -> return error }
+                        .onFailure { error -> return error }
                     return Requirement(parsedId).asSuccess()
                 }
             }

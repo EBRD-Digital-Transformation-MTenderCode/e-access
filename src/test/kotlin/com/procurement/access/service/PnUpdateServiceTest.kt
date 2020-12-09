@@ -6,6 +6,9 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.util.extension.nowDefaultUTC
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.json.JsonValidator
@@ -15,14 +18,11 @@ import com.procurement.access.json.loadJson
 import com.procurement.access.json.putAttribute
 import com.procurement.access.json.toJson
 import com.procurement.access.json.toNode
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.CommandType
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class PnUpdateServiceTest {
 
@@ -117,7 +117,7 @@ class PnUpdateServiceTest {
             val entity = TenderProcessEntity(
                 cpId = CPID,
                 stage = STAGE,
-                createdDate = Date(),
+                createdDate = nowDefaultUTC(),
                 jsonData = tenderProcess.toJson(),
                 owner = ContextGenerator.OWNER,
                 token = ContextGenerator.TOKEN
@@ -141,7 +141,7 @@ class PnUpdateServiceTest {
             operationId = "124124"
         )
         return CommandMessageGenerator.generate(
-            command = CommandType.UPDATE_PN,
+            command = CommandTypeV1.UPDATE_PN,
             context = context,
             data = data
         )

@@ -1,5 +1,6 @@
 package com.procurement.access.infrastructure.entity
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -32,6 +33,7 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveDeserializer
 import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
 import com.procurement.access.infrastructure.bind.coefficient.CoefficientRateDeserializer
@@ -42,10 +44,7 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializ
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
-import com.procurement.access.infrastructure.dto.cn.criteria.Requirement
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-import com.procurement.access.model.dto.databinding.JsonDateTimeDeserializer
-import com.procurement.access.model.dto.databinding.JsonDateTimeSerializer
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -106,12 +105,8 @@ data class CNEntity(
                 )
 
                 data class Period(
-                    @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                    @JsonSerialize(using = JsonDateTimeSerializer::class)
                     @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-                    @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                    @JsonSerialize(using = JsonDateTimeSerializer::class)
                     @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
                 )
 
@@ -316,32 +311,20 @@ data class CNEntity(
         )
 
         data class TenderPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
         )
 
         data class ContractPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
         )
 
         data class EnquiryPeriod(
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-            @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-            @JsonSerialize(using = JsonDateTimeSerializer::class)
             @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
         )
 
@@ -487,8 +470,6 @@ data class CNEntity(
                     )
 
                     data class Period(
-                        @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                        @JsonSerialize(using = JsonDateTimeSerializer::class)
                         @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
                     )
                 }
@@ -550,12 +531,8 @@ data class CNEntity(
             )
 
             data class ContractPeriod(
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
                 @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime,
 
-                @JsonDeserialize(using = JsonDateTimeDeserializer::class)
-                @JsonSerialize(using = JsonDateTimeSerializer::class)
                 @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime
             )
 

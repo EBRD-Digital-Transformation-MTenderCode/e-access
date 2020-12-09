@@ -8,8 +8,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.util.Result
-import com.procurement.access.domain.util.asFailure
+import com.procurement.access.lib.functional.Result
 
 class FindLotIdsParams private constructor(
     val cpid: Cpid,
@@ -46,12 +45,10 @@ class FindLotIdsParams private constructor(
         ): Result<FindLotIdsParams, DataErrors> {
 
             val cpidResult = parseCpid(value = cpid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             val ocidResult = parseOcid(value = ocid)
-                .doOnError { error -> return error.asFailure() }
-                .get
+                .onFailure { return it }
 
             if (states != null && states.isEmpty()) {
                 return Result.failure(DataErrors.Validation.EmptyArray("states"))

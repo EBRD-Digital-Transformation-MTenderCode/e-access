@@ -25,15 +25,17 @@ import com.procurement.access.exception.ErrorType.INVALID_LOT_AMOUNT
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CONTRACT_PERIOD
 import com.procurement.access.exception.ErrorType.INVALID_LOT_CURRENCY
 import com.procurement.access.exception.ErrorType.INVALID_LOT_ID
-import com.procurement.access.model.dto.bpe.CommandMessage
-import com.procurement.access.model.dto.bpe.ResponseDto
-import com.procurement.access.model.dto.cn.BudgetCnCreate
-import com.procurement.access.model.dto.cn.CnCreate
-import com.procurement.access.model.dto.cn.DocumentCnCreate
-import com.procurement.access.model.dto.cn.ItemCnCreate
-import com.procurement.access.model.dto.cn.LotCnCreate
-import com.procurement.access.model.dto.cn.TenderCnCreate
-import com.procurement.access.model.dto.cn.validate
+import com.procurement.access.infrastructure.api.v1.ApiResponseV1
+import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.handler.v1.model.request.BudgetCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.CnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.DocumentCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.ItemCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.LotCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.TenderCnCreate
+import com.procurement.access.infrastructure.handler.v1.model.request.validate
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
@@ -58,7 +60,6 @@ import com.procurement.access.model.dto.ocds.Value
 import com.procurement.access.model.dto.ocds.Variant
 import com.procurement.access.model.dto.ocds.validate
 import com.procurement.access.model.entity.TenderProcessEntity
-import com.procurement.access.utils.toDate
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
@@ -107,7 +108,7 @@ class CnCreateService(
             }.toSet()
     }
 
-    fun createCn(cm: CommandMessage, context: CnCreateContext): ResponseDto {
+    fun createCn(cm: CommandMessage, context: CnCreateContext): ApiResponseV1.Success {
         val cnDto = toObject(CnCreate::class.java, cm.data).validate()
         validateAuctionsDto(context.country, context.pmd, cnDto)
 
@@ -179,7 +180,7 @@ class CnCreateService(
         val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
-        return ResponseDto(data = tp)
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tp)
     }
 
     private fun validateAuctionsDto(country: String, pmd: ProcurementMethod, cnDto: CnCreate) {
@@ -214,7 +215,7 @@ class CnCreateService(
     }
 
     private fun setItemsId(items: List<ItemCnCreate>) {
-        val itemsId = items.asSequence().map { it.id }.toHashSet()
+        val itemsId = items.toSet { it.id }
         if (itemsId.size != items.size) throw ErrorException(INVALID_ITEMS)
         items.forEach { it.id = generationService.getTimeBasedUUID() }
     }
@@ -246,20 +247,23 @@ class CnCreateService(
     }
 
     private fun validateDtoRelatedLots(tender: TenderCnCreate) {
-        val lotsIdSet = tender.lots.asSequence().map { it.id }.toHashSet()
+        val lotsIdSet = tender.lots.toSet { it.id }
         if (lotsIdSet.size != tender.lots.size) throw ErrorException(INVALID_LOT_ID)
-        val lotsFromItemsSet = tender.items.asSequence().map { it.relatedLot }.toHashSet()
+        val lotsFromItemsSet = tender.items.toSet { it.relatedLot }
         if (lotsIdSet.size != lotsFromItemsSet.size) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
         if (!lotsIdSet.containsAll(lotsFromItemsSet)) throw ErrorException(INVALID_ITEMS_RELATED_LOTS)
-        val lotsFromDocuments = tender.documents.asSequence()
-                .filter { it.relatedLots != null }.flatMap { it.relatedLots!!.asSequence() }.toHashSet()
+        val lotsFromDocuments = tender.documents
+            .asSequence()
+            .filter { it.relatedLots != null }
+            .flatMap { it.relatedLots!!.asSequence() }
+            .toSet()
         if (lotsFromDocuments.isNotEmpty()) {
             if (!lotsIdSet.containsAll(lotsFromDocuments)) throw ErrorException(INVALID_DOCS_RELATED_LOTS)
         }
         tender.electronicAuctions?.let { auctions ->
-            val auctionIds = auctions.details.asSequence().map { it.id }.toHashSet()
+            val auctionIds = auctions.details.toSet { it.id }
             if (auctionIds.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_ID)
-            val lotsFromAuctions = auctions.details.asSequence().map { it.relatedLot }.toHashSet()
+            val lotsFromAuctions = auctions.details.toSet { it.relatedLot }
             if (lotsFromAuctions.size != auctions.details.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (lotsFromAuctions.size != lotsIdSet.size) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
             if (!lotsIdSet.containsAll(lotsFromAuctions)) throw ErrorException(INVALID_AUCTION_RELATED_LOTS)
@@ -290,7 +294,7 @@ class CnCreateService(
     }
 
     private fun checkAndGetDocuments(documentsDto: List<DocumentCnCreate>): List<Document>? {
-        val docsId = documentsDto.asSequence().map { it.id }.toHashSet()
+        val docsId = documentsDto.toSet { it.id }
         if (docsId.size != documentsDto.size) throw ErrorException(INVALID_DOCS_ID)
 
         return documentsDto.map { documentDto ->
@@ -358,12 +362,12 @@ class CnCreateService(
                           dateTime: LocalDateTime,
                           owner: String): TenderProcessEntity {
         return TenderProcessEntity(
-                cpId = cpId,
-                token = generationService.generateRandomUUID(),
-                stage = stage,
-                owner = owner,
-                createdDate = dateTime.toDate(),
-                jsonData = toJson(tp)
+            cpId = cpId,
+            token = generationService.generateRandomUUID(),
+            stage = stage,
+            owner = owner,
+            createdDate = dateTime,
+            jsonData = toJson(tp)
         )
     }
 }

@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.tender.check.tenderstate
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.check.tenderstate.CheckTenderStateRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.CheckTenderStateRequest
 import org.junit.jupiter.api.Test
 
 class CheckTenderStateRequestTest

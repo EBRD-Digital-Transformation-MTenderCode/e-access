@@ -1,7 +1,7 @@
 package com.procurement.access.infrastructure.dto.responder
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
-import com.procurement.access.infrastructure.handler.check.persons.CheckPersonesStructureRequest
+import com.procurement.access.infrastructure.handler.v2.model.request.CheckPersonesStructureRequest
 import org.junit.jupiter.api.Test
 
 class CheckPersonesStructureRequestTest : AbstractDTOTestBase<CheckPersonesStructureRequest.Params>(
