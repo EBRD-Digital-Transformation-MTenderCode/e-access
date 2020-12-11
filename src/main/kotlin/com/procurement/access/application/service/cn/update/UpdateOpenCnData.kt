@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class UpdateOpenCnData(
@@ -167,7 +168,8 @@ data class UpdateOpenCnData(
             override val id: String,
             val internalId: String?,
             val description: String,
-            override val relatedLot: LotId
+            override val relatedLot: LotId,
+            val quantity: BigDecimal
         ) : EntityBase<String>(), RelatedLot<LotId>
 
         data class Document(

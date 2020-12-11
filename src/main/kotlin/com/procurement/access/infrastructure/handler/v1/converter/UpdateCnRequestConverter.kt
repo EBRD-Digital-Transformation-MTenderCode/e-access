@@ -220,7 +220,8 @@ fun UpdateOpenCnRequest.convert() = UpdateOpenCnData(
                         id = item.id,
                         internalId = item.internalId,
                         description = item.description,
-                        relatedLot = LotId.fromString(item.relatedLot)
+                        relatedLot = LotId.fromString(item.relatedLot),
+                        quantity = item.quantity
                     )
                 }
                 .orThrow {
@@ -482,7 +483,8 @@ fun UpdateSelectiveCnRequest.convert() = UpdateSelectiveCnData(
                         id = item.id,
                         internalId = item.internalId,
                         description = item.description,
-                        relatedLot = LotId.fromString(item.relatedLot)
+                        relatedLot = LotId.fromString(item.relatedLot),
+                        quantity = item.quantity
                     )
                 }
                 .orThrow {
