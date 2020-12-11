@@ -4,7 +4,12 @@ import com.procurement.access.application.service.cn.update.UpdateOpenCnContext
 import com.procurement.access.application.service.cn.update.UpdateOpenCnData
 import com.procurement.access.application.service.cn.update.UpdatedOpenCn
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.*
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
@@ -39,6 +44,7 @@ class CNServiceImpl(
         data.checkElectronicAuction(context) //VR-1.0.1.7.8
             .checkLotsIds() //VR-1.0.1.4.1
             .checkUniqueIdsItems() // VR-1.0.1.5.1
+            .checkItemsValue() //VR-1.0.1.5.3
             .checkIdsPersons() //VR-1.0.1.10.3
             .checkBusinessFunctions(context.startDate) //VR-1.0.1.10.5, VR-1.0.1.10.6, VR-1.0.1.10.7, VR-1.0.1.2.1, VR-1.0.1.2.8
 
@@ -502,6 +508,17 @@ class CNServiceImpl(
                 error = ErrorType.ITEM_ID_DUPLICATED,
                 message = "The list items of tender contain duplicates."
             )
+        }
+        return this
+    }
+
+    private fun UpdateOpenCnData.checkItemsValue(): UpdateOpenCnData {
+        this.tender.items.map {item ->
+            if (item.quantity <= BigDecimal.ZERO)
+                throw ErrorException(
+                    error = ErrorType.INVALID_ITEMS_QUANTITY,
+                    message = "Item quantity must be greater than zero."
+                )
         }
         return this
     }
