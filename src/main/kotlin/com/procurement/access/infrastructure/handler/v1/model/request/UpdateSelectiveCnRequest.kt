@@ -13,7 +13,7 @@ import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
-
+import java.math.BigDecimal
 
 import java.time.LocalDateTime
 
@@ -205,7 +205,8 @@ data class UpdateSelectiveCnRequest(
             @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
 
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-            @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
+            @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String,
+            @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal
         )
 
         data class Document(
