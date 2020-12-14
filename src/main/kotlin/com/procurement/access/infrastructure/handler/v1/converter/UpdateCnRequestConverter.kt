@@ -221,7 +221,21 @@ fun UpdateOpenCnRequest.convert() = UpdateOpenCnData(
                         internalId = item.internalId,
                         description = item.description,
                         relatedLot = LotId.fromString(item.relatedLot),
-                        quantity = item.quantity
+                        quantity = item.quantity,
+                        additionalClassifications = item.additionalClassifications
+                            ?.map { additionalClassification ->
+                                UpdateOpenCnData.Tender.Item.AdditionalClassification(
+                                    id = additionalClassification.id,
+                                    description = additionalClassification.description,
+                                    scheme = additionalClassification.scheme
+                                )
+                            }.orEmpty(),
+                        unit = item.unit.let { unit ->
+                            UpdateOpenCnData.Tender.Item.Unit(
+                                id = unit.id,
+                                name = unit.name
+                            )
+                        }
                     )
                 }
                 .orThrow {
@@ -484,7 +498,21 @@ fun UpdateSelectiveCnRequest.convert() = UpdateSelectiveCnData(
                         internalId = item.internalId,
                         description = item.description,
                         relatedLot = LotId.fromString(item.relatedLot),
-                        quantity = item.quantity
+                        quantity = item.quantity,
+                        additionalClassifications = item.additionalClassifications
+                            ?.map { additionalClassification ->
+                                UpdateSelectiveCnData.Tender.Item.AdditionalClassification(
+                                    id = additionalClassification.id,
+                                    description = additionalClassification.description,
+                                    scheme = additionalClassification.scheme
+                                )
+                            }.orEmpty(),
+                        unit = item.unit.let { unit ->
+                            UpdateSelectiveCnData.Tender.Item.Unit(
+                                id = unit.id,
+                                name = unit.name
+                            )
+                        }
                     )
                 }
                 .orThrow {
