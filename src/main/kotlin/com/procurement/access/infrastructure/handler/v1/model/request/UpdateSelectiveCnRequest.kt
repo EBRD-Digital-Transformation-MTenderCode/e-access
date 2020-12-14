@@ -206,8 +206,23 @@ data class UpdateSelectiveCnRequest(
 
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String,
-            @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal
-        )
+            @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("additionalClassifications") @param:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
+
+            @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit
+        ){
+            data class AdditionalClassification(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+            )
+            data class Unit(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
+            )
+        }
 
         data class Document(
             @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
