@@ -756,9 +756,31 @@ class CNServiceImpl(
             dst.copy(
                 description = src.description,
                 relatedLot = src.relatedLot.toString(),
-                internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId)
+                internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId),
+                unit = src.unit.let { unit ->
+                    CNEntity.Tender.Item.Unit(id = unit.id, name = unit.name)
+                },
+                quantity = src.quantity,
+                additionalClassifications = dst.updateAdditionalClassifications(src.additionalClassifications)
+                )
+        }
+
+    private fun CNEntity.Tender.Item.updateAdditionalClassifications(additionalClassifications: List<UpdateOpenCnData.Tender.Item.AdditionalClassification>): List<CNEntity.Tender.Item.AdditionalClassification> {
+        val receivedClassificationsById = additionalClassifications.associateBy { it.id }
+        val storedClassifications = this.additionalClassifications.orEmpty()
+        val storedClassificationsIds = storedClassifications.toSet { it.id }
+        val newIds = getNewElements(received = receivedClassificationsById.keys, saved = storedClassificationsIds)
+        val newClassifications = newIds.map { id ->
+            val newAdditionalClassification = receivedClassificationsById.getValue(id)
+            CNEntity.Tender.Item.AdditionalClassification(
+                id = newAdditionalClassification.id,
+                description = newAdditionalClassification.description,
+                scheme = newAdditionalClassification.scheme
             )
         }
+
+        return storedClassifications + newClassifications
+    }
 
     private fun CNEntity.Tender.ProcuringEntity.update(
         persons: List<UpdateOpenCnData.Tender.ProcuringEntity.Person>
