@@ -10,6 +10,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
@@ -215,7 +216,7 @@ data class UpdateSelectiveCnRequest(
         ){
             data class AdditionalClassification(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
             )
             data class Unit(

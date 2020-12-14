@@ -7,6 +7,7 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
@@ -166,7 +167,7 @@ data class UpdateSelectiveCnData(
 
             data class AdditionalClassification(
                 val id: String,
-                val scheme: String,
+                val scheme: Scheme,
                 val description: String
             )
 
