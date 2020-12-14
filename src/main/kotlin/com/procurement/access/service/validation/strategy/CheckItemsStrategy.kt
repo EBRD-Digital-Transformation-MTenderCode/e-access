@@ -68,7 +68,6 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 val prevStage = cm.prevStage
                 val process: TenderProcess = loadTenderProcess(cpid, prevStage)
                 if (process.tender.items.isEmpty()) {
-
                     val itemsCpvCodes = getCPVCodes(request)
                     val itemsAreHomogeneous = areHomogeneous(itemsCpvCodes)
 
@@ -76,6 +75,9 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                         itemsCpvCodes
                     else
                         getCpvCodesHomogeneousWithTenderClassification(itemsCpvCodes, process.tender.classification)
+
+                    if (homogeneousItemsCpvCodes.isEmpty())
+                        throw ErrorException(ErrorType.MISSING_HOMOGENEOUS_ITEMS)
 
                     val calculatedCPVCode = calculateCPVCode(homogeneousItemsCpvCodes)
                         .also {
@@ -284,11 +286,13 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun areHomogeneous(codes: List<CPVCode>): Boolean {
+        if (codes.isEmpty())
+            throw ErrorException(error = ErrorType.EMPTY_ITEMS, message = "Items must not be empty.")
         val pattern: CPVCodePattern = codes.first().patternOfGroups
         return codes.startsWithPattern(pattern)
     }
 
-    private fun getCpvCodesHomogeneousWithTenderClassification(codes: List<CPVCode>, classification: Classification ): List<CPVCode> {
+    private fun getCpvCodesHomogeneousWithTenderClassification(codes: List<CPVCode>, classification: Classification): List<CPVCode> {
         val pattern: CPVCodePattern = classification.id.patternOfGroups
         return codes.filter { it.startsWithPattern(pattern) }
     }
