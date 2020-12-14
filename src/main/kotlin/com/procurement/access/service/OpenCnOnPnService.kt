@@ -945,7 +945,7 @@ class OpenCnOnPnService(
             value = value,
             contractPeriod = contractPeriod,
             electronicAuctions = electronicAuctions,
-            updatedDocuments = updatedDocuments
+            updatedDocuments = updatedDocuments,
         )
     }
 
@@ -1296,7 +1296,8 @@ class OpenCnOnPnService(
             submissionMethod = pnEntity.tender.submissionMethod, //BR-3.8.1
             submissionMethodRationale = pnEntity.tender.submissionMethodRationale, //BR-3.8.1
             submissionMethodDetails = pnEntity.tender.submissionMethodDetails, //BR-3.8.1
-            documents = updatedDocuments //BR-3.7.13
+            documents = updatedDocuments, //BR-3.7.13
+            additionalProcurementCategories = request.tender.additionalProcurementCategories
         )
     }
 
@@ -1886,7 +1887,8 @@ class OpenCnOnPnService(
                     procurementMethodDetails = tender.procurementMethodDetails,
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-                    mainProcurementCategory = tender.mainProcurementCategory,
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                        mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         OpenCnOnPnResponse.Tender.ContractPeriod(
