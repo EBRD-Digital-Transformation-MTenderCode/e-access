@@ -159,8 +159,22 @@ data class UpdateSelectiveCnData(
             val internalId: String?,
             val description: String,
             override val relatedLot: LotId,
-            val quantity: BigDecimal
-        ) : EntityBase<String>(), RelatedLot<LotId>
+            val quantity: BigDecimal,
+            val additionalClassifications: List<AdditionalClassification>,
+            val unit: Unit
+        ) : EntityBase<String>(), RelatedLot<LotId> {
+
+            data class AdditionalClassification(
+                val id: String,
+                val scheme: String,
+                val description: String
+            )
+
+            data class Unit(
+                val id: String,
+                val name: String
+            )
+        }
 
         data class Document(
             val documentType: DocumentType,
