@@ -27,7 +27,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                                 .takeIfNotEmpty {
                                     ErrorException(
                                         error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                        message = "The attribute 'planning.budget' is empty or blank."
+                                        message = "The attribute 'planning.budget.description' is empty or blank."
                                     )
                                 },
                             amount = budget.amount,
