@@ -187,28 +187,28 @@ fun PnCreateRequest.convert() = PnCreateData(
                                             .takeIfNotEmpty {
                                                 ErrorException(
                                                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                    message = "The attribute 'identifier.scheme' is empty or blank."
+                                                    message = "The attribute 'tender.procuringEntity.additionalIdentifiers.scheme' is empty or blank."
                                                 )
                                             },
                                         id = additionalIdentifiers.id
                                             .takeIfNotEmpty {
                                                 ErrorException(
                                                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                    message = "The attribute 'identifier.id' is empty or blank."
+                                                    message = "The attribute 'tender.procuringEntity.additionalIdentifiers.id' is empty or blank."
                                                 )
                                             },
                                         legalName = additionalIdentifiers.legalName
                                             .takeIfNotEmpty {
                                                 ErrorException(
                                                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                    message = "The attribute 'identifier.legalName' is empty or blank."
+                                                    message = "The attribute 'tender.procuringEntity.additionalIdentifiers.legalName' is empty or blank."
                                                 )
                                             },
                                         uri = additionalIdentifiers.uri
                                             .takeIfNotEmpty {
                                                 ErrorException(
                                                     error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                                                    message = "The attribute 'identifier.uri' is empty or blank."
+                                                    message = "The attribute 'tender.procuringEntity.additionalIdentifiers.uri' is empty or blank."
                                                 )
                                             }
                                     )
