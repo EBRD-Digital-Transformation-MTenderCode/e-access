@@ -13,11 +13,23 @@ fun PnCreateRequest.convert() = PnCreateData(
     planning = this.planning
         .let { planning ->
             PnCreateData.Planning(
-                rationale = planning.rationale,
+                rationale = planning.rationale
+                    .takeIfNotEmpty {
+                        ErrorException(
+                            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                            message = "The attribute 'planning.rationale' is empty or blank."
+                        )
+                    },
                 budget = planning.budget
                     .let { budget ->
                         PnCreateData.Planning.Budget(
-                            description = budget.description,
+                            description = budget.description
+                                .takeIfNotEmpty {
+                                    ErrorException(
+                                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                                        message = "The attribute 'planning.budget' is empty or blank."
+                                    )
+                                },
                             amount = budget.amount,
                             budgetBreakdowns = budget.budgetBreakdowns
                                 .mapIfNotEmpty { budgetBreakdowns ->
@@ -377,7 +389,13 @@ fun PnCreateRequest.convert() = PnCreateData(
                     ?.map { lot ->
                         PnCreateData.Tender.Lot(
                             id = lot.id,
-                            internalId = lot.internalId,
+                            internalId = lot.internalId
+                                .takeIfNotEmpty {
+                                    ErrorException(
+                                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                                        message = "The attribute 'tender.lots.internalId' is empty or blank."
+                                    )
+                                },
                             title = lot.title
                                 .takeIfNotEmpty {
                                     ErrorException(
@@ -522,6 +540,12 @@ fun PnCreateRequest.convert() = PnCreateData(
                                             )
                                         },
                                         description = placeOfPerformance.description
+                                            .takeIfNotEmpty {
+                                                ErrorException(
+                                                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                                                    message = "The attribute 'tender.lots.placeOfPerformance.description' is empty or blank."
+                                                )
+                                            }
                                     )
                                 }
                         )
@@ -536,8 +560,20 @@ fun PnCreateRequest.convert() = PnCreateData(
                     }
                     ?.map { item ->
                         PnCreateData.Tender.Item(
-                            id = item.id,
-                            internalId = item.internalId,
+                            id = item.id
+                                .takeIfNotEmpty {
+                                    ErrorException(
+                                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                                        message = "The attribute 'tender.items.id' is empty or blank."
+                                    )
+                                },
+                            internalId = item.internalId
+                                .takeIfNotEmpty {
+                                    ErrorException(
+                                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                                        message = "The attribute 'tender.items.internalId' is empty or blank."
+                                    )
+                                },
                             description = item.description
                                 .takeIfNotEmpty {
                                     ErrorException(
