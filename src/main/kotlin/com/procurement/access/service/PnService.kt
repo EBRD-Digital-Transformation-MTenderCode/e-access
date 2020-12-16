@@ -165,9 +165,6 @@ class PnService(
 
             //VR-3.1.11 "Contract Period" (Lot)
             checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
-
-            //VR-3.1.18
-            checkAdditionalIdentifiersInProcuringEntity(request.tender.procuringEntity)
         }
     }
 
@@ -493,6 +490,9 @@ class PnService(
                 convertRequestDocument(document, relatedTemporalWithPermanentLotId)
             }
         }
+
+        //VR-3.1.18
+        checkAdditionalIdentifiersInProcuringEntity(request.tender.procuringEntity)
 
         return PNEntity(
             ocid = id,
