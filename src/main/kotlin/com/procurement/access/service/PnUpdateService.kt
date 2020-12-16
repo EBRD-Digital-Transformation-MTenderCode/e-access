@@ -24,6 +24,7 @@ import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.startDate
+import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
@@ -93,19 +94,7 @@ class PnUpdateService(private val generationService: GenerationService,
         val dateTime = cm.startDate
         val pnDto = toObject(PnUpdate::class.java, cm.data).validate()
 
-        //VR-3.2.21
-        if (pnDto.tender.title.isBlank())
-            throw ErrorException(
-                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                message = "The attribute 'tender.title' is empty or blank."
-            )
-
-        //VR-3.2.22
-        if (pnDto.tender.description.isBlank())
-            throw ErrorException(
-                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                message = "The attribute 'tender.description' is empty or blank."
-            )
+        pnDto.validation()
 
         checkDocumentsTitle(documents = pnDto.tender.documents)
 
@@ -195,6 +184,39 @@ class PnUpdateService(private val generationService: GenerationService,
         }
         tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tenderProcess)
+    }
+
+    private fun PnUpdate.validation() {
+        planning.rationale.checkForBlank("request.planning.rationale")
+        planning.budget.description.checkForBlank("planning.budget.description")
+        tender.title.checkForBlank("tender.title")
+        tender.description.checkForBlank("tender.description")
+        tender.lots
+            ?.forEach { lot ->
+                lot.internalId.checkForBlank("tender.lots.internalId")
+                lot.title.checkForBlank("tender.lots.title")
+                lot.description.checkForBlank("tender.lots.description")
+                lot.placeOfPerformance?.description.checkForBlank("tender.lots.description")
+            }
+        tender.items
+            ?.forEach { item ->
+                item.id.checkForBlank("tender.items.id")
+                item.internalId.checkForBlank("tender.items.internalId")
+                item.description.checkForBlank("tender.items.description")
+            }
+        tender.documents
+            ?.forEach { document ->
+                document.title?.checkForBlank("tender.documents.title")
+            }
+        tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+        tender.procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
+    }
+
+    private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+        ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty or blank."
+        )
     }
 
     private fun checkDocumentsTitle(documents: List<Document>?) {
