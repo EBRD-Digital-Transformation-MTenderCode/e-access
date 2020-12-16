@@ -336,7 +336,15 @@ fun ApCreateRequest.convert() = ApCreateData(
                                 }
                         )
                     },
-                value = ApCreateData.Tender.Value(tender.value.currency),
+                value = ApCreateData.Tender.Value(
+                    tender.value.currency
+                        .takeIfNotEmpty {
+                            ErrorException(
+                                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                                message = "The attribute 'tender.value.currency' is empty or blank."
+                            )
+                        }
+                ),
                 eligibilityCriteria = tender.eligibilityCriteria
                     .takeIfNotEmpty {
                         ErrorException(
