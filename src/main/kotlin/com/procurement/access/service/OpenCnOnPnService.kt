@@ -4,6 +4,7 @@ import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
@@ -20,6 +21,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -41,6 +43,7 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
+import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
@@ -93,6 +96,7 @@ class OpenCnOnPnService(
         }.toSet()
 
     fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedOpenCnOnPn {
+        data.validateTextAttributes()
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
@@ -263,6 +267,89 @@ class OpenCnOnPnService(
         val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
+    }
+
+    private fun OpenCnOnPnRequest.validateTextAttributes() {
+        tender.procurementMethodRationale.checkForBlank("")
+        tender.procurementMethodAdditionalInfo.checkForBlank("")
+        tender.procuringEntity?.persones
+            ?.forEach { person ->
+                person.title.checkForBlank("tender.procuringEntity.persones.title")
+                person.name.checkForBlank("tender.procuringEntity.persones.name")
+                person.identifier.scheme.checkForBlank("tender.procuringEntity.persones.identifier.scheme")
+                person.identifier.id.checkForBlank("tender.procuringEntity.persones.identifier.id")
+                person.identifier.uri.checkForBlank("tender.procuringEntity.persones.identifier.uri")
+
+                person.businessFunctions
+                    .forEach { businessFunction ->
+                        businessFunction.id.checkForBlank("tender.procuringEntity.persones.businessFunctions.id")
+                        businessFunction.jobTitle.checkForBlank("tender.procuringEntity.persones.businessFunctions.jobTitle")
+
+                        businessFunction.documents
+                            ?.forEach { document ->
+                                document.title.checkForBlank("tender.procuringEntity.persones.businessFunctions.documents.title")
+                                document.description.checkForBlank("tender.procuringEntity.persones.businessFunctions.documents.description")
+                            }
+                    }
+            }
+
+        tender.lots
+            .forEach { lot ->
+                lot.description.checkForBlank("tender.lots.description")
+                lot.internalId.checkForBlank("tender.lots.internalId")
+                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
+                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
+                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
+                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
+                lot.title.checkForBlank("tender.lots.title")
+            }
+
+        tender.items
+            .forEach { item ->
+                item.internalId.checkForBlank("tender.items.internalId")
+            }
+
+        tender.criteria
+            ?.forEach { criterion ->
+                criterion.title.checkForBlank("tender.criteria.title")
+                criterion.description.checkForBlank("tender.criteria.description")
+                criterion.requirementGroups
+                    .forEach { requirementGroup ->
+                        requirementGroup.requirements
+                            .forEach { requirement ->
+                                requirement.title.checkForBlank("tender.criteria.requirementGroups.requirements.title")
+                                requirement.value
+                                    .also {
+                                        if (it is ExpectedValue.AsString)
+                                            it.value.checkForBlank("tender.criteria.requirementGroups.requirements.expectedValue")
+                                    }
+                            }
+                    }
+            }
+
+        tender.conversions
+            ?.forEach { conversion ->
+                conversion.description.checkForBlank("tender.conversions.description")
+                conversion.rationale.checkForBlank("tender.conversions.rationale")
+                conversion.coefficients
+                    .forEach { coefficient ->
+                        coefficient.relatedOption.checkForBlank("tender.conversions.coefficients.relatedOption")
+                        coefficient.value.also {
+                            if (it is CoefficientValue.AsString)
+                                it.value.checkForBlank("tender.conversions.coefficients.value")
+                        }
+                    }
+            }
+    }
+
+    private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+        ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty or blank."
+        )
     }
 
     private fun OpenCnOnPnRequest.validateDuplicates() {
