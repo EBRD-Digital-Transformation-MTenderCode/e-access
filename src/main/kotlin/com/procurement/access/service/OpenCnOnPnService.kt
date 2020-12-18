@@ -41,6 +41,7 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -92,6 +93,8 @@ class OpenCnOnPnService(
         }.toSet()
 
     fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedOpenCnOnPn {
+        data.validateDuplicates()
+
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -260,6 +263,18 @@ class OpenCnOnPnService(
         val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
+    }
+
+    private fun OpenCnOnPnRequest.validateDuplicates() {
+        tender.documents
+            .forEach { document ->
+                val duplicateRelatedLot = document.relatedLots?.getDuplicate { it }
+                if (duplicateRelatedLot != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.documents.relatedLots' has duplicate '$duplicateRelatedLot'."
+                    )
+            }
     }
 
     /**
