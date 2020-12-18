@@ -22,11 +22,11 @@ class SelectiveCnOnPnRequestTest : AbstractDTOTestBase<SelectiveCnOnPnRequest>(S
 
     @Test
     fun required_3() {
-        testMappingOnFail("json/dto/create/cn_on_pn/selective/request/request_selective_cn_on_pn_required_3.json")
+        testBindingAndMapping("json/dto/create/cn_on_pn/selective/request/request_selective_cn_on_pn_required_3.json")
     }
 
     @Test
     fun required_4() {
-        testMappingOnFail("json/dto/create/cn_on_pn/selective/request/request_selective_cn_on_pn_required_4.json")
+        testBindingAndMapping("json/dto/create/cn_on_pn/selective/request/request_selective_cn_on_pn_required_4.json")
     }
 }
