@@ -25,6 +25,7 @@ import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.lib.errorIfBlank
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.ocds.Budget
 import com.procurement.access.model.dto.ocds.ContractPeriod
@@ -94,7 +95,8 @@ class PnUpdateService(private val generationService: GenerationService,
         val dateTime = cm.startDate
         val pnDto = toObject(PnUpdate::class.java, cm.data).validate()
 
-        pnDto.validation()
+        pnDto.validateTextAttributes()
+        pnDto.validateDuplicates()
 
         checkDocumentsTitle(documents = pnDto.tender.documents)
 
@@ -186,7 +188,7 @@ class PnUpdateService(private val generationService: GenerationService,
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tenderProcess)
     }
 
-    private fun PnUpdate.validation() {
+    private fun PnUpdate.validateTextAttributes() {
         planning.rationale.checkForBlank("request.planning.rationale")
         planning.budget.description.checkForBlank("planning.budget.description")
         tender.title.checkForBlank("tender.title")
@@ -217,6 +219,20 @@ class PnUpdateService(private val generationService: GenerationService,
             error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
             message = "The attribute '$name' is empty or blank."
         )
+    }
+
+    private fun PnUpdate.validateDuplicates() {
+        val duplicateAdditionalClassification = tender.items
+            ?.asSequence()
+            ?.flatMap {
+                it.additionalClassifications?.asSequence() ?: emptySequence()
+            }
+            ?.getDuplicate { it.scheme.key + it.id.toUpperCase() }
+        if (duplicateAdditionalClassification != null)
+            throw ErrorException(
+                error = ErrorType.DUPLICATE,
+                message = "Attribute 'tender.items.additionalClassifications' has duplicate by scheme '${duplicateAdditionalClassification.scheme}' and id '${duplicateAdditionalClassification.id}'."
+            )
     }
 
     private fun checkDocumentsTitle(documents: List<Document>?) {
