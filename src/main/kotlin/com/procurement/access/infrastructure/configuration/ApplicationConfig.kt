@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Import
     ObjectMapperConfig::class,
     ServiceConfig::class,
     TransformConfiguration::class,
-    WebConfig::class,
+    WebConfig::class
 )
 class ApplicationConfig
