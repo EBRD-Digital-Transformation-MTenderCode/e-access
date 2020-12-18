@@ -57,19 +57,19 @@ data class TenderPnUpdate @JsonCreator constructor(
 
 data class LotPnUpdate @JsonCreator constructor(
 
-        var id: String,
+    var id: String,
 
-        val internalId: String?,
+    val internalId: String?,
 
-        val title: String,
+    val title: String,
 
-        val description: String,
+    val description: String,
 
-        val value: Value,
+    val value: Value,
 
-        val contractPeriod: ContractPeriod,
+    val contractPeriod: ContractPeriod,
 
-        val placeOfPerformance: PlaceOfPerformance?
+    val placeOfPerformance: PlaceOfPerformance
 )
 
 data class ItemPnUpdate @JsonCreator constructor(
