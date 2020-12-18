@@ -233,6 +233,16 @@ class PnUpdateService(private val generationService: GenerationService,
                 error = ErrorType.DUPLICATE,
                 message = "Attribute 'tender.items.additionalClassifications' has duplicate by scheme '${duplicateAdditionalClassification.scheme}' and id '${duplicateAdditionalClassification.id}'."
             )
+
+        tender.documents
+            ?.forEach { document ->
+                val duplicateRelatedLot = document.relatedLots?.getDuplicate { it }
+                if (duplicateRelatedLot != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.documents.relatedLots' has duplicate '$duplicateRelatedLot'."
+                    )
+            }
     }
 
     private fun checkDocumentsTitle(documents: List<Document>?) {
