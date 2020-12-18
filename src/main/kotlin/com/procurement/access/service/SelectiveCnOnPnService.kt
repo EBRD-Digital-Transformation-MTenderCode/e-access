@@ -44,6 +44,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.CriterionR
 import com.procurement.access.infrastructure.handler.v1.model.request.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -96,8 +97,10 @@ class SelectiveCnOnPnService(
 
     fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedSelectiveCnOnPn {
         //VR-1.0.1.13.1 preQualification
-        if(data.preQualification == null)
+        if (data.preQualification == null)
             throw ErrorException(ErrorType.MISSING_ATTRIBUTE, "Missing required an attribute 'preQualification'.")
+
+        data.validateDuplicates()
 
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
@@ -288,6 +291,19 @@ class SelectiveCnOnPnService(
         return getResponse(responseCnEntity)
     }
 
+    private fun SelectiveCnOnPnRequest.validateDuplicates() {
+        val duplicateAdditionalClassification = tender.items
+            .asSequence()
+            .flatMap {
+                it.additionalClassifications?.asSequence() ?: emptySequence()
+            }
+            .getDuplicate { it.scheme.key + it.id.toUpperCase() }
+        if (duplicateAdditionalClassification != null)
+            throw ErrorException(
+                error = ErrorType.DUPLICATE,
+                message = "Attribute 'tender.items.additionalClassifications' has duplicate by scheme '${duplicateAdditionalClassification.scheme}' and id '${duplicateAdditionalClassification.id}'."
+            )
+    }
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(request: SelectiveCnOnPnRequest, pnEntity: PNEntity): CNEntity.Tender {
