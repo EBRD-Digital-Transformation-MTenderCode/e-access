@@ -107,5 +107,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_ITEM_ID("10.92", "Invalid item id."),
     INVALID_TENDER_CONTRACT_PERIOD("10.93", "Invalid tender contract period."),
     RULES_INCORRECT_FORMAT("10.94", "Incorrect format of rule value."),
-    INVALID_RELATED_PROCESS_RELATIONSHIP("10.95", "Invalid related process relationship.");
+    INVALID_RELATED_PROCESS_RELATIONSHIP("10.95", "Invalid related process relationship."),
+    DUPLICATE("10.96", "Duplicate.");
 }
