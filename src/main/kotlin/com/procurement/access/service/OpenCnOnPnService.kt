@@ -270,31 +270,58 @@ class OpenCnOnPnService(
     }
 
     private fun OpenCnOnPnRequest.validateTextAttributes() {
-        tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
-        tender.procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
-        tender.procuringEntity?.persones
-            ?.forEach { person ->
-                person.title.checkForBlank("tender.procuringEntity.persones.title")
-                person.name.checkForBlank("tender.procuringEntity.persones.name")
-                person.identifier.scheme.checkForBlank("tender.procuringEntity.persones.identifier.scheme")
-                person.identifier.id.checkForBlank("tender.procuringEntity.persones.identifier.id")
-                person.identifier.uri.checkForBlank("tender.procuringEntity.persones.identifier.uri")
+        tender.electronicAuctions?.details
+            ?.forEach { detail ->
+                detail.id.checkForBlank("tender.electronicAuctions.details.id")
+            }
 
-                person.businessFunctions
-                    .forEach { businessFunction ->
-                        businessFunction.id.checkForBlank("tender.procuringEntity.persones.businessFunctions.id")
-                        businessFunction.jobTitle.checkForBlank("tender.procuringEntity.persones.businessFunctions.jobTitle")
+        tender.criteria
+            ?.forEach { criterion ->
+                criterion.id.checkForBlank("tender.criteria.id")
+                criterion.title.checkForBlank("tender.criteria.title")
+                criterion.description.checkForBlank("tender.criteria.description")
 
-                        businessFunction.documents
-                            ?.forEach { document ->
-                                document.title.checkForBlank("tender.procuringEntity.persones.businessFunctions.documents.title")
-                                document.description.checkForBlank("tender.procuringEntity.persones.businessFunctions.documents.description")
+                criterion.requirementGroups
+                    .forEach { requirementGroup ->
+                        requirementGroup.id.checkForBlank("tender.criteria.requirementGroups.id")
+                        requirementGroup.description.checkForBlank("tender.criteria.requirementGroups.description")
+
+                        requirementGroup.requirements
+                            .forEach { requirement ->
+                                requirement.id.checkForBlank("tender.criteria.requirementGroups.requirements.id")
+                                requirement.title.checkForBlank("tender.criteria.requirementGroups.requirements.title")
+                                requirement.description.checkForBlank("tender.criteria.requirementGroups.requirements.description")
+                                requirement.value
+                                    .also {
+                                        if (it is ExpectedValue.AsString)
+                                            it.value.checkForBlank("tender.criteria.requirementGroups.requirements.expectedValue")
+                                    }
                             }
                     }
             }
 
+        tender.conversions
+            ?.forEach { conversion ->
+                conversion.id.checkForBlank("tender.conversions.id")
+                conversion.description.checkForBlank("tender.conversions.description")
+                conversion.relatedItem.checkForBlank("tender.conversions.relatedItem")
+                conversion.rationale.checkForBlank("tender.conversions.rationale")
+                conversion.coefficients
+                    .forEach { coefficient ->
+                        coefficient.id.checkForBlank("tender.conversions.coefficients.id")
+                        coefficient.relatedOption.checkForBlank("tender.conversions.coefficients.relatedOption")
+                        coefficient.value.also {
+                            if (it is CoefficientValue.AsString)
+                                it.value.checkForBlank("tender.conversions.coefficients.value")
+                        }
+                    }
+            }
+
+        tender.procuringEntity?.id.checkForBlank("tender.procuringEntity.id")
+
         tender.lots
             .forEach { lot ->
+                lot.id.checkForBlank("tender.lots.id")
                 lot.description.checkForBlank("tender.lots.description")
                 lot.internalId.checkForBlank("tender.lots.internalId")
                 lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
@@ -309,40 +336,31 @@ class OpenCnOnPnService(
 
         tender.items
             .forEach { item ->
+                item.id.checkForBlank("tender.items.id")
                 item.internalId.checkForBlank("tender.items.internalId")
+                item.classification.id.checkForBlank("tender.items.classification.id")
+                item.classification.description.checkForBlank("tender.items.classification.description")
+                item.additionalClassifications
+                    ?.forEach { additionalClassification ->
+                        additionalClassification.id.checkForBlank("tender.items.additionalClassifications.id")
+                        additionalClassification.description.checkForBlank("tender.items.additionalClassifications.description")
+                    }
+                item.unit.id.checkForBlank("tender.items.unit.id")
+                item.unit.name.checkForBlank("tender.items.unit.name")
+                item.description.checkForBlank("tender.items.description")
+                item.relatedLot.checkForBlank("tender.items.relatedLot")
             }
 
-        tender.criteria
-            ?.forEach { criterion ->
-                criterion.title.checkForBlank("tender.criteria.title")
-                criterion.description.checkForBlank("tender.criteria.description")
-                criterion.requirementGroups
-                    .forEach { requirementGroup ->
-                        requirementGroup.requirements
-                            .forEach { requirement ->
-                                requirement.title.checkForBlank("tender.criteria.requirementGroups.requirements.title")
-                                requirement.value
-                                    .also {
-                                        if (it is ExpectedValue.AsString)
-                                            it.value.checkForBlank("tender.criteria.requirementGroups.requirements.expectedValue")
-                                    }
-                            }
-                    }
+        tender.documents
+            .forEach { document ->
+                document.title.checkForBlank("tender.documents.title")
+                document.description.checkForBlank("tender.documents.description")
+                document.relatedLots
+                    ?.forEachIndexed { index, relatedLot -> relatedLot.checkForBlank("tender.documents.relatedLots[$index]") }
             }
 
-        tender.conversions
-            ?.forEach { conversion ->
-                conversion.description.checkForBlank("tender.conversions.description")
-                conversion.rationale.checkForBlank("tender.conversions.rationale")
-                conversion.coefficients
-                    .forEach { coefficient ->
-                        coefficient.relatedOption.checkForBlank("tender.conversions.coefficients.relatedOption")
-                        coefficient.value.also {
-                            if (it is CoefficientValue.AsString)
-                                it.value.checkForBlank("tender.conversions.coefficients.value")
-                        }
-                    }
-            }
+        tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+        tender.procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
     }
 
     private fun String?.checkForBlank(name: String) = this.errorIfBlank {
