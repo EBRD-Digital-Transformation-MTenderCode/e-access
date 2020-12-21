@@ -210,7 +210,6 @@ class SelectiveCNServiceImpl(
                 lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
                 lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
                 lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
-                lot.title.checkForBlank("tender.lots.title")
             }
 
         tender.items
