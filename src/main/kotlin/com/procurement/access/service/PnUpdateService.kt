@@ -198,7 +198,7 @@ class PnUpdateService(private val generationService: GenerationService,
                 lot.internalId.checkForBlank("tender.lots.internalId")
                 lot.title.checkForBlank("tender.lots.title")
                 lot.description.checkForBlank("tender.lots.description")
-                lot.placeOfPerformance?.description.checkForBlank("tender.lots.description")
+                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
             }
         tender.items
             ?.forEach { item ->
