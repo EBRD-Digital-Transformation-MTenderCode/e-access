@@ -1,0 +1,34 @@
+{
+  "tender": {
+    "lots": [
+      {
+        "id": "0124de77-8143-49dd-8fca-eda3f682f013",
+        "value": {
+          "amount": 10,
+          "currency": "currency"
+        },
+        "contractPeriod": {
+          "startDate": "2020-02-10T08:49:55Z",
+          "endDate": "2020-02-11T08:49:55Z"
+        }
+      },
+      {
+        "id": "babfd708-9ada-4dc1-8929-b4d43895f369",
+        "value": {
+          "amount": 10,
+          "currency": "currency"
+        },
+        "contractPeriod": {
+          "startDate": "2020-02-10T08:49:55Z",
+          "endDate": "2020-02-11T08:49:55Z"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "id",
+        "relatedLot": "0124de77-8143-49dd-8fca-eda3f682f013"
+      }
+    ]
+  }
+}
