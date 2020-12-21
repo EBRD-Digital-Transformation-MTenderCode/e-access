@@ -24,6 +24,7 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.model.response.ApUpdateResponse
+import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
@@ -43,6 +44,7 @@ class ApUpdateServiceImpl(
 ): ApUpdateService {
 
     override fun updateAp(context: UpdateApContext, data: ApUpdateData): ApUpdateResponse {
+        data.validateTextAttributes()
 
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
             ?: throw ErrorException(DATA_NOT_FOUND)
@@ -188,6 +190,44 @@ class ApUpdateServiceImpl(
 
         tenderProcessDao.save(getEntity(updatedTenderProcess, entity, context.startDate))
         return updatedTenderProcess.convert()
+    }
+
+    private fun ApUpdateData.validateTextAttributes() {
+        tender.lots
+            .forEach { lot ->
+                lot.id.checkForBlank("tender.lots.id")
+                lot.title.checkForBlank("tender.lots.description")
+                lot.description.checkForBlank("tender.lots.description")
+                lot.internalId.checkForBlank("tender.lots.internalId")
+
+                lot.placeOfPerformance?.address?.addressDetails?.locality?.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
+                lot.placeOfPerformance?.address?.addressDetails?.locality?.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
+                lot.placeOfPerformance?.address?.addressDetails?.locality?.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
+                lot.placeOfPerformance?.address?.addressDetails?.locality?.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
+                lot.placeOfPerformance?.address?.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance?.address?.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.title.checkForBlank("tender.lots.title")
+            }
+
+        tender.items
+            .forEach { item ->
+                item.id.checkForBlank("tender.items.id")
+                item.internalId.checkForBlank("tender.items.internalId")
+                item.description.checkForBlank("tender.items.description")
+                item.classification.description.checkForBlank("tender.items.classification.description")
+                item.deliveryAddress?.streetAddress.checkForBlank("tender.items.deliveryAddress.streetAddress")
+                item.deliveryAddress?.postalCode.checkForBlank("tender.items.deliveryAddress.postalCode")
+                item.deliveryAddress?.addressDetails?.locality?.id.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.id")
+                item.deliveryAddress?.addressDetails?.locality?.scheme.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.scheme")
+                item.deliveryAddress?.addressDetails?.locality?.description.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.description")
+            }
+    }
+
+    private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+        ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty or blank."
+        )
     }
 
     private fun checkItemsIdsQniqueness(itemsIds: List<String>) {
