@@ -63,6 +63,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.RoundingMode
 
 @Service
 class LotsService(
@@ -541,6 +542,7 @@ class LotsService(
         val newAmount = newLots
             .map { it.value!!.amount }
             .reduce { sum, element -> sum + element }
+            .setScale(2, RoundingMode.HALF_UP)
 
         if (dividedLot.value.amount.compareTo(newAmount) != 0)
             return ValidationErrors.InvalidAmount(dividedLotId = dividedLot.id)
