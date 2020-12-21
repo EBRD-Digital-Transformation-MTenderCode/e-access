@@ -270,8 +270,8 @@ class OpenCnOnPnService(
     }
 
     private fun OpenCnOnPnRequest.validateTextAttributes() {
-        tender.procurementMethodRationale.checkForBlank("")
-        tender.procurementMethodAdditionalInfo.checkForBlank("")
+        tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+        tender.procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
         tender.procuringEntity?.persones
             ?.forEach { person ->
                 person.title.checkForBlank("tender.procuringEntity.persones.title")
