@@ -21,6 +21,7 @@ import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -76,6 +77,8 @@ class PnService(
 
     fun createPn(contextRequest: CreatePnContext, request: PnCreateData): PnCreateResult {
         checkValidationRules(request)
+        request.validateDuplicates()
+
         val pnEntity: PNEntity = businessRules(contextRequest, request)
         val cpid = pnEntity.ocid
         val token = generationService.generateToken()
@@ -168,8 +171,22 @@ class PnService(
         }
     }
 
+    private fun PnCreateData.validateDuplicates() {
+        val duplicateAdditionalClassification = tender.items
+            .asSequence()
+            .flatMap {
+                it.additionalClassifications.asSequence()
+            }
+            .getDuplicate { it.scheme.key + it.id.toUpperCase() }
+        if (duplicateAdditionalClassification != null)
+            throw ErrorException(
+                error = ErrorType.DUPLICATE,
+                message = "Attribute 'tender.items.additionalClassifications' has duplicate by scheme '${duplicateAdditionalClassification.scheme}' and id '${duplicateAdditionalClassification.id}'."
+            )
+    }
+
     fun checkDocumentsRelationWithLot(documents: Map<String, List<String>>, lotsIds: Set<String>) {
-        documents.forEach { (documentId, relatedLots)  ->
+        documents.forEach { (documentId, relatedLots) ->
             relatedLots.forEach { relatedLot ->
                 if (relatedLot !in lotsIds)
                     throw ErrorException(
