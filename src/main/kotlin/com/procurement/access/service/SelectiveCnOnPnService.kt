@@ -409,17 +409,17 @@ class SelectiveCnOnPnService(
     }
 
     private fun SelectiveCnOnPnRequest.validateDuplicates() {
-        val duplicateAdditionalClassification = tender.items
-            .asSequence()
-            .flatMap {
-                it.additionalClassifications?.asSequence() ?: emptySequence()
+        tender.items
+            .forEachIndexed { index, item ->
+                val duplicate =
+                    item.additionalClassifications?.getDuplicate { it.scheme.key + it.id.toUpperCase() }
+
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.items[$index].additionalClassifications' has duplicate by scheme '${duplicate.scheme}' and id '${duplicate.id}'."
+                    )
             }
-            .getDuplicate { it.scheme.key + it.id.toUpperCase() }
-        if (duplicateAdditionalClassification != null)
-            throw ErrorException(
-                error = ErrorType.DUPLICATE,
-                message = "Attribute 'tender.items.additionalClassifications' has duplicate by scheme '${duplicateAdditionalClassification.scheme}' and id '${duplicateAdditionalClassification.id}'."
-            )
     }
 
     /** Begin Business Rules */
