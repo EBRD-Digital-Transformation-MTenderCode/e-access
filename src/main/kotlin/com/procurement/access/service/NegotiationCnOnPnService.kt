@@ -28,6 +28,7 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -77,6 +78,8 @@ class NegotiationCnOnPnService(
         }.toSet()
 
     fun check(context: CheckNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): CheckedNegotiationCnOnPn {
+        data.validateDuplicates()
+
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -206,6 +209,20 @@ class NegotiationCnOnPnService(
         val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
+    }
+
+    private fun NegotiationCnOnPnRequest.validateDuplicates() {
+        tender.items
+            .forEachIndexed { index, item ->
+                val duplicate =
+                    item.additionalClassifications?.getDuplicate { it.scheme.key + it.id.toUpperCase() }
+
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.items[$index].additionalClassifications' has duplicate by scheme '${duplicate.scheme}' and id '${duplicate.id}'."
+                    )
+            }
     }
 
     /**
