@@ -371,6 +371,18 @@ class OpenCnOnPnService(
     }
 
     private fun OpenCnOnPnRequest.validateDuplicates() {
+        tender.items
+            .forEachIndexed { index, item ->
+                val duplicate =
+                    item.additionalClassifications?.getDuplicate { it.scheme.key + it.id.toUpperCase() }
+
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.items[$index].additionalClassifications' has duplicate by scheme '${duplicate.scheme}' and id '${duplicate.id}'."
+                    )
+            }
+
         tender.documents
             .forEach { document ->
                 val duplicateRelatedLot = document.relatedLots?.getDuplicate { it }
