@@ -328,7 +328,7 @@ class OpenCnOnPnService(
                 lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
                 lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
                 lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
                 lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
                 lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
                 lot.title.checkForBlank("tender.lots.title")
