@@ -384,12 +384,12 @@ class OpenCnOnPnService(
             }
 
         tender.documents
-            .forEach { document ->
-                val duplicateRelatedLot = document.relatedLots?.getDuplicate { it }
-                if (duplicateRelatedLot != null)
+            .forEachIndexed { index, document ->
+                val duplicate = document.relatedLots?.getDuplicate { it }
+                if (duplicate != null)
                     throw ErrorException(
                         error = ErrorType.DUPLICATE,
-                        message = "Attribute 'tender.documents.relatedLots' has duplicate '$duplicateRelatedLot'."
+                        message = "Attribute 'tender.documents[$index].relatedLots' has duplicate '$duplicate'."
                     )
             }
     }
