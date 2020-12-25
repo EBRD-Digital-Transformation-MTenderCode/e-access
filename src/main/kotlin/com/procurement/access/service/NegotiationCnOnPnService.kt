@@ -28,6 +28,7 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
+import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
@@ -78,6 +79,7 @@ class NegotiationCnOnPnService(
         }.toSet()
 
     fun check(context: CheckNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): CheckedNegotiationCnOnPn {
+        data.validateTextAttributes()
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
@@ -209,6 +211,57 @@ class NegotiationCnOnPnService(
         val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
+    }
+
+    private fun NegotiationCnOnPnRequest.validateTextAttributes() {
+        tender.apply {
+            procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+            procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
+
+            lots.forEachIndexed { lotIdx, lot ->
+                lot.id.checkForBlank("tender.lots[$lotIdx].id")
+                lot.title.checkForBlank("tender.lots[$lotIdx].title")
+                lot.description.checkForBlank("tender.lots[$lotIdx].description")
+                lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+
+                lot.placeOfPerformance
+                    .apply {
+                        description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.description")
+
+                        address.apply {
+                            postalCode.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.postalCode")
+                            streetAddress.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.streetAddress")
+
+                            addressDetails.apply {
+                                locality.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.description")
+                                locality.id.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.id")
+                                locality.scheme.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.scheme")
+                                locality.uri.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.uri")
+                            }
+                        }
+                    }
+            }
+
+            items.forEachIndexed { itemIdx, item ->
+                item.id.checkForBlank("tender.items[$itemIdx].id")
+                item.internalId.checkForBlank("tender.items[$itemIdx].internalId")
+                item.description.checkForBlank("tender.items[$itemIdx].description")
+                item.relatedLot.checkForBlank("tender.items[$itemIdx].relatedLot")
+            }
+
+            documents.forEachIndexed { documentIdx, document ->
+                document.title.checkForBlank("tender.documents[$documentIdx].title")
+                document.description.checkForBlank("tender.documents[$documentIdx].description")
+                document.relatedLots?.forEach { relatedLot -> relatedLot.checkForBlank("tender.documents[$documentIdx].relatedLots") }
+            }
+        }
+    }
+
+    private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+        ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty or blank."
+        )
     }
 
     private fun NegotiationCnOnPnRequest.validateDuplicates() {
