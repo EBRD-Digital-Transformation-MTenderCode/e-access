@@ -61,8 +61,10 @@ fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMis
             )
         }
 
-fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation> {
-    val name = "startDate"
+fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation> =
+    parseDate(value, "startDate")
+
+fun parseDate(value: String, name: String): Result<LocalDateTime, DataErrors.Validation>{
     return value.toLocalDateTime()
         .mapFailure { fail ->
             when (fail) {
