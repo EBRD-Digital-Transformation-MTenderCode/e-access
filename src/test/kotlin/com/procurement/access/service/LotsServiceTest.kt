@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.params.GetLotsValueParams
 import com.procurement.access.application.model.params.ValidateLotsDataParams
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.Transform
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -44,13 +45,18 @@ internal class LotsServiceTest {
     private lateinit var tenderProcessDao: TenderProcessDao
     private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var rulesService: RulesService
+    private lateinit var generationService: GenerationService
+    private lateinit var transform: Transform
 
     @BeforeEach
     fun init() {
         tenderProcessDao = mock()
         tenderProcessRepository = mock()
         rulesService = mock()
-        lotsService = LotsService(tenderProcessDao, tenderProcessRepository, rulesService)
+        generationService = mock()
+        transform = mock()
+
+        lotsService = LotsService(tenderProcessDao, tenderProcessRepository, generationService, rulesService, transform)
     }
 
     @Nested
