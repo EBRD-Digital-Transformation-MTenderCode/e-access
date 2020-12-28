@@ -2,6 +2,12 @@ package com.procurement.access.infrastructure.handler.v2.model.response
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.access.domain.model.amount.Amount
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.lot.LotId
+import java.math.BigDecimal
+import java.time.LocalDateTime
 
 data class DivideLotResult(
     @param:JsonProperty("tender") @field:JsonProperty("tender") val tender: Tender
@@ -11,24 +17,24 @@ data class DivideLotResult(
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>
     ) {
         data class Lot(
-            @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
+            @param:JsonProperty("id") @field:JsonProperty("id") val id: LotId,
             @param:JsonProperty("internalId") @field:JsonProperty("internalId") val internalId: String?,
-            @param:JsonProperty("title") @field:JsonProperty("title") val title: String,
-            @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
-            @param:JsonProperty("value") @field:JsonProperty("value") val value: Value,
-            @param:JsonProperty("contractPeriod") @field:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
-            @param:JsonProperty("placeOfPerformance") @field:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance,
-            @param:JsonProperty("status") @field:JsonProperty("status") val status: String,
-            @param:JsonProperty("statusDetails") @field:JsonProperty("statusDetails") val statusDetails: String
+            @param:JsonProperty("title") @field:JsonProperty("title") val title: String?,
+            @param:JsonProperty("description") @field:JsonProperty("description") val description: String?,
+            @param:JsonProperty("value") @field:JsonProperty("value") val value: Value?,
+            @param:JsonProperty("contractPeriod") @field:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
+            @param:JsonProperty("placeOfPerformance") @field:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?,
+            @param:JsonProperty("status") @field:JsonProperty("status") val status: LotStatus,
+            @param:JsonProperty("statusDetails") @field:JsonProperty("statusDetails") val statusDetails: LotStatusDetails
         ) {
             data class Value(
-                @param:JsonProperty("amount") @field:JsonProperty("amount") val amount: Int,
+                @param:JsonProperty("amount") @field:JsonProperty("amount") val amount: Amount,
                 @param:JsonProperty("currency") @field:JsonProperty("currency") val currency: String
             )
 
             data class ContractPeriod(
-                @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: String,
-                @param:JsonProperty("endDate") @field:JsonProperty("endDate") val endDate: String
+                @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: LocalDateTime,
+                @param:JsonProperty("endDate") @field:JsonProperty("endDate") val endDate: LocalDateTime
             )
 
             data class PlaceOfPerformance(
@@ -74,10 +80,10 @@ data class DivideLotResult(
             @param:JsonProperty("internalId") @field:JsonProperty("internalId") val internalId: String?,
             @param:JsonProperty("classification") @field:JsonProperty("classification") val classification: Classification,
             @param:JsonProperty("additionalClassifications") @field:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
-            @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: Int,
+            @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: BigDecimal,
             @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
             @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
-            @param:JsonProperty("relatedLot") @field:JsonProperty("relatedLot") val relatedLot: String
+            @param:JsonProperty("relatedLot") @field:JsonProperty("relatedLot") val relatedLot: LotId
         ) {
             data class Classification(
                 @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
