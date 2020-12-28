@@ -18,12 +18,12 @@ data class TenderLotsAndItemsInfo(
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>?,
+        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>?
     ) {
         data class Lot(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: LotId,
             @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
-            @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
+            @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod
         ){
             data class Value(
                 @JsonDeserialize(using = AmountPositiveDeserializer::class)
