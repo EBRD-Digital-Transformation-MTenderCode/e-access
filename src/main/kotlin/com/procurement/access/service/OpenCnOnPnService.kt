@@ -1077,7 +1077,7 @@ class OpenCnOnPnService(
             value = value,
             contractPeriod = contractPeriod,
             electronicAuctions = electronicAuctions,
-            updatedDocuments = updatedDocuments,
+            updatedDocuments = updatedDocuments
         )
     }
 
