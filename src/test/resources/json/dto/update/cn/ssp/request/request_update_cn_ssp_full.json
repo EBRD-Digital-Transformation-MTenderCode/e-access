@@ -114,7 +114,19 @@
       {
         "id": "tender.items[0].id",
         "description": "tender.items[].description",
-        "relatedLot": "tender.lots[0].id"
+        "relatedLot": "tender.lots[0].id",
+        "additionalClassifications":[
+          {
+            "scheme":"CPVS",
+            "description":"",
+            "id":""
+          }
+        ],
+        "unit":{
+          "id":"",
+          "name":""
+        },
+        "quantity": 0
       }
     ],
     "documents": [

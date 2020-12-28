@@ -4,7 +4,11 @@ import com.procurement.access.application.service.cn.update.UpdateSelectiveCnCon
 import com.procurement.access.application.service.cn.update.UpdateSelectiveCnData
 import com.procurement.access.application.service.cn.update.UpdatedSelectiveCn
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.*
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.isNotUniqueIds
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.money.Money
@@ -40,6 +44,7 @@ class SelectiveCNServiceImpl(
         data.validateTextAttributes()
         data.checkLotsIds() //VR-1.0.1.4.1
             .checkUniqueIdsItems() // VR-1.0.1.5.1
+            .checkItemsValue()//VR-1.0.1.5.3
             .checkIdsPersons() //VR-1.0.1.10.3
             .checkBusinessFunctions(context.startDate) //VR-1.0.1.10.5, VR-1.0.1.10.6, VR-1.0.1.10.7, VR-1.0.1.2.1, VR-1.0.1.2.8
 
@@ -505,6 +510,17 @@ class SelectiveCNServiceImpl(
         return this
     }
 
+    private fun UpdateSelectiveCnData.checkItemsValue(): UpdateSelectiveCnData {
+        this.tender.items.map {item ->
+            if (item.quantity <= BigDecimal.ZERO)
+                throw ErrorException(
+                    error = ErrorType.INVALID_ITEMS_QUANTITY,
+                    message = "Item quantity must be greater than zero."
+                )
+        }
+        return this
+    }
+
     /**
      * VR-1.0.1.5.4 relatedLot (item) (there are lots in DB)
      * 1. Gets all Lots object from proceeded CN in DB;
@@ -738,9 +754,31 @@ class SelectiveCNServiceImpl(
             dst.copy(
                 description = src.description,
                 relatedLot = src.relatedLot.toString(),
-                internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId)
+                internalId = src.internalId.takeIfNotNullOrDefault(dst.internalId),
+                unit = src.unit.let { unit ->
+                    CNEntity.Tender.Item.Unit(id = unit.id, name = unit.name)
+                },
+                quantity = src.quantity,
+                additionalClassifications = dst.updateAdditionalClassifications(src.additionalClassifications)
             )
         }
+
+    private fun CNEntity.Tender.Item.updateAdditionalClassifications(additionalClassifications: List<UpdateSelectiveCnData.Tender.Item.AdditionalClassification>): List<CNEntity.Tender.Item.AdditionalClassification> {
+        val receivedClassificationsById = additionalClassifications.associateBy { it.id }
+        val storedClassifications = this.additionalClassifications.orEmpty()
+        val storedClassificationsIds = storedClassifications.toSet { it.id }
+        val newIds = getNewElements(received = receivedClassificationsById.keys, saved = storedClassificationsIds)
+        val newClassifications = newIds.map { id ->
+            val newAdditionalClassification = receivedClassificationsById.getValue(id)
+            CNEntity.Tender.Item.AdditionalClassification(
+                id = newAdditionalClassification.id,
+                description = newAdditionalClassification.description,
+                scheme = newAdditionalClassification.scheme
+            )
+        }
+
+        return storedClassifications + newClassifications
+    }
 
     private fun CNEntity.Tender.ProcuringEntity.update(
         persons: List<UpdateSelectiveCnData.Tender.ProcuringEntity.Person>
