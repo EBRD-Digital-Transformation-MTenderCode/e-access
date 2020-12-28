@@ -231,11 +231,11 @@ data class UpdateOpenCnRequest(
             data class AdditionalClassification(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
-                @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String
             )
             data class Unit(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
+                @field:JsonProperty("name") @param:JsonProperty("name") val name: String
             )
         }
 
