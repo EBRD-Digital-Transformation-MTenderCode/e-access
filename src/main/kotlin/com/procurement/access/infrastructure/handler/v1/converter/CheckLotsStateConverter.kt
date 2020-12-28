@@ -42,6 +42,7 @@ val allowedOperationType = OperationType.allowedElements
     .filter {
         when (it) {
             OperationType.CREATE_AWARD,
+            OperationType.DIVIDE_LOT,
             OperationType.UPDATE_AWARD -> true
 
             OperationType.AMEND_FE,

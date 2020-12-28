@@ -61,20 +61,21 @@ fun parseToken(value: String): Result<Token, DataErrors.Validation.DataFormatMis
             )
         }
 
-fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation> = parseDate(value, "startDate")
+fun parseStartDate(value: String): Result<LocalDateTime, DataErrors.Validation> =
+    parseDate(value, "startDate")
 
-fun parseDate(value: String, attributeName: String): Result<LocalDateTime, DataErrors.Validation> {
+fun parseDate(value: String, name: String): Result<LocalDateTime, DataErrors.Validation>{
     return value.toLocalDateTime()
         .mapFailure { fail ->
             when (fail) {
                 is DataTimeError.InvalidFormat -> DataErrors.Validation.DataFormatMismatch(
-                    name = attributeName,
+                    name = name,
                     actualValue = value,
                     expectedFormat = fail.pattern
                 )
 
                 is DataTimeError.InvalidDateTime ->
-                    DataErrors.Validation.InvalidDateTime(name = attributeName, actualValue = value)
+                    DataErrors.Validation.InvalidDateTime(name = name, actualValue = value)
             }
         }
 }

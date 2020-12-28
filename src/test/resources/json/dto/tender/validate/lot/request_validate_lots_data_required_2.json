@@ -1,0 +1,17 @@
+{
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "tender": {
+    "lots": [
+      {
+        "id": "c779aad5-6778-4d0f-acf9-7e3cdc019e1b"
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "relatedLot": "13d81953-42d9-465c-8ac8-e766bf6f435e"
+      }
+    ]
+  }
+}

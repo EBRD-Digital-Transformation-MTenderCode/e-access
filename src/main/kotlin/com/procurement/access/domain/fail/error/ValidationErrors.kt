@@ -400,4 +400,100 @@ sealed class ValidationErrors(
         numberError = "1.36.3",
         description = "State of lot'$lotId' is invalid."
     )
+
+    class TenderNotFoundOnValidateLotsData(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+        numberError = "1.39.1",
+        prefix = "VR.COM-",
+        description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
+    )
+
+    class IncorrectNumberOfKnownLots(lots: Set<LotId>) : ValidationErrors(
+        numberError = "1.39.2",
+        prefix = "VR.COM-",
+        description = "Stored tender must contain only one lot that matches received. " + if (lots.isNotEmpty()) "Matching lots: '${lots.joinToString()}'." else "But contains none."
+    )
+
+    class IncorrectNumberOfNewLots() : ValidationErrors(
+        numberError = "1.39.3",
+        prefix = "VR.COM-",
+        description = "Received tender must contain two or more new lots."
+    )
+
+    class MissingTittleOnValidateLotsData(lotId: LotId) : ValidationErrors(
+        numberError = "1.39.12",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' must contain title."
+    )
+
+    class MissingDescriptionOnValidateLotsData(lotId: LotId) : ValidationErrors(
+        numberError = "1.39.13",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' must contain description."
+    )
+
+    class MissingValueOnValidateLotsData(lotId: LotId) : ValidationErrors(
+        numberError = "1.39.14",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' must contain value."
+    )
+
+    class MissingContractPeriodOnValidateLotsData(lotId: LotId) : ValidationErrors(
+        numberError = "1.39.15",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' must contain contractPeriod."
+    )
+
+    class MissingPlaceOfPerformanceOnValidateLotsData(lotId: LotId) : ValidationErrors(
+        numberError = "1.39.16",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' must contain placeOfPerformance."
+    )
+
+    class CurrencyDoesNotMatch(newLotId: LotId, dividedLotId: LotId) : ValidationErrors(
+        numberError = "1.39.4",
+        prefix = "VR.COM-",
+        description = "Currency of lot '$newLotId' does not match currency of divided lot '$dividedLotId'."
+    )
+
+    class InvalidAmount(dividedLotId: LotId) : ValidationErrors(
+        numberError = "1.39.5",
+        prefix = "VR.COM-",
+        description = "Sum of new lots amounts does equal amount of divided lot '$dividedLotId'."
+    )
+
+    class InvalidContractPeriodStart(newLotId: LotId, dividedLotId: LotId) : ValidationErrors(
+        numberError = "1.39.6",
+        prefix = "VR.COM-",
+        description = "Contract period start date of lot '$newLotId' does not match start date of divided lot '$dividedLotId'."
+    )
+
+    class InvalidContractPeriodEnd(newLotId: LotId, dividedLotId: LotId) : ValidationErrors(
+        numberError = "1.39.7",
+        prefix = "VR.COM-",
+        description = "Contract period end date of lot '$newLotId' does not match end date of divided lot '$dividedLotId'."
+    )
+
+    class LotDoesNotHaveRelatedItem(lotsIds: List<LotId>) : ValidationErrors(
+        numberError = "1.39.8",
+        prefix = "VR.COM-",
+        description = "No related items found for lot(s) '${lotsIds.joinToString()}'."
+    )
+
+    class MissingItemsOfDividedLot(dividedLotId: LotId, missingItems: List<String>) : ValidationErrors(
+        numberError = "1.39.9",
+        prefix = "VR.COM-",
+        description = "Received divided lot '$dividedLotId' is missing item(s) '${missingItems.joinToString()}'."
+    )
+
+    class UnknownItemsOfDividedLot(dividedLotId: LotId, unknownItems: List<String>) : ValidationErrors(
+        numberError = "1.39.10",
+        prefix = "VR.COM-",
+        description = "Received divided lot '$dividedLotId' contains unknown items '${unknownItems.joinToString()}'."
+    )
+
+    class ItemsNotLinkedToAnyNewLots(unlinkedItems: List<String>) : ValidationErrors(
+        numberError = "1.39.11",
+        prefix = "VR.COM-",
+        description = "Item(s) '${unlinkedItems.joinToString()}' not linked to any lots."
+    )
 }
