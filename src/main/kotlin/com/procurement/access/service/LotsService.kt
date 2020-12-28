@@ -447,20 +447,124 @@ class LotsService(
         val dividedLotId = tenderProcess.tender.lots.first { it.id.toString() in receivedLotsIds }.id
 
         val generatedLotsByOldIds = getGeneratedLotsByOldIds(params, dividedLotId)
-        val newLotIdsByOldLotIds = generatedLotsByOldIds.mapValues { it.value.id }
         val generatedLots = generatedLotsByOldIds.values
         val updatedLots = updateDividedLot(tenderProcess, dividedLotId) + generatedLots
 
+        val newLotIdsByOldLotIds = generatedLotsByOldIds.mapValues { it.value.id }
         val updatedItems = getUpdatedItems(params, newLotIdsByOldLotIds, tenderProcess)
 
         saveLotsAndItems(updatedLots, updatedItems, tenderProcessEntity)
             .doOnError { return it.asFailure() }
 
-        DivideLotResult(
+        return generateResult(generatedLots, updatedLots, dividedLotId, params, updatedItems)
+    }
+
+    private fun generateResult(
+        generatedLots: Collection<TenderLotsFullInfo.Tender.Lot>,
+        updatedLots: List<TenderLotsFullInfo.Tender.Lot>,
+        dividedLotId: LotId,
+        params: DivideLotParams,
+        updatedItems: List<TenderLotsFullInfo.Tender.Item>
+    ): Result<DivideLotResult, Fail> {
+        val resultingLots = generatedLots + updatedLots.find { it.id == dividedLotId }!!
+        val itemsIds = params.tender.items.toSet { it.id }
+        val resultingItems = updatedItems.filter { it.id in itemsIds }
+
+        return DivideLotResult(
             tender = DivideLotResult.Tender(
-                lots =
+                lots = resultingLots.map { lot ->
+                    DivideLotResult.Tender.Lot(
+                        id = lot.id,
+                        status = lot.status,
+                        statusDetails = lot.statusDetails,
+                        internalId = lot.internalId,
+                        title = lot.title,
+                        description = lot.description,
+                        value = lot.value?.let { value ->
+                            DivideLotResult.Tender.Lot.Value(amount = value.amount, currency = value.currency)
+                        },
+                        contractPeriod = lot.contractPeriod?.let { contractPeriod ->
+                            DivideLotResult.Tender.Lot.ContractPeriod(
+                                startDate = contractPeriod.startDate,
+                                endDate = contractPeriod.endDate
+                            )
+                        },
+                        placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                            placeOfPerformance?.address?.let { address ->
+                                DivideLotResult.Tender.Lot.PlaceOfPerformance(
+                                    address = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                                        streetAddress = address.streetAddress,
+                                        postalCode = address.postalCode,
+                                        addressDetails = address.addressDetails.let { addressDetails ->
+                                            DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                country = addressDetails.country.let { country ->
+                                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                        id = country.id,
+                                                        description = country.description,
+                                                        scheme = country.scheme,
+                                                        uri = country.uri
+                                                    )
+                                                },
+                                                region = addressDetails.country.let { region ->
+                                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                        id = region.id,
+                                                        description = region.description,
+                                                        scheme = region.scheme,
+                                                        uri = region.uri
+                                                    )
+                                                },
+                                                locality = addressDetails.country.let { locality ->
+                                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                        id = locality.id,
+                                                        description = locality.description,
+                                                        scheme = locality.scheme,
+                                                        uri = locality.uri
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                )
+                            }
+
+                        }
+                    )
+                },
+                items = resultingItems.map { item ->
+                    DivideLotResult.Tender.Item(
+                        id = item.id,
+                        relatedLot = item.relatedLot,
+                        internalId = item.internalId,
+                        description = item.description,
+                        quantity = item.quantity,
+                        classification = item.classification
+                            .let { classification ->
+                                DivideLotResult.Tender.Item.Classification(
+                                    id = classification.id,
+                                    description = classification.description,
+                                    scheme = classification.scheme
+                                )
+                            },
+                        unit = item.unit
+                            .let { unit ->
+                                DivideLotResult.Tender.Item.Unit(
+                                    id = unit.id,
+                                    name = unit.name
+                                )
+                            },
+                        additionalClassifications = item.additionalClassifications
+                            ?.map { additionalClassification ->
+                                DivideLotResult.Tender.Item.AdditionalClassification(
+                                    id = additionalClassification.id,
+                                    scheme = additionalClassification.scheme,
+                                    description = additionalClassification.description
+                                )
+                            }
+                    )
+
+                }
             )
-        )
+        ).asSuccess()
     }
 
     private fun saveLotsAndItems(
