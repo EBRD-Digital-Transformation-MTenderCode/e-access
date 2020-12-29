@@ -402,10 +402,7 @@ internal class LotsServiceTest {
             val params = getParams()
             val paramsWithoutItemForOneNewLot = params.copy(
                 tender = params.tender.copy(
-                    items = params.tender.items.subList(
-                        0,
-                        2
-                    )
+                    items = params.tender.items.subList(0, 2)
                 )
             )
 
@@ -426,10 +423,7 @@ internal class LotsServiceTest {
             val params = getParams()
             val paramsWithoutItemForDividedLot = params.copy(
                 tender = params.tender.copy(
-                    items = params.tender.items.subList(
-                        1,
-                        3
-                    )
+                    items = params.tender.items.subList(1, 3)
                 )
             )
 
