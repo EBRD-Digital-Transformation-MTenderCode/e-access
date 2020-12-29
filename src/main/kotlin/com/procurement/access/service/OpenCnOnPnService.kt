@@ -4,6 +4,7 @@ import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
@@ -20,6 +21,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -41,6 +43,8 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
+import com.procurement.access.lib.errorIfBlank
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -92,6 +96,9 @@ class OpenCnOnPnService(
         }.toSet()
 
     fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedOpenCnOnPn {
+        data.validateTextAttributes()
+        data.validateDuplicates()
+
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
                 ?: throw ErrorException(DATA_NOT_FOUND)
@@ -260,6 +267,131 @@ class OpenCnOnPnService(
         val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
+    }
+
+    private fun OpenCnOnPnRequest.validateTextAttributes() {
+        tender.electronicAuctions?.details
+            ?.forEach { detail ->
+                detail.id.checkForBlank("tender.electronicAuctions.details.id")
+            }
+
+        tender.criteria
+            ?.forEach { criterion ->
+                criterion.id.checkForBlank("tender.criteria.id")
+                criterion.title.checkForBlank("tender.criteria.title")
+                criterion.description.checkForBlank("tender.criteria.description")
+
+                criterion.requirementGroups
+                    .forEach { requirementGroup ->
+                        requirementGroup.id.checkForBlank("tender.criteria.requirementGroups.id")
+                        requirementGroup.description.checkForBlank("tender.criteria.requirementGroups.description")
+
+                        requirementGroup.requirements
+                            .forEach { requirement ->
+                                requirement.id.checkForBlank("tender.criteria.requirementGroups.requirements.id")
+                                requirement.title.checkForBlank("tender.criteria.requirementGroups.requirements.title")
+                                requirement.description.checkForBlank("tender.criteria.requirementGroups.requirements.description")
+                                requirement.value
+                                    .also {
+                                        if (it is ExpectedValue.AsString)
+                                            it.value.checkForBlank("tender.criteria.requirementGroups.requirements.expectedValue")
+                                    }
+                            }
+                    }
+            }
+
+        tender.conversions
+            ?.forEach { conversion ->
+                conversion.id.checkForBlank("tender.conversions.id")
+                conversion.description.checkForBlank("tender.conversions.description")
+                conversion.relatedItem.checkForBlank("tender.conversions.relatedItem")
+                conversion.rationale.checkForBlank("tender.conversions.rationale")
+                conversion.coefficients
+                    .forEach { coefficient ->
+                        coefficient.id.checkForBlank("tender.conversions.coefficients.id")
+                        coefficient.relatedOption.checkForBlank("tender.conversions.coefficients.relatedOption")
+                        coefficient.value.also {
+                            if (it is CoefficientValue.AsString)
+                                it.value.checkForBlank("tender.conversions.coefficients.value")
+                        }
+                    }
+            }
+
+        tender.procuringEntity?.id.checkForBlank("tender.procuringEntity.id")
+
+        tender.lots
+            .forEach { lot ->
+                lot.id.checkForBlank("tender.lots.id")
+                lot.description.checkForBlank("tender.lots.description")
+                lot.internalId.checkForBlank("tender.lots.internalId")
+                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
+                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
+                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
+                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
+                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
+                lot.title.checkForBlank("tender.lots.title")
+            }
+
+        tender.items
+            .forEach { item ->
+                item.id.checkForBlank("tender.items.id")
+                item.internalId.checkForBlank("tender.items.internalId")
+                item.classification.id.checkForBlank("tender.items.classification.id")
+                item.classification.description.checkForBlank("tender.items.classification.description")
+                item.additionalClassifications
+                    ?.forEach { additionalClassification ->
+                        additionalClassification.id.checkForBlank("tender.items.additionalClassifications.id")
+                        additionalClassification.description.checkForBlank("tender.items.additionalClassifications.description")
+                    }
+                item.unit.id.checkForBlank("tender.items.unit.id")
+                item.unit.name.checkForBlank("tender.items.unit.name")
+                item.description.checkForBlank("tender.items.description")
+                item.relatedLot.checkForBlank("tender.items.relatedLot")
+            }
+
+        tender.documents
+            .forEach { document ->
+                document.title.checkForBlank("tender.documents.title")
+                document.description.checkForBlank("tender.documents.description")
+                document.relatedLots
+                    ?.forEachIndexed { index, relatedLot -> relatedLot.checkForBlank("tender.documents.relatedLots[$index]") }
+            }
+
+        tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+        tender.procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
+    }
+
+    private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+        ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty or blank."
+        )
+    }
+
+    private fun OpenCnOnPnRequest.validateDuplicates() {
+        tender.items
+            .forEachIndexed { index, item ->
+                val duplicate =
+                    item.additionalClassifications?.getDuplicate { it.scheme.key + it.id.toUpperCase() }
+
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.items[$index].additionalClassifications' has duplicate by scheme '${duplicate.scheme}' and id '${duplicate.id}'."
+                    )
+            }
+
+        tender.documents
+            .forEachIndexed { index, document ->
+                val duplicate = document.relatedLots?.getDuplicate { it }
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.documents[$index].relatedLots' has duplicate '$duplicate'."
+                    )
+            }
     }
 
     /**
@@ -1296,7 +1428,8 @@ class OpenCnOnPnService(
             submissionMethod = pnEntity.tender.submissionMethod, //BR-3.8.1
             submissionMethodRationale = pnEntity.tender.submissionMethodRationale, //BR-3.8.1
             submissionMethodDetails = pnEntity.tender.submissionMethodDetails, //BR-3.8.1
-            documents = updatedDocuments //BR-3.7.13
+            documents = updatedDocuments, //BR-3.7.13
+            additionalProcurementCategories = request.tender.additionalProcurementCategories
         )
     }
 
@@ -1886,7 +2019,8 @@ class OpenCnOnPnService(
                     procurementMethodDetails = tender.procurementMethodDetails,
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-                    mainProcurementCategory = tender.mainProcurementCategory,
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                        mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         OpenCnOnPnResponse.Tender.ContractPeriod(

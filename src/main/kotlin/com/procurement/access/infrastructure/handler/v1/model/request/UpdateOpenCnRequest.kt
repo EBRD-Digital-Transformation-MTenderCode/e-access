@@ -7,10 +7,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
-
+import java.math.BigDecimal
 
 import java.time.LocalDateTime
 
@@ -219,8 +220,24 @@ data class UpdateOpenCnRequest(
             @field:JsonProperty("internalId") @param:JsonProperty("internalId") val internalId: String?,
 
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-            @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
-        )
+            @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String,
+            @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("additionalClassifications") @param:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
+
+            @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit
+        ){
+            data class AdditionalClassification(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: Scheme,
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String
+            )
+            data class Unit(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("name") @param:JsonProperty("name") val name: String
+            )
+        }
 
         data class Document(
             @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: String,

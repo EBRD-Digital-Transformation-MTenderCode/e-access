@@ -78,9 +78,16 @@ fun <T> getElementsForUpdate(received: Set<T>, known: Set<T>) = known.intersect(
 
 inline fun <T, V> Collection<T>.getDuplicate(selector: (T) -> V): T? {
     val unique = HashSet<V>()
-    this.forEach { item ->
-        if (!unique.add(selector(item)))
-            return item
+    forEach { item ->
+        if (!unique.add(selector(item))) return item
+    }
+    return null
+}
+
+inline fun <T, V> Sequence<T>.getDuplicate(selector: (T) -> V): T? {
+    val unique = HashSet<V>()
+    forEach { item ->
+        if (!unique.add(selector(item))) return item
     }
     return null
 }

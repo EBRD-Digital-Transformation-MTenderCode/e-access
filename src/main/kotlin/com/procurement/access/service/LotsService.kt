@@ -4,6 +4,7 @@ import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.model.params.CheckLotsStateParams
 import com.procurement.access.application.model.params.GetLotsValueParams
+import com.procurement.access.application.model.params.ValidateLotsDataParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
@@ -28,6 +29,7 @@ import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.pmd
 import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.TenderLotValueInfo
+import com.procurement.access.infrastructure.entity.TenderLotsAndItemsInfo
 import com.procurement.access.infrastructure.entity.TenderLotsInfo
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcLot
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRq
@@ -61,11 +63,13 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.RoundingMode
 
 @Service
-class LotsService(private val tenderProcessDao: TenderProcessDao,
-                  private val tenderProcessRepository: TenderProcessRepository,
-                  private val rulesService: RulesService
+class LotsService(
+    private val tenderProcessDao: TenderProcessDao,
+    private val tenderProcessRepository: TenderProcessRepository,
+    private val rulesService: RulesService
 ) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
@@ -373,7 +377,6 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             .asSuccess()
     }
 
-
     fun checkLotsState(params: CheckLotsStateParams): ValidationResult<Fail> {
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
             .onFailure { return it.reason.asValidationFailure() }
@@ -411,7 +414,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             }
         )
 
-    private fun checkLotState(lot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): ValidationResult<ValidationErrors> =
+    private fun checkLotState(
+        lot: TenderLotsInfo.Tender.Lot,
+        validStates: LotStatesRule
+    ): ValidationResult<ValidationErrors> =
         if (lotStateIsValid(lot, validStates))
             ValidationResult.ok()
         else ValidationErrors.InvalidLotState(lot.id).asValidationFailure()
@@ -421,4 +427,194 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             storedLot.status == validState.status
                 && validState.statusDetails?.equals(storedLot.statusDetails) ?: true
         }
+
+    fun validateLotsData(params: ValidateLotsDataParams): ValidationResult<Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { return it.reason.asValidationFailure() }
+            ?: return ValidationErrors.TenderNotFoundOnValidateLotsData(params.cpid, params.ocid).asValidationFailure()
+
+        val process = entity.jsonData.tryToObject(TenderLotsAndItemsInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val receivedLotsByIds = params.tender.lots.associateBy { it.id }
+        val storedLotsByIds = process.tender.lots.orEmpty().associateBy { it.id }
+
+        val dividedLot = getDividedLot(receivedLotsByIds, storedLotsByIds)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val newLots = getNewLots(receivedLotsByIds, dividedLot)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        checkForMissingParameters(newLots)
+            .doOnError { return it.asValidationFailure() }
+
+        checkLots(newLots, dividedLot, params.tender.items, process.tender.items.orEmpty())
+            .doOnError { return it.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun getNewLots(
+        receivedLotsByIds: Map<LotId, ValidateLotsDataParams.Tender.Lot>,
+        knownLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): Result<List<ValidateLotsDataParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots>  {
+        val newLots = receivedLotsByIds.minus(knownLot.id)
+        val minimumNumberOfNewLots = 2
+        return if (newLots.size < minimumNumberOfNewLots)
+            ValidationErrors.IncorrectNumberOfNewLots().asFailure()
+        else newLots.values.toList().asSuccess()
+    }
+
+    private fun getDividedLot(
+        receivedLotsByIds: Map<LotId, ValidateLotsDataParams.Tender.Lot>,
+        storedLotsByIds: Map<LotId, TenderLotsAndItemsInfo.Tender.Lot>
+    ): Result<TenderLotsAndItemsInfo.Tender.Lot, ValidationErrors.IncorrectNumberOfKnownLots> {
+        val knownLotsIds = receivedLotsByIds.keys.intersect(storedLotsByIds.keys)
+        val expectedNumberOfKnownLots = 1
+
+        if (knownLotsIds.size != expectedNumberOfKnownLots)
+            return ValidationErrors.IncorrectNumberOfKnownLots(knownLotsIds).asFailure()
+
+        return storedLotsByIds.getValue(knownLotsIds.first()).asSuccess()
+    }
+
+    private fun checkForMissingParameters(newLots: List<ValidateLotsDataParams.Tender.Lot>) : ValidationResult<Fail>{
+        newLots.map { lot ->
+            lot.title ?: return ValidationErrors.MissingTittleOnValidateLotsData(lot.id).asValidationFailure()
+            lot.description ?: return ValidationErrors.MissingDescriptionOnValidateLotsData(lot.id).asValidationFailure()
+            lot.value ?: return ValidationErrors.MissingValueOnValidateLotsData(lot.id).asValidationFailure()
+            lot.contractPeriod ?: return ValidationErrors.MissingContractPeriodOnValidateLotsData(lot.id).asValidationFailure()
+            lot.placeOfPerformance ?: return ValidationErrors.MissingPlaceOfPerformanceOnValidateLotsData(lot.id).asValidationFailure()
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun checkLots(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
+        receivedItems: List<ValidateLotsDataParams.Tender.Item>,
+        storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
+    ) : ValidationResult<Fail>{
+        checkLotsValue(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkLotsContractPeriod(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkNewLotsItems(newLots, receivedItems, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkDividedLotItems(dividedLot, receivedItems, storedItems)
+            .doOnError { return it.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsValue(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        checkLotsCurrency(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkLotsAmount(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsCurrency(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        newLots.forEach { newLot ->
+            if (newLot.value!!.currency != dividedLot.value.currency)
+                return ValidationErrors.CurrencyDoesNotMatch(newLotId = newLot.id, dividedLotId = dividedLot.id)
+                    .asValidationFailure()
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsAmount(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        val newAmount = newLots
+            .map { it.value!!.amount }
+            .reduce { sum, element -> sum + element }
+            .setScale(2, RoundingMode.HALF_UP)
+
+        if (dividedLot.value.amount.compareTo(newAmount) != 0)
+            return ValidationErrors.InvalidAmount(dividedLotId = dividedLot.id)
+                .asValidationFailure()
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsContractPeriod(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        newLots.forEach { newLot ->
+            if (newLot.contractPeriod!!.startDate != dividedLot.contractPeriod.startDate)
+                return ValidationErrors.InvalidContractPeriodStart(newLotId = newLot.id, dividedLotId = dividedLot.id)
+                    .asValidationFailure()
+
+            if (newLot.contractPeriod.endDate != dividedLot.contractPeriod.endDate)
+                return ValidationErrors.InvalidContractPeriodEnd(newLotId = newLot.id, dividedLotId = dividedLot.id)
+                    .asValidationFailure()
+        }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkNewLotsItems(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        items: List<ValidateLotsDataParams.Tender.Item>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        val itemsByRelatedLots = items.associateBy { it.relatedLot }.minus(dividedLot.id)
+        val lotIds = newLots.toSet { it.id }
+
+        val lotsWithoutItems = lotIds - itemsByRelatedLots.keys
+        if (lotsWithoutItems.isNotEmpty())
+            return ValidationErrors.LotDoesNotHaveRelatedItem(lotsWithoutItems.toList())
+                .asValidationFailure()
+
+        val unknownLots = itemsByRelatedLots.keys - lotIds
+        if (unknownLots.isNotEmpty()) {
+            val itemsWithUnknownLots = unknownLots.map { itemsByRelatedLots.getValue(it).id }
+            return ValidationErrors.ItemsNotLinkedToAnyNewLots(itemsWithUnknownLots)
+                .asValidationFailure()
+        }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkDividedLotItems(
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
+        receivedItems: List<ValidateLotsDataParams.Tender.Item>,
+        storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
+    ): ValidationResult<Fail> {
+        val receivedItemsOfDividedLot = receivedItems.asSequence()
+            .filter { it.relatedLot == dividedLot.id }
+            .map { it.id }
+            .toSet()
+
+        val storedItemsOfDividedLot = storedItems.asSequence()
+            .filter { it.relatedLot == dividedLot.id }
+            .map { it.id }
+            .toSet()
+
+        val missingItems = storedItemsOfDividedLot - receivedItemsOfDividedLot
+        if (missingItems.isNotEmpty())
+            return ValidationErrors.MissingItemsOfDividedLot(dividedLot.id, missingItems.toList())
+                .asValidationFailure()
+
+        val unknownItems = receivedItemsOfDividedLot - storedItemsOfDividedLot
+        if (unknownItems.isNotEmpty())
+            return ValidationErrors.UnknownItemsOfDividedLot(dividedLot.id, unknownItems.toList())
+                .asValidationFailure()
+
+        return ValidationResult.ok()
+    }
 }

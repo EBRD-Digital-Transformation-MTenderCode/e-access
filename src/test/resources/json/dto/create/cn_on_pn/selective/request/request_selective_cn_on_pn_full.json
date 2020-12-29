@@ -16,6 +16,7 @@
     },
     "procurementMethodRationale": "request.tender.procurementMethodRationale",
     "procurementMethodAdditionalInfo": "request.tender.procurementMethodAdditionalInfo",
+    "additionalProcurementCategories": ["goods"],
     "awardCriteria": "costOnly",
     "procurementMethodModalities": [
       "electronicAuction"

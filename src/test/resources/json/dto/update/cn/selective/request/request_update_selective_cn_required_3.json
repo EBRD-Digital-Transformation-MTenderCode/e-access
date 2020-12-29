@@ -45,13 +45,19 @@
       {
         "id": "tender.items[0].id",
         "description": "tender.items[].description",
-        "relatedLot": "tender.lots[0].id"
+        "relatedLot": "tender.lots[0].id",
+        "unit":{
+          "id":"",
+          "name":""
+        },
+        "quantity": 0
       }
     ],
     "documents": [
       {
         "documentType": "evaluationCriteria",
-        "id": "tender.documents[0].documentType"
+        "id": "tender.documents[0].documentType",
+        "title": "tender.documents[0].title"
       }
     ]
   }
