@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.dto.lot
+package com.procurement.access.infrastructure.dto.lot.divide
 
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import com.procurement.access.infrastructure.handler.v2.model.request.DivideLotRequest
