@@ -148,7 +148,7 @@ class CheckItemsStrategyTest {
                             val dataRequest = requestWithNotConsistentCPVCodes()
                             val cm = commandMessage(operationName = operationName, data = dataRequest)
 
-                            val dataEntity = tenderProcessEntityData(hasItems = hasItems)
+                            val dataEntity = tenderProcessEntityData(hasItems = hasItems, id ="non.consistent.id")
                             mockGetByCpIdAndStage(
                                 cpid = ContextGenerator.CPID,
                                 stage = ContextGenerator.PREV_STAGE,
@@ -158,9 +158,46 @@ class CheckItemsStrategyTest {
                             val exception = assertThrows<ErrorException> {
                                 strategy.check(cm)
                             }
-                            assertEquals(ErrorType.ITEMS_CPV_CODES_NOT_CONSISTENT, exception.error)
+                            assertEquals(ErrorType.MISSING_HOMOGENEOUS_ITEMS, exception.error)
                         }
+
+                    @ParameterizedTest
+                    @CsvSource(
+                        value = [
+                            "createCNonPN",
+                            "createPINonPN",
+                            "createNegotiationCnOnPn"
+                        ]
+                    )
+                    fun requestWithCPVCodesConsistentWithTenderClassification(operationName: String) {
+                        val dataRequest = requestWithNotConsistentCPVCodes()
+                        val cm = commandMessage(operationName = operationName, data = dataRequest)
+
+                        val dataEntity = tenderProcessEntityData(hasItems = hasItems)
+                        mockGetByCpIdAndStage(
+                            cpid = ContextGenerator.CPID,
+                            stage = ContextGenerator.PREV_STAGE,
+                            data = dataEntity
+                        )
+
+                        val actual = strategy.check(cm).toJson()
+                        val expectedItems = dataRequest.toObject<CheckItemsRequest>().items
+                        val expected = response(
+                            mdmValidation = true,
+                            itemsAdd = true,
+                            id = RESPONSE_TENDER_CPV_CODE,
+                            mainProcurementCategory = MainProcurementCategory.SERVICES,
+                            items = expectedItems.map {
+                                CheckItemsResponse.Item(
+                                    id = it.id,
+                                    relatedLot = it.relatedLot
+                                )
+                            }
+                        )
+
+                        JsonValidator.equalsJsons(expectedJson = expected, actualJson = actual)
                     }
+                }
 
                     @ParameterizedTest
                     @CsvSource(
