@@ -1,0 +1,161 @@
+{
+  "tender": {
+    "lots": [
+      {
+        "id": "5aa8c7f0-0bc0-41ce-9a6e-31f930829c96",
+        "internalId": "string",
+        "title": "string",
+        "description": "unchanged_lot",
+        "value": {
+          "amount": 0,
+          "currency": "string"
+        },
+        "contractPeriod": {
+          "startDate": "2020-12-29T09:41:07Z",
+          "endDate": "2020-12-29T09:41:07Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "string",
+            "postalCode": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              }
+            }
+          }
+        },
+        "status": "cancelled",
+        "statusDetails": "empty"
+      },
+      {
+        "id": "0124de77-8143-49dd-8fca-eda3f682f013",
+        "internalId": "string",
+        "title": "string",
+        "description": "divided_lot",
+        "value": {
+          "amount": 0,
+          "currency": "string"
+        },
+        "contractPeriod": {
+          "startDate": "2020-10-29T09:41:07Z",
+          "endDate": "2020-10-29T09:41:07Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "string",
+            "postalCode": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              }
+            }
+          }
+        },
+        "status": "planning",
+        "statusDetails": "awarded"
+      }
+    ],
+    "items": [
+      {
+        "id": "unchanged_item",
+        "internalId": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        },
+        "additionalClassifications": [
+          {
+            "id": "string",
+            "scheme": "string",
+            "description": "string"
+          }
+        ],
+        "quantity": 0,
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "description": "string",
+        "relatedLot": "5aa8c7f0-0bc0-41ce-9a6e-31f930829c96"
+      },
+      {
+        "id": "item_id_1",
+        "internalId": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        },
+        "additionalClassifications": [
+          {
+            "id": "string",
+            "scheme": "string",
+            "description": "string"
+          }
+        ],
+        "quantity": 0,
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "description": "string",
+        "relatedLot": "0124de77-8143-49dd-8fca-eda3f682f013"
+      },
+      {
+        "id": "item_id_2",
+        "internalId": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        },
+        "additionalClassifications": [
+          {
+            "id": "string",
+            "scheme": "string",
+            "description": "string"
+          }
+        ],
+        "quantity": 0,
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "description": "string",
+        "relatedLot": "0124de77-8143-49dd-8fca-eda3f682f013"
+      }
+    ]
+  }
+}
