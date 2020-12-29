@@ -1,7 +1,9 @@
 package com.procurement.access.service
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import com.procurement.access.application.model.params.DivideLotParams
 import com.procurement.access.application.model.params.GetLotsValueParams
 import com.procurement.access.application.model.params.ValidateLotsDataParams
 import com.procurement.access.application.repository.TenderProcessRepository
@@ -9,12 +11,18 @@ import com.procurement.access.application.service.Transform
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.LotStatus
+import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.infrastructure.entity.TenderLotsFullInfo
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
+import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
+import com.procurement.access.json.JsonMapper.mapper
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asSuccess
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -34,6 +42,8 @@ internal class LotsServiceTest {
         private val STORED_LOT_ID = UUID.fromString("0124de77-8143-49dd-8fca-eda3f682f013")
         private val LOT_ID_1 = UUID.fromString("dccd933c-10d1-463f-97f2-8966dfc211c8")
         private val LOT_ID_2 = UUID.fromString("03af0741-32d0-41a1-a953-42b43278eacd")
+        private val ITEM_ID_1 = "item_id_1"
+        private val ITEM_ID_2 = "item_id_2"
 
         private const val FORMAT_PATTERN = "uuuu-MM-dd'T'HH:mm:ss'Z'"
         private val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern(FORMAT_PATTERN)
@@ -206,7 +216,14 @@ internal class LotsServiceTest {
         @Test
         fun oneNewLotReceived() {
             val params = getParams()
-            val paramsWithOneStoredAndOneNewLot = params.copy(tender = params.tender.copy(lots = params.tender.lots.subList(0,2)))
+            val paramsWithOneStoredAndOneNewLot = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.subList(
+                        0,
+                        2
+                    )
+                )
+            )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
@@ -223,7 +240,11 @@ internal class LotsServiceTest {
         @Test
         fun titleOfNewLotIsNull() {
             val params = getParams()
-            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot -> lot.copy(title = null) }))
+            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot ->
+                lot.copy(
+                    title = null
+                )
+            }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
@@ -239,7 +260,11 @@ internal class LotsServiceTest {
         @Test
         fun descriptionOfNewLotIsNull() {
             val params = getParams()
-            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot -> lot.copy(description = null) }))
+            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot ->
+                lot.copy(
+                    description = null
+                )
+            }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
@@ -255,7 +280,11 @@ internal class LotsServiceTest {
         @Test
         fun valueOfNewLotIsNull() {
             val params = getParams()
-            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot -> lot.copy(value = null) }))
+            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot ->
+                lot.copy(
+                    value = null
+                )
+            }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
@@ -271,7 +300,11 @@ internal class LotsServiceTest {
         @Test
         fun contractPeriodOfNewLotIsNull() {
             val params = getParams()
-            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot -> lot.copy(contractPeriod = null) }))
+            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot ->
+                lot.copy(
+                    contractPeriod = null
+                )
+            }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
@@ -287,7 +320,11 @@ internal class LotsServiceTest {
         @Test
         fun placeOfPerformanceOfNewLotIsNull() {
             val params = getParams()
-            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot -> lot.copy(placeOfPerformance = null) }))
+            val paramsWithNullTitle = params.copy(tender = params.tender.copy(lots = params.tender.lots.map { lot ->
+                lot.copy(
+                    placeOfPerformance = null
+                )
+            }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
@@ -363,7 +400,14 @@ internal class LotsServiceTest {
         @Test
         fun newLotDoesNotHaveRelatedItem() {
             val params = getParams()
-            val paramsWithoutItemForOneNewLot = params.copy(tender = params.tender.copy(items = params.tender.items.subList(0,2)))
+            val paramsWithoutItemForOneNewLot = params.copy(
+                tender = params.tender.copy(
+                    items = params.tender.items.subList(
+                        0,
+                        2
+                    )
+                )
+            )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
@@ -377,11 +421,17 @@ internal class LotsServiceTest {
             assertEquals(expectedMessage, actual.reason.description)
         }
 
-
         @Test
         fun dividedLotDoesNotHaveRelatedItem() {
             val params = getParams()
-            val paramsWithoutItemForDividedLot = params.copy(tender = params.tender.copy(items = params.tender.items.subList(1,3)))
+            val paramsWithoutItemForDividedLot = params.copy(
+                tender = params.tender.copy(
+                    items = params.tender.items.subList(
+                        1,
+                        3
+                    )
+                )
+            )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
@@ -419,7 +469,6 @@ internal class LotsServiceTest {
             assertEquals(expectedMessage, actual.reason.description)
         }
 
-
         @Test
         fun paramsContainItemOfUnknownLot() {
             val params = getParams()
@@ -443,7 +492,6 @@ internal class LotsServiceTest {
             assertEquals(expectedErrorCode, actual.reason.code)
             assertEquals(expectedMessage, actual.reason.description)
         }
-
 
         private fun getParams(): ValidateLotsDataParams {
             return ValidateLotsDataParams(
@@ -554,5 +602,258 @@ internal class LotsServiceTest {
                 )
             )
         }
+    }
+
+    @Nested
+    inner class DivideLot {
+
+        @Test
+        fun success() {
+            val params = getParams()
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/divide/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            whenever(generationService.lotId())
+                .thenReturn(LOT_ID_1)
+                .thenReturn(LOT_ID_2)
+            val node = mapper.createObjectNode()
+            whenever(transform.tryToJsonNode(any<List<TenderLotsFullInfo.Tender.Lot>>())).thenReturn(node.asSuccess())
+            whenever(transform.tryToJsonNode(any<List<TenderLotsFullInfo.Tender.Item>>())).thenReturn(node.asSuccess())
+            val tenderNode = mapper.createObjectNode().apply { replace("tender", node) }
+            whenever(transform.tryParse(any())).thenReturn(tenderNode.asSuccess())
+            whenever(transform.tryToJson(any())).thenReturn("".asSuccess())
+            whenever(tenderProcessRepository.save(any())).thenReturn(true.asSuccess())
+
+            val actual = lotsService.divideLot(params)
+
+            val expectedLotsResult = generateExpectedLots()
+            val expectedItemsResult = generateExpectedItems()
+
+            assertEquals(expectedLotsResult, actual.get.tender.lots.toSet())
+            assertEquals(expectedItemsResult, actual.get.tender.items.toSet())
+
+        }
+
+        fun generateExpectedLots() = setOf(
+            DivideLotResult.Tender.Lot(
+                id = LOT_ID_1,
+                status = LotStatus.ACTIVE,
+                statusDetails = LotStatusDetails.EMPTY,
+                internalId = "internalId",
+                title = "title",
+                description = "description",
+                value = DivideLotResult.Tender.Lot.Value(amount = BigDecimal.ONE, currency = "currency"),
+                contractPeriod = DivideLotResult.Tender.Lot.ContractPeriod(
+                    startDate = DATE,
+                    endDate = DATE.plusDays(1)
+                ),
+                placeOfPerformance = DivideLotResult.Tender.Lot.PlaceOfPerformance(
+                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                        streetAddress = "streetAddress",
+                        postalCode = "postalCode",
+                        addressDetails = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                            country = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                id = "id",
+                                description = "description",
+                                scheme = "scheme",
+                                uri = "uri"
+                            ),
+                            region = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                id = "id",
+                                description = "description",
+                                scheme = "scheme",
+                                uri = "uri"
+                            ),
+                            locality = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                id = "id",
+                                description = "description",
+                                scheme = "scheme",
+                                uri = "uri"
+                            )
+                        )
+                    )
+                )
+            ),
+            DivideLotResult.Tender.Lot(
+                id = LOT_ID_2,
+                status = LotStatus.ACTIVE,
+                statusDetails = LotStatusDetails.EMPTY,
+                description = null,
+                title = null,
+                value = null,
+                contractPeriod = null,
+                placeOfPerformance = null,
+                internalId = null
+            ),
+            DivideLotResult.Tender.Lot(
+                id = STORED_LOT_ID,
+                status = LotStatus.CANCELLED,
+                statusDetails = LotStatusDetails.EMPTY,
+                internalId = "string",
+                title = "string",
+                description = "divided_lot",
+                value = DivideLotResult.Tender.Lot.Value(
+                    amount = BigDecimal.ZERO,
+                    currency = "string"
+                ),
+                contractPeriod = DivideLotResult.Tender.Lot.ContractPeriod(
+                    startDate = LocalDateTime.parse("2020-10-29T09:41:07Z", FORMATTER),
+                    endDate = LocalDateTime.parse("2020-10-29T09:41:07Z", FORMATTER)
+                ),
+                placeOfPerformance = DivideLotResult.Tender.Lot.PlaceOfPerformance(
+                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                        streetAddress = "string",
+                        postalCode = "string",
+                        addressDetails = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                            country = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                id = "string",
+                                description = "string",
+                                scheme = "string",
+                                uri = "string"
+                            ),
+                            region = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                id = "string",
+                                description = "string",
+                                scheme = "string",
+                                uri = "string"
+                            ),
+                            locality = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                id = "string",
+                                description = "string",
+                                scheme = "string",
+                                uri = "string"
+                            )
+                        )
+                    )
+                )
+            )
+
+        )
+        fun generateExpectedItems() = setOf(
+            DivideLotResult.Tender.Item(
+                id = ITEM_ID_1,
+                relatedLot = LOT_ID_1,
+                internalId = "string",
+                description = "string",
+                quantity = BigDecimal.ZERO,
+                classification =
+                DivideLotResult.Tender.Item.Classification(
+                    id = "string",
+                    description = "string",
+                    scheme = "string"
+                ),
+                unit =
+                DivideLotResult.Tender.Item.Unit(
+                    id = "string",
+                    name = "string"
+                ),
+                additionalClassifications = listOf(
+                    DivideLotResult.Tender.Item.AdditionalClassification(
+                        id = "string",
+                        scheme = "string",
+                        description = "string"
+                    )
+                )
+            ),
+            DivideLotResult.Tender.Item(
+                id = ITEM_ID_2,
+                relatedLot = LOT_ID_2,
+                internalId = "string",
+                description = "string",
+                quantity = BigDecimal.ZERO,
+                classification =
+                DivideLotResult.Tender.Item.Classification(
+                    id = "string",
+                    description = "string",
+                    scheme = "string"
+                ),
+                unit =
+                DivideLotResult.Tender.Item.Unit(
+                    id = "string",
+                    name = "string"
+                ),
+                additionalClassifications = listOf(
+                    DivideLotResult.Tender.Item.AdditionalClassification(
+                        id = "string",
+                        scheme = "string",
+                        description = "string"
+                    )
+                )
+            )
+        )
+
+        private fun getParams() = DivideLotParams(
+            cpid = CPID,
+            ocid = OCID,
+            tender = DivideLotParams.Tender(
+                lots = listOf(
+                    DivideLotParams.Tender.Lot(
+                        id = STORED_LOT_ID.toString(),
+                        description = null,
+                        internalId = null,
+                        placeOfPerformance = null,
+                        contractPeriod = null,
+                        value = null,
+                        title = null
+                    ),
+                    DivideLotParams.Tender.Lot(
+                        id = "ae865fd4-288e-4862-9ec2-6d9f1f1a59be",
+                        description = "description",
+                        internalId = "internalId",
+                        placeOfPerformance = DivideLotParams.Tender.Lot.PlaceOfPerformance(
+                            DivideLotParams.Tender.Lot.PlaceOfPerformance.Address(
+                                streetAddress = "streetAddress",
+                                postalCode = "postalCode",
+                                addressDetails = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                    country = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                        id = "id",
+                                        description = "description",
+                                        scheme = "scheme",
+                                        uri = "uri"
+                                    ),
+                                    region = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                        id = "id",
+                                        description = "description",
+                                        scheme = "scheme",
+                                        uri = "uri"
+                                    ),
+                                    locality = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                        id = "id",
+                                        description = "description",
+                                        scheme = "scheme",
+                                        uri = "uri"
+                                    )
+                                )
+                            )
+                        ),
+                        contractPeriod = DivideLotParams.Tender.Lot.ContractPeriod(
+                            startDate = DATE,
+                            endDate = DATE.plusDays(1)
+                        ),
+                        value = DivideLotParams.Tender.Lot.Value(amount = BigDecimal.ONE, currency = "currency"),
+                        title = "title"
+                    ),
+                    DivideLotParams.Tender.Lot(
+                        id = "beb7c28c-6bb6-444d-b43d-a7cf2454b935",
+                        description = null,
+                        internalId = null,
+                        placeOfPerformance = null,
+                        contractPeriod = null,
+                        value = null,
+                        title = null
+                    )
+                ),
+                items = listOf(
+                    DivideLotParams.Tender.Item(
+                        id = ITEM_ID_1,
+                        relatedLot = "ae865fd4-288e-4862-9ec2-6d9f1f1a59be"
+                    ),
+                    DivideLotParams.Tender.Item(
+                        id = ITEM_ID_2,
+                        relatedLot = "beb7c28c-6bb6-444d-b43d-a7cf2454b935"
+                    )
+                )
+            )
+        )
     }
 }
