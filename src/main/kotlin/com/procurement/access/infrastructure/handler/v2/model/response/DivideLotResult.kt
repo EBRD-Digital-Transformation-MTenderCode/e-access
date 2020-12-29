@@ -1,6 +1,7 @@
 package com.procurement.access.infrastructure.handler.v2.model.response
 
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.domain.model.amount.Amount
 import com.procurement.access.domain.model.enums.LotStatus
@@ -18,12 +19,25 @@ data class DivideLotResult(
     ) {
         data class Lot(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: LotId,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("internalId") @field:JsonProperty("internalId") val internalId: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("title") @field:JsonProperty("title") val title: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("description") @field:JsonProperty("description") val description: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("value") @field:JsonProperty("value") val value: Value?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("contractPeriod") @field:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("placeOfPerformance") @field:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?,
+
             @param:JsonProperty("status") @field:JsonProperty("status") val status: LotStatus,
             @param:JsonProperty("statusDetails") @field:JsonProperty("statusDetails") val statusDetails: LotStatusDetails
         ) {
@@ -42,7 +56,10 @@ data class DivideLotResult(
             ) {
                 data class Address(
                     @param:JsonProperty("streetAddress") @field:JsonProperty("streetAddress") val streetAddress: String,
+
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
                     @param:JsonProperty("postalCode") @field:JsonProperty("postalCode") val postalCode: String?,
+
                     @param:JsonProperty("addressDetails") @field:JsonProperty("addressDetails") val addressDetails: AddressDetails
                 ) {
                     data class AddressDetails(
@@ -68,6 +85,8 @@ data class DivideLotResult(
                             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
                             @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
                             @param:JsonProperty("scheme") @field:JsonProperty("scheme") val scheme: String,
+
+                            @JsonInclude(JsonInclude.Include.NON_NULL)
                             @param:JsonProperty("uri") @field:JsonProperty("uri") val uri: String?
                         )
                     }
@@ -77,9 +96,15 @@ data class DivideLotResult(
 
         data class Item(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("internalId") @field:JsonProperty("internalId") val internalId: String?,
+
             @param:JsonProperty("classification") @field:JsonProperty("classification") val classification: Classification,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @param:JsonProperty("additionalClassifications") @field:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
+
             @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: BigDecimal,
             @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
             @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
