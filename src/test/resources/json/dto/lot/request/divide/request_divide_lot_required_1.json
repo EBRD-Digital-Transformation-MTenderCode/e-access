@@ -1,0 +1,41 @@
+{
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "tender": {
+    "lots": [
+      {
+        "id": "string",
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "relatedLot": "string"
+      }
+    ]
+  }
+}

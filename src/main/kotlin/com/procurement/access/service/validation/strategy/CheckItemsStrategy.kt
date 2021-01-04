@@ -20,6 +20,7 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckItemsRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckItemsResponse
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 
@@ -67,12 +68,18 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 val prevStage = cm.prevStage
                 val process: TenderProcess = loadTenderProcess(cpid, prevStage)
                 if (process.tender.items.isEmpty()) {
-                    val cpvCodes = getCPVCodes(request)
-                        .also {
-                            checkItemsCPVCodes(it)
-                        }
+                    val itemsCpvCodes = getCPVCodes(request)
+                    val itemsAreHomogeneous = areHomogeneous(itemsCpvCodes)
 
-                    val calculatedCPVCode = calculateCPVCode(cpvCodes)
+                    val homogeneousItemsCpvCodes = if (itemsAreHomogeneous)
+                        itemsCpvCodes
+                    else
+                        getCpvCodesHomogeneousWithTenderClassification(itemsCpvCodes, process.tender.classification)
+
+                    if (homogeneousItemsCpvCodes.isEmpty())
+                        throw ErrorException(ErrorType.MISSING_HOMOGENEOUS_ITEMS)
+
+                    val calculatedCPVCode = calculateCPVCode(homogeneousItemsCpvCodes)
                         .also {
                             checkCalculatedCPVCode(
                                 calculatedCPVCode = it,
@@ -202,7 +209,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 checkItems(request = request, cn = cn)
 
                 CheckItemsResponse(
-                    mdmValidation = false,
+                    mdmValidation = true,
                     itemsAdd = false,
                     mainProcurementCategory = cn.tender.mainProcurementCategory,
                     items = request.items.map { item ->
@@ -223,6 +230,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.CREATE_FE,
             OperationType.CREATE_PCR,
             OperationType.CREATE_SUBMISSION,
+            OperationType.DIVIDE_LOT,
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
@@ -276,6 +284,18 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             if (!codes.startsWithPattern(pattern))
                 throw ErrorException(error = ErrorType.ITEMS_CPV_CODES_NOT_CONSISTENT)
         }
+    }
+
+    private fun areHomogeneous(codes: List<CPVCode>): Boolean {
+        if (codes.isEmpty())
+            throw ErrorException(error = ErrorType.EMPTY_ITEMS, message = "Items must not be empty.")
+        val pattern: CPVCodePattern = codes.first().patternOfGroups
+        return codes.startsWithPattern(pattern)
+    }
+
+    private fun getCpvCodesHomogeneousWithTenderClassification(codes: List<CPVCode>, classification: Classification): List<CPVCode> {
+        val pattern: CPVCodePattern = classification.id.patternOfGroups
+        return codes.filter { it.startsWithPattern(pattern) }
     }
 
     /**

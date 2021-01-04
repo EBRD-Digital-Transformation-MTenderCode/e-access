@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.enums.AdditionalProcurementCategories
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
@@ -51,6 +52,9 @@ data class SelectiveCnOnPnRequest(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodRationale") @param:JsonProperty("procurementMethodRationale") val procurementMethodRationale: String? = null,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("additionalProcurementCategories") @param:JsonProperty("additionalProcurementCategories") val additionalProcurementCategories: List<AdditionalProcurementCategories>?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("procurementMethodAdditionalInfo") @param:JsonProperty("procurementMethodAdditionalInfo") val procurementMethodAdditionalInfo: String? = null,
@@ -300,9 +304,7 @@ data class SelectiveCnOnPnRequest(
         data class Document(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("title") @param:JsonProperty("title") val title: String?,
+            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,

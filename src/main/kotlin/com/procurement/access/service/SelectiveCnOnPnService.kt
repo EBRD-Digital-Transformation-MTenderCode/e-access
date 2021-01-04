@@ -4,6 +4,7 @@ import com.procurement.access.application.model.context.CheckSelectiveCnOnPnCont
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
 import com.procurement.access.domain.model.criteria.generatePermanentRequirementIds
@@ -24,6 +25,7 @@ import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -44,6 +46,8 @@ import com.procurement.access.infrastructure.handler.v1.model.request.CriterionR
 import com.procurement.access.infrastructure.handler.v1.model.request.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
+import com.procurement.access.lib.errorIfBlank
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -96,8 +100,11 @@ class SelectiveCnOnPnService(
 
     fun check(context: CheckSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): CheckedSelectiveCnOnPn {
         //VR-1.0.1.13.1 preQualification
-        if(data.preQualification == null)
+        if (data.preQualification == null)
             throw ErrorException(ErrorType.MISSING_ATTRIBUTE, "Missing required an attribute 'preQualification'.")
+
+        data.validateTextAttributes()
+        data.validateDuplicates()
 
         val entity: TenderProcessEntity =
             tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
@@ -288,6 +295,132 @@ class SelectiveCnOnPnService(
         return getResponse(responseCnEntity)
     }
 
+    private fun SelectiveCnOnPnRequest.validateTextAttributes() {
+        tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+        tender.electronicAuctions?.details
+            ?.forEachIndexed { detailIdx, detail ->
+                detail.id.checkForBlank("tender.electronicAuctions.details[$detailIdx].id")
+                detail.relatedLot.checkForBlank("tender.electronicAuctions.details[$detailIdx].relatedLot")
+            }
+
+        tender.criteria
+            ?.forEachIndexed { criterionIdx, criterion ->
+                criterion.id.checkForBlank("tender.criteria[$criterionIdx].id")
+                criterion.title.checkForBlank("tender.criteria[$criterionIdx].title")
+                criterion.relatedItem.checkForBlank("tender.criteria[$criterionIdx].relatedItem")
+                criterion.description.checkForBlank("tender.criteria[$criterionIdx].description")
+
+                criterion.requirementGroups
+                    .forEachIndexed { requirementGroupIdx, requirementGroup ->
+                        requirementGroup.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].id")
+
+                        requirementGroup.requirements
+                            .forEachIndexed { requirementIdx, requirement ->
+                                requirement.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].id")
+                                requirement.title.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].title")
+                                requirement.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].description")
+                                requirement.value
+                                    .also {
+                                        if (it is ExpectedValue.AsString)
+                                            it.value.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].expectedValue")
+                                    }
+                            }
+                    }
+            }
+
+        tender.conversions
+            ?.forEachIndexed { conversionIdx, conversion ->
+                conversion.id.checkForBlank("tender.conversions[$conversionIdx].id")
+                conversion.description.checkForBlank("tender.conversions[$conversionIdx].description")
+                conversion.rationale.checkForBlank("tender.conversions[$conversionIdx].rationale")
+                conversion.relatedItem.checkForBlank("tender.conversions[$conversionIdx].relatedItem")
+
+                conversion.coefficients
+                    .forEachIndexed { coefficientIdx, coefficient ->
+                        coefficient.id.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].id")
+                        coefficient.relatedOption.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].relatedOption")
+                        coefficient.value.also {
+                            if (it is CoefficientValue.AsString)
+                                it.value.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].value")
+                        }
+                    }
+            }
+
+        tender.procuringEntity?.persones
+            ?.forEachIndexed { personIdx, person ->
+                person.title.checkForBlank("tender.procuringEntity.persones[$personIdx].title")
+                person.name.checkForBlank("tender.procuringEntity.persones[$personIdx].name")
+
+                person.identifier.scheme.checkForBlank("tender.procuringEntity.persones[$personIdx].identifier.scheme")
+                person.identifier.id.checkForBlank("tender.procuringEntity.persones[$personIdx].identifier.id")
+                person.identifier.uri.checkForBlank("tender.procuringEntity.persones[$personIdx].identifier.uri")
+
+                person.businessFunctions
+                    .forEachIndexed { businessFunctionIdx, businessFunction ->
+                        businessFunction.id.checkForBlank("tender.procuringEntity.persones[$personIdx].businessFunctions[$businessFunctionIdx].id")
+                        businessFunction.jobTitle.checkForBlank("tender.procuringEntity.persones[$personIdx].businessFunctions[$businessFunctionIdx].jobTitle")
+
+                        businessFunction.documents
+                            ?.forEachIndexed { documentIdx, document ->
+                                document.title.checkForBlank("tender.procuringEntity.persones[$personIdx].businessFunctions[$businessFunctionIdx].documents[$documentIdx].title")
+                                document.description.checkForBlank("tender.procuringEntity.persones[$personIdx].businessFunctions[$businessFunctionIdx].documents[$documentIdx].description")
+                            }
+                    }
+            }
+
+        tender.lots
+            .forEachIndexed { lotIdx, lot ->
+                lot.id.checkForBlank("tender.lots[$lotIdx].id")
+                lot.title.checkForBlank("tender.lots[$lotIdx].title")
+                lot.description.checkForBlank("tender.lots[$lotIdx].description")
+                lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+
+                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.description")
+                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.id")
+                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.scheme")
+                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.uri")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.postalCode")
+                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.description")
+                lot.title.checkForBlank("tender.lots[$lotIdx].title")
+            }
+
+        tender.items
+            .forEachIndexed { itemIdx, item ->
+                item.id.checkForBlank("tender.items[$itemIdx].id")
+                item.internalId.checkForBlank("tender.items[$itemIdx].internalId")
+                item.description.checkForBlank("tender.items[$itemIdx].description")
+                item.relatedLot.checkForBlank("tender.items[$itemIdx].relatedLot")
+            }
+
+        tender.documents
+            .forEachIndexed { documentIdx, document ->
+                document.title.checkForBlank("tender.documents[$documentIdx].title")
+                document.description.checkForBlank("tender.documents[$documentIdx].description")
+                document.relatedLots?.forEach { relatedLot -> relatedLot.checkForBlank("tender.documents[$documentIdx].relatedLots") }
+            }
+    }
+
+    private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+        ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty or blank."
+        )
+    }
+
+    private fun SelectiveCnOnPnRequest.validateDuplicates() {
+        tender.items
+            .forEachIndexed { index, item ->
+                val duplicate =
+                    item.additionalClassifications?.getDuplicate { it.scheme.key + it.id.toUpperCase() }
+
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.items[$index].additionalClassifications' has duplicate by scheme '${duplicate.scheme}' and id '${duplicate.id}'."
+                    )
+            }
+    }
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(request: SelectiveCnOnPnRequest, pnEntity: PNEntity): CNEntity.Tender {
@@ -1072,7 +1205,8 @@ class SelectiveCnOnPnService(
                     reductionCriteria = otherCriteria.reductionCriteria,
                     qualificationSystemMethods = otherCriteria.qualificationSystemMethods.toList()
                 )
-            }
+            },
+            additionalProcurementCategories = request.tender.additionalProcurementCategories
         )
     }
 
@@ -1240,7 +1374,8 @@ class SelectiveCnOnPnService(
                     procurementMethodDetails = tender.procurementMethodDetails,
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-                    mainProcurementCategory = tender.mainProcurementCategory,
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                        mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         SelectiveCnOnPnResponse.Tender.ContractPeriod(

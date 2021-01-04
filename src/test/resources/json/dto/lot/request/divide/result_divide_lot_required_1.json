@@ -1,0 +1,62 @@
+{
+  "tender": {
+    "lots": [
+      {
+        "id": "013f7cec-3b92-487b-92a8-c17219015fbd",
+        "title": "string",
+        "description": "string",
+        "value": {
+          "amount": 0,
+          "currency": "string"
+        },
+        "contractPeriod": {
+          "startDate": "2020-12-29T13:02:29Z",
+          "endDate": "2020-12-29T13:02:29Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string"
+              }
+            }
+          }
+        },
+        "status": "cancelled",
+        "statusDetails": "empty"
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        },
+        "quantity": 0,
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "description": "string",
+        "relatedLot": "11e4be30-796c-4f71-9baf-d2626d1f12ea"
+      }
+    ]
+  }
+}

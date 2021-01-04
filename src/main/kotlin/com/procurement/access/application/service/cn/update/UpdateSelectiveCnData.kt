@@ -7,10 +7,12 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.RelatedLot
 import com.procurement.access.domain.model.lot.RelatedLots
 import com.procurement.access.domain.model.money.Money
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class UpdateSelectiveCnData(
@@ -157,13 +159,28 @@ data class UpdateSelectiveCnData(
             override val id: String,
             val internalId: String?,
             val description: String,
-            override val relatedLot: LotId
-        ) : EntityBase<String>(), RelatedLot<LotId>
+            override val relatedLot: LotId,
+            val quantity: BigDecimal,
+            val additionalClassifications: List<AdditionalClassification>,
+            val unit: Unit
+        ) : EntityBase<String>(), RelatedLot<LotId> {
+
+            data class AdditionalClassification(
+                val id: String,
+                val scheme: Scheme,
+                val description: String
+            )
+
+            data class Unit(
+                val id: String,
+                val name: String
+            )
+        }
 
         data class Document(
             val documentType: DocumentType,
             override val id: String,
-            val title: String?,
+            val title: String,
             val description: String?,
             override val relatedLots: List<LotId>
         ) : EntityBase<String>(), RelatedLots<LotId>

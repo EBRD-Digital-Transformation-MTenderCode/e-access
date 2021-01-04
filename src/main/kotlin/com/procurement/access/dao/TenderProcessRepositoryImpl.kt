@@ -1,6 +1,5 @@
 package com.procurement.access.dao
 
-import com.datastax.driver.core.ResultSet
 import com.datastax.driver.core.Row
 import com.datastax.driver.core.Session
 import com.procurement.access.application.repository.TenderProcessRepository
@@ -90,7 +89,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                     success(it.wasApplied())
             }
 
-    override fun save(entity: TenderProcessEntity): Result<ResultSet, Fail.Incident.Database> =
+    override fun save(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database> =
         preparedSaveCQL.bind()
             .apply {
                 setString(COLUMN_CPID, entity.cpId)
@@ -101,6 +100,9 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
             .tryExecute(session)
+            .onFailure { return it }
+            .wasApplied()
+            .asSuccess()
 
     override fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database> =
         preparedGetByCpIdAndStageCQL.bind()
