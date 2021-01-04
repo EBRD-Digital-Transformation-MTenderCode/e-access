@@ -1,10 +1,14 @@
 package com.procurement.access.service
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.model.params.CheckLotsStateParams
+import com.procurement.access.application.model.params.DivideLotParams
 import com.procurement.access.application.model.params.GetLotsValueParams
+import com.procurement.access.application.model.params.ValidateLotsDataParams
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.Transform
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
 import com.procurement.access.dao.TenderProcessDao
@@ -28,6 +32,8 @@ import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.pmd
 import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.TenderLotValueInfo
+import com.procurement.access.infrastructure.entity.TenderLotsAndItemsInfo
+import com.procurement.access.infrastructure.entity.TenderLotsFullInfo
 import com.procurement.access.infrastructure.entity.TenderLotsInfo
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcLot
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRq
@@ -47,6 +53,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLots
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRs
 import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsByLotRs
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
+import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
 import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
@@ -57,15 +64,20 @@ import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.ocds.asMoney
+import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.RoundingMode
 
 @Service
-class LotsService(private val tenderProcessDao: TenderProcessDao,
-                  private val tenderProcessRepository: TenderProcessRepository,
-                  private val rulesService: RulesService
+class LotsService(
+    private val tenderProcessDao: TenderProcessDao,
+    private val tenderProcessRepository: TenderProcessRepository,
+    private val generationService: GenerationService,
+    private val rulesService: RulesService,
+    private val transform: Transform
 ) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
@@ -373,7 +385,6 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             .asSuccess()
     }
 
-
     fun checkLotsState(params: CheckLotsStateParams): ValidationResult<Fail> {
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
             .onFailure { return it.reason.asValidationFailure() }
@@ -411,7 +422,10 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             }
         )
 
-    private fun checkLotState(lot: TenderLotsInfo.Tender.Lot, validStates: LotStatesRule): ValidationResult<ValidationErrors> =
+    private fun checkLotState(
+        lot: TenderLotsInfo.Tender.Lot,
+        validStates: LotStatesRule
+    ): ValidationResult<ValidationErrors> =
         if (lotStateIsValid(lot, validStates))
             ValidationResult.ok()
         else ValidationErrors.InvalidLotState(lot.id).asValidationFailure()
@@ -421,4 +435,454 @@ class LotsService(private val tenderProcessDao: TenderProcessDao,
             storedLot.status == validState.status
                 && validState.statusDetails?.equals(storedLot.statusDetails) ?: true
         }
+
+    fun validateLotsData(params: ValidateLotsDataParams): ValidationResult<Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { return it.reason.asValidationFailure() }
+            ?: return ValidationErrors.TenderNotFoundOnValidateLotsData(params.cpid, params.ocid).asValidationFailure()
+
+        val process = entity.jsonData.tryToObject(TenderLotsAndItemsInfo::class.java)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val receivedLotsByIds = params.tender.lots.associateBy { it.id }
+        val storedLotsByIds = process.tender.lots.orEmpty().associateBy { it.id }
+
+        val dividedLot = getDividedLot(receivedLotsByIds, storedLotsByIds)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val newLots = getNewLots(receivedLotsByIds, dividedLot)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        checkForMissingParameters(newLots)
+            .doOnError { return it.asValidationFailure() }
+
+        checkLots(newLots, dividedLot, params.tender.items, process.tender.items.orEmpty())
+            .doOnError { return it.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun getNewLots(
+        receivedLotsByIds: Map<LotId, ValidateLotsDataParams.Tender.Lot>,
+        knownLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): Result<List<ValidateLotsDataParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots>  {
+        val newLots = receivedLotsByIds.minus(knownLot.id)
+        val minimumNumberOfNewLots = 2
+        return if (newLots.size < minimumNumberOfNewLots)
+            ValidationErrors.IncorrectNumberOfNewLots().asFailure()
+        else newLots.values.toList().asSuccess()
+    }
+
+    private fun getDividedLot(
+        receivedLotsByIds: Map<LotId, ValidateLotsDataParams.Tender.Lot>,
+        storedLotsByIds: Map<LotId, TenderLotsAndItemsInfo.Tender.Lot>
+    ): Result<TenderLotsAndItemsInfo.Tender.Lot, ValidationErrors.IncorrectNumberOfKnownLots> {
+        val knownLotsIds = receivedLotsByIds.keys.intersect(storedLotsByIds.keys)
+        val expectedNumberOfKnownLots = 1
+
+        if (knownLotsIds.size != expectedNumberOfKnownLots)
+            return ValidationErrors.IncorrectNumberOfKnownLots(knownLotsIds).asFailure()
+
+        return storedLotsByIds.getValue(knownLotsIds.first()).asSuccess()
+    }
+
+    private fun checkForMissingParameters(newLots: List<ValidateLotsDataParams.Tender.Lot>) : ValidationResult<Fail>{
+        newLots.map { lot ->
+            lot.title ?: return ValidationErrors.MissingTittleOnValidateLotsData(lot.id).asValidationFailure()
+            lot.description ?: return ValidationErrors.MissingDescriptionOnValidateLotsData(lot.id).asValidationFailure()
+            lot.value ?: return ValidationErrors.MissingValueOnValidateLotsData(lot.id).asValidationFailure()
+            lot.contractPeriod ?: return ValidationErrors.MissingContractPeriodOnValidateLotsData(lot.id).asValidationFailure()
+            lot.placeOfPerformance ?: return ValidationErrors.MissingPlaceOfPerformanceOnValidateLotsData(lot.id).asValidationFailure()
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun checkLots(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
+        receivedItems: List<ValidateLotsDataParams.Tender.Item>,
+        storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
+    ) : ValidationResult<Fail>{
+        checkLotsValue(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkLotsContractPeriod(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkNewLotsItems(newLots, receivedItems, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkDividedLotItems(dividedLot, receivedItems, storedItems)
+            .doOnError { return it.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsValue(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        checkLotsCurrency(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        checkLotsAmount(newLots, dividedLot)
+            .doOnError { return it.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsCurrency(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        newLots.forEach { newLot ->
+            if (newLot.value!!.currency != dividedLot.value.currency)
+                return ValidationErrors.CurrencyDoesNotMatch(newLotId = newLot.id, dividedLotId = dividedLot.id)
+                    .asValidationFailure()
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsAmount(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        val newAmount = newLots
+            .map { it.value!!.amount }
+            .reduce { sum, element -> sum + element }
+            .setScale(2, RoundingMode.HALF_UP)
+
+        if (dividedLot.value.amount.compareTo(newAmount) != 0)
+            return ValidationErrors.InvalidAmount(dividedLotId = dividedLot.id)
+                .asValidationFailure()
+        return ValidationResult.ok()
+    }
+
+    private fun checkLotsContractPeriod(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        newLots.forEach { newLot ->
+            if (newLot.contractPeriod!!.startDate != dividedLot.contractPeriod.startDate)
+                return ValidationErrors.InvalidContractPeriodStart(newLotId = newLot.id, dividedLotId = dividedLot.id)
+                    .asValidationFailure()
+
+            if (newLot.contractPeriod.endDate != dividedLot.contractPeriod.endDate)
+                return ValidationErrors.InvalidContractPeriodEnd(newLotId = newLot.id, dividedLotId = dividedLot.id)
+                    .asValidationFailure()
+        }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkNewLotsItems(
+        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        items: List<ValidateLotsDataParams.Tender.Item>,
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+    ): ValidationResult<Fail> {
+        val itemsByRelatedLots = items.associateBy { it.relatedLot }.minus(dividedLot.id)
+        val lotIds = newLots.toSet { it.id }
+
+        val lotsWithoutItems = lotIds - itemsByRelatedLots.keys
+        if (lotsWithoutItems.isNotEmpty())
+            return ValidationErrors.LotDoesNotHaveRelatedItem(lotsWithoutItems.toList())
+                .asValidationFailure()
+
+        val unknownLots = itemsByRelatedLots.keys - lotIds
+        if (unknownLots.isNotEmpty()) {
+            val itemsWithUnknownLots = unknownLots.map { itemsByRelatedLots.getValue(it).id }
+            return ValidationErrors.ItemsNotLinkedToAnyNewLots(itemsWithUnknownLots)
+                .asValidationFailure()
+        }
+
+        return ValidationResult.ok()
+    }
+
+    private fun checkDividedLotItems(
+        dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
+        receivedItems: List<ValidateLotsDataParams.Tender.Item>,
+        storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
+    ): ValidationResult<Fail> {
+        val receivedItemsOfDividedLot = receivedItems.asSequence()
+            .filter { it.relatedLot == dividedLot.id }
+            .map { it.id }
+            .toSet()
+
+        val storedItemsOfDividedLot = storedItems.asSequence()
+            .filter { it.relatedLot == dividedLot.id }
+            .map { it.id }
+            .toSet()
+
+        val missingItems = storedItemsOfDividedLot - receivedItemsOfDividedLot
+        if (missingItems.isNotEmpty())
+            return ValidationErrors.MissingItemsOfDividedLot(dividedLot.id, missingItems.toList())
+                .asValidationFailure()
+
+        val unknownItems = receivedItemsOfDividedLot - storedItemsOfDividedLot
+        if (unknownItems.isNotEmpty())
+            return ValidationErrors.UnknownItemsOfDividedLot(dividedLot.id, unknownItems.toList())
+                .asValidationFailure()
+
+        return ValidationResult.ok()
+    }
+
+    fun divideLot(params: DivideLotParams): Result<DivideLotResult, Fail> {
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { return it }
+            ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
+
+        val tenderProcess = tenderProcessEntity.jsonData
+            .tryToObject(TenderLotsFullInfo::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
+
+        val receivedLotsIds = params.tender.lots.toSet { it.id }
+        val dividedLotId = tenderProcess.tender.lots.first { it.id.toString() in receivedLotsIds }.id
+
+        val generatedLotsByOldIds = getGeneratedLotsByOldIds(params, dividedLotId)
+        val generatedLots = generatedLotsByOldIds.values
+        val updatedLots = updateDividedLot(tenderProcess, dividedLotId) + generatedLots
+
+        val newLotIdsByOldLotIds = generatedLotsByOldIds.mapValues { it.value.id }
+        val updatedItems = getUpdatedItems(params, newLotIdsByOldLotIds, tenderProcess)
+
+        saveLotsAndItems(updatedLots, updatedItems, tenderProcessEntity)
+            .doOnError { return it.asFailure() }
+
+        return generateResult(generatedLots, updatedLots, dividedLotId, params, updatedItems)
+    }
+
+    private fun generateResult(
+        generatedLots: Collection<TenderLotsFullInfo.Tender.Lot>,
+        updatedLots: List<TenderLotsFullInfo.Tender.Lot>,
+        dividedLotId: LotId,
+        params: DivideLotParams,
+        updatedItems: List<TenderLotsFullInfo.Tender.Item>
+    ): Result<DivideLotResult, Fail> {
+        val resultingLots = generatedLots + updatedLots.find { it.id == dividedLotId }!!
+        val itemsIds = params.tender.items.toSet { it.id }
+        val resultingItems = updatedItems.filter { it.id in itemsIds }
+
+        return DivideLotResult(
+            tender = DivideLotResult.Tender(
+                lots = resultingLots.map { lot ->
+                    DivideLotResult.Tender.Lot(
+                        id = lot.id,
+                        status = lot.status,
+                        statusDetails = lot.statusDetails,
+                        internalId = lot.internalId,
+                        title = lot.title,
+                        description = lot.description,
+                        value = lot.value?.let { value ->
+                            DivideLotResult.Tender.Lot.Value(amount = value.amount, currency = value.currency)
+                        },
+                        contractPeriod = lot.contractPeriod?.let { contractPeriod ->
+                            DivideLotResult.Tender.Lot.ContractPeriod(
+                                startDate = contractPeriod.startDate,
+                                endDate = contractPeriod.endDate
+                            )
+                        },
+                        placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                            placeOfPerformance?.address?.let { address ->
+                                DivideLotResult.Tender.Lot.PlaceOfPerformance(
+                                    address = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                                        streetAddress = address.streetAddress,
+                                        postalCode = address.postalCode,
+                                        addressDetails = address.addressDetails.let { addressDetails ->
+                                            DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                country = addressDetails.country.let { country ->
+                                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                        id = country.id,
+                                                        description = country.description,
+                                                        scheme = country.scheme,
+                                                        uri = country.uri
+                                                    )
+                                                },
+                                                region = addressDetails.country.let { region ->
+                                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                        id = region.id,
+                                                        description = region.description,
+                                                        scheme = region.scheme,
+                                                        uri = region.uri
+                                                    )
+                                                },
+                                                locality = addressDetails.country.let { locality ->
+                                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                        id = locality.id,
+                                                        description = locality.description,
+                                                        scheme = locality.scheme,
+                                                        uri = locality.uri
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                )
+                            }
+
+                        }
+                    )
+                },
+                items = resultingItems.map { item ->
+                    DivideLotResult.Tender.Item(
+                        id = item.id,
+                        relatedLot = item.relatedLot,
+                        internalId = item.internalId,
+                        description = item.description,
+                        quantity = item.quantity,
+                        classification = item.classification
+                            .let { classification ->
+                                DivideLotResult.Tender.Item.Classification(
+                                    id = classification.id,
+                                    description = classification.description,
+                                    scheme = classification.scheme
+                                )
+                            },
+                        unit = item.unit
+                            .let { unit ->
+                                DivideLotResult.Tender.Item.Unit(
+                                    id = unit.id,
+                                    name = unit.name
+                                )
+                            },
+                        additionalClassifications = item.additionalClassifications
+                            ?.map { additionalClassification ->
+                                DivideLotResult.Tender.Item.AdditionalClassification(
+                                    id = additionalClassification.id,
+                                    scheme = additionalClassification.scheme,
+                                    description = additionalClassification.description
+                                )
+                            }
+                    )
+
+                }
+            )
+        ).asSuccess()
+    }
+
+    private fun saveLotsAndItems(
+        updatedLots: List<TenderLotsFullInfo.Tender.Lot>,
+        updatedItems: List<TenderLotsFullInfo.Tender.Item>,
+        tenderProcessEntity: TenderProcessEntity
+    ): ValidationResult<Fail> {
+        val lotsTransformed = transform.tryToJsonNode(updatedLots).onFailure { return it.reason.asValidationFailure() }
+        val itemsTransformed = transform.tryToJsonNode(updatedItems)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val jsonDataNode = transform
+            .tryParse(tenderProcessEntity.jsonData)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val updatedJsonData = jsonDataNode.get("tender")
+            .apply {
+                this as ObjectNode
+                replace("lots", lotsTransformed)
+                replace("items", itemsTransformed)
+            }
+            .let { transform.tryToJson(it) }
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val updatedEntity = tenderProcessEntity.copy(jsonData = updatedJsonData)
+
+        tenderProcessRepository.save(updatedEntity)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun getUpdatedItems(
+        params: DivideLotParams,
+        newLotIdsByOldLotIds: Map<String, LotId>,
+        tenderProcess: TenderLotsFullInfo
+    ): List<TenderLotsFullInfo.Tender.Item> {
+        val newLotIdsByItems = params.tender.items.associateBy(
+            keySelector = { item -> item.id },
+            valueTransform = { item -> newLotIdsByOldLotIds.getValue(item.relatedLot) }
+        )
+        val receivedItemsIds = newLotIdsByItems.keys
+
+        return tenderProcess.tender.items.map { item ->
+            if (item.id in receivedItemsIds) {
+                item.copy(relatedLot = newLotIdsByItems.getValue(item.id))
+            } else item
+        }
+    }
+
+    private fun getGeneratedLotsByOldIds(
+        params: DivideLotParams,
+        dividedLotId: LotId
+    ) = params.tender.lots
+        .filter { lot -> lot.id != dividedLotId.toString() }
+        .associateBy(
+            keySelector = { lot -> lot.id },
+            valueTransform = { lot -> generateLot(lot) }
+        )
+
+    private fun updateDividedLot(
+        tenderProcess: TenderLotsFullInfo,
+        dividedLotId: LotId
+    ) = tenderProcess.tender.lots.map { lot ->
+        if (lot.id == dividedLotId)
+            lot.copy(status = LotStatus.CANCELLED, statusDetails = LotStatusDetails.EMPTY)
+        else
+            lot
+    }
+
+    private fun generateLot(lot: DivideLotParams.Tender.Lot) =
+        TenderLotsFullInfo.Tender.Lot(
+            id = generationService.lotId(),
+            status = LotStatus.ACTIVE,
+            statusDetails = LotStatusDetails.EMPTY,
+            internalId = lot.internalId,
+            title = lot.title,
+            description = lot.description,
+            value = lot.value?.let { value ->
+                TenderLotsFullInfo.Tender.Lot.Value(amount = value.amount, currency = value.currency)
+            },
+            contractPeriod = lot.contractPeriod?.let { contractPeriod ->
+                TenderLotsFullInfo.Tender.Lot.ContractPeriod(
+                    startDate = contractPeriod.startDate,
+                    endDate = contractPeriod.endDate
+                )
+            },
+            placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                placeOfPerformance?.address?.let { address ->
+                    TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance(
+                        address = TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails.let { addressDetails ->
+                                TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                    country = addressDetails.country.let { country ->
+                                        TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                            id = country.id,
+                                            description = country.description,
+                                            scheme = country.scheme,
+                                            uri = country.uri
+                                        )
+                                    },
+                                    region = addressDetails.country.let { region ->
+                                        TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                            id = region.id,
+                                            description = region.description,
+                                            scheme = region.scheme,
+                                            uri = region.uri
+                                        )
+                                    },
+                                    locality = addressDetails.country.let { locality ->
+                                        TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                            id = locality.id,
+                                            description = locality.description,
+                                            scheme = locality.scheme,
+                                            uri = locality.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    )
+                }
+
+            }
+        )
 }

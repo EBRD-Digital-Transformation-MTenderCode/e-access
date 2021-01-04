@@ -18,6 +18,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     CHECK_TENDER_STATE("checkTenderState"),
     CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
     CREATE_RELATION_TO_OTHER_PROCESS("createRelationToOtherProcess"),
+    DIVIDE_LOT("divideLot"),
     FIND_AUCTIONS("findAuctions"),
     FIND_CRITERIA("findCriteria"),
     FIND_LOT_IDS("findLotIds"),
@@ -33,6 +34,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     SET_STATE_FOR_LOTS("setStateForLots"),
     SET_STATE_FOR_TENDER("setStateForTender"),
     VALIDATE_CLASSIFICATION("validateClassification"),
+    VALIDATE_LOTS_DATA("validateLotsData"),
     VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
     VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse"),
     ;

@@ -1205,7 +1205,8 @@ class SelectiveCnOnPnService(
                     reductionCriteria = otherCriteria.reductionCriteria,
                     qualificationSystemMethods = otherCriteria.qualificationSystemMethods.toList()
                 )
-            }
+            },
+            additionalProcurementCategories = request.tender.additionalProcurementCategories
         )
     }
 
@@ -1373,7 +1374,8 @@ class SelectiveCnOnPnService(
                     procurementMethodDetails = tender.procurementMethodDetails,
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
-                    mainProcurementCategory = tender.mainProcurementCategory,
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                        mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         SelectiveCnOnPnResponse.Tender.ContractPeriod(

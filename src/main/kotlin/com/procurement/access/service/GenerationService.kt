@@ -5,6 +5,7 @@ import com.procurement.access.application.model.Mode
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.domain.util.extension.toMilliseconds
 import com.procurement.access.exception.ErrorException
@@ -80,4 +81,5 @@ class GenerationService {
 
     fun coefficientId(): String = UUID.randomUUID().toString()
 
+    fun lotId(): LotId = UUID.randomUUID()
 }

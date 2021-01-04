@@ -39,6 +39,7 @@ class CreateRelationToOtherProcessParams(
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
                     OperationType.CREATE_SUBMISSION,
+                    OperationType.DIVIDE_LOT,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
                     OperationType.QUALIFICATION_PROTOCOL,

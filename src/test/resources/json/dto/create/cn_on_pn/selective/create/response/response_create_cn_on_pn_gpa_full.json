@@ -55,6 +55,7 @@
     "procurementMethodDetails": "pn.tender.procurementMethodDetails",
     "procurementMethodRationale": "request.tender.procurementMethodRationale",
     "procurementMethodAdditionalInfo": "request.tender.procurementMethodAdditionalInfo",
+    "additionalProcurementCategories": ["goods"],
     "submissionMethod": [
       "electronicSubmission"
     ],
