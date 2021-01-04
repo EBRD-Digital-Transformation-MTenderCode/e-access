@@ -209,7 +209,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 checkItems(request = request, cn = cn)
 
                 CheckItemsResponse(
-                    mdmValidation = false,
+                    mdmValidation = true,
                     itemsAdd = false,
                     mainProcurementCategory = cn.tender.mainProcurementCategory,
                     items = request.items.map { item ->
