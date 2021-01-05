@@ -70,11 +70,13 @@ fun CNEntity.Tender.Criteria.replaceTemporalItemId(
     val relatedItem = this.relatedItem
     return this.copy(
         relatedItem = when (relatesTo) {
-            CriteriaRelatesTo.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
-            CriteriaRelatesTo.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
             CriteriaRelatesTo.AWARD -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
-            CriteriaRelatesTo.TENDERER,
+            CriteriaRelatesTo.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
+            CriteriaRelatesTo.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
+
             CriteriaRelatesTo.QUALIFICATION,
+            CriteriaRelatesTo.TENDER,
+            CriteriaRelatesTo.TENDERER,
             null -> relatedItem
         }
     )

@@ -15,10 +15,9 @@ data class CriterionRequest(
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-    @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo?,
+    @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
+    @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?

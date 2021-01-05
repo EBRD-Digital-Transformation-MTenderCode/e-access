@@ -508,7 +508,7 @@ fun getCriteriaCombinations(
     val criteriaByItems = criteriaByAffiliation[CriteriaRelatesTo.ITEM].orEmpty().groupBy { it.relatedItem }
     val criteriaByLots = criteriaByAffiliation[CriteriaRelatesTo.LOT].orEmpty().groupBy { it.relatedItem }
 
-    val tenderCriteria = criteriaByAffiliation[null].orEmpty()
+    val tenderCriteria = criteriaByAffiliation[CriteriaRelatesTo.TENDER].orEmpty()
     val tendererCriteria = criteriaByAffiliation[CriteriaRelatesTo.TENDERER].orEmpty()
 
     val itemsByLots = items.groupBy { it.relatedLot }

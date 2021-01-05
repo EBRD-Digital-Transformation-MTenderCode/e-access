@@ -44,6 +44,7 @@
         "id": "d3732c09-7d62-4edc-a172-241da6636e7c",
         "title": "Bankruptcy",
         "description": "Is the economic operator bankrupt? This information needs not be given if exclusion of economic operators in this case has been made mandatory under the applicable national law without any possibility of derogation where the economic operator is nevertheless able to perform the contract.",
+        "relatesTo": "tender",
         "requirementGroups": [
           {
             "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00555",
@@ -61,6 +62,7 @@
       {
         "id": "002",
         "title": "Product warranty",
+        "relatesTo": "tender",
         "requirementGroups": [
           {
             "id": "002-1",

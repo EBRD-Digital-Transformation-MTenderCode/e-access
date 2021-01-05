@@ -41,7 +41,7 @@ internal class CheckCriteriaKtTest {
             description = null,
             title = "",
             relatedItem = null,
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup1, reqGroup2)
         )
         val groupsByCriterion2 = CriterionRequest(
@@ -49,7 +49,7 @@ internal class CheckCriteriaKtTest {
             description = "desc",
             title = "",
             relatedItem = null,
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup3, reqGroup4)
         )
 
@@ -84,7 +84,7 @@ internal class CheckCriteriaKtTest {
             description = null,
             title = "",
             relatedItem = null,
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup1, reqGroup2)
         )
         val groupsByCriterion2 = CriterionRequest(
@@ -92,7 +92,7 @@ internal class CheckCriteriaKtTest {
             description = "desc",
             title = "",
             relatedItem = null,
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup3, reqGroup4, reqGroup5)
         )
         val groupsByCriterion3 = CriterionRequest(
@@ -100,7 +100,7 @@ internal class CheckCriteriaKtTest {
             description = null,
             title = "",
             relatedItem = null,
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup6)
         )
 
@@ -124,7 +124,7 @@ internal class CheckCriteriaKtTest {
     fun getCriteriaCombinations() {
         val tenderCriterion = CriterionRequest(
             id = "tenderCriterion",
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             relatedItem = null,
             title = "",
             description = "",
@@ -321,7 +321,7 @@ internal class CheckCriteriaKtTest {
         val reqGroup2 = CriterionRequest.RequirementGroup(id = "2", description = "", requirements = emptyList())
         val tenderCriterion = CriterionRequest(
             id = "tenderCriterion",
-            relatesTo = null,
+            relatesTo = CriteriaRelatesTo.TENDER,
             relatedItem = null,
             title = "",
             description = "",
