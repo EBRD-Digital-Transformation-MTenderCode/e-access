@@ -21,6 +21,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.lib.errorIfBlank
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.mapOrEmpty
 import com.procurement.access.lib.extension.orThrow
@@ -43,6 +44,7 @@ class CNServiceImpl(
 ) : CNService {
     override fun update(context: UpdateOpenCnContext, data: UpdateOpenCnData): UpdatedOpenCn {
         data.validateTextAttributes()
+        data.validateDuplicates()
 
         data.checkElectronicAuction(context) //VR-1.0.1.7.8
             .checkLotsIds() //VR-1.0.1.4.1
@@ -239,6 +241,18 @@ class CNServiceImpl(
             .forEach { document ->
                 document.title.checkForBlank("tender.documents.title")
                 document.description.checkForBlank("tender.documents.description")
+            }
+    }
+
+    private fun UpdateOpenCnData.validateDuplicates() {
+        tender.documents
+            .forEachIndexed { index, document ->
+                val duplicate = document.relatedLots.getDuplicate { it }
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.documents[$index].relatedLots' has duplicate '$duplicate'."
+                    )
             }
     }
 
