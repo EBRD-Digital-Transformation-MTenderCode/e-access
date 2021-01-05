@@ -4,7 +4,6 @@ import com.procurement.access.application.model.notEmptyRule
 import com.procurement.access.application.model.params.ValidateLotsDataParams
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseDate
-import com.procurement.access.application.model.parseLotId
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.infrastructure.handler.v2.model.request.ValidateLotsDataRequest
@@ -38,8 +37,8 @@ private fun ValidateLotsDataRequest.Tender.convert(path: String): Result<Validat
         .onFailure { return it }
 
     val items = items.validate(notEmptyRule("$path.items"))
-        .flatMap { it.mapResult { item -> item.convert("items") } }
         .onFailure { return it }
+        .map { item -> item.convert()  }
 
     return ValidateLotsDataParams.Tender(
         lots = lots,
@@ -47,20 +46,13 @@ private fun ValidateLotsDataRequest.Tender.convert(path: String): Result<Validat
     ).asSuccess()
 }
 
-private fun ValidateLotsDataRequest.Tender.Item.convert(path: String): Result<ValidateLotsDataParams.Tender.Item, DataErrors> {
-    val relatedLot = parseLotId(relatedLot, "$path.relatedLot")
-        .onFailure { return it }
-
-    return ValidateLotsDataParams.Tender.Item(
+private fun ValidateLotsDataRequest.Tender.Item.convert() =
+    ValidateLotsDataParams.Tender.Item(
         id = id,
         relatedLot = relatedLot
-    ).asSuccess()
-}
+    )
 
 private fun ValidateLotsDataRequest.Tender.Lot.convert(path: String): Result<ValidateLotsDataParams.Tender.Lot, DataErrors> {
-    val id = parseLotId(id, "$path.id")
-        .onFailure { return it }
-
     val contractPeriod = contractPeriod?.convert("$path.contractPeriod")
         ?.onFailure { return it }
 
