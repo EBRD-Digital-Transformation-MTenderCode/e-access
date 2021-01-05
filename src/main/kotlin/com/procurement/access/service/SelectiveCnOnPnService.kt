@@ -313,6 +313,7 @@ class SelectiveCnOnPnService(
                 criterion.requirementGroups
                     .forEachIndexed { requirementGroupIdx, requirementGroup ->
                         requirementGroup.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].id")
+                        requirementGroup.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].description")
 
                         requirementGroup.requirements
                             .forEachIndexed { requirementIdx, requirement ->
