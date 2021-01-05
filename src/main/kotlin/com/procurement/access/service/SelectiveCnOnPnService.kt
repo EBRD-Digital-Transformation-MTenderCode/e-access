@@ -13,7 +13,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
@@ -837,7 +837,7 @@ class SelectiveCnOnPnService(
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Criteria>? {
         return criteriaFromRequest?.map { criterion ->
-            val source = if(criterion.relatesTo == null || criterion.relatesTo != CriteriaRelatesToEnum.TENDERER) CriteriaSource.TENDERER else null
+            val source = if(criterion.relatesTo == null || criterion.relatesTo != CriteriaRelatesTo.TENDERER) CriteriaSource.TENDERER else null
             CNEntity.Tender.Criteria(
                 id = generationService.criterionId(),
                 title = criterion.title,

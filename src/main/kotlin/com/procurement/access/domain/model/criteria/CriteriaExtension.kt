@@ -3,7 +3,7 @@ package com.procurement.access.domain.model.criteria
 import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -70,11 +70,11 @@ fun CNEntity.Tender.Criteria.replaceTemporalItemId(
     val relatedItem = this.relatedItem
     return this.copy(
         relatedItem = when (relatesTo) {
-            CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
-            CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
-            CriteriaRelatesToEnum.AWARD -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
-            CriteriaRelatesToEnum.TENDERER,
-            CriteriaRelatesToEnum.QUALIFICATION,
+            CriteriaRelatesTo.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
+            CriteriaRelatesTo.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
+            CriteriaRelatesTo.AWARD -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
+            CriteriaRelatesTo.TENDERER,
+            CriteriaRelatesTo.QUALIFICATION,
             null -> relatedItem
         }
     )

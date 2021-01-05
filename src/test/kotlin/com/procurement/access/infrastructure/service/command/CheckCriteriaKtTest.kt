@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.domain.model.coefficient.CoefficientRate
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
@@ -133,7 +133,7 @@ internal class CheckCriteriaKtTest {
 
         val tendererCriterion = CriterionRequest(
             id = "tendererCriterion",
-            relatesTo = CriteriaRelatesToEnum.TENDERER,
+            relatesTo = CriteriaRelatesTo.TENDERER,
             relatedItem = null,
             title = "",
             description = "",
@@ -142,7 +142,7 @@ internal class CheckCriteriaKtTest {
 
         val lotCriterion1 = CriterionRequest(
             id = "lotCriterion1",
-            relatesTo = CriteriaRelatesToEnum.LOT,
+            relatesTo = CriteriaRelatesTo.LOT,
             relatedItem = "lot1",
             title = "",
             description = "",
@@ -151,7 +151,7 @@ internal class CheckCriteriaKtTest {
 
         val lotCriterion2 = CriterionRequest(
             id = "lotCriterion2",
-            relatesTo = CriteriaRelatesToEnum.LOT,
+            relatesTo = CriteriaRelatesTo.LOT,
             relatedItem = "lot2",
             title = "",
             description = "",
@@ -160,7 +160,7 @@ internal class CheckCriteriaKtTest {
 
         val itemCriterion1 = CriterionRequest(
             id = "itemsCriterion1",
-            relatesTo = CriteriaRelatesToEnum.ITEM,
+            relatesTo = CriteriaRelatesTo.ITEM,
             relatedItem = "item1",
             title = "",
             description = "",
@@ -270,7 +270,7 @@ internal class CheckCriteriaKtTest {
         )
         val lotCriterion1 = CriterionRequest(
             id = "lotCriterion1",
-            relatesTo = CriteriaRelatesToEnum.LOT,
+            relatesTo = CriteriaRelatesTo.LOT,
             relatedItem = "lot1",
             title = "",
             description = "",
@@ -280,7 +280,7 @@ internal class CheckCriteriaKtTest {
         val reqGroup6 = CriterionRequest.RequirementGroup(id = "6", description = "", requirements = emptyList())
         val lotCriterion2 = CriterionRequest(
             id = "lotCriterion2",
-            relatesTo = CriteriaRelatesToEnum.LOT,
+            relatesTo = CriteriaRelatesTo.LOT,
             relatedItem = "lot2",
             title = "",
             description = "",
@@ -294,7 +294,7 @@ internal class CheckCriteriaKtTest {
         val reqGroup4 = CriterionRequest.RequirementGroup(id = "4", description = "", requirements = emptyList())
         val tendererCriterion = CriterionRequest(
             id = "tendererCriterion",
-            relatesTo = CriteriaRelatesToEnum.TENDERER,
+            relatesTo = CriteriaRelatesTo.TENDERER,
             relatedItem = null,
             title = "",
             description = "",

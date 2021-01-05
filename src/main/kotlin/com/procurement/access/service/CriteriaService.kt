@@ -23,7 +23,7 @@ import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
@@ -102,7 +102,7 @@ class CriteriaServiceImpl(
             title = "",
             description = "",
             source = CriteriaSource.PROCURING_ENTITY,
-            relatesTo = CriteriaRelatesToEnum.AWARD,
+            relatesTo = CriteriaRelatesTo.AWARD,
             relatedItem = null,
             requirementGroups = listOf(
                 CNEntity.Tender.Criteria.RequirementGroup(
@@ -454,8 +454,8 @@ class CriteriaServiceImpl(
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
 
-                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
-                OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesTo.QUALIFICATION
+                OperationType.TENDER_PERIOD_END -> CriteriaRelatesTo.AWARD
             },
             relatedItem = null
         )
@@ -523,8 +523,8 @@ class CriteriaServiceImpl(
                         )
                     )
 
-                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
-                OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesTo.QUALIFICATION
+                OperationType.TENDER_PERIOD_END -> CriteriaRelatesTo.AWARD
             }
         )
             .asSuccess()

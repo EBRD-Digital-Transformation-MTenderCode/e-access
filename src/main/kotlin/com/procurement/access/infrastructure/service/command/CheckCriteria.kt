@@ -4,7 +4,7 @@ import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
@@ -121,9 +121,9 @@ fun checkActualItemRelation(criteria: List<CriterionRequest>?, items: List<ItemR
         itemsByRelatedLot: Map<String, List<ItemReferenceRequest>>
     ) {
         when (this.relatesTo) {
-            CriteriaRelatesToEnum.ITEM -> itemsById.containsElement(this.relatedItem!!)
-            CriteriaRelatesToEnum.LOT -> itemsByRelatedLot.relatesWithLot(this.relatedItem!!)
-            CriteriaRelatesToEnum.TENDERER -> Unit
+            CriteriaRelatesTo.ITEM -> itemsById.containsElement(this.relatedItem!!)
+            CriteriaRelatesTo.LOT -> itemsByRelatedLot.relatesWithLot(this.relatedItem!!)
+            CriteriaRelatesTo.TENDERER -> Unit
         }
     }
 
@@ -135,12 +135,12 @@ fun checkActualItemRelation(criteria: List<CriterionRequest>?, items: List<ItemR
 
         if (this.relatesTo != null) {
             when (this.relatesTo) {
-                CriteriaRelatesToEnum.TENDERER -> if (this.relatedItem != null) throw ErrorException(
+                CriteriaRelatesTo.TENDERER -> if (this.relatedItem != null) throw ErrorException(
                     error = ErrorType.INVALID_CRITERIA,
                     message = "For parameter relatedTo = 'tenderer', parameter relatedItem cannot be passed"
                 )
-                CriteriaRelatesToEnum.ITEM,
-                CriteriaRelatesToEnum.LOT -> if (this.relatedItem == null) throw ErrorException(
+                CriteriaRelatesTo.ITEM,
+                CriteriaRelatesTo.LOT -> if (this.relatedItem == null) throw ErrorException(
                     error = ErrorType.INVALID_CRITERIA,
                     message = "For parameter relatedTo = 'lot' or 'item', parameter relatedItem must be specified"
                 )
@@ -407,7 +407,7 @@ fun checkCriteriaWithAwardCriteria(
                 message = "For awardCriteria='priceOnly' conversion cannot be passed"
             )
 
-            val nonTendererCriteria = criteria.filter { it.relatesTo != CriteriaRelatesToEnum.TENDERER }
+            val nonTendererCriteria = criteria.filter { it.relatesTo != CriteriaRelatesTo.TENDERER }
             if (nonTendererCriteria.isNotEmpty()) throw ErrorException(
                 error = ErrorType.INVALID_CRITERIA,
                 message = "For awardCriteria='priceOnly' can be passed only criteria that relates to tenderer. " +
@@ -505,11 +505,11 @@ fun getCriteriaCombinations(
     items: List<ItemReferenceRequest>
 ): List<List<CriterionRequest>> {
     val criteriaByAffiliation = criteria.groupBy { it.relatesTo }
-    val criteriaByItems = criteriaByAffiliation[CriteriaRelatesToEnum.ITEM].orEmpty().groupBy { it.relatedItem }
-    val criteriaByLots = criteriaByAffiliation[CriteriaRelatesToEnum.LOT].orEmpty().groupBy { it.relatedItem }
+    val criteriaByItems = criteriaByAffiliation[CriteriaRelatesTo.ITEM].orEmpty().groupBy { it.relatedItem }
+    val criteriaByLots = criteriaByAffiliation[CriteriaRelatesTo.LOT].orEmpty().groupBy { it.relatedItem }
 
     val tenderCriteria = criteriaByAffiliation[null].orEmpty()
-    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesToEnum.TENDERER].orEmpty()
+    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesTo.TENDERER].orEmpty()
 
     val itemsByLots = items.groupBy { it.relatedLot }
     val lots = itemsByLots.keys
