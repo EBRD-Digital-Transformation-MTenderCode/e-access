@@ -190,7 +190,7 @@ data class UpdateOpenCnData(
         data class Document(
             val documentType: DocumentType,
             override val id: String,
-            val title: String?,
+            val title: String,
             val description: String?,
             override val relatedLots: List<LotId>
         ) : EntityBase<String>(), RelatedLots<LotId>
