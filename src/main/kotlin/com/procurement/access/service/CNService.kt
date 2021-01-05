@@ -217,7 +217,7 @@ class CNServiceImpl(
 
         tender.lots
             .forEach { lot ->
-                lot.title.checkForBlank("tender.lots.description")
+                lot.title.checkForBlank("tender.lots.title")
                 lot.description.checkForBlank("tender.lots.description")
                 lot.internalId.checkForBlank("tender.lots.internalId")
 
