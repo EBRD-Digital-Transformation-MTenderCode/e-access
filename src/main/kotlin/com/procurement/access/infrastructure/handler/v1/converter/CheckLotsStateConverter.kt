@@ -21,14 +21,14 @@ val allowedPmd = ProcurementMethod.values()
             ProcurementMethod.DC, ProcurementMethod.TEST_DC,
             ProcurementMethod.NP, ProcurementMethod.TEST_NP,
             ProcurementMethod.CD, ProcurementMethod.TEST_CD,
-            ProcurementMethod.IP, ProcurementMethod.TEST_IP -> true
-
-            ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-            ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-            ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-            ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+            ProcurementMethod.IP, ProcurementMethod.TEST_IP,
             ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+            ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+            ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+            ProcurementMethod.MV, ProcurementMethod.TEST_MV -> true
+
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP,
             ProcurementMethod.MC, ProcurementMethod.TEST_MC,
             ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
             ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
