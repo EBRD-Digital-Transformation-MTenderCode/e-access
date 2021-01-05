@@ -446,7 +446,7 @@ internal class LotsServiceTest {
                 tender = params.tender.copy(
                     items = params.tender.items + ValidateLotsDataParams.Tender.Item(
                         id = "redundatnt",
-                        relatedLot = STORED_LOT_ID
+                        relatedLot = STORED_LOT_ID.toString()
                     )
                 )
             )
@@ -470,7 +470,7 @@ internal class LotsServiceTest {
                 tender = params.tender.copy(
                     items = params.tender.items + ValidateLotsDataParams.Tender.Item(
                         id = "item",
-                        relatedLot = UUID.randomUUID()
+                        relatedLot = UUID.randomUUID().toString()
                     )
                 )
             )
@@ -494,7 +494,7 @@ internal class LotsServiceTest {
                 tender = ValidateLotsDataParams.Tender(
                     lots = listOf(
                         ValidateLotsDataParams.Tender.Lot(
-                            id = STORED_LOT_ID,
+                            id = STORED_LOT_ID.toString(),
                             internalId = null,
                             title = null,
                             description = null,
@@ -503,7 +503,7 @@ internal class LotsServiceTest {
                             value = null
                         ),
                         ValidateLotsDataParams.Tender.Lot(
-                            id = LOT_ID_1,
+                            id = LOT_ID_1.toString(),
                             internalId = null,
                             title = "title",
                             description = "description",
@@ -541,7 +541,7 @@ internal class LotsServiceTest {
                             )
                         ),
                         ValidateLotsDataParams.Tender.Lot(
-                            id = LOT_ID_2,
+                            id = LOT_ID_2.toString(),
                             internalId = null,
                             title = "title",
                             description = "description",
@@ -582,15 +582,15 @@ internal class LotsServiceTest {
                     items = listOf(
                         ValidateLotsDataParams.Tender.Item(
                             id = "id",
-                            relatedLot = STORED_LOT_ID
+                            relatedLot = STORED_LOT_ID.toString()
                         ),
                         ValidateLotsDataParams.Tender.Item(
                             id = "id1",
-                            relatedLot = LOT_ID_1
+                            relatedLot = LOT_ID_1.toString()
                         ),
                         ValidateLotsDataParams.Tender.Item(
                             id = "id2",
-                            relatedLot = LOT_ID_2
+                            relatedLot = LOT_ID_2.toString()
                         )
                     )
                 )
