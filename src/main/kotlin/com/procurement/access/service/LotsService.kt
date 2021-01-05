@@ -445,7 +445,7 @@ class LotsService(
             .onFailure { return it.reason.asValidationFailure() }
 
         val receivedLotsByIds = params.tender.lots.associateBy { it.id }
-        val storedLotsByIds = process.tender.lots.orEmpty().associateBy { it.id }
+        val storedLotsByIds = process.tender.lots.orEmpty().associateBy { it.id.toString() }
 
         val dividedLot = getDividedLot(receivedLotsByIds, storedLotsByIds)
             .onFailure { return it.reason.asValidationFailure() }
@@ -463,10 +463,10 @@ class LotsService(
     }
 
     private fun getNewLots(
-        receivedLotsByIds: Map<LotId, ValidateLotsDataParams.Tender.Lot>,
+        receivedLotsByIds: Map<String, ValidateLotsDataParams.Tender.Lot>,
         knownLot: TenderLotsAndItemsInfo.Tender.Lot
     ): Result<List<ValidateLotsDataParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots>  {
-        val newLots = receivedLotsByIds.minus(knownLot.id)
+        val newLots = receivedLotsByIds.minus(knownLot.id.toString())
         val minimumNumberOfNewLots = 2
         return if (newLots.size < minimumNumberOfNewLots)
             ValidationErrors.IncorrectNumberOfNewLots().asFailure()
@@ -474,8 +474,8 @@ class LotsService(
     }
 
     private fun getDividedLot(
-        receivedLotsByIds: Map<LotId, ValidateLotsDataParams.Tender.Lot>,
-        storedLotsByIds: Map<LotId, TenderLotsAndItemsInfo.Tender.Lot>
+        receivedLotsByIds: Map<String, ValidateLotsDataParams.Tender.Lot>,
+        storedLotsByIds: Map<String, TenderLotsAndItemsInfo.Tender.Lot>
     ): Result<TenderLotsAndItemsInfo.Tender.Lot, ValidationErrors.IncorrectNumberOfKnownLots> {
         val knownLotsIds = receivedLotsByIds.keys.intersect(storedLotsByIds.keys)
         val expectedNumberOfKnownLots = 1
@@ -580,7 +580,7 @@ class LotsService(
         items: List<ValidateLotsDataParams.Tender.Item>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot
     ): ValidationResult<Fail> {
-        val itemsByRelatedLots = items.associateBy { it.relatedLot }.minus(dividedLot.id)
+        val itemsByRelatedLots = items.associateBy { it.relatedLot }.minus(dividedLot.id.toString())
         val lotIds = newLots.toSet { it.id }
 
         val lotsWithoutItems = lotIds - itemsByRelatedLots.keys
@@ -604,7 +604,7 @@ class LotsService(
         storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
     ): ValidationResult<Fail> {
         val receivedItemsOfDividedLot = receivedItems.asSequence()
-            .filter { it.relatedLot == dividedLot.id }
+            .filter { it.relatedLot == dividedLot.id.toString() }
             .map { it.id }
             .toSet()
 
