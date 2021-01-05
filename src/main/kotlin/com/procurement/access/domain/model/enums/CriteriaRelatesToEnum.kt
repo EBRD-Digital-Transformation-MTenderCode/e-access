@@ -8,8 +8,9 @@ enum class CriteriaRelatesToEnum(@JsonValue override val key: String) : EnumElem
     AWARD("award"),
     ITEM("item"),
     LOT("lot"),
-    TENDERER("tenderer"),
-    QUALIFICATION("qualification");
+    QUALIFICATION("qualification"),
+    TENDER("tender"),
+    TENDERER("tenderer");
 
     override fun toString(): String = key
 
