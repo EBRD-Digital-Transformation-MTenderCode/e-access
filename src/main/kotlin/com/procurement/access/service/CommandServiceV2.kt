@@ -16,6 +16,7 @@ import com.procurement.access.infrastructure.handler.v2.CheckTenderStateHandler
 import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 import com.procurement.access.infrastructure.handler.v2.CreateCriteriaForProcuringEntityHandler
 import com.procurement.access.infrastructure.handler.v2.CreateRelationToOtherProcessHandler
+import com.procurement.access.infrastructure.handler.v2.DivideLotHandler
 import com.procurement.access.infrastructure.handler.v2.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.v2.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.v2.FindLotIdsHandler
@@ -48,6 +49,7 @@ class CommandServiceV2(
     private val checkTenderStateHandler: CheckTenderStateHandler,
     private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
     private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
+    private val divideLotHandler: DivideLotHandler,
     private val findAuctionsHandler: FindAuctionsHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
     private val findLotIdsHandler: FindLotIdsHandler,
@@ -81,6 +83,7 @@ class CommandServiceV2(
                     CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(descriptor)
                     CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(descriptor)
                     CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(descriptor)
+                    CommandTypeV2.DIVIDE_LOT -> divideLotHandler.handle(descriptor)
                     CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(descriptor)
                     CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(descriptor)
                     CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(descriptor)
