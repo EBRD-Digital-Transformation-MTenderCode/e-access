@@ -1,4 +1,4 @@
-package com.procurement.access.infrastructure.handler.v1.model.request
+package com.procurement.access.infrastructure.handler.v1.model.request.criterion
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -16,12 +16,15 @@ data class CriterionRequest(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
+    @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: CriterionClassificationRequest,
+
     @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
     @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
 ) {
+
     data class RequirementGroup(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 

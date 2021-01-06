@@ -25,6 +25,7 @@ import com.procurement.access.domain.model.enums.ReductionCriteria
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.EligibleEvidenceId
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
@@ -42,8 +43,9 @@ import com.procurement.access.exception.ErrorType.ITEM_ID_DUPLICATED
 import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
-import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.SelectiveCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.errorIfBlank
@@ -420,6 +422,27 @@ class SelectiveCnOnPnService(
                         error = ErrorType.DUPLICATE,
                         message = "Attribute 'tender.items[$index].additionalClassifications' has duplicate by scheme '${duplicate.scheme}' and id '${duplicate.id}'."
                     )
+            }
+
+        val uniqueEligibleEvidenceIds = mutableSetOf<EligibleEvidenceId>()
+        tender.criteria
+            ?.forEachIndexed { criterionIdx, criterion ->
+                criterion.requirementGroups
+                    .forEachIndexed { requirementGroupIdx, requirementGroup ->
+                        requirementGroup.requirements
+                            .forEachIndexed { requirementIdx, requirement ->
+                                requirement.eligibleEvidences
+                                    ?.forEachIndexed { eligibleEvidenceIdx, eligibleEvidence ->
+
+                                        // FReq-1.1.1.37
+                                        if (!uniqueEligibleEvidenceIds.add(eligibleEvidence.id))
+                                            throw ErrorException(
+                                                error = ErrorType.DUPLICATE,
+                                                message = "Attribute 'tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences' has duplicate by id '${eligibleEvidence.id}'."
+                                            )
+                                    }
+                            }
+                    }
             }
     }
 
@@ -859,7 +882,8 @@ class SelectiveCnOnPnService(
                                     )
                                 },
                                 dataType = requirement.dataType,
-                                value = requirement.value
+                                value = requirement.value,
+                                eligibleEvidences = requirement.eligibleEvidences?.toList()
                             )
                         }
                     )
@@ -871,12 +895,12 @@ class SelectiveCnOnPnService(
     }
 
     private fun updateDocuments(
-        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<DocumentRequest>,
         documentsFromDB: List<PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return if (documentsFromDB.isNotEmpty()) {
-            val documentsFromRequestById: Map<String, SelectiveCnOnPnRequest.Tender.Document> =
+            val documentsFromRequestById: Map<String, DocumentRequest> =
                 documentsFromRequest.associateBy { document -> document.id }
             val existsDocumentsById: Map<String, PNEntity.Tender.Document> =
                 documentsFromDB.associateBy { document -> document.id }
@@ -887,7 +911,7 @@ class SelectiveCnOnPnService(
                 relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
             )
 
-            val newDocumentsFromRequest: Set<SelectiveCnOnPnRequest.Tender.Document> = extractNewDocuments(
+            val newDocumentsFromRequest: Set<DocumentRequest> = extractNewDocuments(
                 documentsFromRequest = documentsFromRequest,
                 existsDocumentsById = existsDocumentsById
             )
@@ -907,7 +931,7 @@ class SelectiveCnOnPnService(
     }
 
     private fun updateExistsDocuments(
-        documentsFromRequestById: Map<String, SelectiveCnOnPnRequest.Tender.Document>,
+        documentsFromRequestById: Map<String, DocumentRequest>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): Set<CNEntity.Tender.Document> {
@@ -947,16 +971,16 @@ class SelectiveCnOnPnService(
     }
 
     private fun extractNewDocuments(
-        documentsFromRequest: Collection<SelectiveCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: Collection<DocumentRequest>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>
-    ): Set<SelectiveCnOnPnRequest.Tender.Document> {
+    ): Set<DocumentRequest> {
         return documentsFromRequest.asSequence()
             .filter { document -> !existsDocumentsById.containsKey(document.id) }
             .toSet()
     }
 
     private fun convertNewDocuments(
-        newDocumentsFromRequest: Collection<SelectiveCnOnPnRequest.Tender.Document>,
+        newDocumentsFromRequest: Collection<DocumentRequest>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return newDocumentsFromRequest.map { document ->
@@ -965,7 +989,7 @@ class SelectiveCnOnPnService(
     }
 
     private fun convertNewDocument(
-        newDocumentFromRequest: SelectiveCnOnPnRequest.Tender.Document,
+        newDocumentFromRequest: DocumentRequest,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): CNEntity.Tender.Document {
         val relatedLots = getPermanentLotsIds(
@@ -1535,7 +1559,8 @@ class SelectiveCnOnPnService(
                                                 )
                                             },
                                             dataType = requirement.dataType,
-                                            value = requirement.value
+                                            value = requirement.value,
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList()
                                         )
                                     }
                                 )
@@ -1768,7 +1793,7 @@ class SelectiveCnOnPnService(
      * в массиве Documents из запроса.
      */
     private fun checkDocuments(
-        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<DocumentRequest>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
         val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSet { it.id }
@@ -2165,7 +2190,7 @@ class SelectiveCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
         lotsIdsFromRequest: Set<String>,
-        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<DocumentRequest>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -2325,7 +2350,7 @@ class SelectiveCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
         lotsIdsFromPN: Set<String>,
-        documentsFromRequest: List<SelectiveCnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<DocumentRequest>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -2449,7 +2474,9 @@ class SelectiveCnOnPnService(
             data.mainProcurementCategory,
             tender.awardCriteria,
             tender.awardCriteriaDetails,
+            tender.documents,
             data.items,
+            data.criteria,
             tender.criteria,
             tender.conversions,
             rulesService,

@@ -26,7 +26,8 @@ fun RequestsForEvPanelsResult.convert(): RequestsForEvPanelsResponse {
                                             dataType = requirement.dataType,
                                             value = requirement.value,
                                             period = requirement.period,
-                                            description = requirement.description
+                                            description = requirement.description,
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList()
                                         )
                                     }
                             )

@@ -7,7 +7,7 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
 
 fun generatePermanentRequirementIds(criteria: List<CriterionRequest>?): Map<String, RequirementId.Permanent> =
     criteria
@@ -54,7 +54,8 @@ fun buildCriterion(
                                         )
                                     },
                                 dataType = requirement.dataType,
-                                value = requirement.value
+                                value = requirement.value,
+                                eligibleEvidences = requirement.eligibleEvidences?.toList()
                             )
                         }
                 )

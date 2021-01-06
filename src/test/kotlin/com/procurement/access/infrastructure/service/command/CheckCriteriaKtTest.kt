@@ -10,13 +10,17 @@ import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.option.RelatedOption
+import com.procurement.access.domain.model.requirement.EligibleEvidence
+import com.procurement.access.domain.model.requirement.EligibleEvidenceType
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.infrastructure.handler.v1.model.request.ConversionRequest
-import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.ItemReferenceRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionClassificationRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.document.RelatedDocumentRequest
 import com.procurement.access.service.RulesService
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -24,6 +28,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.util.*
 
 internal class CheckCriteriaKtTest {
 
@@ -40,6 +45,10 @@ internal class CheckCriteriaKtTest {
             id = "cr1",
             description = null,
             title = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             relatedItem = null,
             relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup1, reqGroup2)
@@ -48,6 +57,10 @@ internal class CheckCriteriaKtTest {
             id = "cr2",
             description = "desc",
             title = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             relatedItem = null,
             relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup3, reqGroup4)
@@ -83,6 +96,10 @@ internal class CheckCriteriaKtTest {
             id = "cr1",
             description = null,
             title = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             relatedItem = null,
             relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup1, reqGroup2)
@@ -91,6 +108,10 @@ internal class CheckCriteriaKtTest {
             id = "cr2",
             description = "desc",
             title = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             relatedItem = null,
             relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup3, reqGroup4, reqGroup5)
@@ -99,6 +120,10 @@ internal class CheckCriteriaKtTest {
             id = "cr3",
             description = null,
             title = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             relatedItem = null,
             relatesTo = CriteriaRelatesTo.TENDER,
             requirementGroups = listOf(reqGroup6)
@@ -128,6 +153,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = null,
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = emptyList()
         )
 
@@ -137,6 +166,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = null,
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = emptyList()
         )
 
@@ -146,6 +179,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = "lot1",
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = emptyList()
         )
 
@@ -155,6 +192,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = "lot2",
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = emptyList()
         )
 
@@ -164,6 +205,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = "item1",
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = emptyList()
         )
 
@@ -264,7 +309,8 @@ internal class CheckCriteriaKtTest {
                     period = null,
                     title = "",
                     dataType = RequirementDataType.STRING,
-                    value = ExpectedValue.AsString("")
+                    value = ExpectedValue.AsString(""),
+                    eligibleEvidences = emptyList()
                 )
             )
         )
@@ -274,6 +320,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = "lot1",
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = listOf(reqGroup5)
         )
 
@@ -284,6 +334,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = "lot2",
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = listOf(reqGroup6)
         )
         return listOf(lotCriterion1, lotCriterion2)
@@ -298,6 +352,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = null,
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = listOf(reqGroup3, reqGroup4)
         )
         return tendererCriterion
@@ -314,7 +372,16 @@ internal class CheckCriteriaKtTest {
                     period = null,
                     title = "",
                     dataType = RequirementDataType.STRING,
-                    value = ExpectedValue.AsString("")
+                    value = ExpectedValue.AsString(""),
+                    eligibleEvidences = listOf(
+                        EligibleEvidence(
+                            id = UUID.randomUUID().toString(),
+                            title = "title",
+                            description = "description",
+                            type = EligibleEvidenceType.DOCUMENT,
+                            relatedDocument = RelatedDocumentRequest(id = "document")
+                        )
+                    )
                 )
             )
         )
@@ -325,6 +392,10 @@ internal class CheckCriteriaKtTest {
             relatedItem = null,
             title = "",
             description = "",
+            classification = CriterionClassificationRequest(
+                id = "CRITERION.OTHER.123456",
+                scheme = "scheme"
+            ),
             requirementGroups = listOf(reqGroup1, reqGroup2)
         )
         return tenderCriterion

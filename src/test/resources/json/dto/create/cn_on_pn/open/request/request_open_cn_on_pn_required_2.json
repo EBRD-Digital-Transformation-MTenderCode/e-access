@@ -1,4 +1,13 @@
 {
+  "criteria": [
+    {
+      "id": "001",
+      "classification": {
+        "id": "CRITERION.OTHER.123456",
+        "scheme": "scheme"
+      }
+    }
+  ],
   "tender": {
     "tenderPeriod": {
       "startDate": "2019-04-01T10:00:00Z",

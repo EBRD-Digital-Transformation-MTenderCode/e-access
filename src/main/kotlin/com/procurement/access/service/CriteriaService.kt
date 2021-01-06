@@ -115,7 +115,8 @@ class CriteriaServiceImpl(
                             dataType = RequirementDataType.BOOLEAN,
                             value = NoneValue,
                             period = null,
-                            description = null
+                            description = null,
+                            eligibleEvidences = emptyList()
                         )
                     )
                 )
@@ -155,7 +156,8 @@ class CriteriaServiceImpl(
                                         dataType = requirement.dataType,
                                         value = requirement.value,
                                         period = requirement.period,
-                                        description = requirement.description
+                                        description = requirement.description,
+                                        eligibleEvidences = requirement.eligibleEvidences?.toList()
                                     )
                                 }
                         )
@@ -420,7 +422,8 @@ class CriteriaServiceImpl(
                                     title = requirement.title,
                                     period = null,
                                     value = NoneValue,
-                                    dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                    dataType = RequirementDataType.BOOLEAN, // FR.COM-1.12.2
+                                    eligibleEvidences = emptyList()
                                 )
                             }
                     )
@@ -482,7 +485,8 @@ class CriteriaServiceImpl(
                                     title = requirement.title,
                                     period = null,
                                     value = NoneValue,
-                                    dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                    dataType = RequirementDataType.BOOLEAN, // FR.COM-1.12.2
+                                    eligibleEvidences = emptyList()
                                 )
                             }
                     )

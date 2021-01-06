@@ -10,7 +10,8 @@ class Requirement(
     val description: String?,
     val period: Period?,
     val dataType: RequirementDataType,
-    val value: RequirementValue
+    val value: RequirementValue,
+    val eligibleEvidences: List<EligibleEvidence>?
 ) {
 
     data class Period(

@@ -4,6 +4,15 @@
       "endDate": "2019-03-16T12:40:00Z"
     }
   },
+  "criteria": [
+    {
+      "id": "001",
+      "classification": {
+        "id": "CRITERION.OTHER.123456",
+        "scheme": "scheme"
+      }
+    }
+  ],
   "tender": {
     "secondStage": {
     },
@@ -45,6 +54,10 @@
         "title": "Bankruptcy",
         "description": "Is the economic operator bankrupt? This information needs not be given if exclusion of economic operators in this case has been made mandatory under the applicable national law without any possibility of derogation where the economic operator is nevertheless able to perform the contract.",
         "relatesTo": "tender",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00555",
@@ -63,6 +76,10 @@
         "id": "002",
         "title": "Product warranty",
         "relatesTo": "tender",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "002-1",
@@ -93,6 +110,10 @@
         "description": "Country of origin",
         "relatesTo": "item",
         "relatedItem": "002",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "004-1",

@@ -141,7 +141,8 @@ internal class CheckResponsesKtTest {
                                 title = "",
                                 period = null,
                                 dataType = RequirementDataType.STRING,
-                                value = ExpectedValue.of("")
+                                value = ExpectedValue.of(""),
+                                eligibleEvidences = emptyList()
                             )
                         )
                     )
