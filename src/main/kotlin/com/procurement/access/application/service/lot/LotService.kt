@@ -619,28 +619,10 @@ class LotServiceImpl(
 
         val receivedLotsIds = receivedLotsByIds.keys
         val savedLotsIds = savedLotsByIds.keys
-        val idsNewLots: Set<TemporalLotId> = getNewElements(receivedLotsIds, savedLotsIds)
         val idsUpdatingLots: Set<TemporalLotId> = getElementsForUpdate(receivedLotsIds, savedLotsIds)
-
-        val newLots = getNewLots(idsNewLots, receivedLotsByIds)
-        val updatingLots = getUpdatingActiveLots(idsUpdatingLots, savedLotsByIds)
-
-        return LotsForAuction(lots = (newLots + updatingLots).toList())
+        val updatingLots = getUpdatingActiveLots(idsUpdatingLots, savedLotsByIds).toList()
+        return LotsForAuction(lots = updatingLots)
     }
-
-    private fun getNewLots(
-        idsNewLots: Set<TemporalLotId>,
-        receivedLotsByIds: Map<TemporalLotId, LotsForAuctionData.Lot>
-    ): Sequence<LotsForAuction.Lot> = idsNewLots.asSequence()
-        .map { id ->
-            receivedLotsByIds.getValue(id)
-                .let { lot ->
-                    LotsForAuction.Lot(
-                        id = id,
-                        value = lot.value
-                    )
-                }
-        }
 
     private fun getUpdatingActiveLots(
         idsUpdatingLots: Set<TemporalLotId>,
@@ -661,8 +643,6 @@ class LotServiceImpl(
                 )
             )
         }
-
-    fun <T> getNewElements(received: Set<T>, saved: Set<T>) = received.subtract(saved)
 
     private fun <T> getElementsForUpdate(received: Set<T>, saved: Set<T>) = saved.intersect(received)
 
