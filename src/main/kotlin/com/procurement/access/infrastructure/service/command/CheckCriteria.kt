@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.requirement.EligibleEvidenceType
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.MaxValue
 import com.procurement.access.domain.model.requirement.MinValue
@@ -138,12 +139,11 @@ fun checkCriteriaAndConversion(
                             ?.forEach { eligibleEvidence ->
 
                                 // FReq-1.1.1.38
-                                eligibleEvidence.relatedDocument
-                                    ?.also { document ->
-                                        if (document.id !in documentByIds)
-                                            throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.38")
-                                    }
-
+                                val relatedDocument = eligibleEvidence.relatedDocument
+                                if (relatedDocument != null) {
+                                    if (eligibleEvidence.type == EligibleEvidenceType.DOCUMENT && relatedDocument.id !in documentByIds)
+                                        throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.38")
+                                }
                             }
                     }
             }
