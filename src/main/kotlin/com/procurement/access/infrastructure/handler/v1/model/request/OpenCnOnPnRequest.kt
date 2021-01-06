@@ -11,7 +11,6 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.Scheme
@@ -19,13 +18,16 @@ import com.procurement.access.infrastructure.bind.amount.positive.AmountPositive
 import com.procurement.access.infrastructure.bind.amount.positive.AmountPositiveSerializer
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
-
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.ReferenceCriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
 
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OpenCnOnPnRequest(
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<ReferenceCriterionRequest>,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -73,7 +75,7 @@ data class OpenCnOnPnRequest(
 
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
         @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>,
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<DocumentRequest>
     ) {
 
         data class Classification(
@@ -299,17 +301,5 @@ data class OpenCnOnPnRequest(
                 @field:JsonProperty("name") @param:JsonProperty("name") val name: String
             )
         }
-
-        data class Document(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
-            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
-
-            @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
-        )
     }
 }

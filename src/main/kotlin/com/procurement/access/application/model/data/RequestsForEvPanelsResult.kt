@@ -1,6 +1,6 @@
 package com.procurement.access.application.model.data
 
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.requirement.Requirement
 
@@ -11,7 +11,7 @@ data class RequestsForEvPanelsResult(
         val id: String,
         val title: String,
         val source: CriteriaSource,
-        val relatesTo: CriteriaRelatesToEnum,
+        val relatesTo: CriteriaRelatesTo,
         val description: String?,
         val requirementGroups: List<RequirementGroup>
     ) {

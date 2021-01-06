@@ -21,6 +21,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.EligibleEvidenceId
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
@@ -41,6 +42,7 @@ import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.errorIfBlank
@@ -392,6 +394,27 @@ class OpenCnOnPnService(
                         message = "Attribute 'tender.documents[$index].relatedLots' has duplicate '$duplicate'."
                     )
             }
+
+        val uniqueEligibleEvidenceIds = mutableSetOf<EligibleEvidenceId>()
+        tender.criteria
+            ?.forEachIndexed { criterionIdx, criterion ->
+                criterion.requirementGroups
+                    .forEachIndexed { requirementGroupIdx, requirementGroup ->
+                        requirementGroup.requirements
+                            .forEachIndexed { requirementIdx, requirement ->
+                                requirement.eligibleEvidences
+                                    ?.forEachIndexed { eligibleEvidenceIdx, eligibleEvidence ->
+
+                                        // FReq-1.1.1.37
+                                        if (!uniqueEligibleEvidenceIds.add(eligibleEvidence.id))
+                                            throw ErrorException(
+                                                error = ErrorType.DUPLICATE,
+                                                message = "Attribute 'tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences' has duplicate by id '${eligibleEvidence.id}'."
+                                            )
+                                    }
+                            }
+                    }
+            }
     }
 
     /**
@@ -434,7 +457,7 @@ class OpenCnOnPnService(
      * в массиве Documents из запроса.
      */
     private fun checkDocuments(
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<DocumentRequest>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
         val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSet { it.id }
@@ -753,7 +776,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
         lotsIdsFromRequest: Set<String>,
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<DocumentRequest>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -937,7 +960,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
         lotsIdsFromPN: Set<String>,
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<DocumentRequest>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -1459,12 +1482,12 @@ class OpenCnOnPnService(
     }
 
     private fun updateDocuments(
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<DocumentRequest>,
         documentsFromDB: List<PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return if (documentsFromDB.isNotEmpty()) {
-            val documentsFromRequestById: Map<String, OpenCnOnPnRequest.Tender.Document> =
+            val documentsFromRequestById: Map<String, DocumentRequest> =
                 documentsFromRequest.associateBy { document -> document.id }
             val existsDocumentsById: Map<String, PNEntity.Tender.Document> =
                 documentsFromDB.associateBy { document -> document.id }
@@ -1475,7 +1498,7 @@ class OpenCnOnPnService(
                 relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
             )
 
-            val newDocumentsFromRequest: Set<OpenCnOnPnRequest.Tender.Document> = extractNewDocuments(
+            val newDocumentsFromRequest: Set<DocumentRequest> = extractNewDocuments(
                 documentsFromRequest = documentsFromRequest,
                 existsDocumentsById = existsDocumentsById
             )
@@ -1495,7 +1518,7 @@ class OpenCnOnPnService(
     }
 
     private fun updateExistsDocuments(
-        documentsFromRequestById: Map<String, OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequestById: Map<String, DocumentRequest>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): Set<CNEntity.Tender.Document> {
@@ -1525,16 +1548,16 @@ class OpenCnOnPnService(
     }
 
     private fun extractNewDocuments(
-        documentsFromRequest: Collection<OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: Collection<DocumentRequest>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>
-    ): Set<OpenCnOnPnRequest.Tender.Document> {
+    ): Set<DocumentRequest> {
         return documentsFromRequest.asSequence()
             .filter { document -> !existsDocumentsById.containsKey(document.id) }
             .toSet()
     }
 
     private fun convertNewDocuments(
-        newDocumentsFromRequest: Collection<OpenCnOnPnRequest.Tender.Document>,
+        newDocumentsFromRequest: Collection<DocumentRequest>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return newDocumentsFromRequest.map { document ->
@@ -1543,7 +1566,7 @@ class OpenCnOnPnService(
     }
 
     private fun convertNewDocument(
-        newDocumentFromRequest: OpenCnOnPnRequest.Tender.Document,
+        newDocumentFromRequest: DocumentRequest,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): CNEntity.Tender.Document {
         val relatedLots = getPermanentLotsIds(
@@ -2179,7 +2202,8 @@ class OpenCnOnPnService(
                                                 )
                                             },
                                             dataType = requirement.dataType,
-                                            value = requirement.value
+                                            value = requirement.value,
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList()
                                         )
                                     }
                                 )
@@ -2340,7 +2364,9 @@ class OpenCnOnPnService(
             data.mainProcurementCategory,
             tender.awardCriteria,
             tender.awardCriteriaDetails,
+            tender.documents,
             data.items,
+            data.criteria,
             tender.criteria,
             tender.conversions,
             rulesService,

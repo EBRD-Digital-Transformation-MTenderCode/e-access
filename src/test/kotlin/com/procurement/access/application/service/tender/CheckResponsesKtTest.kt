@@ -1,7 +1,7 @@
 package com.procurement.access.application.service.tender
 
 import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
@@ -107,9 +107,9 @@ internal class CheckResponsesKtTest {
         )
 
         val criteria = listOf(
-            createCriteria(relatesTo = CriteriaRelatesToEnum.LOT, relatedLot = TARGET_LOT, requirementId = TARGET_REQUIREMENT),
-            createCriteria(relatesTo = CriteriaRelatesToEnum.LOT, relatedLot = ANOTHER_LOT, requirementId = ANOTHER_REQUIREMENT),
-            createCriteria(relatesTo = CriteriaRelatesToEnum.TENDERER, relatedLot = null, requirementId = TENDERER_REQUIREMENT)
+            createCriteria(relatesTo = CriteriaRelatesTo.LOT, relatedLot = TARGET_LOT, requirementId = TARGET_REQUIREMENT),
+            createCriteria(relatesTo = CriteriaRelatesTo.LOT, relatedLot = ANOTHER_LOT, requirementId = ANOTHER_REQUIREMENT),
+            createCriteria(relatesTo = CriteriaRelatesTo.TENDERER, relatedLot = null, requirementId = TENDERER_REQUIREMENT)
         )
 
         private fun createResponse(requirementId: String) =
@@ -122,7 +122,7 @@ internal class CheckResponsesKtTest {
                 requirement = CheckResponsesData.Bid.RequirementResponse.Requirement(id = requirementId)
             )
 
-        private fun createCriteria(relatesTo: CriteriaRelatesToEnum, relatedLot: String?, requirementId: String) =
+        private fun createCriteria(relatesTo: CriteriaRelatesTo, relatedLot: String?, requirementId: String) =
             CNEntity.Tender.Criteria(
                 id = UUID.randomUUID().toString(),
                 title = "",
@@ -141,7 +141,8 @@ internal class CheckResponsesKtTest {
                                 title = "",
                                 period = null,
                                 dataType = RequirementDataType.STRING,
-                                value = ExpectedValue.of("")
+                                value = ExpectedValue.of(""),
+                                eligibleEvidences = emptyList()
                             )
                         )
                     )

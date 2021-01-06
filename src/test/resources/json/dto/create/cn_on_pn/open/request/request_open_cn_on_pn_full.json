@@ -1,5 +1,14 @@
 {
   "mainProcurementCategory": "goods",
+  "criteria": [
+    {
+      "id": "001",
+      "classification": {
+        "id": "CRITERION.OTHER.123456",
+        "scheme": "scheme"
+      }
+    }
+  ],
   "tender": {
     "classification": {
       "scheme": "CPV",
@@ -54,6 +63,11 @@
         "id": "d3732c09-7d62-4edc-a172-241da6636e7c",
         "title": "Bankruptcy",
         "description": "Is the economic operator bankrupt? This information needs not be given if exclusion of economic operators in this case has been made mandatory under the applicable national law without any possibility of derogation where the economic operator is nevertheless able to perform the contract.",
+        "relatesTo": "tender",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00555",
@@ -75,6 +89,10 @@
         "description": "Is the economic operator bankrupt? This information needs not be given if exclusion of economic operators in this case has been made mandatory under the applicable national law without any possibility of derogation where the economic operator is nevertheless able to perform the contract.",
         "relatesTo": "lot",
         "relatedItem": "lot-2",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00556",
@@ -96,6 +114,10 @@
         "description": "A minimum product warranty of 1 year is required for all bids.",
         "relatesTo": "item",
         "relatedItem": "item-1",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "002-1",
@@ -127,6 +149,10 @@
         "description": "Country of origin",
         "relatesTo": "item",
         "relatedItem": "item-2",
+        "classification": {
+          "id": "CRITERION.OTHER.123456",
+          "scheme": "scheme"
+        },
         "requirementGroups": [
           {
             "id": "004-1",

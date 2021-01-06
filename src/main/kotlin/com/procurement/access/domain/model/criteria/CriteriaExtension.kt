@@ -3,11 +3,11 @@ package com.procurement.access.domain.model.criteria
 import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
-import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
 
 fun generatePermanentRequirementIds(criteria: List<CriterionRequest>?): Map<String, RequirementId.Permanent> =
     criteria
@@ -54,7 +54,8 @@ fun buildCriterion(
                                         )
                                     },
                                 dataType = requirement.dataType,
-                                value = requirement.value
+                                value = requirement.value,
+                                eligibleEvidences = requirement.eligibleEvidences?.toList()
                             )
                         }
                 )
@@ -70,11 +71,13 @@ fun CNEntity.Tender.Criteria.replaceTemporalItemId(
     val relatedItem = this.relatedItem
     return this.copy(
         relatedItem = when (relatesTo) {
-            CriteriaRelatesToEnum.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
-            CriteriaRelatesToEnum.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
-            CriteriaRelatesToEnum.AWARD -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
-            CriteriaRelatesToEnum.TENDERER,
-            CriteriaRelatesToEnum.QUALIFICATION,
+            CriteriaRelatesTo.AWARD -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
+            CriteriaRelatesTo.ITEM -> relatedTemporalWithPermanentItemId.getValue(relatedItem!!)
+            CriteriaRelatesTo.LOT -> relatedTemporalWithPermanentLotId.getValue(relatedItem!!)
+
+            CriteriaRelatesTo.QUALIFICATION,
+            CriteriaRelatesTo.TENDER,
+            CriteriaRelatesTo.TENDERER,
             null -> relatedItem
         }
     )

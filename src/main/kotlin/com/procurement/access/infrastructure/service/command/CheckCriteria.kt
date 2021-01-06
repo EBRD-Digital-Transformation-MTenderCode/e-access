@@ -4,7 +4,7 @@ import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
@@ -19,17 +19,25 @@ import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.handler.v1.model.request.ConversionRequest
-import com.procurement.access.infrastructure.handler.v1.model.request.CriterionRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.ItemReferenceRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.criterion.ReferenceCriterionRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.service.RulesService
 import java.math.BigDecimal
+
+private const val PREFIX_EXCLUSION_CRITERION = "CRITERION.EXCLUSION."
+private const val PREFIX_SELECTION_CRITERION = "CRITERION.SELECTION."
+private const val PREFIX_OTHER_CRITERION = "CRITERION.OTHER."
 
 fun checkCriteriaAndConversion(
     mainProcurementCategory: MainProcurementCategory?,
     awardCriteria: AwardCriteria,
     awardCriteriaDetails: AwardCriteriaDetails?,
+    documents: List<DocumentRequest>,
     items: List<ItemReferenceRequest>,
+    referenceCriteria: List<ReferenceCriterionRequest>,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?,
     rulesService: RulesService,
@@ -94,6 +102,89 @@ fun checkCriteriaAndConversion(
 
     // FReq-1.1.1.15
     checkAwardCriteriaDetailsEnum(awardCriteriaDetails)
+
+    val allReferenceCriterionClassifications = referenceCriteria.toSet { it.classification }
+    val documentByIds = documents.toSet { it.id }
+    criteria?.forEach { criterion ->
+        // FReq-1.1.1.30
+        if (criterion.relatesTo == CriteriaRelatesTo.TENDER && criterion.relatedItem != null)
+            throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.30")
+
+        // FReq-1.1.1.31
+        val classificationId = criterion.classification.id
+        when {
+            classificationId.startsWith(PREFIX_EXCLUSION_CRITERION) -> Unit
+
+            classificationId.startsWith(PREFIX_SELECTION_CRITERION) -> {
+                // FReq-1.1.1.34
+                if (criterion.classification !in allReferenceCriterionClassifications)
+                    throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.34 ")
+            }
+
+            classificationId.startsWith(PREFIX_OTHER_CRITERION) -> {
+                // FReq-1.1.1.35
+                if (criterion.classification !in allReferenceCriterionClassifications)
+                    throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.35 ")
+            }
+
+            else -> throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.31")
+        }
+
+        criterion.requirementGroups
+            .forEach { requirementGroup ->
+                requirementGroup.requirements
+                    .forEach { requirement ->
+                        requirement.eligibleEvidences
+                            ?.forEach { eligibleEvidence ->
+
+                                // FReq-1.1.1.38
+                                eligibleEvidence.relatedDocument
+                                    ?.also { document ->
+                                        if (document.id !in documentByIds)
+                                            throw  ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.38")
+                                    }
+
+                            }
+                    }
+            }
+    }
+
+    // FReq-1.1.1.33
+    val exclusionReferenceCriterionClassifications = allReferenceCriterionClassifications.asSequence()
+        .filter { it.id.startsWith(PREFIX_EXCLUSION_CRITERION) }
+        .toSet()
+    val exclusionCriterionClassifications = criteria?.asSequence()
+        ?.filter { it.classification.id.startsWith(PREFIX_EXCLUSION_CRITERION) }
+        ?.map { it.classification }
+        ?.toSet()
+        .orEmpty()
+    if (exclusionCriterionClassifications != exclusionReferenceCriterionClassifications)
+        throw ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.33")
+
+    // FReq-1.1.1.36
+    val criterionByRequirement = criteria?.asSequence()
+        ?.flatMap { criterion ->
+            criterion.requirementGroups
+                .asSequence()
+                .flatMap { group -> group.requirements.asSequence() }
+                .map { requirement -> requirement.id to criterion }
+        }
+        ?.toMap()
+        .orEmpty()
+    conversions?.forEach { conversion ->
+        if (conversion.relatesTo == ConversionsRelatesTo.REQUIREMENT) {
+            criterionByRequirement[conversion.relatedItem]
+                ?.apply {
+                    val isCriteriaInvalid =
+                        !classification.id.startsWith(PREFIX_SELECTION_CRITERION) &&
+                            !classification.id.startsWith(PREFIX_OTHER_CRITERION)
+
+                    if (isCriteriaInvalid)
+                        throw ErrorException(ErrorType.INVALID_CONVERSION, message = "FReq-1.1.1.36")
+                }
+                ?: throw ErrorException(ErrorType.INVALID_CONVERSION, "FReq-1.1.1.36 (requirement is not found)")
+        }
+    }
 }
 
 fun checkConversionWithoutCriteria(criteria: List<CriterionRequest>?, conversions: List<ConversionRequest>?) {
@@ -121,9 +212,9 @@ fun checkActualItemRelation(criteria: List<CriterionRequest>?, items: List<ItemR
         itemsByRelatedLot: Map<String, List<ItemReferenceRequest>>
     ) {
         when (this.relatesTo) {
-            CriteriaRelatesToEnum.ITEM -> itemsById.containsElement(this.relatedItem!!)
-            CriteriaRelatesToEnum.LOT -> itemsByRelatedLot.relatesWithLot(this.relatedItem!!)
-            CriteriaRelatesToEnum.TENDERER -> Unit
+            CriteriaRelatesTo.ITEM -> itemsById.containsElement(this.relatedItem!!)
+            CriteriaRelatesTo.LOT -> itemsByRelatedLot.relatesWithLot(this.relatedItem!!)
+            CriteriaRelatesTo.TENDERER -> Unit
         }
     }
 
@@ -135,12 +226,12 @@ fun checkActualItemRelation(criteria: List<CriterionRequest>?, items: List<ItemR
 
         if (this.relatesTo != null) {
             when (this.relatesTo) {
-                CriteriaRelatesToEnum.TENDERER -> if (this.relatedItem != null) throw ErrorException(
+                CriteriaRelatesTo.TENDERER -> if (this.relatedItem != null) throw ErrorException(
                     error = ErrorType.INVALID_CRITERIA,
                     message = "For parameter relatedTo = 'tenderer', parameter relatedItem cannot be passed"
                 )
-                CriteriaRelatesToEnum.ITEM,
-                CriteriaRelatesToEnum.LOT -> if (this.relatedItem == null) throw ErrorException(
+                CriteriaRelatesTo.ITEM,
+                CriteriaRelatesTo.LOT -> if (this.relatedItem == null) throw ErrorException(
                     error = ErrorType.INVALID_CRITERIA,
                     message = "For parameter relatedTo = 'lot' or 'item', parameter relatedItem must be specified"
                 )
@@ -407,7 +498,7 @@ fun checkCriteriaWithAwardCriteria(
                 message = "For awardCriteria='priceOnly' conversion cannot be passed"
             )
 
-            val nonTendererCriteria = criteria.filter { it.relatesTo != CriteriaRelatesToEnum.TENDERER }
+            val nonTendererCriteria = criteria.filter { it.relatesTo != CriteriaRelatesTo.TENDERER }
             if (nonTendererCriteria.isNotEmpty()) throw ErrorException(
                 error = ErrorType.INVALID_CRITERIA,
                 message = "For awardCriteria='priceOnly' can be passed only criteria that relates to tenderer. " +
@@ -505,11 +596,11 @@ fun getCriteriaCombinations(
     items: List<ItemReferenceRequest>
 ): List<List<CriterionRequest>> {
     val criteriaByAffiliation = criteria.groupBy { it.relatesTo }
-    val criteriaByItems = criteriaByAffiliation[CriteriaRelatesToEnum.ITEM].orEmpty().groupBy { it.relatedItem }
-    val criteriaByLots = criteriaByAffiliation[CriteriaRelatesToEnum.LOT].orEmpty().groupBy { it.relatedItem }
+    val criteriaByItems = criteriaByAffiliation[CriteriaRelatesTo.ITEM].orEmpty().groupBy { it.relatedItem }
+    val criteriaByLots = criteriaByAffiliation[CriteriaRelatesTo.LOT].orEmpty().groupBy { it.relatedItem }
 
-    val tenderCriteria = criteriaByAffiliation[null].orEmpty()
-    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesToEnum.TENDERER].orEmpty()
+    val tenderCriteria = criteriaByAffiliation[CriteriaRelatesTo.TENDER].orEmpty()
+    val tendererCriteria = criteriaByAffiliation[CriteriaRelatesTo.TENDERER].orEmpty()
 
     val itemsByLots = items.groupBy { it.relatedLot }
     val lots = itemsByLots.keys

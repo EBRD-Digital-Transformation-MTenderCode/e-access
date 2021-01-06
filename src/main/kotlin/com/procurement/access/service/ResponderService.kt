@@ -11,7 +11,7 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.enums.OperationType
@@ -682,7 +682,7 @@ private fun getRequirementToTenderer(
         .onFailure { return it }
         .tender.criteria
         ?.asSequence()
-        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.filter { it.relatesTo == CriteriaRelatesTo.TENDERER }
         ?.flatMap { it.requirementGroups.asSequence() }
         ?.flatMap { it.requirements.asSequence() }
         ?.associateBy { it.id }
@@ -697,7 +697,7 @@ private fun getRequirementToTenderer(
         .onFailure { return it }
         .tender.criteria
         ?.asSequence()
-        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.filter { it.relatesTo == CriteriaRelatesTo.TENDERER }
         ?.flatMap { it.requirementGroups.asSequence() }
         ?.flatMap { it.requirements.asSequence() }
         ?.associateBy { it.id }
