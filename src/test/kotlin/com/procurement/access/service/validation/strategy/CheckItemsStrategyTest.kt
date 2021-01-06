@@ -448,7 +448,7 @@ class CheckItemsStrategyTest {
                 val actual = strategy.check(cm).toJson()
                 val expected = response(
                     mdmValidation = true,
-                    itemsAdd = false,
+                    itemsAdd = true,
                     mainProcurementCategory = MainProcurementCategory.SERVICES,
                     items = dataRequest.items.map { CheckItemsResponse.Item(id = it.id, relatedLot = it.relatedLot) }
                 )
