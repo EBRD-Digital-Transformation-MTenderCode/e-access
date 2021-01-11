@@ -496,4 +496,10 @@ sealed class ValidationErrors(
         prefix = "VR.COM-",
         description = "Item(s) '${unlinkedItems.joinToString()}' not linked to any lots."
     )
+
+    class InvalidAmountOfLot(val id: String) : ValidationErrors(
+        numberError = "1.39.17",
+        prefix = "VR.COM-",
+        description = "Invalid value of lot with id '$id'."
+    )
 }
