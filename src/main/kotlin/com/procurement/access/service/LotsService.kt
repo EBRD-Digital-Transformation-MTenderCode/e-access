@@ -69,6 +69,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Service
@@ -546,16 +547,24 @@ class LotsService(
     private fun checkLotsAmount(
         newLots: List<ValidateLotsDataParams.Tender.Lot>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot
-    ): ValidationResult<Fail> {
-        val newAmount = newLots
-            .map { it.value!!.amount }
-            .reduce { sum, element -> sum + element }
-            .setScale(2, RoundingMode.HALF_UP)
-
-        if (dividedLot.value.amount.compareTo(newAmount) != 0)
+    ): ValidationResult<ValidationErrors> {
+        val newAmount = calcAmount(newLots).onFailure { return ValidationResult.error(it.reason) }
+        if (dividedLot.value.amount != newAmount)
             return ValidationErrors.InvalidAmount(dividedLotId = dividedLot.id)
                 .asValidationFailure()
         return ValidationResult.ok()
+    }
+
+    private fun calcAmount(newLots: List<ValidateLotsDataParams.Tender.Lot>): Result<BigDecimal, ValidationErrors.InvalidAmountOfLot> {
+        var total = BigDecimal.ZERO
+        newLots.forEach { lot ->
+            val amount = lot.value!!.amount
+            if (amount > BigDecimal.ZERO)
+                total += amount
+            else
+                return ValidationErrors.InvalidAmountOfLot(lot.id).asFailure()
+        }
+        return total.setScale(2, RoundingMode.HALF_UP).asSuccess()
     }
 
     private fun checkLotsContractPeriod(
