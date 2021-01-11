@@ -40,6 +40,7 @@ enum class CommandTypeV1(@JsonValue override val key: String) : EnumElementProvi
     GET_LOT("getLot"),
     GET_LOTS_AUCTION("getLotsAuction"),
     GET_LOTS_FOR_AUCTION("getLotsForAuction"),
+    GET_MAIN_PROCUREMENT_CATEGORY("getMainProcurementCategory"),
     GET_TENDER_OWNER("getTenderOwner"),
     SET_FINAL_STATUSES("setFinalStatuses"),
     SET_LOTS_INITIAL_STATUS("setLotInitialStatus"),

@@ -6,12 +6,12 @@ import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.businessError
 import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.api.v1.internalServerError
 import com.procurement.access.service.CommandServiceV1
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -23,15 +23,15 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/command")
-class CommandControllerV1(private val commandService: CommandServiceV1) {
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(CommandControllerV1::class.java)
-    }
+class CommandControllerV1(
+    private val commandService: CommandServiceV1,
+    private val logger: com.procurement.access.application.service.Logger
+) {
 
     @PostMapping
     fun command(@RequestBody requestBody: String): ResponseEntity<ApiResponseV1> {
-        if (log.isDebugEnabled)
-            log.debug("RECEIVED COMMAND: '$requestBody'.")
+        if (logger.isDebugEnabled)
+            logger.debug("RECEIVED COMMAND: '$requestBody'.")
         val cm: CommandMessage = try {
             toObject(CommandMessage::class.java, requestBody)
         } catch (expected: Exception) {
@@ -42,62 +42,42 @@ class CommandControllerV1(private val commandService: CommandServiceV1) {
         val response = try {
             commandService.execute(cm)
                 .also { response ->
-                    if (log.isDebugEnabled)
-                        log.debug("RESPONSE (operation-id: '${cm.context.operationId}'): '${toJson(response)}'.")
+                    if (logger.isDebugEnabled)
+                        logger.debug("RESPONSE (operation-id: '${cm.context.operationId}'): '${toJson(response)}'.")
                 }
         } catch (expected: Exception) {
-            log.debug("Error.", expected)
             errorResponse(exception = expected, id = cm.commandId, version = cm.version)
         }
 
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    fun errorResponse(exception: Exception, id: CommandId, version: ApiVersion): ApiResponseV1.Failure {
-        log.error("Error.", exception)
+    fun errorResponse(
+        version: ApiVersion,
+        id: CommandId,
+        exception: Exception
+    ): ApiResponseV1.Failure {
+        logger.error(message = "Error.", exception = exception)
         return when (exception) {
-            is ErrorException -> getErrorExceptionResponseDto(exception = exception, id = id, version = version)
-            is EnumElementProviderException -> getEnumExceptionResponseDto(exception = exception, id = id, version = version)
-            else -> getExceptionResponseDto(exception = exception, id = id, version = version)
+            is ErrorException -> ApiResponseV1.Failure.businessError(
+                version = version,
+                id = id,
+                code = exception.code,
+                description = exception.message ?: exception.toString()
+            )
+
+            is EnumElementProviderException -> ApiResponseV1.Failure.businessError(
+                version = version,
+                id = id,
+                code = exception.code,
+                description = exception.message ?: exception.toString()
+            )
+
+            else -> ApiResponseV1.Failure.internalServerError(
+                version = version,
+                id = id,
+                description = exception.message ?: exception.toString()
+            )
         }
-    }
-
-    fun getExceptionResponseDto(exception: Exception, id: CommandId, version: ApiVersion): ApiResponseV1.Failure {
-        return ApiResponseV1.Failure(
-            version = version,
-            id = id,
-            errors = listOf(
-                ApiResponseV1.Failure.Error(
-                    code = "400.03.00",
-                    description = exception.message ?: exception.toString()
-                )
-            )
-        )
-    }
-
-    fun getErrorExceptionResponseDto(exception: ErrorException, id: CommandId, version: ApiVersion): ApiResponseV1.Failure {
-        return ApiResponseV1.Failure(
-            version = version,
-            id = id,
-            errors = listOf(
-                ApiResponseV1.Failure.Error(
-                    code = "400.03." + exception.error.code,
-                    description = exception.message ?: exception.toString()
-                )
-            )
-        )
-    }
-
-    fun getEnumExceptionResponseDto(exception: EnumElementProviderException, id: CommandId, version: ApiVersion): ApiResponseV1.Failure {
-        return ApiResponseV1.Failure(
-            id = id,
-            version = version,
-            errors = listOf(
-                ApiResponseV1.Failure.Error(
-                    code = "400.03." + exception.code,
-                    description = exception.message ?: exception.toString()
-                )
-            )
-        )
     }
 }
