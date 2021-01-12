@@ -27,9 +27,11 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.requirement.NoneValue
 import com.procurement.access.domain.model.requirement.Requirement
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -49,6 +51,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 interface CriteriaService {
     fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData)
@@ -101,6 +104,11 @@ class CriteriaServiceImpl(
             id = CriteriaId.Permanent.generate().toString(),
             title = "",
             description = "",
+            //TODO Replace with specific data
+            classification = CNEntity.Tender.Criteria.Classification(
+                id = "None",
+                scheme = "None"
+            ),
             source = CriteriaSource.PROCURING_ENTITY,
             relatesTo = CriteriaRelatesTo.AWARD,
             relatedItem = null,
@@ -116,7 +124,9 @@ class CriteriaServiceImpl(
                             value = NoneValue,
                             period = null,
                             description = null,
-                            eligibleEvidences = emptyList()
+                            eligibleEvidences = emptyList(),
+                            status = RequirementStatus.ACTIVE,
+                            datePublished = context.startDate
                         )
                     )
                 )
@@ -157,7 +167,9 @@ class CriteriaServiceImpl(
                                         value = requirement.value,
                                         period = requirement.period,
                                         description = requirement.description,
-                                        eligibleEvidences = requirement.eligibleEvidences?.toList()
+                                        eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                        status = requirement.status,
+                                        datePublished = requirement.datePublished
                                     )
                                 }
                         )
@@ -321,6 +333,8 @@ class CriteriaServiceImpl(
 
     override fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail> {
         val stage = params.ocid.stage
+        //TODO Replace to data from params
+        val startDate = nowDefaultUTC()
 
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
             cpid = params.cpid,
@@ -344,7 +358,7 @@ class CriteriaServiceImpl(
                     .onFailure { return it }
 
                 val createdCriteria = params.criteria
-                    .map { criterion -> createCriterionForCN(criterion, params.operationType) }
+                    .map { criterion -> createCriterionForCN(startDate, criterion, params.operationType) }
 
                 val result = createdCriteria.map { it.convertToResponse() }
 
@@ -368,7 +382,7 @@ class CriteriaServiceImpl(
                     .onFailure { return it }
 
                 val createdCriteria = params.criteria
-                    .mapResult { criterion -> createCriterionForFE(criterion, params.operationType) }
+                    .mapResult { criterion -> createCriterionForFE(startDate, criterion, params.operationType) }
                     .onFailure { error -> return error }
 
                 val result = createdCriteria.map { it.convertToResponse() }
@@ -402,6 +416,7 @@ class CriteriaServiceImpl(
     }
 
     private fun createCriterionForCN(
+        datePublished: LocalDateTime,
         criterion: CreateCriteriaForProcuringEntity.Params.Criterion,
         operationType: OperationType
     ): CNEntity.Tender.Criteria =
@@ -409,6 +424,11 @@ class CriteriaServiceImpl(
             id = criterion.id,
             title = criterion.title,
             description = criterion.description,
+            //TODO Replace with specific data
+            classification = CNEntity.Tender.Criteria.Classification(
+                id = "None",
+                scheme = "None"
+            ),
             requirementGroups = criterion.requirementGroups
                 .map { requirementGroups ->
                     CNEntity.Tender.Criteria.RequirementGroup(
@@ -423,7 +443,9 @@ class CriteriaServiceImpl(
                                     period = null,
                                     value = NoneValue,
                                     dataType = RequirementDataType.BOOLEAN, // FR.COM-1.12.2
-                                    eligibleEvidences = emptyList()
+                                    eligibleEvidences = emptyList(),
+                                    status = RequirementStatus.ACTIVE,
+                                    datePublished = datePublished
                                 )
                             }
                     )
@@ -464,6 +486,7 @@ class CriteriaServiceImpl(
         )
 
     private fun createCriterionForFE(
+        datePublished: LocalDateTime,
         criterion: CreateCriteriaForProcuringEntity.Params.Criterion,
         operationType: OperationType
     ): Result<FEEntity.Tender.Criteria, DataErrors.Validation.UnknownValue>  {
@@ -486,7 +509,9 @@ class CriteriaServiceImpl(
                                     period = null,
                                     value = NoneValue,
                                     dataType = RequirementDataType.BOOLEAN, // FR.COM-1.12.2
-                                    eligibleEvidences = emptyList()
+                                    eligibleEvidences = emptyList(),
+                                    status = RequirementStatus.ACTIVE,
+                                    datePublished = datePublished
                                 )
                             }
                     )

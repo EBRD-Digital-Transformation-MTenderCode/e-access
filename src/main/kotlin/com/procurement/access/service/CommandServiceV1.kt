@@ -481,7 +481,12 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = EvPanelsContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner)
+                        val context = EvPanelsContext(
+                            cpid = cm.cpid,
+                            stage = cm.stage,
+                            owner = cm.owner,
+                            startDate = cm.startDate
+                        )
                         val response = criteriaService.createRequestsForEvPanels(context = context)
                             .also { result ->
                                 if (log.isDebugEnabled)

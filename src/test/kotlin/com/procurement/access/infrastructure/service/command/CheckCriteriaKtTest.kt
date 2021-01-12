@@ -9,12 +9,14 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.option.RelatedOption
 import com.procurement.access.domain.model.requirement.EligibleEvidence
 import com.procurement.access.domain.model.requirement.EligibleEvidenceType
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.infrastructure.handler.v1.model.request.ConversionRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.ItemReferenceRequest
@@ -310,7 +312,9 @@ internal class CheckCriteriaKtTest {
                     title = "",
                     dataType = RequirementDataType.STRING,
                     value = ExpectedValue.AsString(""),
-                    eligibleEvidences = emptyList()
+                    eligibleEvidences = emptyList(),
+                    status = RequirementStatus.ACTIVE,
+                    datePublished = nowDefaultUTC()
                 )
             )
         )
@@ -381,7 +385,9 @@ internal class CheckCriteriaKtTest {
                             type = EligibleEvidenceType.DOCUMENT,
                             relatedDocument = RelatedDocumentRequest(id = "document")
                         )
-                    )
+                    ),
+                    status = RequirementStatus.ACTIVE,
+                    datePublished = nowDefaultUTC()
                 )
             )
         )

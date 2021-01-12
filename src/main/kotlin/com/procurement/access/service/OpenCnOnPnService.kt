@@ -243,9 +243,9 @@ class OpenCnOnPnService(
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
         val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
-            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
+            createTenderBasedPNWithoutItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
         else
-            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
+            createTenderBasedPNWithItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
 
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
@@ -1033,6 +1033,7 @@ class OpenCnOnPnService(
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
+        datePublished: LocalDateTime,
         request: OpenCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -1056,7 +1057,7 @@ class OpenCnOnPnService(
         val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
         val criteria = request.tender.criteria
             ?.map { criterion ->
-                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                buildCriterion(datePublished, criterion, relatedTemporalWithPermanentRequirementId)
                     .replaceTemporalItemId(
                         relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId,
                         relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId
@@ -1105,6 +1106,7 @@ class OpenCnOnPnService(
     }
 
     private fun createTenderBasedPNWithItems(
+        datePublished: LocalDateTime,
         request: OpenCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -1119,7 +1121,7 @@ class OpenCnOnPnService(
         val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
         val criteria = request.tender.criteria
             ?.map { criterion ->
-                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                buildCriterion(datePublished, criterion, relatedTemporalWithPermanentRequirementId)
             }
 
         val conversions = request.tender.conversions
@@ -2203,7 +2205,9 @@ class OpenCnOnPnService(
                                             },
                                             dataType = requirement.dataType,
                                             value = requirement.value,
-                                            eligibleEvidences = requirement.eligibleEvidences?.toList()
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                            status = requirement.status,
+                                            datePublished = requirement.datePublished
                                         )
                                     }
                                 )
