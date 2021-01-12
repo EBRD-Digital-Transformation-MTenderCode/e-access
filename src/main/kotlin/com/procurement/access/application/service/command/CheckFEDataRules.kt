@@ -346,6 +346,7 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
@@ -378,6 +379,7 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
@@ -412,13 +414,13 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                OperationType.CREATE_AWARD -> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
@@ -446,6 +448,7 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
