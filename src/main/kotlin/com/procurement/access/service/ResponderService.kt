@@ -269,6 +269,7 @@ class ResponderServiceImpl(
             OperationType.RELATION_AP,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
+            OperationType.SUBMIT_BID,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AP,
             OperationType.UPDATE_AWARD,

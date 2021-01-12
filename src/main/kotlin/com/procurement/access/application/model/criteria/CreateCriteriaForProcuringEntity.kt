@@ -43,6 +43,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.QUALIFICATION_PROTOCOL,
                         OperationType.RELATION_AP,
                         OperationType.START_SECONDSTAGE,
+                        OperationType.SUBMIT_BID,
                         OperationType.UPDATE_AP,
                         OperationType.UPDATE_AWARD,
                         OperationType.UPDATE_CN,

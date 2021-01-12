@@ -43,6 +43,7 @@ val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.CREATE_AWARD,
             OperationType.DIVIDE_LOT,
+            OperationType.SUBMIT_BID,
             OperationType.UPDATE_AWARD -> true
 
             OperationType.AMEND_FE,

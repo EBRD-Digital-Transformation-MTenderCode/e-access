@@ -27,6 +27,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     RELATION_AP("relationAP"),
     START_SECONDSTAGE("startSecondStage"),
     SUBMISSION_PERIOD_END("submissionPeriodEnd"),
+    SUBMIT_BID("submitBid"),
     TENDER_PERIOD_END("tenderPeriodEnd"),
     UPDATE_AP("updateAP"),
     UPDATE_AWARD("updateAward"),
