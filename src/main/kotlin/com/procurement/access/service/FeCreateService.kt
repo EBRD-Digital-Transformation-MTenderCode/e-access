@@ -163,7 +163,9 @@ class FeCreateServiceImpl(
                                                         },
                                                     dataType = requirement.dataType,
                                                     value = requirement.value,
-                                                    eligibleEvidences = requirement.eligibleEvidences?.toList()
+                                                    eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                                    status = requirement.status,
+                                                    datePublished = requirement.datePublished
                                                 )
                                             }
                                     )

@@ -27,7 +27,9 @@ fun RequestsForEvPanelsResult.convert(): RequestsForEvPanelsResponse {
                                             value = requirement.value,
                                             period = requirement.period,
                                             description = requirement.description,
-                                            eligibleEvidences = requirement.eligibleEvidences?.toList()
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                            status = requirement.status,
+                                            datePublished = requirement.datePublished
                                         )
                                     }
                             )

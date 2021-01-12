@@ -3,9 +3,11 @@ package com.procurement.access.application.service.tender
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
 import java.util.*
 
 internal class CheckResponsesKtTest {
@@ -64,6 +67,7 @@ internal class CheckResponsesKtTest {
         private val ANOTHER_LOT = "some-related-lot-2"
         private val ANOTHER_REQUIREMENT = "req-lot-2"
         private val TENDERER_REQUIREMENT = "req-tenderer-3"
+        private val DATE_PUBLISHED = nowDefaultUTC()
 
         val responseForOnlyBiddedLot = CheckResponsesData(
             items = emptyList(),
@@ -107,9 +111,24 @@ internal class CheckResponsesKtTest {
         )
 
         val criteria = listOf(
-            createCriteria(relatesTo = CriteriaRelatesTo.LOT, relatedLot = TARGET_LOT, requirementId = TARGET_REQUIREMENT),
-            createCriteria(relatesTo = CriteriaRelatesTo.LOT, relatedLot = ANOTHER_LOT, requirementId = ANOTHER_REQUIREMENT),
-            createCriteria(relatesTo = CriteriaRelatesTo.TENDERER, relatedLot = null, requirementId = TENDERER_REQUIREMENT)
+            createCriteria(
+                datePublished = DATE_PUBLISHED,
+                relatesTo = CriteriaRelatesTo.LOT,
+                relatedLot = TARGET_LOT,
+                requirementId = TARGET_REQUIREMENT
+            ),
+            createCriteria(
+                datePublished = DATE_PUBLISHED,
+                relatesTo = CriteriaRelatesTo.LOT,
+                relatedLot = ANOTHER_LOT,
+                requirementId = ANOTHER_REQUIREMENT
+            ),
+            createCriteria(
+                datePublished = DATE_PUBLISHED,
+                relatesTo = CriteriaRelatesTo.TENDERER,
+                relatedLot = null,
+                requirementId = TENDERER_REQUIREMENT
+            )
         )
 
         private fun createResponse(requirementId: String) =
@@ -122,33 +141,41 @@ internal class CheckResponsesKtTest {
                 requirement = CheckResponsesData.Bid.RequirementResponse.Requirement(id = requirementId)
             )
 
-        private fun createCriteria(relatesTo: CriteriaRelatesTo, relatedLot: String?, requirementId: String) =
-            CNEntity.Tender.Criteria(
-                id = UUID.randomUUID().toString(),
-                title = "",
-                source = null,
-                description = null,
-                relatesTo = relatesTo,
-                relatedItem = relatedLot,
-                requirementGroups = listOf(
-                    CNEntity.Tender.Criteria.RequirementGroup(
-                        id = UUID.randomUUID().toString(),
-                        description = null,
-                        requirements = listOf(
-                            Requirement(
-                                id = requirementId,
-                                description = null,
-                                title = "",
-                                period = null,
-                                dataType = RequirementDataType.STRING,
-                                value = ExpectedValue.of(""),
-                                eligibleEvidences = emptyList()
-                            )
+        private fun createCriteria(
+            datePublished: LocalDateTime,
+            relatesTo: CriteriaRelatesTo,
+            relatedLot: String?,
+            requirementId: String
+        ) = CNEntity.Tender.Criteria(
+            id = UUID.randomUUID().toString(),
+            title = "",
+            classification = CNEntity.Tender.Criteria.Classification(
+                id = "None",
+                scheme = "None"
+            ),
+            source = null,
+            description = null,
+            relatesTo = relatesTo,
+            relatedItem = relatedLot,
+            requirementGroups = listOf(
+                CNEntity.Tender.Criteria.RequirementGroup(
+                    id = UUID.randomUUID().toString(),
+                    description = null,
+                    requirements = listOf(
+                        Requirement(
+                            id = requirementId,
+                            description = null,
+                            title = "",
+                            period = null,
+                            dataType = RequirementDataType.STRING,
+                            value = ExpectedValue.of(""),
+                            eligibleEvidences = emptyList(),
+                            status = RequirementStatus.ACTIVE,
+                            datePublished = datePublished
                         )
                     )
                 )
             )
-
-
+        )
     }
 }

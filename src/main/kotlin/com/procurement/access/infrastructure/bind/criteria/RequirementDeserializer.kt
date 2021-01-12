@@ -58,7 +58,9 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                     period = period,
                     dataType = dataType,
                     value = requirementValue(requirement),
-                    eligibleEvidences = eligibleEvidences
+                    eligibleEvidences = eligibleEvidences,
+                    status = null,
+                    datePublished = null
                 )
             }
         }

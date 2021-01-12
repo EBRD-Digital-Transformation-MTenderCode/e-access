@@ -270,9 +270,9 @@ class SelectiveCnOnPnService(
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
         val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
-            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
+            createTenderBasedPNWithoutItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
         else
-            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
+            createTenderBasedPNWithItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
 
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
@@ -447,7 +447,11 @@ class SelectiveCnOnPnService(
     }
 
     /** Begin Business Rules */
-    private fun createTenderBasedPNWithoutItems(request: SelectiveCnOnPnRequest, pnEntity: PNEntity): CNEntity.Tender {
+    private fun createTenderBasedPNWithoutItems(
+        datePublished: LocalDateTime,
+        request: SelectiveCnOnPnRequest,
+        pnEntity: PNEntity
+    ): CNEntity.Tender {
         //BR-3.6.5
         val relatedTemporalWithPermanentLotId: Map<String, String> = generatePermanentLotId(request.tender.lots)
         val relatedTemporalWithPermanentItemId: Map<String, String> = generatePermanentItemId(request.tender.items)
@@ -467,7 +471,7 @@ class SelectiveCnOnPnService(
         val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
         val criteria = request.tender.criteria
             ?.map { criterion ->
-                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                buildCriterion(datePublished, criterion, relatedTemporalWithPermanentRequirementId)
                     .replaceTemporalItemId(
                         relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId,
                         relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId
@@ -517,6 +521,7 @@ class SelectiveCnOnPnService(
     }
 
     private fun createTenderBasedPNWithItems(
+        datePublished: LocalDateTime,
         request: SelectiveCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -530,7 +535,7 @@ class SelectiveCnOnPnService(
         val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
         val criteria = request.tender.criteria
             ?.map { criterion ->
-                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                buildCriterion(datePublished, criterion, relatedTemporalWithPermanentRequirementId)
             }
 
         val conversions = request.tender.conversions
@@ -860,11 +865,18 @@ class SelectiveCnOnPnService(
         relatedTemporalWithPermanentRequirementId: Map<String, String>
     ): List<CNEntity.Tender.Criteria>? {
         return criteriaFromRequest?.map { criterion ->
-            val source = if(criterion.relatesTo == null || criterion.relatesTo != CriteriaRelatesTo.TENDERER) CriteriaSource.TENDERER else null
+            val source = if (criterion.relatesTo != CriteriaRelatesTo.TENDERER) CriteriaSource.TENDERER else null
             CNEntity.Tender.Criteria(
                 id = generationService.criterionId(),
                 title = criterion.title,
                 description = criterion.description,
+                classification = criterion.classification
+                    .let { classification ->
+                        CNEntity.Tender.Criteria.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme
+                        )
+                    },
                 source = source,
                 requirementGroups = criterion.requirementGroups.map { requirementGroup ->
                     CNEntity.Tender.Criteria.RequirementGroup(
@@ -883,7 +895,9 @@ class SelectiveCnOnPnService(
                                 },
                                 dataType = requirement.dataType,
                                 value = requirement.value,
-                                eligibleEvidences = requirement.eligibleEvidences?.toList()
+                                eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                status = requirement.status,
+                                datePublished = requirement.datePublished
                             )
                         }
                     )
@@ -1542,6 +1556,13 @@ class SelectiveCnOnPnService(
                             id = criterion.id,
                             title = criterion.title,
                             description = criterion.description,
+                            classification = criterion.classification
+                                .let { classification ->
+                                    SelectiveCnOnPnResponse.Tender.Criteria.Classification(
+                                        id = classification.id,
+                                        scheme = classification.scheme
+                                    )
+                                },
                             source = criterion.source,
                             requirementGroups = criterion.requirementGroups.map {
                                 SelectiveCnOnPnResponse.Tender.Criteria.RequirementGroup(
@@ -1560,7 +1581,9 @@ class SelectiveCnOnPnService(
                                             },
                                             dataType = requirement.dataType,
                                             value = requirement.value,
-                                            eligibleEvidences = requirement.eligibleEvidences?.toList()
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                            status = requirement.status,
+                                            datePublished = requirement.datePublished
                                         )
                                     }
                                 )

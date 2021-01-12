@@ -1,6 +1,7 @@
 package com.procurement.access.domain.model.requirement
 
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -11,7 +12,9 @@ class Requirement(
     val period: Period?,
     val dataType: RequirementDataType,
     val value: RequirementValue,
-    val eligibleEvidences: List<EligibleEvidence>?
+    val eligibleEvidences: List<EligibleEvidence>?,
+    val status: RequirementStatus?,
+    val datePublished: LocalDateTime?
 ) {
 
     data class Period(
