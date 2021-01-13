@@ -21,6 +21,7 @@ import com.procurement.access.infrastructure.handler.v2.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.v2.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.v2.FindLotIdsHandler
 import com.procurement.access.infrastructure.handler.v2.GetCurrencyHandler
+import com.procurement.access.infrastructure.handler.v2.GetItemsByLotIdsHandler
 import com.procurement.access.infrastructure.handler.v2.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.v2.GetLotsValueHandler
 import com.procurement.access.infrastructure.handler.v2.GetMainProcurementCategoryHandler
@@ -55,6 +56,7 @@ class CommandServiceV2(
     private val findLotIdsHandler: FindLotIdsHandler,
     private val checkLotsStateHandler: CheckLotsStateHandler,
     private val getCurrencyHandler: GetCurrencyHandler,
+    private val getItemsByLotIdsHandler: GetItemsByLotIdsHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getLotsValueHandler: GetLotsValueHandler,
     private val getMainProcurementCategoryHandler: GetMainProcurementCategoryHandler,
@@ -89,6 +91,7 @@ class CommandServiceV2(
                     CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(descriptor)
                     CommandTypeV2.CHECK_LOTS_STATE -> checkLotsStateHandler.handle(descriptor)
                     CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(descriptor)
+                    CommandTypeV2.GET_ITEMS_BY_LOT_IDS -> getItemsByLotIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_LOTS_VALUE -> getLotsValueHandler.handle(descriptor)
                     CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(descriptor)

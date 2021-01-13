@@ -11,9 +11,9 @@ object GetItemsByLotIdsErrors {
         description = "Record not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class ItemsNotFound(cpid: Cpid, ocid: Ocid, itemIds: Collection<String>) : CommandValidationErrors(
+    class ItemsNotFound(cpid: Cpid, ocid: Ocid, relatedLots: Collection<String>) : CommandValidationErrors(
         numberError = "1.41.2",
-        description = "Record not found items ($itemIds) by cpid='$cpid' and ocid='$ocid'."
+        description = "Record not found items by related lots ($relatedLots) by cpid='$cpid' and ocid='$ocid'."
     )
 
 }

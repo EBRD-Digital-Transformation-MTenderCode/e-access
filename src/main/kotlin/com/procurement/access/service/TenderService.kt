@@ -5,6 +5,9 @@ import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.model.params.GetCurrencyParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsErrors
+import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsParams
+import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsResult
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateParams
 import com.procurement.access.application.service.tender.strategy.get.state.GetTenderStateResult
 import com.procurement.access.dao.TenderProcessDao
@@ -12,6 +15,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -46,6 +50,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.UpdateTen
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.asFailure
@@ -57,6 +62,7 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class TenderService(
@@ -329,6 +335,73 @@ class TenderService(
                     statusDetails = tender.statusDetails
                 )
             }
+            .asSuccess()
+    }
+
+    fun getItemsByLotIds(params: GetItemsByLotIdsParams): Result<GetItemsByLotIdsResult, Fail> {
+        val entity = tenderProcessRepository
+            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .onFailure { incident -> return incident }
+            ?: return GetItemsByLotIdsErrors.RecordNotFound(cpid = params.cpid, ocid = params.ocid)
+                .asFailure()
+
+        val receivedLotIds = params.tender.lots.toSet { it.id }
+
+//        val storedItems = entity.jsonData
+//            .tryToObject(CNEntity::class.java)
+//            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
+//            .onFailure { return it }
+//            .tender.items
+
+        val storedItems = listOf(
+            CNEntity.Tender.Item(
+                id = "item.id-1",
+                internalId = "item.internalId",
+                description = "item.description",
+                quantity = BigDecimal.TEN,
+                classification = CNEntity.Tender.Item.Classification(
+                    id = "cl-id",
+                    description = "cl-des",
+                    scheme = Scheme.CPC,
+                    uri = "cl-url"
+                ),
+                additionalClassifications = emptyList(),
+                unit = CNEntity.Tender.Item.Unit(
+                    id = "unit-id",
+                    name = "unit-name"
+                ),
+                relatedLot = "item.relatedLot-1"
+            ),
+            CNEntity.Tender.Item(
+                id = "item.id-2",
+                internalId = "item.internalId",
+                description = "item.description",
+                quantity = BigDecimal.TEN,
+                classification = CNEntity.Tender.Item.Classification(
+                    id = "cl-id",
+                    description = "cl-des",
+                    scheme = Scheme.CPC,
+                    uri = "cl-url"
+                ),
+                additionalClassifications = emptyList(),
+                unit = CNEntity.Tender.Item.Unit(
+                    id = "unit-id",
+                    name = "unit-name"
+                ),
+                relatedLot = "item.relatedLot-2"
+            )
+        )
+
+        val targetItems = storedItems.filter { it.relatedLot in receivedLotIds }
+
+        val missingLots = receivedLotIds - targetItems.map { it.relatedLot }
+
+        if (missingLots.isNotEmpty())
+            return GetItemsByLotIdsErrors.ItemsNotFound(params.cpid, params.ocid, missingLots).asFailure()
+
+        return targetItems
+            .map { GetItemsByLotIdsResult.fromDomain(it) }
+            .let { GetItemsByLotIdsResult(tender = GetItemsByLotIdsResult.Tender(items = it)) }
             .asSuccess()
     }
 
