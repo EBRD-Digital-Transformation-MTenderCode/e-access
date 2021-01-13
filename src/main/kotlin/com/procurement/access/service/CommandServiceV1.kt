@@ -1008,9 +1008,7 @@ class CommandServiceV1(
                     log.debug("Main procurement category. Result: ${toJson(result)}")
 
                 val response = GetMainProcurementCategoryResponse(
-                    tender = GetMainProcurementCategoryResponse.Tender(
-                        mainProcurementCategory = result.tender.mainProcurementCategory.key
-                    )
+                    mainProcurementCategory = result.tender.mainProcurementCategory.key
                 )
                 if (log.isDebugEnabled)
                     log.debug("Main procurement category. Response: ${toJson(response)}")
