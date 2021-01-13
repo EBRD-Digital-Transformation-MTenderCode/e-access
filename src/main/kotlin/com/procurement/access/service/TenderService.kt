@@ -15,7 +15,6 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -62,7 +61,6 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 
 @Service
 class TenderService(
@@ -347,50 +345,11 @@ class TenderService(
 
         val receivedLotIds = params.tender.lots.toSet { it.id }
 
-//        val storedItems = entity.jsonData
-//            .tryToObject(CNEntity::class.java)
-//            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
-//            .onFailure { return it }
-//            .tender.items
-
-        val storedItems = listOf(
-            CNEntity.Tender.Item(
-                id = "item.id-1",
-                internalId = "item.internalId",
-                description = "item.description",
-                quantity = BigDecimal.TEN,
-                classification = CNEntity.Tender.Item.Classification(
-                    id = "cl-id",
-                    description = "cl-des",
-                    scheme = Scheme.CPC,
-                    uri = "cl-url"
-                ),
-                additionalClassifications = emptyList(),
-                unit = CNEntity.Tender.Item.Unit(
-                    id = "unit-id",
-                    name = "unit-name"
-                ),
-                relatedLot = "item.relatedLot-1"
-            ),
-            CNEntity.Tender.Item(
-                id = "item.id-2",
-                internalId = "item.internalId",
-                description = "item.description",
-                quantity = BigDecimal.TEN,
-                classification = CNEntity.Tender.Item.Classification(
-                    id = "cl-id",
-                    description = "cl-des",
-                    scheme = Scheme.CPC,
-                    uri = "cl-url"
-                ),
-                additionalClassifications = emptyList(),
-                unit = CNEntity.Tender.Item.Unit(
-                    id = "unit-id",
-                    name = "unit-name"
-                ),
-                relatedLot = "item.relatedLot-2"
-            )
-        )
+        val storedItems = entity.jsonData
+            .tryToObject(CNEntity::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
+            .onFailure { return it }
+            .tender.items
 
         val targetItems = storedItems.filter { it.relatedLot in receivedLotIds }
 
