@@ -27,7 +27,9 @@ import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OpenCnOnPnRequest(
-    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<ReferenceCriterionRequest>,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<ReferenceCriterionRequest>?,
+
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

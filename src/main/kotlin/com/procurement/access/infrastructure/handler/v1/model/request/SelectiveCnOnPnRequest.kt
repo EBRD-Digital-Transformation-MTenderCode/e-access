@@ -30,7 +30,9 @@ data class SelectiveCnOnPnRequest(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("preQualification") @param:JsonProperty("preQualification") val preQualification: PreQualification?,
 
-    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<ReferenceCriterionRequest>,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<ReferenceCriterionRequest>?,
+
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

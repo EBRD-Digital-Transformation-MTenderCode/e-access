@@ -4,15 +4,6 @@
       "endDate": "2019-03-16T12:40:00Z"
     }
   },
-  "criteria": [
-    {
-      "id": "001",
-      "classification": {
-        "id": "CRITERION.OTHER.123456",
-        "scheme": "scheme"
-      }
-    }
-  ],
   "tender": {
     "awardCriteria": "costOnly",
     "procurementMethodModalities": [

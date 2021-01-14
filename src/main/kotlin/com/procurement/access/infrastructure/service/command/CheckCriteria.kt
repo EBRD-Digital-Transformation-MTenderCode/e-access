@@ -38,7 +38,7 @@ fun checkCriteriaAndConversion(
     awardCriteriaDetails: AwardCriteriaDetails?,
     documents: List<DocumentRequest>,
     items: List<ItemReferenceRequest>,
-    referenceCriteria: List<ReferenceCriterionRequest>,
+    referenceCriteria: List<ReferenceCriterionRequest>?,
     criteria: List<CriterionRequest>?,
     conversions: List<ConversionRequest>?,
     rulesService: RulesService,
@@ -103,6 +103,9 @@ fun checkCriteriaAndConversion(
 
     // FReq-1.1.1.15
     checkAwardCriteriaDetailsEnum(awardCriteriaDetails)
+
+    if (referenceCriteria == null)
+        throw  ErrorException(ErrorType.MISSING_REFERENCE_CRITERIA, message = "VR-1.0.1.14.1")
 
     val allReferenceCriterionClassifications = referenceCriteria.toSet { it.classification }
     val documentByIds = documents.toSet { it.id }
