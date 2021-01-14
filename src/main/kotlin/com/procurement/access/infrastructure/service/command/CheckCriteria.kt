@@ -150,16 +150,17 @@ fun checkCriteriaAndConversion(
     }
 
     // FReq-1.1.1.33
-    val exclusionReferenceCriterionClassifications = allReferenceCriterionClassifications.asSequence()
-        .filter { it.id.startsWith(PREFIX_EXCLUSION_CRITERION) }
-        .toSet()
-    val exclusionCriterionClassifications = criteria?.asSequence()
-        ?.filter { it.classification.id.startsWith(PREFIX_EXCLUSION_CRITERION) }
-        ?.map { it.classification }
-        ?.toSet()
-        .orEmpty()
-    if (exclusionCriterionClassifications != exclusionReferenceCriterionClassifications)
-        throw ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.33")
+    if (criteria != null) {
+        val exclusionReferenceCriterionClassifications = allReferenceCriterionClassifications.asSequence()
+            .filter { it.id.startsWith(PREFIX_EXCLUSION_CRITERION) }
+            .toSet()
+        val exclusionCriterionClassifications = criteria.asSequence()
+            .filter { it.classification.id.startsWith(PREFIX_EXCLUSION_CRITERION) }
+            .map { it.classification }
+            .toSet()
+        if (exclusionCriterionClassifications != exclusionReferenceCriterionClassifications)
+            throw ErrorException(ErrorType.INVALID_CRITERIA, message = "FReq-1.1.1.33")
+    }
 
     // FReq-1.1.1.36
     val criterionByRequirement = criteria?.asSequence()
