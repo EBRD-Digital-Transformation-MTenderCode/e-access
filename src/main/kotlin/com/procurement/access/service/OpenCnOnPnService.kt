@@ -43,6 +43,7 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CriterionClassificationResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.errorIfBlank
@@ -2200,6 +2201,13 @@ class OpenCnOnPnService(
                             id = criterion.id,
                             title = criterion.title,
                             description = criterion.description,
+                            classification = criterion.classification
+                                .let { classification ->
+                                    CriterionClassificationResponse(
+                                        id = classification.id,
+                                        scheme = classification.scheme
+                                    )
+                                },
                             source = criterion.source,
                             requirementGroups = criterion.requirementGroups.map {
                                 OpenCnOnPnResponse.Tender.Criteria.RequirementGroup(
