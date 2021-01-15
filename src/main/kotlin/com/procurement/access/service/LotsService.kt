@@ -510,10 +510,12 @@ class LotsService(
         checkLotsContractPeriod(newLots, dividedLot)
             .doOnError { return it.asValidationFailure() }
 
-        checkNewLotsItems(newLots, receivedItems, dividedLot)
+        //VR.COM-1.39.9, VR.COM-1.39.10
+        checkThatAllItemsReceivedAndNoneMissing(dividedLot, receivedItems, storedItems)
             .doOnError { return it.asValidationFailure() }
 
-        checkDividedLotItems(dividedLot, receivedItems, storedItems)
+        //VR.COM-1.39.8, VR.COM-1.39.11
+        checkNewLotsToItemsRelations(newLots, receivedItems)
             .doOnError { return it.asValidationFailure() }
 
         return ValidationResult.ok()
@@ -584,50 +586,63 @@ class LotsService(
         return ValidationResult.ok()
     }
 
-    private fun checkNewLotsItems(
+    private fun checkNewLotsToItemsRelations(
         newLots: List<ValidateLotsDataParams.Tender.Lot>,
-        items: List<ValidateLotsDataParams.Tender.Item>,
-        dividedLot: TenderLotsAndItemsInfo.Tender.Lot
+        items: List<ValidateLotsDataParams.Tender.Item>
     ): ValidationResult<Fail> {
-        val itemsByRelatedLots = items.associateBy { it.relatedLot }.minus(dividedLot.id.toString())
-        val lotIds = newLots.toSet { it.id }
+        val itemsByRelatedLots = items.associateBy { it.relatedLot }
+        val newLotIds = newLots.toSet { it.id }
 
-        val lotsWithoutItems = lotIds - itemsByRelatedLots.keys
-        if (lotsWithoutItems.isNotEmpty())
-            return ValidationErrors.LotDoesNotHaveRelatedItem(lotsWithoutItems.toList())
-                .asValidationFailure()
+        checkEachNewLotHasItem(newLotIds, itemsByRelatedLots)
+            .doOnError { return it.asValidationFailure() }
 
-        val unknownLots = itemsByRelatedLots.keys - lotIds
-        if (unknownLots.isNotEmpty()) {
-            val itemsWithUnknownLots = unknownLots.map { itemsByRelatedLots.getValue(it).id }
-            return ValidationErrors.ItemsNotLinkedToAnyNewLots(itemsWithUnknownLots)
-                .asValidationFailure()
-        }
+        checkEachItemRelatesToNewLot(itemsByRelatedLots, newLotIds)
+            .doOnError { return it.asValidationFailure() }
 
         return ValidationResult.ok()
     }
 
-    private fun checkDividedLotItems(
+    private fun checkEachItemRelatesToNewLot(
+        itemsByRelatedLots: Map<String, ValidateLotsDataParams.Tender.Item>,
+        newLotIds: Set<String>
+    ): ValidationResult<Fail> {
+        val unknownLots = itemsByRelatedLots.keys - newLotIds
+        return if (unknownLots.isNotEmpty()) {
+            val itemsWithUnknownLots = unknownLots.map { itemsByRelatedLots.getValue(it).id }
+            ValidationErrors.ItemsNotLinkedToAnyNewLots(itemsWithUnknownLots)
+                .asValidationFailure()
+        } else ValidationResult.ok()
+    }
+
+    private fun checkEachNewLotHasItem(
+        newLotIds: Set<String>,
+        itemsByRelatedLots: Map<String, ValidateLotsDataParams.Tender.Item>
+    ): ValidationResult<Fail> {
+        val lotsWithoutItems = newLotIds - itemsByRelatedLots.keys
+        return if (lotsWithoutItems.isNotEmpty())
+            ValidationErrors.LotDoesNotHaveRelatedItem(lotsWithoutItems.toList())
+                .asValidationFailure()
+        else ValidationResult.ok()
+    }
+
+    private fun checkThatAllItemsReceivedAndNoneMissing(
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
         receivedItems: List<ValidateLotsDataParams.Tender.Item>,
         storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
     ): ValidationResult<Fail> {
-        val receivedItemsOfDividedLot = receivedItems.asSequence()
-            .filter { it.relatedLot == dividedLot.id.toString() }
-            .map { it.id }
-            .toSet()
+        val receivedItems = receivedItems.toSet { it.id }
 
         val storedItemsOfDividedLot = storedItems.asSequence()
             .filter { it.relatedLot == dividedLot.id }
             .map { it.id }
             .toSet()
 
-        val missingItems = storedItemsOfDividedLot - receivedItemsOfDividedLot
+        val missingItems = storedItemsOfDividedLot - receivedItems
         if (missingItems.isNotEmpty())
             return ValidationErrors.MissingItemsOfDividedLot(dividedLot.id, missingItems.toList())
                 .asValidationFailure()
 
-        val unknownItems = receivedItemsOfDividedLot - storedItemsOfDividedLot
+        val unknownItems = receivedItems - storedItemsOfDividedLot
         if (unknownItems.isNotEmpty())
             return ValidationErrors.UnknownItemsOfDividedLot(dividedLot.id, unknownItems.toList())
                 .asValidationFailure()
