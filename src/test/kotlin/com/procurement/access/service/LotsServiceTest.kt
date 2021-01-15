@@ -402,7 +402,7 @@ internal class LotsServiceTest {
             val params = getParams()
             val paramsWithoutItemForOneNewLot = params.copy(
                 tender = params.tender.copy(
-                    items = params.tender.items.subList(0, 2)
+                    items = params.tender.items.map { it.copy(relatedLot = LOT_ID_1.toString()) }
                 )
             )
 
@@ -419,11 +419,11 @@ internal class LotsServiceTest {
         }
 
         @Test
-        fun dividedLotDoesNotHaveRelatedItem() {
+        fun oneItemIsMissingInReceivedData() {
             val params = getParams()
             val paramsWithoutItemForDividedLot = params.copy(
                 tender = params.tender.copy(
-                    items = params.tender.items.subList(1, 3)
+                    items = listOf(params.tender.items[0])
                 )
             )
 
@@ -433,20 +433,20 @@ internal class LotsServiceTest {
             val actual = lotsService.validateLotsData(paramsWithoutItemForDividedLot) as ValidationResult.Error
 
             val expectedErrorCode = "VR.COM-1.39.9"
-            val expectedMessage = "Received divided lot '$STORED_LOT_ID' is missing item(s) 'id'."
+            val expectedMessage = "Received divided lot '$STORED_LOT_ID' is missing item(s) '${params.tender.items[1].id}'."
 
             assertEquals(expectedErrorCode, actual.reason.code)
             assertEquals(expectedMessage, actual.reason.description)
         }
 
         @Test
-        fun dividedLotReceivedRedundantItem() {
+        fun receivedItemNotFound() {
             val params = getParams()
             val paramsWithRedundantReceivedItem = params.copy(
                 tender = params.tender.copy(
                     items = params.tender.items + ValidateLotsDataParams.Tender.Item(
-                        id = "redundatnt",
-                        relatedLot = STORED_LOT_ID.toString()
+                        id = "redundant",
+                        relatedLot = LOT_ID_1.toString()
                     )
                 )
             )
@@ -457,31 +457,31 @@ internal class LotsServiceTest {
             val actual = lotsService.validateLotsData(paramsWithRedundantReceivedItem) as ValidationResult.Error
 
             val expectedErrorCode = "VR.COM-1.39.10"
-            val expectedMessage = "Received divided lot '$STORED_LOT_ID' contains unknown items 'redundatnt'."
+            val expectedMessage = "Received divided lot '$STORED_LOT_ID' contains unknown items 'redundant'."
 
             assertEquals(expectedErrorCode, actual.reason.code)
             assertEquals(expectedMessage, actual.reason.description)
         }
 
         @Test
-        fun paramsContainItemOfUnknownLot() {
+        fun itemNotLinkedToAnyNewLot() {
             val params = getParams()
             val paramsWithUnrelatedItem = params.copy(
                 tender = params.tender.copy(
                     items = params.tender.items + ValidateLotsDataParams.Tender.Item(
-                        id = "item",
+                        id = "id3",
                         relatedLot = UUID.randomUUID().toString()
                     )
                 )
             )
 
-            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_additional_item.json"))
             whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsData(paramsWithUnrelatedItem) as ValidationResult.Error
 
             val expectedErrorCode = "VR.COM-1.39.11"
-            val expectedMessage = "Item(s) 'item' not linked to any lots."
+            val expectedMessage = "Item(s) 'id3' not linked to any lots."
 
             assertEquals(expectedErrorCode, actual.reason.code)
             assertEquals(expectedMessage, actual.reason.description)
@@ -581,10 +581,6 @@ internal class LotsServiceTest {
                     ),
                     items = listOf(
                         ValidateLotsDataParams.Tender.Item(
-                            id = "id",
-                            relatedLot = STORED_LOT_ID.toString()
-                        ),
-                        ValidateLotsDataParams.Tender.Item(
                             id = "id1",
                             relatedLot = LOT_ID_1.toString()
                         ),
@@ -625,7 +621,6 @@ internal class LotsServiceTest {
 
             assertEquals(expectedLotsResult, actual.get.tender.lots.toSet())
             assertEquals(expectedItemsResult, actual.get.tender.items.toSet())
-
         }
 
         fun generateExpectedLots() = setOf(
@@ -723,6 +718,7 @@ internal class LotsServiceTest {
             )
 
         )
+
         fun generateExpectedItems() = setOf(
             DivideLotResult.Tender.Item(
                 id = ITEM_ID_1,
