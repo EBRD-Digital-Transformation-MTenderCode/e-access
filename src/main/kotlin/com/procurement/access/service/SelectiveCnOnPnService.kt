@@ -46,6 +46,7 @@ import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.SelectiveCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.criterion.CriterionRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CriterionClassificationResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.errorIfBlank
@@ -1565,7 +1566,7 @@ class SelectiveCnOnPnService(
                             description = criterion.description,
                             classification = criterion.classification
                                 .let { classification ->
-                                    SelectiveCnOnPnResponse.Tender.Criteria.Classification(
+                                    CriterionClassificationResponse(
                                         id = classification.id,
                                         scheme = classification.scheme
                                     )
