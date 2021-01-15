@@ -327,6 +327,13 @@ class SelectiveCnOnPnService(
                                         if (it is ExpectedValue.AsString)
                                             it.value.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].expectedValue")
                                     }
+                                requirement.eligibleEvidences
+                                    ?.forEachIndexed { eligibleEvidenceIdx, eligibleEvidence ->
+                                        eligibleEvidence.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].id")
+                                        eligibleEvidence.title.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].title")
+                                        eligibleEvidence.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].description")
+                                        eligibleEvidence.relatedDocument?.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].relatedDocument.id")
+                                    }
                             }
                     }
             }

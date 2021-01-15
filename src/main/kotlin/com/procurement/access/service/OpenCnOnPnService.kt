@@ -273,48 +273,55 @@ class OpenCnOnPnService(
 
     private fun OpenCnOnPnRequest.validateTextAttributes() {
         tender.electronicAuctions?.details
-            ?.forEach { detail ->
-                detail.id.checkForBlank("tender.electronicAuctions.details.id")
+            ?.forEachIndexed { detailIdx, detail ->
+                detail.id.checkForBlank("tender.electronicAuctions.details[$detailIdx].id")
             }
 
         tender.criteria
-            ?.forEach { criterion ->
-                criterion.id.checkForBlank("tender.criteria.id")
-                criterion.title.checkForBlank("tender.criteria.title")
-                criterion.description.checkForBlank("tender.criteria.description")
+            ?.forEachIndexed { criterionIdx, criterion ->
+                criterion.id.checkForBlank("tender.criteria[$criterionIdx].id")
+                criterion.title.checkForBlank("tender.criteria[$criterionIdx].title")
+                criterion.description.checkForBlank("tender.criteria[$criterionIdx].description")
 
                 criterion.requirementGroups
-                    .forEach { requirementGroup ->
-                        requirementGroup.id.checkForBlank("tender.criteria.requirementGroups.id")
-                        requirementGroup.description.checkForBlank("tender.criteria.requirementGroups.description")
+                    .forEachIndexed { requirementGroupIdx, requirementGroup ->
+                        requirementGroup.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].id")
+                        requirementGroup.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].description")
 
                         requirementGroup.requirements
-                            .forEach { requirement ->
-                                requirement.id.checkForBlank("tender.criteria.requirementGroups.requirements.id")
-                                requirement.title.checkForBlank("tender.criteria.requirementGroups.requirements.title")
-                                requirement.description.checkForBlank("tender.criteria.requirementGroups.requirements.description")
+                            .forEachIndexed { requirementIdx, requirement ->
+                                requirement.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].id")
+                                requirement.title.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].title")
+                                requirement.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].description")
                                 requirement.value
                                     .also {
                                         if (it is ExpectedValue.AsString)
-                                            it.value.checkForBlank("tender.criteria.requirementGroups.requirements.expectedValue")
+                                            it.value.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].expectedValue")
+                                    }
+                                requirement.eligibleEvidences
+                                    ?.forEachIndexed { eligibleEvidenceIdx, eligibleEvidence ->
+                                        eligibleEvidence.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].id")
+                                        eligibleEvidence.title.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].title")
+                                        eligibleEvidence.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].description")
+                                        eligibleEvidence.relatedDocument?.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].relatedDocument.id")
                                     }
                             }
                     }
             }
 
         tender.conversions
-            ?.forEach { conversion ->
-                conversion.id.checkForBlank("tender.conversions.id")
-                conversion.description.checkForBlank("tender.conversions.description")
-                conversion.relatedItem.checkForBlank("tender.conversions.relatedItem")
-                conversion.rationale.checkForBlank("tender.conversions.rationale")
+            ?.forEachIndexed { conversionIdx, conversion ->
+                conversion.id.checkForBlank("tender.conversions[$conversionIdx].id")
+                conversion.description.checkForBlank("tender.conversions[$conversionIdx].description")
+                conversion.relatedItem.checkForBlank("tender.conversions[$conversionIdx].relatedItem")
+                conversion.rationale.checkForBlank("tender.conversions[$conversionIdx].rationale")
                 conversion.coefficients
-                    .forEach { coefficient ->
-                        coefficient.id.checkForBlank("tender.conversions.coefficients.id")
-                        coefficient.relatedOption.checkForBlank("tender.conversions.coefficients.relatedOption")
+                    .forEachIndexed { coefficientIdx, coefficient ->
+                        coefficient.id.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].id")
+                        coefficient.relatedOption.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].relatedOption")
                         coefficient.value.also {
                             if (it is CoefficientValue.AsString)
-                                it.value.checkForBlank("tender.conversions.coefficients.value")
+                                it.value.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].value")
                         }
                     }
             }
@@ -322,43 +329,45 @@ class OpenCnOnPnService(
         tender.procuringEntity?.id.checkForBlank("tender.procuringEntity.id")
 
         tender.lots
-            .forEach { lot ->
-                lot.id.checkForBlank("tender.lots.id")
-                lot.description.checkForBlank("tender.lots.description")
-                lot.internalId.checkForBlank("tender.lots.internalId")
-                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
-                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
-                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
-                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
-                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
-                lot.title.checkForBlank("tender.lots.title")
+            .forEachIndexed { lotIdx, lot ->
+                lot.id.checkForBlank("tender.lots[$lotIdx].id")
+                lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+                lot.title.checkForBlank("tender.lots[$lotIdx].title")
+                lot.description.checkForBlank("tender.lots[$lotIdx].description")
+
+
+                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.description")
+                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.id")
+                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.scheme")
+                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.uri")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.postalCode")
+                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.description")
             }
 
         tender.items
-            .forEach { item ->
-                item.id.checkForBlank("tender.items.id")
-                item.internalId.checkForBlank("tender.items.internalId")
-                item.classification.id.checkForBlank("tender.items.classification.id")
-                item.classification.description.checkForBlank("tender.items.classification.description")
+            .forEachIndexed { itemIdx, item ->
+                item.id.checkForBlank("tender.items[$itemIdx].id")
+                item.internalId.checkForBlank("tender.items[$itemIdx].internalId")
+                item.classification.id.checkForBlank("tender.items[$itemIdx].classification.id")
+                item.classification.description.checkForBlank("tender.items[$itemIdx].classification.description")
                 item.additionalClassifications
-                    ?.forEach { additionalClassification ->
-                        additionalClassification.id.checkForBlank("tender.items.additionalClassifications.id")
-                        additionalClassification.description.checkForBlank("tender.items.additionalClassifications.description")
+                    ?.forEachIndexed { additionalClassificationIdx, additionalClassification ->
+                        additionalClassification.id.checkForBlank("tender.items[$itemIdx].additionalClassifications[$additionalClassificationIdx].id")
+                        additionalClassification.description.checkForBlank("tender.items[$itemIdx].additionalClassifications[$additionalClassificationIdx].description")
                     }
-                item.unit.id.checkForBlank("tender.items.unit.id")
-                item.unit.name.checkForBlank("tender.items.unit.name")
-                item.description.checkForBlank("tender.items.description")
-                item.relatedLot.checkForBlank("tender.items.relatedLot")
+                item.unit.id.checkForBlank("tender.items[$itemIdx].unit.id")
+                item.unit.name.checkForBlank("tender.items[$itemIdx].unit.name")
+                item.description.checkForBlank("tender.items[$itemIdx].description")
+                item.relatedLot.checkForBlank("tender.items[$itemIdx].relatedLot")
             }
 
         tender.documents
-            .forEach { document ->
-                document.title.checkForBlank("tender.documents.title")
-                document.description.checkForBlank("tender.documents.description")
+            .forEachIndexed { documentIdx, document ->
+                document.title.checkForBlank("tender.documents[$documentIdx].title")
+                document.description.checkForBlank("tender.documents[$documentIdx].description")
                 document.relatedLots
-                    ?.forEachIndexed { index, relatedLot -> relatedLot.checkForBlank("tender.documents.relatedLots[$index]") }
+                    ?.forEachIndexed { index, relatedLot -> relatedLot.checkForBlank("tender.documents[$documentIdx].relatedLots[$index]") }
             }
 
         tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
@@ -1013,7 +1022,10 @@ class OpenCnOnPnService(
             )
     }
 
-    private fun isAuctionRequired(electronicAuctions: OpenCnOnPnRequest.Tender.ElectronicAuctions?, pmm: Set<ProcurementMethodModalities>?): Boolean =
+    private fun isAuctionRequired(
+        electronicAuctions: OpenCnOnPnRequest.Tender.ElectronicAuctions?,
+        pmm: Set<ProcurementMethodModalities>?
+    ): Boolean =
         // VR-1.0.1.7.9
         if (electronicAuctions != null) {
             if (pmm == null || !pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
@@ -1243,6 +1255,7 @@ class OpenCnOnPnService(
         /** Begin BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
         val status = TenderStatus.ACTIVE
         val statusDetails: TenderStatusDetails = TenderStatusDetails.CLARIFICATION
+
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
         val awardCriteriaDetails = if (request.tender.awardCriteria == AwardCriteria.PRICE_ONLY)
@@ -1882,7 +1895,7 @@ class OpenCnOnPnService(
                         )
                     }
                 )
-        }
+            }
     }
 
     /**
@@ -2045,7 +2058,7 @@ class OpenCnOnPnService(
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
                     additionalProcurementCategories = tender.additionalProcurementCategories,
-                        mainProcurementCategory = tender.mainProcurementCategory,
+                    mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         OpenCnOnPnResponse.Tender.ContractPeriod(
