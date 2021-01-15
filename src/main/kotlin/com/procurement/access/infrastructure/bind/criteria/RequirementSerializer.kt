@@ -33,6 +33,8 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                 requirementNode.put("dataType", requirement.dataType.toString())
 
                 requirement.description?.let { requirementNode.put("description", it) }
+                requirement.status?.let { requirementNode.put("status", it.key) }
+                requirement.datePublished?.let { requirementNode.put("datePublished", it.asString()) }
 
                 requirement.period?.let {
                     requirementNode.putObject("period")

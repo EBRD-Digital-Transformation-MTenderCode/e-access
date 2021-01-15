@@ -1,6 +1,5 @@
 package com.procurement.access.infrastructure.handler.v1.model.response
 
-
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -185,6 +184,7 @@ data class OpenCnOnPnResponse(
         data class Criteria(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: CriterionClassificationResponse,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("source") @param:JsonProperty("source") val source: CriteriaSource?,
@@ -199,6 +199,7 @@ data class OpenCnOnPnResponse(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
         ) {
+
             data class RequirementGroup(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
