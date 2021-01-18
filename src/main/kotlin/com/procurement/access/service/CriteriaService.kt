@@ -424,11 +424,13 @@ class CriteriaServiceImpl(
             id = criterion.id,
             title = criterion.title,
             description = criterion.description,
-            //TODO Replace with specific data
-            classification = CNEntity.Tender.Criteria.Classification(
-                id = "None",
-                scheme = "None"
-            ),
+            classification = criterion.classification
+                .let { classification ->
+                    CNEntity.Tender.Criteria.Classification(
+                        id = classification.id,
+                        scheme = classification.scheme
+                    )
+                },
             requirementGroups = criterion.requirementGroups
                 .map { requirementGroups ->
                     CNEntity.Tender.Criteria.RequirementGroup(
@@ -496,6 +498,13 @@ class CriteriaServiceImpl(
             id = criterion.id,
             title = criterion.title,
             description = criterion.description,
+            classification = criterion.classification
+                .let { classification ->
+                    FEEntity.Tender.Criteria.Classification(
+                        id = classification.id,
+                        scheme = classification.scheme
+                    )
+                },
             requirementGroups = criterion.requirementGroups
                 .map { requirementGroups ->
                     FEEntity.Tender.Criteria.RequirementGroup(

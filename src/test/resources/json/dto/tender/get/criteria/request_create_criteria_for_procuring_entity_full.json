@@ -1,12 +1,17 @@
 {
   "cpid": "ocds-b3wdp1-MD-1580458690892",
   "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "date": "2020-10-20T11:54:45Z",
   "operationType": "tenderPeriodEnd",
   "criteria": [
     {
       "id": "MD.TEST_GPA.1",
       "title": "string",
       "description": "string",
+      "classification": {
+        "id": "string",
+        "scheme": "string"
+      },
       "requirementGroups": [
         {
           "id": "MD.TEST_GPA.1.1",
