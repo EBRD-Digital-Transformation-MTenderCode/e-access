@@ -143,6 +143,7 @@ class FeCreateServiceImpl(
                             title = criterion.title,
                             source = CriteriaSource.TENDERER, // BR-1.0.1.16.2
                             relatesTo = criterion.relatesTo,
+                            classification = null,
                             requirementGroups = criterion.requirementGroups
                                 .map { requirementGroups ->
                                     FEEntity.Tender.Criteria.RequirementGroup(

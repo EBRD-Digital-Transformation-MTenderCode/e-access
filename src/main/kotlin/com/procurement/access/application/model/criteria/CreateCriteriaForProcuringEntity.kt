@@ -1,6 +1,7 @@
 package com.procurement.access.application.model.criteria
 
 import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseEnum
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.domain.fail.error.DataErrors
@@ -8,12 +9,14 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.lib.functional.Result
+import java.time.LocalDateTime
 
 class CreateCriteriaForProcuringEntity {
 
     class Params private constructor(
         val cpid: Cpid,
         val ocid: Ocid,
+        val date: LocalDateTime,
         val criteria: List<Criterion>,
         val operationType: OperationType
     ) {
@@ -59,6 +62,7 @@ class CreateCriteriaForProcuringEntity {
             fun tryCreate(
                 cpid: String,
                 ocid: String,
+                date: String,
                 criteria: List<Criterion>,
                 operationType: String
             ): Result<Params, DataErrors> {
@@ -67,6 +71,9 @@ class CreateCriteriaForProcuringEntity {
                     .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
+                    .onFailure { error -> return error }
+
+                val parsedDate = parseDate(value = date, name = "date")
                     .onFailure { error -> return error }
 
                 val parsedOperationType = parseEnum(
@@ -81,6 +88,7 @@ class CreateCriteriaForProcuringEntity {
                     Params(
                         cpid = cpidResult,
                         ocid = ocidResult,
+                        date = parsedDate,
                         criteria = criteria,
                         operationType = parsedOperationType
                     )
@@ -92,8 +100,14 @@ class CreateCriteriaForProcuringEntity {
             val id: String,
             val description: String?,
             val title: String,
+            val classification: Classification,
             val requirementGroups: List<RequirementGroup>
-        )
+        ) {
+            data class Classification(
+                val id: String,
+                val scheme: String
+            )
+        }
 
         class RequirementGroup(val id: String, val description: String?, val requirements: List<Requirement>)
         class Requirement(val id: String, val description: String?, val title: String)
