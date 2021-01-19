@@ -103,10 +103,9 @@ class CriteriaServiceImpl(
             id = CriteriaId.Permanent.generate().toString(),
             title = "",
             description = "",
-            //TODO Replace with specific data
             classification = CNEntity.Tender.Criteria.Classification(
-                id = "None",
-                scheme = "None"
+                id = "CRITERION.EXCLUSION.CONFLICT_OF_INTEREST.TBD",
+                scheme = "ESPD"
             ),
             source = CriteriaSource.PROCURING_ENTITY,
             relatesTo = CriteriaRelatesTo.AWARD,
@@ -153,6 +152,13 @@ class CriteriaServiceImpl(
                 description = criterion.description,
                 source = criterion.source!!,
                 relatesTo = criterion.relatesTo!!,
+                classification = criterion.classification
+                    .let { classification ->
+                        RequestsForEvPanelsResult.Criteria.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme
+                        )
+                    },
                 requirementGroups = criterion.requirementGroups
                     .map { requirementGroup ->
                         RequestsForEvPanelsResult.Criteria.RequirementGroup(

@@ -14,6 +14,13 @@ fun RequestsForEvPanelsResult.convert(): RequestsForEvPanelsResponse {
                     description = criteria.description,
                     source = criteria.source,
                     relatesTo = criteria.relatesTo,
+                    classification = criteria.classification
+                        .let { classification ->
+                            RequestsForEvPanelsResponse.Criteria.Classification(
+                                scheme = classification.scheme,
+                                id = classification.id
+                            )
+                        },
                     requirementGroups = criteria.requirementGroups
                         .map { requirementGroup ->
                             RequestsForEvPanelsResponse.Criteria.RequirementGroup(

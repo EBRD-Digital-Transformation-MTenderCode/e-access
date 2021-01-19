@@ -5,6 +5,10 @@
     "source": "procuringEntity",
     "relatesTo": "award",
     "description": "Is there conflict of interest with any of tenderers submitted bids",
+    "classification": {
+      "scheme": "CPV",
+      "id": ""
+    },
     "requirementGroups": [
       {
         "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00555",

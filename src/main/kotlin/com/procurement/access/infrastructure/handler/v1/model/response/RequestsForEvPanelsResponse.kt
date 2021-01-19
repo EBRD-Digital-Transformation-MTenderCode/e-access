@@ -18,6 +18,7 @@ data class RequestsForEvPanelsResponse(
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("source") @param:JsonProperty("source") val source: CriteriaSource,
         @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo,
+        @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
@@ -30,6 +31,11 @@ data class RequestsForEvPanelsResponse(
             @JsonDeserialize(using = RequirementDeserializer::class)
             @JsonSerialize(using = RequirementSerializer::class)
             @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+        )
+
+        data class Classification(
+            @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String
         )
     }
 }
