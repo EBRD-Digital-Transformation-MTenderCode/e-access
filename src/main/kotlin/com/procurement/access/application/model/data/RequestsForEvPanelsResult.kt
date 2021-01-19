@@ -13,11 +13,17 @@ data class RequestsForEvPanelsResult(
         val source: CriteriaSource,
         val relatesTo: CriteriaRelatesTo,
         val description: String?,
+        val classification: Classification,
         val requirementGroups: List<RequirementGroup>
     ) {
         data class RequirementGroup(
             val id: String,
             val requirements: List<Requirement>
+        )
+
+        data class Classification(
+            val scheme: String,
+            val id: String
         )
     }
 }
