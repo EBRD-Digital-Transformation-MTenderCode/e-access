@@ -31,7 +31,6 @@ import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.requirement.NoneValue
 import com.procurement.access.domain.model.requirement.Requirement
-import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -280,7 +279,7 @@ class CriteriaServiceImpl(
             .onFailure { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
-        val foundedCriteriaResult = when (params.ocid.stage) {
+        val allFoundedCriteriaBySource = when (params.ocid.stage) {
 
             Stage.FE -> {
                 val fe = entity.jsonData
@@ -290,7 +289,7 @@ class CriteriaServiceImpl(
 
                 val targetCriteria = fe.tender.criteria.orEmpty()
                     .asSequence()
-                    .filter { it.source == params.source }
+                    .filter { it.source in params.source }
                     .map { criterion -> criterion.convert() }
                     .toList()
 
@@ -307,7 +306,7 @@ class CriteriaServiceImpl(
 
                 val targetCriteria = cn.tender.criteria.orEmpty()
                     .asSequence()
-                    .filter { it.source == params.source }
+                    .filter { it.source in params.source }
                     .map { criterion -> criterion.convert() }
                     .toList()
 
@@ -326,15 +325,27 @@ class CriteriaServiceImpl(
         }
             .onFailure { fail -> return fail }
 
-        val result = FindCriteriaResult(foundedCriteriaResult)
+        val criteriaWithActiveRequirements = allFoundedCriteriaBySource
+            .map {
+                it.copy(
+                    requirementGroups = it.requirementGroups
+                        .map {
+                            it.copy(requirements = it.requirements.filter { it.status == RequirementStatus.ACTIVE })
+                        }
+                        .filter { it.requirements.isNotEmpty() }
+                )
+            }
+            .filter { it.requirementGroups.isNotEmpty() }
+
+
+        val result = FindCriteriaResult(criteriaWithActiveRequirements)
 
         return success(result)
     }
 
     override fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail> {
         val stage = params.ocid.stage
-        //TODO Replace to data from params
-        val startDate = nowDefaultUTC()
+        val datePublished = params.date
 
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
             cpid = params.cpid,
@@ -358,7 +369,7 @@ class CriteriaServiceImpl(
                     .onFailure { return it }
 
                 val createdCriteria = params.criteria
-                    .map { criterion -> createCriterionForCN(startDate, criterion, params.operationType) }
+                    .map { criterion -> createCriterionForCN(datePublished, criterion, params.operationType) }
 
                 val result = createdCriteria.map { it.convertToResponse() }
 
@@ -382,7 +393,7 @@ class CriteriaServiceImpl(
                     .onFailure { return it }
 
                 val createdCriteria = params.criteria
-                    .mapResult { criterion -> createCriterionForFE(startDate, criterion, params.operationType) }
+                    .mapResult { criterion -> createCriterionForFE(datePublished, criterion, params.operationType) }
                     .onFailure { error -> return error }
 
                 val result = createdCriteria.map { it.convertToResponse() }

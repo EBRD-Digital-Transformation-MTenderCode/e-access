@@ -11,7 +11,7 @@ import com.procurement.access.lib.functional.Result
 
 class FindCriteria {
 
-    class Params private constructor(val cpid: Cpid, val ocid: Ocid, val source: CriteriaSource) {
+    class Params private constructor(val cpid: Cpid, val ocid: Ocid, val source: List<CriteriaSource>) {
         companion object {
             private val allowedSources = CriteriaSource.allowedElements
                 .filter { source ->
@@ -23,22 +23,23 @@ class FindCriteria {
                 }
                 .toSet()
 
-            fun tryCreate(cpid: String, ocid: String, source: String): Result<Params, DataErrors> {
+            fun tryCreate(cpid: String, ocid: String, sources: List<String>): Result<Params, DataErrors> {
                 val cpidResult = parseCpid(value = cpid)
                     .onFailure { error -> return error }
 
                 val ocidResult = parseOcid(value = ocid)
                     .onFailure { error -> return error }
 
-                val parsedSource = parseEnum(
-                    value = source,
-                    attributeName = "source",
-                    allowedEnums = allowedSources,
-                    target = CriteriaSource.Companion
-                )
-                    .onFailure { error -> return error }
-
-                return Result.success(Params(cpid = cpidResult, ocid = ocidResult, source = parsedSource))
+                val parsedSources = sources.map { source ->
+                    parseEnum(
+                        value = source,
+                        attributeName = "source",
+                        allowedEnums = allowedSources,
+                        target = CriteriaSource.Companion
+                    )
+                        .onFailure { error -> return error }
+                }
+                return Result.success(Params(cpid = cpidResult, ocid = ocidResult, source = parsedSources))
             }
         }
     }

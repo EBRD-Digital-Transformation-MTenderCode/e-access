@@ -21,11 +21,20 @@ class FindCriteriaResult(values: List<Criterion>) : List<FindCriteriaResult.Crit
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
     ) {
+
+        data class Classification(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
+        )
+
         data class RequirementGroup(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 

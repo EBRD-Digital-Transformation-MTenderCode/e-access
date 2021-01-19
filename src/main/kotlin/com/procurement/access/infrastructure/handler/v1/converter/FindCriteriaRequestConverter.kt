@@ -6,5 +6,4 @@ import com.procurement.access.infrastructure.handler.v2.model.request.FindCriter
 import com.procurement.access.lib.functional.Result
 
 fun FindCriteriaRequest.convert(): Result<FindCriteria.Params, DataErrors> =
-    FindCriteria.Params.tryCreate(cpid = this.cpid, ocid = this.ocid, source = this.source)
-
+    FindCriteria.Params.tryCreate(cpid = this.cpid, ocid = this.ocid, sources = this.source)
