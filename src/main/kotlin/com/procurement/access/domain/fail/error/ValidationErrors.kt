@@ -401,7 +401,7 @@ sealed class ValidationErrors(
         description = "State of lot'$lotId' is invalid."
     )
 
-    class TenderNotFoundOnValidateLotsData(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnValidateLotsDataForDivision(cpid: Cpid, ocid: Ocid) : ValidationErrors(
         numberError = "1.39.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -419,31 +419,31 @@ sealed class ValidationErrors(
         description = "Received tender must contain two or more new lots."
     )
 
-    class MissingTittleOnValidateLotsData(lotId: String) : ValidationErrors(
+    class MissingTittleOnValidateLotsDataForDivision(lotId: String) : ValidationErrors(
         numberError = "1.39.12",
         prefix = "VR.COM-",
         description = "Lot '$lotId' must contain title."
     )
 
-    class MissingDescriptionOnValidateLotsData(lotId: String) : ValidationErrors(
+    class MissingDescriptionOnValidateLotsDataForDivision(lotId: String) : ValidationErrors(
         numberError = "1.39.13",
         prefix = "VR.COM-",
         description = "Lot '$lotId' must contain description."
     )
 
-    class MissingValueOnValidateLotsData(lotId: String) : ValidationErrors(
+    class MissingValueOnValidateLotsDataForDivision(lotId: String) : ValidationErrors(
         numberError = "1.39.14",
         prefix = "VR.COM-",
         description = "Lot '$lotId' must contain value."
     )
 
-    class MissingContractPeriodOnValidateLotsData(lotId: String) : ValidationErrors(
+    class MissingContractPeriodOnValidateLotsDataForDivision(lotId: String) : ValidationErrors(
         numberError = "1.39.15",
         prefix = "VR.COM-",
         description = "Lot '$lotId' must contain contractPeriod."
     )
 
-    class MissingPlaceOfPerformanceOnValidateLotsData(lotId: String) : ValidationErrors(
+    class MissingPlaceOfPerformanceOnValidateLotsDataForDivision(lotId: String) : ValidationErrors(
         numberError = "1.39.16",
         prefix = "VR.COM-",
         description = "Lot '$lotId' must contain placeOfPerformance."

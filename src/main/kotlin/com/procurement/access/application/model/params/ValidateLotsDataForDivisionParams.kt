@@ -5,7 +5,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.amount.Amount
 import java.time.LocalDateTime
 
-data class ValidateLotsDataParams(
+data class ValidateLotsDataForDivisionParams(
     val cpid: Cpid,
     val ocid: Ocid,
     val tender: Tender
