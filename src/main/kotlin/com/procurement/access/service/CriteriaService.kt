@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
+import com.procurement.access.application.model.context.GetCriteriaForTendererContext
 import com.procurement.access.application.model.criteria.CreateCriteriaForProcuringEntity
 import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.application.model.criteria.FindCriteria
@@ -10,6 +11,7 @@ import com.procurement.access.application.model.criteria.GetQualificationCriteri
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
 import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
+import com.procurement.access.application.model.data.GetCriteriaForTendererResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
@@ -23,6 +25,7 @@ import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
@@ -54,6 +57,8 @@ import java.time.LocalDateTime
 
 interface CriteriaService {
     fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData)
+
+    fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult
 
     fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult
 
@@ -90,6 +95,61 @@ class CriteriaServiceImpl(
         checkPeriod(data = data)
         // FR.COM-1.16.9
         checkIdsUniqueness(data = data)
+    }
+
+    override fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult {
+        val validatedCpid = Cpid.tryCreate(context.cpid)
+            .orThrow { _ ->
+                ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Attribute 'cpid' has invalid format."
+                )
+            }
+
+        val validatedStage = Stage.tryOf(context.stage)
+            .orThrow { _ ->
+                ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Attribute 'stage' has invalid value."
+                )
+            }
+
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = validatedCpid, stage = validatedStage)
+            .orThrow { it.exception }
+            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+
+        val criteriaForTenderer = when (validatedStage) {
+            Stage.EV,
+            Stage.TP -> {
+                toObject(CNEntity::class.java, entity.jsonData)
+                    .tender.criteria
+                    ?.filter { it.source == CriteriaSource.TENDERER }
+                    .orEmpty()
+                    .map { criterion -> GetCriteriaForTendererResult.fromDomain(criterion) }
+            }
+
+            Stage.FE -> {
+                toObject(FEEntity::class.java, entity.jsonData)
+                    .tender.criteria
+                    ?.filter { it.source == CriteriaSource.TENDERER }
+                    .orEmpty()
+                    .map { criterion -> GetCriteriaForTendererResult.fromDomain(criterion) }
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.NP,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage $validatedStage not allowed at the command."
+            )
+        }
+
+        return GetCriteriaForTendererResult(criteriaForTenderer)
+
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
