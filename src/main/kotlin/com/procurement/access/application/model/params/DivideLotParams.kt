@@ -65,7 +65,7 @@ data class DivideLotParams(
                              val id: String,
                              val description: String,
                              val scheme: String,
-                             val uri: String
+                             val uri: String?
                         )
                     }
                 }
