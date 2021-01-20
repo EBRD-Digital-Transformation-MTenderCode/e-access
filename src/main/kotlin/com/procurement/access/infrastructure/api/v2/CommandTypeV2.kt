@@ -35,7 +35,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     SET_STATE_FOR_LOTS("setStateForLots"),
     SET_STATE_FOR_TENDER("setStateForTender"),
     VALIDATE_CLASSIFICATION("validateClassification"),
-    VALIDATE_LOTS_DATA("validateLotsData"),
+    VALIDATE_LOTS_DATA_FOR_DIVISION("validateLotsDataForDivision"),
     VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
     VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse"),
     ;

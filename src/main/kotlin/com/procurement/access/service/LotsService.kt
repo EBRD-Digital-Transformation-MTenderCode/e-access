@@ -6,7 +6,7 @@ import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.model.params.CheckLotsStateParams
 import com.procurement.access.application.model.params.DivideLotParams
 import com.procurement.access.application.model.params.GetLotsValueParams
-import com.procurement.access.application.model.params.ValidateLotsDataParams
+import com.procurement.access.application.model.params.ValidateLotsDataForDivisionParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Transform
 import com.procurement.access.application.service.lot.GetActiveLotsContext
@@ -437,10 +437,10 @@ class LotsService(
                 && validState.statusDetails?.equals(storedLot.statusDetails) ?: true
         }
 
-    fun validateLotsData(params: ValidateLotsDataParams): ValidationResult<Fail> {
+    fun validateLotsDataForDivision(params: ValidateLotsDataForDivisionParams): ValidationResult<Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
             .onFailure { return it.reason.asValidationFailure() }
-            ?: return ValidationErrors.TenderNotFoundOnValidateLotsData(params.cpid, params.ocid).asValidationFailure()
+            ?: return ValidationErrors.TenderNotFoundOnValidateLotsDataForDivision(params.cpid, params.ocid).asValidationFailure()
 
         val process = entity.jsonData.tryToObject(TenderLotsAndItemsInfo::class.java)
             .onFailure { return it.reason.asValidationFailure() }
@@ -464,9 +464,9 @@ class LotsService(
     }
 
     private fun getNewLots(
-        receivedLotsByIds: Map<String, ValidateLotsDataParams.Tender.Lot>,
+        receivedLotsByIds: Map<String, ValidateLotsDataForDivisionParams.Tender.Lot>,
         knownLot: TenderLotsAndItemsInfo.Tender.Lot
-    ): Result<List<ValidateLotsDataParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots>  {
+    ): Result<List<ValidateLotsDataForDivisionParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots>  {
         val newLots = receivedLotsByIds.minus(knownLot.id.toString())
         val minimumNumberOfNewLots = 2
         return if (newLots.size < minimumNumberOfNewLots)
@@ -475,7 +475,7 @@ class LotsService(
     }
 
     private fun getDividedLot(
-        receivedLotsByIds: Map<String, ValidateLotsDataParams.Tender.Lot>,
+        receivedLotsByIds: Map<String, ValidateLotsDataForDivisionParams.Tender.Lot>,
         storedLotsByIds: Map<String, TenderLotsAndItemsInfo.Tender.Lot>
     ): Result<TenderLotsAndItemsInfo.Tender.Lot, ValidationErrors.IncorrectNumberOfKnownLots> {
         val knownLotsIds = receivedLotsByIds.keys.intersect(storedLotsByIds.keys)
@@ -487,21 +487,21 @@ class LotsService(
         return storedLotsByIds.getValue(knownLotsIds.first()).asSuccess()
     }
 
-    private fun checkForMissingParameters(newLots: List<ValidateLotsDataParams.Tender.Lot>) : ValidationResult<Fail>{
+    private fun checkForMissingParameters(newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>) : ValidationResult<Fail>{
         newLots.map { lot ->
-            lot.title ?: return ValidationErrors.MissingTittleOnValidateLotsData(lot.id).asValidationFailure()
-            lot.description ?: return ValidationErrors.MissingDescriptionOnValidateLotsData(lot.id).asValidationFailure()
-            lot.value ?: return ValidationErrors.MissingValueOnValidateLotsData(lot.id).asValidationFailure()
-            lot.contractPeriod ?: return ValidationErrors.MissingContractPeriodOnValidateLotsData(lot.id).asValidationFailure()
-            lot.placeOfPerformance ?: return ValidationErrors.MissingPlaceOfPerformanceOnValidateLotsData(lot.id).asValidationFailure()
+            lot.title ?: return ValidationErrors.MissingTittleOnValidateLotsDataForDivision(lot.id).asValidationFailure()
+            lot.description ?: return ValidationErrors.MissingDescriptionOnValidateLotsDataForDivision(lot.id).asValidationFailure()
+            lot.value ?: return ValidationErrors.MissingValueOnValidateLotsDataForDivision(lot.id).asValidationFailure()
+            lot.contractPeriod ?: return ValidationErrors.MissingContractPeriodOnValidateLotsDataForDivision(lot.id).asValidationFailure()
+            lot.placeOfPerformance ?: return ValidationErrors.MissingPlaceOfPerformanceOnValidateLotsDataForDivision(lot.id).asValidationFailure()
         }
         return ValidationResult.ok()
     }
 
     private fun checkLots(
-        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
-        receivedItems: List<ValidateLotsDataParams.Tender.Item>,
+        receivedItems: List<ValidateLotsDataForDivisionParams.Tender.Item>,
         storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
     ) : ValidationResult<Fail>{
         checkLotsValue(newLots, dividedLot)
@@ -522,7 +522,7 @@ class LotsService(
     }
 
     private fun checkLotsValue(
-        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot
     ): ValidationResult<Fail> {
         checkLotsCurrency(newLots, dividedLot)
@@ -535,7 +535,7 @@ class LotsService(
     }
 
     private fun checkLotsCurrency(
-        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot
     ): ValidationResult<Fail> {
         newLots.forEach { newLot ->
@@ -547,7 +547,7 @@ class LotsService(
     }
 
     private fun checkLotsAmount(
-        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot
     ): ValidationResult<ValidationErrors> {
         val newAmount = calcAmount(newLots).onFailure { return ValidationResult.error(it.reason) }
@@ -557,7 +557,7 @@ class LotsService(
         return ValidationResult.ok()
     }
 
-    private fun calcAmount(newLots: List<ValidateLotsDataParams.Tender.Lot>): Result<BigDecimal, ValidationErrors.InvalidAmountOfLot> {
+    private fun calcAmount(newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>): Result<BigDecimal, ValidationErrors.InvalidAmountOfLot> {
         var total = BigDecimal.ZERO
         newLots.forEach { lot ->
             val amount = lot.value!!.amount
@@ -570,7 +570,7 @@ class LotsService(
     }
 
     private fun checkLotsContractPeriod(
-        newLots: List<ValidateLotsDataParams.Tender.Lot>,
+        newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot
     ): ValidationResult<Fail> {
         newLots.forEach { newLot ->
@@ -587,8 +587,8 @@ class LotsService(
     }
 
     private fun checkNewLotsToItemsRelations(
-        newLots: List<ValidateLotsDataParams.Tender.Lot>,
-        items: List<ValidateLotsDataParams.Tender.Item>
+        newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
+        items: List<ValidateLotsDataForDivisionParams.Tender.Item>
     ): ValidationResult<Fail> {
         val itemsByRelatedLots = items.associateBy { it.relatedLot }
         val newLotIds = newLots.toSet { it.id }
@@ -603,7 +603,7 @@ class LotsService(
     }
 
     private fun checkEachItemRelatesToNewLot(
-        itemsByRelatedLots: Map<String, ValidateLotsDataParams.Tender.Item>,
+        itemsByRelatedLots: Map<String, ValidateLotsDataForDivisionParams.Tender.Item>,
         newLotIds: Set<String>
     ): ValidationResult<Fail> {
         val unknownLots = itemsByRelatedLots.keys - newLotIds
@@ -616,7 +616,7 @@ class LotsService(
 
     private fun checkEachNewLotHasItem(
         newLotIds: Set<String>,
-        itemsByRelatedLots: Map<String, ValidateLotsDataParams.Tender.Item>
+        itemsByRelatedLots: Map<String, ValidateLotsDataForDivisionParams.Tender.Item>
     ): ValidationResult<Fail> {
         val lotsWithoutItems = newLotIds - itemsByRelatedLots.keys
         return if (lotsWithoutItems.isNotEmpty())
@@ -627,7 +627,7 @@ class LotsService(
 
     private fun checkThatAllItemsReceivedAndNoneMissing(
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
-        receivedItems: List<ValidateLotsDataParams.Tender.Item>,
+        receivedItems: List<ValidateLotsDataForDivisionParams.Tender.Item>,
         storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
     ): ValidationResult<Fail> {
         val receivedItems = receivedItems.toSet { it.id }

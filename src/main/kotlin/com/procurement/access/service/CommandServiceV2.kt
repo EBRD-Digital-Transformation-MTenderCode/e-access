@@ -33,7 +33,7 @@ import com.procurement.access.infrastructure.handler.v2.ResponderProcessingHandl
 import com.procurement.access.infrastructure.handler.v2.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.v2.SetStateForTenderHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateClassificationHandler
-import com.procurement.access.infrastructure.handler.v2.ValidateLotsDataHandler
+import com.procurement.access.infrastructure.handler.v2.ValidateLotsDataForDivisionHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateRequirementResponsesHandler
 import com.procurement.access.infrastructure.handler.v2.VerifyRequirementResponseHandler
 import org.springframework.stereotype.Service
@@ -68,7 +68,7 @@ class CommandServiceV2(
     private val setStateForLotsHandler: SetStateForLotsHandler,
     private val setStateForTenderHandler: SetStateForTenderHandler,
     private val validateClassificationHandler: ValidateClassificationHandler,
-    private val validateLotsDataHandler: ValidateLotsDataHandler,
+    private val validateLotsDataForDivisionHandler: ValidateLotsDataForDivisionHandler,
     private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
     private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler
 ) {
@@ -103,7 +103,7 @@ class CommandServiceV2(
                     CommandTypeV2.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(descriptor)
                     CommandTypeV2.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(descriptor)
                     CommandTypeV2.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(descriptor)
-                    CommandTypeV2.VALIDATE_LOTS_DATA -> validateLotsDataHandler.handle(descriptor)
+                    CommandTypeV2.VALIDATE_LOTS_DATA_FOR_DIVISION -> validateLotsDataForDivisionHandler.handle(descriptor)
                     CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(descriptor)
                     CommandTypeV2.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(descriptor)
 
