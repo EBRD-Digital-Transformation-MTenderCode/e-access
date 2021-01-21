@@ -885,7 +885,7 @@ class LotsService(
                                             uri = country.uri
                                         )
                                     },
-                                    region = addressDetails.country.let { region ->
+                                    region = addressDetails.region.let { region ->
                                         TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
                                             id = region.id,
                                             description = region.description,
@@ -893,7 +893,7 @@ class LotsService(
                                             uri = region.uri
                                         )
                                     },
-                                    locality = addressDetails.country.let { locality ->
+                                    locality = addressDetails.locality.let { locality ->
                                         TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
                                             id = locality.id,
                                             description = locality.description,
