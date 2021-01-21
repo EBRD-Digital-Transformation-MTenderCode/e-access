@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.procurement.access.application.model.parseEnum
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.requirement.EligibleEvidence
 import com.procurement.access.domain.model.requirement.EligibleEvidenceType
 import com.procurement.access.domain.model.requirement.ExpectedValue
@@ -23,6 +24,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.handler.v1.model.request.document.RelatedDocumentRequest
 import java.io.IOException
 import java.math.BigDecimal
+import java.time.LocalDateTime
 
 class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
     companion object {
@@ -34,6 +36,15 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                 val id: String = requirement.get("id").asText()
                 val title: String = requirement.get("title").asText()
                 val description: String? = requirement.takeIf { it.has("description") }?.get("description")?.asText()
+
+                val status: RequirementStatus? = requirement
+                    .takeIf { it.has("status") }
+                    ?.let { RequirementStatus.creator(it.get("status").asText()) }
+
+                val datePublished: LocalDateTime? = requirement
+                    .takeIf { it.has("datePublished") }
+                    ?.let { dateNode -> dateNode.get("datePublished").asText().toLocalDateTime().orThrow { it.reason } }
+
                 val dataType: RequirementDataType = RequirementDataType.creator(requirement.get("dataType").asText())
                 val period: Requirement.Period? = requirement.takeIf { it.has("period") }
                     ?.let { node ->
@@ -59,8 +70,8 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                     dataType = dataType,
                     value = requirementValue(requirement),
                     eligibleEvidences = eligibleEvidences,
-                    status = null,
-                    datePublished = null
+                    status = status,
+                    datePublished = datePublished
                 )
             }
         }

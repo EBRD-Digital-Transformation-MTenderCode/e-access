@@ -12,6 +12,7 @@ import com.procurement.access.application.model.context.CheckSelectiveCnOnPnCont
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
+import com.procurement.access.application.model.context.GetCriteriaForTendererContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.model.parseCpid
@@ -598,6 +599,22 @@ class CommandServiceV1(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
+            }
+            CommandTypeV1.GET_CRITERIA_FOR_TENDERER -> {
+                val context = GetCriteriaForTendererContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage
+                )
+                val result = criteriaService.getCriteriaForTenderer(context = context)
+
+                if (log.isDebugEnabled)
+                    log.debug("Criteria for tenderer. Result: ${toJson(result)}")
+
+                val response = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Criteria for tenderer. Response: ${toJson(response)}")
+
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
