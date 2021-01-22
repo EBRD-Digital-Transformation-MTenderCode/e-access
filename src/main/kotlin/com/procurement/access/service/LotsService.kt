@@ -706,10 +706,11 @@ class LotsService(
                                 endDate = contractPeriod.endDate
                             )
                         },
-                        placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                            placeOfPerformance?.address?.let { address ->
-                                DivideLotResult.Tender.Lot.PlaceOfPerformance(
-                                    address = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                        placeOfPerformance = lot.placeOfPerformance?.let { placeOfPerformance ->
+                            DivideLotResult.Tender.Lot.PlaceOfPerformance(
+                                description = placeOfPerformance.description,
+                                address = placeOfPerformance.address.let { address ->
+                                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
                                         streetAddress = address.streetAddress,
                                         postalCode = address.postalCode,
                                         addressDetails = address.addressDetails.let { addressDetails ->
@@ -741,9 +742,8 @@ class LotsService(
                                             )
                                         }
                                     )
-                                )
-                            }
-
+                                }
+                            )
                         }
                     )
                 },
@@ -869,10 +869,11 @@ class LotsService(
                     endDate = contractPeriod.endDate
                 )
             },
-            placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
-                placeOfPerformance?.address?.let { address ->
-                    TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance(
-                        address = TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address(
+            placeOfPerformance = lot.placeOfPerformance?.let { placeOfPerformance ->
+                TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance(
+                    description = placeOfPerformance.description,
+                    address =  placeOfPerformance.address.let { address ->
+                        TenderLotsFullInfo.Tender.Lot.PlaceOfPerformance.Address(
                             streetAddress = address.streetAddress,
                             postalCode = address.postalCode,
                             addressDetails = address.addressDetails.let { addressDetails ->
@@ -904,9 +905,8 @@ class LotsService(
                                 )
                             }
                         )
-                    )
-                }
-
+                    }
+                )
             }
         )
 }

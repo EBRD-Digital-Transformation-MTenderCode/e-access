@@ -70,6 +70,7 @@ fun DivideLotRequest.Tender.Lot.ContractPeriod.convert(path: String): Result<Div
 }
 
 fun DivideLotRequest.Tender.Lot.PlaceOfPerformance.convert() = DivideLotParams.Tender.Lot.PlaceOfPerformance(
+    description = description,
     address = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address(
         streetAddress = address.streetAddress,
         postalCode = address.postalCode,

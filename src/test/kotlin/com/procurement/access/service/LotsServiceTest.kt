@@ -637,7 +637,8 @@ internal class LotsServiceTest {
                     endDate = DATE.plusDays(1)
                 ),
                 placeOfPerformance = DivideLotResult.Tender.Lot.PlaceOfPerformance(
-                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                    description = "description",
+                    address = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
                         streetAddress = "streetAddress",
                         postalCode = "postalCode",
                         addressDetails = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
@@ -690,7 +691,8 @@ internal class LotsServiceTest {
                     endDate = LocalDateTime.parse("2020-10-29T09:41:07Z", FORMATTER)
                 ),
                 placeOfPerformance = DivideLotResult.Tender.Lot.PlaceOfPerformance(
-                    DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                    description = null,
+                    address = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
                         streetAddress = "string",
                         postalCode = "string",
                         addressDetails = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
@@ -791,7 +793,8 @@ internal class LotsServiceTest {
                         description = "description",
                         internalId = "internalId",
                         placeOfPerformance = DivideLotParams.Tender.Lot.PlaceOfPerformance(
-                            DivideLotParams.Tender.Lot.PlaceOfPerformance.Address(
+                            description = "description",
+                            address = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address(
                                 streetAddress = "streetAddress",
                                 postalCode = "postalCode",
                                 addressDetails = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
