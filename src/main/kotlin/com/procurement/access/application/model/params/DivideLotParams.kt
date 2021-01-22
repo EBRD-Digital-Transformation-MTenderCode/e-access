@@ -35,7 +35,8 @@ data class DivideLotParams(
             )
 
             data class PlaceOfPerformance(
-                 val address: Address
+                val address: Address,
+                val description: String?
             ) {
                 data class Address(
                      val streetAddress: String,

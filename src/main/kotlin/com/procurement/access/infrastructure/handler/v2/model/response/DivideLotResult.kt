@@ -52,6 +52,9 @@ data class DivideLotResult(
             )
 
             data class PlaceOfPerformance(
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @param:JsonProperty("description") @field:JsonProperty("description") val description: String?,
+
                 @param:JsonProperty("address") @field:JsonProperty("address") val address: Address
             ) {
                 data class Address(

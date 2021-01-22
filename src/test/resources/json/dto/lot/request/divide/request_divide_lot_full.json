@@ -17,6 +17,7 @@
           "endDate": "2020-12-29T09:41:07Z"
         },
         "placeOfPerformance": {
+          "description": "string",
           "address": {
             "streetAddress": "string",
             "postalCode": "string",
