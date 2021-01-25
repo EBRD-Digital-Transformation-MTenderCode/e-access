@@ -148,7 +148,19 @@ class CriteriaServiceImpl(
             )
         }
 
-        return GetCriteriaForTendererResult(criteriaForTenderer)
+        val criteriaWithActiveRequirements = criteriaForTenderer
+            .map {
+                it.copy(
+                    requirementGroups = it.requirementGroups
+                        .map {
+                            it.copy(requirements = it.requirements.filter { it.status == RequirementStatus.ACTIVE })
+                        }
+                        .filter { it.requirements.isNotEmpty() }
+                )
+            }
+            .filter { it.requirementGroups.isNotEmpty() }
+
+        return GetCriteriaForTendererResult(criteriaWithActiveRequirements)
 
     }
 
