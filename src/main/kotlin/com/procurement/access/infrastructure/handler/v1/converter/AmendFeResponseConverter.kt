@@ -118,7 +118,14 @@ fun AmendFEResult.Tender.Criteria.convert(): AmendFEResponse.Tender.Criteria =
         description = this.description,
         relatesTo = this.relatesTo,
         source = this.source,
+        classification = this.classification?.convert(),
         requirementGroups = this.requirementGroups.map { it.convert() }
+    )
+
+fun AmendFEResult.Tender.Criteria.Classification.convert(): AmendFEResponse.Tender.Criteria.Classification =
+    AmendFEResponse.Tender.Criteria.Classification(
+        id = this.id,
+        scheme = this.scheme
     )
 
 fun AmendFEResult.Tender.Criteria.RequirementGroup.convert(): AmendFEResponse.Tender.Criteria.RequirementGroup =

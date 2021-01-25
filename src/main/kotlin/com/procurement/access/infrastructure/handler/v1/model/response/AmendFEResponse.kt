@@ -142,6 +142,9 @@ data class AmendFEResponse(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification?,
+
             @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>
         ) {
             data class RequirementGroup(
@@ -153,6 +156,11 @@ data class AmendFEResponse(
                 @JsonDeserialize(using = RequirementDeserializer::class)
                 @JsonSerialize(using = RequirementSerializer::class)
                 @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode
             )
         }
 

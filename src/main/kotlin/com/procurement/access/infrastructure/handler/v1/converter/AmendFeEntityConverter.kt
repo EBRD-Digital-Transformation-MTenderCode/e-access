@@ -126,7 +126,14 @@ class AmendFeEntityConverter {
                 description = entity.description,
                 relatesTo = entity.relatesTo,
                 source = entity.source,
+                classification = entity.classification?.let { convert(it) },
                 requirementGroups = entity.requirementGroups.map { convert(it) }
+            )
+
+        private fun convert(entity: FEEntity.Tender.Criteria.Classification): AmendFEResult.Tender.Criteria.Classification =
+            AmendFEResult.Tender.Criteria.Classification(
+                id = entity.id,
+                scheme = entity.scheme
             )
 
         private fun convert(entity: FEEntity.Tender.Criteria.RequirementGroup): AmendFEResult.Tender.Criteria.RequirementGroup =
