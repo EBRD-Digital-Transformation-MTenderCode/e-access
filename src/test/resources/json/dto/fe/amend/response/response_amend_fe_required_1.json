@@ -139,6 +139,10 @@
         "title": "string",
         "source": "tenderer",
         "relatesTo": "tenderer",
+        "classification": {
+          "scheme": "CPVS",
+          "id": "tender.classification.id"
+        },
         "requirementGroups": [
           {
             "id": "string",

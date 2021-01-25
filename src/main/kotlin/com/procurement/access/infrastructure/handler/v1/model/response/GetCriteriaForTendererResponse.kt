@@ -11,6 +11,7 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializ
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 
 data class GetCriteriaForTendererResponse(
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion>
 ) {
     data class Criterion(

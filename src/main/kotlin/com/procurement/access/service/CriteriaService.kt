@@ -116,7 +116,10 @@ class CriteriaServiceImpl(
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = validatedCpid, stage = validatedStage)
             .orThrow { it.exception }
-            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+            ?: throw ErrorException(
+                error = ErrorType.DATA_NOT_FOUND,
+                message = "VR.COM-1.42.1"
+            )
 
         val criteriaForTenderer = when (validatedStage) {
             Stage.EV,

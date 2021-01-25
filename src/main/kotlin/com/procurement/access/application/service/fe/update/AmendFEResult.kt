@@ -104,12 +104,18 @@ data class AmendFEResult(
             val relatesTo: CriteriaRelatesTo,
             val source: CriteriaSource,
             val description: String?,
+            val classification: Classification?,
             val requirementGroups: List<RequirementGroup>
         ) {
             data class RequirementGroup(
                 val id: String,
                 val description: String?,
                 val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                val scheme: String,
+                val id: CPVCode
             )
         }
 
