@@ -1,5 +1,6 @@
 package com.procurement.access.application.service.fe.check
 
+import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
@@ -11,7 +12,8 @@ import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
 data class CheckFEDataData(
-    val tender: Tender
+    val tender: Tender,
+    val criteria: List<Criterion>
 ) {
     data class Tender(
         val title: String,
@@ -31,12 +33,18 @@ data class CheckFEDataData(
             val title: String,
             val relatesTo: CriteriaRelatesTo,
             val description: String?,
-            val requirementGroups: List<RequirementGroup>
+            val requirementGroups: List<RequirementGroup>,
+            val classification: Classification
         ) {
             data class RequirementGroup(
                 val id: String,
                 val description: String?,
                 val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                 val id: String,
+                 val scheme: String
             )
         }
 
@@ -93,6 +101,16 @@ data class CheckFEDataData(
             val documentType: DocumentType,
             val title: String,
             val description: String?
+        )
+    }
+
+    data class Criterion(
+         val id: CriteriaId,
+         val classification: Classification
+    ) {
+        data class Classification(
+             val id: String,
+             val scheme: String
         )
     }
 }
