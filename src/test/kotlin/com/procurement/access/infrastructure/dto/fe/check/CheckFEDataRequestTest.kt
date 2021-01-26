@@ -18,6 +18,11 @@ class CheckFEDataRequestTest : AbstractDTOTestBase<CheckFEDataRequest>(CheckFEDa
 
     @Test
     fun required_2() {
-        testBindingAndMapping("json/dto/fe/check/request/request_check_fe_data_required_2.json")
+        testBindingAndMapping("json/dto/fe/check/request/request_check_fe_data_required_3.json")
+    }
+
+    @Test
+    fun required_3() {
+        testBindingAndMapping("json/dto/fe/check/request/request_check_fe_data_required_3.json")
     }
 }

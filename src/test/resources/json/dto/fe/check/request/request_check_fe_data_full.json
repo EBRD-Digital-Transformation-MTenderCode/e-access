@@ -1,4 +1,13 @@
 {
+  "criteria": [
+    {
+      "id": "fb05bb7c-e90b-4cf2-b7c4-fd745703300c",
+      "classification": {
+        "id": "string",
+        "scheme": "string"
+      }
+    }
+  ],
   "tender": {
     "title": "string",
     "description": "string",
@@ -46,6 +55,10 @@
       {
         "id": "string",
         "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        },
         "description": "string",
         "relatesTo": "tenderer",
         "requirementGroups": [
@@ -63,7 +76,18 @@
                   "endDate": "2020-09-16T12:24:54Z"
                 },
                 "minValue": 1.000,
-                "maxValue": 5.000
+                "maxValue": 5.000,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "description": "string",
+                    "type": "document",
+                    "relatedDocument": {
+                      "id": "string"
+                    }
+                  }
+                ]
               }
             ]
           }

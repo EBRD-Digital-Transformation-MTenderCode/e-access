@@ -1,4 +1,13 @@
 {
+  "criteria": [
+    {
+      "id": "fb05bb7c-e90b-4cf2-b7c4-fd745703300c",
+      "classification": {
+        "id": "string",
+        "scheme": "string"
+      }
+    }
+  ],
   "tender": {
     "title": "string",
     "description": "string",
@@ -30,6 +39,10 @@
       {
         "id": "string",
         "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        },
         "relatesTo": "tenderer",
         "requirementGroups": [
           {
@@ -39,7 +52,14 @@
               {
                 "id": "string",
                 "title": "string",
-                "dataType": "number"
+                "dataType": "number",
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "type": "document"
+                  }
+                ]
               }
             ]
           }

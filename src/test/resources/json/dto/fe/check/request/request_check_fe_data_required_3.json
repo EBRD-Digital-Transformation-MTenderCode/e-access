@@ -1,0 +1,15 @@
+{
+  "criteria": [
+    {
+      "id": "fb05bb7c-e90b-4cf2-b7c4-fd745703300c",
+      "classification": {
+        "id": "string",
+        "scheme": "string"
+      }
+    }
+  ],
+  "tender": {
+    "title": "string",
+    "description": "string"
+  }
+}
