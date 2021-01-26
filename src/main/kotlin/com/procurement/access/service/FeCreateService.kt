@@ -6,6 +6,7 @@ import com.procurement.access.application.service.fe.create.CreateFEResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
@@ -22,6 +23,7 @@ import com.procurement.access.utils.toObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.*
 
 interface FeCreateService {
@@ -52,7 +54,7 @@ class FeCreateServiceImpl(
         // BR-1.0.1.21.1
         val ocid = generationService.generateOcid(cpid = cpid, stage = context.stage)
 
-        val fe = createEntity(ocid = ocid, token = entity.token, data = request, ap = ap)
+        val fe = createEntity(ocid = ocid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
 
         val result = CreateFeEntityConverter.fromEntity(fe);
 
@@ -70,7 +72,7 @@ class FeCreateServiceImpl(
         return result
     }
 
-    private fun createEntity(ocid: Ocid, token: UUID, data: CreateFEData, ap: APEntity): FEEntity =
+    private fun createEntity(ocid: Ocid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity =
         FEEntity(
             ocid = ocid.toString(),
             token = token.toString(),
@@ -143,7 +145,12 @@ class FeCreateServiceImpl(
                             title = criterion.title,
                             source = CriteriaSource.TENDERER, // BR-1.0.1.16.2
                             relatesTo = criterion.relatesTo,
-                            classification = null,
+                            classification = criterion.classification.let { classification ->   //BR-1.0.1.16.3
+                                FEEntity.Tender.Criteria.Classification(
+                                    id = classification.id,
+                                    scheme = classification.scheme
+                                )
+                            },
                             requirementGroups = criterion.requirementGroups
                                 .map { requirementGroups ->
                                     FEEntity.Tender.Criteria.RequirementGroup(
@@ -165,8 +172,8 @@ class FeCreateServiceImpl(
                                                     dataType = requirement.dataType,
                                                     value = requirement.value,
                                                     eligibleEvidences = requirement.eligibleEvidences?.toList(),
-                                                    status = requirement.status,
-                                                    datePublished = requirement.datePublished
+                                                    status = RequirementStatus.ACTIVE,
+                                                    datePublished = datePublished
                                                 )
                                             }
                                     )
