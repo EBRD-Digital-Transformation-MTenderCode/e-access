@@ -57,7 +57,8 @@ data class CreateFERequest(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
-            @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>
+            @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification
         ) {
             data class RequirementGroup(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
@@ -68,6 +69,11 @@ data class CreateFERequest(
                 @JsonDeserialize(using = RequirementDeserializer::class)
                 @JsonSerialize(using = RequirementSerializer::class)
                 @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
             )
         }
 

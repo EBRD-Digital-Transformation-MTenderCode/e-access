@@ -31,12 +31,18 @@ data class CreateFEData(
             val title: String,
             val relatesTo: CriteriaRelatesTo,
             val description: String?,
-            val requirementGroups: List<RequirementGroup>
+            val requirementGroups: List<RequirementGroup>,
+            val classification: Classification
         ) {
             data class RequirementGroup(
                 val id: String,
                 val description: String?,
                 val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                val id: String,
+                val scheme: String
             )
         }
 
