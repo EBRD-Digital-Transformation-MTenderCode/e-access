@@ -220,14 +220,21 @@ class CNServiceImpl(
                 lot.title.checkForBlank("tender.lots.title")
                 lot.description.checkForBlank("tender.lots.description")
                 lot.internalId.checkForBlank("tender.lots.internalId")
+                lot.placeOfPerformance
+                    .apply {
+                        description.checkForBlank("tender.lots.placeOfPerformance.description")
+                        address.apply {
+                            postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
+                            streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
 
-                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
-                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
-                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
-                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
+                            addressDetails.apply {
+                                locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
+                                locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
+                                locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
+                                locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
+                            }
+                        }
+                    }
             }
 
         tender.items
