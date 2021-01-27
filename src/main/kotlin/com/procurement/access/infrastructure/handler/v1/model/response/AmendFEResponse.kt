@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
@@ -136,11 +136,14 @@ data class AmendFEResponse(
         data class Criteria(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo,
             @field:JsonProperty("source") @param:JsonProperty("source") val source: CriteriaSource,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification?,
 
             @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>
         ) {
@@ -153,6 +156,11 @@ data class AmendFEResponse(
                 @JsonDeserialize(using = RequirementDeserializer::class)
                 @JsonSerialize(using = RequirementSerializer::class)
                 @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: CPVCode
             )
         }
 

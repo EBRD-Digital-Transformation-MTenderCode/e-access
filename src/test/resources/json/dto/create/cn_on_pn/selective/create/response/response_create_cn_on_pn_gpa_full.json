@@ -55,7 +55,9 @@
     "procurementMethodDetails": "pn.tender.procurementMethodDetails",
     "procurementMethodRationale": "request.tender.procurementMethodRationale",
     "procurementMethodAdditionalInfo": "request.tender.procurementMethodAdditionalInfo",
-    "additionalProcurementCategories": ["goods"],
+    "additionalProcurementCategories": [
+      "goods"
+    ],
     "submissionMethod": [
       "electronicSubmission"
     ],
@@ -187,6 +189,10 @@
         "id": "d3732c09-7d62-4edc-a172-241da6636e7c",
         "title": "Bankruptcy",
         "description": "Is the economic operator bankrupt? This information needs not be given if exclusion of economic operators in this case has been made mandatory under the applicable national law without any possibility of derogation where the economic operator is nevertheless able to perform the contract.",
+        "classification": {
+          "scheme": "tender.criteria.classification.scheme",
+          "id": "tender.criteria.classification.id"
+        },
         "requirementGroups": [
           {
             "id": "d91c11a1-f19e-4b83-8ade-c4be2bf00555",
@@ -206,6 +212,10 @@
         "id": "002",
         "title": "Product warranty",
         "description": "A minimum product warranty of 1 year is required for all bids.",
+        "classification": {
+          "scheme": "tender.criteria.classification.scheme",
+          "id": "tender.criteria.classification.id"
+        },
         "relatesTo": "item",
         "relatedItem": "001",
         "requirementGroups": [
@@ -237,6 +247,10 @@
         "id": "004",
         "title": "Product",
         "description": "Country of origin",
+        "classification": {
+          "scheme": "tender.criteria.classification.scheme",
+          "id": "tender.criteria.classification.id"
+        },
         "relatesTo": "item",
         "relatedItem": "002",
         "requirementGroups": [
@@ -247,7 +261,18 @@
                 "id": "004-1-1",
                 "title": "Product has to be manufactured in the EU",
                 "dataType": "boolean",
-                "expectedValue": true
+                "expectedValue": true,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "description": "string",
+                    "type": "document",
+                    "relatedDocument": {
+                      "id": ""
+                    }
+                  }
+                ]
               },
               {
                 "id": "004-1-2",

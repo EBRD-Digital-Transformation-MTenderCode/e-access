@@ -173,6 +173,7 @@ class ValidationService(
             OperationType.QUALIFICATION_PROTOCOL,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
+            OperationType.SUBMIT_BID,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AP,
             OperationType.UPDATE_AWARD,

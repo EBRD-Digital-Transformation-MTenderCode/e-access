@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
@@ -21,11 +21,20 @@ class FindCriteriaResult(values: List<Criterion>) : List<FindCriteriaResult.Crit
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum?,
+        @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
     ) {
+
+        data class Classification(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
+        )
+
         data class RequirementGroup(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 

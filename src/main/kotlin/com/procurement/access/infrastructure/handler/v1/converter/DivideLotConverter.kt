@@ -70,6 +70,7 @@ fun DivideLotRequest.Tender.Lot.ContractPeriod.convert(path: String): Result<Div
 }
 
 fun DivideLotRequest.Tender.Lot.PlaceOfPerformance.convert() = DivideLotParams.Tender.Lot.PlaceOfPerformance(
+    description = description,
     address = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address(
         streetAddress = address.streetAddress,
         postalCode = address.postalCode,
@@ -83,7 +84,7 @@ fun DivideLotRequest.Tender.Lot.PlaceOfPerformance.convert() = DivideLotParams.T
                         uri = country.uri
                     )
                 },
-                region = addressDetails.country.let { region ->
+                region = addressDetails.region.let { region ->
                     DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
                         id = region.id,
                         description = region.description,
@@ -91,7 +92,7 @@ fun DivideLotRequest.Tender.Lot.PlaceOfPerformance.convert() = DivideLotParams.T
                         uri = region.uri
                     )
                 },
-                locality = addressDetails.country.let { locality ->
+                locality = addressDetails.locality.let { locality ->
                     DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
                         id = locality.id,
                         description = locality.description,

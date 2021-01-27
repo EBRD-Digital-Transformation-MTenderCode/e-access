@@ -1,0 +1,21 @@
+{
+  "tender": {
+    "items": [
+      {
+        "id": "string",
+        "description": "string",
+        "quantity": 30.123,
+        "classification": {
+          "id": "string",
+          "scheme": "CPV",
+          "description": "string"
+        },
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "relatedLot": "string"
+      }
+    ]
+  }
+}

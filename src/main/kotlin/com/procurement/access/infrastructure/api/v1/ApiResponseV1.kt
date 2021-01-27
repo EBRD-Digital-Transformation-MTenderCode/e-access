@@ -20,6 +20,8 @@ sealed class ApiResponseV1 {
         @field:JsonProperty("errors") @param:JsonProperty("errors") val errors: List<Error>
     ) : ApiResponseV1() {
 
+        companion object {}
+
         data class Error(
             @field:JsonProperty("code") @param:JsonProperty("code") val code: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String

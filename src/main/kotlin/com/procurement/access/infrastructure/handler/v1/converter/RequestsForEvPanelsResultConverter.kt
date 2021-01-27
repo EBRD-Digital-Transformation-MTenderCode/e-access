@@ -14,6 +14,13 @@ fun RequestsForEvPanelsResult.convert(): RequestsForEvPanelsResponse {
                     description = criteria.description,
                     source = criteria.source,
                     relatesTo = criteria.relatesTo,
+                    classification = criteria.classification
+                        .let { classification ->
+                            RequestsForEvPanelsResponse.Criteria.Classification(
+                                scheme = classification.scheme,
+                                id = classification.id
+                            )
+                        },
                     requirementGroups = criteria.requirementGroups
                         .map { requirementGroup ->
                             RequestsForEvPanelsResponse.Criteria.RequirementGroup(
@@ -26,7 +33,10 @@ fun RequestsForEvPanelsResult.convert(): RequestsForEvPanelsResponse {
                                             dataType = requirement.dataType,
                                             value = requirement.value,
                                             period = requirement.period,
-                                            description = requirement.description
+                                            description = requirement.description,
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                            status = requirement.status,
+                                            datePublished = requirement.datePublished
                                         )
                                     }
                             )

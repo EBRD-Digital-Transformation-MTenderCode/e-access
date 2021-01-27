@@ -3,7 +3,7 @@ package com.procurement.access.application.service.fe.update
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
@@ -101,15 +101,21 @@ data class AmendFEResult(
         data class Criteria(
             val id: String,
             val title: String,
-            val relatesTo: CriteriaRelatesToEnum,
+            val relatesTo: CriteriaRelatesTo,
             val source: CriteriaSource,
             val description: String?,
+            val classification: Classification?,
             val requirementGroups: List<RequirementGroup>
         ) {
             data class RequirementGroup(
                 val id: String,
                 val description: String?,
                 val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                val scheme: String,
+                val id: CPVCode
             )
         }
 

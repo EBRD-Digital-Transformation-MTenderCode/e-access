@@ -29,6 +29,10 @@ val CommandMessage.cpid: String
     get() = this.context.cpid
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context.")
 
+val CommandMessage.ocid: String
+    get() = this.context.ocid
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
+
 val CommandMessage.token: UUID
     get() = this.context
         .token
@@ -36,7 +40,10 @@ val CommandMessage.token: UUID
             try {
                 UUID.fromString(token)
             } catch (exception: Exception) {
-                throw ErrorException(error = ErrorType.INVALID_FORMAT_TOKEN, message = "Expected token format is UUID, actual token=$token.")
+                throw ErrorException(
+                    error = ErrorType.INVALID_FORMAT_TOKEN,
+                    message = "Expected token format is UUID, actual token=$token."
+                )
             }
         }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
@@ -80,10 +87,10 @@ val CommandMessage.startDate: LocalDateTime
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'startDate' attribute in context.")
 
 val CommandMessage.testMode: Boolean
-    get() = this.context.testMode?.let { it } ?: false
+    get() = this.context.testMode ?: false
 
 val CommandMessage.isAuction: Boolean
-    get() = this.context.isAuction?.let { it } ?: false
+    get() = this.context.isAuction ?: false
 
 val CommandMessage.lotId: LotId
     get() = this.context.id?.let { id ->

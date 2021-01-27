@@ -3,6 +3,7 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
+import com.procurement.access.application.model.context.GetCriteriaForTendererContext
 import com.procurement.access.application.model.criteria.CreateCriteriaForProcuringEntity
 import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.application.model.criteria.FindCriteria
@@ -10,6 +11,7 @@ import com.procurement.access.application.model.criteria.GetQualificationCriteri
 import com.procurement.access.application.model.criteria.RequirementGroupId
 import com.procurement.access.application.model.criteria.RequirementId
 import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
+import com.procurement.access.application.model.data.GetCriteriaForTendererResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
@@ -23,10 +25,12 @@ import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.requirement.NoneValue
 import com.procurement.access.domain.model.requirement.Requirement
@@ -49,9 +53,12 @@ import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 interface CriteriaService {
     fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData)
+
+    fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult
 
     fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult
 
@@ -90,6 +97,76 @@ class CriteriaServiceImpl(
         checkIdsUniqueness(data = data)
     }
 
+    override fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult {
+        val validatedCpid = Cpid.tryCreate(context.cpid)
+            .orThrow { _ ->
+                ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Attribute 'cpid' has invalid format."
+                )
+            }
+
+        val validatedStage = Stage.tryOf(context.stage)
+            .orThrow { _ ->
+                ErrorException(
+                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                    message = "Attribute 'stage' has invalid value."
+                )
+            }
+
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = validatedCpid, stage = validatedStage)
+            .orThrow { it.exception }
+            ?: throw ErrorException(
+                error = ErrorType.DATA_NOT_FOUND,
+                message = "VR.COM-1.42.1"
+            )
+
+        val criteriaForTenderer = when (validatedStage) {
+            Stage.EV,
+            Stage.TP -> {
+                toObject(CNEntity::class.java, entity.jsonData)
+                    .tender.criteria
+                    ?.filter { it.source == CriteriaSource.TENDERER }
+                    .orEmpty()
+                    .map { criterion -> GetCriteriaForTendererResult.fromDomain(criterion) }
+            }
+
+            Stage.FE -> {
+                toObject(FEEntity::class.java, entity.jsonData)
+                    .tender.criteria
+                    ?.filter { it.source == CriteriaSource.TENDERER }
+                    .orEmpty()
+                    .map { criterion -> GetCriteriaForTendererResult.fromDomain(criterion) }
+            }
+
+            Stage.AC,
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.NP,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage $validatedStage not allowed at the command."
+            )
+        }
+
+        val criteriaWithActiveRequirements = criteriaForTenderer
+            .map {
+                it.copy(
+                    requirementGroups = it.requirementGroups
+                        .map {
+                            it.copy(requirements = it.requirements.filter { it.status == RequirementStatus.ACTIVE })
+                        }
+                        .filter { it.requirements.isNotEmpty() }
+                )
+            }
+            .filter { it.requirementGroups.isNotEmpty() }
+
+        return GetCriteriaForTendererResult(criteriaWithActiveRequirements)
+
+    }
+
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
         val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
@@ -101,8 +178,12 @@ class CriteriaServiceImpl(
             id = CriteriaId.Permanent.generate().toString(),
             title = "",
             description = "",
+            classification = CNEntity.Tender.Criteria.Classification(
+                id = "CRITERION.EXCLUSION.CONFLICT_OF_INTEREST.TBD",
+                scheme = "ESPD"
+            ),
             source = CriteriaSource.PROCURING_ENTITY,
-            relatesTo = CriteriaRelatesToEnum.AWARD,
+            relatesTo = CriteriaRelatesTo.AWARD,
             relatedItem = null,
             requirementGroups = listOf(
                 CNEntity.Tender.Criteria.RequirementGroup(
@@ -115,7 +196,10 @@ class CriteriaServiceImpl(
                             dataType = RequirementDataType.BOOLEAN,
                             value = NoneValue,
                             period = null,
-                            description = null
+                            description = null,
+                            eligibleEvidences = emptyList(),
+                            status = RequirementStatus.ACTIVE,
+                            datePublished = context.startDate
                         )
                     )
                 )
@@ -143,6 +227,13 @@ class CriteriaServiceImpl(
                 description = criterion.description,
                 source = criterion.source!!,
                 relatesTo = criterion.relatesTo!!,
+                classification = criterion.classification
+                    .let { classification ->
+                        RequestsForEvPanelsResult.Criteria.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme
+                        )
+                    },
                 requirementGroups = criterion.requirementGroups
                     .map { requirementGroup ->
                         RequestsForEvPanelsResult.Criteria.RequirementGroup(
@@ -155,7 +246,10 @@ class CriteriaServiceImpl(
                                         dataType = requirement.dataType,
                                         value = requirement.value,
                                         period = requirement.period,
-                                        description = requirement.description
+                                        description = requirement.description,
+                                        eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                        status = requirement.status,
+                                        datePublished = requirement.datePublished
                                     )
                                 }
                         )
@@ -266,7 +360,7 @@ class CriteriaServiceImpl(
             .onFailure { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
-        val foundedCriteriaResult = when (params.ocid.stage) {
+        val allFoundedCriteriaBySource = when (params.ocid.stage) {
 
             Stage.FE -> {
                 val fe = entity.jsonData
@@ -276,7 +370,7 @@ class CriteriaServiceImpl(
 
                 val targetCriteria = fe.tender.criteria.orEmpty()
                     .asSequence()
-                    .filter { it.source == params.source }
+                    .filter { it.source in params.source }
                     .map { criterion -> criterion.convert() }
                     .toList()
 
@@ -293,7 +387,7 @@ class CriteriaServiceImpl(
 
                 val targetCriteria = cn.tender.criteria.orEmpty()
                     .asSequence()
-                    .filter { it.source == params.source }
+                    .filter { it.source in params.source }
                     .map { criterion -> criterion.convert() }
                     .toList()
 
@@ -312,13 +406,27 @@ class CriteriaServiceImpl(
         }
             .onFailure { fail -> return fail }
 
-        val result = FindCriteriaResult(foundedCriteriaResult)
+        val criteriaWithActiveRequirements = allFoundedCriteriaBySource
+            .map {
+                it.copy(
+                    requirementGroups = it.requirementGroups
+                        .map {
+                            it.copy(requirements = it.requirements.filter { it.status == RequirementStatus.ACTIVE })
+                        }
+                        .filter { it.requirements.isNotEmpty() }
+                )
+            }
+            .filter { it.requirementGroups.isNotEmpty() }
+
+
+        val result = FindCriteriaResult(criteriaWithActiveRequirements)
 
         return success(result)
     }
 
     override fun createCriteriaForProcuringEntity(params: CreateCriteriaForProcuringEntity.Params): Result<CreateCriteriaForProcuringEntityResult, Fail> {
         val stage = params.ocid.stage
+        val datePublished = params.date
 
         val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
             cpid = params.cpid,
@@ -342,7 +450,7 @@ class CriteriaServiceImpl(
                     .onFailure { return it }
 
                 val createdCriteria = params.criteria
-                    .map { criterion -> createCriterionForCN(criterion, params.operationType) }
+                    .map { criterion -> createCriterionForCN(datePublished, criterion, params.operationType) }
 
                 val result = createdCriteria.map { it.convertToResponse() }
 
@@ -366,7 +474,7 @@ class CriteriaServiceImpl(
                     .onFailure { return it }
 
                 val createdCriteria = params.criteria
-                    .mapResult { criterion -> createCriterionForFE(criterion, params.operationType) }
+                    .mapResult { criterion -> createCriterionForFE(datePublished, criterion, params.operationType) }
                     .onFailure { error -> return error }
 
                 val result = createdCriteria.map { it.convertToResponse() }
@@ -400,6 +508,7 @@ class CriteriaServiceImpl(
     }
 
     private fun createCriterionForCN(
+        datePublished: LocalDateTime,
         criterion: CreateCriteriaForProcuringEntity.Params.Criterion,
         operationType: OperationType
     ): CNEntity.Tender.Criteria =
@@ -407,6 +516,13 @@ class CriteriaServiceImpl(
             id = criterion.id,
             title = criterion.title,
             description = criterion.description,
+            classification = criterion.classification
+                .let { classification ->
+                    CNEntity.Tender.Criteria.Classification(
+                        id = classification.id,
+                        scheme = classification.scheme
+                    )
+                },
             requirementGroups = criterion.requirementGroups
                 .map { requirementGroups ->
                     CNEntity.Tender.Criteria.RequirementGroup(
@@ -420,7 +536,10 @@ class CriteriaServiceImpl(
                                     title = requirement.title,
                                     period = null,
                                     value = NoneValue,
-                                    dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                    dataType = RequirementDataType.BOOLEAN, // FR.COM-1.12.2
+                                    eligibleEvidences = emptyList(),
+                                    status = RequirementStatus.ACTIVE,
+                                    datePublished = datePublished
                                 )
                             }
                     )
@@ -448,19 +567,21 @@ class CriteriaServiceImpl(
                 OperationType.QUALIFICATION_PROTOCOL,
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
+                OperationType.SUBMIT_BID,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
 
-                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
-                OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesTo.QUALIFICATION
+                OperationType.TENDER_PERIOD_END -> CriteriaRelatesTo.AWARD
             },
             relatedItem = null
         )
 
     private fun createCriterionForFE(
+        datePublished: LocalDateTime,
         criterion: CreateCriteriaForProcuringEntity.Params.Criterion,
         operationType: OperationType
     ): Result<FEEntity.Tender.Criteria, DataErrors.Validation.UnknownValue>  {
@@ -469,6 +590,13 @@ class CriteriaServiceImpl(
             id = criterion.id,
             title = criterion.title,
             description = criterion.description,
+            classification = criterion.classification
+                .let { classification ->
+                    FEEntity.Tender.Criteria.Classification(
+                        id = classification.id,
+                        scheme = classification.scheme
+                    )
+                },
             requirementGroups = criterion.requirementGroups
                 .map { requirementGroups ->
                     FEEntity.Tender.Criteria.RequirementGroup(
@@ -482,7 +610,10 @@ class CriteriaServiceImpl(
                                     title = requirement.title,
                                     period = null,
                                     value = NoneValue,
-                                    dataType = RequirementDataType.BOOLEAN // FR.COM-1.12.2
+                                    dataType = RequirementDataType.BOOLEAN, // FR.COM-1.12.2
+                                    eligibleEvidences = emptyList(),
+                                    status = RequirementStatus.ACTIVE,
+                                    datePublished = datePublished
                                 )
                             }
                     )
@@ -510,6 +641,7 @@ class CriteriaServiceImpl(
                 OperationType.QUALIFICATION_PROTOCOL,
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
+                OperationType.SUBMIT_BID,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
@@ -523,8 +655,8 @@ class CriteriaServiceImpl(
                         )
                     )
 
-                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesToEnum.QUALIFICATION
-                OperationType.TENDER_PERIOD_END -> CriteriaRelatesToEnum.AWARD
+                OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesTo.QUALIFICATION
+                OperationType.TENDER_PERIOD_END -> CriteriaRelatesTo.AWARD
             }
         )
             .asSuccess()

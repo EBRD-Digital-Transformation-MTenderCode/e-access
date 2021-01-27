@@ -11,7 +11,7 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.LocationOfPersonsType
 import com.procurement.access.domain.model.enums.OperationType
@@ -269,6 +269,7 @@ class ResponderServiceImpl(
             OperationType.RELATION_AP,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
+            OperationType.SUBMIT_BID,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AP,
             OperationType.UPDATE_AWARD,
@@ -682,7 +683,7 @@ private fun getRequirementToTenderer(
         .onFailure { return it }
         .tender.criteria
         ?.asSequence()
-        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.filter { it.relatesTo == CriteriaRelatesTo.TENDERER }
         ?.flatMap { it.requirementGroups.asSequence() }
         ?.flatMap { it.requirements.asSequence() }
         ?.associateBy { it.id }
@@ -697,7 +698,7 @@ private fun getRequirementToTenderer(
         .onFailure { return it }
         .tender.criteria
         ?.asSequence()
-        ?.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+        ?.filter { it.relatesTo == CriteriaRelatesTo.TENDERER }
         ?.flatMap { it.requirementGroups.asSequence() }
         ?.flatMap { it.requirements.asSequence() }
         ?.associateBy { it.id }
