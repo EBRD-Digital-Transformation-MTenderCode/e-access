@@ -21,6 +21,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.requirement.EligibleEvidenceId
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
@@ -41,6 +42,8 @@ import com.procurement.access.exception.ErrorType.LOT_ID_DUPLICATED
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
+import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
+import com.procurement.access.infrastructure.handler.v1.model.response.CriterionClassificationResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.errorIfBlank
@@ -241,9 +244,9 @@ class OpenCnOnPnService(
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
 
         val tender: CNEntity.Tender = if (pnEntity.tender.items.isEmpty())
-            createTenderBasedPNWithoutItems(request = data, pnEntity = pnEntity)
+            createTenderBasedPNWithoutItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
         else
-            createTenderBasedPNWithItems(request = data, pnEntity = pnEntity)
+            createTenderBasedPNWithItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
 
         val cnEntity = CNEntity(
             ocid = pnEntity.ocid,
@@ -271,48 +274,55 @@ class OpenCnOnPnService(
 
     private fun OpenCnOnPnRequest.validateTextAttributes() {
         tender.electronicAuctions?.details
-            ?.forEach { detail ->
-                detail.id.checkForBlank("tender.electronicAuctions.details.id")
+            ?.forEachIndexed { detailIdx, detail ->
+                detail.id.checkForBlank("tender.electronicAuctions.details[$detailIdx].id")
             }
 
         tender.criteria
-            ?.forEach { criterion ->
-                criterion.id.checkForBlank("tender.criteria.id")
-                criterion.title.checkForBlank("tender.criteria.title")
-                criterion.description.checkForBlank("tender.criteria.description")
+            ?.forEachIndexed { criterionIdx, criterion ->
+                criterion.id.checkForBlank("tender.criteria[$criterionIdx].id")
+                criterion.title.checkForBlank("tender.criteria[$criterionIdx].title")
+                criterion.description.checkForBlank("tender.criteria[$criterionIdx].description")
 
                 criterion.requirementGroups
-                    .forEach { requirementGroup ->
-                        requirementGroup.id.checkForBlank("tender.criteria.requirementGroups.id")
-                        requirementGroup.description.checkForBlank("tender.criteria.requirementGroups.description")
+                    .forEachIndexed { requirementGroupIdx, requirementGroup ->
+                        requirementGroup.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].id")
+                        requirementGroup.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].description")
 
                         requirementGroup.requirements
-                            .forEach { requirement ->
-                                requirement.id.checkForBlank("tender.criteria.requirementGroups.requirements.id")
-                                requirement.title.checkForBlank("tender.criteria.requirementGroups.requirements.title")
-                                requirement.description.checkForBlank("tender.criteria.requirementGroups.requirements.description")
+                            .forEachIndexed { requirementIdx, requirement ->
+                                requirement.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].id")
+                                requirement.title.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].title")
+                                requirement.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].description")
                                 requirement.value
                                     .also {
                                         if (it is ExpectedValue.AsString)
-                                            it.value.checkForBlank("tender.criteria.requirementGroups.requirements.expectedValue")
+                                            it.value.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].expectedValue")
+                                    }
+                                requirement.eligibleEvidences
+                                    ?.forEachIndexed { eligibleEvidenceIdx, eligibleEvidence ->
+                                        eligibleEvidence.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].id")
+                                        eligibleEvidence.title.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].title")
+                                        eligibleEvidence.description.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].description")
+                                        eligibleEvidence.relatedDocument?.id.checkForBlank("tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences[$eligibleEvidenceIdx].relatedDocument.id")
                                     }
                             }
                     }
             }
 
         tender.conversions
-            ?.forEach { conversion ->
-                conversion.id.checkForBlank("tender.conversions.id")
-                conversion.description.checkForBlank("tender.conversions.description")
-                conversion.relatedItem.checkForBlank("tender.conversions.relatedItem")
-                conversion.rationale.checkForBlank("tender.conversions.rationale")
+            ?.forEachIndexed { conversionIdx, conversion ->
+                conversion.id.checkForBlank("tender.conversions[$conversionIdx].id")
+                conversion.description.checkForBlank("tender.conversions[$conversionIdx].description")
+                conversion.relatedItem.checkForBlank("tender.conversions[$conversionIdx].relatedItem")
+                conversion.rationale.checkForBlank("tender.conversions[$conversionIdx].rationale")
                 conversion.coefficients
-                    .forEach { coefficient ->
-                        coefficient.id.checkForBlank("tender.conversions.coefficients.id")
-                        coefficient.relatedOption.checkForBlank("tender.conversions.coefficients.relatedOption")
+                    .forEachIndexed { coefficientIdx, coefficient ->
+                        coefficient.id.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].id")
+                        coefficient.relatedOption.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].relatedOption")
                         coefficient.value.also {
                             if (it is CoefficientValue.AsString)
-                                it.value.checkForBlank("tender.conversions.coefficients.value")
+                                it.value.checkForBlank("tender.conversions[$conversionIdx].coefficients[$coefficientIdx].value")
                         }
                     }
             }
@@ -320,43 +330,45 @@ class OpenCnOnPnService(
         tender.procuringEntity?.id.checkForBlank("tender.procuringEntity.id")
 
         tender.lots
-            .forEach { lot ->
-                lot.id.checkForBlank("tender.lots.id")
-                lot.description.checkForBlank("tender.lots.description")
-                lot.internalId.checkForBlank("tender.lots.internalId")
-                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
-                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
-                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
-                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
-                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
-                lot.title.checkForBlank("tender.lots.title")
+            .forEachIndexed { lotIdx, lot ->
+                lot.id.checkForBlank("tender.lots[$lotIdx].id")
+                lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+                lot.title.checkForBlank("tender.lots[$lotIdx].title")
+                lot.description.checkForBlank("tender.lots[$lotIdx].description")
+
+
+                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.description")
+                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.id")
+                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.scheme")
+                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.uri")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.postalCode")
+                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.description")
             }
 
         tender.items
-            .forEach { item ->
-                item.id.checkForBlank("tender.items.id")
-                item.internalId.checkForBlank("tender.items.internalId")
-                item.classification.id.checkForBlank("tender.items.classification.id")
-                item.classification.description.checkForBlank("tender.items.classification.description")
+            .forEachIndexed { itemIdx, item ->
+                item.id.checkForBlank("tender.items[$itemIdx].id")
+                item.internalId.checkForBlank("tender.items[$itemIdx].internalId")
+                item.classification.id.checkForBlank("tender.items[$itemIdx].classification.id")
+                item.classification.description.checkForBlank("tender.items[$itemIdx].classification.description")
                 item.additionalClassifications
-                    ?.forEach { additionalClassification ->
-                        additionalClassification.id.checkForBlank("tender.items.additionalClassifications.id")
-                        additionalClassification.description.checkForBlank("tender.items.additionalClassifications.description")
+                    ?.forEachIndexed { additionalClassificationIdx, additionalClassification ->
+                        additionalClassification.id.checkForBlank("tender.items[$itemIdx].additionalClassifications[$additionalClassificationIdx].id")
+                        additionalClassification.description.checkForBlank("tender.items[$itemIdx].additionalClassifications[$additionalClassificationIdx].description")
                     }
-                item.unit.id.checkForBlank("tender.items.unit.id")
-                item.unit.name.checkForBlank("tender.items.unit.name")
-                item.description.checkForBlank("tender.items.description")
-                item.relatedLot.checkForBlank("tender.items.relatedLot")
+                item.unit.id.checkForBlank("tender.items[$itemIdx].unit.id")
+                item.unit.name.checkForBlank("tender.items[$itemIdx].unit.name")
+                item.description.checkForBlank("tender.items[$itemIdx].description")
+                item.relatedLot.checkForBlank("tender.items[$itemIdx].relatedLot")
             }
 
         tender.documents
-            .forEach { document ->
-                document.title.checkForBlank("tender.documents.title")
-                document.description.checkForBlank("tender.documents.description")
+            .forEachIndexed { documentIdx, document ->
+                document.title.checkForBlank("tender.documents[$documentIdx].title")
+                document.description.checkForBlank("tender.documents[$documentIdx].description")
                 document.relatedLots
-                    ?.forEachIndexed { index, relatedLot -> relatedLot.checkForBlank("tender.documents.relatedLots[$index]") }
+                    ?.forEachIndexed { index, relatedLot -> relatedLot.checkForBlank("tender.documents[$documentIdx].relatedLots[$index]") }
             }
 
         tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
@@ -391,6 +403,27 @@ class OpenCnOnPnService(
                         error = ErrorType.DUPLICATE,
                         message = "Attribute 'tender.documents[$index].relatedLots' has duplicate '$duplicate'."
                     )
+            }
+
+        val uniqueEligibleEvidenceIds = mutableSetOf<EligibleEvidenceId>()
+        tender.criteria
+            ?.forEachIndexed { criterionIdx, criterion ->
+                criterion.requirementGroups
+                    .forEachIndexed { requirementGroupIdx, requirementGroup ->
+                        requirementGroup.requirements
+                            .forEachIndexed { requirementIdx, requirement ->
+                                requirement.eligibleEvidences
+                                    ?.forEachIndexed { eligibleEvidenceIdx, eligibleEvidence ->
+
+                                        // FReq-1.1.1.37
+                                        if (!uniqueEligibleEvidenceIds.add(eligibleEvidence.id))
+                                            throw ErrorException(
+                                                error = ErrorType.DUPLICATE,
+                                                message = "Attribute 'tender.criteria[$criterionIdx].requirementGroups[$requirementGroupIdx].requirements[$requirementIdx].eligibleEvidences' has duplicate by id '${eligibleEvidence.id}'."
+                                            )
+                                    }
+                            }
+                    }
             }
     }
 
@@ -434,7 +467,7 @@ class OpenCnOnPnService(
      * в массиве Documents из запроса.
      */
     private fun checkDocuments(
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<DocumentRequest>,
         documentsFromPN: List<PNEntity.Tender.Document>?
     ) {
         val uniqueIdsDocumentsFromRequest: Set<String> = documentsFromRequest.toSet { it.id }
@@ -753,7 +786,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithoutItems(
         lotsIdsFromRequest: Set<String>,
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<DocumentRequest>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -937,7 +970,7 @@ class OpenCnOnPnService(
      */
     private fun checkRelatedLotsInDocumentsFromRequestWhenPNWithItems(
         lotsIdsFromPN: Set<String>,
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>
+        documentsFromRequest: List<DocumentRequest>
     ) {
         documentsFromRequest.forEach { document ->
             document.relatedLots?.forEach { relatedLot ->
@@ -990,7 +1023,10 @@ class OpenCnOnPnService(
             )
     }
 
-    private fun isAuctionRequired(electronicAuctions: OpenCnOnPnRequest.Tender.ElectronicAuctions?, pmm: Set<ProcurementMethodModalities>?): Boolean =
+    private fun isAuctionRequired(
+        electronicAuctions: OpenCnOnPnRequest.Tender.ElectronicAuctions?,
+        pmm: Set<ProcurementMethodModalities>?
+    ): Boolean =
         // VR-1.0.1.7.9
         if (electronicAuctions != null) {
             if (pmm == null || !pmm.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION))
@@ -1010,6 +1046,7 @@ class OpenCnOnPnService(
 
     /** Begin Business Rules */
     private fun createTenderBasedPNWithoutItems(
+        datePublished: LocalDateTime,
         request: OpenCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -1033,7 +1070,7 @@ class OpenCnOnPnService(
         val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
         val criteria = request.tender.criteria
             ?.map { criterion ->
-                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                buildCriterion(datePublished, criterion, relatedTemporalWithPermanentRequirementId)
                     .replaceTemporalItemId(
                         relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId,
                         relatedTemporalWithPermanentItemId = relatedTemporalWithPermanentItemId
@@ -1082,6 +1119,7 @@ class OpenCnOnPnService(
     }
 
     private fun createTenderBasedPNWithItems(
+        datePublished: LocalDateTime,
         request: OpenCnOnPnRequest,
         pnEntity: PNEntity
     ): CNEntity.Tender {
@@ -1096,7 +1134,7 @@ class OpenCnOnPnService(
         val relatedTemporalWithPermanentRequirementId = generatePermanentRequirementIds(request.tender.criteria)
         val criteria = request.tender.criteria
             ?.map { criterion ->
-                buildCriterion(criterion, relatedTemporalWithPermanentRequirementId)
+                buildCriterion(datePublished, criterion, relatedTemporalWithPermanentRequirementId)
             }
 
         val conversions = request.tender.conversions
@@ -1218,6 +1256,7 @@ class OpenCnOnPnService(
         /** Begin BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
         val status = TenderStatus.ACTIVE
         val statusDetails: TenderStatusDetails = TenderStatusDetails.CLARIFICATION
+
         /** End BR-3.8.8(CN on PN) Status StatusDetails (tender) -> BR-3.6.2(CN)*/
 
         val awardCriteriaDetails = if (request.tender.awardCriteria == AwardCriteria.PRICE_ONLY)
@@ -1459,12 +1498,12 @@ class OpenCnOnPnService(
     }
 
     private fun updateDocuments(
-        documentsFromRequest: List<OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: List<DocumentRequest>,
         documentsFromDB: List<PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return if (documentsFromDB.isNotEmpty()) {
-            val documentsFromRequestById: Map<String, OpenCnOnPnRequest.Tender.Document> =
+            val documentsFromRequestById: Map<String, DocumentRequest> =
                 documentsFromRequest.associateBy { document -> document.id }
             val existsDocumentsById: Map<String, PNEntity.Tender.Document> =
                 documentsFromDB.associateBy { document -> document.id }
@@ -1475,7 +1514,7 @@ class OpenCnOnPnService(
                 relatedTemporalWithPermanentLotId = relatedTemporalWithPermanentLotId
             )
 
-            val newDocumentsFromRequest: Set<OpenCnOnPnRequest.Tender.Document> = extractNewDocuments(
+            val newDocumentsFromRequest: Set<DocumentRequest> = extractNewDocuments(
                 documentsFromRequest = documentsFromRequest,
                 existsDocumentsById = existsDocumentsById
             )
@@ -1495,7 +1534,7 @@ class OpenCnOnPnService(
     }
 
     private fun updateExistsDocuments(
-        documentsFromRequestById: Map<String, OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequestById: Map<String, DocumentRequest>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): Set<CNEntity.Tender.Document> {
@@ -1525,16 +1564,16 @@ class OpenCnOnPnService(
     }
 
     private fun extractNewDocuments(
-        documentsFromRequest: Collection<OpenCnOnPnRequest.Tender.Document>,
+        documentsFromRequest: Collection<DocumentRequest>,
         existsDocumentsById: Map<String, PNEntity.Tender.Document>
-    ): Set<OpenCnOnPnRequest.Tender.Document> {
+    ): Set<DocumentRequest> {
         return documentsFromRequest.asSequence()
             .filter { document -> !existsDocumentsById.containsKey(document.id) }
             .toSet()
     }
 
     private fun convertNewDocuments(
-        newDocumentsFromRequest: Collection<OpenCnOnPnRequest.Tender.Document>,
+        newDocumentsFromRequest: Collection<DocumentRequest>,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): List<CNEntity.Tender.Document> {
         return newDocumentsFromRequest.map { document ->
@@ -1543,7 +1582,7 @@ class OpenCnOnPnService(
     }
 
     private fun convertNewDocument(
-        newDocumentFromRequest: OpenCnOnPnRequest.Tender.Document,
+        newDocumentFromRequest: DocumentRequest,
         relatedTemporalWithPermanentLotId: Map<String, String>
     ): CNEntity.Tender.Document {
         val relatedLots = getPermanentLotsIds(
@@ -1857,7 +1896,7 @@ class OpenCnOnPnService(
                         )
                     }
                 )
-        }
+            }
     }
 
     /**
@@ -2020,7 +2059,7 @@ class OpenCnOnPnService(
                     procurementMethodRationale = tender.procurementMethodRationale,
                     procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
                     additionalProcurementCategories = tender.additionalProcurementCategories,
-                        mainProcurementCategory = tender.mainProcurementCategory,
+                    mainProcurementCategory = tender.mainProcurementCategory,
                     eligibilityCriteria = tender.eligibilityCriteria,
                     contractPeriod = tender.contractPeriod?.let { contractPeriod ->
                         OpenCnOnPnResponse.Tender.ContractPeriod(
@@ -2162,6 +2201,13 @@ class OpenCnOnPnService(
                             id = criterion.id,
                             title = criterion.title,
                             description = criterion.description,
+                            classification = criterion.classification
+                                .let { classification ->
+                                    CriterionClassificationResponse(
+                                        id = classification.id,
+                                        scheme = classification.scheme
+                                    )
+                                },
                             source = criterion.source,
                             requirementGroups = criterion.requirementGroups.map {
                                 OpenCnOnPnResponse.Tender.Criteria.RequirementGroup(
@@ -2179,7 +2225,10 @@ class OpenCnOnPnService(
                                                 )
                                             },
                                             dataType = requirement.dataType,
-                                            value = requirement.value
+                                            value = requirement.value,
+                                            eligibleEvidences = requirement.eligibleEvidences?.toList(),
+                                            status = requirement.status,
+                                            datePublished = requirement.datePublished
                                         )
                                     }
                                 )
@@ -2340,7 +2389,9 @@ class OpenCnOnPnService(
             data.mainProcurementCategory,
             tender.awardCriteria,
             tender.awardCriteriaDetails,
+            tender.documents,
             data.items,
+            data.criteria,
             tender.criteria,
             tender.conversions,
             rulesService,

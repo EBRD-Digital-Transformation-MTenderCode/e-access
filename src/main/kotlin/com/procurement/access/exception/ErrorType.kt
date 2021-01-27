@@ -109,6 +109,6 @@ enum class ErrorType constructor(val code: String, val message: String) {
     RULES_INCORRECT_FORMAT("10.94", "Incorrect format of rule value."),
     INVALID_RELATED_PROCESS_RELATIONSHIP("10.95", "Invalid related process relationship."),
     DUPLICATE("10.96", "Duplicate."),
-    MISSING_HOMOGENEOUS_ITEMS("10.97", "Homogeneous items not found.")
-    ;
+    MISSING_HOMOGENEOUS_ITEMS("10.97", "Homogeneous items not found."),
+    MISSING_REFERENCE_CRITERIA("10.98", "Missing reference criteria.");
 }

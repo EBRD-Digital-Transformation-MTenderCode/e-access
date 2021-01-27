@@ -21,6 +21,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.lib.errorIfBlank
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.mapOrEmpty
 import com.procurement.access.lib.extension.orThrow
@@ -43,6 +44,7 @@ class CNServiceImpl(
 ) : CNService {
     override fun update(context: UpdateOpenCnContext, data: UpdateOpenCnData): UpdatedOpenCn {
         data.validateTextAttributes()
+        data.validateDuplicates()
 
         data.checkElectronicAuction(context) //VR-1.0.1.7.8
             .checkLotsIds() //VR-1.0.1.4.1
@@ -215,17 +217,24 @@ class CNServiceImpl(
 
         tender.lots
             .forEach { lot ->
-                lot.title.checkForBlank("tender.lots.description")
+                lot.title.checkForBlank("tender.lots.title")
                 lot.description.checkForBlank("tender.lots.description")
                 lot.internalId.checkForBlank("tender.lots.internalId")
+                lot.placeOfPerformance
+                    .apply {
+                        description.checkForBlank("tender.lots.placeOfPerformance.description")
+                        address.apply {
+                            postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
+                            streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
 
-                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
-                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
-                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
-                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
+                            addressDetails.apply {
+                                locality.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
+                                locality.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
+                                locality.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
+                                locality.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
+                            }
+                        }
+                    }
             }
 
         tender.items
@@ -239,6 +248,18 @@ class CNServiceImpl(
             .forEach { document ->
                 document.title.checkForBlank("tender.documents.title")
                 document.description.checkForBlank("tender.documents.description")
+            }
+    }
+
+    private fun UpdateOpenCnData.validateDuplicates() {
+        tender.documents
+            .forEachIndexed { index, document ->
+                val duplicate = document.relatedLots.getDuplicate { it }
+                if (duplicate != null)
+                    throw ErrorException(
+                        error = ErrorType.DUPLICATE,
+                        message = "Attribute 'tender.documents[$index].relatedLots' has duplicate '$duplicate'."
+                    )
             }
     }
 

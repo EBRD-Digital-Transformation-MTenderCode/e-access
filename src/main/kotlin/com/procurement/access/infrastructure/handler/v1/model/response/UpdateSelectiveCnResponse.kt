@@ -10,7 +10,7 @@ import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.ConversionsRelatesTo
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
@@ -249,7 +249,7 @@ data class UpdateSelectiveCnResponse(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesToEnum?,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: CriteriaRelatesTo?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,

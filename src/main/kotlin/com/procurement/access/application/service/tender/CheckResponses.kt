@@ -1,7 +1,7 @@
 package com.procurement.access.application.service.tender
 
 import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.enums.Stage
@@ -64,7 +64,7 @@ fun checkAnswerByLotRequirements(
 
 
     val nonBiddedLotsRequirements  = criteria.asSequence()
-        .filter { it.relatesTo == CriteriaRelatesToEnum.LOT }
+        .filter { it.relatesTo == CriteriaRelatesTo.LOT }
         .filter { it.relatedItem != data.bid.relatedLots[0] }
         .flatMap { it.requirementGroups.asSequence() }
         .flatMap { it.requirements.asSequence() }
@@ -103,7 +103,7 @@ fun checkResponsesCompleteness(criteria: List<CNEntity.Tender.Criteria>, respons
     val biddedLots = responses.bid.relatedLots
 
     val criteriaToTender = criteria.filter { it.relatesTo == null }
-    val criteriaToTenderer = criteria.filter { it.relatesTo == CriteriaRelatesToEnum.TENDERER }
+    val criteriaToTenderer = criteria.filter { it.relatesTo == CriteriaRelatesTo.TENDERER }
     val criteriaToLot = criteria.filter { it.relatedItem in biddedLots }
     val criteriaToItem = criteria.filter { it.relatedItem in receivedItems }
 

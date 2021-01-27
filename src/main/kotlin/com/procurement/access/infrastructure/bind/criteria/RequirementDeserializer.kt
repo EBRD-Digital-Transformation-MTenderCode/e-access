@@ -6,7 +6,11 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.procurement.access.application.model.parseEnum
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.enums.RequirementStatus
+import com.procurement.access.domain.model.requirement.EligibleEvidence
+import com.procurement.access.domain.model.requirement.EligibleEvidenceType
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.MaxValue
 import com.procurement.access.domain.model.requirement.MinValue
@@ -17,17 +21,30 @@ import com.procurement.access.domain.model.requirement.RequirementValue
 import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.handler.v1.model.request.document.RelatedDocumentRequest
 import java.io.IOException
 import java.math.BigDecimal
+import java.time.LocalDateTime
 
 class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
     companion object {
+
+        private val allowedEligibleEvidenceTypes = EligibleEvidenceType.allowedElements.toSet()
         fun deserialize(requirements: ArrayNode): List<Requirement> {
 
             return requirements.map { requirement ->
                 val id: String = requirement.get("id").asText()
                 val title: String = requirement.get("title").asText()
                 val description: String? = requirement.takeIf { it.has("description") }?.get("description")?.asText()
+
+                val status: RequirementStatus? = requirement
+                    .takeIf { it.has("status") }
+                    ?.let { RequirementStatus.creator(it.get("status").asText()) }
+
+                val datePublished: LocalDateTime? = requirement
+                    .takeIf { it.has("datePublished") }
+                    ?.let { dateNode -> dateNode.get("datePublished").asText().toLocalDateTime().orThrow { it.reason } }
+
                 val dataType: RequirementDataType = RequirementDataType.creator(requirement.get("dataType").asText())
                 val period: Requirement.Period? = requirement.takeIf { it.has("period") }
                     ?.let { node ->
@@ -40,15 +57,53 @@ class RequirementDeserializer : JsonDeserializer<List<Requirement>>() {
                         )
                     }
 
+                val eligibleEvidences: List<EligibleEvidence>? = requirement.get("eligibleEvidences")
+                    ?.let { node ->
+                        (node as ArrayNode).map { it.toEligibleEvidence() }
+                    }
+
                 Requirement(
                     id = id,
                     title = title,
                     description = description,
                     period = period,
                     dataType = dataType,
-                    value = requirementValue(requirement)
+                    value = requirementValue(requirement),
+                    eligibleEvidences = eligibleEvidences,
+                    status = status,
+                    datePublished = datePublished
                 )
             }
+        }
+
+        private fun JsonNode.toEligibleEvidence(): EligibleEvidence {
+            val id = get("id").asText()
+            val title = get("title").asText()
+            val description = get("description")?.asText()
+            val type = get("type").asText()
+                .let { value ->
+                    parseEnum(
+                        value = value,
+                        allowedEnums = allowedEligibleEvidenceTypes,
+                        attributeName = "eligibleEvidences",
+                        target = EligibleEvidenceType
+                    ).orThrow { IllegalArgumentException("Error of parsing element of 'EligibleEvidenceType' enum. Invalid value '$value'.") }
+                }
+
+            val relatedDocument = get("relatedDocument")
+                ?.let { node ->
+                    RelatedDocumentRequest(
+                        id = node.get("id").asText()
+                    )
+                }
+
+            return EligibleEvidence(
+                id = id,
+                title = title,
+                description = description,
+                type = type,
+                relatedDocument = relatedDocument
+            )
         }
 
         private fun requirementValue(requirementNode: JsonNode): RequirementValue {

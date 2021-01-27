@@ -8,6 +8,8 @@ fun CNEntity.Tender.Criteria.convert(): FindCriteriaResult.Criterion {
     val requirementGroups = this.requirementGroups
         .map { requirementGroup -> requirementGroup.convert() }
 
+    val classification = this.classification.convert()
+
     return FindCriteriaResult.Criterion(
         id = this.id,
         source = this.source!!,
@@ -15,9 +17,16 @@ fun CNEntity.Tender.Criteria.convert(): FindCriteriaResult.Criterion {
         title = this.title,
         relatesTo = this.relatesTo,
         relatedItem = this.relatedItem,
-        requirementGroups = requirementGroups
+        requirementGroups = requirementGroups,
+        classification = classification
     )
 }
+
+private fun CNEntity.Tender.Criteria.Classification.convert(): FindCriteriaResult.Criterion.Classification =
+    FindCriteriaResult.Criterion.Classification(
+        id = this.id,
+        scheme = this.scheme
+    )
 
 private fun CNEntity.Tender.Criteria.RequirementGroup.convert(): FindCriteriaResult.Criterion.RequirementGroup =
     FindCriteriaResult.Criterion.RequirementGroup(
@@ -30,6 +39,8 @@ fun FEEntity.Tender.Criteria.convert(): FindCriteriaResult.Criterion {
     val requirementGroups = this.requirementGroups
         .map { requirementGroup -> requirementGroup.convert() }
 
+    val classification = this.classification?.convert()
+
     return FindCriteriaResult.Criterion(
         id = this.id,
         source = this.source,
@@ -37,9 +48,16 @@ fun FEEntity.Tender.Criteria.convert(): FindCriteriaResult.Criterion {
         title = this.title,
         relatesTo = this.relatesTo,
         relatedItem = null,
-        requirementGroups = requirementGroups
+        requirementGroups = requirementGroups,
+        classification = classification
     )
 }
+
+private fun FEEntity.Tender.Criteria.Classification.convert(): FindCriteriaResult.Criterion.Classification =
+    FindCriteriaResult.Criterion.Classification(
+        id = this.id,
+        scheme = this.scheme
+    )
 
 private fun FEEntity.Tender.Criteria.RequirementGroup.convert(): FindCriteriaResult.Criterion.RequirementGroup =
     FindCriteriaResult.Criterion.RequirementGroup(

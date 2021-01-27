@@ -12,12 +12,17 @@ import com.procurement.access.application.model.context.CheckSelectiveCnOnPnCont
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
+import com.procurement.access.application.model.context.GetCriteriaForTendererContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
+import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
+import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
+import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.ap.create.ApCreateData
 import com.procurement.access.application.service.ap.create.CreateApContext
 import com.procurement.access.application.service.ap.get.GetAPTitleAndDescriptionContext
@@ -47,17 +52,23 @@ import com.procurement.access.application.service.tender.strategy.get.awardCrite
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationContext
 import com.procurement.access.application.service.tender.strategy.prepare.cancellation.PrepareCancellationData
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
+import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.api.ApiVersion
+import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
+import com.procurement.access.infrastructure.api.v1.businessError
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.country
 import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.internalServerError
 import com.procurement.access.infrastructure.api.v1.isAuction
 import com.procurement.access.infrastructure.api.v1.lotId
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.operationType
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.phase
@@ -94,6 +105,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.CheckSele
 import com.procurement.access.infrastructure.handler.v1.model.response.CreateFEResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.GetAwardCriteriaResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotResponse
+import com.procurement.access.infrastructure.handler.v1.model.response.GetMainProcurementCategoryResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.LotsForAuctionResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
@@ -104,6 +116,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.SetLotsSt
 import com.procurement.access.infrastructure.handler.v1.model.response.SetTenderUnsuccessfulResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.UpdateOpenCnResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.UpdateSelectiveCnResponse
+import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
 import com.procurement.access.service.validation.JsonValidationService
 import com.procurement.access.service.validation.ValidationService
 import com.procurement.access.utils.toJson
@@ -140,7 +153,8 @@ class CommandServiceV1(
     private val extendTenderService: ExtendTenderService,
     private val ocdsProperties: OCDSProperties,
     private val medeiaValidationService: JsonValidationService,
-    private val criteriaService: CriteriaService
+    private val criteriaService: CriteriaService,
+    private val logger: Logger
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(CommandServiceV1::class.java)
@@ -156,7 +170,7 @@ class CommandServiceV1(
             MainMode(prefix = prefix, pattern = prefix.toRegex())
         }
 
-    fun execute(cm: CommandMessage): ApiResponseV1.Success {
+    fun execute(cm: CommandMessage): ApiResponseV1 {
         val history = historyRepository.getHistory(cm.commandId, cm.command)
             .orThrow { it.exception }
         if (history != null) {
@@ -468,7 +482,12 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = EvPanelsContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner)
+                        val context = EvPanelsContext(
+                            cpid = cm.cpid,
+                            stage = cm.stage,
+                            owner = cm.owner,
+                            startDate = cm.startDate
+                        )
                         val response = criteriaService.createRequestsForEvPanels(context = context)
                             .also { result ->
                                 if (log.isDebugEnabled)
@@ -580,6 +599,22 @@ class CommandServiceV1(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
+            }
+            CommandTypeV1.GET_CRITERIA_FOR_TENDERER -> {
+                val context = GetCriteriaForTendererContext(
+                    cpid = cm.cpid,
+                    stage = cm.stage
+                )
+                val result = criteriaService.getCriteriaForTenderer(context = context)
+
+                if (log.isDebugEnabled)
+                    log.debug("Criteria for tenderer. Result: ${toJson(result)}")
+
+                val response = result.convert()
+                if (log.isDebugEnabled)
+                    log.debug("Criteria for tenderer. Response: ${toJson(response)}")
+
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
@@ -779,7 +814,7 @@ class CommandServiceV1(
                             pmd = cm.pmd,
                             startDate = cm.startDate
                         )
-                        val request: OpenCnOnPnRequest = medeiaValidationService.validateCriteria(cm.data, OpenCnOnPnRequest::class.java)
+                        val request: OpenCnOnPnRequest = toObject(OpenCnOnPnRequest::class.java, cm.data)
                         val result: CheckedOpenCnOnPn = cnOnPnService.check(context = context, data = request)
                         if (log.isDebugEnabled)
                             log.debug("Check CN on PN. Result: ${toJson(result)}")
@@ -977,6 +1012,26 @@ class CommandServiceV1(
                     log.debug("Lots for auction. Response: ${toJson(dataResponse)}")
                 ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
+            CommandTypeV1.GET_MAIN_PROCUREMENT_CATEGORY -> {
+                val cpid = parseCpid(cm.cpid)
+                    .onFailure { return responseError(version = cm.version, id = cm.commandId, fail = it.reason) }
+                val ocid = parseOcid(cm.ocid)
+                    .onFailure { return responseError(version = cm.version, id = cm.commandId, fail = it.reason) }
+                val params = GetMainProcurementCategoryParams(cpid = cpid, ocid = ocid)
+                val result: GetMainProcurementCategoryResult = tenderService.getMainProcurementCategory(params = params)
+                    .onFailure { return responseError(version = cm.version, id = cm.commandId, fail = it.reason) }
+
+                if (log.isDebugEnabled)
+                    log.debug("Main procurement category. Result: ${toJson(result)}")
+
+                val response = GetMainProcurementCategoryResponse(
+                    mainProcurementCategory = result.tender.mainProcurementCategory.key
+                )
+                if (log.isDebugEnabled)
+                    log.debug("Main procurement category. Response: ${toJson(response)}")
+
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
+            }
             CommandTypeV1.GET_AWARD_CRITERIA_AND_CONVERSIONS -> {
                 val response = when (cm.pmd) {
                     ProcurementMethod.MC, ProcurementMethod.TEST_MC,
@@ -1018,4 +1073,21 @@ class CommandServiceV1(
     }
 
     fun getMode(isTestMode: Boolean): Mode = if (isTestMode) testMode else mainMode
+
+    fun responseError(version: ApiVersion, id: CommandId, fail: Fail): ApiResponseV1.Failure {
+        fail.logging(logger)
+        return when (fail) {
+            is Fail.Error -> ApiResponseV1.Failure.businessError(
+                id = id,
+                version = version,
+                code = fail.code,
+                description = fail.description
+            )
+            is Fail.Incident -> ApiResponseV1.Failure.internalServerError(
+                id = id,
+                version = version,
+                description = fail.description
+            )
+        }
+    }
 }

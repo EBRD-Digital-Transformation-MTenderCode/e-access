@@ -3,7 +3,7 @@ package com.procurement.access.application.service.command
 import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.fe.check.CheckFEDataData
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.enums.CriteriaRelatesToEnum
+import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.ExpectedValue
@@ -306,17 +306,17 @@ class CheckFEDataRules {
             }
         }
 
-        fun checkCriteriaRelation(relations: List<CriteriaRelatesToEnum>): Unit =
+        fun checkCriteriaRelation(relations: List<CriteriaRelatesTo>): Unit =
             relations.forEach { relation ->
                 when (relation) {
-                    CriteriaRelatesToEnum.TENDERER -> Unit
-                    CriteriaRelatesToEnum.AWARD,
-                    CriteriaRelatesToEnum.ITEM,
-                    CriteriaRelatesToEnum.LOT,
-                    CriteriaRelatesToEnum.QUALIFICATION ->
+                    CriteriaRelatesTo.TENDERER -> Unit
+                    CriteriaRelatesTo.AWARD,
+                    CriteriaRelatesTo.ITEM,
+                    CriteriaRelatesTo.LOT,
+                    CriteriaRelatesTo.QUALIFICATION ->
                         throw ErrorException(
                             ErrorType.INVALID_CRITERIA,
-                            message = "Criteria can relates only to '${CriteriaRelatesToEnum.TENDERER}'."
+                            message = "Criteria can relates only to '${CriteriaRelatesTo.TENDERER}'."
                         )
                 }
             }
@@ -346,6 +346,7 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
@@ -378,6 +379,7 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
@@ -412,13 +414,13 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                OperationType.CREATE_AWARD -> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
@@ -446,6 +448,7 @@ class CheckFEDataRules {
                 OperationType.RELATION_AP,
                 OperationType.START_SECONDSTAGE,
                 OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
                 OperationType.TENDER_PERIOD_END,
                 OperationType.UPDATE_AP,
                 OperationType.UPDATE_AWARD,

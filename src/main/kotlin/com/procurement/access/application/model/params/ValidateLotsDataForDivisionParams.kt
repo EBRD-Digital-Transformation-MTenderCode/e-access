@@ -3,10 +3,9 @@ package com.procurement.access.application.model.params
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.amount.Amount
-import com.procurement.access.domain.model.lot.LotId
 import java.time.LocalDateTime
 
-data class ValidateLotsDataParams(
+data class ValidateLotsDataForDivisionParams(
     val cpid: Cpid,
     val ocid: Ocid,
     val tender: Tender
@@ -16,7 +15,7 @@ data class ValidateLotsDataParams(
         val items: List<Item>
     ) {
         data class Lot(
-            val id: LotId,
+            val id: String,
             val internalId: String?,
             val title: String?,
             val description: String?,
@@ -72,7 +71,7 @@ data class ValidateLotsDataParams(
 
         data class Item(
             val id: String,
-            val relatedLot: LotId
+            val relatedLot: String
         )
     }
 }

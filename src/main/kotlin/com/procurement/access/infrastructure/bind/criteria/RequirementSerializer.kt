@@ -33,6 +33,8 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                 requirementNode.put("dataType", requirement.dataType.toString())
 
                 requirement.description?.let { requirementNode.put("description", it) }
+                requirement.status?.let { requirementNode.put("status", it.key) }
+                requirement.datePublished?.let { requirementNode.put("datePublished", it.asString()) }
 
                 requirement.period?.let {
                     requirementNode.putObject("period")
@@ -75,6 +77,31 @@ class RequirementSerializer : JsonSerializer<List<Requirement>>() {
                     }
                     is NoneValue -> Unit
                 }
+
+                requirement.eligibleEvidences
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { eligibleEvidences ->
+                        val array = requirementNode.putArray("eligibleEvidences")
+                        eligibleEvidences.forEach { eligibleEvidence ->
+                            array.addObject()
+                                .apply {
+                                    put("id", eligibleEvidence.id)
+                                    put("title", eligibleEvidence.title)
+
+                                    if (eligibleEvidence.description != null)
+                                        put("description", eligibleEvidence.description)
+
+                                    put("type", eligibleEvidence.type.key)
+
+                                    if (eligibleEvidence.relatedDocument != null) {
+                                        putObject("relatedDocument")
+                                            .apply {
+                                                put("id", eligibleEvidence.relatedDocument.id)
+                                            }
+                                    }
+                                }
+                        }
+                    }
 
                 requirementNode
             }.also { it.forEach { requirement -> serializedRequirements.add(requirement) } }

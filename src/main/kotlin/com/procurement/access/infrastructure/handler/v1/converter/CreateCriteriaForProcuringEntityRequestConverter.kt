@@ -12,6 +12,7 @@ fun CreateCriteriaForProcuringEntityRequest.convert(): Result<Params, DataErrors
     return Params.tryCreate(
         cpid     = this.cpid,
         ocid     = this.ocid,
+        date     = this.date,
         criteria = convertedCriteria,
         operationType = this.operationType
     )
@@ -25,9 +26,16 @@ fun CreateCriteriaForProcuringEntityRequest.Criterion.convert(): Params.Criterio
         id                = this.id,
         title             = this.title,
         description       = this.description,
+        classification    = this.classification.convert(),
         requirementGroups = requirementGroups
     )
 }
+
+fun CreateCriteriaForProcuringEntityRequest.Criterion.Classification.convert(): Params.Criterion.Classification =
+    Params.Criterion.Classification(
+        id     = this.id,
+        scheme = this.scheme
+    )
 
 fun CreateCriteriaForProcuringEntityRequest.Criterion.RequirementGroup.convert(): Params.RequirementGroup {
     val convertedRequirements = this.requirements
