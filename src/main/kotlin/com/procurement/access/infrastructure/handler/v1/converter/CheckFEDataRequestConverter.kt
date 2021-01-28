@@ -12,7 +12,18 @@ import com.procurement.access.lib.extension.mapIfNotEmpty
 import com.procurement.access.lib.extension.orThrow
 
 fun CheckFEDataRequest.convert() = CheckFEDataData(
-    tender = this.tender.convert()
+    tender = this.tender.convert(),
+    criteria = this.criteria.map { criteria ->
+        CheckFEDataData.Criterion(
+            id = criteria.id,
+            classification = criteria.classification.let { classification ->
+                CheckFEDataData.Criterion.Classification(
+                    id = classification.id,
+                    scheme = classification.scheme
+                )
+            }
+        )
+    }
 )
 
 fun CheckFEDataRequest.Tender.convert() = CheckFEDataData.Tender(
@@ -67,7 +78,13 @@ fun CheckFEDataRequest.Tender.Criteria.convert() = CheckFEDataData.Tender.Criter
                 error = ErrorType.IS_EMPTY,
                 message = "The tender.criteria contain empty list of the requirement groups."
             )
-        }
+        },
+    classification = this.classification.let { classification ->
+        CheckFEDataData.Tender.Criteria.Classification(
+            id = classification.id,
+            scheme = classification.scheme
+        )
+    }
 )
 
 fun CheckFEDataRequest.Tender.Criteria.RequirementGroup.convert() = CheckFEDataData.Tender.Criteria.RequirementGroup(

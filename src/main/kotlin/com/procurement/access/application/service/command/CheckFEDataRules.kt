@@ -6,6 +6,8 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RequirementDataType
+import com.procurement.access.domain.model.requirement.EligibleEvidence
+import com.procurement.access.domain.model.requirement.EligibleEvidenceType
 import com.procurement.access.domain.model.requirement.ExpectedValue
 import com.procurement.access.domain.model.requirement.MaxValue
 import com.procurement.access.domain.model.requirement.MinValue
@@ -17,6 +19,8 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.lib.extension.isUnique
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toObject
 import java.math.BigDecimal
@@ -52,11 +56,7 @@ class CheckFEDataRules {
         }
 
         fun <T> validateUniquenessBy(elements: Collection<T>, collectionName: String, selector: (T) -> String) {
-            val selectedElements = elements.map { element ->
-                selector(element)
-            }
-            val uniqSelectedElements = selectedElements.toSet()
-            if (selectedElements.size != uniqSelectedElements.size)
+            if (!elements.isUnique(selector))
                 throw ErrorException(
                     error = ErrorType.NOT_UNIQUE_IDS,
                     message = "$collectionName contains duplicated ids."
@@ -320,6 +320,118 @@ class CheckFEDataRules {
                         )
                 }
             }
+
+        fun checkCriteriaCategory(criteria: List<CheckFEDataData.Tender.Criteria>): Unit =
+            criteria.forEach { criteria ->
+                if(!isOfExclusionCategory(criteria.classification.id) &&
+                    !isOfSelectionCategory(criteria.classification.id))
+                        throw ErrorException(
+                            ErrorType.INVALID_CRITERIA,
+                            message = "Invalid criteria category."
+                        )
+
+            }
+
+        private fun isOfSelectionCategory(criteriaClassificationId: String) =
+            criteriaClassificationId.startsWith("CRITERION.SELECTION.")
+
+        private fun isOfExclusionCategory(criteriaClassificationId: String) =
+            criteriaClassificationId.startsWith("CRITERION.EXCLUSION.")
+
+        fun checkClassification(
+            tenderCriteria: List<CheckFEDataData.Tender.Criteria>,
+            criteria: List<CheckFEDataData.Criterion>
+        ) {
+            if (tenderCriteria.isEmpty()) return
+
+            checkExclusionClassification(tenderCriteria, criteria)
+            checkSelectionClassification(tenderCriteria, criteria)
+        }
+
+        fun checkEligibleEvidences(tenderCriteria: List<CheckFEDataData.Tender.Criteria>, documents: List<CheckFEDataData.Tender.Document>) {
+            val eligibleEvidences = tenderCriteria
+                .asSequence()
+                .flatMap { it.requirementGroups.asSequence() }
+                .flatMap { it.requirements.asSequence() }
+                .flatMap { it.eligibleEvidences?.asSequence() ?: emptySequence() }
+                .toList()
+
+            validateUniquenessBy(eligibleEvidences, "tender.criteria[].requirements[].eligibleEvidences[]") { it.id }
+            checkEligibleEvidenceDocuments(eligibleEvidences, documents)
+        }
+
+        private fun checkEligibleEvidenceDocuments(
+            eligibleEvidences: List<EligibleEvidence>,
+            documents: List<CheckFEDataData.Tender.Document>
+        ) {
+            val eligibleEvidenceDocuments = eligibleEvidences
+                .asSequence()
+                .filter { it.type == EligibleEvidenceType.DOCUMENT }
+                .mapNotNull { it.relatedDocument?.id }
+                .toSet()
+
+            val tenderDocuments = documents.toSet { it.id }
+
+            if (!tenderDocuments.containsAll(eligibleEvidenceDocuments)) {
+                throw ErrorException(
+                    ErrorType.INVALID_ELIGIBLE_EVIDENCES,
+                    message = "Tender documents do not contain all related documents of eligible evidences."
+                )
+            }
+        }
+
+        private fun checkExclusionClassification(
+            tenderCriteria: List<CheckFEDataData.Tender.Criteria>,
+            criteria: List<CheckFEDataData.Criterion>
+        ) {
+            val exclusionTenderCriteria = tenderCriteria.filter { criteria -> isOfExclusionCategory(criteria.classification.id) }
+                .associateBy { it.classification.id }
+            val exclusionCriteria = criteria.filter { criteria -> isOfExclusionCategory(criteria.classification.id) }
+                .associateBy { it.classification.id }
+
+
+            if (exclusionTenderCriteria.keys != exclusionCriteria.keys)
+                throw ErrorException(
+                    ErrorType.INVALID_CRITERIA,
+                    message = "Exclusion criteria and tender.criteria does not match."
+                )
+
+            checkClassificationScheme(exclusionTenderCriteria, exclusionCriteria)
+        }
+
+        private fun checkSelectionClassification(
+            tenderCriteria: List<CheckFEDataData.Tender.Criteria>,
+            criteria: List<CheckFEDataData.Criterion>
+        ) {
+            val selectionTenderCriteria = tenderCriteria.filter { criteria -> isOfSelectionCategory(criteria.classification.id) }
+                .associateBy { it.classification.id }
+            val selectionCriteria = criteria.filter { criteria -> isOfSelectionCategory(criteria.classification.id) }
+                .associateBy { it.classification.id }
+
+
+            if (selectionTenderCriteria.keys != selectionCriteria.keys)
+                throw ErrorException(
+                    ErrorType.INVALID_CRITERIA,
+                    message = "Selection criteria and tender.criteria does not match."
+                )
+
+            checkClassificationScheme(selectionTenderCriteria, selectionCriteria)
+        }
+
+        private fun checkClassificationScheme(
+            tenderCriteria: Map<String, CheckFEDataData.Tender.Criteria>,
+            criteria: Map<String, CheckFEDataData.Criterion>
+        ) {
+            tenderCriteria.forEach { (classificationId, tenderCriteria) ->
+                val criteriaClassificationScheme = criteria.getValue(classificationId).classification.scheme
+                val tenderCriteriaClassificationScheme = tenderCriteria.classification.scheme
+                if (criteriaClassificationScheme != tenderCriteriaClassificationScheme)
+                    throw ErrorException(
+                        ErrorType.INVALID_CRITERIA,
+                        message = "Scheme does not match for tender.criteria and criteria by classification id '$classificationId'"
+                    )
+            }
+        }
 
         fun CheckFEDataData.Tender.SecondStage?.isNeedValidate(operationType: OperationType) =
             when(operationType) {

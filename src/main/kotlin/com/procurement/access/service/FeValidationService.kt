@@ -101,7 +101,17 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
                 // FReq-1.1.1.25
                 CheckFEDataRules.checkCriteriaValueScale(criteria)
+
+                // FReq-1.1.1.32
+                CheckFEDataRules.checkCriteriaCategory(criteria)
+
+                //FReq-1.1.1.33, FReq-1.1.1.34
+                CheckFEDataRules.checkClassification(criteria, data.criteria)
+
+                //FReq-1.1.1.37, FReq-1.1.1.38
+                CheckFEDataRules.checkEligibleEvidences(criteria, data.tender.documents)
             }
+
 
         // FR.COM-1.27.7
         // VR-1.0.1.12.1
