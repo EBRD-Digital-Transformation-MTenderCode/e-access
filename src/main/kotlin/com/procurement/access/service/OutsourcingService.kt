@@ -218,7 +218,8 @@ class OutsourcingServiceImpl(
                 .onFailure { fail -> return fail })
 
         when (params.operationType) {
-            OperationType.RELATION_AP -> { // FR.COM-1.22.6
+            OperationType.RELATION_AP,
+            OperationType.CREATE_PCR -> { // FR.COM-1.22.6
                 val entity = getTenderEntity(tenderProcessRepository, params)
                     .onFailure { fail -> return fail }
 
@@ -239,7 +240,6 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_CN_ON_PN,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
-            OperationType.CREATE_PCR,
             OperationType.CREATE_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
