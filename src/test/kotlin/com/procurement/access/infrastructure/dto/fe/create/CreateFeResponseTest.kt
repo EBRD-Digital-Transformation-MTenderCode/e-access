@@ -20,4 +20,9 @@ class CreateFeResponseTest : AbstractDTOTestBase<CreateFEResponse>(CreateFERespo
     fun required2() {
         testBindingAndMapping("json/dto/fe/create/response/response_create_fe_required_2.json")
     }
+
+    @Test
+    fun required3() {
+        testBindingAndMapping("json/dto/fe/create/response/response_create_fe_required_3.json")
+    }
 }
