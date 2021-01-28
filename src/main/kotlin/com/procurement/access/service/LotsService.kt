@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
@@ -789,28 +790,40 @@ class LotsService(
         updatedItems: List<TenderLotsFullInfo.Tender.Item>,
         tenderProcessEntity: TenderProcessEntity
     ): ValidationResult<Fail> {
-        val lotsTransformed = transform.tryToJsonNode(updatedLots).onFailure { return it.reason.asValidationFailure() }
-        val itemsTransformed = transform.tryToJsonNode(updatedItems)
-            .onFailure { return it.reason.asValidationFailure() }
-
         val jsonDataNode = transform
             .tryParse(tenderProcessEntity.jsonData)
             .onFailure { return it.reason.asValidationFailure() }
 
-        val updatedJsonData = jsonDataNode.get("tender")
+        setUpdatedLotsAndItems(jsonDataNode, updatedLots, updatedItems)
+            .doOnError { return it.asValidationFailure() }
+
+        val jsonData = jsonDataNode
+            .let { transform.tryToJson(it) }
+            .onFailure { return it.reason.asValidationFailure() }
+
+        val updatedEntity = tenderProcessEntity.copy(jsonData = jsonData)
+
+        tenderProcessRepository.save(updatedEntity)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        return ValidationResult.ok()
+    }
+
+    private fun setUpdatedLotsAndItems(
+        jsonDataNode: JsonNode,
+        lots: List<TenderLotsFullInfo.Tender.Lot>,
+        items: List<TenderLotsFullInfo.Tender.Item>
+    ): ValidationResult<Fail>  {
+        val lotsTransformed = transform.tryToJsonNode(lots).onFailure { return it.reason.asValidationFailure() }
+        val itemsTransformed = transform.tryToJsonNode(items)
+            .onFailure { return it.reason.asValidationFailure() }
+
+        jsonDataNode.get("tender")
             .apply {
                 this as ObjectNode
                 replace("lots", lotsTransformed)
                 replace("items", itemsTransformed)
             }
-            .let { transform.tryToJson(it) }
-            .onFailure { return it.reason.asValidationFailure() }
-
-        val updatedEntity = tenderProcessEntity.copy(jsonData = updatedJsonData)
-
-        tenderProcessRepository.save(updatedEntity)
-            .onFailure { return it.reason.asValidationFailure() }
-
         return ValidationResult.ok()
     }
 
