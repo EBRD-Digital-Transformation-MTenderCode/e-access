@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
@@ -147,7 +146,7 @@ data class CheckFEDataRequest(
     }
 
     data class Criterion(
-        @field:JsonProperty("id") @param:JsonProperty("id") val id: CriteriaId,
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
         @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification
         ) {
         data class Classification(

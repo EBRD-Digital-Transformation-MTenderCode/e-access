@@ -1,6 +1,5 @@
 package com.procurement.access.application.service.fe.check
 
-import com.procurement.access.application.model.criteria.CriteriaId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
@@ -105,7 +104,7 @@ data class CheckFEDataData(
     }
 
     data class Criterion(
-         val id: CriteriaId,
+         val id: String,
          val classification: Classification
     ) {
         data class Classification(
