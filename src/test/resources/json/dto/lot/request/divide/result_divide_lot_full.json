@@ -51,13 +51,13 @@
         "internalId": "string",
         "classification": {
           "id": "string",
-          "scheme": "string",
+          "scheme": "CPV",
           "description": "string"
         },
         "additionalClassifications": [
           {
             "id": "string",
-            "scheme": "string",
+            "scheme": "CPV",
             "description": "string"
           }
         ],
