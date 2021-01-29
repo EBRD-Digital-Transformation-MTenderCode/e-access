@@ -313,7 +313,8 @@ class CheckFEDataRules {
                     CriteriaRelatesTo.AWARD,
                     CriteriaRelatesTo.ITEM,
                     CriteriaRelatesTo.LOT,
-                    CriteriaRelatesTo.QUALIFICATION ->
+                    CriteriaRelatesTo.QUALIFICATION,
+                    CriteriaRelatesTo.TENDER ->
                         throw ErrorException(
                             ErrorType.INVALID_CRITERIA,
                             message = "Criteria can relates only to '${CriteriaRelatesTo.TENDERER}'."
