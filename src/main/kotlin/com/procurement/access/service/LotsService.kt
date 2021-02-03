@@ -1,6 +1,9 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.context.GetItemsByLotsContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
+import com.procurement.access.application.model.data.GetItemsByLotsData
+import com.procurement.access.application.model.data.GetItemsByLotsResult
 import com.procurement.access.application.model.data.GetLotsAuctionResponseData
 import com.procurement.access.application.model.params.CheckLotsStateParams
 import com.procurement.access.application.model.params.DivideLotParams
@@ -877,4 +880,58 @@ class LotsService(
                 )
             }
         )
+
+    fun getItemsByLots(context: GetItemsByLotsContext, data: GetItemsByLotsData): GetItemsByLotsResult {
+        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+            ?: throw ErrorException(DATA_NOT_FOUND, "Tender by '${context.cpid}' and stage ${context.stage} not found")
+
+        val cn = toObject(CNEntity::class.java, tenderProcessEntity.jsonData)
+        val receivedLotIds = data.lots.toSet { it.id }
+        val itemsByLots = cn.tender.items.groupBy { it.relatedLot }
+
+        val lotsWithoutRelatedItems = receivedLotIds - itemsByLots.keys
+
+        if (lotsWithoutRelatedItems.isNotEmpty())
+            throw ErrorException(
+                ErrorType.RELATED_ITEMS_NOT_FOUND,
+                "No items are linked via relatedLot to lot(s) '${lotsWithoutRelatedItems.joinToString()}' "
+            )
+
+        val itemsRelatedToReceivedLots = receivedLotIds
+            .flatMap { lotId ->
+                itemsByLots.getValue(lotId)
+                    .map { item -> item.toGetItemsByLotsResultItem() }
+            }.let { GetItemsByLotsResult(it) }
+
+        return itemsRelatedToReceivedLots
+    }
+
+    private fun CNEntity.Tender.Item.toGetItemsByLotsResultItem() = GetItemsByLotsResult.Item(
+        id = id,
+        description = description,
+        internalId = internalId,
+        classification = classification.let { classification ->
+            GetItemsByLotsResult.Item.Classification(
+                id = classification.id,
+                description = classification.description,
+                scheme = classification.scheme
+            )
+        },
+        additionalClassifications = additionalClassifications
+            ?.map { additionalClassification ->
+                GetItemsByLotsResult.Item.AdditionalClassification(
+                    id = additionalClassification.id,
+                    scheme = additionalClassification.scheme,
+                    description = additionalClassification.description
+                )
+            },
+        quantity = quantity,
+        relatedLot = relatedLot,
+        unit = unit.let { unit ->
+            GetItemsByLotsResult.Item.Unit(
+                id = unit.id,
+                name = unit.name
+            )
+        }
+    )
 }
