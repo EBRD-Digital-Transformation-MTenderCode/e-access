@@ -13,14 +13,14 @@ fun GetItemsByLotsResult.convert() = GetItemsByLotsResponse(
                 GetItemsByLotsResponse.Item.Classification(
                     id = classification.id,
                     description = classification.description,
-                    scheme = classification.scheme
+                    scheme = classification.scheme.toString()
                 )
             },
             additionalClassifications = item.additionalClassifications
                 ?.map { additionalClassification ->
                     GetItemsByLotsResponse.Item.AdditionalClassification(
                         id = additionalClassification.id,
-                        scheme = additionalClassification.scheme,
+                        scheme = additionalClassification.scheme.toString(),
                         description = additionalClassification.description
                     )
                 },
