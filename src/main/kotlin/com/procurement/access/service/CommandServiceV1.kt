@@ -13,6 +13,7 @@ import com.procurement.access.application.model.context.CreateSelectiveCnOnPnCon
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
 import com.procurement.access.application.model.context.GetCriteriaForTendererContext
+import com.procurement.access.application.model.context.GetItemsByLotsContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.model.parseCpid
@@ -88,6 +89,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.ApUpdateRe
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckFEDataRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckResponsesRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.CreateFERequest
+import com.procurement.access.infrastructure.handler.v1.model.request.GetItemsByLotsRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.LotsForAuctionRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
@@ -209,7 +211,8 @@ class CommandServiceV1(
                     mode = getMode(cm.testMode)
                 )
                 val request: ApCreateRequest = toObject(
-                    ApCreateRequest::class.java, cm.data)
+                    ApCreateRequest::class.java, cm.data
+                )
                 val data: ApCreateData = request.convert()
                 val result = apCreateService.createAp(context, data)
                 if (log.isDebugEnabled)
@@ -897,7 +900,12 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = CheckResponsesContext(cpid = cm.cpid, stage = cm.stage, owner = cm.owner, pmd = cm.pmd)
+                        val context = CheckResponsesContext(
+                            cpid = cm.cpid,
+                            stage = cm.stage,
+                            owner = cm.owner,
+                            pmd = cm.pmd
+                        )
                         val request: CheckResponsesRequest = toObject(CheckResponsesRequest::class.java, cm.data)
 
                         criteriaService.checkResponses(context = context, data = request.convert())
@@ -1064,6 +1072,17 @@ class CommandServiceV1(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
+                ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
+            }
+            CommandTypeV1.GET_ITEMS_BY_LOTS -> {
+                val context = GetItemsByLotsContext(cpid = cm.cpid, stage = cm.stage)
+                val request = toObject(GetItemsByLotsRequest::class.java, cm.data)
+                val data = request.convert()
+
+                val response = lotsService.getItemsByLots(context, data)
+                    .also { result -> log.debug("Getting items by lots. Result: ${toJson(result)}") }
+                    .convert()
+
                 ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
         }
