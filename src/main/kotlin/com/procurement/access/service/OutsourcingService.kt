@@ -14,6 +14,7 @@ import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
 import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RelatedProcessesInfo
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
@@ -218,8 +219,7 @@ class OutsourcingServiceImpl(
                 .onFailure { fail -> return fail })
 
         when (params.operationType) {
-            OperationType.RELATION_AP,
-            OperationType.CREATE_PCR -> { // FR.COM-1.22.6
+            OperationType.RELATION_AP -> {
                 val entity = getTenderEntity(tenderProcessRepository, params)
                     .onFailure { fail -> return fail }
 
@@ -228,6 +228,18 @@ class OutsourcingServiceImpl(
                     .map { ap -> ap.copy(relatedProcesses = ap.relatedProcesses.orEmpty() + relatedProcesses) }
                     .flatMap { updatedAp -> trySerialization(updatedAp) }
                     .map { updatedApJson -> entity.copy(jsonData = updatedApJson) }
+                    .flatMap { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
+                    .onFailure { fail -> return fail }
+            }
+            OperationType.CREATE_PCR -> { // FR.COM-1.22.6
+                val entity = getTenderEntity(tenderProcessRepository, params)
+                    .onFailure { fail -> return fail }
+
+                entity.jsonData
+                    .tryToObject(FEEntity::class.java)
+                    .map { fe -> fe.copy(relatedProcesses = fe.relatedProcesses.orEmpty() + relatedProcesses) }
+                    .flatMap { updatedFE -> trySerialization(updatedFE) }
+                    .map { updatedFEJson -> entity.copy(jsonData = updatedFEJson) }
                     .flatMap { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
                     .onFailure { fail -> return fail }
             }

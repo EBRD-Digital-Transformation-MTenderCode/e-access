@@ -204,7 +204,8 @@ class FeCreateServiceImpl(
                 procedureOutsourcing = ap.tender.procedureOutsourcing.convert(),
                 mainProcurementCategory = ap.tender.mainProcurementCategory,
                 framework = FEEntity.Tender.Framework(isAFramework = true)
-            )
+            ),
+            relatedProcesses = emptyList()
         )
 
     private fun CreateFEData.Tender.SecondStage.convert(): FEEntity.Tender.SecondStage =
