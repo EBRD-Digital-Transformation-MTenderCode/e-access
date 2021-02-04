@@ -16,6 +16,7 @@ import com.procurement.access.domain.model.requirement.NoneValue
 import com.procurement.access.domain.model.requirement.RangeValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.model.requirement.RequirementValue
+import com.procurement.access.domain.model.requirement.hasInvalidScale
 import com.procurement.access.domain.rule.MinSpecificWeightPriceRule
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -61,6 +62,9 @@ fun checkCriteriaAndConversion(
 
     // FReq-1.1.1.24
     checkCoefficientValueUniqueness(conversions)
+
+    //FReq-1.1.1.25
+    checkCriteriaValueScale(criteria)
 
     // FReq-1.1.1.27
     checkCriteriaWithAwardCriteria(awardCriteria, criteria, conversions)
@@ -486,6 +490,22 @@ fun checkCoefficientValueUniqueness(conversions: List<ConversionRequest>?) {
     conversions?.forEach { conversion ->
         conversion.coefficients.validateCoefficientValues()
     }
+}
+
+fun checkCriteriaValueScale(criteria: List<CriterionRequest>?) {
+    if (criteria == null) return
+    val allowedScale = 3
+
+    criteria.asSequence()
+        .flatMap { it.requirementGroups.asSequence() }
+        .flatMap { it.requirements.asSequence() }
+        .forEach { requirement ->
+            if (requirement.hasInvalidScale(allowedScale))
+                throw ErrorException(
+                    error = ErrorType.INVALID_CRITERIA,
+                    message = "Invalid scale ($allowedScale) for 'number' datatype"
+                )
+        }
 }
 
 fun checkCriteriaWithAwardCriteria(
