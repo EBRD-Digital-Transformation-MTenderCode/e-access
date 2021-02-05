@@ -15,6 +15,7 @@ import com.procurement.access.domain.model.requirement.NoneValue
 import com.procurement.access.domain.model.requirement.RangeValue
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.domain.model.requirement.RequirementValue
+import com.procurement.access.domain.model.requirement.hasInvalidScale
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
@@ -578,45 +579,18 @@ class CheckFEDataRules {
         }
 
         fun checkCriteriaValueScale(criteria: List<CheckFEDataData.Tender.Criteria>) {
-            fun invalidScale(allowedScale: Int): Nothing {
-                throw ErrorException(
-                    error = ErrorType.INVALID_CRITERIA,
-                    message = "Invalid scale ($allowedScale) for 'number' datatype"
-                )
-            }
             val allowedScale = 3
 
             criteria.asSequence()
                 .flatMap { it.requirementGroups.asSequence() }
                 .flatMap { it.requirements.asSequence() }
                 .forEach { requirement ->
-                when(requirement.dataType) {
-                    RequirementDataType.NUMBER -> {
-                        when (requirement.value) {
-                            is ExpectedValue.AsNumber ->
-                                if (requirement.value.value.scale() > allowedScale) invalidScale(allowedScale)
-                            is MinValue.AsNumber ->
-                                if (requirement.value.value.scale() > allowedScale) invalidScale(allowedScale)
-                            is MaxValue.AsNumber ->
-                                if (requirement.value.value.scale() > allowedScale) invalidScale(allowedScale)
-                            is RangeValue.AsNumber -> {
-                                if (requirement.value.minValue.scale() > allowedScale) invalidScale(allowedScale)
-                                if (requirement.value.maxValue.scale() > allowedScale) invalidScale(allowedScale)
-                            }
-                            is MinValue.AsInteger,
-                            is RangeValue.AsInteger,
-                            is MaxValue.AsInteger,
-                            is ExpectedValue.AsBoolean,
-                            is ExpectedValue.AsString,
-                            is ExpectedValue.AsInteger,
-                            NoneValue -> Unit
-                        }
-                    }
-                    RequirementDataType.BOOLEAN,
-                    RequirementDataType.STRING,
-                    RequirementDataType.INTEGER -> Unit
+                    if (requirement.hasInvalidScale(allowedScale))
+                        throw ErrorException(
+                            error = ErrorType.INVALID_CRITERIA,
+                            message = "Invalid scale ($allowedScale) for 'number' datatype"
+                        )
                 }
-            }
         }
     }
 }
