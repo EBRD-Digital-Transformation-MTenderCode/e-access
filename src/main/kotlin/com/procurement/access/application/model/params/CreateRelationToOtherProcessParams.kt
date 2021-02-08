@@ -40,6 +40,7 @@ class CreateRelationToOtherProcessParams(
                     OperationType.CREATE_PN,
                     OperationType.CREATE_SUBMISSION,
                     OperationType.DIVIDE_LOT,
+                    OperationType.ISSUING_FRAMEWORK_CONTRACT,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
                     OperationType.QUALIFICATION_PROTOCOL,
