@@ -19,6 +19,7 @@ import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CheckFEDataRequest(
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion>,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(
@@ -56,7 +57,9 @@ data class CheckFEDataRequest(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
-            @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>
+            @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
+
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification
         ) {
             data class RequirementGroup(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
@@ -67,6 +70,11 @@ data class CheckFEDataRequest(
                 @JsonDeserialize(using = RequirementDeserializer::class)
                 @JsonSerialize(using = RequirementSerializer::class)
                 @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+            )
+
+            data class Classification(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
             )
         }
 
@@ -134,6 +142,16 @@ data class CheckFEDataRequest(
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?
+        )
+    }
+
+    data class Criterion(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+        @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification
+        ) {
+        data class Classification(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
         )
     }
 }

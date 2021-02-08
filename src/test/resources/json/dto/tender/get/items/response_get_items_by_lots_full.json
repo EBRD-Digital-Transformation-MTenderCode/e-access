@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "id": "string",
+      "internalId": "string",
+      "description": "string",
+      "quantity": 0,
+      "classification": {
+        "id": "string",
+        "scheme": "CPV",
+        "description": "string"
+      },
+      "additionalClassifications": [
+        {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        }
+      ],
+      "unit": {
+        "id": "string",
+        "name": "string"
+      },
+      "relatedLot": "string"
+    }
+  ]
+}

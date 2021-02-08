@@ -38,6 +38,7 @@ enum class CommandTypeV1(@JsonValue override val key: String) : EnumElementProvi
     GET_CRITERIA_FOR_TENDERER("getCriteriaForTenderer"),
     GET_DATA_FOR_AC("getDataForAc"),
     GET_ITEMS_BY_LOT("getItemsByLot"),
+    GET_ITEMS_BY_LOTS("getItemsByLots"),
     GET_LOT("getLot"),
     GET_LOTS_AUCTION("getLotsAuction"),
     GET_LOTS_FOR_AUCTION("getLotsForAuction"),

@@ -61,9 +61,6 @@
       "startDate": "2020-09-22T12:32:49Z",
       "endDate": "2020-09-22T12:32:49Z"
     },
-    "secondStage": {
-      "maximumCandidates": 2
-    },
     "procuringEntity": {
       "id": "tender.procuringEntity.id",
       "name": "tender.procuringEntity.name",
@@ -134,43 +131,6 @@
           ]
         }
       ]
-    },
-    "criteria": [
-      {
-        "id": "string",
-        "title": "string",
-        "source": "tenderer",
-        "relatesTo": "tenderer",
-        "requirementGroups": [
-          {
-            "id": "string",
-            "description": "string",
-            "requirements": [
-              {
-                "id": "string",
-                "title": "string",
-                "status": "active",
-                "datePublished": "2020-09-22T12:32:49Z",
-                "dataType": "number",
-                "eligibleEvidences": [
-                  {
-                    "id": "string",
-                    "title": "string",
-                    "type": "document"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "documents": [
-      {
-        "documentType": "marketStudies",
-        "id": "string",
-        "title": "string"
-      }
-    ]
+    }
   }
 }

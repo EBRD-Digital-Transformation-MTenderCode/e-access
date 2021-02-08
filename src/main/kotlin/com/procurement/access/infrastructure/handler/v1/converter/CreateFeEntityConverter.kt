@@ -130,7 +130,14 @@ class CreateFeEntityConverter {
                 description = entity.description,
                 relatesTo = entity.relatesTo,
                 source = entity.source,
-                requirementGroups = entity.requirementGroups.map { convert(it) }
+                requirementGroups = entity.requirementGroups.map { convert(it) },
+                classification = entity.classification
+                    ?.let { classification ->
+                        CreateFEResult.Tender.Criteria.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme
+                        )
+                    }
             )
 
         private fun convert(entity: FEEntity.Tender.Criteria.RequirementGroup): CreateFEResult.Tender.Criteria.RequirementGroup =

@@ -46,6 +46,10 @@
       {
         "id": "string",
         "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        },
         "description": "string",
         "relatesTo": "tenderer",
         "requirementGroups": [
@@ -63,7 +67,18 @@
                   "endDate": "2020-09-16T12:24:54Z"
                 },
                 "minValue": 1.000,
-                "maxValue": 5.000
+                "maxValue": 5.000,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "description": "string",
+                    "type": "document",
+                    "relatedDocument": {
+                      "id": "string"
+                    }
+                  }
+                ]
               }
             ]
           }
