@@ -46,7 +46,7 @@
         "id": "string",
         "classification": {
           "id": "string",
-          "scheme": "string",
+          "scheme": "CPV",
           "description": "string"
         },
         "quantity": 0,

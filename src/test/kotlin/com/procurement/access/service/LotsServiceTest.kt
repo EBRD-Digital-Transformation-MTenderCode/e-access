@@ -7,17 +7,15 @@ import com.procurement.access.application.model.params.DivideLotParams
 import com.procurement.access.application.model.params.GetLotsValueParams
 import com.procurement.access.application.model.params.ValidateLotsDataForDivisionParams
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.application.service.Transform
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.infrastructure.entity.TenderLotsFullInfo
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
 import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
-import com.procurement.access.json.JsonMapper.mapper
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.success
@@ -56,7 +54,6 @@ internal class LotsServiceTest {
     private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var rulesService: RulesService
     private lateinit var generationService: GenerationService
-    private lateinit var transform: Transform
 
     @BeforeEach
     fun init() {
@@ -64,9 +61,8 @@ internal class LotsServiceTest {
         tenderProcessRepository = mock()
         rulesService = mock()
         generationService = mock()
-        transform = mock()
 
-        lotsService = LotsService(tenderProcessDao, tenderProcessRepository, generationService, rulesService, transform)
+        lotsService = LotsService(tenderProcessDao, tenderProcessRepository, generationService, rulesService)
     }
 
     @Nested
@@ -606,12 +602,6 @@ internal class LotsServiceTest {
             whenever(generationService.lotId())
                 .thenReturn(LOT_ID_1)
                 .thenReturn(LOT_ID_2)
-            val node = mapper.createObjectNode()
-            whenever(transform.tryToJsonNode(any<List<TenderLotsFullInfo.Tender.Lot>>())).thenReturn(node.asSuccess())
-            whenever(transform.tryToJsonNode(any<List<TenderLotsFullInfo.Tender.Item>>())).thenReturn(node.asSuccess())
-            val tenderNode = mapper.createObjectNode().apply { replace("tender", node) }
-            whenever(transform.tryParse(any())).thenReturn(tenderNode.asSuccess())
-            whenever(transform.tryToJson(any())).thenReturn("".asSuccess())
             whenever(tenderProcessRepository.save(any())).thenReturn(true.asSuccess())
 
             val actual = lotsService.divideLot(params)
@@ -625,7 +615,7 @@ internal class LotsServiceTest {
 
         fun generateExpectedLots() = setOf(
             DivideLotResult.Tender.Lot(
-                id = LOT_ID_1,
+                id = LOT_ID_1.toString(),
                 status = LotStatus.ACTIVE,
                 statusDetails = LotStatusDetails.EMPTY,
                 internalId = "internalId",
@@ -665,25 +655,57 @@ internal class LotsServiceTest {
                 )
             ),
             DivideLotResult.Tender.Lot(
-                id = LOT_ID_2,
+                id = LOT_ID_2.toString(),
                 status = LotStatus.ACTIVE,
                 statusDetails = LotStatusDetails.EMPTY,
-                description = null,
-                title = null,
-                value = null,
-                contractPeriod = null,
-                placeOfPerformance = null,
-                internalId = null
+                internalId = "internalId",
+                title = "title",
+                description = "description",
+                value = DivideLotResult.Tender.Lot.Value(
+                    amount = BigDecimal.TEN,
+                    currency = "currency"
+                ),
+                contractPeriod = DivideLotResult.Tender.Lot.ContractPeriod(
+                    startDate = LocalDateTime.parse("2020-02-10T08:49:55Z", FORMATTER),
+                    endDate = LocalDateTime.parse("2020-02-11T08:49:55Z", FORMATTER)
+                ),
+                placeOfPerformance = DivideLotResult.Tender.Lot.PlaceOfPerformance(
+                    description = "description",
+                    address = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address(
+                        streetAddress = "streetAddress",
+                        postalCode = "postalCode",
+                        addressDetails = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                            country = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                id = "id",
+                                description = "description",
+                                scheme = "scheme",
+                                uri = "uri"
+                            ),
+                            region = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                id = "id",
+                                description = "description",
+                                scheme = "scheme",
+                                uri = "uri"
+                            ),
+                            locality = DivideLotResult.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                id = "id",
+                                description = "description",
+                                scheme = "scheme",
+                                uri = "uri"
+                            )
+                        )
+                    )
+                )
             ),
             DivideLotResult.Tender.Lot(
-                id = STORED_LOT_ID,
+                id = STORED_LOT_ID.toString(),
                 status = LotStatus.CANCELLED,
                 statusDetails = LotStatusDetails.EMPTY,
                 internalId = "string",
                 title = "string",
                 description = "divided_lot",
                 value = DivideLotResult.Tender.Lot.Value(
-                    amount = BigDecimal.ZERO,
+                    amount = BigDecimal("6.02"),
                     currency = "string"
                 ),
                 contractPeriod = DivideLotResult.Tender.Lot.ContractPeriod(
@@ -724,7 +746,7 @@ internal class LotsServiceTest {
         fun generateExpectedItems() = setOf(
             DivideLotResult.Tender.Item(
                 id = ITEM_ID_1,
-                relatedLot = LOT_ID_1,
+                relatedLot = LOT_ID_1.toString(),
                 internalId = "string",
                 description = "string",
                 quantity = BigDecimal.ZERO,
@@ -732,7 +754,7 @@ internal class LotsServiceTest {
                 DivideLotResult.Tender.Item.Classification(
                     id = "string",
                     description = "string",
-                    scheme = "string"
+                    scheme = Scheme.CPV
                 ),
                 unit =
                 DivideLotResult.Tender.Item.Unit(
@@ -742,14 +764,14 @@ internal class LotsServiceTest {
                 additionalClassifications = listOf(
                     DivideLotResult.Tender.Item.AdditionalClassification(
                         id = "string",
-                        scheme = "string",
+                        scheme = Scheme.CPV,
                         description = "string"
                     )
                 )
             ),
             DivideLotResult.Tender.Item(
                 id = ITEM_ID_2,
-                relatedLot = LOT_ID_2,
+                relatedLot = LOT_ID_2.toString(),
                 internalId = "string",
                 description = "string",
                 quantity = BigDecimal.ZERO,
@@ -757,7 +779,7 @@ internal class LotsServiceTest {
                 DivideLotResult.Tender.Item.Classification(
                     id = "string",
                     description = "string",
-                    scheme = "string"
+                    scheme = Scheme.CPV
                 ),
                 unit =
                 DivideLotResult.Tender.Item.Unit(
@@ -767,7 +789,7 @@ internal class LotsServiceTest {
                 additionalClassifications = listOf(
                     DivideLotResult.Tender.Item.AdditionalClassification(
                         id = "string",
-                        scheme = "string",
+                        scheme = Scheme.CPV,
                         description = "string"
                     )
                 )
@@ -828,12 +850,41 @@ internal class LotsServiceTest {
                     ),
                     DivideLotParams.Tender.Lot(
                         id = "beb7c28c-6bb6-444d-b43d-a7cf2454b935",
-                        description = null,
-                        internalId = null,
-                        placeOfPerformance = null,
-                        contractPeriod = null,
-                        value = null,
-                        title = null
+                        description = "description",
+                        internalId = "internalId",
+                        placeOfPerformance = DivideLotParams.Tender.Lot.PlaceOfPerformance(
+                            description = "description",
+                            address = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address(
+                                streetAddress = "streetAddress",
+                                postalCode = "postalCode",
+                                addressDetails = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                    country = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                        id = "id",
+                                        description = "description",
+                                        scheme = "scheme",
+                                        uri = "uri"
+                                    ),
+                                    region = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                        id = "id",
+                                        description = "description",
+                                        scheme = "scheme",
+                                        uri = "uri"
+                                    ),
+                                    locality = DivideLotParams.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                        id = "id",
+                                        description = "description",
+                                        scheme = "scheme",
+                                        uri = "uri"
+                                    )
+                                )
+                            )
+                        ),
+                        contractPeriod = DivideLotParams.Tender.Lot.ContractPeriod(
+                            startDate = DATE,
+                            endDate = DATE.plusDays(1)
+                        ),
+                        value = DivideLotParams.Tender.Lot.Value(amount = BigDecimal.TEN, currency = "currency"),
+                        title = "title"
                     )
                 ),
                 items = listOf(

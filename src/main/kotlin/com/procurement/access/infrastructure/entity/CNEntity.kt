@@ -510,10 +510,19 @@ data class CNEntity(
             @field:JsonProperty("status") @param:JsonProperty("status") val status: LotStatus,
             @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: LotStatusDetails,
             @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
-            @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option>,
-            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant>,
-            @field:JsonProperty("renewals") @param:JsonProperty("renewals") val renewals: List<Renewal>,
-            @field:JsonProperty("recurrentProcurement") @param:JsonProperty("recurrentProcurement") val recurrentProcurement: List<RecurrentProcurement>,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option> = emptyList(),
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant> = emptyList(),
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("renewals") @param:JsonProperty("renewals") val renewals: List<Renewal> = emptyList(),
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("recurrentProcurement") @param:JsonProperty("recurrentProcurement") val recurrentProcurement: List<RecurrentProcurement> = emptyList(),
+
             @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
             @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance
         ) {

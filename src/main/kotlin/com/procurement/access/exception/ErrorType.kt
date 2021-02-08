@@ -110,5 +110,8 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_RELATED_PROCESS_RELATIONSHIP("10.95", "Invalid related process relationship."),
     DUPLICATE("10.96", "Duplicate."),
     MISSING_HOMOGENEOUS_ITEMS("10.97", "Homogeneous items not found."),
-    MISSING_REFERENCE_CRITERIA("10.98", "Missing reference criteria.");
+    MISSING_REFERENCE_CRITERIA("10.98", "Missing reference criteria."),
+    INVALID_ELIGIBLE_EVIDENCES("10.99", "Invalid eligible evidences."),
+    RELATED_ITEMS_NOT_FOUND("11.00", "Related items not found.")
+    ;
 }

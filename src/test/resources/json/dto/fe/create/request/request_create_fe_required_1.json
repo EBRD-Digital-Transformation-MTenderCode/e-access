@@ -30,6 +30,10 @@
       {
         "id": "string",
         "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        },
         "relatesTo": "tenderer",
         "requirementGroups": [
           {
@@ -39,7 +43,14 @@
               {
                 "id": "string",
                 "title": "string",
-                "dataType": "number"
+                "dataType": "number",
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "type": "document"
+                  }
+                ]
               }
             ]
           }

@@ -209,7 +209,11 @@ sealed class MaxValue : RequirementValue() {
 sealed class RangeValue : RequirementValue() {
 
     companion object {
-        fun of(minValue: BigDecimal, maxValue: BigDecimal): RangeValue = AsNumber(minValue = minValue, maxValue = maxValue)
+        fun of(minValue: BigDecimal, maxValue: BigDecimal): RangeValue = AsNumber(
+            minValue = minValue,
+            maxValue = maxValue
+        )
+
         fun of(minValue: Long, maxValue: Long): RangeValue = AsInteger(minValue = minValue, maxValue = maxValue)
     }
 
@@ -218,3 +222,37 @@ sealed class RangeValue : RequirementValue() {
 }
 
 object NoneValue : RequirementValue()
+
+fun Requirement.compareScale(allowedScale: Int): Int {
+    return when (dataType) {
+        RequirementDataType.NUMBER -> {
+            when (value) {
+                is ExpectedValue.AsNumber ->
+                    if (value.value.scale() > allowedScale) -1
+                    else 1
+                is MinValue.AsNumber ->
+                    if (value.value.scale() > allowedScale) -1
+                    else 1
+                is MaxValue.AsNumber ->
+                    if (value.value.scale() > allowedScale) -1
+                    else 1
+                is RangeValue.AsNumber -> {
+                    if (value.minValue.scale() > allowedScale || value.maxValue.scale() > allowedScale) -1
+                    else 1
+                }
+                is MinValue.AsInteger,
+                is RangeValue.AsInteger,
+                is MaxValue.AsInteger,
+                is ExpectedValue.AsBoolean,
+                is ExpectedValue.AsString,
+                is ExpectedValue.AsInteger,
+                NoneValue -> 0
+            }
+        }
+        RequirementDataType.BOOLEAN,
+        RequirementDataType.STRING,
+        RequirementDataType.INTEGER -> 0
+    }
+}
+
+fun Requirement.hasInvalidScale(allowedScale: Int) = compareScale(allowedScale) == -1

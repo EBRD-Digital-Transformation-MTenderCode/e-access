@@ -41,7 +41,14 @@ fun CreateFERequest.Tender.Criteria.convert() = CreateFEData.Tender.Criteria(
     title = this.title,
     relatesTo = this.relatesTo,
     requirementGroups = this.requirementGroups
-        .map { it.convert() }
+        .map { it.convert() },
+    classification = this.classification
+        .let { classification ->
+            CreateFEData.Tender.Criteria.Classification(
+                id = classification.id,
+                scheme = classification.scheme
+            )
+        }
 )
 
 fun CreateFERequest.Tender.Criteria.RequirementGroup.convert() = CreateFEData.Tender.Criteria.RequirementGroup(

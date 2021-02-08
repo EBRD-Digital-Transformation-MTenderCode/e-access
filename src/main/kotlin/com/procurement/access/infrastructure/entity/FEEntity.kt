@@ -28,13 +28,17 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializ
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 import com.procurement.access.infrastructure.bind.money.MoneyDeserializer
 import com.procurement.access.infrastructure.bind.money.MoneySerializer
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class FEEntity(
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("token") @param:JsonProperty("token") val token: String,
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>?
 ) {
     data class Tender(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
