@@ -59,6 +59,7 @@ val allowedOperationType = OperationType.allowedElements
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
             OperationType.CREATE_SUBMISSION,
+            OperationType.ISSUING_FRAMEWORK_CONTRACT,
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
