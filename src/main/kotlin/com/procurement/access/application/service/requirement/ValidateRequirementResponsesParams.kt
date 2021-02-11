@@ -42,6 +42,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
                     OperationType.DIVIDE_LOT,
+                    OperationType.ISSUING_FRAMEWORK_CONTRACT,
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,

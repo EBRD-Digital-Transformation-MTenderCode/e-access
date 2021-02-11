@@ -167,6 +167,7 @@ class ValidationService(
             OperationType.CREATE_PN,
             OperationType.CREATE_SUBMISSION,
             OperationType.DIVIDE_LOT,
+            OperationType.ISSUING_FRAMEWORK_CONTRACT,
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
