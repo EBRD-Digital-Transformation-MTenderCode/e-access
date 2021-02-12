@@ -175,6 +175,15 @@ class NegotiationCnOnPnService(
             )
             /** End check Documents */
         }
+
+        data.tender.lots.forEach { lot ->
+            lot.apply {
+                checkOptions()
+                checkRecurrence()
+                checkRenewal()
+            }
+        }
+
         return CheckedNegotiationCnOnPn(requireAuction = false)
     }
 
@@ -1697,4 +1706,35 @@ class NegotiationCnOnPnService(
             }
         )
     }
+
+    private fun NegotiationCnOnPnRequest.Tender.Lot.checkOptions() {
+        if (hasOptions == null) return
+
+        if (!hasOptions && (options != null && options.isNotEmpty()))
+            throw ErrorException(
+                error = INCORRECT_VALUE_ATTRIBUTE,
+                message = "Lot should not contain options"
+            )
+    }
+
+    private fun NegotiationCnOnPnRequest.Tender.Lot.checkRecurrence() {
+        if (hasRecurrence == null) return
+
+        if (!hasRecurrence && recurrence != null)
+            throw ErrorException(
+                error = INCORRECT_VALUE_ATTRIBUTE,
+                message = "Lot should not contain reccurence"
+            )
+    }
+
+    private fun NegotiationCnOnPnRequest.Tender.Lot.checkRenewal() {
+        if (hasRenewal == null) return
+
+        if (!hasRenewal && renewal != null)
+            throw ErrorException(
+                error = INCORRECT_VALUE_ATTRIBUTE,
+                message = "Lot should not contain renewal"
+            )
+    }
+
 }
