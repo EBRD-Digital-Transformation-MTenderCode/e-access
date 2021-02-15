@@ -198,26 +198,6 @@
           "amount": 300.01,
           "currency": "pn.planning.budget.amount.currency"
         },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
         "contractPeriod": {
           "startDate": "2019-05-01T10:00:00Z",
           "endDate": "2019-05-10T10:00:00Z"
@@ -248,7 +228,10 @@
             }
           },
           "description": "pn.tender.lot[0].placeOfPerformance.description"
-        }
+        },
+        "hasOptions": false,
+        "hasRenewal": false,
+        "hasRecurrence": false
       },
       {
         "id": "lot-2",
@@ -260,26 +243,6 @@
           "amount": 300.01,
           "currency": "pn.planning.budget.amount.currency"
         },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
         "contractPeriod": {
           "startDate": "2019-05-07T10:00:00Z",
           "endDate": "2019-05-17T10:00:00Z"
@@ -310,7 +273,10 @@
             }
           },
           "description": "pn.tender.lot[1].placeOfPerformance.description"
-        }
+        },
+        "hasOptions": false,
+        "hasRenewal": false,
+        "hasRecurrence": false
       }
     ],
     "items": [

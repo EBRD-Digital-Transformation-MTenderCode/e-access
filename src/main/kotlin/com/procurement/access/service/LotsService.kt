@@ -878,7 +878,13 @@ class LotsService(
                         )
                     }
                 )
-            }
+            },
+            hasOptions = false,
+            options = emptyList(),
+            hasRenewal = false,
+            renewal = null,
+            hasRecurrence = false,
+            recurrence = null
         )
 
     fun getItemsByLots(context: GetItemsByLotsContext, data: GetItemsByLotsData): GetItemsByLotsResult {

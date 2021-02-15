@@ -175,26 +175,6 @@
           "amount": 300.01,
           "currency": "pn.planning.budget.amount.currency"
         },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
         "contractPeriod": {
           "startDate": "2019-05-01T10:00:00Z",
           "endDate": "2019-05-10T10:00:00Z"
