@@ -1681,18 +1681,6 @@ class OpenCnOnPnService(
                         currency = value.currency
                     )
                 },
-
-                /** Begin BR-3.8.4 */
-                //BR-3.8.9 -> BR-3.6.17
-                options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.4; BR-3.8.9 -> BR-3.6.17
-                //BR-3.8.10 -> BR-3.6.18
-                variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.4; BR-3.8.10 -> BR-3.6.18
-                //BR-3.8.11 -> BR-3.6.19
-                renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.4; BR-3.8.11 -> BR-3.6.19
-                //BR-3.8.12 -> BR-3.6.20
-                recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.4; BR-3.8.12 -> BR-3.6.20
-                /** End BR-3.8.4 */
-
                 //BR-3.8.4; BR-3.8.15 -> BR-3.6.31
                 contractPeriod = lot.contractPeriod.let { contractPeriod ->
                     CNEntity.Tender.Lot.ContractPeriod(
@@ -1737,6 +1725,47 @@ class OpenCnOnPnService(
                             )
                         },
                         description = placeOfPerformance.description
+                    )
+                },
+                hasOptions = lot.hasOptions ?: false,        // BR-1.0.1.3.9
+                hasRecurrence = lot.hasRecurrence ?: false,  // BR-1.0.1.3.10
+                hasRenewal = lot.hasRenewal ?: false,        // BR-1.0.1.3.11
+                options = lot.options.orEmpty().map { option ->
+                    CNEntity.Tender.Lot.Option(
+                        description = option.description,
+                        period = option.period?.let { period ->
+                            CNEntity.Tender.Lot.Period(
+                                startDate = period.startDate,
+                                endDate = period.endDate,
+                                maxExtentDate = period.maxExtentDate,
+                                durationInDays = period.durationInDays
+                            )
+                        }
+                    )
+                },
+                recurrence = lot.recurrence?.let {  recurrence ->
+                    CNEntity.Tender.Lot.Recurrence(
+                        description = recurrence.description,
+                        dates = recurrence.dates?.map { date ->
+                            CNEntity.Tender.Lot.Recurrence.Date(
+                                startDate = date.startDate
+                            )
+                        }
+                    )
+                },
+                renewal = lot.renewal?.let { renewal ->
+                    CNEntity.Tender.Lot.RenewalV2(
+                        description = renewal.description,
+                        minimumRenewals = renewal.minimumRenewals,
+                        maximumRenewals = renewal.maximumRenewals,
+                        period = renewal.period?.let { period ->
+                            CNEntity.Tender.Lot.Period(
+                                startDate = period.startDate,
+                                endDate = period.endDate,
+                                maxExtentDate = period.maxExtentDate,
+                                durationInDays = period.durationInDays
+                            )
+                        }
                     )
                 }
             )
@@ -1853,10 +1882,6 @@ class OpenCnOnPnService(
                             currency = value.currency
                         )
                     },
-                    options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
-                    recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
-                    renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
-                    variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
                     contractPeriod = lot.contractPeriod.let { contractPeriod ->
                         CNEntity.Tender.Lot.ContractPeriod(
                             startDate = contractPeriod.startDate,
@@ -1901,7 +1926,13 @@ class OpenCnOnPnService(
                             },
                             description = placeOfPerformance.description
                         )
-                    }
+                    },
+                    hasOptions = false,
+                    options = emptyList(),
+                    hasRenewal = false,
+                    renewal = null,
+                    hasRecurrence = false,
+                    recurrence = null
                 )
             }
     }
@@ -2274,24 +2305,45 @@ class OpenCnOnPnService(
                                     currency = value.currency
                                 )
                             },
+                            hasOptions = lot.hasOptions,
                             options = lot.options.map { option ->
                                 OpenCnOnPnResponse.Tender.Lot.Option(
-                                    hasOptions = option.hasOptions
+                                    description = option.description,
+                                    period = option.period?.let { period ->
+                                        OpenCnOnPnResponse.Tender.Lot.Period(
+                                            startDate = period.startDate,
+                                            endDate = period.endDate,
+                                            maxExtentDate = period.maxExtentDate,
+                                            durationInDays = period.durationInDays
+                                        )
+                                    }
                                 )
                             },
-                            variants = lot.variants.map { variant ->
-                                OpenCnOnPnResponse.Tender.Lot.Variant(
-                                    hasVariants = variant.hasVariants
+                            hasRecurrence = lot.hasRecurrence,
+                            recurrence = lot.recurrence?.let { recurrence ->
+                                OpenCnOnPnResponse.Tender.Lot.Recurrence(
+                                    description = recurrence.description,
+                                    dates = recurrence.dates?.map { date ->
+                                        OpenCnOnPnResponse.Tender.Lot.Recurrence.Date(
+                                            startDate = date.startDate
+                                        )
+                                    }
                                 )
                             },
-                            renewals = lot.renewals.map { renewal ->
+                            hasRenewal = lot.hasRenewal,
+                            renewal = lot.renewal?.let { renewalV2 ->
                                 OpenCnOnPnResponse.Tender.Lot.Renewal(
-                                    hasRenewals = renewal.hasRenewals
-                                )
-                            },
-                            recurrentProcurement = lot.recurrentProcurement.map { recurrentProcurement ->
-                                OpenCnOnPnResponse.Tender.Lot.RecurrentProcurement(
-                                    isRecurrent = recurrentProcurement.isRecurrent
+                                    description = renewalV2.description,
+                                    minimumRenewals = renewalV2.minimumRenewals,
+                                    maximumRenewals = renewalV2.maximumRenewals,
+                                    period = renewalV2.period?.let { period ->
+                                        OpenCnOnPnResponse.Tender.Lot.Period(
+                                            startDate = period.startDate,
+                                            endDate = period.endDate,
+                                            maxExtentDate = period.maxExtentDate,
+                                            durationInDays = period.durationInDays
+                                        )
+                                    }
                                 )
                             },
                             contractPeriod = lot.contractPeriod.let { contractPeriod ->
