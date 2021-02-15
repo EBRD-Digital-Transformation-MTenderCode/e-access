@@ -456,6 +456,9 @@ class LotsService(
         checkForMissingParameters(newLots)
             .doOnError { return it.asValidationFailure() }
 
+        checkLotsFilling(params.tender.lots)
+            .doOnError { return it.asValidationFailure() }
+
         checkLots(newLots, dividedLot, params.tender.items, process.tender.items.orEmpty())
             .doOnError { return it.asValidationFailure() }
 
@@ -496,6 +499,27 @@ class LotsService(
         }
         return ValidationResult.ok()
     }
+
+    private fun checkLotsFilling(lots: List<ValidateLotsDataForDivisionParams.Tender.Lot>): ValidationResult<Fail> {
+        lots.map { lot ->
+            if (lot.mustContainNoOptions() && lot.options.isNotEmpty())
+                return ValidationErrors.OptionsMustBeAbsent(lot.id).asValidationFailure()
+            if (lot.mustContainNoRecurrence() && lot.recurrence!=null)
+                return ValidationErrors.RecurrenceMustBeAbsent(lot.id).asValidationFailure()
+            if (lot.mustContainNoRenewal() && lot.renewal != null)
+                return ValidationErrors.RenewalMustBeAbsent(lot.id).asValidationFailure()
+        }
+        return ValidationResult.ok()
+    }
+
+    private fun ValidateLotsDataForDivisionParams.Tender.Lot.mustContainNoOptions() =
+        hasOptions != null && hasOptions == false
+
+    private fun ValidateLotsDataForDivisionParams.Tender.Lot.mustContainNoRecurrence() =
+        hasRecurrence != null && hasRecurrence == false
+
+    private fun ValidateLotsDataForDivisionParams.Tender.Lot.mustContainNoRenewal() =
+        hasRenewal != null && hasRenewal == false
 
     private fun checkLots(
         newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>,
