@@ -101,8 +101,8 @@ data class DivideLotParams(
 
             data class Renewal(
                 val description: String?,
-                val minimumRenewals: Long?,
-                val maximumRenewals: Long?,
+                val minimumRenewals: Int?,
+                val maximumRenewals: Int?,
                 val period: Period?
             ) {
                 data class Period(
