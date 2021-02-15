@@ -198,6 +198,19 @@
               }
             }
           }
+        },
+        "options": [
+          {
+            "period": {
+            }
+          }
+        ],
+        "recurrence": {
+        },
+        "renewal": {
+          "period": {
+
+          }
         }
       }
     ],
