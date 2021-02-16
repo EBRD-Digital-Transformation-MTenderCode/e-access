@@ -20,4 +20,9 @@ class DivideLotRequestTest : AbstractDTOTestBase<DivideLotRequest>(
     fun test2() {
         testBindingAndMapping(pathToJsonFile = "json/dto/lot/request/divide/request_divide_lot_required_2.json")
     }
+
+    @Test
+    fun test3() {
+        testBindingAndMapping(pathToJsonFile = "json/dto/lot/request/divide/request_divide_lot_required_3.json")
+    }
 }
