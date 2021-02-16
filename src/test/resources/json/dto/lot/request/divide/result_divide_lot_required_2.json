@@ -37,17 +37,9 @@
             }
           }
         },
-        "options": [
-          {
-            "period": {}
-          }
-        ],
-        "recurrence": {
-          "dates": []
-        },
-        "renewal": {
-          "period": {}
-        },
+        "options": [],
+        "recurrence": {},
+        "renewal": {},
         "status": "cancelled",
         "statusDetails": "empty"
       }
