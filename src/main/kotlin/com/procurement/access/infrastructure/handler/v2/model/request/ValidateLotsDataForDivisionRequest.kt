@@ -143,10 +143,10 @@ data class ValidateLotsDataForDivisionRequest(
                 @param:JsonProperty("description") @field:JsonProperty("description") val description: String?,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
-                @param:JsonProperty("minimumRenewals") @field:JsonProperty("minimumRenewals") val minimumRenewals: Long?,
+                @param:JsonProperty("minimumRenewals") @field:JsonProperty("minimumRenewals") val minimumRenewals: Int?,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
-                @param:JsonProperty("maximumRenewals") @field:JsonProperty("maximumRenewals") val maximumRenewals: Long?,
+                @param:JsonProperty("maximumRenewals") @field:JsonProperty("maximumRenewals") val maximumRenewals: Int?,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @param:JsonProperty("period") @field:JsonProperty("period") val period: Period?
