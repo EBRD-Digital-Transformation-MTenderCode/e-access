@@ -39,6 +39,39 @@
             }
           },
           "description": "string"
+        },
+        "hasOptions": true,
+        "options": [
+          {
+            "description": "string",
+            "period": {
+              "durationInDays": 0,
+              "startDate": "2021-02-15T13:39:23Z",
+              "endDate": "2021-02-15T13:39:23Z",
+              "maxExtentDate": "2021-02-15T13:39:23Z"
+            }
+          }
+        ],
+        "hasRecurrence": true,
+        "recurrence": {
+          "dates": [
+            {
+              "startDate": "2021-02-15T13:39:23Z"
+            }
+          ],
+          "description": "string"
+        },
+        "hasRenewal": true,
+        "renewal": {
+          "description": "string",
+          "minimumRenewals": 0,
+          "maximumRenewals": 0,
+          "period": {
+            "durationInDays": 0,
+            "startDate": "2021-02-15T13:39:23Z",
+            "endDate": "2021-02-15T13:39:23Z",
+            "maxExtentDate": "2021-02-15T13:39:23Z"
+          }
         }
       }
     ],

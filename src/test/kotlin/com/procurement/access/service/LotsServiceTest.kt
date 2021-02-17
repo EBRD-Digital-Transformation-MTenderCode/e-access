@@ -483,6 +483,88 @@ internal class LotsServiceTest {
             assertEquals(expectedMessage, actual.reason.description)
         }
 
+        @Test
+        fun containsOptionsWithHasOptionIsFalse_fail() {
+            val params = getParams()
+            val paramsWithOptions = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.map {
+                        it.copy(
+                            options = listOf(
+                                ValidateLotsDataForDivisionParams.Tender.Lot.Option(description = "string", period = null)
+                            ),
+                            hasOptions = false
+                        )
+            }))
+
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
+
+            val expectedErrorCode = "VR.COM-1.39.18"
+            val expectedMessage = "Lot '${params.tender.lots[0].id}' contains redundant list of options."
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+            assertEquals(expectedMessage, actual.reason.description)
+        }
+
+        @Test
+        fun containsRenewalWithHasRenewalIsFalse_fail() {
+            val params = getParams()
+            val paramsWithOptions = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.map {
+                        it.copy(
+                            renewal = ValidateLotsDataForDivisionParams.Tender.Lot.Renewal(
+                                description = "string",
+                                period = null,
+                                maximumRenewals = null,
+                                minimumRenewals = null
+                            ),
+                            hasRenewal = false
+                        )
+                    }))
+
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
+
+            val expectedErrorCode = "VR.COM-1.39.20"
+            val expectedMessage = "Lot '${params.tender.lots[0].id}' contains redundant renewal."
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+            assertEquals(expectedMessage, actual.reason.description)
+        }
+
+        @Test
+        fun containsRecurrenceWithHasRenewalIsFalse_fail() {
+            val params = getParams()
+            val paramsWithOptions = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.map {
+                        it.copy(
+                            recurrence = ValidateLotsDataForDivisionParams.Tender.Lot.Recurrence(
+                                description = "string",
+                                dates = null
+                            ),
+                            hasRecurrence = false
+                        )
+                    }))
+
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
+
+            val expectedErrorCode = "VR.COM-1.39.19"
+            val expectedMessage = "Lot '${params.tender.lots[0].id}' contains redundant recurrence."
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+            assertEquals(expectedMessage, actual.reason.description)
+        }
+
         private fun getParams(): ValidateLotsDataForDivisionParams {
             return ValidateLotsDataForDivisionParams(
                 cpid = CPID,
@@ -496,7 +578,13 @@ internal class LotsServiceTest {
                             description = null,
                             placeOfPerformance = null,
                             contractPeriod = null,
-                            value = null
+                            value = null,
+                            hasRenewal = null,
+                            hasOptions = null,
+                            hasRecurrence = null,
+                            options = emptyList(),
+                            renewal = null,
+                            recurrence = null
                         ),
                         ValidateLotsDataForDivisionParams.Tender.Lot(
                             id = LOT_ID_1.toString(),
@@ -534,7 +622,13 @@ internal class LotsServiceTest {
                             value = ValidateLotsDataForDivisionParams.Tender.Lot.Value(
                                 amount = BigDecimal(2),
                                 currency = "currency"
-                            )
+                            ),
+                            hasRenewal = null,
+                            hasOptions = null,
+                            hasRecurrence = null,
+                            options = emptyList(),
+                            renewal = null,
+                            recurrence = null
                         ),
                         ValidateLotsDataForDivisionParams.Tender.Lot(
                             id = LOT_ID_2.toString(),
@@ -572,7 +666,13 @@ internal class LotsServiceTest {
                             value = ValidateLotsDataForDivisionParams.Tender.Lot.Value(
                                 amount = BigDecimal(4.020),
                                 currency = "currency"
-                            )
+                            ),
+                            hasRenewal = null,
+                            hasOptions = null,
+                            hasRecurrence = null,
+                            options = emptyList(),
+                            renewal = null,
+                            recurrence = null
                         )
                     ),
                     items = listOf(

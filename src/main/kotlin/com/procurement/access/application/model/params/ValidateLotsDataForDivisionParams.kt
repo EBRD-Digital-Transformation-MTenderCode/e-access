@@ -21,7 +21,13 @@ data class ValidateLotsDataForDivisionParams(
             val description: String?,
             val value: Value?,
             val contractPeriod: ContractPeriod?,
-            val placeOfPerformance: PlaceOfPerformance?
+            val placeOfPerformance: PlaceOfPerformance?,
+            val hasOptions: Boolean?,
+            val options: List<Option>,
+            val hasRecurrence: Boolean?,
+            val recurrence: Recurrence?,
+            val hasRenewal: Boolean?,
+            val renewal: Renewal?
         ) {
             data class Value(
                 val amount: Amount,
@@ -66,6 +72,41 @@ data class ValidateLotsDataForDivisionParams(
                         )
                     }
                 }
+            }
+
+            data class Option(
+                val description: String?,
+                val period: Period?
+            ) {
+                data class Period(
+                    val durationInDays: Int?,
+                    val startDate: LocalDateTime?,
+                    val endDate: LocalDateTime?,
+                    val maxExtentDate: LocalDateTime?
+                )
+            }
+
+            data class Recurrence(
+                val dates: List<Date>?,
+                val description: String?
+            ) {
+                data class Date(
+                    val startDate: LocalDateTime?
+                )
+            }
+
+            data class Renewal(
+                val description: String?,
+                val minimumRenewals: Int?,
+                val maximumRenewals: Int?,
+                val period: Period?
+            ) {
+                data class Period(
+                    val durationInDays: Int?,
+                    val startDate: LocalDateTime?,
+                    val endDate: LocalDateTime?,
+                    val maxExtentDate: LocalDateTime?
+                )
             }
         }
 
