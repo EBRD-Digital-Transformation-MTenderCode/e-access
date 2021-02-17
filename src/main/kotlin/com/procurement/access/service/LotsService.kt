@@ -769,7 +769,52 @@ class LotsService(
                                     )
                                 }
                             )
-                        }
+                        },
+                        hasOptions = lot.hasOptions,
+                        options = lot.options
+                            .map { option ->
+                                DivideLotResult.Tender.Lot.Option(
+                                    description = option.description,
+                                    period = option.period
+                                        ?.let { period ->
+                                            DivideLotResult.Tender.Lot.Option.Period(
+                                                startDate = period.startDate,
+                                                endDate = period.endDate,
+                                                maxExtentDate = period.maxExtentDate,
+                                                durationInDays = period.durationInDays
+                                            )
+                                        }
+                                )
+                            },
+                        hasRenewal = lot.hasRenewal,
+                        renewal = lot.renewal?.let { renewal ->
+                            DivideLotResult.Tender.Lot.Renewal(
+                                description = renewal.description,
+                                period = renewal.period
+                                    ?.let { period ->
+                                        DivideLotResult.Tender.Lot.Renewal.Period(
+                                            startDate = period.startDate,
+                                            endDate = period.endDate,
+                                            maxExtentDate = period.maxExtentDate,
+                                            durationInDays = period.durationInDays
+                                        )
+                                    },
+                                minimumRenewals = renewal.minimumRenewals,
+                                maximumRenewals = renewal.maximumRenewals
+                            )
+                        },
+                        hasRecurrence = lot.hasRecurrence,
+                        recurrence = lot.recurrence
+                            ?.let { recurrence ->
+                                DivideLotResult.Tender.Lot.Recurrence(
+                                    description = recurrence.description,
+                                    dates = recurrence.dates?.map { date ->
+                                        DivideLotResult.Tender.Lot.Recurrence.Date(
+                                            startDate = date.startDate
+                                        )
+                                    }
+                                )
+                            }
                     )
                 },
                 items = resultingItems.map { item ->
@@ -903,12 +948,51 @@ class LotsService(
                     }
                 )
             },
-            hasOptions = false,
-            options = emptyList(),
-            hasRenewal = false,
-            renewal = null,
-            hasRecurrence = false,
-            recurrence = null
+            hasOptions = lot.hasOptions ?: false,
+            options = lot.options
+                .map { option ->
+                    CNEntity.Tender.Lot.Option(
+                        description = option.description,
+                        period = option.period
+                            ?.let { period ->
+                                CNEntity.Tender.Lot.Period(
+                                    startDate = period.startDate,
+                                    endDate = period.endDate,
+                                    maxExtentDate = period.maxExtentDate,
+                                    durationInDays = period.durationInDays
+                                )
+                            }
+                    )
+                },
+            hasRenewal = lot.hasRenewal ?: false,
+            renewal = lot.renewal?.let { renewal ->
+                CNEntity.Tender.Lot.RenewalV2(
+                    description = renewal.description,
+                    period = renewal.period
+                        ?.let { period ->
+                            CNEntity.Tender.Lot.Period(
+                                startDate = period.startDate,
+                                endDate = period.endDate,
+                                maxExtentDate = period.maxExtentDate,
+                                durationInDays = period.durationInDays
+                            )
+                        },
+                    minimumRenewals = renewal.minimumRenewals,
+                    maximumRenewals = renewal.maximumRenewals
+                )
+            },
+            hasRecurrence = lot.hasRecurrence ?: false,
+            recurrence = lot.recurrence
+                ?.let { recurrence ->
+                    CNEntity.Tender.Lot.Recurrence(
+                        description = recurrence.description,
+                        dates = recurrence.dates?.map { date ->
+                            CNEntity.Tender.Lot.Recurrence.Date(
+                                startDate = date.startDate
+                            )
+                        }
+                    )
+                }
         )
 
     fun getItemsByLots(context: GetItemsByLotsContext, data: GetItemsByLotsData): GetItemsByLotsResult {

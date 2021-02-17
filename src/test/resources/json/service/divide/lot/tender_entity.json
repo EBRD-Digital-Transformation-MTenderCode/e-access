@@ -70,11 +70,6 @@
         },
         "status": "cancelled",
         "statusDetails": "empty",
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
         "recurrentProcurement": [
           {
             "isRecurrent": false
@@ -132,11 +127,6 @@
         },
         "status": "planning",
         "statusDetails": "awarded",
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
         "recurrentProcurement": [
           {
             "isRecurrent": false
