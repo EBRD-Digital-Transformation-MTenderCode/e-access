@@ -258,6 +258,13 @@ class SelectiveCnOnPnService(
         }
 
         check(data, context)
+        data.tender.lots.forEach { lot ->
+            lot.apply {
+                checkOptions()
+                checkRecurrence()
+                checkRenewal()
+            }
+        }
 
         val requireAuction = isAuctionRequired(data.tender.electronicAuctions, data.tender.procurementMethodModalities)
 
@@ -658,18 +665,6 @@ class SelectiveCnOnPnService(
                         currency = value.currency
                     )
                 },
-
-                /** Begin BR-3.8.4 */
-                //BR-3.8.9 -> BR-3.6.17
-                options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.4; BR-3.8.9 -> BR-3.6.17
-                //BR-3.8.10 -> BR-3.6.18
-                variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.4; BR-3.8.10 -> BR-3.6.18
-                //BR-3.8.11 -> BR-3.6.19
-                renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.4; BR-3.8.11 -> BR-3.6.19
-                //BR-3.8.12 -> BR-3.6.20
-                recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.4; BR-3.8.12 -> BR-3.6.20
-                /** End BR-3.8.4 */
-
                 //BR-3.8.4; BR-3.8.15 -> BR-3.6.31
                 contractPeriod = lot.contractPeriod.let { contractPeriod ->
                     CNEntity.Tender.Lot.ContractPeriod(
@@ -714,6 +709,47 @@ class SelectiveCnOnPnService(
                             )
                         },
                         description = placeOfPerformance.description
+                    )
+                },
+                hasOptions = lot.hasOptions ?: false,        // BR-1.0.1.3.9
+                hasRecurrence = lot.hasRecurrence ?: false,  // BR-1.0.1.3.10
+                hasRenewal = lot.hasRenewal ?: false,        // BR-1.0.1.3.11
+                options = lot.options.orEmpty().map { option ->
+                    CNEntity.Tender.Lot.Option(
+                        description = option.description,
+                        period = option.period?.let { period ->
+                            CNEntity.Tender.Lot.Period(
+                                startDate = period.startDate,
+                                endDate = period.endDate,
+                                maxExtentDate = period.maxExtentDate,
+                                durationInDays = period.durationInDays
+                            )
+                        }
+                    )
+                },
+                recurrence = lot.recurrence?.let {  recurrence ->
+                    CNEntity.Tender.Lot.Recurrence(
+                        description = recurrence.description,
+                        dates = recurrence.dates?.map { date ->
+                            CNEntity.Tender.Lot.Recurrence.Date(
+                                startDate = date.startDate
+                            )
+                        }
+                    )
+                },
+                renewal = lot.renewal?.let { renewal ->
+                    CNEntity.Tender.Lot.RenewalV2(
+                        description = renewal.description,
+                        minimumRenewals = renewal.minimumRenewals,
+                        maximumRenewals = renewal.maximumRenewals,
+                        period = renewal.period?.let { period ->
+                            CNEntity.Tender.Lot.Period(
+                                startDate = period.startDate,
+                                endDate = period.endDate,
+                                maxExtentDate = period.maxExtentDate,
+                                durationInDays = period.durationInDays
+                            )
+                        }
                     )
                 }
             )
@@ -798,10 +834,6 @@ class SelectiveCnOnPnService(
                             currency = value.currency
                         )
                     },
-                    options = listOf(CNEntity.Tender.Lot.Option(false)), //BR-3.8.9 -> BR-3.6.17
-                    recurrentProcurement = listOf(CNEntity.Tender.Lot.RecurrentProcurement(false)), //BR-3.8.12 -> BR-3.6.20
-                    renewals = listOf(CNEntity.Tender.Lot.Renewal(false)), //BR-3.8.11 -> BR-3.6.19
-                    variants = listOf(CNEntity.Tender.Lot.Variant(false)), //BR-3.8.10 -> BR-3.6.18
                     contractPeriod = lot.contractPeriod.let { contractPeriod ->
                         CNEntity.Tender.Lot.ContractPeriod(
                             startDate = contractPeriod.startDate,
@@ -846,7 +878,13 @@ class SelectiveCnOnPnService(
                             },
                             description = placeOfPerformance.description
                         )
-                    }
+                    },
+                    hasOptions = false,
+                    options = emptyList(),
+                    hasRenewal = false,
+                    renewal = null,
+                    hasRecurrence = false,
+                    recurrence = null
                 )
         }
     }
@@ -1630,26 +1668,6 @@ class SelectiveCnOnPnService(
                                     currency = value.currency
                                 )
                             },
-                            options = lot.options.map { option ->
-                                SelectiveCnOnPnResponse.Tender.Lot.Option(
-                                    hasOptions = option.hasOptions
-                                )
-                            },
-                            variants = lot.variants.map { variant ->
-                                SelectiveCnOnPnResponse.Tender.Lot.Variant(
-                                    hasVariants = variant.hasVariants
-                                )
-                            },
-                            renewals = lot.renewals.map { renewal ->
-                                SelectiveCnOnPnResponse.Tender.Lot.Renewal(
-                                    hasRenewals = renewal.hasRenewals
-                                )
-                            },
-                            recurrentProcurement = lot.recurrentProcurement.map { recurrentProcurement ->
-                                SelectiveCnOnPnResponse.Tender.Lot.RecurrentProcurement(
-                                    isRecurrent = recurrentProcurement.isRecurrent
-                                )
-                            },
                             contractPeriod = lot.contractPeriod.let { contractPeriod ->
                                 SelectiveCnOnPnResponse.Tender.Lot.ContractPeriod(
                                     startDate = contractPeriod.startDate,
@@ -1692,6 +1710,47 @@ class SelectiveCnOnPnService(
 
                                                 )
                                             }
+                                        )
+                                    }
+                                )
+                            },
+                            hasOptions = lot.hasOptions,
+                            options = lot.options.map { option ->
+                                SelectiveCnOnPnResponse.Tender.Lot.Option(
+                                    description = option.description,
+                                    period = option.period?.let { period ->
+                                        SelectiveCnOnPnResponse.Tender.Lot.Period(
+                                            startDate = period.startDate,
+                                            endDate = period.endDate,
+                                            maxExtentDate = period.maxExtentDate,
+                                            durationInDays = period.durationInDays
+                                        )
+                                    }
+                                )
+                            },
+                            hasRecurrence = lot.hasRecurrence,
+                            recurrence = lot.recurrence?.let { recurrence ->
+                                SelectiveCnOnPnResponse.Tender.Lot.Recurrence(
+                                    description = recurrence.description,
+                                    dates = recurrence.dates?.map { date ->
+                                        SelectiveCnOnPnResponse.Tender.Lot.Recurrence.Date(
+                                            startDate = date.startDate
+                                        )
+                                    }
+                                )
+                            },
+                            hasRenewal = lot.hasRenewal,
+                            renewal = lot.renewal?.let { renewalV2 ->
+                                SelectiveCnOnPnResponse.Tender.Lot.Renewal(
+                                    description = renewalV2.description,
+                                    minimumRenewals = renewalV2.minimumRenewals,
+                                    maximumRenewals = renewalV2.maximumRenewals,
+                                    period = renewalV2.period?.let { period ->
+                                        SelectiveCnOnPnResponse.Tender.Lot.Period(
+                                            startDate = period.startDate,
+                                            endDate = period.endDate,
+                                            maxExtentDate = period.maxExtentDate,
+                                            durationInDays = period.durationInDays
                                         )
                                     }
                                 )
@@ -2515,5 +2574,36 @@ class SelectiveCnOnPnService(
             context.country
         )
     }
+
+    private fun SelectiveCnOnPnRequest.Tender.Lot.checkOptions() {
+        if (hasOptions == null) return
+
+        if (!hasOptions && (options != null && options.isNotEmpty()))
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "Lot should not contain options"
+            )
+    }
+
+    private fun SelectiveCnOnPnRequest.Tender.Lot.checkRecurrence() {
+        if (hasRecurrence == null) return
+
+        if (!hasRecurrence && recurrence != null)
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "Lot should not contain reccurence"
+            )
+    }
+
+    private fun SelectiveCnOnPnRequest.Tender.Lot.checkRenewal() {
+        if (hasRenewal == null) return
+
+        if (!hasRenewal && renewal != null)
+            throw ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "Lot should not contain renewal"
+            )
+    }
+
 }
 

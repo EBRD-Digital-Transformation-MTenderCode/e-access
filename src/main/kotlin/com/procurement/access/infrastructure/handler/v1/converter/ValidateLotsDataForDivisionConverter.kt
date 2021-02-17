@@ -56,6 +56,10 @@ private fun ValidateLotsDataForDivisionRequest.Tender.Lot.convert(path: String):
     val contractPeriod = contractPeriod?.convert("$path.contractPeriod")
         ?.onFailure { return it }
 
+    val options = options.validate(notEmptyRule("$path/options"))
+        .flatMap { it.orEmpty().mapResult { option -> option.convert("$path/options") } }
+        .onFailure { return it }
+
     return ValidateLotsDataForDivisionParams.Tender.Lot(
         id = id,
         internalId = internalId,
@@ -63,8 +67,78 @@ private fun ValidateLotsDataForDivisionRequest.Tender.Lot.convert(path: String):
         description = description,
         value = value?.convert(),
         contractPeriod = contractPeriod,
-        placeOfPerformance = placeOfPerformance?.convert()
+        placeOfPerformance = placeOfPerformance?.convert(),
+        hasRecurrence = hasRecurrence,
+        hasOptions = hasOptions,
+        hasRenewal = hasRenewal,
+        recurrence = recurrence?.convert("$path.recurrence")?.onFailure { return it },
+        renewal = renewal?.convert("$path.renewal")?.onFailure { return it },
+        options = options
+    ).asSuccess()
+}
 
+private fun ValidateLotsDataForDivisionRequest.Tender.Lot.Renewal.convert(path: String): Result<ValidateLotsDataForDivisionParams.Tender.Lot.Renewal, DataErrors> =
+     ValidateLotsDataForDivisionParams.Tender.Lot.Renewal(
+        description = description,
+        minimumRenewals = minimumRenewals,
+        maximumRenewals = maximumRenewals,
+        period = period?.convert("$path.period")?.onFailure { return it }
+    ).asSuccess()
+
+private fun ValidateLotsDataForDivisionRequest.Tender.Lot.Renewal.Period.convert(path: String): Result<ValidateLotsDataForDivisionParams.Tender.Lot.Renewal.Period, DataErrors> {
+    val startDate = startDate?.let { parseDate(startDate, "$path.startDate") }
+        ?.onFailure { return it }
+
+    val endDate = endDate?.let { parseDate(endDate, "$path.endDate") }
+        ?.onFailure { return it }
+
+    val maxExtentDate = maxExtentDate?.let { parseDate(maxExtentDate, "$path.maxExtentDate") }
+        ?.onFailure { return it }
+
+    return ValidateLotsDataForDivisionParams.Tender.Lot.Renewal.Period(
+        startDate = startDate,
+        endDate = endDate,
+        maxExtentDate = maxExtentDate,
+        durationInDays = durationInDays
+    ).asSuccess()
+}
+
+private fun ValidateLotsDataForDivisionRequest.Tender.Lot.Recurrence.convert(path: String): Result<ValidateLotsDataForDivisionParams.Tender.Lot.Recurrence, DataErrors> {
+    return ValidateLotsDataForDivisionParams.Tender.Lot.Recurrence(
+        description = description,
+        dates = dates?.mapResult { it.convert("$path.dates") }?.onFailure { return it }
+    ).asSuccess()
+}
+
+private fun ValidateLotsDataForDivisionRequest.Tender.Lot.Recurrence.Date.convert(path: String): Result<ValidateLotsDataForDivisionParams.Tender.Lot.Recurrence.Date, DataErrors> {
+    val startDate = startDate?.let { parseDate(startDate, "$path.startDate") }
+        ?.onFailure { return it }
+
+    return ValidateLotsDataForDivisionParams.Tender.Lot.Recurrence.Date(
+        startDate = startDate
+    ).asSuccess()}
+
+private fun ValidateLotsDataForDivisionRequest.Tender.Lot.Option.convert(path: String): Result<ValidateLotsDataForDivisionParams.Tender.Lot.Option, DataErrors> =
+    ValidateLotsDataForDivisionParams.Tender.Lot.Option(
+        description = description,
+        period = period?.toDomain("$path/period")?.onFailure { return it }
+    ).asSuccess()
+
+private fun ValidateLotsDataForDivisionRequest.Tender.Lot.Option.Period.toDomain(path: String): Result<ValidateLotsDataForDivisionParams.Tender.Lot.Option.Period, DataErrors> {
+    val startDate = startDate?.let { parseDate(startDate, "$path.startDate") }
+        ?.onFailure { return it }
+
+    val endDate = endDate?.let { parseDate(endDate, "$path.endDate") }
+        ?.onFailure { return it }
+
+    val maxExtentDate = maxExtentDate?.let { parseDate(maxExtentDate, "$path.maxExtentDate") }
+        ?.onFailure { return it }
+
+    return ValidateLotsDataForDivisionParams.Tender.Lot.Option.Period(
+        startDate = startDate,
+        endDate = endDate,
+        maxExtentDate = maxExtentDate,
+        durationInDays = durationInDays
     ).asSuccess()
 }
 

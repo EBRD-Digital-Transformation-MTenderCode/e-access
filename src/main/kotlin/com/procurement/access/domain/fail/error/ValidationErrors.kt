@@ -502,4 +502,23 @@ sealed class ValidationErrors(
         prefix = "VR.COM-",
         description = "Invalid value of lot with id '$id'."
     )
+
+    class OptionsMustBeAbsent(val lotId: String) : ValidationErrors(
+        numberError = "1.39.18",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' contains redundant list of options."
+    )
+
+    class RecurrenceMustBeAbsent(val lotId: String) : ValidationErrors(
+        numberError = "1.39.19",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' contains redundant recurrence."
+    )
+
+    class RenewalMustBeAbsent(val lotId: String) : ValidationErrors(
+        numberError = "1.39.20",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' contains redundant renewal."
+    )
+
 }

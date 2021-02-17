@@ -483,6 +483,88 @@ internal class LotsServiceTest {
             assertEquals(expectedMessage, actual.reason.description)
         }
 
+        @Test
+        fun containsOptionsWithHasOptionIsFalse_fail() {
+            val params = getParams()
+            val paramsWithOptions = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.map {
+                        it.copy(
+                            options = listOf(
+                                ValidateLotsDataForDivisionParams.Tender.Lot.Option(description = "string", period = null)
+                            ),
+                            hasOptions = false
+                        )
+            }))
+
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
+
+            val expectedErrorCode = "VR.COM-1.39.18"
+            val expectedMessage = "Lot '${params.tender.lots[0].id}' contains redundant list of options."
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+            assertEquals(expectedMessage, actual.reason.description)
+        }
+
+        @Test
+        fun containsRenewalWithHasRenewalIsFalse_fail() {
+            val params = getParams()
+            val paramsWithOptions = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.map {
+                        it.copy(
+                            renewal = ValidateLotsDataForDivisionParams.Tender.Lot.Renewal(
+                                description = "string",
+                                period = null,
+                                maximumRenewals = null,
+                                minimumRenewals = null
+                            ),
+                            hasRenewal = false
+                        )
+                    }))
+
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
+
+            val expectedErrorCode = "VR.COM-1.39.20"
+            val expectedMessage = "Lot '${params.tender.lots[0].id}' contains redundant renewal."
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+            assertEquals(expectedMessage, actual.reason.description)
+        }
+
+        @Test
+        fun containsRecurrenceWithHasRenewalIsFalse_fail() {
+            val params = getParams()
+            val paramsWithOptions = params.copy(
+                tender = params.tender.copy(
+                    lots = params.tender.lots.map {
+                        it.copy(
+                            recurrence = ValidateLotsDataForDivisionParams.Tender.Lot.Recurrence(
+                                description = "string",
+                                dates = null
+                            ),
+                            hasRecurrence = false
+                        )
+                    }))
+
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
+            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+                .thenReturn(success(tenderProcessEntity))
+            val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
+
+            val expectedErrorCode = "VR.COM-1.39.19"
+            val expectedMessage = "Lot '${params.tender.lots[0].id}' contains redundant recurrence."
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+            assertEquals(expectedMessage, actual.reason.description)
+        }
+
         private fun getParams(): ValidateLotsDataForDivisionParams {
             return ValidateLotsDataForDivisionParams(
                 cpid = CPID,
@@ -496,7 +578,13 @@ internal class LotsServiceTest {
                             description = null,
                             placeOfPerformance = null,
                             contractPeriod = null,
-                            value = null
+                            value = null,
+                            hasRenewal = null,
+                            hasOptions = null,
+                            hasRecurrence = null,
+                            options = emptyList(),
+                            renewal = null,
+                            recurrence = null
                         ),
                         ValidateLotsDataForDivisionParams.Tender.Lot(
                             id = LOT_ID_1.toString(),
@@ -534,7 +622,13 @@ internal class LotsServiceTest {
                             value = ValidateLotsDataForDivisionParams.Tender.Lot.Value(
                                 amount = BigDecimal(2),
                                 currency = "currency"
-                            )
+                            ),
+                            hasRenewal = null,
+                            hasOptions = null,
+                            hasRecurrence = null,
+                            options = emptyList(),
+                            renewal = null,
+                            recurrence = null
                         ),
                         ValidateLotsDataForDivisionParams.Tender.Lot(
                             id = LOT_ID_2.toString(),
@@ -572,7 +666,13 @@ internal class LotsServiceTest {
                             value = ValidateLotsDataForDivisionParams.Tender.Lot.Value(
                                 amount = BigDecimal(4.020),
                                 currency = "currency"
-                            )
+                            ),
+                            hasRenewal = null,
+                            hasOptions = null,
+                            hasRecurrence = null,
+                            options = emptyList(),
+                            renewal = null,
+                            recurrence = null
                         )
                     ),
                     items = listOf(
@@ -652,6 +752,33 @@ internal class LotsServiceTest {
                             )
                         )
                     )
+                ),
+                hasRenewal = true,
+                hasOptions = true,
+                hasRecurrence = true,
+                options = listOf(DivideLotResult.Tender.Lot.Option(
+                    description = "string",
+                    period = DivideLotResult.Tender.Lot.Option.Period(
+                        durationInDays = 1,
+                        maxExtentDate = DATE.minusDays(1),
+                        endDate = DATE.minusDays(2),
+                        startDate = DATE.minusDays(3)
+                    )
+                )),
+                renewal = DivideLotResult.Tender.Lot.Renewal(
+                    description = "string",
+                    period = DivideLotResult.Tender.Lot.Renewal.Period(
+                        durationInDays = 10,
+                        maxExtentDate = DATE.minusDays(10),
+                        endDate = DATE.minusDays(20),
+                        startDate = DATE.minusDays(30)
+                    ),
+                    maximumRenewals = 1,
+                    minimumRenewals = 1
+                ),
+                recurrence = DivideLotResult.Tender.Lot.Recurrence(
+                    dates = listOf(DivideLotResult.Tender.Lot.Recurrence.Date(DATE)),
+                    description = "string"
                 )
             ),
             DivideLotResult.Tender.Lot(
@@ -695,7 +822,13 @@ internal class LotsServiceTest {
                             )
                         )
                     )
-                )
+                ),
+                hasRenewal = false,
+                hasOptions = false,
+                hasRecurrence = false,
+                options = emptyList(),
+                renewal = null,
+                recurrence = null
             ),
             DivideLotResult.Tender.Lot(
                 id = STORED_LOT_ID.toString(),
@@ -738,7 +871,13 @@ internal class LotsServiceTest {
                             )
                         )
                     )
-                )
+                ),
+                hasRenewal = null,
+                hasOptions = null,
+                hasRecurrence = null,
+                options = emptyList(),
+                renewal = null,
+                recurrence = null
             )
 
         )
@@ -808,7 +947,13 @@ internal class LotsServiceTest {
                         placeOfPerformance = null,
                         contractPeriod = null,
                         value = null,
-                        title = null
+                        title = null,
+                        hasRenewal = null,
+                        hasOptions = null,
+                        hasRecurrence = null,
+                        options = emptyList(),
+                        renewal = null,
+                        recurrence = null
                     ),
                     DivideLotParams.Tender.Lot(
                         id = "ae865fd4-288e-4862-9ec2-6d9f1f1a59be",
@@ -846,7 +991,34 @@ internal class LotsServiceTest {
                             endDate = DATE.plusDays(1)
                         ),
                         value = DivideLotParams.Tender.Lot.Value(amount = BigDecimal.ONE, currency = "currency"),
-                        title = "title"
+                        title = "title",
+                        hasRenewal = true,
+                        hasOptions = true,
+                        hasRecurrence = true,
+                        options = listOf(DivideLotParams.Tender.Lot.Option(
+                            description = "string",
+                            period = DivideLotParams.Tender.Lot.Option.Period(
+                                durationInDays = 1,
+                                maxExtentDate = DATE.minusDays(1),
+                                endDate = DATE.minusDays(2),
+                                startDate = DATE.minusDays(3)
+                            )
+                        )),
+                        renewal = DivideLotParams.Tender.Lot.Renewal(
+                            description = "string",
+                            period = DivideLotParams.Tender.Lot.Renewal.Period(
+                                durationInDays = 10,
+                                maxExtentDate = DATE.minusDays(10),
+                                endDate = DATE.minusDays(20),
+                                startDate = DATE.minusDays(30)
+                            ),
+                            maximumRenewals = 1,
+                            minimumRenewals = 1
+                        ),
+                        recurrence = DivideLotParams.Tender.Lot.Recurrence(
+                            dates = listOf(DivideLotParams.Tender.Lot.Recurrence.Date(DATE)),
+                            description = "string"
+                        )
                     ),
                     DivideLotParams.Tender.Lot(
                         id = "beb7c28c-6bb6-444d-b43d-a7cf2454b935",
@@ -884,7 +1056,13 @@ internal class LotsServiceTest {
                             endDate = DATE.plusDays(1)
                         ),
                         value = DivideLotParams.Tender.Lot.Value(amount = BigDecimal.TEN, currency = "currency"),
-                        title = "title"
+                        title = "title",
+                        hasRenewal = null,
+                        hasOptions = null,
+                        hasRecurrence = null,
+                        options = emptyList(),
+                        renewal = null,
+                        recurrence = null
                     )
                 ),
                 items = listOf(
