@@ -159,26 +159,42 @@
           "amount": 300.01,
           "currency": "pn.planning.budget.amount.currency"
         },
+        "hasOptions": true,
         "options": [
           {
-            "hasOptions": false
+            "description": "The buyer has the option to buy an additional hundred uniforms.",
+            "period": {
+              "durationInDays": 180,
+              "startDate": "2021-02-10T00:00:00Z",
+              "endDate": "2024-02-10T00:00:00Z",
+              "maxExtentDate": "2024-02-10T00:00:00Z"
+            }
           }
         ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
+        "hasRecurrence": true,
+        "recurrence": {
+          "dates": [
+            {
+              "startDate": "2020-01-01T00:00:00Z"
+            },
+            {
+              "startDate": "2021-01-01T00:00:00Z"
+            }
+          ],
+          "description": "The duration of this contract and recurrent contracts will not exceed three years."
+        },
+        "hasRenewal": true,
+        "renewal": {
+          "description": "The contracting authority reserves the right to extend the term for a period or periods of up to 1 year with a maximum of 2 such extensions on the same terms and conditions, subject to the contracting authority's obligations at law.",
+          "minimumRenewals": 2,
+          "maximumRenewals": 2,
+          "period": {
+            "durationInDays": 365,
+            "startDate": "2021-02-10T00:00:00Z",
+            "endDate": "2024-02-10T00:00:00Z",
+            "maxExtentDate": "2024-02-10T00:00:00Z"
           }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
+        },
         "contractPeriod": {
           "startDate": "2019-05-01T10:00:00Z",
           "endDate": "2019-05-10T10:00:00Z"
@@ -222,26 +238,6 @@
           "amount": 300.01,
           "currency": "pn.planning.budget.amount.currency"
         },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
         "contractPeriod": {
           "startDate": "2019-05-07T10:00:00Z",
           "endDate": "2019-05-17T10:00:00Z"
@@ -284,26 +280,6 @@
           "amount": 250.01,
           "currency": "pn.planning.budget.amount.currency"
         },
-        "options": [
-          {
-            "hasOptions": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "variants": [
-          {
-            "hasVariants": false
-          }
-        ],
         "contractPeriod": {
           "startDate": "2019-05-13T10:00:00Z",
           "endDate": "2019-05-23T10:00:00Z"

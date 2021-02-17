@@ -26,6 +26,17 @@
               }
             }
           }
+        },
+        "options": [
+          {
+            "period": {}
+          }
+        ],
+        "recurrence": {
+          "dates": []
+        },
+        "renewal": {
+          "period": {}
         }
       }
     ],
