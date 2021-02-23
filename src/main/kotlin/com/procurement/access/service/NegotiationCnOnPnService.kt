@@ -1204,6 +1204,7 @@ class NegotiationCnOnPnService(
                 hasRenewal = lot.hasRenewal ?: false,        // BR-1.0.1.3.11
                 options = lot.options.orEmpty().map { option ->
                     CNEntity.Tender.Lot.Option(
+                        hasOptions = null,
                         description = option.description,
                         period = option.period?.let { period ->
                             CNEntity.Tender.Lot.Period(
