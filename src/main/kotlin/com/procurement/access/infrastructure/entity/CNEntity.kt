@@ -555,7 +555,8 @@ data class CNEntity(
 
             data class Option(
                 @Deprecated(message = "Will not be used anymore")
-                @field:JsonProperty("hasOptions") @param:JsonProperty("hasOptions") val hasOptions: Boolean = false,
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("hasOptions") @param:JsonProperty("hasOptions") val hasOptions: Boolean?,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,

@@ -21,7 +21,7 @@ data class GettedLot(
     val placeOfPerformance: PlaceOfPerformance
 ) {
     data class Option(
-        val hasOptions: Boolean = false
+        val hasOptions: Boolean? = false
     )
 
     data class Variant(
