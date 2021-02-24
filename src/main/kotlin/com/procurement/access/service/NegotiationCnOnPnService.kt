@@ -232,6 +232,12 @@ class NegotiationCnOnPnService(
                 lot.title.checkForBlank("tender.lots[$lotIdx].title")
                 lot.description.checkForBlank("tender.lots[$lotIdx].description")
                 lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+                lot.options
+                    ?.forEachIndexed { optionIdx, option ->
+                        option.description.checkForBlank("tender.lots[$lotIdx].options[$optionIdx].description")
+                    }
+                lot.recurrence?.description.checkForBlank("tender.lots[$lotIdx].recurrence.description")
+                lot.renewal?.description.checkForBlank("tender.lots[$lotIdx].renewal.description")
 
                 lot.placeOfPerformance
                     .apply {

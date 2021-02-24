@@ -392,15 +392,29 @@ class SelectiveCnOnPnService(
                 lot.title.checkForBlank("tender.lots[$lotIdx].title")
                 lot.description.checkForBlank("tender.lots[$lotIdx].description")
                 lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+                lot.options
+                    ?.forEachIndexed { optionIdx, option ->
+                        option.description.checkForBlank("tender.lots[$lotIdx].options[$optionIdx].description")
+                    }
+                lot.recurrence?.description.checkForBlank("tender.lots[$lotIdx].recurrence.description")
+                lot.renewal?.description.checkForBlank("tender.lots[$lotIdx].renewal.description")
 
-                lot.placeOfPerformance.address.addressDetails.locality.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.description")
-                lot.placeOfPerformance.address.addressDetails.locality.id.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.id")
-                lot.placeOfPerformance.address.addressDetails.locality.scheme.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.scheme")
-                lot.placeOfPerformance.address.addressDetails.locality.uri.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.postalCode")
-                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.description")
-                lot.title.checkForBlank("tender.lots[$lotIdx].title")
+                lot.placeOfPerformance
+                    .apply {
+                        description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.description")
+
+                        address.apply {
+                            postalCode.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.postalCode")
+                            streetAddress.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.streetAddress")
+
+                            addressDetails.apply {
+                                locality.description.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.description")
+                                locality.id.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.id")
+                                locality.scheme.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.scheme")
+                                locality.uri.checkForBlank("tender.lots[$lotIdx].placeOfPerformance.address.addressDetails.locality.uri")
+                            }
+                        }
+                    }
             }
 
         tender.items
