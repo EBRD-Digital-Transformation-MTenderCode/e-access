@@ -206,26 +206,39 @@
           "amount": 256.78,
           "currency": "MDL"
         },
+        "hasOptions": true,
         "options": [
           {
-            "hasOptions": false
+            "description": "string",
+            "period": {
+              "durationInDays": 0,
+              "startDate": "2021-02-15T13:39:23Z",
+              "endDate": "2021-02-15T13:39:23Z",
+              "maxExtentDate": "2021-02-15T13:39:23Z"
+            }
           }
         ],
-        "variants": [
-          {
-            "hasVariants": false
+        "hasRecurrence": true,
+        "recurrence": {
+          "dates": [
+            {
+              "startDate": "2021-02-15T13:39:23Z"
+            }
+          ],
+          "description": "string"
+        },
+        "hasRenewal": true,
+        "renewal": {
+          "description": "string",
+          "minimumRenewals": 0,
+          "maximumRenewals": 0,
+          "period": {
+            "durationInDays": 0,
+            "startDate": "2021-02-15T13:39:23Z",
+            "endDate": "2021-02-15T13:39:23Z",
+            "maxExtentDate": "2021-02-15T13:39:23Z"
           }
-        ],
-        "renewals": [
-          {
-            "hasRenewals": false
-          }
-        ],
-        "recurrentProcurement": [
-          {
-            "isRecurrent": false
-          }
-        ],
+        },
         "contractPeriod": {
           "startDate": "2019-05-01T10:00:00Z",
           "endDate": "2019-05-10T10:00:00Z"

@@ -42,7 +42,9 @@ data class GetLotResponse(
         @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance
     ) {
         data class Option(
-            @field:JsonProperty("hasOptions") @param:JsonProperty("hasOptions") val hasOptions: Boolean = false
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("hasOptions") @param:JsonProperty("hasOptions") val hasOptions: Boolean?
         )
 
         data class Variant(

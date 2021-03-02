@@ -232,6 +232,12 @@ class NegotiationCnOnPnService(
                 lot.title.checkForBlank("tender.lots[$lotIdx].title")
                 lot.description.checkForBlank("tender.lots[$lotIdx].description")
                 lot.internalId.checkForBlank("tender.lots[$lotIdx].internalId")
+                lot.options
+                    ?.forEachIndexed { optionIdx, option ->
+                        option.description.checkForBlank("tender.lots[$lotIdx].options[$optionIdx].description")
+                    }
+                lot.recurrence?.description.checkForBlank("tender.lots[$lotIdx].recurrence.description")
+                lot.renewal?.description.checkForBlank("tender.lots[$lotIdx].renewal.description")
 
                 lot.placeOfPerformance
                     .apply {
@@ -1204,6 +1210,7 @@ class NegotiationCnOnPnService(
                 hasRenewal = lot.hasRenewal ?: false,        // BR-1.0.1.3.11
                 options = lot.options.orEmpty().map { option ->
                     CNEntity.Tender.Lot.Option(
+                        hasOptions = null,
                         description = option.description,
                         period = option.period?.let { period ->
                             CNEntity.Tender.Lot.Period(
