@@ -290,28 +290,42 @@ data class UpdatedOpenCn(
             val status: LotStatus,
             val statusDetails: LotStatusDetails,
             val value: Money,
-            val options: List<Option>,
-            val variants: List<Variant>,
-            val renewals: List<Renewal>,
-            val recurrentProcurements: List<RecurrentProcurement>,
+            val hasOptions: Boolean?,
+            val options: List<Option>?,
+            val hasRecurrence: Boolean?,
+            val recurrence: Recurrence?,
+            val hasRenewal: Boolean?,
+            val renewal: Renewal?,
             val contractPeriod: ContractPeriod,
             val placeOfPerformance: PlaceOfPerformance
         ) {
 
             data class Option(
-                val hasOptions: Boolean
+                val description: String?,
+                val period: Period?
             )
 
-            data class Variant(
-                val hasVariants: Boolean
-            )
+            data class Recurrence(
+                val description: String?,
+                val dates: List<Date>?
+            ) {
+                data class Date(
+                    val startDate: LocalDateTime?
+                )
+            }
 
             data class Renewal(
-                val hasRenewals: Boolean
+                val description: String?,
+                val minimumRenewals: Int?,
+                val maximumRenewals: Int?,
+                val period: Period?
             )
 
-            data class RecurrentProcurement(
-                val isRecurrent: Boolean
+            data class Period(
+                val startDate: LocalDateTime?,
+                val endDate: LocalDateTime?,
+                val durationInDays: Int?,
+                val maxExtentDate: LocalDateTime?
             )
 
             data class ContractPeriod(

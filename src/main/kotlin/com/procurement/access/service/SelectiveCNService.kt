@@ -1319,30 +1319,47 @@ class SelectiveCNServiceImpl(
                                             currency = value.currency
                                         )
                                     },
-                                options = lot.options
-                                    .map { option ->
-                                        UpdatedSelectiveCn.Tender.Lot.Option(
-                                            hasOptions = option.hasOptions
-                                        )
-                                    },
-                                variants = lot.variants
-                                    .map { variant ->
-                                        UpdatedSelectiveCn.Tender.Lot.Variant(
-                                            hasVariants = variant.hasVariants
-                                        )
-                                    },
-                                renewals = lot.renewals
-                                    .map { renewal ->
-                                        UpdatedSelectiveCn.Tender.Lot.Renewal(
-                                            hasRenewals = renewal.hasRenewals
-                                        )
-                                    },
-                                recurrentProcurements = lot.recurrentProcurement
-                                    .map { recurrentProcurement ->
-                                        UpdatedSelectiveCn.Tender.Lot.RecurrentProcurement(
-                                            isRecurrent = recurrentProcurement.isRecurrent
-                                        )
-                                    },
+                                hasOptions = lot.hasOptions,
+                                options = lot.options.map { option ->
+                                    UpdatedSelectiveCn.Tender.Lot.Option(
+                                        description = option.description,
+                                        period = option.period?.let { period ->
+                                            UpdatedSelectiveCn.Tender.Lot.Period(
+                                                startDate = period.startDate,
+                                                endDate = period.endDate,
+                                                durationInDays = period.durationInDays,
+                                                maxExtentDate = period.maxExtentDate
+                                            )
+                                        }
+                                    )
+                                },
+                                hasRenewal = lot.hasRenewal,
+                                renewal = lot.renewal?.let { renewal ->
+                                    UpdatedSelectiveCn.Tender.Lot.Renewal(
+                                        description = renewal.description,
+                                        minimumRenewals = renewal.minimumRenewals,
+                                        maximumRenewals = renewal.maximumRenewals,
+                                        period = renewal.period?.let { period ->
+                                            UpdatedSelectiveCn.Tender.Lot.Period(
+                                                startDate = period.startDate,
+                                                endDate = period.endDate,
+                                                durationInDays = period.durationInDays,
+                                                maxExtentDate = period.maxExtentDate
+                                            )
+                                        }
+                                    )
+                                },
+                                hasRecurrence = lot.hasRecurrence,
+                                recurrence = lot.recurrence?.let { recurrence ->
+                                    UpdatedSelectiveCn.Tender.Lot.Recurrence(
+                                        description = recurrence.description,
+                                        dates = recurrence.dates?.map { date ->
+                                            UpdatedSelectiveCn.Tender.Lot.Recurrence.Date(
+                                                startDate = date.startDate
+                                            )
+                                        }
+                                    )
+                                },
                                 contractPeriod = lot.contractPeriod
                                     .let { contractPeriod ->
                                         UpdatedSelectiveCn.Tender.Lot.ContractPeriod(

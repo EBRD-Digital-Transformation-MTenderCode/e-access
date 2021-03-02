@@ -952,6 +952,7 @@ class LotsService(
             options = lot.options
                 .map { option ->
                     CNEntity.Tender.Lot.Option(
+                        hasOptions = null,
                         description = option.description,
                         period = option.period
                             ?.let { period ->

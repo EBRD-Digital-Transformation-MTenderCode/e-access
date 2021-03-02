@@ -253,24 +253,45 @@ fun UpdatedOpenCn.convert(): UpdateOpenCnResponse =
                         status = lot.status,
                         statusDetails = lot.statusDetails,
                         value = lot.value,
-                        options = lot.options.map { option ->
+                        hasOptions = lot.hasOptions,
+                        options = lot.options?.map { option ->
                             UpdateOpenCnResponse.Tender.Lot.Option(
-                                hasOptions = option.hasOptions
+                                description = option.description,
+                                period = option.period?.let { period ->
+                                    UpdateOpenCnResponse.Tender.Lot.Period(
+                                        startDate = period.startDate,
+                                        endDate = period.endDate,
+                                        durationInDays = period.durationInDays,
+                                        maxExtentDate = period.maxExtentDate
+                                    )
+                                }
                             )
                         },
-                        variants = lot.variants.map { variant ->
-                            UpdateOpenCnResponse.Tender.Lot.Variant(
-                                hasVariants = variant.hasVariants
-                            )
-                        },
-                        renewals = lot.renewals.map { renewal ->
+                        hasRenewal = lot.hasRenewal,
+                        renewal = lot.renewal?.let { renewal ->
                             UpdateOpenCnResponse.Tender.Lot.Renewal(
-                                hasRenewals = renewal.hasRenewals
+                                description = renewal.description,
+                                minimumRenewals = renewal.minimumRenewals,
+                                maximumRenewals = renewal.maximumRenewals,
+                                period = renewal.period?.let { period ->
+                                    UpdateOpenCnResponse.Tender.Lot.Period(
+                                        startDate = period.startDate,
+                                        endDate = period.endDate,
+                                        durationInDays = period.durationInDays,
+                                        maxExtentDate = period.maxExtentDate
+                                    )
+                                }
                             )
                         },
-                        recurrentProcurements = lot.recurrentProcurements.map { recurrentProcurement ->
-                            UpdateOpenCnResponse.Tender.Lot.RecurrentProcurement(
-                                isRecurrent = recurrentProcurement.isRecurrent
+                        hasRecurrence = lot.hasRecurrence,
+                        recurrence = lot.recurrence?.let { recurrence ->
+                            UpdateOpenCnResponse.Tender.Lot.Recurrence(
+                                description = recurrence.description,
+                                dates = recurrence.dates?.map { date ->
+                                    UpdateOpenCnResponse.Tender.Lot.Recurrence.Date(
+                                        startDate = date.startDate
+                                    )
+                                }
                             )
                         },
                         contractPeriod = lot.contractPeriod.let { contractPeriod ->
@@ -646,30 +667,47 @@ fun UpdatedSelectiveCn.convert(): UpdateSelectiveCnResponse =
                                 status = lot.status,
                                 statusDetails = lot.statusDetails,
                                 value = lot.value,
-                                options = lot.options
-                                    .map { option ->
-                                        UpdateSelectiveCnResponse.Tender.Lot.Option(
-                                            hasOptions = option.hasOptions
-                                        )
-                                    },
-                                variants = lot.variants
-                                    .map { variant ->
-                                        UpdateSelectiveCnResponse.Tender.Lot.Variant(
-                                            hasVariants = variant.hasVariants
-                                        )
-                                    },
-                                renewals = lot.renewals
-                                    .map { renewal ->
-                                        UpdateSelectiveCnResponse.Tender.Lot.Renewal(
-                                            hasRenewals = renewal.hasRenewals
-                                        )
-                                    },
-                                recurrentProcurements = lot.recurrentProcurements
-                                    .map { recurrentProcurement ->
-                                        UpdateSelectiveCnResponse.Tender.Lot.RecurrentProcurement(
-                                            isRecurrent = recurrentProcurement.isRecurrent
-                                        )
-                                    },
+                                hasOptions = lot.hasOptions,
+                                options = lot.options?.map { option ->
+                                    UpdateSelectiveCnResponse.Tender.Lot.Option(
+                                        description = option.description,
+                                        period = option.period?.let { period ->
+                                            UpdateSelectiveCnResponse.Tender.Lot.Period(
+                                                startDate = period.startDate,
+                                                endDate = period.endDate,
+                                                durationInDays = period.durationInDays,
+                                                maxExtentDate = period.maxExtentDate
+                                            )
+                                        }
+                                    )
+                                },
+                                hasRenewal = lot.hasRenewal,
+                                renewal = lot.renewal?.let { renewal ->
+                                    UpdateSelectiveCnResponse.Tender.Lot.Renewal(
+                                        description = renewal.description,
+                                        minimumRenewals = renewal.minimumRenewals,
+                                        maximumRenewals = renewal.maximumRenewals,
+                                        period = renewal.period?.let { period ->
+                                            UpdateSelectiveCnResponse.Tender.Lot.Period(
+                                                startDate = period.startDate,
+                                                endDate = period.endDate,
+                                                durationInDays = period.durationInDays,
+                                                maxExtentDate = period.maxExtentDate
+                                            )
+                                        }
+                                    )
+                                },
+                                hasRecurrence = lot.hasRecurrence,
+                                recurrence = lot.recurrence?.let { recurrence ->
+                                    UpdateSelectiveCnResponse.Tender.Lot.Recurrence(
+                                        description = recurrence.description,
+                                        dates = recurrence.dates?.map { date ->
+                                            UpdateSelectiveCnResponse.Tender.Lot.Recurrence.Date(
+                                                startDate = date.startDate
+                                            )
+                                        }
+                                    )
+                                },
                                 contractPeriod = lot.contractPeriod
                                     .let { contractPeriod ->
                                         UpdateSelectiveCnResponse.Tender.Lot.ContractPeriod(

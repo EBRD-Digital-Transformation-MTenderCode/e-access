@@ -460,38 +460,77 @@ data class UpdateOpenCnResponse(
             @JsonSerialize(using = MoneySerializer::class)
             @field:JsonProperty("value") @param:JsonProperty("value") val value: Money,
 
-            @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option>,
-
-            @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant>,
-
-            @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("renewals") @param:JsonProperty("renewals") val renewals: List<Renewal>,
-
-            @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("recurrentProcurement") @param:JsonProperty("recurrentProcurement") val recurrentProcurements: List<RecurrentProcurement>,
-
             @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?
+            @field:JsonProperty("placeOfPerformance") @param:JsonProperty("placeOfPerformance") val placeOfPerformance: PlaceOfPerformance?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("hasOptions") @param:JsonProperty("hasOptions") val hasOptions: Boolean?,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("options") @param:JsonProperty("options") val options: List<Option>?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("hasRecurrence") @param:JsonProperty("hasRecurrence") val hasRecurrence: Boolean?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("recurrence") @param:JsonProperty("recurrence") val recurrence: Recurrence?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("hasRenewal") @param:JsonProperty("hasRenewal") val hasRenewal: Boolean?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("renewal") @param:JsonProperty("renewal") val renewal: Renewal?
         ) {
 
             data class Option(
-                @field:JsonProperty("hasOptions") @param:JsonProperty("hasOptions") val hasOptions: Boolean
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("period") @param:JsonProperty("period") val period: Period?
             )
 
-            data class Variant(
-                @field:JsonProperty("hasVariants") @param:JsonProperty("hasVariants") val hasVariants: Boolean
-            )
+            data class Recurrence(
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+                @JsonInclude(JsonInclude.Include.NON_EMPTY)
+                @field:JsonProperty("dates") @param:JsonProperty("dates") val dates: List<Date>?
+            ) {
+                data class Date(
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime?
+                )
+            }
 
             data class Renewal(
-                @field:JsonProperty("hasRenewals") @param:JsonProperty("hasRenewals") val hasRenewals: Boolean
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("minimumRenewals") @param:JsonProperty("minimumRenewals") val minimumRenewals: Int?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("maximumRenewals") @param:JsonProperty("maximumRenewals") val maximumRenewals: Int?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("period") @param:JsonProperty("period") val period: Period?
             )
 
-            data class RecurrentProcurement(
-                @get:JsonProperty("isRecurrent") @param:JsonProperty("isRecurrent") val isRecurrent: Boolean
+            data class Period(
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: LocalDateTime?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("durationInDays") @param:JsonProperty("durationInDays") val durationInDays: Int?,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("maxExtentDate") @param:JsonProperty("maxExtentDate") val maxExtentDate: LocalDateTime?
             )
 
             data class ContractPeriod(
