@@ -19,6 +19,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     CREATE_PIN_ON_PN("createPINonPN"),
     CREATE_PN("createPN"),
     CREATE_SUBMISSION("createSubmission"),
+    DECLARE_NON_CONFLICT_OF_INTEREST("declareNonConflictOfInterest"),
     DIVIDE_LOT("divideLot"),
     ISSUING_FRAMEWORK_CONTRACT("issuingFrameworkContract"),
     OUTSOURCING_PN("outsourcingPN"),
