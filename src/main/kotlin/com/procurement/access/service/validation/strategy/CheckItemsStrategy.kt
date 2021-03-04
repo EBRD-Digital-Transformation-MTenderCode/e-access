@@ -230,6 +230,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.CREATE_FE,
             OperationType.CREATE_PCR,
             OperationType.CREATE_SUBMISSION,
+            OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,
             OperationType.ISSUING_FRAMEWORK_CONTRACT,
             OperationType.OUTSOURCING_PN,

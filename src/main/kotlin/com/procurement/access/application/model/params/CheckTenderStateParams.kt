@@ -32,6 +32,7 @@ class CheckTenderStateParams private constructor(
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
+                    OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.SUBMISSION_PERIOD_END,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,

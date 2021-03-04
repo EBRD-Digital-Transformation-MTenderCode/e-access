@@ -54,6 +54,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.UPDATE_PN,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
 
+                        OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                         OperationType.SUBMISSION_PERIOD_END,
                         OperationType.TENDER_PERIOD_END -> true
                     }
