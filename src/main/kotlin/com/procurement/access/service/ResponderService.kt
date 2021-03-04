@@ -266,6 +266,7 @@ class ResponderServiceImpl(
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
+            OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.QUALIFICATION_PROTOCOL,
             OperationType.RELATION_AP,
             OperationType.START_SECONDSTAGE,
