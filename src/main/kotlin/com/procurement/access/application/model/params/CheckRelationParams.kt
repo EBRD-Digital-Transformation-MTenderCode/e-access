@@ -43,6 +43,7 @@ class CheckRelationParams private constructor(
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
+                    OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.QUALIFICATION_PROTOCOL,
                     OperationType.START_SECONDSTAGE,
                     OperationType.SUBMIT_BID,

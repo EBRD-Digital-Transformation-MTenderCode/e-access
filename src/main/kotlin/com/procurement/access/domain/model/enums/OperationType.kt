@@ -25,6 +25,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     OUTSOURCING_PN("outsourcingPN"),
     QUALIFICATION("qualification"),
     QUALIFICATION_CONSIDERATION("qualificationConsideration"),
+    QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST("qualificationDeclareNonConflictOfInterest"),
     QUALIFICATION_PROTOCOL("qualificationProtocol"),
     RELATION_AP("relationAP"),
     START_SECONDSTAGE("startSecondStage"),
