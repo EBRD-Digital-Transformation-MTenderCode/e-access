@@ -49,6 +49,7 @@ val allowedOperationType = OperationType.allowedElements
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
