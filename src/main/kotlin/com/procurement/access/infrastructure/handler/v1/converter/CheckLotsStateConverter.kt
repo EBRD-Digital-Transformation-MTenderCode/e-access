@@ -42,6 +42,7 @@ val allowedOperationType = OperationType.allowedElements
     .filter {
         when (it) {
             OperationType.CREATE_AWARD,
+            OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,
             OperationType.SUBMIT_BID,
             OperationType.UPDATE_AWARD -> true

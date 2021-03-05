@@ -37,6 +37,7 @@ class CheckRelationParams private constructor(
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
                     OperationType.CREATE_SUBMISSION,
+                    OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.DIVIDE_LOT,
                     OperationType.ISSUING_FRAMEWORK_CONTRACT,
                     OperationType.OUTSOURCING_PN,
