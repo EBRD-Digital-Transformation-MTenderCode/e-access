@@ -441,6 +441,7 @@ class CheckFEDataRules {
 
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
@@ -478,6 +479,7 @@ class CheckFEDataRules {
 
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
@@ -515,6 +517,7 @@ class CheckFEDataRules {
 
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
@@ -553,6 +556,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE -> context.prevStage
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
