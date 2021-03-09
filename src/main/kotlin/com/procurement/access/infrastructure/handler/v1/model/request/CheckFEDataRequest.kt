@@ -19,7 +19,8 @@ import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CheckFEDataRequest(
-    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion>,
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion>?,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
     data class Tender(
