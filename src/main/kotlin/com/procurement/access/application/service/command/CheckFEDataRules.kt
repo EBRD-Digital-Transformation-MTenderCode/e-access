@@ -608,5 +608,46 @@ class CheckFEDataRules {
                         )
                 }
         }
+
+        fun checkCriteriaReference(data: CheckFEDataData, context: CheckFEDataContext) =
+            when (context.operationType) {
+                OperationType.CREATE_FE -> {
+                    if (data.criteria.isEmpty())
+                        throw ErrorException(ErrorType.MISSING_REFERENCE_CRITERIA, message = "VR-1.0.1.14.1")
+                    else Unit
+                }
+                OperationType.AMEND_FE,
+                OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                OperationType.AWARD_CONSIDERATION,
+                OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
+                OperationType.CREATE_CN,
+                OperationType.CREATE_CN_ON_PIN,
+                OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+                OperationType.CREATE_PCR,
+                OperationType.CREATE_PIN,
+                OperationType.CREATE_PIN_ON_PN,
+                OperationType.CREATE_PN,
+                OperationType.CREATE_SUBMISSION,
+                OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
+                OperationType.DIVIDE_LOT,
+                OperationType.ISSUING_FRAMEWORK_CONTRACT,
+                OperationType.OUTSOURCING_PN,
+                OperationType.QUALIFICATION,
+                OperationType.QUALIFICATION_CONSIDERATION,
+                OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
+                OperationType.QUALIFICATION_PROTOCOL,
+                OperationType.RELATION_AP,
+                OperationType.START_SECONDSTAGE,
+                OperationType.SUBMISSION_PERIOD_END,
+                OperationType.SUBMIT_BID,
+                OperationType.TENDER_PERIOD_END,
+                OperationType.UPDATE_AP,
+                OperationType.UPDATE_AWARD,
+                OperationType.UPDATE_CN,
+                OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> Unit
+            }
     }
 }
