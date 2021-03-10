@@ -118,5 +118,8 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
         val otherCriteria = data.tender.otherCriteria
         if (otherCriteria.isNeedValidate(context.operationType))
             otherCriteria.let { CheckFEDataRules.checkOtherCriteria(it) }
+
+        // FR.COM-1.27.8
+        CheckFEDataRules.checkCriteriaReference(data, context)
     }
 }
