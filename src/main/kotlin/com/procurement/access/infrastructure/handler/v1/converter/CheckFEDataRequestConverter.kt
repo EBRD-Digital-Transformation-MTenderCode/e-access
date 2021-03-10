@@ -15,22 +15,22 @@ fun CheckFEDataRequest.convert() = CheckFEDataData(
     tender = this.tender.convert(),
     criteria = this.criteria
         .errorIfEmpty {
-        ErrorException(
-            error = ErrorType.IS_EMPTY,
-            message = "The request contains empty list of the criteria."
-        )
-    }
+            ErrorException(
+                error = ErrorType.IS_EMPTY,
+                message = "The request contains empty list of the criteria."
+            )
+        }
         ?.map { criteria ->
-        CheckFEDataData.Criterion(
-            id = criteria.id,
-            classification = criteria.classification.let { classification ->
-                CheckFEDataData.Criterion.Classification(
-                    id = classification.id,
-                    scheme = classification.scheme
-                )
-            }
-        )
-    }.orEmpty()
+            CheckFEDataData.Criterion(
+                id = criteria.id,
+                classification = criteria.classification.let { classification ->
+                    CheckFEDataData.Criterion.Classification(
+                        id = classification.id,
+                        scheme = classification.scheme
+                    )
+                }
+            )
+        }.orEmpty()
 )
 
 fun CheckFEDataRequest.Tender.convert() = CheckFEDataData.Tender(
