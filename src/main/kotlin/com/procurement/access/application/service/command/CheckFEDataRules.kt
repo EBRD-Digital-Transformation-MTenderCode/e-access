@@ -614,7 +614,6 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE ->
                     if (data.criteria.isEmpty())
                         throw ErrorException(ErrorType.MISSING_REFERENCE_CRITERIA, message = "VR-1.0.1.14.1")
-
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
