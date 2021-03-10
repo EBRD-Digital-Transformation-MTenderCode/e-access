@@ -609,13 +609,12 @@ class CheckFEDataRules {
                 }
         }
 
-        fun checkCriteriaReference(data: CheckFEDataData, context: CheckFEDataContext) =
+        fun checkCriteriaReference(data: CheckFEDataData, context: CheckFEDataContext) {
             when (context.operationType) {
-                OperationType.CREATE_FE -> {
+                OperationType.CREATE_FE ->
                     if (data.criteria.isEmpty())
                         throw ErrorException(ErrorType.MISSING_REFERENCE_CRITERIA, message = "VR-1.0.1.14.1")
-                    else Unit
-                }
+
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
@@ -649,5 +648,6 @@ class CheckFEDataRules {
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> Unit
             }
+        }
     }
 }
