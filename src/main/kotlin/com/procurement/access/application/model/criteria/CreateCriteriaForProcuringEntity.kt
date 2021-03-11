@@ -27,6 +27,7 @@ class CreateCriteriaForProcuringEntity {
                     when (it) {
                         OperationType.AMEND_FE,
                         OperationType.APPLY_QUALIFICATION_PROTOCOL,
+                        OperationType.AWARD_CONSIDERATION,
                         OperationType.COMPLETE_QUALIFICATION,
                         OperationType.CREATE_AWARD,
                         OperationType.CREATE_CN,
@@ -44,6 +45,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.OUTSOURCING_PN,
                         OperationType.QUALIFICATION,
                         OperationType.QUALIFICATION_CONSIDERATION,
+                        OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
                         OperationType.QUALIFICATION_PROTOCOL,
                         OperationType.RELATION_AP,
                         OperationType.START_SECONDSTAGE,
@@ -54,6 +56,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.UPDATE_PN,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
 
+                        OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                         OperationType.SUBMISSION_PERIOD_END,
                         OperationType.TENDER_PERIOD_END -> true
                     }

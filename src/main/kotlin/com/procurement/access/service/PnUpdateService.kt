@@ -199,6 +199,8 @@ class PnUpdateService(private val generationService: GenerationService,
                 lot.title.checkForBlank("tender.lots.title")
                 lot.description.checkForBlank("tender.lots.description")
                 lot.placeOfPerformance.description.checkForBlank("tender.lots.placeOfPerformance.description")
+                lot.placeOfPerformance.address.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+                lot.placeOfPerformance.address.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
             }
         tender.items
             ?.forEach { item ->
@@ -209,6 +211,7 @@ class PnUpdateService(private val generationService: GenerationService,
         tender.documents
             ?.forEach { document ->
                 document.title?.checkForBlank("tender.documents.title")
+                document.description?.checkForBlank("tender.documents.description")
             }
         tender.procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
         tender.procurementMethodAdditionalInfo.checkForBlank("tender.procurementMethodAdditionalInfo")
