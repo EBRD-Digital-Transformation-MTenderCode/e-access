@@ -24,6 +24,8 @@ val allowedPmd = ProcurementMethod.values()
             ProcurementMethod.IP, ProcurementMethod.TEST_IP,
             ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
             ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+            ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+            ProcurementMethod.OF, ProcurementMethod.TEST_OF,
             ProcurementMethod.OT, ProcurementMethod.TEST_OT,
             ProcurementMethod.SV, ProcurementMethod.TEST_SV,
             ProcurementMethod.MV, ProcurementMethod.TEST_MV -> true
@@ -32,8 +34,6 @@ val allowedPmd = ProcurementMethod.values()
             ProcurementMethod.MC, ProcurementMethod.TEST_MC,
             ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
             ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
-            ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-            ProcurementMethod.OF, ProcurementMethod.TEST_OF,
             ProcurementMethod.FA, ProcurementMethod.TEST_FA -> false
         }
     }.toSet()
@@ -41,6 +41,7 @@ val allowedPmd = ProcurementMethod.values()
 val allowedOperationType = OperationType.allowedElements
     .filter {
         when (it) {
+            OperationType.AWARD_CONSIDERATION,
             OperationType.CREATE_AWARD,
             OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,
@@ -49,7 +50,6 @@ val allowedOperationType = OperationType.allowedElements
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
-            OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
