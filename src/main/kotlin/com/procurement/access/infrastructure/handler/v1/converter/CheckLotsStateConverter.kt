@@ -41,6 +41,7 @@ val allowedPmd = ProcurementMethod.values()
 val allowedOperationType = OperationType.allowedElements
     .filter {
         when (it) {
+            OperationType.AWARD_CONSIDERATION,
             OperationType.CREATE_AWARD,
             OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,
@@ -49,7 +50,6 @@ val allowedOperationType = OperationType.allowedElements
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
-            OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
