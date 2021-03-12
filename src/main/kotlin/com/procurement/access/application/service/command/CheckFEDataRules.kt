@@ -470,6 +470,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
@@ -507,6 +508,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
                 OperationType.CREATE_AWARD-> false
             }
@@ -546,6 +548,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
@@ -584,6 +587,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
                 OperationType.CREATE_AWARD -> throw ErrorException(ErrorType.INVALID_PMD)
             }

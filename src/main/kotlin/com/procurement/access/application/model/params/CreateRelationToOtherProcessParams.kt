@@ -55,6 +55,7 @@ class CreateRelationToOtherProcessParams(
                     OperationType.UPDATE_AWARD,
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
+                    OperationType.WITHDRAW_BID,
                     OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
                     OperationType.CREATE_AWARD-> false
                 }
