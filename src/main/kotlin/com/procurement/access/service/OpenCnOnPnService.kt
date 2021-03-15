@@ -118,7 +118,7 @@ class OpenCnOnPnService(
 
         data.tender.procuringEntity?.also { requestProcuringEntity ->
             //VR-1.0.1.10.1
-            checkProcuringEntityIdentifier(requestProcuringEntity, pnEntity.tender.procuringEntity)
+            checkProcuringEntityIdentifier(requestProcuringEntity, pnEntity.tender.procuringEntity!!)
 
             // VR-1.0.1.10.2, VR-1.0.1.10.3, VR-1.0.1.10.6
             checkProcuringEntityPersones(requestProcuringEntity)
@@ -1358,7 +1358,7 @@ class OpenCnOnPnService(
             procurementMethodModalities = request.tender.procurementMethodModalities,
             electronicAuctions = electronicAuctions, //BR-3.8.5 -> BR-3.6.5
             //BR-3.8.1
-            procuringEntity = pnEntity.tender.procuringEntity
+            procuringEntity = pnEntity.tender.procuringEntity!!
                 .let { procuringEntity ->
                     CNEntity.Tender.ProcuringEntity(
                         id = procuringEntity.id,

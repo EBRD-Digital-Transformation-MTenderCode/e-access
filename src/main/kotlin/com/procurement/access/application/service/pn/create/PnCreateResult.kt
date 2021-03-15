@@ -85,7 +85,7 @@ data class PnCreateResult(
         val eligibilityCriteria: String,
         val tenderPeriod: TenderPeriod,
         val contractPeriod: ContractPeriod?,
-        val procuringEntity: ProcuringEntity,
+        val procuringEntity: ProcuringEntity?,
         val value: Money,
         val lotGroups: List<LotGroup>,
         val lots: List<Lot>,

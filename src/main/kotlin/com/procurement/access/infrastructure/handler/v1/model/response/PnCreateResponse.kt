@@ -122,7 +122,9 @@ data class PnCreateResponse(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
-        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
 
         @JsonDeserialize(using = MoneyDeserializer::class)
         @JsonSerialize(using = MoneySerializer::class)

@@ -98,7 +98,9 @@ class PnCreateRequest(
         @field:JsonProperty("procurementMethodAdditionalInfo") @param:JsonProperty("procurementMethodAdditionalInfo") val procurementMethodAdditionalInfo: String?,
         @field:JsonProperty("eligibilityCriteria") @param:JsonProperty("eligibilityCriteria") val eligibilityCriteria: String,
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>?,

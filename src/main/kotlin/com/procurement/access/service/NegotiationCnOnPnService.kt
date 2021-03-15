@@ -884,7 +884,7 @@ class NegotiationCnOnPnService(
             procurementMethodModalities = null,
             electronicAuctions = null, //BR-3.8.5 -> BR-3.6.5
             //BR-3.8.1
-            procuringEntity = pnEntity.tender.procuringEntity.let { procuringEntity ->
+            procuringEntity = pnEntity.tender.procuringEntity!!.let { procuringEntity ->
                 CNEntity.Tender.ProcuringEntity(
                     id = procuringEntity.id,
                     name = procuringEntity.name,
