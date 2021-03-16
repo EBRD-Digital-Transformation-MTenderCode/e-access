@@ -455,14 +455,13 @@ class PnServiceTest {
             inner class WithDocuments {
                 private val hasDocuments = true
 
-                @ParameterizedTest
-                @EnumSource(ProcurementMethod::class)
-                fun test(pmd: ProcurementMethod) {
+                @Test
+                fun test() {
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
                     )
-                    testOfCreate(pmd = pmd, testData = testData)
+                    testOfCreate(pmd = ProcurementMethod.OT, testData = testData)
                 }
             }
 
@@ -470,14 +469,13 @@ class PnServiceTest {
             inner class WithoutDocuments {
                 private val hasDocuments = false
 
-                @ParameterizedTest
-                @EnumSource(ProcurementMethod::class)
-                fun test(pmd: ProcurementMethod) {
+                @Test
+                fun test() {
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
                     )
-                    testOfCreate(pmd = pmd, testData = testData)
+                    testOfCreate(pmd = ProcurementMethod.OT, testData = testData)
                 }
             }
         }
@@ -490,14 +488,13 @@ class PnServiceTest {
             inner class WithDocuments {
                 private val hasDocuments = true
 
-                @ParameterizedTest
-                @EnumSource(ProcurementMethod::class)
-                fun test(pmd: ProcurementMethod) {
+                @Test
+                fun test() {
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
                     )
-                    testOfCreate(pmd = pmd, testData = testData)
+                    testOfCreate(pmd = ProcurementMethod.SV, testData = testData)
                 }
             }
 
@@ -505,14 +502,13 @@ class PnServiceTest {
             inner class WithoutDocuments {
                 private val hasDocuments = false
 
-                @ParameterizedTest
-                @EnumSource(ProcurementMethod::class)
-                fun test(pmd: ProcurementMethod) {
+                @Test
+                fun test() {
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
                     )
-                    testOfCreate(pmd = pmd, testData = testData)
+                    testOfCreate(pmd = ProcurementMethod.MV, testData = testData)
                 }
             }
         }

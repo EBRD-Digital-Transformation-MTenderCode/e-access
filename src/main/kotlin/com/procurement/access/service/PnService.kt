@@ -76,7 +76,7 @@ class PnService(
         }.toSet()
 
     fun createPn(contextRequest: CreatePnContext, request: PnCreateData): PnCreateResult {
-        checkValidationRules(request)
+        checkValidationRules(request, contextRequest)
         request.validateDuplicates()
 
         val pnEntity: PNEntity = businessRules(contextRequest, request)
@@ -98,7 +98,7 @@ class PnService(
     /**
      * Validation rules
      */
-    private fun checkValidationRules(request: PnCreateData) {
+    private fun checkValidationRules(request: PnCreateData, context: CreatePnContext) {
         //VR-3.1.16
         if (request.tender.title.isBlank())
             throw ErrorException(
@@ -169,7 +169,46 @@ class PnService(
             //VR-3.1.11 "Contract Period" (Lot)
             checkContractPeriodInLots(lots, request.tender.tenderPeriod.startDate)
         }
+
+        checkProcuringEntity(context.pmd, request.tender.procuringEntity)
     }
+
+    private fun checkProcuringEntity(pmd: ProcurementMethod, procuringEntity: PnCreateData.Tender.ProcuringEntity?) {
+        // VR-3.1.19
+        val isProcuringEntityNeed = isProcuringEntityNeed(pmd)
+        isProcuringEntityNeed.ifPresent { isNeed ->
+            when {
+                isNeed && procuringEntity == null ->
+                    throw ErrorException(ErrorType.MISSING_ATTRIBUTE, "Missing 'procuringEntity' in request.")
+
+                !isNeed && procuringEntity != null ->
+                    throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE, "Unexpected 'procuringEntity' attribute in request.")
+            }
+        }
+    }
+
+    private fun isProcuringEntityNeed(pmd: ProcurementMethod): Optional<Boolean> =
+        when (pmd) {
+            ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+            ProcurementMethod.SV, ProcurementMethod.TEST_SV,
+            ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+            ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+            ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+            ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+            ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+            ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+            ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+            ProcurementMethod.RT, ProcurementMethod.TEST_RT -> Optional.of(true)
+
+            ProcurementMethod.MC, ProcurementMethod.TEST_MC,
+            ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+            ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ -> Optional.of(false)
+
+            ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+            ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+            ProcurementMethod.OF, ProcurementMethod.TEST_OF,
+            ProcurementMethod.FA, ProcurementMethod.TEST_FA -> Optional.empty()
+        }
 
     private fun PnCreateData.validateDuplicates() {
         tender.items
@@ -509,7 +548,7 @@ class PnService(
         }
 
         //VR-3.1.18
-        checkAdditionalIdentifiersInProcuringEntity(request.tender.procuringEntity)
+        request.tender.procuringEntity?.let { checkAdditionalIdentifiersInProcuringEntity(it) }
 
         return PNEntity(
             ocid = id,
@@ -636,7 +675,7 @@ class PnService(
             },
             //BR-3.1.26
             contractPeriod = contractPeriod,
-            procuringEntity = tenderRequest.procuringEntity.let { procuringEntity ->
+            procuringEntity = tenderRequest.procuringEntity?.let { procuringEntity ->
                 PNEntity.Tender.ProcuringEntity(
                     id = generationService.generateOrganizationId(
                         identifierScheme = procuringEntity.identifier.scheme,
@@ -1071,7 +1110,7 @@ class PnService(
                             endDate = contractPeriod.endDate
                         )
                     },
-                    procuringEntity = tender.procuringEntity.let { procuringEntity ->
+                    procuringEntity = tender.procuringEntity?.let { procuringEntity ->
                         PnCreateResult.Tender.ProcuringEntity(
                             id = procuringEntity.id,
                             name = procuringEntity.name,
