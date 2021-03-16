@@ -132,7 +132,7 @@ fun PnCreateRequest.convert() = PnCreateData(
                         )
                     },
                 procuringEntity = tender.procuringEntity
-                    .let { procuringEntity ->
+                    ?.let { procuringEntity ->
                         PnCreateData.Tender.ProcuringEntity(
                             name = procuringEntity.name
                                 .takeIfNotEmpty {

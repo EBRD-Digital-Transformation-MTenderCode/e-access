@@ -132,7 +132,10 @@ data class PNEntity(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @field:JsonProperty("contractPeriod") @param:JsonProperty("contractPeriod") val contractPeriod: ContractPeriod?,
-        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity?,
+
         @field:JsonProperty("value") @param:JsonProperty("value") val value: Value,
         @field:JsonProperty("lotGroups") @param:JsonProperty("lotGroups") val lotGroups: List<LotGroup>,
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,

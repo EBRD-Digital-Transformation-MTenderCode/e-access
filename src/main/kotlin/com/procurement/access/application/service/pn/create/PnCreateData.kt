@@ -65,7 +65,7 @@ class PnCreateData(
         val procurementMethodAdditionalInfo: String?,
         val eligibilityCriteria: String,
         val tenderPeriod: TenderPeriod,
-        val procuringEntity: ProcuringEntity,
+        val procuringEntity: ProcuringEntity?,
         val lots: List<Lot>,
         val items: List<Item>,
         val submissionMethodRationale: List<String>,

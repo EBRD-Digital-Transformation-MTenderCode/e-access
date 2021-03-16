@@ -132,7 +132,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                             )
                         },
                     procuringEntity = tender.procuringEntity
-                        .let { procuringEntity ->
+                        ?.let { procuringEntity ->
                             PnCreateResponse.Tender.ProcuringEntity(
                                 id = procuringEntity.id,
                                 name = procuringEntity.name,
