@@ -245,6 +245,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AWARD,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(
                 error = ErrorType.INVALID_OPERATION_TYPE,
                 message = "Operation type $operationType is not allowed for this command"

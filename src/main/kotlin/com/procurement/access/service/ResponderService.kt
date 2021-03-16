@@ -279,6 +279,7 @@ class ResponderServiceImpl(
             OperationType.UPDATE_AWARD,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> getAllRequirement(tenderProcessEntity, params.ocid.stage)
         }
             .onFailure { fail -> return fail }

@@ -56,6 +56,7 @@ class CheckTenderStateParams private constructor(
                     OperationType.RELATION_AP,
                     OperationType.START_SECONDSTAGE,
                     OperationType.SUBMIT_BID,
+                    OperationType.WITHDRAW_BID,
                     OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> true
                 }
             }
