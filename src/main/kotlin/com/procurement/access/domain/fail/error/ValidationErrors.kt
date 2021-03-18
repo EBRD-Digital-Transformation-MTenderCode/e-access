@@ -526,6 +526,11 @@ sealed class ValidationErrors(
             numberError = "1.44.1",
             description = "Tender not found by cpid '$cpid' and '$ocid'."
         )
+
+        class BuyerIsMissing() : ValidationErrors(
+            numberError = "1.44.2",
+            description = "Buyer is missing."
+        )
     }
 
 }
