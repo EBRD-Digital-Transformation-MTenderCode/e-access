@@ -153,5 +153,45 @@
         "documentType": "tenderNotice"
       }
     ]
+  },
+  "buyer": {
+    "id": "",
+    "name": "",
+    "identifier": {
+      "id": "string",
+      "scheme": "string",
+      "legalName": "string",
+      "uri": "string"
+    },
+    "address": {
+      "streetAddress": "",
+      "addressDetails": {
+        "country": {
+          "scheme": "",
+          "id": "",
+          "description": "",
+          "uri": ""
+        },
+        "region": {
+          "scheme": "",
+          "id": "",
+          "description": "",
+          "uri": ""
+        },
+        "locality": {
+          "scheme": "",
+          "id": "",
+          "description": ""
+        }
+      }
+    },
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "url": "string"
+    },
+    "details": {
+    }
   }
 }
