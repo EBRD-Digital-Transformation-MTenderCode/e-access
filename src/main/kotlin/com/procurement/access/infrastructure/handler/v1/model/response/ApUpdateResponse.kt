@@ -12,6 +12,7 @@ import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
@@ -58,7 +59,7 @@ data class ApUpdateResponse(
         @field:JsonProperty("eligibilityCriteria") @param:JsonProperty("eligibilityCriteria") val eligibilityCriteria: String,
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
 
-        @field:JsonProperty("procuringEntity") @param:JsonProperty("procuringEntity") val procuringEntity: ProcuringEntity,
+        @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>,
 
         @field:JsonProperty("requiresElectronicCatalogue") @param:JsonProperty("requiresElectronicCatalogue") val requiresElectronicCatalogue: Boolean,
         @field:JsonProperty("submissionMethod") @param:JsonProperty("submissionMethod") val submissionMethod: List<SubmissionMethod>,
@@ -238,7 +239,7 @@ data class ApUpdateResponse(
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
         )
 
-        data class ProcuringEntity(
+        data class Party(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
             @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
@@ -246,7 +247,8 @@ data class ApUpdateResponse(
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier>?,
             @field:JsonProperty("address") @param:JsonProperty("address") val address: Address,
-            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint
+            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint,
+            @field:JsonProperty("roles") @param:JsonProperty("roles") val roles: List<PartyRole>
         ) {
 
             data class Identifier(
