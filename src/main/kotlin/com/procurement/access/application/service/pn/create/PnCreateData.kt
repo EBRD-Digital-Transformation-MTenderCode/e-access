@@ -5,13 +5,15 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.Scheme
+import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
 class PnCreateData(
     val planning: Planning,
-    val tender: Tender
+    val tender: Tender,
+    val buyer: Buyer
 ) {
 
     data class Planning(
@@ -237,6 +239,77 @@ class PnCreateData(
             val title: String,
             val description: String?,
             val relatedLots: List<String>
+        )
+    }
+
+    data class Buyer(
+        val id: String,
+        val name: String,
+        val identifier: Identifier,
+        val address: Address,
+        val additionalIdentifiers: List<AdditionalIdentifier>,
+        val contactPoint: ContactPoint,
+        val details: Details?
+    ) {
+        data class Identifier(
+            val id: String,
+            val scheme: String,
+            val legalName: String,
+            val uri: String
+        )
+
+        data class Address(
+            val streetAddress: String,
+            val postalCode: String?,
+            val addressDetails: AddressDetails
+        ) {
+            data class AddressDetails(
+                val country: Country,
+                val region: Region,
+                val locality: Locality
+            ) {
+                data class Country(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Region(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Locality(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String?
+                )
+            }
+        }
+
+        data class AdditionalIdentifier(
+            val id: String,
+            val scheme: String,
+            val legalName: String,
+            val uri: String
+        )
+
+        data class ContactPoint(
+            val name: String,
+            val email: String,
+            val telephone: String,
+            val faxNumber: String?,
+            val url: String
+        )
+
+        data class Details(
+            val typeOfBuyer: TypeOfBuyer?,
+            val mainGeneralActivity: String?,
+            val mainSectoralActivity: String?
         )
     }
 }

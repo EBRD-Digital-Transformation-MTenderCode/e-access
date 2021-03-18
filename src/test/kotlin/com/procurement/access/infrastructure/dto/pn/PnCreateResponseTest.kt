@@ -22,4 +22,10 @@ class PnCreateResponseTest : AbstractDTOTestBase<PnCreateResponse>(PnCreateRespo
         val pathToJsonFile = "json/dto/create/pn/response/response_pn_required_2.json"
         testBindingAndMapping(pathToJsonFile)
     }
+
+    @Test
+    fun required3() {
+        val pathToJsonFile = "json/dto/create/pn/response/response_pn_required_3.json"
+        testBindingAndMapping(pathToJsonFile)
+    }
 }

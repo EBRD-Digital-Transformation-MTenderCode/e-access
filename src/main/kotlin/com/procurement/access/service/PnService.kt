@@ -550,6 +550,10 @@ class PnService(
         //VR-3.1.18
         request.tender.procuringEntity?.let { checkAdditionalIdentifiersInProcuringEntity(it) }
 
+        val buyer = if (needToGenerateBuyer(contextRequest.pmd))
+            generateBuyer(request)
+        else null
+
         return PNEntity(
             ocid = id,
             planning = planning(request),
@@ -562,9 +566,110 @@ class PnService(
                 documents = documents,
                 tenderRequest = request.tender
             ),
-            relatedProcesses = null
+            relatedProcesses = null,
+            buyer = buyer
         )
     }
+
+    private fun needToGenerateBuyer(pmd: ProcurementMethod) = when (pmd) {
+        ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
+        ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
+        ProcurementMethod.MC, ProcurementMethod.TEST_MC -> true
+
+        ProcurementMethod.CD, ProcurementMethod.TEST_CD,
+        ProcurementMethod.CF, ProcurementMethod.TEST_CF,
+        ProcurementMethod.DA, ProcurementMethod.TEST_DA,
+        ProcurementMethod.DC, ProcurementMethod.TEST_DC,
+        ProcurementMethod.FA, ProcurementMethod.TEST_FA,
+        ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
+        ProcurementMethod.IP, ProcurementMethod.TEST_IP,
+        ProcurementMethod.MV, ProcurementMethod.TEST_MV,
+        ProcurementMethod.NP, ProcurementMethod.TEST_NP,
+        ProcurementMethod.OF, ProcurementMethod.TEST_OF,
+        ProcurementMethod.OP, ProcurementMethod.TEST_OP,
+        ProcurementMethod.OT, ProcurementMethod.TEST_OT,
+        ProcurementMethod.RT, ProcurementMethod.TEST_RT,
+        ProcurementMethod.SV, ProcurementMethod.TEST_SV -> false
+    }
+
+    private fun generateBuyer(request: PnCreateData) =
+        request.buyer.let { buyer ->
+            PNEntity.Buyer(
+                id = buyer.id,
+                name = buyer.name,
+                details = buyer.details
+                    ?.let { details ->
+                        PNEntity.Buyer.Details(
+                            typeOfBuyer = details.typeOfBuyer,
+                            mainGeneralActivity = details.mainGeneralActivity,
+                            mainSectoralActivity = details.mainSectoralActivity
+                        )
+                    },
+                additionalIdentifiers = buyer.additionalIdentifiers
+                    ?.map { additionalIdentifier ->
+                        PNEntity.Buyer.AdditionalIdentifier(
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            scheme = additionalIdentifier.scheme,
+                            uri = additionalIdentifier.uri
+                        )
+                    },
+                address = buyer.address
+                    .let { address ->
+                        PNEntity.Buyer.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails.let { addressDetails ->
+                                PNEntity.Buyer.Address.AddressDetails(
+                                    country = addressDetails.country.let { country ->
+                                        PNEntity.Buyer.Address.AddressDetails.Country(
+                                            scheme = country.scheme,
+                                            id = country.id,
+                                            description = country.description,
+                                            uri = country.uri
+                                        )
+                                    },
+                                    region = addressDetails.region.let { region ->
+                                        PNEntity.Buyer.Address.AddressDetails.Region(
+                                            scheme = region.scheme,
+                                            id = region.id,
+                                            description = region.description,
+                                            uri = region.uri
+                                        )
+                                    },
+                                    locality = addressDetails.locality.let { locality ->
+                                        PNEntity.Buyer.Address.AddressDetails.Locality(
+                                            scheme = locality.scheme,
+                                            id = locality.id,
+                                            description = locality.description,
+                                            uri = locality.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                contactPoint = buyer.contactPoint
+                    .let { contactPoint ->
+                        PNEntity.Buyer.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            faxNumber = contactPoint.faxNumber,
+                            telephone = contactPoint.telephone,
+                            url = contactPoint.url
+                        )
+                    },
+                identifier = buyer.identifier
+                    .let { identifier ->
+                        PNEntity.Buyer.Identifier(
+                            id = identifier.id,
+                            scheme = identifier.scheme,
+                            uri = identifier.uri,
+                            legalName = identifier.legalName
+                        )
+                    }
+            )
+        }
 
     private fun planning(request: PnCreateData): PNEntity.Planning {
         return request.planning.let { planning ->
@@ -1319,7 +1424,85 @@ class PnService(
                     }
                         .orEmpty()
                 )
-            }
+            },
+            buyer = cn.buyer
+                ?.let { buyer ->
+                    PnCreateResult.Buyer(
+                        id = buyer.id,
+                        name = buyer.name,
+                        details = buyer.details
+                            ?.let { details ->
+                                PnCreateResult.Buyer.Details(
+                                    typeOfBuyer = details.typeOfBuyer,
+                                    mainGeneralActivity = details.mainGeneralActivity,
+                                    mainSectoralActivity = details.mainSectoralActivity
+                                )
+                            },
+                        additionalIdentifiers = buyer.additionalIdentifiers
+                            ?.map { additionalIdentifier ->
+                                PnCreateResult.Buyer.AdditionalIdentifier(
+                                    id = additionalIdentifier.id,
+                                    legalName = additionalIdentifier.legalName,
+                                    scheme = additionalIdentifier.scheme,
+                                    uri = additionalIdentifier.uri
+                                )
+                            },
+                        address = buyer.address
+                            .let { address ->
+                                PnCreateResult.Buyer.Address(
+                                    streetAddress = address.streetAddress,
+                                    postalCode = address.postalCode,
+                                    addressDetails = address.addressDetails.let { addressDetails ->
+                                        PnCreateResult.Buyer.Address.AddressDetails(
+                                            country = addressDetails.country.let { country ->
+                                                PnCreateResult.Buyer.Address.AddressDetails.Country(
+                                                    scheme = country.scheme,
+                                                    id = country.id,
+                                                    description = country.description,
+                                                    uri = country.uri
+                                                )
+                                            },
+                                            region = addressDetails.region.let { region ->
+                                                PnCreateResult.Buyer.Address.AddressDetails.Region(
+                                                    scheme = region.scheme,
+                                                    id = region.id,
+                                                    description = region.description,
+                                                    uri = region.uri
+                                                )
+                                            },
+                                            locality = addressDetails.locality.let { locality ->
+                                                PnCreateResult.Buyer.Address.AddressDetails.Locality(
+                                                    scheme = locality.scheme,
+                                                    id = locality.id,
+                                                    description = locality.description,
+                                                    uri = locality.uri
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            },
+                        contactPoint = buyer.contactPoint
+                            .let { contactPoint ->
+                                PnCreateResult.Buyer.ContactPoint(
+                                    name = contactPoint.name,
+                                    email = contactPoint.email,
+                                    faxNumber = contactPoint.faxNumber,
+                                    telephone = contactPoint.telephone,
+                                    url = contactPoint.url
+                                )
+                            },
+                        identifier = buyer.identifier
+                            .let { identifier ->
+                                PnCreateResult.Buyer.Identifier(
+                                    id = identifier.id,
+                                    scheme = identifier.scheme,
+                                    uri = identifier.uri,
+                                    legalName = identifier.legalName
+                                )
+                            }
+                    )
+                }
         )
     }
 
