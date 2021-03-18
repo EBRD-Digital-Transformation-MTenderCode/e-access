@@ -3,6 +3,7 @@ package com.procurement.access.application.service.ap.create
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
@@ -38,7 +39,7 @@ data class ApCreateResult(
         val eligibilityCriteria: String,
         val tenderPeriod: TenderPeriod,
         val contractPeriod: ContractPeriod,
-        val procuringEntity: ProcuringEntity,
+        val parties: List<Party>,
         val requiresElectronicCatalogue: Boolean,
         val submissionMethod: List<SubmissionMethod>,
         val submissionMethodRationale: List<String>,
@@ -96,13 +97,14 @@ data class ApCreateResult(
             val endDate: LocalDateTime
         )
 
-        data class ProcuringEntity(
+        data class Party(
             val id: String,
             val name: String,
             val identifier: Identifier,
             val additionalIdentifiers: List<AdditionalIdentifier>,
             val address: Address,
-            val contactPoint: ContactPoint
+            val contactPoint: ContactPoint,
+            val roles: List<PartyRole>
         ) {
 
             data class Identifier(
