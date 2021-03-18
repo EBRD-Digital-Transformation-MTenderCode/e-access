@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.params.AddClientsToPartiesInAPParams
 import com.procurement.access.application.model.params.CalculateAPValueParams
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.repository.TenderProcessRepository
@@ -16,6 +17,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
+import com.procurement.access.infrastructure.handler.v2.model.response.AddClientsToPartiesInAPResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CalculateAPValueResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
@@ -30,6 +32,7 @@ import java.math.BigDecimal
 interface APService {
     fun calculateAPValue(params: CalculateAPValueParams): Result<CalculateAPValueResult, Fail>
     fun getAPTitleAndDescription(context: GetAPTitleAndDescriptionContext): GetAPTitleAndDescriptionResult
+    fun addClientsToPartiesInAP(params: AddClientsToPartiesInAPParams): Result<AddClientsToPartiesInAPResult, Fail>
 }
 
 @Service
@@ -128,4 +131,15 @@ class APServiceImpl(
 
     private fun isRelatedToPN(relatedProcess: RelatedProcess): Boolean =
         relatedProcess.relationship.any { relationship -> relationship == RelatedProcessType.X_SCOPE }
+
+    override fun addClientsToPartiesInAP(params: AddClientsToPartiesInAPParams): Result<AddClientsToPartiesInAPResult, Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
+            .onFailure { fail -> return fail }
+            ?: return failure(ValidationErrors.AddClientsToPartiesInAP.TenderNotFound(params.cpid, params.ocid))
+
+        val pn = entity.jsonData.tryToObject(PNEntity::class.java)
+            .onFailure { fail -> return fail }
+
+        if(pn.b)
+    }
 }
