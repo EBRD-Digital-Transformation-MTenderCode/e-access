@@ -521,4 +521,11 @@ sealed class ValidationErrors(
         description = "Lot '$lotId' contains redundant renewal."
     )
 
+    object AddClientsToPartiesInAP{
+        class TenderNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+            numberError = "1.44.1",
+            description = "Tender not found by cpid '$cpid' and '$ocid'."
+        )
+    }
+
 }
