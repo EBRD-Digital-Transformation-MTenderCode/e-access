@@ -13,6 +13,7 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
@@ -22,6 +23,7 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
@@ -89,8 +91,10 @@ data class CreateFEResponse(
         @field:JsonProperty("otherCriteria") @param:JsonProperty("otherCriteria") val otherCriteria: OtherCriteria,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?,
 
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>
     ) {
 
         data class Classification(
@@ -176,16 +180,50 @@ data class CreateFEResponse(
 
         data class ProcuringEntity(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>,
+            @field:JsonProperty("name") @param:JsonProperty("name") val name: String
+        )
+
+        data class OtherCriteria(
+            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
+            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
+        )
+
+        data class Document(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
+            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?
+        )
+
+        data class Party(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
             @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<Identifier>?,
+            @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier>?,
+
             @field:JsonProperty("address") @param:JsonProperty("address") val address: Address,
-            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint
+            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint,
+            @field:JsonProperty("roles") @param:JsonProperty("roles") val roles: List<PartyRole>,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Person>?
+
         ) {
+
             data class Identifier(
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+            )
+
+            data class AdditionalIdentifier(
                 @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
@@ -246,7 +284,7 @@ data class CreateFEResponse(
             )
 
             data class Person(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: PersonId,
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
                 @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
                 @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
@@ -284,19 +322,5 @@ data class CreateFEResponse(
                 }
             }
         }
-
-        data class OtherCriteria(
-            @field:JsonProperty("reductionCriteria") @param:JsonProperty("reductionCriteria") val reductionCriteria: ReductionCriteria,
-            @field:JsonProperty("qualificationSystemMethods") @param:JsonProperty("qualificationSystemMethods") val qualificationSystemMethods: List<QualificationSystemMethod>
-        )
-
-        data class Document(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
-            @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("description") @param:JsonProperty("description") val description: String?
-        )
     }
 }
