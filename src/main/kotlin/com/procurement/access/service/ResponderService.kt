@@ -350,9 +350,10 @@ class ResponderServiceImpl(
                     .tryToObject(FEEntity::class.java)
                     .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
                     .onFailure { return it }
+                val procuringEntityParty = fe.tender.parties.firstOrNull { it.roles.contains(PartyRole.PROCURING_ENTITY) }!!
 
                 val organization = when (params.role) {
-                    GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(fe.tender.procuringEntity!!)
+                    GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(procuringEntityParty)
                 }
                 success(organization)
             }
