@@ -259,42 +259,42 @@ class FeCreateServiceImpl(
         )
 
     private fun CreateFEData.Tender.ProcuringEntity.Person.convert(): FEEntity.Tender.Party.Person =
-                FEEntity.Tender.Party.Person(
-                    id = PersonId.parse(id)!!,
-                    title = title,
-                    name = name,
-                    identifier = identifier
-                        .let { identifier ->
-                            FEEntity.Tender.Party.Person.Identifier(
-                                id = identifier.id,
-                                scheme = identifier.scheme,
-                                uri = identifier.uri
-                            )
-                        },
-                    businessFunctions = businessFunctions
-                        .map { businessFunctions ->
-                            FEEntity.Tender.Party.Person.BusinessFunction(
-                                id = businessFunctions.id,
-                                jobTitle = businessFunctions.jobTitle,
-                                type = businessFunctions.type,
-                                period = businessFunctions.period
-                                    .let { period ->
-                                        FEEntity.Tender.Party.Person.BusinessFunction.Period(
-                                            startDate = period.startDate
-                                        )
-                                    },
-                                documents = businessFunctions.documents
-                                    .map { document ->
-                                        FEEntity.Tender.Party.Person.BusinessFunction.Document(
-                                            id = document.id,
-                                            title = document.title,
-                                            description = document.description,
-                                            documentType = document.documentType
-                                        )
-                                    }
-                            )
-                        }
-                )
+        FEEntity.Tender.Party.Person(
+            id = PersonId.parse(id)!!,
+            title = title,
+            name = name,
+            identifier = identifier
+                .let { identifier ->
+                    FEEntity.Tender.Party.Person.Identifier(
+                        id = identifier.id,
+                        scheme = identifier.scheme,
+                        uri = identifier.uri
+                    )
+                },
+            businessFunctions = businessFunctions
+                .map { businessFunctions ->
+                    FEEntity.Tender.Party.Person.BusinessFunction(
+                        id = businessFunctions.id,
+                        jobTitle = businessFunctions.jobTitle,
+                        type = businessFunctions.type,
+                        period = businessFunctions.period
+                            .let { period ->
+                                FEEntity.Tender.Party.Person.BusinessFunction.Period(
+                                    startDate = period.startDate
+                                )
+                            },
+                        documents = businessFunctions.documents
+                            .map { document ->
+                                FEEntity.Tender.Party.Person.BusinessFunction.Document(
+                                    id = document.id,
+                                    title = document.title,
+                                    description = document.description,
+                                    documentType = document.documentType
+                                )
+                            }
+                    )
+                }
+        )
 
     private fun CreateFEData.Tender.SecondStage.convert(): FEEntity.Tender.SecondStage =
         FEEntity.Tender.SecondStage(
