@@ -10,6 +10,7 @@ enum class PartyRole(@JsonValue override val key: String) : EnumElementProvider.
     BUYER("buyer"),
     CANDIDATE("candidate"),
     CENTRAL_PURCHASING_BODY("centralPurchasingBody"),
+    CLIENT("client"),
     ENQUIRER("enquirer"),
     FUNDER("funder"),
     INVITED_CANDIDATE("invitedCandidate"),
