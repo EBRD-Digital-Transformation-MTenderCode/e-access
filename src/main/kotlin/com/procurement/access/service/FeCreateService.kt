@@ -6,6 +6,7 @@ import com.procurement.access.application.service.fe.create.CreateFEResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -72,8 +73,9 @@ class FeCreateServiceImpl(
         return result
     }
 
-    private fun createEntity(ocid: Ocid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity =
-        FEEntity(
+    private fun createEntity(ocid: Ocid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
+        val parties = createParties(data, ap)
+        return FEEntity(
             ocid = ocid.toString(),
             token = token.toString(),
             tender = FEEntity.Tender(
@@ -84,59 +86,8 @@ class FeCreateServiceImpl(
                 description = data.tender.description,
                 secondStage = data.tender.secondStage?.convert(),
                 procurementMethodRationale = data.tender.procurementMethodRationale ?: ap.tender.procurementMethodRationale,
-                procuringEntity = FEEntity.Tender.ProcuringEntity(
-                    id = ap.tender.procuringEntity.id,
-                    identifier = ap.tender.procuringEntity.identifier.convert(),
-                    name = ap.tender.procuringEntity.name,
-                    address = ap.tender.procuringEntity.address.convert(),
-                    additionalIdentifiers = ap.tender.procuringEntity.additionalIdentifiers
-                        ?.map { it.convert() }
-                        .orEmpty(),
-                    contactPoint = ap.tender.procuringEntity.contactPoint.convert(),
-                    persons = data.tender.procuringEntity?.persons
-                        ?.map { person ->
-                            FEEntity.Tender.ProcuringEntity.Person(
-                                id = PersonId.generate(
-                                    id = person.identifier.id,
-                                    scheme = person.identifier.scheme
-                                ).toString(),
-                                title = person.title,
-                                name = person.name,
-                                identifier = person.identifier
-                                    .let { identifier ->
-                                        FEEntity.Tender.ProcuringEntity.Person.Identifier(
-                                            id = identifier.id,
-                                            scheme = identifier.scheme,
-                                            uri = identifier.uri
-                                        )
-                                    },
-                                businessFunctions = person.businessFunctions
-                                    .map { businessFunctions ->
-                                        FEEntity.Tender.ProcuringEntity.Person.BusinessFunction(
-                                            id = businessFunctions.id,
-                                            jobTitle = businessFunctions.jobTitle,
-                                            type = businessFunctions.type,
-                                            period = businessFunctions.period
-                                                .let { period ->
-                                                    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period(
-                                                        startDate = period.startDate
-                                                    )
-                                                },
-                                            documents = businessFunctions.documents
-                                                .map { document ->
-                                                    FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document(
-                                                        id = document.id,
-                                                        title = document.title,
-                                                        description = document.description,
-                                                        documentType = document.documentType
-                                                    )
-                                                }
-                                        )
-                                    }
-                            )
-                        }
-                        .orEmpty()
-                ),
+                parties = parties,
+                procuringEntity = createProcuringEntity(parties),
                 criteria = data.tender.criteria
                     .map { criterion ->
                         FEEntity.Tender.Criteria(
@@ -207,74 +158,148 @@ class FeCreateServiceImpl(
             ),
             relatedProcesses = emptyList()
         )
+    }
+
+    private fun createProcuringEntity(parties: List<FEEntity.Tender.Party>): FEEntity.Tender.ProcuringEntity {
+        val party = parties.first { it.roles.contains(PartyRole.PROCURING_ENTITY) }
+        return FEEntity.Tender.ProcuringEntity(id = party.id, name = party.name)
+    }
+
+    private fun createParties(data: CreateFEData, ap: APEntity): List<FEEntity.Tender.Party> {
+        val cplRole = PartyRole.CENTRAL_PURCHASING_BODY
+        val cpbPersones = data.tender.procuringEntity?.persons?.map { it.convert() }
+
+        val cpbParty = ap.tender.parties
+            .firstOrNull { it.roles.contains(cplRole) }
+            ?.convert()
+            ?.copy(roles = listOf(PartyRole.PROCURING_ENTITY), persones = cpbPersones)
+            ?: throw ErrorException(ErrorType.MISSING_PARTIES, "Party with role '$cplRole' not found.")
+
+        val clientParties = ap.tender.parties
+            .filter { it.roles.contains(PartyRole.CLIENT) }
+            .map { it.convert() }
+            .map { it.copy(roles = listOf(PartyRole.BUYER)) }
+
+        return clientParties + cpbParty
+    }
+
+    private fun APEntity.Tender.Party.convert(): FEEntity.Tender.Party =
+        FEEntity.Tender.Party(
+            id = id,
+            name = name,
+            identifier = identifier
+                .let { identifier ->
+                    FEEntity.Tender.Party.Identifier(
+                        scheme = identifier.scheme,
+                        id = identifier.id,
+                        legalName = identifier.legalName,
+                        uri = identifier.uri
+                    )
+                },
+            additionalIdentifiers = additionalIdentifiers
+                ?.map { additionalIdentifier ->
+                    FEEntity.Tender.Party.AdditionalIdentifier(
+                        scheme = additionalIdentifier.scheme,
+                        id = additionalIdentifier.id,
+                        legalName = additionalIdentifier.legalName,
+                        uri = additionalIdentifier.uri
+                    )
+                },
+            address = address
+                .let { address ->
+                    FEEntity.Tender.Party.Address(
+                        streetAddress = address.streetAddress,
+                        postalCode = address.postalCode,
+                        addressDetails = address.addressDetails
+                            .let { addressDetails ->
+                                FEEntity.Tender.Party.Address.AddressDetails(
+                                    country = addressDetails.country
+                                        .let { country ->
+                                            FEEntity.Tender.Party.Address.AddressDetails.Country(
+                                                scheme = country.scheme,
+                                                id = country.id,
+                                                description = country.description,
+                                                uri = country.uri
+                                            )
+                                        },
+                                    region = addressDetails.region
+                                        .let { region ->
+                                            FEEntity.Tender.Party.Address.AddressDetails.Region(
+                                                scheme = region.scheme,
+                                                id = region.id,
+                                                description = region.description,
+                                                uri = region.uri
+                                            )
+                                        },
+                                    locality = addressDetails.locality
+                                        .let { locality ->
+                                            FEEntity.Tender.Party.Address.AddressDetails.Locality(
+                                                scheme = locality.scheme,
+                                                id = locality.id,
+                                                description = locality.description,
+                                                uri = locality.uri
+                                            )
+                                        }
+                                )
+                            }
+                    )
+                },
+            contactPoint = contactPoint
+                .let { contactPoint ->
+                    FEEntity.Tender.Party.ContactPoint(
+                        name = contactPoint.name,
+                        email = contactPoint.email,
+                        telephone = contactPoint.telephone,
+                        faxNumber = contactPoint.faxNumber,
+                        url = contactPoint.url
+                    )
+                },
+            roles = roles,
+            persones = null
+        )
+
+    private fun CreateFEData.Tender.ProcuringEntity.Person.convert(): FEEntity.Tender.Party.Person =
+                FEEntity.Tender.Party.Person(
+                    id = PersonId.parse(id)!!,
+                    title = title,
+                    name = name,
+                    identifier = identifier
+                        .let { identifier ->
+                            FEEntity.Tender.Party.Person.Identifier(
+                                id = identifier.id,
+                                scheme = identifier.scheme,
+                                uri = identifier.uri
+                            )
+                        },
+                    businessFunctions = businessFunctions
+                        .map { businessFunctions ->
+                            FEEntity.Tender.Party.Person.BusinessFunction(
+                                id = businessFunctions.id,
+                                jobTitle = businessFunctions.jobTitle,
+                                type = businessFunctions.type,
+                                period = businessFunctions.period
+                                    .let { period ->
+                                        FEEntity.Tender.Party.Person.BusinessFunction.Period(
+                                            startDate = period.startDate
+                                        )
+                                    },
+                                documents = businessFunctions.documents
+                                    .map { document ->
+                                        FEEntity.Tender.Party.Person.BusinessFunction.Document(
+                                            id = document.id,
+                                            title = document.title,
+                                            description = document.description,
+                                            documentType = document.documentType
+                                        )
+                                    }
+                            )
+                        }
+                )
 
     private fun CreateFEData.Tender.SecondStage.convert(): FEEntity.Tender.SecondStage =
         FEEntity.Tender.SecondStage(
             minimumCandidates = this.minimumCandidates,
             maximumCandidates = this.maximumCandidates
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.Identifier.convert(): FEEntity.Tender.ProcuringEntity.Identifier =
-        FEEntity.Tender.ProcuringEntity.Identifier(
-            id = this.id,
-            scheme = this.scheme,
-            legalName = this.legalName,
-            uri = this.uri
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.AdditionalIdentifier.convert(): FEEntity.Tender.ProcuringEntity.Identifier =
-        FEEntity.Tender.ProcuringEntity.Identifier(
-            id = this.id,
-            scheme = this.scheme,
-            legalName = this.legalName,
-            uri = this.uri
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.Address.convert(): FEEntity.Tender.ProcuringEntity.Address =
-        FEEntity.Tender.ProcuringEntity.Address(
-            streetAddress = this.streetAddress,
-            postalCode = this.postalCode,
-            addressDetails = this.addressDetails.convert()
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails =
-        FEEntity.Tender.ProcuringEntity.Address.AddressDetails(
-            country = this.country.convert(),
-            region = this.region.convert(),
-            locality = this.locality.convert()
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.Country.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country =
-        FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
-            scheme = this.scheme,
-            id = this.id,
-            description = this.description,
-            uri = this.uri
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.Region.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region =
-        FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
-            scheme = this.scheme,
-            id = this.id,
-            description = this.description,
-            uri = this.uri
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality.convert(): FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality =
-        FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
-            scheme = this.scheme,
-            id = this.id,
-            description = this.description,
-            uri = this.uri
-        )
-
-    private fun APEntity.Tender.ProcuringEntity.ContactPoint.convert(): FEEntity.Tender.ProcuringEntity.ContactPoint =
-        FEEntity.Tender.ProcuringEntity.ContactPoint(
-            name = this.name,
-            email = this.email,
-            telephone = this.telephone,
-            faxNumber = this.faxNumber,
-            url = this.url
         )
 
     private fun CreateFEData.Tender.OtherCriteria.convert(): FEEntity.Tender.OtherCriteria =
