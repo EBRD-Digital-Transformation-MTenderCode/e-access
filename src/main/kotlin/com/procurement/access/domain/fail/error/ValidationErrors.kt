@@ -529,4 +529,21 @@ sealed class ValidationErrors(
         description = "Lot '$lotId' contains redundant renewal."
     )
 
+    object AddClientsToPartiesInAP{
+        class PnRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+            numberError = "1.44.1",
+            description = "PN record not found by cpid '$cpid' and '$ocid'."
+        )
+
+        class BuyerIsMissing() : ValidationErrors(
+            numberError = "1.44.2",
+            description = "Buyer is missing."
+        )
+
+        class ApRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+            numberError = "1.44.3",
+            description = "AP record not found by cpid '$cpid' and '$ocid'."
+        )
+    }
+
 }

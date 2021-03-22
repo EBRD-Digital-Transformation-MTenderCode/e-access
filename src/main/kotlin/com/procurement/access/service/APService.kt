@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.params.AddClientsToPartiesInAPParams
 import com.procurement.access.application.model.params.CalculateAPValueParams
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.repository.TenderProcessRepository
@@ -9,6 +10,9 @@ import com.procurement.access.application.service.ap.get.GetAPTitleAndDescriptio
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.enums.MainGeneralActivity
+import com.procurement.access.domain.model.enums.MainSectoralActivity
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
@@ -16,11 +20,14 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
+import com.procurement.access.infrastructure.handler.v2.model.response.AddClientsToPartiesInAPResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CalculateAPValueResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.flatMap
+import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
@@ -30,6 +37,7 @@ import java.math.BigDecimal
 interface APService {
     fun calculateAPValue(params: CalculateAPValueParams): Result<CalculateAPValueResult, Fail>
     fun getAPTitleAndDescription(context: GetAPTitleAndDescriptionContext): GetAPTitleAndDescriptionResult
+    fun addClientsToPartiesInAP(params: AddClientsToPartiesInAPParams): Result<AddClientsToPartiesInAPResult, Fail>
 }
 
 @Service
@@ -128,4 +136,216 @@ class APServiceImpl(
 
     private fun isRelatedToPN(relatedProcess: RelatedProcess): Boolean =
         relatedProcess.relationship.any { relationship -> relationship == RelatedProcessType.X_SCOPE }
+
+    override fun addClientsToPartiesInAP(params: AddClientsToPartiesInAPParams): Result<AddClientsToPartiesInAPResult, Fail> {
+        val pnEntity = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
+            .onFailure { fail -> return fail }
+            ?: return failure(
+                ValidationErrors.AddClientsToPartiesInAP.PnRecordNotFound(params.relatedCpid, params.relatedOcid)
+            )
+
+        val pn = pnEntity.jsonData.tryToObject(PNEntity::class.java)
+            .onFailure { fail -> return fail }
+
+        if (pn.buyer == null)
+            return failure(ValidationErrors.AddClientsToPartiesInAP.BuyerIsMissing())
+
+        val apEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+            .onFailure { fail -> return fail }
+            ?: return failure(ValidationErrors.AddClientsToPartiesInAP.ApRecordNotFound(params.cpid, params.ocid))
+
+        val ap = apEntity.jsonData.tryToObject(APEntity::class.java)
+            .onFailure { fail -> return fail }
+
+        val clientParty = ap.tender.parties
+            .firstOrNull { party -> containsPnBuyerOfClientRole(party, pn.buyer) }
+            ?: createAndSaveClientParty(pn.buyer, ap, apEntity)
+                .onFailure { fail -> return fail }
+
+        return generateResult(clientParty).asSuccess()
+    }
+
+    private fun containsPnBuyerOfClientRole(
+        party: APEntity.Tender.Party,
+        buyer: PNEntity.Buyer
+    ) = (party.id == buyer.id
+        && party.roles.contains(PartyRole.CLIENT))
+
+    private fun createAndSaveClientParty(
+        buyer: PNEntity.Buyer,
+        ap: APEntity,
+        apEntity: TenderProcessEntity
+    ): Result<APEntity.Tender.Party, Fail> {
+        val createdClientParty = buyer.toParty(listOf(PartyRole.CLIENT))
+        val updatedParties = ap.tender.parties + createdClientParty
+        val updatedAp = ap.copy(tender = ap.tender.copy(parties = updatedParties))
+        val updatedJsonData = trySerialization(updatedAp)
+            .onFailure { fail -> return fail }
+        val updatedApEntity = apEntity.copy(jsonData = updatedJsonData)
+        tenderProcessRepository.save(updatedApEntity)
+
+        return createdClientParty.asSuccess()
+    }
+
+    private fun PNEntity.Buyer.toParty(roles: List<PartyRole>): APEntity.Tender.Party =
+        APEntity.Tender.Party(
+            id = id,
+            name = name,
+            identifier = identifier
+                .let { identifier ->
+                    APEntity.Tender.Party.Identifier(
+                        scheme = identifier.scheme,
+                        id = identifier.id,
+                        legalName = identifier.legalName,
+                        uri = identifier.uri
+                    )
+                },
+            additionalIdentifiers = additionalIdentifiers
+                ?.map { additionalIdentifier ->
+                    APEntity.Tender.Party.AdditionalIdentifier(
+                        scheme = additionalIdentifier.scheme,
+                        id = additionalIdentifier.id,
+                        legalName = additionalIdentifier.legalName,
+                        uri = additionalIdentifier.uri
+                    )
+                },
+            address = address
+                .let { address ->
+                    APEntity.Tender.Party.Address(
+                        streetAddress = address.streetAddress,
+                        postalCode = address.postalCode,
+                        addressDetails = address.addressDetails
+                            .let { addressDetails ->
+                                APEntity.Tender.Party.Address.AddressDetails(
+                                    country = addressDetails.country
+                                        .let { country ->
+                                            APEntity.Tender.Party.Address.AddressDetails.Country(
+                                                scheme = country.scheme,
+                                                id = country.id,
+                                                description = country.description,
+                                                uri = country.uri
+                                            )
+                                        },
+                                    region = addressDetails.region
+                                        .let { region ->
+                                            APEntity.Tender.Party.Address.AddressDetails.Region(
+                                                scheme = region.scheme,
+                                                id = region.id,
+                                                description = region.description,
+                                                uri = region.uri
+                                            )
+                                        },
+                                    locality = addressDetails.locality
+                                        .let { locality ->
+                                            APEntity.Tender.Party.Address.AddressDetails.Locality(
+                                                scheme = locality.scheme,
+                                                id = locality.id,
+                                                description = locality.description,
+                                                uri = locality.uri
+                                            )
+                                        }
+                                )
+                            }
+                    )
+                },
+            contactPoint = contactPoint
+                .let { contactPoint ->
+                    APEntity.Tender.Party.ContactPoint(
+                        name = contactPoint.name,
+                        email = contactPoint.email,
+                        telephone = contactPoint.telephone,
+                        faxNumber = contactPoint.faxNumber,
+                        url = contactPoint.url
+                    )
+                },
+            details = APEntity.Tender.Party.Details(
+                mainSectoralActivity = details?.mainSectoralActivity?.let { MainSectoralActivity.creator(it) },
+                mainGeneralActivity = details?.mainGeneralActivity?.let { MainGeneralActivity.creator(it) },
+                typeOfBuyer = details?.typeOfBuyer
+            ),
+            roles = roles
+        )
+
+    private fun generateResult(party: APEntity.Tender.Party) =
+        AddClientsToPartiesInAPResult(
+            parties = AddClientsToPartiesInAPResult.Party(
+                id = party.id,
+                name = party.name,
+                identifier = party.identifier
+                    .let { identifier ->
+                        AddClientsToPartiesInAPResult.Party.Identifier(
+                            scheme = identifier.scheme,
+                            id = identifier.id,
+                            legalName = identifier.legalName,
+                            uri = identifier.uri
+                        )
+                    },
+                additionalIdentifiers = party.additionalIdentifiers
+                    ?.map { additionalIdentifier ->
+                        AddClientsToPartiesInAPResult.Party.AdditionalIdentifier(
+                            scheme = additionalIdentifier.scheme,
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            uri = additionalIdentifier.uri
+                        )
+                    },
+                address = party.address
+                    .let { address ->
+                        AddClientsToPartiesInAPResult.Party.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails
+                                .let { addressDetails ->
+                                    AddClientsToPartiesInAPResult.Party.Address.AddressDetails(
+                                        country = addressDetails.country
+                                            .let { country ->
+                                                AddClientsToPartiesInAPResult.Party.Address.AddressDetails.Country(
+                                                    scheme = country.scheme,
+                                                    id = country.id,
+                                                    description = country.description,
+                                                    uri = country.uri
+                                                )
+                                            },
+                                        region = addressDetails.region
+                                            .let { region ->
+                                                AddClientsToPartiesInAPResult.Party.Address.AddressDetails.Region(
+                                                    scheme = region.scheme,
+                                                    id = region.id,
+                                                    description = region.description,
+                                                    uri = region.uri
+                                                )
+                                            },
+                                        locality = addressDetails.locality
+                                            .let { locality ->
+                                                AddClientsToPartiesInAPResult.Party.Address.AddressDetails.Locality(
+                                                    scheme = locality.scheme,
+                                                    id = locality.id,
+                                                    description = locality.description,
+                                                    uri = locality.uri
+                                                )
+                                            }
+                                    )
+                                }
+                        )
+                    },
+                contactPoint = party.contactPoint
+                    .let { contactPoint ->
+                        AddClientsToPartiesInAPResult.Party.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            telephone = contactPoint.telephone,
+                            faxNumber = contactPoint.faxNumber,
+                            url = contactPoint.url
+                        )
+                    },
+                details = party.details.let { details ->
+                    AddClientsToPartiesInAPResult.Party.Details(
+                        mainSectoralActivity = details?.mainSectoralActivity,
+                        mainGeneralActivity = details?.mainGeneralActivity,
+                        typeOfBuyer = details?.typeOfBuyer
+                    )
+                },
+                roles = party.roles
+            ).let { listOf(it) }
+        )
 }
