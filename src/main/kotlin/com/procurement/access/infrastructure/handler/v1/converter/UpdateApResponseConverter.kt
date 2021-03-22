@@ -227,34 +227,34 @@ fun APEntity.convert() = ApUpdateResponse(
                 submissionMethod = tender.submissionMethod,
                 submissionMethodRationale = tender.submissionMethodRationale,
                 submissionMethodDetails = tender.submissionMethodDetails,
-                procuringEntity = tender.procuringEntity.let { procuringEntity ->
-                    ApUpdateResponse.Tender.ProcuringEntity(
-                        id = procuringEntity.id,
-                        name = procuringEntity.name,
-                        identifier = procuringEntity.identifier.let { identifier ->
-                            ApUpdateResponse.Tender.ProcuringEntity.Identifier(
+                parties = tender.parties.map { party ->
+                    ApUpdateResponse.Tender.Party(
+                        id = party.id,
+                        name = party.name,
+                        identifier = party.identifier.let { identifier ->
+                            ApUpdateResponse.Tender.Party.Identifier(
                                 scheme = identifier.scheme,
                                 id = identifier.id,
                                 legalName = identifier.legalName,
                                 uri = identifier.uri
                             )
                         },
-                        additionalIdentifiers = procuringEntity.additionalIdentifiers?.map { additionalIdentifier ->
-                            ApUpdateResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                        additionalIdentifiers = party.additionalIdentifiers?.map { additionalIdentifier ->
+                            ApUpdateResponse.Tender.Party.AdditionalIdentifier(
                                 scheme = additionalIdentifier.scheme,
                                 id = additionalIdentifier.id,
                                 legalName = additionalIdentifier.legalName,
                                 uri = additionalIdentifier.uri
                             )
                         },
-                        address = procuringEntity.address.let { address ->
-                            ApUpdateResponse.Tender.ProcuringEntity.Address(
+                        address = party.address.let { address ->
+                            ApUpdateResponse.Tender.Party.Address(
                                 streetAddress = address.streetAddress,
                                 postalCode = address.postalCode,
                                 addressDetails = address.addressDetails.let { addressDetails ->
-                                    ApUpdateResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                                    ApUpdateResponse.Tender.Party.Address.AddressDetails(
                                         country = addressDetails.country.let { country ->
-                                            ApUpdateResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                            ApUpdateResponse.Tender.Party.Address.AddressDetails.Country(
                                                 scheme = country.scheme,
                                                 id = country.id,
                                                 description = country.description,
@@ -262,7 +262,7 @@ fun APEntity.convert() = ApUpdateResponse(
                                             )
                                         },
                                         region = addressDetails.region.let { region ->
-                                            ApUpdateResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                            ApUpdateResponse.Tender.Party.Address.AddressDetails.Region(
                                                 scheme = region.scheme,
                                                 id = region.id,
                                                 description = region.description,
@@ -270,7 +270,7 @@ fun APEntity.convert() = ApUpdateResponse(
                                             )
                                         },
                                         locality = addressDetails.locality.let { locality ->
-                                            ApUpdateResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                            ApUpdateResponse.Tender.Party.Address.AddressDetails.Locality(
                                                 scheme = locality.scheme,
                                                 id = locality.id,
                                                 description = locality.description,
@@ -282,15 +282,16 @@ fun APEntity.convert() = ApUpdateResponse(
                                 }
                             )
                         },
-                        contactPoint = procuringEntity.contactPoint.let { contactPoint ->
-                            ApUpdateResponse.Tender.ProcuringEntity.ContactPoint(
+                        contactPoint = party.contactPoint.let { contactPoint ->
+                            ApUpdateResponse.Tender.Party.ContactPoint(
                                 name = contactPoint.name,
                                 email = contactPoint.email,
                                 telephone = contactPoint.telephone,
                                 faxNumber = contactPoint.faxNumber,
                                 url = contactPoint.url
                             )
-                        }
+                        },
+                        roles = party.roles
                     )
                 }
             )

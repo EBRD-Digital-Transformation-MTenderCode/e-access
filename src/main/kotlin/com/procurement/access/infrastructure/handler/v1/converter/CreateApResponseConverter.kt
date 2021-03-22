@@ -86,40 +86,40 @@ fun ApCreateResult.convert(): ApCreateResponse =
                     procurementMethodDetails = tender.procurementMethodDetails,
                     procurementMethodRationale = tender.procurementMethodRationale,
                     eligibilityCriteria = tender.eligibilityCriteria,
-                    procuringEntity = tender.procuringEntity
-                        .let { procuringEntity ->
-                            ApCreateResponse.Tender.ProcuringEntity(
-                                id = procuringEntity.id,
-                                name = procuringEntity.name,
-                                identifier = procuringEntity.identifier
+                    parties = tender.parties
+                        .map { party ->
+                            ApCreateResponse.Tender.Party(
+                                id = party.id,
+                                name = party.name,
+                                identifier = party.identifier
                                     .let { identifier ->
-                                        ApCreateResponse.Tender.ProcuringEntity.Identifier(
+                                        ApCreateResponse.Tender.Party.Identifier(
                                             scheme = identifier.scheme,
                                             id = identifier.id,
                                             legalName = identifier.legalName,
                                             uri = identifier.uri
                                         )
                                     },
-                                additionalIdentifiers = procuringEntity.additionalIdentifiers
+                                additionalIdentifiers = party.additionalIdentifiers
                                     .map { additionalIdentifier ->
-                                        ApCreateResponse.Tender.ProcuringEntity.AdditionalIdentifier(
+                                        ApCreateResponse.Tender.Party.AdditionalIdentifier(
                                             scheme = additionalIdentifier.scheme,
                                             id = additionalIdentifier.id,
                                             legalName = additionalIdentifier.legalName,
                                             uri = additionalIdentifier.uri
                                         )
                                     },
-                                address = procuringEntity.address
+                                address = party.address
                                     .let { address ->
-                                        ApCreateResponse.Tender.ProcuringEntity.Address(
+                                        ApCreateResponse.Tender.Party.Address(
                                             streetAddress = address.streetAddress,
                                             postalCode = address.postalCode,
                                             addressDetails = address.addressDetails
                                                 .let { addressDetails ->
-                                                    ApCreateResponse.Tender.ProcuringEntity.Address.AddressDetails(
+                                                    ApCreateResponse.Tender.Party.Address.AddressDetails(
                                                         country = addressDetails.country
                                                             .let { country ->
-                                                                ApCreateResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                                ApCreateResponse.Tender.Party.Address.AddressDetails.Country(
                                                                     scheme = country.scheme,
                                                                     id = country.id,
                                                                     description = country.description,
@@ -128,7 +128,7 @@ fun ApCreateResult.convert(): ApCreateResponse =
                                                             },
                                                         region = addressDetails.region
                                                             .let { region ->
-                                                                ApCreateResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                                ApCreateResponse.Tender.Party.Address.AddressDetails.Region(
                                                                     scheme = region.scheme,
                                                                     id = region.id,
                                                                     description = region.description,
@@ -137,7 +137,7 @@ fun ApCreateResult.convert(): ApCreateResponse =
                                                             },
                                                         locality = addressDetails.locality
                                                             .let { locality ->
-                                                                ApCreateResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                                ApCreateResponse.Tender.Party.Address.AddressDetails.Locality(
                                                                     scheme = locality.scheme,
                                                                     id = locality.id,
                                                                     description = locality.description,
@@ -148,16 +148,17 @@ fun ApCreateResult.convert(): ApCreateResponse =
                                                 }
                                         )
                                     },
-                                contactPoint = procuringEntity.contactPoint
+                                contactPoint = party.contactPoint
                                     .let { contactPoint ->
-                                        ApCreateResponse.Tender.ProcuringEntity.ContactPoint(
+                                        ApCreateResponse.Tender.Party.ContactPoint(
                                             name = contactPoint.name,
                                             email = contactPoint.email,
                                             telephone = contactPoint.telephone,
                                             faxNumber = contactPoint.faxNumber,
                                             url = contactPoint.url
                                         )
-                                    }
+                                    },
+                                roles = party.roles
                             )
                         },
                     requiresElectronicCatalogue = tender.requiresElectronicCatalogue,

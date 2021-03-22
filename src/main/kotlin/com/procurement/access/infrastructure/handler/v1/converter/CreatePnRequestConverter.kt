@@ -702,5 +702,89 @@ fun PnCreateRequest.convert() = PnCreateData(
                     },
                 submissionMethodRationale = tender.submissionMethodRationale.toList()
             )
+        },
+    buyer = this.buyer
+        .let { buyer ->
+            PnCreateData.Buyer(
+                id = buyer.id,
+                name = buyer.name,
+                details = buyer.details
+                    ?.let { details ->
+                        PnCreateData.Buyer.Details(
+                            typeOfBuyer = details.typeOfBuyer,
+                            mainGeneralActivity = details.mainGeneralActivity,
+                            mainSectoralActivity = details.mainSectoralActivity
+                        )
+                    },
+                additionalIdentifiers = buyer.additionalIdentifiers
+                    .errorIfEmpty {
+                        ErrorException(
+                            error = ErrorType.IS_EMPTY,
+                            message = "Buyer contains empty list of additionalIdentifiers."
+                        )
+                    }
+                    ?.map { additionalIdentifier ->
+                        PnCreateData.Buyer.AdditionalIdentifier(
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            scheme = additionalIdentifier.scheme,
+                            uri = additionalIdentifier.uri
+                        )
+                    }.orEmpty(),
+                address = buyer.address
+                    .let { address ->
+                        PnCreateData.Buyer.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails.let { addressDetails ->
+                                PnCreateData.Buyer.Address.AddressDetails(
+                                    country = addressDetails.country.let { country ->
+                                        PnCreateData.Buyer.Address.AddressDetails.Country(
+                                            scheme = country.scheme,
+                                            id = country.id,
+                                            description = country.description,
+                                            uri = country.uri
+                                        )
+                                    },
+                                    region = addressDetails.region.let { region ->
+                                        PnCreateData.Buyer.Address.AddressDetails.Region(
+                                            scheme = region.scheme,
+                                            id = region.id,
+                                            description = region.description,
+                                            uri = region.uri
+                                        )
+                                    },
+                                    locality = addressDetails.locality.let { locality ->
+                                        PnCreateData.Buyer.Address.AddressDetails.Locality(
+                                            scheme = locality.scheme,
+                                            id = locality.id,
+                                            description = locality.description,
+                                            uri = locality.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                contactPoint = buyer.contactPoint
+                    .let { contactPoint ->
+                        PnCreateData.Buyer.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            faxNumber = contactPoint.faxNumber,
+                            telephone = contactPoint.telephone,
+                            url = contactPoint.url
+                        )
+                    },
+                identifier = buyer.identifier
+                    .let { identifier ->
+                        PnCreateData.Buyer.Identifier(
+                            id = identifier.id,
+                            scheme = identifier.scheme,
+                            uri = identifier.uri,
+                            legalName = identifier.legalName
+                        )
+                    }
+            )
         }
 )

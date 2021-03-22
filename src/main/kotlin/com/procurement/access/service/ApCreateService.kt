@@ -5,6 +5,7 @@ import com.procurement.access.application.service.ap.create.ApCreateResult
 import com.procurement.access.application.service.ap.create.CreateApContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -219,15 +220,15 @@ class ApCreateService(
                     endDate = period.endDate
                 )
             },
-            procuringEntity = tenderRequest.procuringEntity.let { procuringEntity ->
-                APEntity.Tender.ProcuringEntity(
+            parties = tenderRequest.procuringEntity.let { procuringEntity ->
+                APEntity.Tender.Party(
                     id = generationService.generateOrganizationId(
                         identifierScheme = procuringEntity.identifier.scheme,
                         identifierId = procuringEntity.identifier.id
                     ),
                     name = procuringEntity.name,
                     identifier = procuringEntity.identifier.let { identifier ->
-                        APEntity.Tender.ProcuringEntity.Identifier(
+                        APEntity.Tender.Party.Identifier(
                             scheme = identifier.scheme,
                             id = identifier.id,
                             legalName = identifier.legalName,
@@ -235,7 +236,7 @@ class ApCreateService(
                         )
                     },
                     additionalIdentifiers = procuringEntity.additionalIdentifiers.map { additionalIdentifier ->
-                        APEntity.Tender.ProcuringEntity.AdditionalIdentifier(
+                        APEntity.Tender.Party.AdditionalIdentifier(
                             scheme = additionalIdentifier.scheme,
                             id = additionalIdentifier.id,
                             legalName = additionalIdentifier.legalName,
@@ -243,13 +244,13 @@ class ApCreateService(
                         )
                     },
                     address = procuringEntity.address.let { address ->
-                        APEntity.Tender.ProcuringEntity.Address(
+                        APEntity.Tender.Party.Address(
                             streetAddress = address.streetAddress,
                             postalCode = address.postalCode,
                             addressDetails = address.addressDetails.let { addressDetails ->
-                                APEntity.Tender.ProcuringEntity.Address.AddressDetails(
+                                APEntity.Tender.Party.Address.AddressDetails(
                                     country = addressDetails.country.let { country ->
-                                        APEntity.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                        APEntity.Tender.Party.Address.AddressDetails.Country(
                                             scheme = country.scheme,
                                             id = country.id,
                                             description = country.description,
@@ -257,7 +258,7 @@ class ApCreateService(
                                         )
                                     },
                                     region = addressDetails.region.let { region ->
-                                        APEntity.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                        APEntity.Tender.Party.Address.AddressDetails.Region(
                                             scheme = region.scheme,
                                             id = region.id,
                                             description = region.description,
@@ -265,7 +266,7 @@ class ApCreateService(
                                         )
                                     },
                                     locality = addressDetails.locality.let { locality ->
-                                        APEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                        APEntity.Tender.Party.Address.AddressDetails.Locality(
                                             scheme = locality.scheme,
                                             id = locality.id,
                                             description = locality.description,
@@ -277,16 +278,17 @@ class ApCreateService(
                         )
                     },
                     contactPoint = procuringEntity.contactPoint.let { contactPoint ->
-                        APEntity.Tender.ProcuringEntity.ContactPoint(
+                        APEntity.Tender.Party.ContactPoint(
                             name = contactPoint.name,
                             email = contactPoint.email,
                             telephone = contactPoint.telephone,
                             faxNumber = contactPoint.faxNumber,
                             url = contactPoint.url
                         )
-                    }
+                    },
+                    roles = listOf(PartyRole.CENTRAL_PURCHASING_BODY)
                 )
-            },
+            }.let { listOf(it) },
             //BR-3.1.16
             requiresElectronicCatalogue = false,
             //BR-3.1.18
@@ -415,23 +417,23 @@ class ApCreateService(
                         procurementMethodDetails = tender.procurementMethodDetails,
                         procurementMethodRationale = tender.procurementMethodRationale,
                         eligibilityCriteria = tender.eligibilityCriteria,
-                        procuringEntity = tender.procuringEntity
-                            .let { procuringEntity ->
-                                ApCreateResult.Tender.ProcuringEntity(
-                                    id = procuringEntity.id,
-                                    name = procuringEntity.name,
-                                    identifier = procuringEntity.identifier
+                        parties = tender.parties
+                            .map { party ->
+                                ApCreateResult.Tender.Party(
+                                    id = party.id,
+                                    name = party.name,
+                                    identifier = party.identifier
                                         .let { identifier ->
-                                            ApCreateResult.Tender.ProcuringEntity.Identifier(
+                                            ApCreateResult.Tender.Party.Identifier(
                                                 scheme = identifier.scheme,
                                                 id = identifier.id,
                                                 legalName = identifier.legalName,
                                                 uri = identifier.uri
                                             )
                                         },
-                                    additionalIdentifiers = procuringEntity.additionalIdentifiers
+                                    additionalIdentifiers = party.additionalIdentifiers
                                         ?.map { additionalIdentifier ->
-                                            ApCreateResult.Tender.ProcuringEntity.AdditionalIdentifier(
+                                            ApCreateResult.Tender.Party.AdditionalIdentifier(
                                                 scheme = additionalIdentifier.scheme,
                                                 id = additionalIdentifier.id,
                                                 legalName = additionalIdentifier.legalName,
@@ -439,17 +441,17 @@ class ApCreateService(
                                             )
                                         }
                                         .orEmpty(),
-                                    address = procuringEntity.address
+                                    address = party.address
                                         .let { address ->
-                                            ApCreateResult.Tender.ProcuringEntity.Address(
+                                            ApCreateResult.Tender.Party.Address(
                                                 streetAddress = address.streetAddress,
                                                 postalCode = address.postalCode,
                                                 addressDetails = address.addressDetails
                                                     .let { addressDetails ->
-                                                        ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails(
+                                                        ApCreateResult.Tender.Party.Address.AddressDetails(
                                                             country = addressDetails.country
                                                                 .let { country ->
-                                                                    ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails.Country(
+                                                                    ApCreateResult.Tender.Party.Address.AddressDetails.Country(
                                                                         scheme = country.scheme,
                                                                         id = country.id,
                                                                         description = country.description,
@@ -458,7 +460,7 @@ class ApCreateService(
                                                                 },
                                                             region = addressDetails.region
                                                                 .let { region ->
-                                                                    ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails.Region(
+                                                                    ApCreateResult.Tender.Party.Address.AddressDetails.Region(
                                                                         scheme = region.scheme,
                                                                         id = region.id,
                                                                         description = region.description,
@@ -467,7 +469,7 @@ class ApCreateService(
                                                                 },
                                                             locality = addressDetails.locality
                                                                 .let { locality ->
-                                                                    ApCreateResult.Tender.ProcuringEntity.Address.AddressDetails.Locality(
+                                                                    ApCreateResult.Tender.Party.Address.AddressDetails.Locality(
                                                                         scheme = locality.scheme,
                                                                         id = locality.id,
                                                                         description = locality.description,
@@ -479,16 +481,17 @@ class ApCreateService(
                                                     }
                                             )
                                         },
-                                    contactPoint = procuringEntity.contactPoint
+                                    contactPoint = party.contactPoint
                                         .let { contactPoint ->
-                                            ApCreateResult.Tender.ProcuringEntity.ContactPoint(
+                                            ApCreateResult.Tender.Party.ContactPoint(
                                                 name = contactPoint.name,
                                                 email = contactPoint.email,
                                                 telephone = contactPoint.telephone,
                                                 faxNumber = contactPoint.faxNumber,
                                                 url = contactPoint.url
                                             )
-                                        }
+                                        },
+                                    roles = party.roles
                                 )
                             },
                         requiresElectronicCatalogue = tender.requiresElectronicCatalogue,

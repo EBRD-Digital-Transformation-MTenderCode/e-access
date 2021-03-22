@@ -7,6 +7,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementDataType
@@ -264,6 +265,13 @@ sealed class ValidationErrors(
             prefix = "VR.COM-",
             numberError = "10.1.4.2",
             description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class ProcuringEntityPartyNotFoundForResponderProcessing() :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.4.3",
+            description = "Party with role '${PartyRole.PROCURING_ENTITY}' not found."
         )
 
     class UnexpectedStageForSetStateForTender(stage: Stage) :

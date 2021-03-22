@@ -112,6 +112,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     MISSING_HOMOGENEOUS_ITEMS("10.97", "Homogeneous items not found."),
     MISSING_REFERENCE_CRITERIA("10.98", "Missing reference criteria."),
     INVALID_ELIGIBLE_EVIDENCES("10.99", "Invalid eligible evidences."),
-    RELATED_ITEMS_NOT_FOUND("11.00", "Related items not found.")
+    RELATED_ITEMS_NOT_FOUND("11.00", "Related items not found."),
+    MISSING_PARTIES("11.01", "Missing parties."),
     ;
 }
