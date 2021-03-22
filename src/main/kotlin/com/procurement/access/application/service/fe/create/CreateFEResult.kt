@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
@@ -17,6 +18,7 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
@@ -56,7 +58,8 @@ data class CreateFEResult(
         val procuringEntity: ProcuringEntity,
         val criteria: List<Criteria>,
         val otherCriteria: OtherCriteria,
-        val documents: List<Document>
+        val documents: List<Document>,
+        val parties: List<Party>
     ) {
 
         data class Classification(
@@ -128,14 +131,42 @@ data class CreateFEResult(
 
         data class ProcuringEntity(
             val id: String,
-            val persons: List<Person>,
+            val name: String
+        )
+
+        data class OtherCriteria(
+            val reductionCriteria: ReductionCriteria,
+            val qualificationSystemMethods: List<QualificationSystemMethod>
+        )
+
+        data class Document(
+            val id: String,
+            val documentType: DocumentType,
+            val title: String,
+            val description: String?
+        )
+
+        data class Party(
+            val id: String,
             val name: String,
             val identifier: Identifier,
-            val additionalIdentifiers: List<Identifier>,
+
+            val additionalIdentifiers: List<AdditionalIdentifier>?,
+
             val address: Address,
-            val contactPoint: ContactPoint
+            val contactPoint: ContactPoint,
+            val roles: List<PartyRole>,
+            val persones: List<Person>?
+
         ) {
             data class Identifier(
+                val scheme: String,
+                val id: String,
+                val legalName: String,
+                val uri: String?
+            )
+
+            data class AdditionalIdentifier(
                 val scheme: String,
                 val id: String,
                 val legalName: String,
@@ -186,7 +217,7 @@ data class CreateFEResult(
             )
 
             data class Person(
-                val id: String,
+                val id: PersonId,
                 val title: String,
                 val name: String,
                 val identifier: Identifier,
@@ -203,7 +234,7 @@ data class CreateFEResult(
                     val type: BusinessFunctionType,
                     val jobTitle: String,
                     val period: Period,
-                    val documents: List<Document>
+                    val documents: List<Document>?
                 ) {
                     data class Document(
                         val id: String,
@@ -218,17 +249,5 @@ data class CreateFEResult(
                 }
             }
         }
-
-        data class OtherCriteria(
-            val reductionCriteria: ReductionCriteria,
-            val qualificationSystemMethods: List<QualificationSystemMethod>
-        )
-
-        data class Document(
-            val id: String,
-            val documentType: DocumentType,
-            val title: String,
-            val description: String?
-        )
     }
 }

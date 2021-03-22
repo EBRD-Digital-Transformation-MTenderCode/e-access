@@ -50,7 +50,8 @@ class CreateFeEntityConverter {
                 contractPeriod = convert(entity.contractPeriod),
                 criteria = entity.criteria
                     ?.map { convert(it) }
-                    .orEmpty()
+                    .orEmpty(),
+                parties = entity.parties.map { convert(it) }
             )
 
         private fun convert(entity: FEEntity.Tender.Classification): CreateFEResult.Tender.Classification =
@@ -150,109 +151,119 @@ class CreateFeEntityConverter {
         private fun convert(entity: FEEntity.Tender.ProcuringEntity): CreateFEResult.Tender.ProcuringEntity =
             CreateFEResult.Tender.ProcuringEntity(
                 id = entity.id,
+                name = entity.name
+            )
+
+        private fun convert(entity: FEEntity.Tender.Party): CreateFEResult.Tender.Party =
+            CreateFEResult.Tender.Party(
+                id = entity.id,
                 name = entity.name,
-                identifier = convert(entity.identifier),
+                identifier = entity.identifier
+                    .let { identifier ->
+                        CreateFEResult.Tender.Party.Identifier(
+                            scheme = identifier.scheme,
+                            id = identifier.id,
+                            legalName = identifier.legalName,
+                            uri = identifier.uri
+                        )
+                    },
                 additionalIdentifiers = entity.additionalIdentifiers
-                    ?.map { convert(it) }
-                    .orEmpty(),
-                address = convert(entity.address),
-                contactPoint = convert(entity.contactPoint),
-                persons = entity.persons.map { convert(it) }
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Identifier): CreateFEResult.Tender.ProcuringEntity.Identifier =
-            CreateFEResult.Tender.ProcuringEntity.Identifier(
-                scheme = entity.scheme,
-                id = entity.id,
-                legalName = entity.legalName,
-                uri = entity.uri
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address): CreateFEResult.Tender.ProcuringEntity.Address =
-            CreateFEResult.Tender.ProcuringEntity.Address(
-                streetAddress = entity.streetAddress,
-                postalCode = entity.postalCode,
-                addressDetails = convert(entity.addressDetails)
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails(
-                country = convert(entity.country),
-                region = convert(entity.region),
-                locality = convert(entity.locality)
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Country): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country(
-                scheme = entity.scheme,
-                id = entity.id,
-                description = entity.description,
-                uri = entity.uri
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Region): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region(
-                scheme = entity.scheme,
-                id = entity.id,
-                description = entity.description,
-                uri = entity.uri
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Address.AddressDetails.Locality): CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality =
-            CreateFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality(
-                scheme = entity.scheme,
-                id = entity.id,
-                description = entity.description,
-                uri = entity.uri
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.ContactPoint): CreateFEResult.Tender.ProcuringEntity.ContactPoint =
-            CreateFEResult.Tender.ProcuringEntity.ContactPoint(
-                name = entity.name,
-                email = entity.email,
-                telephone = entity.telephone,
-                faxNumber = entity.faxNumber,
-                url = entity.url
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person): CreateFEResult.Tender.ProcuringEntity.Person =
-            CreateFEResult.Tender.ProcuringEntity.Person(
-                id = entity.id,
-                title = entity.title,
-                name = entity.name,
-                identifier = convert(entity.identifier),
-                businessFunctions = entity.businessFunctions.map { convert(it) }
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.Identifier): CreateFEResult.Tender.ProcuringEntity.Person.Identifier =
-            CreateFEResult.Tender.ProcuringEntity.Person.Identifier(
-                id = entity.id,
-                scheme = entity.scheme,
-                uri = entity.uri
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction): CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction =
-            CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction(
-                id = entity.id,
-                jobTitle = entity.jobTitle,
-                type = entity.type,
-                period = convert(entity.period),
-                documents = entity.documents
-                    ?.map { convert(it) }
-                    .orEmpty()
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Document): CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document =
-            CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document(
-                id = entity.id,
-                documentType = entity.documentType,
-                title = entity.title,
-                description = entity.description
-            )
-
-        private fun convert(entity: FEEntity.Tender.ProcuringEntity.Person.BusinessFunction.Period): CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period =
-            CreateFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period(
-                startDate = entity.startDate
+                    ?.map { additionalIdentifier ->
+                        CreateFEResult.Tender.Party.AdditionalIdentifier(
+                            scheme = additionalIdentifier.scheme,
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            uri = additionalIdentifier.uri
+                        )
+                    },
+                address = entity.address
+                    .let { address ->
+                        CreateFEResult.Tender.Party.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails
+                                .let { addressDetails ->
+                                    CreateFEResult.Tender.Party.Address.AddressDetails(
+                                        country = addressDetails.country
+                                            .let { country ->
+                                                CreateFEResult.Tender.Party.Address.AddressDetails.Country(
+                                                    scheme = country.scheme,
+                                                    id = country.id,
+                                                    description = country.description,
+                                                    uri = country.uri
+                                                )
+                                            },
+                                        region = addressDetails.region
+                                            .let { region ->
+                                                CreateFEResult.Tender.Party.Address.AddressDetails.Region(
+                                                    scheme = region.scheme,
+                                                    id = region.id,
+                                                    description = region.description,
+                                                    uri = region.uri
+                                                )
+                                            },
+                                        locality = addressDetails.locality
+                                            .let { locality ->
+                                                CreateFEResult.Tender.Party.Address.AddressDetails.Locality(
+                                                    scheme = locality.scheme,
+                                                    id = locality.id,
+                                                    description = locality.description,
+                                                    uri = locality.uri
+                                                )
+                                            }
+                                    )
+                                }
+                        )
+                    },
+                contactPoint = entity.contactPoint
+                    .let { contactPoint ->
+                        CreateFEResult.Tender.Party.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            telephone = contactPoint.telephone,
+                            faxNumber = contactPoint.faxNumber,
+                            url = contactPoint.url
+                        )
+                    },
+                roles = entity.roles,
+                persones = entity.persones?.map { person ->
+                    CreateFEResult.Tender.Party.Person(
+                        id = person.id,
+                        title = person.title,
+                        name = person.name,
+                        identifier = person.identifier
+                            .let { identifier ->
+                                CreateFEResult.Tender.Party.Person.Identifier(
+                                    id = identifier.id,
+                                    scheme = identifier.scheme,
+                                    uri = identifier.uri
+                                )
+                            },
+                        businessFunctions = person.businessFunctions
+                            .map { businessFunctions ->
+                                CreateFEResult.Tender.Party.Person.BusinessFunction(
+                                    id = businessFunctions.id,
+                                    jobTitle = businessFunctions.jobTitle,
+                                    type = businessFunctions.type,
+                                    period = businessFunctions.period
+                                        .let { period ->
+                                            CreateFEResult.Tender.Party.Person.BusinessFunction.Period(
+                                                startDate = period.startDate
+                                            )
+                                        },
+                                    documents = businessFunctions.documents
+                                        ?.map { document ->
+                                            CreateFEResult.Tender.Party.Person.BusinessFunction.Document(
+                                                id = document.id,
+                                                title = document.title,
+                                                description = document.description,
+                                                documentType = document.documentType
+                                            )
+                                        }
+                                )
+                            }
+                    )
+                }
             )
     }
 }
