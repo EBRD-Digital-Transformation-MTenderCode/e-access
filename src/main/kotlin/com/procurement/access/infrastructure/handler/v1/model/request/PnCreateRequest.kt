@@ -338,7 +338,9 @@ class PnCreateRequest(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
             @param:JsonProperty("scheme") @field:JsonProperty("scheme") val scheme: String,
             @param:JsonProperty("legalName") @field:JsonProperty("legalName") val legalName: String,
-            @param:JsonProperty("uri") @field:JsonProperty("uri") val uri: String
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @param:JsonProperty("uri") @field:JsonProperty("uri") val uri: String?
         )
 
         data class Address(
@@ -383,7 +385,9 @@ class PnCreateRequest(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
             @param:JsonProperty("scheme") @field:JsonProperty("scheme") val scheme: String,
             @param:JsonProperty("legalName") @field:JsonProperty("legalName") val legalName: String,
-            @param:JsonProperty("uri") @field:JsonProperty("uri") val uri: String
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @param:JsonProperty("uri") @field:JsonProperty("uri") val uri: String?
         )
 
         data class ContactPoint(
@@ -394,7 +398,8 @@ class PnCreateRequest(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("faxNumber") @field:JsonProperty("faxNumber") val faxNumber: String?,
 
-            @param:JsonProperty("url") @field:JsonProperty("url") val url: String
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @param:JsonProperty("url") @field:JsonProperty("url") val url: String?
         )
 
         data class Details(

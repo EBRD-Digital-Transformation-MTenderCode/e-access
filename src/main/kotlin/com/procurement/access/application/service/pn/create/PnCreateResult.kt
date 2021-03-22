@@ -344,7 +344,7 @@ data class PnCreateResult(
             val id: String,
             val scheme: String,
             val legalName: String,
-            val uri: String
+            val uri: String?
         )
 
         data class Address(
@@ -384,7 +384,7 @@ data class PnCreateResult(
             val id: String,
             val scheme: String,
             val legalName: String,
-            val uri: String
+            val uri: String?
         )
 
         data class ContactPoint(
@@ -392,7 +392,7 @@ data class PnCreateResult(
             val email: String,
             val telephone: String,
             val faxNumber: String?,
-            val url: String
+            val url: String?
         )
 
         data class Details(
