@@ -530,14 +530,19 @@ sealed class ValidationErrors(
     )
 
     object AddClientsToPartiesInAP{
-        class TenderNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        class PnRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
             numberError = "1.44.1",
-            description = "Tender not found by cpid '$cpid' and '$ocid'."
+            description = "PN record not found by cpid '$cpid' and '$ocid'."
         )
 
         class BuyerIsMissing() : ValidationErrors(
             numberError = "1.44.2",
             description = "Buyer is missing."
+        )
+
+        class ApRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+            numberError = "1.44.3",
+            description = "AP record not found by cpid '$cpid' and '$ocid'."
         )
     }
 
