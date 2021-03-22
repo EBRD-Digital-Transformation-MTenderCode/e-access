@@ -3,6 +3,10 @@ package com.procurement.access.infrastructure.handler.v2.model.response
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.access.domain.model.enums.MainGeneralActivity
+import com.procurement.access.domain.model.enums.MainSectoralActivity
+import com.procurement.access.domain.model.enums.PartyRole
+import com.procurement.access.domain.model.enums.TypeOfBuyer
 
 data class AddClientsToPartiesInAPResult(
     @param:JsonProperty("parties") @field:JsonProperty("parties") val parties: List<Party>
@@ -21,7 +25,7 @@ data class AddClientsToPartiesInAPResult(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @param:JsonProperty("details") @field:JsonProperty("details") val details: Details?,
         
-        @param:JsonProperty("roles") @field:JsonProperty("roles") val roles: List<String>
+        @param:JsonProperty("roles") @field:JsonProperty("roles") val roles: List<PartyRole>
     ) {
         data class Identifier(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
@@ -93,13 +97,13 @@ data class AddClientsToPartiesInAPResult(
 
         data class Details(
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @param:JsonProperty("typeOfBuyer") @field:JsonProperty("typeOfBuyer") val typeOfBuyer: String?,
+            @param:JsonProperty("typeOfBuyer") @field:JsonProperty("typeOfBuyer") val typeOfBuyer: TypeOfBuyer?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @param:JsonProperty("mainGeneralActivity") @field:JsonProperty("mainGeneralActivity") val mainGeneralActivity: String?,
+            @param:JsonProperty("mainGeneralActivity") @field:JsonProperty("mainGeneralActivity") val mainGeneralActivity: MainGeneralActivity?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @param:JsonProperty("mainSectoralActivity") @field:JsonProperty("mainSectoralActivity") val mainSectoralActivity: String?
+            @param:JsonProperty("mainSectoralActivity") @field:JsonProperty("mainSectoralActivity") val mainSectoralActivity: MainSectoralActivity?
         )
     }
 }
