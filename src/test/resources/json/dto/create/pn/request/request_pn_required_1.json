@@ -160,8 +160,7 @@
     "identifier": {
       "id": "string",
       "scheme": "string",
-      "legalName": "string",
-      "uri": "string"
+      "legalName": "string"
     },
     "address": {
       "streetAddress": "",
@@ -185,11 +184,17 @@
         }
       }
     },
+    "additionalIdentifiers": [
+      {
+        "id": "string",
+        "scheme": "string",
+        "legalName": "string"
+      }
+    ],
     "contactPoint": {
       "name": "string",
       "email": "string",
-      "telephone": "string",
-      "url": "string"
+      "telephone": "string"
     },
     "details": {
     }

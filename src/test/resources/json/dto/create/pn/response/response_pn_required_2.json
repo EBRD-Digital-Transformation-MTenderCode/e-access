@@ -129,8 +129,7 @@
     "identifier": {
       "id": "string",
       "scheme": "string",
-      "legalName": "string",
-      "uri": "string"
+      "legalName": "string"
     },
     "address": {
       "streetAddress": "",
@@ -157,8 +156,7 @@
     "contactPoint": {
       "name": "string",
       "email": "string",
-      "telephone": "string",
-      "url": "string"
+      "telephone": "string"
     }
   }
 }
