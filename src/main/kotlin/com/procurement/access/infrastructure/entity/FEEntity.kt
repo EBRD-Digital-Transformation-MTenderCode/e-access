@@ -101,8 +101,7 @@ data class FEEntity(
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?,
 
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party> = emptyList()
+        @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>
         ) {
 
         data class Classification(
