@@ -169,13 +169,13 @@ class FeCreateServiceImpl(
         val cplRole = PartyRole.CENTRAL_PURCHASING_BODY
         val cpbPersones = data.tender.procuringEntity?.persons?.map { it.convert() }
 
-        val cpbParty = ap.tender.parties
+        val cpbParty = ap.parties
             .firstOrNull { it.roles.contains(cplRole) }
             ?.convert()
             ?.copy(roles = listOf(PartyRole.PROCURING_ENTITY), persones = cpbPersones)
             ?: throw ErrorException(ErrorType.MISSING_PARTIES, "Party with role '$cplRole' not found.")
 
-        val clientParties = ap.tender.parties
+        val clientParties = ap.parties
             .filter { it.roles.contains(PartyRole.CLIENT) }
             .map { it.convert() }
             .map { it.copy(roles = listOf(PartyRole.BUYER)) }
@@ -183,7 +183,7 @@ class FeCreateServiceImpl(
         return clientParties + cpbParty
     }
 
-    private fun APEntity.Tender.Party.convert(): FEEntity.Tender.Party =
+    private fun APEntity.Party.convert(): FEEntity.Tender.Party =
         FEEntity.Tender.Party(
             id = id,
             name = name,

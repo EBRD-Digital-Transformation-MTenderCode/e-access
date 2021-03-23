@@ -35,6 +35,7 @@ import java.time.LocalDateTime
 data class APEntity(
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
+    @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>?
@@ -66,8 +67,6 @@ data class APEntity(
 
         @field:JsonProperty("eligibilityCriteria") @param:JsonProperty("eligibilityCriteria") val eligibilityCriteria: String,
         @field:JsonProperty("tenderPeriod") @param:JsonProperty("tenderPeriod") val tenderPeriod: TenderPeriod,
-
-        @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>,
 
         @field:JsonProperty("requiresElectronicCatalogue") @param:JsonProperty("requiresElectronicCatalogue") val requiresElectronicCatalogue: Boolean,
         @field:JsonProperty("submissionMethod") @param:JsonProperty("submissionMethod") val submissionMethod: List<SubmissionMethod>,
@@ -249,103 +248,6 @@ data class APEntity(
             @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime
         )
 
-        data class Party(
-            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
-            @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
-
-            @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier>?,
-            @field:JsonProperty("address") @param:JsonProperty("address") val address: Address,
-            @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("details") @param:JsonProperty("details") val details: Details? = null,
-
-            @field:JsonProperty("roles") @param:JsonProperty("roles") val roles: List<PartyRole>
-        ) {
-
-            data class Identifier(
-                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
-            )
-
-            data class AdditionalIdentifier(
-                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
-            )
-
-            data class Address(
-                @field:JsonProperty("streetAddress") @param:JsonProperty("streetAddress") val streetAddress: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("postalCode") @param:JsonProperty("postalCode") val postalCode: String?,
-                @field:JsonProperty("addressDetails") @param:JsonProperty("addressDetails") val addressDetails: AddressDetails
-            ) {
-
-                data class AddressDetails(
-                    @field:JsonProperty("country") @param:JsonProperty("country") val country: Country,
-                    @field:JsonProperty("region") @param:JsonProperty("region") val region: Region,
-                    @field:JsonProperty("locality") @param:JsonProperty("locality") val locality: Locality
-                ) {
-
-                    data class Country(
-                        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
-                        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                        @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-                        @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
-                    )
-
-                    data class Region(
-                        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
-                        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                        @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-                        @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
-                    )
-
-                    data class Locality(
-                        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
-                        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                        @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-
-                        @JsonInclude(JsonInclude.Include.NON_NULL)
-                        @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
-                    )
-                }
-            }
-
-            data class ContactPoint(
-                @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
-                @field:JsonProperty("email") @param:JsonProperty("email") val email: String,
-                @field:JsonProperty("telephone") @param:JsonProperty("telephone") val telephone: String,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("faxNumber") @param:JsonProperty("faxNumber") val faxNumber: String?,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("url") @param:JsonProperty("url") val url: String?
-            )
-
-            data class Details(
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("typeOfBuyer") @param:JsonProperty("typeOfBuyer") val typeOfBuyer: TypeOfBuyer?,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("mainGeneralActivity") @param:JsonProperty("mainGeneralActivity") val mainGeneralActivity: MainGeneralActivity?,
-
-                @JsonInclude(JsonInclude.Include.NON_NULL)
-                @field:JsonProperty("mainSectoralActivity") @param:JsonProperty("mainSectoralActivity") val mainSectoralActivity: MainSectoralActivity?
-            )
-        }
-
         data class Document(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
             @field:JsonProperty("documentType") @param:JsonProperty("documentType") val documentType: DocumentType,
@@ -358,6 +260,103 @@ data class APEntity(
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
+        )
+    }
+
+    data class Party(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+        @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
+        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("additionalIdentifiers") @param:JsonProperty("additionalIdentifiers") val additionalIdentifiers: List<AdditionalIdentifier>?,
+        @field:JsonProperty("address") @param:JsonProperty("address") val address: Address,
+        @field:JsonProperty("contactPoint") @param:JsonProperty("contactPoint") val contactPoint: ContactPoint,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("details") @param:JsonProperty("details") val details: Details? = null,
+
+        @field:JsonProperty("roles") @param:JsonProperty("roles") val roles: List<PartyRole>
+    ) {
+
+        data class Identifier(
+            @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+        )
+
+        data class AdditionalIdentifier(
+            @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("legalName") @param:JsonProperty("legalName") val legalName: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+        )
+
+        data class Address(
+            @field:JsonProperty("streetAddress") @param:JsonProperty("streetAddress") val streetAddress: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("postalCode") @param:JsonProperty("postalCode") val postalCode: String?,
+            @field:JsonProperty("addressDetails") @param:JsonProperty("addressDetails") val addressDetails: AddressDetails
+        ) {
+
+            data class AddressDetails(
+                @field:JsonProperty("country") @param:JsonProperty("country") val country: Country,
+                @field:JsonProperty("region") @param:JsonProperty("region") val region: Region,
+                @field:JsonProperty("locality") @param:JsonProperty("locality") val locality: Locality
+            ) {
+
+                data class Country(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+                )
+
+                data class Region(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+                )
+
+                data class Locality(
+                    @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+                    @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                    @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String?
+                )
+            }
+        }
+
+        data class ContactPoint(
+            @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
+            @field:JsonProperty("email") @param:JsonProperty("email") val email: String,
+            @field:JsonProperty("telephone") @param:JsonProperty("telephone") val telephone: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("faxNumber") @param:JsonProperty("faxNumber") val faxNumber: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("url") @param:JsonProperty("url") val url: String?
+        )
+
+        data class Details(
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("typeOfBuyer") @param:JsonProperty("typeOfBuyer") val typeOfBuyer: TypeOfBuyer?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("mainGeneralActivity") @param:JsonProperty("mainGeneralActivity") val mainGeneralActivity: MainGeneralActivity?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("mainSectoralActivity") @param:JsonProperty("mainSectoralActivity") val mainSectoralActivity: MainSectoralActivity?
         )
     }
 }

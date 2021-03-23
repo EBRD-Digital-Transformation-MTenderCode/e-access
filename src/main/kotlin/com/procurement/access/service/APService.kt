@@ -157,7 +157,7 @@ class APServiceImpl(
         val ap = apEntity.jsonData.tryToObject(APEntity::class.java)
             .onFailure { fail -> return fail }
 
-        val clientParty = ap.tender.parties
+        val clientParty = ap.parties
             .firstOrNull { party -> containsPnBuyerOfClientRole(party, pn.buyer) }
             ?: createAndSaveClientParty(pn.buyer, ap, apEntity)
                 .onFailure { fail -> return fail }
@@ -166,7 +166,7 @@ class APServiceImpl(
     }
 
     private fun containsPnBuyerOfClientRole(
-        party: APEntity.Tender.Party,
+        party: APEntity.Party,
         buyer: PNEntity.Buyer
     ) = (party.id == buyer.id
         && party.roles.contains(PartyRole.CLIENT))
@@ -175,10 +175,10 @@ class APServiceImpl(
         buyer: PNEntity.Buyer,
         ap: APEntity,
         apEntity: TenderProcessEntity
-    ): Result<APEntity.Tender.Party, Fail> {
+    ): Result<APEntity.Party, Fail> {
         val createdClientParty = buyer.toParty(listOf(PartyRole.CLIENT))
-        val updatedParties = ap.tender.parties + createdClientParty
-        val updatedAp = ap.copy(tender = ap.tender.copy(parties = updatedParties))
+        val updatedParties = ap.parties + createdClientParty
+        val updatedAp = ap.copy(parties = updatedParties)
         val updatedJsonData = trySerialization(updatedAp)
             .onFailure { fail -> return fail }
         val updatedApEntity = apEntity.copy(jsonData = updatedJsonData)
@@ -187,13 +187,13 @@ class APServiceImpl(
         return createdClientParty.asSuccess()
     }
 
-    private fun PNEntity.Buyer.toParty(roles: List<PartyRole>): APEntity.Tender.Party =
-        APEntity.Tender.Party(
+    private fun PNEntity.Buyer.toParty(roles: List<PartyRole>): APEntity.Party =
+        APEntity.Party(
             id = id,
             name = name,
             identifier = identifier
                 .let { identifier ->
-                    APEntity.Tender.Party.Identifier(
+                    APEntity.Party.Identifier(
                         scheme = identifier.scheme,
                         id = identifier.id,
                         legalName = identifier.legalName,
@@ -202,7 +202,7 @@ class APServiceImpl(
                 },
             additionalIdentifiers = additionalIdentifiers
                 ?.map { additionalIdentifier ->
-                    APEntity.Tender.Party.AdditionalIdentifier(
+                    APEntity.Party.AdditionalIdentifier(
                         scheme = additionalIdentifier.scheme,
                         id = additionalIdentifier.id,
                         legalName = additionalIdentifier.legalName,
@@ -211,15 +211,15 @@ class APServiceImpl(
                 },
             address = address
                 .let { address ->
-                    APEntity.Tender.Party.Address(
+                    APEntity.Party.Address(
                         streetAddress = address.streetAddress,
                         postalCode = address.postalCode,
                         addressDetails = address.addressDetails
                             .let { addressDetails ->
-                                APEntity.Tender.Party.Address.AddressDetails(
+                                APEntity.Party.Address.AddressDetails(
                                     country = addressDetails.country
                                         .let { country ->
-                                            APEntity.Tender.Party.Address.AddressDetails.Country(
+                                            APEntity.Party.Address.AddressDetails.Country(
                                                 scheme = country.scheme,
                                                 id = country.id,
                                                 description = country.description,
@@ -228,7 +228,7 @@ class APServiceImpl(
                                         },
                                     region = addressDetails.region
                                         .let { region ->
-                                            APEntity.Tender.Party.Address.AddressDetails.Region(
+                                            APEntity.Party.Address.AddressDetails.Region(
                                                 scheme = region.scheme,
                                                 id = region.id,
                                                 description = region.description,
@@ -237,7 +237,7 @@ class APServiceImpl(
                                         },
                                     locality = addressDetails.locality
                                         .let { locality ->
-                                            APEntity.Tender.Party.Address.AddressDetails.Locality(
+                                            APEntity.Party.Address.AddressDetails.Locality(
                                                 scheme = locality.scheme,
                                                 id = locality.id,
                                                 description = locality.description,
@@ -250,7 +250,7 @@ class APServiceImpl(
                 },
             contactPoint = contactPoint
                 .let { contactPoint ->
-                    APEntity.Tender.Party.ContactPoint(
+                    APEntity.Party.ContactPoint(
                         name = contactPoint.name,
                         email = contactPoint.email,
                         telephone = contactPoint.telephone,
@@ -258,7 +258,7 @@ class APServiceImpl(
                         url = contactPoint.url
                     )
                 },
-            details = APEntity.Tender.Party.Details(
+            details = APEntity.Party.Details(
                 mainSectoralActivity = details?.mainSectoralActivity?.let { MainSectoralActivity.creator(it) },
                 mainGeneralActivity = details?.mainGeneralActivity?.let { MainGeneralActivity.creator(it) },
                 typeOfBuyer = details?.typeOfBuyer
@@ -266,7 +266,7 @@ class APServiceImpl(
             roles = roles
         )
 
-    private fun generateResult(party: APEntity.Tender.Party) =
+    private fun generateResult(party: APEntity.Party) =
         AddClientsToPartiesInAPResult(
             parties = AddClientsToPartiesInAPResult.Party(
                 id = party.id,

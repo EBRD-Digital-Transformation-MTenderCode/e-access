@@ -73,7 +73,7 @@ class CheckFEDataRules {
 
         private fun compareProcuringEntityWithApParty(
             procuringEntity: CheckFEDataData.Tender.ProcuringEntity,
-            parties: List<APEntity.Tender.Party>,
+            parties: List<APEntity.Party>,
             partyRole: PartyRole
         ) {
             val party = parties.firstOrNull { it.roles.contains(partyRole) }
@@ -120,7 +120,7 @@ class CheckFEDataRules {
                     val ap = toObject(APEntity::class.java, entity.jsonData)
 
                     // VR-1.0.1.10.1
-                    compareProcuringEntityWithApParty(procuringEntity, ap.tender.parties, PartyRole.CENTRAL_PURCHASING_BODY)
+                    compareProcuringEntityWithApParty(procuringEntity, ap.parties, PartyRole.CENTRAL_PURCHASING_BODY)
                 }
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
