@@ -232,6 +232,9 @@ sealed class ValidationErrors(
                 "relationship='${RelatedProcessType.X_SCOPE}', identifier='${relatedCpid}'. Tender with cpid='$cpid' and ocid='$ocid'."
         )
 
+    class InvalidStageOnCheckRelation(val stage: Stage) :
+        ValidationErrors(numberError = "1.24.5", prefix = "VR.COM-", description = "Invalid stage : '${stage.key}'.")
+
     class UnexpectedStageForValidateRequirementResponse(stage: Stage) :
         ValidationErrors(
             prefix = "VR-",

@@ -5,6 +5,7 @@ import com.datastax.driver.core.Session
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
@@ -115,6 +116,9 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             .one()
             ?.convertToTenderProcessEntity()
             .asSuccess()
+
+    override fun getByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity?, Fail.Incident.Database> =
+        getByCpIdAndStage(cpid, ocid.stage)
 
     private fun Row.convertToTenderProcessEntity(): TenderProcessEntity {
         return TenderProcessEntity(
