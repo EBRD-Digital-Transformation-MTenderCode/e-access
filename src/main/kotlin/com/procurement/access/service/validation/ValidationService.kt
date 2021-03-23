@@ -25,6 +25,7 @@ import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
@@ -129,22 +130,43 @@ class ValidationService(
         return ValidationResult.ok()
     }
 
+    enum class StageForCheckingRelation { AP, PN }
+
     fun checkRelation(params: CheckRelationParams): ValidationResult<Fail> {
         val cpid = params.cpid
-        val stage = params.ocid.stage
+        val ocid = params.ocid
+        val stage = when (val stage = ocid.stage) {
+            Stage.AP -> StageForCheckingRelation.AP
+            Stage.PN -> StageForCheckingRelation.PN
 
-        val entity = tenderProcessRepository
-            .getByCpIdAndStage(cpid, stage)
-            .onFailure { return it.reason.asValidationFailure() }
-            ?: return ValidationResult.error(
-                ValidationErrors.TenderNotFoundOnCheckRelation(cpid, params.ocid)
-            )
+            Stage.AC,
+            Stage.EI,
+            Stage.EV,
+            Stage.FE,
+            Stage.FS,
+            Stage.NP,
+            Stage.PC,
+            Stage.TP -> return ValidationResult.error(ValidationErrors.InvalidStageOnCheckRelation(stage))
+        }
 
-        return when(params.operationType) {
+        return when (params.operationType) {
+
             OperationType.RELATION_AP -> {
-                val relatedProcesses = entity.jsonData.tryToObject(APEntity::class.java)
+                val entity = tenderProcessRepository
+                    .getByCpIdAndOcid(cpid, ocid)
                     .onFailure { return it.reason.asValidationFailure() }
-                    .relatedProcesses
+                    ?: return ValidationResult.error(ValidationErrors.TenderNotFoundOnCheckRelation(cpid, ocid))
+
+                val relatedProcesses = when (stage) {
+
+                    StageForCheckingRelation.AP -> entity.jsonData.tryToObject(APEntity::class.java)
+                        .onFailure { return it.reason.asValidationFailure() }
+                        .relatedProcesses
+
+                    StageForCheckingRelation.PN -> entity.jsonData.tryToObject(PNEntity::class.java)
+                        .onFailure { return it.reason.asValidationFailure() }
+                        .relatedProcesses
+                }
 
                 if (params.existenceRelation)
                     checkRelationExistsOnAp(relatedProcesses, params)
