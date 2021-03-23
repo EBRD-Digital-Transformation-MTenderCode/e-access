@@ -116,7 +116,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
             }
     )
 
-fun convert(procuringEntity: FEEntity.Tender.Party): GetOrganizationResult =
+fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
     GetOrganizationResult(
         id = procuringEntity.id,
         identifier = procuringEntity.identifier

@@ -7,7 +7,8 @@ fun CreateFEResult.convert(): CreateFEResponse =
     CreateFEResponse(
         ocid = this.ocid,
         token = this.token,
-        tender = this.tender.convert()
+        tender = this.tender.convert(),
+        parties = this.parties.map { it.convert() }
     )
 
 fun CreateFEResult.Tender.convert(): CreateFEResponse.Tender =
@@ -42,8 +43,7 @@ fun CreateFEResult.Tender.convert(): CreateFEResponse.Tender =
         secondStage = this.secondStage?.convert(),
         otherCriteria = this.otherCriteria.convert(),
         contractPeriod = this.contractPeriod.convert(),
-        criteria = this.criteria.map { it.convert() },
-        parties = this.parties.map { it.convert() }
+        criteria = this.criteria.map { it.convert() }        
     )
 
 fun CreateFEResult.Tender.Classification.convert(): CreateFEResponse.Tender.Classification =
@@ -146,13 +146,13 @@ fun CreateFEResult.Tender.ProcuringEntity.convert(): CreateFEResponse.Tender.Pro
         name = this.name
     )
 
-private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party =
-    CreateFEResponse.Tender.Party(
+private fun CreateFEResult.Party.convert(): CreateFEResponse.Party =
+    CreateFEResponse.Party(
         id = id,
         name = name,
         identifier = identifier
             .let { identifier ->
-                CreateFEResponse.Tender.Party.Identifier(
+                CreateFEResponse.Party.Identifier(
                     scheme = identifier.scheme,
                     id = identifier.id,
                     legalName = identifier.legalName,
@@ -161,7 +161,7 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
             },
         additionalIdentifiers = additionalIdentifiers
             ?.map { additionalIdentifier ->
-                CreateFEResponse.Tender.Party.AdditionalIdentifier(
+                CreateFEResponse.Party.AdditionalIdentifier(
                     scheme = additionalIdentifier.scheme,
                     id = additionalIdentifier.id,
                     legalName = additionalIdentifier.legalName,
@@ -170,15 +170,15 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
             },
         address = address
             .let { address ->
-                CreateFEResponse.Tender.Party.Address(
+                CreateFEResponse.Party.Address(
                     streetAddress = address.streetAddress,
                     postalCode = address.postalCode,
                     addressDetails = address.addressDetails
                         .let { addressDetails ->
-                            CreateFEResponse.Tender.Party.Address.AddressDetails(
+                            CreateFEResponse.Party.Address.AddressDetails(
                                 country = addressDetails.country
                                     .let { country ->
-                                        CreateFEResponse.Tender.Party.Address.AddressDetails.Country(
+                                        CreateFEResponse.Party.Address.AddressDetails.Country(
                                             scheme = country.scheme,
                                             id = country.id,
                                             description = country.description,
@@ -187,7 +187,7 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
                                     },
                                 region = addressDetails.region
                                     .let { region ->
-                                        CreateFEResponse.Tender.Party.Address.AddressDetails.Region(
+                                        CreateFEResponse.Party.Address.AddressDetails.Region(
                                             scheme = region.scheme,
                                             id = region.id,
                                             description = region.description,
@@ -196,7 +196,7 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
                                     },
                                 locality = addressDetails.locality
                                     .let { locality ->
-                                        CreateFEResponse.Tender.Party.Address.AddressDetails.Locality(
+                                        CreateFEResponse.Party.Address.AddressDetails.Locality(
                                             scheme = locality.scheme,
                                             id = locality.id,
                                             description = locality.description,
@@ -209,7 +209,7 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
             },
         contactPoint = contactPoint
             .let { contactPoint ->
-                CreateFEResponse.Tender.Party.ContactPoint(
+                CreateFEResponse.Party.ContactPoint(
                     name = contactPoint.name,
                     email = contactPoint.email,
                     telephone = contactPoint.telephone,
@@ -219,13 +219,13 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
             },
         roles = roles,
         persones = persones?.map { person ->
-            CreateFEResponse.Tender.Party.Person(
+            CreateFEResponse.Party.Person(
                 id = person.id,
                 title = person.title,
                 name = person.name,
                 identifier = person.identifier
                     .let { identifier ->
-                        CreateFEResponse.Tender.Party.Person.Identifier(
+                        CreateFEResponse.Party.Person.Identifier(
                             id = identifier.id,
                             scheme = identifier.scheme,
                             uri = identifier.uri
@@ -233,19 +233,19 @@ private fun CreateFEResult.Tender.Party.convert(): CreateFEResponse.Tender.Party
                     },
                 businessFunctions = person.businessFunctions
                     .map { businessFunctions ->
-                        CreateFEResponse.Tender.Party.Person.BusinessFunction(
+                        CreateFEResponse.Party.Person.BusinessFunction(
                             id = businessFunctions.id,
                             jobTitle = businessFunctions.jobTitle,
                             type = businessFunctions.type,
                             period = businessFunctions.period
                                 .let { period ->
-                                    CreateFEResponse.Tender.Party.Person.BusinessFunction.Period(
+                                    CreateFEResponse.Party.Person.BusinessFunction.Period(
                                         startDate = period.startDate
                                     )
                                 },
                             documents = businessFunctions.documents
                                 ?.map { document ->
-                                    CreateFEResponse.Tender.Party.Person.BusinessFunction.Document(
+                                    CreateFEResponse.Party.Person.BusinessFunction.Document(
                                         id = document.id,
                                         title = document.title,
                                         description = document.description,

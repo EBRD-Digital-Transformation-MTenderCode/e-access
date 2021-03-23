@@ -7,7 +7,10 @@ class AmendFeEntityConverter {
     companion object {
 
         fun fromEntity(entity: FEEntity): AmendFEResult =
-            AmendFEResult(tender = fromEntity(entity.tender))
+            AmendFEResult(
+                tender = fromEntity(entity.tender),
+                parties = entity.parties.map { convert(it) }
+            )
 
         private fun fromEntity(entity: FEEntity.Tender): AmendFEResult.Tender =
             AmendFEResult.Tender(
@@ -46,8 +49,7 @@ class AmendFeEntityConverter {
                 contractPeriod = convert(entity.contractPeriod),
                 criteria = entity.criteria
                     ?.map { convert(it) }
-                    .orEmpty(),
-                parties = entity.parties.map { convert(it) }
+                    .orEmpty()
             )
 
         private fun convert(entity: FEEntity.Tender.Classification): AmendFEResult.Tender.Classification =
@@ -150,13 +152,13 @@ class AmendFeEntityConverter {
                 name = entity.name
             )
 
-        private fun convert(entity: FEEntity.Tender.Party): AmendFEResult.Tender.Party =
-            AmendFEResult.Tender.Party(
+        private fun convert(entity: FEEntity.Party): AmendFEResult.Party =
+            AmendFEResult.Party(
                 id = entity.id,
                 name = entity.name,
                 identifier = entity.identifier
                     .let { identifier ->
-                        AmendFEResult.Tender.Party.Identifier(
+                        AmendFEResult.Party.Identifier(
                             scheme = identifier.scheme,
                             id = identifier.id,
                             legalName = identifier.legalName,
@@ -165,7 +167,7 @@ class AmendFeEntityConverter {
                     },
                 additionalIdentifiers = entity.additionalIdentifiers
                     ?.map { additionalIdentifier ->
-                        AmendFEResult.Tender.Party.AdditionalIdentifier(
+                        AmendFEResult.Party.AdditionalIdentifier(
                             scheme = additionalIdentifier.scheme,
                             id = additionalIdentifier.id,
                             legalName = additionalIdentifier.legalName,
@@ -174,15 +176,15 @@ class AmendFeEntityConverter {
                     },
                 address = entity.address
                     .let { address ->
-                        AmendFEResult.Tender.Party.Address(
+                        AmendFEResult.Party.Address(
                             streetAddress = address.streetAddress,
                             postalCode = address.postalCode,
                             addressDetails = address.addressDetails
                                 .let { addressDetails ->
-                                    AmendFEResult.Tender.Party.Address.AddressDetails(
+                                    AmendFEResult.Party.Address.AddressDetails(
                                         country = addressDetails.country
                                             .let { country ->
-                                                AmendFEResult.Tender.Party.Address.AddressDetails.Country(
+                                                AmendFEResult.Party.Address.AddressDetails.Country(
                                                     scheme = country.scheme,
                                                     id = country.id,
                                                     description = country.description,
@@ -191,7 +193,7 @@ class AmendFeEntityConverter {
                                             },
                                         region = addressDetails.region
                                             .let { region ->
-                                                AmendFEResult.Tender.Party.Address.AddressDetails.Region(
+                                                AmendFEResult.Party.Address.AddressDetails.Region(
                                                     scheme = region.scheme,
                                                     id = region.id,
                                                     description = region.description,
@@ -200,7 +202,7 @@ class AmendFeEntityConverter {
                                             },
                                         locality = addressDetails.locality
                                             .let { locality ->
-                                                AmendFEResult.Tender.Party.Address.AddressDetails.Locality(
+                                                AmendFEResult.Party.Address.AddressDetails.Locality(
                                                     scheme = locality.scheme,
                                                     id = locality.id,
                                                     description = locality.description,
@@ -213,7 +215,7 @@ class AmendFeEntityConverter {
                     },
                 contactPoint = entity.contactPoint
                     .let { contactPoint ->
-                        AmendFEResult.Tender.Party.ContactPoint(
+                        AmendFEResult.Party.ContactPoint(
                             name = contactPoint.name,
                             email = contactPoint.email,
                             telephone = contactPoint.telephone,
@@ -223,13 +225,13 @@ class AmendFeEntityConverter {
                     },
                 roles = entity.roles,
                 persones = entity.persones?.map { person ->
-                    AmendFEResult.Tender.Party.Person(
+                    AmendFEResult.Party.Person(
                         id = person.id,
                         title = person.title,
                         name = person.name,
                         identifier = person.identifier
                             .let { identifier ->
-                                AmendFEResult.Tender.Party.Person.Identifier(
+                                AmendFEResult.Party.Person.Identifier(
                                     id = identifier.id,
                                     scheme = identifier.scheme,
                                     uri = identifier.uri
@@ -237,19 +239,19 @@ class AmendFeEntityConverter {
                             },
                         businessFunctions = person.businessFunctions
                             .map { businessFunctions ->
-                                AmendFEResult.Tender.Party.Person.BusinessFunction(
+                                AmendFEResult.Party.Person.BusinessFunction(
                                     id = businessFunctions.id,
                                     jobTitle = businessFunctions.jobTitle,
                                     type = businessFunctions.type,
                                     period = businessFunctions.period
                                         .let { period ->
-                                            AmendFEResult.Tender.Party.Person.BusinessFunction.Period(
+                                            AmendFEResult.Party.Person.BusinessFunction.Period(
                                                 startDate = period.startDate
                                             )
                                         },
                                     documents = businessFunctions.documents
                                         ?.map { document ->
-                                            AmendFEResult.Tender.Party.Person.BusinessFunction.Document(
+                                            AmendFEResult.Party.Person.BusinessFunction.Document(
                                                 id = document.id,
                                                 title = document.title,
                                                 description = document.description,

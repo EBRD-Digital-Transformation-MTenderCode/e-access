@@ -4,7 +4,10 @@ import com.procurement.access.application.service.fe.update.AmendFEResult
 import com.procurement.access.infrastructure.handler.v1.model.response.AmendFEResponse
 
 fun AmendFEResult.convert(): AmendFEResponse =
-    AmendFEResponse(tender = this.tender.convert())
+    AmendFEResponse(
+        tender = this.tender.convert(),
+        parties = this.parties.map { it.convert() }
+    )
 
 fun AmendFEResult.Tender.convert(): AmendFEResponse.Tender =
     AmendFEResponse.Tender(
@@ -38,8 +41,7 @@ fun AmendFEResult.Tender.convert(): AmendFEResponse.Tender =
         secondStage = this.secondStage?.convert(),
         otherCriteria = this.otherCriteria.convert(),
         contractPeriod = this.contractPeriod.convert(),
-        criteria = this.criteria?.map { it.convert() },
-        parties = this.parties.map { it.convert() }
+        criteria = this.criteria?.map { it.convert() }
     )
 
 fun AmendFEResult.Tender.Classification.convert(): AmendFEResponse.Tender.Classification =
@@ -142,13 +144,13 @@ fun AmendFEResult.Tender.ProcuringEntity.convert(): AmendFEResponse.Tender.Procu
         name = this.name
     )
 
-private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
-    AmendFEResponse.Tender.Party(
+private fun AmendFEResult.Party.convert(): AmendFEResponse.Party =
+    AmendFEResponse.Party(
         id = id,
         name = name,
         identifier = identifier
             .let { identifier ->
-                AmendFEResponse.Tender.Party.Identifier(
+                AmendFEResponse.Party.Identifier(
                     scheme = identifier.scheme,
                     id = identifier.id,
                     legalName = identifier.legalName,
@@ -157,7 +159,7 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
             },
         additionalIdentifiers = additionalIdentifiers
             ?.map { additionalIdentifier ->
-                AmendFEResponse.Tender.Party.AdditionalIdentifier(
+                AmendFEResponse.Party.AdditionalIdentifier(
                     scheme = additionalIdentifier.scheme,
                     id = additionalIdentifier.id,
                     legalName = additionalIdentifier.legalName,
@@ -166,15 +168,15 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
             },
         address = address
             .let { address ->
-                AmendFEResponse.Tender.Party.Address(
+                AmendFEResponse.Party.Address(
                     streetAddress = address.streetAddress,
                     postalCode = address.postalCode,
                     addressDetails = address.addressDetails
                         .let { addressDetails ->
-                            AmendFEResponse.Tender.Party.Address.AddressDetails(
+                            AmendFEResponse.Party.Address.AddressDetails(
                                 country = addressDetails.country
                                     .let { country ->
-                                        AmendFEResponse.Tender.Party.Address.AddressDetails.Country(
+                                        AmendFEResponse.Party.Address.AddressDetails.Country(
                                             scheme = country.scheme,
                                             id = country.id,
                                             description = country.description,
@@ -183,7 +185,7 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
                                     },
                                 region = addressDetails.region
                                     .let { region ->
-                                        AmendFEResponse.Tender.Party.Address.AddressDetails.Region(
+                                        AmendFEResponse.Party.Address.AddressDetails.Region(
                                             scheme = region.scheme,
                                             id = region.id,
                                             description = region.description,
@@ -192,7 +194,7 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
                                     },
                                 locality = addressDetails.locality
                                     .let { locality ->
-                                        AmendFEResponse.Tender.Party.Address.AddressDetails.Locality(
+                                        AmendFEResponse.Party.Address.AddressDetails.Locality(
                                             scheme = locality.scheme,
                                             id = locality.id,
                                             description = locality.description,
@@ -205,7 +207,7 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
             },
         contactPoint = contactPoint
             .let { contactPoint ->
-                AmendFEResponse.Tender.Party.ContactPoint(
+                AmendFEResponse.Party.ContactPoint(
                     name = contactPoint.name,
                     email = contactPoint.email,
                     telephone = contactPoint.telephone,
@@ -215,13 +217,13 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
             },
         roles = roles,
         persones = persones?.map { person ->
-            AmendFEResponse.Tender.Party.Person(
+            AmendFEResponse.Party.Person(
                 id = person.id,
                 title = person.title,
                 name = person.name,
                 identifier = person.identifier
                     .let { identifier ->
-                        AmendFEResponse.Tender.Party.Person.Identifier(
+                        AmendFEResponse.Party.Person.Identifier(
                             id = identifier.id,
                             scheme = identifier.scheme,
                             uri = identifier.uri
@@ -229,19 +231,19 @@ private fun AmendFEResult.Tender.Party.convert(): AmendFEResponse.Tender.Party =
                     },
                 businessFunctions = person.businessFunctions
                     .map { businessFunctions ->
-                        AmendFEResponse.Tender.Party.Person.BusinessFunction(
+                        AmendFEResponse.Party.Person.BusinessFunction(
                             id = businessFunctions.id,
                             jobTitle = businessFunctions.jobTitle,
                             type = businessFunctions.type,
                             period = businessFunctions.period
                                 .let { period ->
-                                    AmendFEResponse.Tender.Party.Person.BusinessFunction.Period(
+                                    AmendFEResponse.Party.Person.BusinessFunction.Period(
                                         startDate = period.startDate
                                     )
                                 },
                             documents = businessFunctions.documents
                                 ?.map { document ->
-                                    AmendFEResponse.Tender.Party.Person.BusinessFunction.Document(
+                                    AmendFEResponse.Party.Person.BusinessFunction.Document(
                                         id = document.id,
                                         title = document.title,
                                         description = document.description,

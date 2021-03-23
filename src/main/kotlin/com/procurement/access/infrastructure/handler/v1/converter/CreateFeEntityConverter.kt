@@ -10,7 +10,8 @@ class CreateFeEntityConverter {
             CreateFEResult(
                 ocid = entity.ocid,
                 token = entity.token,
-                tender = fromEntity(entity.tender)
+                tender = fromEntity(entity.tender),
+                parties = entity.parties.map { convert(it) }
             )
 
         private fun fromEntity(entity: FEEntity.Tender): CreateFEResult.Tender =
@@ -50,8 +51,7 @@ class CreateFeEntityConverter {
                 contractPeriod = convert(entity.contractPeriod),
                 criteria = entity.criteria
                     ?.map { convert(it) }
-                    .orEmpty(),
-                parties = entity.parties.map { convert(it) }
+                    .orEmpty()
             )
 
         private fun convert(entity: FEEntity.Tender.Classification): CreateFEResult.Tender.Classification =
@@ -154,13 +154,13 @@ class CreateFeEntityConverter {
                 name = entity.name
             )
 
-        private fun convert(entity: FEEntity.Tender.Party): CreateFEResult.Tender.Party =
-            CreateFEResult.Tender.Party(
+        private fun convert(entity: FEEntity.Party): CreateFEResult.Party =
+            CreateFEResult.Party(
                 id = entity.id,
                 name = entity.name,
                 identifier = entity.identifier
                     .let { identifier ->
-                        CreateFEResult.Tender.Party.Identifier(
+                        CreateFEResult.Party.Identifier(
                             scheme = identifier.scheme,
                             id = identifier.id,
                             legalName = identifier.legalName,
@@ -169,7 +169,7 @@ class CreateFeEntityConverter {
                     },
                 additionalIdentifiers = entity.additionalIdentifiers
                     ?.map { additionalIdentifier ->
-                        CreateFEResult.Tender.Party.AdditionalIdentifier(
+                        CreateFEResult.Party.AdditionalIdentifier(
                             scheme = additionalIdentifier.scheme,
                             id = additionalIdentifier.id,
                             legalName = additionalIdentifier.legalName,
@@ -178,15 +178,15 @@ class CreateFeEntityConverter {
                     },
                 address = entity.address
                     .let { address ->
-                        CreateFEResult.Tender.Party.Address(
+                        CreateFEResult.Party.Address(
                             streetAddress = address.streetAddress,
                             postalCode = address.postalCode,
                             addressDetails = address.addressDetails
                                 .let { addressDetails ->
-                                    CreateFEResult.Tender.Party.Address.AddressDetails(
+                                    CreateFEResult.Party.Address.AddressDetails(
                                         country = addressDetails.country
                                             .let { country ->
-                                                CreateFEResult.Tender.Party.Address.AddressDetails.Country(
+                                                CreateFEResult.Party.Address.AddressDetails.Country(
                                                     scheme = country.scheme,
                                                     id = country.id,
                                                     description = country.description,
@@ -195,7 +195,7 @@ class CreateFeEntityConverter {
                                             },
                                         region = addressDetails.region
                                             .let { region ->
-                                                CreateFEResult.Tender.Party.Address.AddressDetails.Region(
+                                                CreateFEResult.Party.Address.AddressDetails.Region(
                                                     scheme = region.scheme,
                                                     id = region.id,
                                                     description = region.description,
@@ -204,7 +204,7 @@ class CreateFeEntityConverter {
                                             },
                                         locality = addressDetails.locality
                                             .let { locality ->
-                                                CreateFEResult.Tender.Party.Address.AddressDetails.Locality(
+                                                CreateFEResult.Party.Address.AddressDetails.Locality(
                                                     scheme = locality.scheme,
                                                     id = locality.id,
                                                     description = locality.description,
@@ -217,7 +217,7 @@ class CreateFeEntityConverter {
                     },
                 contactPoint = entity.contactPoint
                     .let { contactPoint ->
-                        CreateFEResult.Tender.Party.ContactPoint(
+                        CreateFEResult.Party.ContactPoint(
                             name = contactPoint.name,
                             email = contactPoint.email,
                             telephone = contactPoint.telephone,
@@ -227,13 +227,13 @@ class CreateFeEntityConverter {
                     },
                 roles = entity.roles,
                 persones = entity.persones?.map { person ->
-                    CreateFEResult.Tender.Party.Person(
+                    CreateFEResult.Party.Person(
                         id = person.id,
                         title = person.title,
                         name = person.name,
                         identifier = person.identifier
                             .let { identifier ->
-                                CreateFEResult.Tender.Party.Person.Identifier(
+                                CreateFEResult.Party.Person.Identifier(
                                     id = identifier.id,
                                     scheme = identifier.scheme,
                                     uri = identifier.uri
@@ -241,19 +241,19 @@ class CreateFeEntityConverter {
                             },
                         businessFunctions = person.businessFunctions
                             .map { businessFunctions ->
-                                CreateFEResult.Tender.Party.Person.BusinessFunction(
+                                CreateFEResult.Party.Person.BusinessFunction(
                                     id = businessFunctions.id,
                                     jobTitle = businessFunctions.jobTitle,
                                     type = businessFunctions.type,
                                     period = businessFunctions.period
                                         .let { period ->
-                                            CreateFEResult.Tender.Party.Person.BusinessFunction.Period(
+                                            CreateFEResult.Party.Person.BusinessFunction.Period(
                                                 startDate = period.startDate
                                             )
                                         },
                                     documents = businessFunctions.documents
                                         ?.map { document ->
-                                            CreateFEResult.Tender.Party.Person.BusinessFunction.Document(
+                                            CreateFEResult.Party.Person.BusinessFunction.Document(
                                                 id = document.id,
                                                 title = document.title,
                                                 description = document.description,
