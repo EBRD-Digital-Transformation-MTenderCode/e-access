@@ -50,9 +50,9 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
 
         val updatedParties = request.tender.procuringEntity
             ?.let { receivedProcuringEntity ->
-                storedFE.tender.updateParties(receivedProcuringEntity.persons)
+                storedFE.updateParties(receivedProcuringEntity.persons)
             }
-            ?: storedFE.tender.parties
+            ?: storedFE.parties
 
         // BR-1.0.1.5.4
         val updatedTenderDocuments = storedFE.tender.documents
@@ -64,9 +64,9 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
                 title = request.tender.title,
                 description = request.tender.description,
                 procurementMethodRationale = request.tender.procurementMethodRationale,
-                parties = updatedParties,
                 documents = updatedTenderDocuments
-            )
+            ),
+            parties = updatedParties
         )
 
         val result = AmendFeEntityConverter.fromEntity(updatedFE);
@@ -100,9 +100,9 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
                 )
         }
 
-    private fun FEEntity.Tender.updateParties(
+    private fun FEEntity.updateParties(
         persons: List<AmendFEData.Tender.ProcuringEntity.Person>
-    ): List<FEEntity.Tender.Party> {
+    ): List<FEEntity.Party> {
         val receivedPersonsById = persons.associateBy { it.identifier.id }
         val partyRole = PartyRole.PROCURING_ENTITY
 
@@ -137,8 +137,8 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
         }
     }
 
-    private fun createPerson(person: AmendFEData.Tender.ProcuringEntity.Person): FEEntity.Tender.Party.Person =
-        FEEntity.Tender.Party.Person(
+    private fun createPerson(person: AmendFEData.Tender.ProcuringEntity.Person): FEEntity.Party.Person =
+        FEEntity.Party.Person(
             id = PersonId.generate(scheme = person.identifier.scheme, id = person.identifier.id),
             title = person.title,
             name = person.name,
@@ -146,14 +146,14 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
             businessFunctions = person.businessFunctions.map { createBusinessFunction(it) }
         )
 
-    private fun createIdentifier(identifier: AmendFEData.Tender.ProcuringEntity.Person.Identifier): FEEntity.Tender.Party.Person.Identifier =
-        FEEntity.Tender.Party.Person.Identifier(
+    private fun createIdentifier(identifier: AmendFEData.Tender.ProcuringEntity.Person.Identifier): FEEntity.Party.Person.Identifier =
+        FEEntity.Party.Person.Identifier(
             scheme = identifier.scheme,
             id = identifier.id,
             uri = identifier.uri
         )
 
-    private fun FEEntity.Tender.Party.Person.update(person: AmendFEData.Tender.ProcuringEntity.Person) =
+    private fun FEEntity.Party.Person.update(person: AmendFEData.Tender.ProcuringEntity.Person) =
         this.copy(
             title = person.title,
             name = person.name,
@@ -162,8 +162,8 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
 
     private fun updateBusinessFunctions(
         receivedBusinessFunctions: List<AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction>,
-        savedBusinessFunctions: List<FEEntity.Tender.Party.Person.BusinessFunction>
-    ): List<FEEntity.Tender.Party.Person.BusinessFunction> {
+        savedBusinessFunctions: List<FEEntity.Party.Person.BusinessFunction>
+    ): List<FEEntity.Party.Person.BusinessFunction> {
         val receivedBusinessFunctionsByIds = receivedBusinessFunctions.associateBy { it.id }
         val savedBusinessFunctionsByIds = savedBusinessFunctions.associateBy { it.id }
 
@@ -187,7 +187,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
     }
 
     private fun createBusinessFunction(businessFunction: AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction) =
-        FEEntity.Tender.Party.Person.BusinessFunction(
+        FEEntity.Party.Person.BusinessFunction(
             id = businessFunction.id,
             type = businessFunction.type,
             jobTitle = businessFunction.jobTitle,
@@ -196,17 +196,17 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
         )
 
     private fun AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction.Period.convert() =
-        FEEntity.Tender.Party.Person.BusinessFunction.Period(startDate = this.startDate)
+        FEEntity.Party.Person.BusinessFunction.Period(startDate = this.startDate)
 
     private fun AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction.Document.convert() =
-        FEEntity.Tender.Party.Person.BusinessFunction.Document(
+        FEEntity.Party.Person.BusinessFunction.Document(
             documentType = this.documentType,
             id = this.id,
             title = this.title,
             description = this.description
         )
 
-    private fun FEEntity.Tender.Party.Person.BusinessFunction.update(
+    private fun FEEntity.Party.Person.BusinessFunction.update(
         businessFunction: AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction
     ) = this.copy(
         type = businessFunction.type,
@@ -217,8 +217,8 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
 
     private fun updateBusinessFunctionDocuments(
         receivedDocuments: List<AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction.Document>,
-        savedDocuments: List<FEEntity.Tender.Party.Person.BusinessFunction.Document>
-    ): List<FEEntity.Tender.Party.Person.BusinessFunction.Document> {
+        savedDocuments: List<FEEntity.Party.Person.BusinessFunction.Document>
+    ): List<FEEntity.Party.Person.BusinessFunction.Document> {
         val receivedDocumentsByIds = receivedDocuments.associateBy { it.id }
         val savedDocumentsByIds = savedDocuments.associateBy { it.id }
 
@@ -243,14 +243,14 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
 
     private fun createBusinessFunctionDocument(
         document: AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction.Document
-    ) = FEEntity.Tender.Party.Person.BusinessFunction.Document(
+    ) = FEEntity.Party.Person.BusinessFunction.Document(
         documentType = document.documentType,
         id = document.id,
         title = document.title,
         description = document.description
     )
 
-    private fun FEEntity.Tender.Party.Person.BusinessFunction.Document.update(
+    private fun FEEntity.Party.Person.BusinessFunction.Document.update(
         document: AmendFEData.Tender.ProcuringEntity.Person.BusinessFunction.Document
     ) = this.copy(
         title = document.title,
