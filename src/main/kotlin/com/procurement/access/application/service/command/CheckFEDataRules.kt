@@ -59,7 +59,7 @@ class CheckFEDataRules {
 
         private fun compareProcuringEntityWithFeParty(
             procuringEntity: CheckFEDataData.Tender.ProcuringEntity,
-            parties: List<FEEntity.Tender.Party>,
+            parties: List<FEEntity.Party>,
             partyRole: PartyRole
         ) {
             val party = parties.firstOrNull { it.roles.contains(partyRole) }
@@ -112,7 +112,7 @@ class CheckFEDataRules {
                     val fe = toObject(FEEntity::class.java, entity.jsonData)
 
                     // VR-1.0.1.10.1
-                    compareProcuringEntityWithFeParty(procuringEntity, fe.tender.parties, PartyRole.CENTRAL_PURCHASING_BODY)
+                    compareProcuringEntityWithFeParty(procuringEntity, fe.parties, PartyRole.CENTRAL_PURCHASING_BODY)
 
                     fe.tender.procuringEntity?.let { validateProcuringEntityId(procuringEntity.id, it.id) }
                 }

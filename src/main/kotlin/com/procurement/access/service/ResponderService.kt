@@ -67,7 +67,7 @@ class ResponderServiceImpl(
 
                 val responder = params.responder
 
-                val procuringEntityParty = fe.tender.parties
+                val procuringEntityParty = fe.parties
                     .firstOrNull { it.roles.contains(PartyRole.PROCURING_ENTITY) }
                     ?: return ValidationErrors.ProcuringEntityPartyNotFoundForResponderProcessing().asFailure()
 
@@ -83,21 +83,17 @@ class ResponderServiceImpl(
                     keyExtractorForReceivedElement = responderPersonKeyExtractor,
                     availableElements = dbPersons,
                     keyExtractorForAvailableElement = dbFEPersonKeyExtractor,
-                    updateBlock = FEEntity.Tender.Party.Person::update,
+                    updateBlock = FEEntity.Party.Person::update,
                     createBlock = ::createFEPerson
                 )
 
-                val updatedParties = fe.tender.parties.map { party ->
+                val updatedParties = fe.parties.map { party ->
                     if (party.id == procuringEntityParty.id)
                         party.copy(persones = updatedPersons)
                     else party
                 }
 
-                val updatedFe = fe.copy(
-                    tender = fe.tender.copy(
-                        parties = updatedParties
-                    )
-                )
+                val updatedFe = fe.copy(parties = updatedParties)
 
                 success(toJson(updatedFe))
             }
@@ -350,7 +346,7 @@ class ResponderServiceImpl(
                     .tryToObject(FEEntity::class.java)
                     .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
                     .onFailure { return it }
-                val procuringEntityParty = fe.tender.parties.firstOrNull { it.roles.contains(PartyRole.PROCURING_ENTITY) }!!
+                val procuringEntityParty = fe.parties.firstOrNull { it.roles.contains(PartyRole.PROCURING_ENTITY) }!!
 
                 val organization = when (params.role) {
                     GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(procuringEntityParty)
@@ -453,7 +449,7 @@ private val responderPersonKeyExtractor: (ResponderProcessing.Params.Responder) 
 private val dbCNPersonKeyExtractor: (CNEntity.Tender.ProcuringEntity.Persone) -> String =
     { it.identifier.id + it.identifier.scheme }
 
-private val dbFEPersonKeyExtractor: (FEEntity.Tender.Party.Person) -> String =
+private val dbFEPersonKeyExtractor: (FEEntity.Party.Person) -> String =
     { it.identifier.id + it.identifier.scheme }
 
 private fun CNEntity.Tender.ProcuringEntity.Persone.update(
@@ -586,8 +582,8 @@ private fun createDocument(
         description = received.description
     )
 
-private fun FEEntity.Tender.Party.Person.update(received: ResponderProcessing.Params.Responder): FEEntity.Tender.Party.Person =
-    FEEntity.Tender.Party.Person(
+private fun FEEntity.Party.Person.update(received: ResponderProcessing.Params.Responder): FEEntity.Party.Person =
+    FEEntity.Party.Person(
         id = received.id,
         title = received.title,
         name = received.name,
@@ -597,25 +593,25 @@ private fun FEEntity.Tender.Party.Person.update(received: ResponderProcessing.Pa
             keyExtractorForReceivedElement = responderBusinessFunctionKeyExtractor,
             availableElements = this.businessFunctions,
             keyExtractorForAvailableElement = dbFEBusinessFunctionKeyExtractor,
-            updateBlock = FEEntity.Tender.Party.Person.BusinessFunction::update,
+            updateBlock = FEEntity.Party.Person.BusinessFunction::update,
             createBlock = ::createFEBusinessFunction
         )
     )
 
-private val dbFEBusinessFunctionKeyExtractor: (FEEntity.Tender.Party.Person.BusinessFunction) -> String =
+private val dbFEBusinessFunctionKeyExtractor: (FEEntity.Party.Person.BusinessFunction) -> String =
     { it.id }
 
-private fun FEEntity.Tender.Party.Person.Identifier.update(received: ResponderProcessing.Params.Responder.Identifier) =
-    FEEntity.Tender.Party.Person.Identifier(
+private fun FEEntity.Party.Person.Identifier.update(received: ResponderProcessing.Params.Responder.Identifier) =
+    FEEntity.Party.Person.Identifier(
         id = received.id,
         scheme = received.scheme,
         uri = received.uri ?: this.uri
     )
 
-private fun FEEntity.Tender.Party.Person.BusinessFunction.update(
+private fun FEEntity.Party.Person.BusinessFunction.update(
     received: ResponderProcessing.Params.Responder.BusinessFunction
-): FEEntity.Tender.Party.Person.BusinessFunction =
-    FEEntity.Tender.Party.Person.BusinessFunction(
+): FEEntity.Party.Person.BusinessFunction =
+    FEEntity.Party.Person.BusinessFunction(
     id = received.id,
     jobTitle = received.jobTitle,
     type = received.type,
@@ -625,23 +621,23 @@ private fun FEEntity.Tender.Party.Person.BusinessFunction.update(
         keyExtractorForReceivedElement = responderDocumentKeyExtractor,
         availableElements = this.documents.orEmpty(),
         keyExtractorForAvailableElement = dbFEDocumentKeyExtractor,
-        updateBlock = FEEntity.Tender.Party.Person.BusinessFunction.Document::update,
+        updateBlock = FEEntity.Party.Person.BusinessFunction.Document::update,
         createBlock = ::createFEDocument
     )
 )
 
-private val dbFEDocumentKeyExtractor: (FEEntity.Tender.Party.Person.BusinessFunction.Document) -> String =
+private val dbFEDocumentKeyExtractor: (FEEntity.Party.Person.BusinessFunction.Document) -> String =
     { it.id }
 
-private fun FEEntity.Tender.Party.Person.BusinessFunction.Period.update(
+private fun FEEntity.Party.Person.BusinessFunction.Period.update(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Period
-): FEEntity.Tender.Party.Person.BusinessFunction.Period =
-    FEEntity.Tender.Party.Person.BusinessFunction.Period(startDate = received.startDate)
+): FEEntity.Party.Person.BusinessFunction.Period =
+    FEEntity.Party.Person.BusinessFunction.Period(startDate = received.startDate)
 
-private fun FEEntity.Tender.Party.Person.BusinessFunction.Document.update(
+private fun FEEntity.Party.Person.BusinessFunction.Document.update(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Document
 ) =
-    FEEntity.Tender.Party.Person.BusinessFunction.Document(
+    FEEntity.Party.Person.BusinessFunction.Document(
         id = received.id,
         documentType = received.documentType,
         title = received.title,
@@ -649,7 +645,7 @@ private fun FEEntity.Tender.Party.Person.BusinessFunction.Document.update(
     )
 
 private fun createFEPerson(received: ResponderProcessing.Params.Responder) =
-    FEEntity.Tender.Party.Person(
+    FEEntity.Party.Person(
         id = received.id,
         title = received.title,
         name = received.name,
@@ -659,14 +655,14 @@ private fun createFEPerson(received: ResponderProcessing.Params.Responder) =
     )
 
 private fun createFEIdentifier(received: ResponderProcessing.Params.Responder.Identifier) =
-    FEEntity.Tender.Party.Person.Identifier(
+    FEEntity.Party.Person.Identifier(
         id = received.id,
         scheme = received.scheme,
         uri = received.uri
     )
 
 private fun createFEBusinessFunction(received: ResponderProcessing.Params.Responder.BusinessFunction) =
-    FEEntity.Tender.Party.Person.BusinessFunction(
+    FEEntity.Party.Person.BusinessFunction(
         id = received.id,
         type = received.type,
         jobTitle = received.jobTitle,
@@ -676,14 +672,14 @@ private fun createFEBusinessFunction(received: ResponderProcessing.Params.Respon
     )
 
 private fun createFEPeriod(received: ResponderProcessing.Params.Responder.BusinessFunction.Period) =
-    FEEntity.Tender.Party.Person.BusinessFunction.Period(
+    FEEntity.Party.Person.BusinessFunction.Period(
         startDate = received.startDate
     )
 
 private fun createFEDocument(
     received: ResponderProcessing.Params.Responder.BusinessFunction.Document
 ) =
-    FEEntity.Tender.Party.Person.BusinessFunction.Document(
+    FEEntity.Party.Person.BusinessFunction.Document(
         id = received.id,
         title = received.title,
         documentType = received.documentType,

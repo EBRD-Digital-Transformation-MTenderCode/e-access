@@ -86,7 +86,6 @@ class FeCreateServiceImpl(
                 description = data.tender.description,
                 secondStage = data.tender.secondStage?.convert(),
                 procurementMethodRationale = data.tender.procurementMethodRationale ?: ap.tender.procurementMethodRationale,
-                parties = parties,
                 procuringEntity = createProcuringEntity(parties),
                 criteria = data.tender.criteria
                     .map { criterion ->
@@ -156,24 +155,25 @@ class FeCreateServiceImpl(
                 mainProcurementCategory = ap.tender.mainProcurementCategory,
                 framework = FEEntity.Tender.Framework(isAFramework = true)
             ),
+            parties = parties,
             relatedProcesses = emptyList()
         )
     }
 
-    private fun createProcuringEntity(parties: List<FEEntity.Tender.Party>): FEEntity.Tender.ProcuringEntity {
+    private fun createProcuringEntity(parties: List<FEEntity.Party>): FEEntity.Tender.ProcuringEntity {
         val party = parties.first { it.roles.contains(PartyRole.PROCURING_ENTITY) }
         return FEEntity.Tender.ProcuringEntity(id = party.id, name = party.name)
     }
 
-    private fun createParties(data: CreateFEData, ap: APEntity): List<FEEntity.Tender.Party> {
-        val cplRole = PartyRole.CENTRAL_PURCHASING_BODY
+    private fun createParties(data: CreateFEData, ap: APEntity): List<FEEntity.Party> {
+        val cpbRole = PartyRole.CENTRAL_PURCHASING_BODY
         val cpbPersones = data.tender.procuringEntity?.persons?.map { it.convert() }
 
         val cpbParty = ap.parties
-            .firstOrNull { it.roles.contains(cplRole) }
+            .firstOrNull { it.roles.contains(cpbRole) }
             ?.convert()
             ?.copy(roles = listOf(PartyRole.PROCURING_ENTITY), persones = cpbPersones)
-            ?: throw ErrorException(ErrorType.MISSING_PARTIES, "Party with role '$cplRole' not found.")
+            ?: throw ErrorException(ErrorType.MISSING_PARTIES, "Party with role '$cpbRole' not found.")
 
         val clientParties = ap.parties
             .filter { it.roles.contains(PartyRole.CLIENT) }
@@ -183,13 +183,13 @@ class FeCreateServiceImpl(
         return clientParties + cpbParty
     }
 
-    private fun APEntity.Party.convert(): FEEntity.Tender.Party =
-        FEEntity.Tender.Party(
+    private fun APEntity.Party.convert(): FEEntity.Party =
+        FEEntity.Party(
             id = id,
             name = name,
             identifier = identifier
                 .let { identifier ->
-                    FEEntity.Tender.Party.Identifier(
+                    FEEntity.Party.Identifier(
                         scheme = identifier.scheme,
                         id = identifier.id,
                         legalName = identifier.legalName,
@@ -198,7 +198,7 @@ class FeCreateServiceImpl(
                 },
             additionalIdentifiers = additionalIdentifiers
                 ?.map { additionalIdentifier ->
-                    FEEntity.Tender.Party.AdditionalIdentifier(
+                    FEEntity.Party.AdditionalIdentifier(
                         scheme = additionalIdentifier.scheme,
                         id = additionalIdentifier.id,
                         legalName = additionalIdentifier.legalName,
@@ -207,15 +207,15 @@ class FeCreateServiceImpl(
                 },
             address = address
                 .let { address ->
-                    FEEntity.Tender.Party.Address(
+                    FEEntity.Party.Address(
                         streetAddress = address.streetAddress,
                         postalCode = address.postalCode,
                         addressDetails = address.addressDetails
                             .let { addressDetails ->
-                                FEEntity.Tender.Party.Address.AddressDetails(
+                                FEEntity.Party.Address.AddressDetails(
                                     country = addressDetails.country
                                         .let { country ->
-                                            FEEntity.Tender.Party.Address.AddressDetails.Country(
+                                            FEEntity.Party.Address.AddressDetails.Country(
                                                 scheme = country.scheme,
                                                 id = country.id,
                                                 description = country.description,
@@ -224,7 +224,7 @@ class FeCreateServiceImpl(
                                         },
                                     region = addressDetails.region
                                         .let { region ->
-                                            FEEntity.Tender.Party.Address.AddressDetails.Region(
+                                            FEEntity.Party.Address.AddressDetails.Region(
                                                 scheme = region.scheme,
                                                 id = region.id,
                                                 description = region.description,
@@ -233,7 +233,7 @@ class FeCreateServiceImpl(
                                         },
                                     locality = addressDetails.locality
                                         .let { locality ->
-                                            FEEntity.Tender.Party.Address.AddressDetails.Locality(
+                                            FEEntity.Party.Address.AddressDetails.Locality(
                                                 scheme = locality.scheme,
                                                 id = locality.id,
                                                 description = locality.description,
@@ -246,7 +246,7 @@ class FeCreateServiceImpl(
                 },
             contactPoint = contactPoint
                 .let { contactPoint ->
-                    FEEntity.Tender.Party.ContactPoint(
+                    FEEntity.Party.ContactPoint(
                         name = contactPoint.name,
                         email = contactPoint.email,
                         telephone = contactPoint.telephone,
@@ -258,14 +258,14 @@ class FeCreateServiceImpl(
             persones = null
         )
 
-    private fun CreateFEData.Tender.ProcuringEntity.Person.convert(): FEEntity.Tender.Party.Person =
-        FEEntity.Tender.Party.Person(
+    private fun CreateFEData.Tender.ProcuringEntity.Person.convert(): FEEntity.Party.Person =
+        FEEntity.Party.Person(
             id = PersonId.parse(id)!!,
             title = title,
             name = name,
             identifier = identifier
                 .let { identifier ->
-                    FEEntity.Tender.Party.Person.Identifier(
+                    FEEntity.Party.Person.Identifier(
                         id = identifier.id,
                         scheme = identifier.scheme,
                         uri = identifier.uri
@@ -273,19 +273,19 @@ class FeCreateServiceImpl(
                 },
             businessFunctions = businessFunctions
                 .map { businessFunctions ->
-                    FEEntity.Tender.Party.Person.BusinessFunction(
+                    FEEntity.Party.Person.BusinessFunction(
                         id = businessFunctions.id,
                         jobTitle = businessFunctions.jobTitle,
                         type = businessFunctions.type,
                         period = businessFunctions.period
                             .let { period ->
-                                FEEntity.Tender.Party.Person.BusinessFunction.Period(
+                                FEEntity.Party.Person.BusinessFunction.Period(
                                     startDate = period.startDate
                                 )
                             },
                         documents = businessFunctions.documents
                             .map { document ->
-                                FEEntity.Tender.Party.Person.BusinessFunction.Document(
+                                FEEntity.Party.Person.BusinessFunction.Document(
                                     id = document.id,
                                     title = document.title,
                                     description = document.description,
