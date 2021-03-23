@@ -62,47 +62,47 @@
     "procuringEntity": {
       "id": "tender.procuringEntity.id",
       "name": "tender.procuringEntity.name"
-    },
-    "parties": [
+    }
+  },
+  "parties": [
+    {
+      "id": "",
+      "name": "",
+      "identifier":
       {
+        "scheme": "",
         "id": "",
-        "name": "",
-        "identifier":
-        {
-          "scheme": "",
-          "id": "",
-          "legalName": ""
-        },
-        "address": {
-          "streetAddress": "",
-          "addressDetails": {
-            "country": {
-              "scheme": "",
-              "id": "",
-              "description": "",
-              "uri": ""
-            },
-            "region": {
-              "scheme": "",
-              "id": "",
-              "description": "",
-              "uri": ""
-            },
-            "locality": {
-              "scheme": "",
-              "id": "",
-              "description": ""
-            }
+        "legalName": ""
+      },
+      "address": {
+        "streetAddress": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "region": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": ""
           }
-        },
-        "contactPoint":
-        {
-          "name": "",
-          "email": "",
-          "telephone": ""
-        },
-        "roles":  ["centralPurchasingBody"]
-      }
-    ]
-  }
+        }
+      },
+      "contactPoint":
+      {
+        "name": "",
+        "email": "",
+        "telephone": ""
+      },
+      "roles":  ["centralPurchasingBody"]
+    }
+  ]
 }
