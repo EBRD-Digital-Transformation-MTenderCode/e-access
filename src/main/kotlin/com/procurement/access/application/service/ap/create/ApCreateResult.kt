@@ -14,7 +14,8 @@ import java.time.LocalDateTime
 data class ApCreateResult(
     val ocid: String,
     val token: String,
-    val tender: Tender
+    val tender: Tender,
+    val parties: List<Party>
 ) {
     data class Tender(
         val id: String,
@@ -39,7 +40,6 @@ data class ApCreateResult(
         val eligibilityCriteria: String,
         val tenderPeriod: TenderPeriod,
         val contractPeriod: ContractPeriod,
-        val parties: List<Party>,
         val requiresElectronicCatalogue: Boolean,
         val submissionMethod: List<SubmissionMethod>,
         val submissionMethodRationale: List<String>,
@@ -91,85 +91,84 @@ data class ApCreateResult(
             val startDate: LocalDateTime
         )
 
-
         data class ContractPeriod(
             val startDate: LocalDateTime,
             val endDate: LocalDateTime
         )
-
-        data class Party(
-            val id: String,
-            val name: String,
-            val identifier: Identifier,
-            val additionalIdentifiers: List<AdditionalIdentifier>,
-            val address: Address,
-            val contactPoint: ContactPoint,
-            val roles: List<PartyRole>
-        ) {
-
-            data class Identifier(
-                val scheme: String,
-                val id: String,
-                val legalName: String,
-                val uri: String?
-            )
-
-            data class AdditionalIdentifier(
-                val scheme: String,
-                val id: String,
-                val legalName: String,
-                val uri: String?
-            )
-
-            data class Address(
-                val streetAddress: String,
-                val postalCode: String?,
-                val addressDetails: AddressDetails
-            ) {
-
-                data class AddressDetails(
-                    val country: Country,
-                    val region: Region,
-                    val locality: Locality
-                ) {
-
-                    data class Country(
-                        val scheme: String,
-                        val id: String,
-                        val description: String,
-                        val uri: String
-                    )
-
-                    data class Region(
-                        val scheme: String,
-                        val id: String,
-                        val description: String,
-                        val uri: String
-                    )
-
-                    data class Locality(
-                        val scheme: String,
-                        val id: String,
-                        val description: String,
-                        val uri: String?
-                    )
-                }
-            }
-
-            data class ContactPoint(
-                val name: String,
-                val email: String,
-                val telephone: String,
-                val faxNumber: String?,
-                val url: String?
-            )
-        }
 
         data class Document(
             val id: String,
             val documentType: DocumentType,
             val title: String,
             val description: String?
+        )
+    }
+
+    data class Party(
+        val id: String,
+        val name: String,
+        val identifier: Identifier,
+        val additionalIdentifiers: List<AdditionalIdentifier>,
+        val address: Address,
+        val contactPoint: ContactPoint,
+        val roles: List<PartyRole>
+    ) {
+
+        data class Identifier(
+            val scheme: String,
+            val id: String,
+            val legalName: String,
+            val uri: String?
+        )
+
+        data class AdditionalIdentifier(
+            val scheme: String,
+            val id: String,
+            val legalName: String,
+            val uri: String?
+        )
+
+        data class Address(
+            val streetAddress: String,
+            val postalCode: String?,
+            val addressDetails: AddressDetails
+        ) {
+
+            data class AddressDetails(
+                val country: Country,
+                val region: Region,
+                val locality: Locality
+            ) {
+
+                data class Country(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Region(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Locality(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String?
+                )
+            }
+        }
+
+        data class ContactPoint(
+            val name: String,
+            val email: String,
+            val telephone: String,
+            val faxNumber: String?,
+            val url: String?
         )
     }
 }

@@ -153,59 +153,60 @@
           "79d8f2ec-fd88-417f-b5b9-c6dfad9e2b0d"
         ]
       }
-    ],
-    "parties": [
-      {
-        "id": "",
-        "name": "",
-        "identifier":
-        {
-          "scheme": "",
-          "id": "",
-          "legalName": "",
-          "uri": ""
-        },
-        "additionalIdentifiers":
-        [{
-          "scheme": "",
-          "id": "",
-          "legalName": "",
-          "uri": ""
-        }],
-        "address": {
-          "streetAddress": "",
-          "postalCode": "",
-          "addressDetails": {
-            "country": {
-              "scheme": "",
-              "id": "",
-              "description": "",
-              "uri": ""
-            },
-            "region": {
-              "scheme": "",
-              "id": "",
-              "description": "",
-              "uri": ""
-            },
-            "locality": {
-              "scheme": "",
-              "id": "",
-              "description": "",
-              "uri": ""
-            }
-          }
-        },
-        "contactPoint":
-        {
-          "name": "",
-          "email": "",
-          "telephone": "",
-          "faxNumber": "",
-          "url": ""
-        },
-        "roles":  ["centralPurchasingBody"]
-      }
     ]
-  }
+  },
+  "parties": [
+    {
+      "id": "",
+      "name": "",
+      "identifier": {
+        "scheme": "",
+        "id": "",
+        "legalName": "",
+        "uri": ""
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "",
+          "id": "",
+          "legalName": "",
+          "uri": ""
+        }
+      ],
+      "address": {
+        "streetAddress": "",
+        "postalCode": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "region": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "",
+        "email": "",
+        "telephone": "",
+        "faxNumber": "",
+        "url": ""
+      },
+      "roles": [
+        "centralPurchasingBody"
+      ]
+    }
+  ]
 }
