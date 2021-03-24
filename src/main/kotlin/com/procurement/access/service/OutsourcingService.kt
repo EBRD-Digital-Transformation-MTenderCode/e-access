@@ -122,6 +122,7 @@ class OutsourcingServiceImpl(
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
                     failure(
                         DataErrors.Validation.UnknownValue(
@@ -168,6 +169,7 @@ class OutsourcingServiceImpl(
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
@@ -320,6 +322,7 @@ class OutsourcingServiceImpl(
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> ValidationResult.ok()
         }
 
@@ -360,6 +363,7 @@ class OutsourcingServiceImpl(
         OperationType.UPDATE_AP,
         OperationType.UPDATE_CN,
         OperationType.UPDATE_PN,
+        OperationType.WITHDRAW_BID,
         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> failure(generateOperationTypeError(params))
     }
 
@@ -422,6 +426,7 @@ class OutsourcingServiceImpl(
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> failure(generateOperationTypeError(params))
         }
 

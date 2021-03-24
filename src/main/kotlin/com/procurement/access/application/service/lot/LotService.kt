@@ -503,6 +503,7 @@ class LotServiceImpl(
             OperationType.UPDATE_AP,
             OperationType.UPDATE_AWARD,
             OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
                 throw ErrorException(
                     error = ErrorType.INVALID_OPERATION_TYPE,

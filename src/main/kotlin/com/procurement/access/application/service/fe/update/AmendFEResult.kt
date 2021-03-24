@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
@@ -17,11 +18,13 @@ import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
 data class AmendFEResult(
-    val tender: Tender
+    val tender: Tender,
+    val parties: List<Party>
 ) {
     data class Tender(
         val id: String,
@@ -126,96 +129,8 @@ data class AmendFEResult(
 
         data class ProcuringEntity(
             val id: String,
-            val persons: List<Person>,
-            val name: String,
-            val identifier: Identifier,
-            val additionalIdentifiers: List<Identifier>?,
-            val address: Address,
-            val contactPoint: ContactPoint
-        ) {
-            data class Identifier(
-                val scheme: String,
-                val id: String,
-                val legalName: String,
-                val uri: String?
-            )
-
-            data class Address(
-                val streetAddress: String,
-                val postalCode: String?,
-                val addressDetails: AddressDetails
-            ) {
-
-                data class AddressDetails(
-                    val country: Country,
-                    val region: Region,
-                    val locality: Locality
-                ) {
-
-                    data class Country(
-                        val scheme: String,
-                        val id: String,
-                        val description: String,
-                        val uri: String
-                    )
-
-                    data class Region(
-                        val scheme: String,
-                        val id: String,
-                        val description: String,
-                        val uri: String
-                    )
-
-                    data class Locality(
-                        val scheme: String,
-                        val id: String,
-                        val description: String,
-                        val uri: String?
-                    )
-                }
-            }
-
-            data class ContactPoint(
-                val name: String,
-                val email: String,
-                val telephone: String,
-                val faxNumber: String?,
-                val url: String?
-            )
-
-            data class Person(
-                val id: String,
-                val title: String,
-                val name: String,
-                val identifier: Identifier,
-                val businessFunctions: List<BusinessFunction>
-            ) {
-                data class Identifier(
-                    val scheme: String,
-                    val id: String,
-                    val uri: String?
-                )
-
-                data class BusinessFunction(
-                    val id: String,
-                    val type: BusinessFunctionType,
-                    val jobTitle: String,
-                    val period: Period,
-                    val documents: List<Document>?
-                ) {
-                    data class Document(
-                        val id: String,
-                        val documentType: BusinessFunctionDocumentType,
-                        val title: String,
-                        val description: String?
-                    )
-
-                    data class Period(
-                        val startDate: LocalDateTime
-                    )
-                }
-            }
-        }
+            val name: String
+        )
 
         data class OtherCriteria(
             val reductionCriteria: ReductionCriteria,
@@ -228,5 +143,109 @@ data class AmendFEResult(
             val title: String,
             val description: String?
         )
+    }
+
+    data class Party(
+        val id: String,
+        val name: String,
+        val identifier: Identifier,
+
+        val additionalIdentifiers: List<AdditionalIdentifier>?,
+
+        val address: Address,
+        val contactPoint: ContactPoint,
+        val roles: List<PartyRole>,
+        val persones: List<Person>?
+
+    ) {
+        data class Identifier(
+            val scheme: String,
+            val id: String,
+            val legalName: String,
+            val uri: String?
+        )
+
+        data class AdditionalIdentifier(
+            val scheme: String,
+            val id: String,
+            val legalName: String,
+            val uri: String?
+        )
+
+        data class Address(
+            val streetAddress: String,
+            val postalCode: String?,
+            val addressDetails: AddressDetails
+        ) {
+
+            data class AddressDetails(
+                val country: Country,
+                val region: Region,
+                val locality: Locality
+            ) {
+
+                data class Country(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Region(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Locality(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String?
+                )
+            }
+        }
+
+        data class ContactPoint(
+            val name: String,
+            val email: String,
+            val telephone: String,
+            val faxNumber: String?,
+            val url: String?
+        )
+
+        data class Person(
+            val id: PersonId,
+            val title: String,
+            val name: String,
+            val identifier: Identifier,
+            val businessFunctions: List<BusinessFunction>
+        ) {
+            data class Identifier(
+                val scheme: String,
+                val id: String,
+                val uri: String?
+            )
+
+            data class BusinessFunction(
+                val id: String,
+                val type: BusinessFunctionType,
+                val jobTitle: String,
+                val period: Period,
+                val documents: List<Document>?
+            ) {
+                data class Document(
+                    val id: String,
+                    val documentType: BusinessFunctionDocumentType,
+                    val title: String,
+                    val description: String?
+                )
+
+                data class Period(
+                    val startDate: LocalDateTime
+                )
+            }
+        }
     }
 }

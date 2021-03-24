@@ -1,6 +1,5 @@
 package com.procurement.access.infrastructure.handler.v1.converter
 
-import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationResult
@@ -117,7 +116,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
             }
     )
 
-fun convert(procuringEntity: FEEntity.Tender.ProcuringEntity): GetOrganizationResult =
+fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
     GetOrganizationResult(
         id = procuringEntity.id,
         identifier = procuringEntity.identifier
@@ -188,10 +187,10 @@ fun convert(procuringEntity: FEEntity.Tender.ProcuringEntity): GetOrganizationRe
                         }
                 )
             },
-        persons = procuringEntity.persons
-            .map { person ->
+        persons = procuringEntity.persones
+            ?.map { person ->
                 GetOrganizationResult.Person(
-                    id = PersonId.parse(person.id)!!,
+                    id = person.id,
                     title = person.title,
                     name = person.name,
                     identifier = person.identifier

@@ -7,6 +7,7 @@ import com.procurement.access.infrastructure.api.Action
 
 enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
 
+    ADD_CLIENTS_TO_PARTIES_IN_AP("addClientsToPartiesInAP"),
     CALCULATE_AP_VALUE("calculateAPValue"),
     CHECK_ACCESS_TO_TENDER("checkAccessToTender"),
     CHECK_EQUALITY_CURRENCIES("checkEqualityCurrencies"),

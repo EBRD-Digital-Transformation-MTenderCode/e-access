@@ -250,5 +250,59 @@
         ]
       }
     ]
+  },
+  "buyer": {
+    "id": "",
+    "name": "",
+    "identifier": {
+      "id": "string",
+      "scheme": "string",
+      "legalName": "string",
+      "uri": "string"
+    },
+    "address": {
+      "streetAddress": "",
+      "postalCode": "",
+      "addressDetails": {
+        "country": {
+          "scheme": "",
+          "id": "",
+          "description": "",
+          "uri": ""
+        },
+        "region": {
+          "scheme": "",
+          "id": "",
+          "description": "",
+          "uri": ""
+        },
+        "locality": {
+          "scheme": "",
+          "id": "",
+          "description": "",
+          "uri": ""
+        }
+      }
+    },
+    "additionalIdentifiers": [
+      {
+        "id": "string",
+        "scheme": "string",
+        "legalName": "string",
+        "uri": "string"
+      }
+    ],
+    "contactPoint": {
+      "name": "string",
+      "email": "string",
+      "telephone": "string",
+      "faxNumber": "string",
+      "url": "string"
+    },
+    "details": {
+      "typeOfBuyer": "BODY_PUBLIC",
+      "mainGeneralActivity": "DEFENCE",
+      "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES"
+    }
   }
 }

@@ -11,6 +11,7 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -19,7 +20,8 @@ data class PnCreateResult(
     val ocid: String,
     val token: String,
     val planning: Planning,
-    val tender: Tender
+    val tender: Tender,
+    val buyer: Buyer?
 ) {
     data class Planning(
         val rationale: String?,
@@ -85,7 +87,7 @@ data class PnCreateResult(
         val eligibilityCriteria: String,
         val tenderPeriod: TenderPeriod,
         val contractPeriod: ContractPeriod?,
-        val procuringEntity: ProcuringEntity,
+        val procuringEntity: ProcuringEntity?,
         val value: Money,
         val lotGroups: List<LotGroup>,
         val lots: List<Lot>,
@@ -326,6 +328,77 @@ data class PnCreateResult(
             val title: String,
             val description: String?,
             val relatedLots: List<String>
+        )
+    }
+
+    data class Buyer(
+        val id: String,
+        val name: String,
+        val identifier: Identifier,
+        val address: Address,
+        val additionalIdentifiers: List<AdditionalIdentifier>?,
+        val contactPoint: ContactPoint,
+        val details: Details?
+    ) {
+        data class Identifier(
+            val id: String,
+            val scheme: String,
+            val legalName: String,
+            val uri: String?
+        )
+
+        data class Address(
+            val streetAddress: String,
+            val postalCode: String?,
+            val addressDetails: AddressDetails
+        ) {
+            data class AddressDetails(
+                val country: Country,
+                val region: Region,
+                val locality: Locality
+            ) {
+                data class Country(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Region(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String
+                )
+
+                data class Locality(
+                    val scheme: String,
+                    val id: String,
+                    val description: String,
+                    val uri: String?
+                )
+            }
+        }
+
+        data class AdditionalIdentifier(
+            val id: String,
+            val scheme: String,
+            val legalName: String,
+            val uri: String?
+        )
+
+        data class ContactPoint(
+            val name: String,
+            val email: String,
+            val telephone: String,
+            val faxNumber: String?,
+            val url: String?
+        )
+
+        data class Details(
+            val typeOfBuyer: TypeOfBuyer?,
+            val mainGeneralActivity: String?,
+            val mainSectoralActivity: String?
         )
     }
 }

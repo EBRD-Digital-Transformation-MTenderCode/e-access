@@ -37,6 +37,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     UPDATE_AWARD("updateAward"),
     UPDATE_CN("updateCN"),
     UPDATE_PN("updatePN"),
+    WITHDRAW_BID("withdrawBid"),
     WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol");
 
     override fun toString(): String = key

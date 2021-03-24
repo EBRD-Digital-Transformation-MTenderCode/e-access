@@ -4,7 +4,10 @@ import com.procurement.access.application.service.fe.update.AmendFEResult
 import com.procurement.access.infrastructure.handler.v1.model.response.AmendFEResponse
 
 fun AmendFEResult.convert(): AmendFEResponse =
-    AmendFEResponse(tender = this.tender.convert())
+    AmendFEResponse(
+        tender = this.tender.convert(),
+        parties = this.parties.map { it.convert() }
+    )
 
 fun AmendFEResult.Tender.convert(): AmendFEResponse.Tender =
     AmendFEResponse.Tender(
@@ -138,103 +141,117 @@ fun AmendFEResult.Tender.Criteria.RequirementGroup.convert(): AmendFEResponse.Te
 fun AmendFEResult.Tender.ProcuringEntity.convert(): AmendFEResponse.Tender.ProcuringEntity =
     AmendFEResponse.Tender.ProcuringEntity(
         id = this.id,
-        name = this.name,
-        identifier = this.identifier.convert(),
-        additionalIdentifiers = this.additionalIdentifiers?.map { it.convert() },
-        address = this.address.convert(),
-        contactPoint = this.contactPoint.convert(),
-        persons = this.persons.map { it.convert() }
+        name = this.name
     )
 
-fun AmendFEResult.Tender.ProcuringEntity.Identifier.convert(): AmendFEResponse.Tender.ProcuringEntity.Identifier =
-    AmendFEResponse.Tender.ProcuringEntity.Identifier(
-        scheme = this.scheme,
-        id = this.id,
-        legalName = this.legalName,
-        uri = this.uri
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Address.convert(): AmendFEResponse.Tender.ProcuringEntity.Address =
-    AmendFEResponse.Tender.ProcuringEntity.Address(
-        streetAddress = this.streetAddress,
-        postalCode = this.postalCode,
-        addressDetails = this.addressDetails.convert()
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails =
-    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails(
-        country = this.country.convert(),
-        region = this.region.convert(),
-        locality = this.locality.convert()
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Country.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Country =
-    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Country(
-        scheme = this.scheme,
-        id = this.id,
-        description = this.description,
-        uri = this.uri
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Region.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Region =
-    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Region(
-        scheme = this.scheme,
-        id = this.id,
-        description = this.description,
-        uri = this.uri
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Address.AddressDetails.Locality.convert(): AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality =
-    AmendFEResponse.Tender.ProcuringEntity.Address.AddressDetails.Locality(
-        scheme = this.scheme,
-        id = this.id,
-        description = this.description,
-        uri = this.uri
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.ContactPoint.convert(): AmendFEResponse.Tender.ProcuringEntity.ContactPoint =
-    AmendFEResponse.Tender.ProcuringEntity.ContactPoint(
-        name = this.name,
-        email = this.email,
-        telephone = this.telephone,
-        faxNumber = this.faxNumber,
-        url = this.url
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Person.convert(): AmendFEResponse.Tender.ProcuringEntity.Person =
-    AmendFEResponse.Tender.ProcuringEntity.Person(
-        id = this.id,
-        title = this.title,
-        name = this.name,
-        identifier = this.identifier.convert(),
-        businessFunctions = this.businessFunctions.map { it.convert() }
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Person.Identifier.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.Identifier =
-    AmendFEResponse.Tender.ProcuringEntity.Person.Identifier(
-        id = this.id,
-        scheme = this.scheme,
-        uri = this.uri
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction =
-    AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction(
-        id = this.id,
-        jobTitle = this.jobTitle,
-        type = this.type,
-        period = this.period.convert(),
-        documents = this.documents?.map { it.convert() }
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Document.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document =
-    AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Document(
-        id = this.id,
-        documentType = this.documentType,
-        title = this.title,
-        description = this.description
-    )
-
-fun AmendFEResult.Tender.ProcuringEntity.Person.BusinessFunction.Period.convert(): AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period =
-    AmendFEResponse.Tender.ProcuringEntity.Person.BusinessFunction.Period(
-        startDate = this.startDate
+private fun AmendFEResult.Party.convert(): AmendFEResponse.Party =
+    AmendFEResponse.Party(
+        id = id,
+        name = name,
+        identifier = identifier
+            .let { identifier ->
+                AmendFEResponse.Party.Identifier(
+                    scheme = identifier.scheme,
+                    id = identifier.id,
+                    legalName = identifier.legalName,
+                    uri = identifier.uri
+                )
+            },
+        additionalIdentifiers = additionalIdentifiers
+            ?.map { additionalIdentifier ->
+                AmendFEResponse.Party.AdditionalIdentifier(
+                    scheme = additionalIdentifier.scheme,
+                    id = additionalIdentifier.id,
+                    legalName = additionalIdentifier.legalName,
+                    uri = additionalIdentifier.uri
+                )
+            },
+        address = address
+            .let { address ->
+                AmendFEResponse.Party.Address(
+                    streetAddress = address.streetAddress,
+                    postalCode = address.postalCode,
+                    addressDetails = address.addressDetails
+                        .let { addressDetails ->
+                            AmendFEResponse.Party.Address.AddressDetails(
+                                country = addressDetails.country
+                                    .let { country ->
+                                        AmendFEResponse.Party.Address.AddressDetails.Country(
+                                            scheme = country.scheme,
+                                            id = country.id,
+                                            description = country.description,
+                                            uri = country.uri
+                                        )
+                                    },
+                                region = addressDetails.region
+                                    .let { region ->
+                                        AmendFEResponse.Party.Address.AddressDetails.Region(
+                                            scheme = region.scheme,
+                                            id = region.id,
+                                            description = region.description,
+                                            uri = region.uri
+                                        )
+                                    },
+                                locality = addressDetails.locality
+                                    .let { locality ->
+                                        AmendFEResponse.Party.Address.AddressDetails.Locality(
+                                            scheme = locality.scheme,
+                                            id = locality.id,
+                                            description = locality.description,
+                                            uri = locality.uri
+                                        )
+                                    }
+                            )
+                        }
+                )
+            },
+        contactPoint = contactPoint
+            .let { contactPoint ->
+                AmendFEResponse.Party.ContactPoint(
+                    name = contactPoint.name,
+                    email = contactPoint.email,
+                    telephone = contactPoint.telephone,
+                    faxNumber = contactPoint.faxNumber,
+                    url = contactPoint.url
+                )
+            },
+        roles = roles,
+        persones = persones?.map { person ->
+            AmendFEResponse.Party.Person(
+                id = person.id,
+                title = person.title,
+                name = person.name,
+                identifier = person.identifier
+                    .let { identifier ->
+                        AmendFEResponse.Party.Person.Identifier(
+                            id = identifier.id,
+                            scheme = identifier.scheme,
+                            uri = identifier.uri
+                        )
+                    },
+                businessFunctions = person.businessFunctions
+                    .map { businessFunctions ->
+                        AmendFEResponse.Party.Person.BusinessFunction(
+                            id = businessFunctions.id,
+                            jobTitle = businessFunctions.jobTitle,
+                            type = businessFunctions.type,
+                            period = businessFunctions.period
+                                .let { period ->
+                                    AmendFEResponse.Party.Person.BusinessFunction.Period(
+                                        startDate = period.startDate
+                                    )
+                                },
+                            documents = businessFunctions.documents
+                                ?.map { document ->
+                                    AmendFEResponse.Party.Person.BusinessFunction.Document(
+                                        id = document.id,
+                                        title = document.title,
+                                        description = document.description,
+                                        documentType = document.documentType
+                                    )
+                                }
+                        )
+                    }
+            )
+        }
     )

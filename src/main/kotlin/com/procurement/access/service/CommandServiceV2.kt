@@ -4,6 +4,7 @@ import com.procurement.access.domain.fail.error.BadRequest
 import com.procurement.access.infrastructure.api.v2.ApiResponseV2
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
 import com.procurement.access.infrastructure.api.v2.errorResponse
+import com.procurement.access.infrastructure.handler.v2.AddClientsToPartiesInAPHandler
 import com.procurement.access.infrastructure.handler.v2.CalculateAPValueHandler
 import com.procurement.access.infrastructure.handler.v2.CheckAccessToTenderHandler
 import com.procurement.access.infrastructure.handler.v2.CheckEqualityCurrenciesHandler
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandServiceV2(
+    private val addClientsToPartiesInAPHandler: AddClientsToPartiesInAPHandler,
     private val calculateAPValueHandler: CalculateAPValueHandler,
     private val checkAccessToTenderHandler: CheckAccessToTenderHandler,
     private val checkEqualPNAndAPCurrencyHandler: CheckEqualityCurrenciesHandler,
@@ -75,6 +77,7 @@ class CommandServiceV2(
 
         fun execute(descriptor: CommandDescriptor): ApiResponseV2 =
             when (descriptor.action) {
+                    CommandTypeV2.ADD_CLIENTS_TO_PARTIES_IN_AP -> addClientsToPartiesInAPHandler.handle(descriptor)
                     CommandTypeV2.CALCULATE_AP_VALUE -> calculateAPValueHandler.handle(descriptor)
                     CommandTypeV2.CHECK_ACCESS_TO_TENDER -> checkAccessToTenderHandler.handle(descriptor)
                     CommandTypeV2.CHECK_EQUALITY_CURRENCIES -> checkEqualPNAndAPCurrencyHandler.handle(descriptor)

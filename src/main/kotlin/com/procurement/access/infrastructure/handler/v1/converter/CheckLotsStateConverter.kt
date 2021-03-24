@@ -74,6 +74,7 @@ val allowedOperationType = OperationType.allowedElements
             OperationType.UPDATE_AP,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
         }
     }.toSet()

@@ -71,7 +71,8 @@ data class Tender @JsonCreator constructor(
 
         val legalBasis: LegalBasis,
 
-        val procuringEntity: OrganizationReference,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        val procuringEntity: OrganizationReference?,
 
         var awardCriteria: AwardCriteria?,
 
