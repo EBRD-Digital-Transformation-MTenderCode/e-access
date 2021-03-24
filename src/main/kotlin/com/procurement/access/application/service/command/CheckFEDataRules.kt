@@ -112,7 +112,7 @@ class CheckFEDataRules {
                     val fe = toObject(FEEntity::class.java, entity.jsonData)
 
                     // VR-1.0.1.10.1
-                    compareProcuringEntityWithFeParty(procuringEntity, fe.parties, PartyRole.CENTRAL_PURCHASING_BODY)
+                    compareProcuringEntityWithFeParty(procuringEntity, fe.parties, PartyRole.PROCURING_ENTITY)
 
                     fe.tender.procuringEntity?.let { validateProcuringEntityId(procuringEntity.id, it.id) }
                 }
