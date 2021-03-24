@@ -54,6 +54,7 @@ class CreateCriteriaForProcuringEntity {
                         OperationType.UPDATE_AWARD,
                         OperationType.UPDATE_CN,
                         OperationType.UPDATE_PN,
+                        OperationType.WITHDRAW_BID,
                         OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
 
                         OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,

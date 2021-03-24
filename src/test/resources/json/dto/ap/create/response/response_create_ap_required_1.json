@@ -51,7 +51,24 @@
       "startDate": "2018-12-28T18:26:00Z",
       "endDate": "2018-12-29T18:26:00Z"
     },
-    "procuringEntity": {
+    "requiresElectronicCatalogue": false,
+    "submissionMethod": [
+      "electronicSubmission"
+    ],
+    "submissionMethodRationale": [
+      ""
+    ],
+    "submissionMethodDetails": "",
+    "documents": [
+      {
+        "documentType": "billOfQuantity",
+        "id": "",
+        "title": ""
+      }
+    ]
+  },
+  "parties": [
+    {
       "id": "",
       "name": "",
       "identifier": {
@@ -92,22 +109,10 @@
         "name": "",
         "email": "",
         "telephone": ""
-      }
-    },
-    "requiresElectronicCatalogue": false,
-    "submissionMethod": [
-      "electronicSubmission"
-    ],
-    "submissionMethodRationale": [
-      ""
-    ],
-    "submissionMethodDetails": "",
-    "documents": [
-      {
-        "documentType": "billOfQuantity",
-        "id": "",
-        "title": ""
-      }
-    ]
-  }
+      },
+      "roles": [
+        "centralPurchasingBody"
+      ]
+    }
+  ]
 }

@@ -7,6 +7,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementDataType
@@ -231,6 +232,9 @@ sealed class ValidationErrors(
                 "relationship='${RelatedProcessType.X_SCOPE}', identifier='${relatedCpid}'. Tender with cpid='$cpid' and ocid='$ocid'."
         )
 
+    class InvalidStageOnCheckRelation(val stage: Stage) :
+        ValidationErrors(numberError = "1.24.5", prefix = "VR.COM-", description = "Invalid stage : '${stage.key}'.")
+
     class UnexpectedStageForValidateRequirementResponse(stage: Stage) :
         ValidationErrors(
             prefix = "VR-",
@@ -264,6 +268,13 @@ sealed class ValidationErrors(
             prefix = "VR.COM-",
             numberError = "10.1.4.2",
             description = "Stage '${stage}' not allowed at this command"
+        )
+
+    class ProcuringEntityPartyNotFoundForResponderProcessing() :
+        ValidationErrors(
+            prefix = "VR.COM-",
+            numberError = "10.1.4.3",
+            description = "Party with role '${PartyRole.PROCURING_ENTITY}' not found."
         )
 
     class UnexpectedStageForSetStateForTender(stage: Stage) :
@@ -520,5 +531,22 @@ sealed class ValidationErrors(
         prefix = "VR.COM-",
         description = "Lot '$lotId' contains redundant renewal."
     )
+
+    object AddClientsToPartiesInAP{
+        class PnRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+            numberError = "1.44.1",
+            description = "PN record not found by cpid '$cpid' and '$ocid'."
+        )
+
+        class BuyerIsMissing() : ValidationErrors(
+            numberError = "1.44.2",
+            description = "Buyer is missing."
+        )
+
+        class ApRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+            numberError = "1.44.3",
+            description = "AP record not found by cpid '$cpid' and '$ocid'."
+        )
+    }
 
 }

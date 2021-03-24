@@ -5,6 +5,7 @@ import com.procurement.access.application.service.fe.check.CheckFEDataData
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.RequirementDataType
 import com.procurement.access.domain.model.requirement.EligibleEvidence
 import com.procurement.access.domain.model.requirement.EligibleEvidenceType
@@ -56,6 +57,34 @@ class CheckFEDataRules {
                 )
         }
 
+        private fun compareProcuringEntityWithFeParty(
+            procuringEntity: CheckFEDataData.Tender.ProcuringEntity,
+            parties: List<FEEntity.Party>,
+            partyRole: PartyRole
+        ) {
+            val party = parties.firstOrNull { it.roles.contains(partyRole) }
+                ?: throw ErrorException(
+                    error = ErrorType.INVALID_PROCURING_ENTITY,
+                    message = "Party with role '$partyRole' not found."
+                )
+
+            validateProcuringEntityId(procuringEntity.id, party.id)
+        }
+
+        private fun compareProcuringEntityWithApParty(
+            procuringEntity: CheckFEDataData.Tender.ProcuringEntity,
+            parties: List<APEntity.Party>,
+            partyRole: PartyRole
+        ) {
+            val party = parties.firstOrNull { it.roles.contains(partyRole) }
+                ?: throw ErrorException(
+                    error = ErrorType.INVALID_PROCURING_ENTITY,
+                    message = "Party with role '$partyRole' not found."
+                )
+
+            validateProcuringEntityId(procuringEntity.id, party.id)
+        }
+
         fun <T> validateUniquenessBy(elements: Collection<T>, collectionName: String, selector: (T) -> String) {
             if (!elements.isUnique(selector))
                 throw ErrorException(
@@ -83,13 +112,15 @@ class CheckFEDataRules {
                     val fe = toObject(FEEntity::class.java, entity.jsonData)
 
                     // VR-1.0.1.10.1
+                    compareProcuringEntityWithFeParty(procuringEntity, fe.parties, PartyRole.PROCURING_ENTITY)
+
                     fe.tender.procuringEntity?.let { validateProcuringEntityId(procuringEntity.id, it.id) }
                 }
                 OperationType.CREATE_FE -> {
                     val ap = toObject(APEntity::class.java, entity.jsonData)
 
                     // VR-1.0.1.10.1
-                    validateProcuringEntityId(procuringEntity.id, ap.tender.procuringEntity.id)
+                    compareProcuringEntityWithApParty(procuringEntity, ap.parties, PartyRole.CENTRAL_PURCHASING_BODY)
                 }
 
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -470,6 +501,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
@@ -507,6 +539,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
                 OperationType.CREATE_AWARD-> false
             }
@@ -546,6 +579,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
@@ -584,6 +618,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
                 OperationType.CREATE_AWARD -> throw ErrorException(ErrorType.INVALID_PMD)
             }

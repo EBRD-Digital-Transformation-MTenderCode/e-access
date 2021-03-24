@@ -132,7 +132,7 @@ fun PnCreateResult.convert(): PnCreateResponse =
                             )
                         },
                     procuringEntity = tender.procuringEntity
-                        .let { procuringEntity ->
+                        ?.let { procuringEntity ->
                             PnCreateResponse.Tender.ProcuringEntity(
                                 id = procuringEntity.id,
                                 name = procuringEntity.name,
@@ -348,5 +348,82 @@ fun PnCreateResult.convert(): PnCreateResponse =
                             )
                         }
                 )
-            }
+            },
+        buyer = buyer?.let { buyer ->
+            PnCreateResponse.Buyer(
+                id = buyer.id,
+                name = buyer.name,
+                details = buyer.details
+                    ?.let { details ->
+                        PnCreateResponse.Buyer.Details(
+                            typeOfBuyer = details.typeOfBuyer,
+                            mainGeneralActivity = details.mainGeneralActivity,
+                            mainSectoralActivity = details.mainSectoralActivity
+                        )
+                    },
+                additionalIdentifiers = buyer.additionalIdentifiers
+                    ?.map { additionalIdentifier ->
+                        PnCreateResponse.Buyer.AdditionalIdentifier(
+                            id = additionalIdentifier.id,
+                            legalName = additionalIdentifier.legalName,
+                            scheme = additionalIdentifier.scheme,
+                            uri = additionalIdentifier.uri
+                        )
+                    },
+                address = buyer.address
+                    .let { address ->
+                        PnCreateResponse.Buyer.Address(
+                            streetAddress = address.streetAddress,
+                            postalCode = address.postalCode,
+                            addressDetails = address.addressDetails.let { addressDetails ->
+                                PnCreateResponse.Buyer.Address.AddressDetails(
+                                    country = addressDetails.country.let { country ->
+                                        PnCreateResponse.Buyer.Address.AddressDetails.Country(
+                                            scheme = country.scheme,
+                                            id = country.id,
+                                            description = country.description,
+                                            uri = country.uri
+                                        )
+                                    },
+                                    region = addressDetails.region.let { region ->
+                                        PnCreateResponse.Buyer.Address.AddressDetails.Region(
+                                            scheme = region.scheme,
+                                            id = region.id,
+                                            description = region.description,
+                                            uri = region.uri
+                                        )
+                                    },
+                                    locality = addressDetails.locality.let { locality ->
+                                        PnCreateResponse.Buyer.Address.AddressDetails.Locality(
+                                            scheme = locality.scheme,
+                                            id = locality.id,
+                                            description = locality.description,
+                                            uri = locality.uri
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                contactPoint = buyer.contactPoint
+                    .let { contactPoint ->
+                        PnCreateResponse.Buyer.ContactPoint(
+                            name = contactPoint.name,
+                            email = contactPoint.email,
+                            faxNumber = contactPoint.faxNumber,
+                            telephone = contactPoint.telephone,
+                            url = contactPoint.url
+                        )
+                    },
+                identifier = buyer.identifier
+                    .let { identifier ->
+                        PnCreateResponse.Buyer.Identifier(
+                            id = identifier.id,
+                            scheme = identifier.scheme,
+                            uri = identifier.uri,
+                            legalName = identifier.legalName
+                        )
+                    }
+            )
+        }
     )

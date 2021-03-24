@@ -576,6 +576,7 @@ class CriteriaServiceImpl(
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> null
 
                 OperationType.SUBMISSION_PERIOD_END -> CriteriaRelatesTo.QUALIFICATION
@@ -654,6 +655,7 @@ class CriteriaServiceImpl(
                 OperationType.UPDATE_AWARD,
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
+                OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL ->
                     return failure(
                         DataErrors.Validation.UnknownValue(

@@ -48,49 +48,6 @@
       "startDate": "2020-09-16T12:16:47Z",
       "endDate": "2020-09-16T12:16:47Z"
     },
-    "procuringEntity": {
-      "id": "tender.procuringEntity.id",
-      "name": "tender.procuringEntity.name",
-      "identifier": {
-        "scheme": "tender.procuringEntity.identifier.scheme",
-        "id": "tender.procuringEntity.identifier.id",
-        "legalName": "tender.procuringEntity.identifier.legalName"
-      },
-      "additionalIdentifiers": [
-        {
-          "scheme": "tender.procuringEntity.additionalIdentifiers[0].scheme",
-          "id": "tender.procuringEntity.additionalIdentifiers[0].id",
-          "legalName": "tender.procuringEntity.additionalIdentifiers[0].legalName"
-        }
-      ],
-      "address": {
-        "streetAddress": "tender.procuringEntity.address.streetAddress",
-        "addressDetails": {
-          "country": {
-            "scheme": "tender.procuringEntity.address.addressDetails.country.scheme",
-            "id": "tender.procuringEntity.address.addressDetails.country.id",
-            "description": "tender.procuringEntity.address.addressDetails.country.description",
-            "uri": "tender.procuringEntity.address.addressDetails.country.uri"
-          },
-          "region": {
-            "scheme": "tender.procuringEntity.address.addressDetails.region.scheme",
-            "id": "tender.procuringEntity.address.addressDetails.region.id",
-            "description": "tender.procuringEntity.address.addressDetails.region.description",
-            "uri": "tender.procuringEntity.address.addressDetails.region.uri"
-          },
-          "locality": {
-            "scheme": "tender.procuringEntity.address.addressDetails.locality.scheme",
-            "id": "tender.procuringEntity.address.addressDetails.locality.id",
-            "description": "tender.procuringEntity.address.addressDetails.locality.description"
-          }
-        }
-      },
-      "contactPoint": {
-        "name": "tender.procuringEntity.contactPoint.name",
-        "email": "tender.procuringEntity.contactPoint.email",
-        "telephone": "tender.procuringEntity.contactPoint.telephone"
-      }
-    },
     "requiresElectronicCatalogue": false,
     "submissionMethod": [
       "electronicSubmission"
@@ -186,5 +143,53 @@
         "title": "tender.documents[0].title"
       }
     ]
-  }
+  },
+  "parties": [
+    {
+      "id": "",
+      "name": "",
+      "identifier": {
+        "scheme": "",
+        "id": "",
+        "legalName": ""
+      },
+      "additionalIdentifiers": [
+        {
+          "scheme": "",
+          "id": "",
+          "legalName": ""
+        }
+      ],
+      "address": {
+        "streetAddress": "",
+        "addressDetails": {
+          "country": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "region": {
+            "scheme": "",
+            "id": "",
+            "description": "",
+            "uri": ""
+          },
+          "locality": {
+            "scheme": "",
+            "id": "",
+            "description": ""
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "",
+        "email": "",
+        "telephone": ""
+      },
+      "roles": [
+        "centralPurchasingBody"
+      ]
+    }
+  ]
 }
