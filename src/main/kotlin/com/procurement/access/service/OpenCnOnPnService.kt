@@ -245,6 +245,7 @@ class OpenCnOnPnService(
     }
 
     fun create(context: CreateOpenCnOnPnContext, data: OpenCnOnPnRequest): OpenCnOnPnResponse {
+        data.validateTextAttributesForCreate()
         val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
@@ -277,6 +278,25 @@ class OpenCnOnPnService(
         val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
+    }
+
+    private fun OpenCnOnPnRequest.validateTextAttributesForCreate() {
+        tender.procuringEntity?.persones
+            ?.forEachIndexed { i, person ->
+                person.title.checkForBlank("tender.procuringEntity.persones[$i].title")
+                person.name.checkForBlank("tender.procuringEntity.persones[$i].name")
+                person.identifier.uri.checkForBlank("tender.procuringEntity.persones[$i].uri")
+                person.identifier.scheme.checkForBlank("tender.procuringEntity.persones[$i].scheme")
+                person.identifier.id.checkForBlank("tender.procuringEntity.persones[$i].id")
+                person.businessFunctions.forEachIndexed { j, businessFunction ->
+                    businessFunction.id.checkForBlank("tender.procuringEntity.persones[$i].businessFunctions[$j].id")
+                    businessFunction.jobTitle.checkForBlank("tender.procuringEntity.persones[$i].businessFunctions[$j].jobTitle")
+                    businessFunction.documents?.forEachIndexed { h, document ->
+                        document.title.checkForBlank("tender.procuringEntity.persones[$i].businessFunctions[$j].documents[$h].title")
+                        document.description.checkForBlank("tender.procuringEntity.persones[$i].businessFunctions[$j].documents[$h].description")
+                    }
+                }
+            }
     }
 
     private fun OpenCnOnPnRequest.validateTextAttributes() {
