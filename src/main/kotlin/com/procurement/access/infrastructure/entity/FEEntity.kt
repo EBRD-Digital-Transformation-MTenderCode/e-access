@@ -13,7 +13,9 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
+import com.procurement.access.domain.model.enums.MainGeneralActivity
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.MainSectoralActivity
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
@@ -23,6 +25,7 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.requirement.Requirement
@@ -218,9 +221,11 @@ data class FEEntity(
         @field:JsonProperty("roles") @param:JsonProperty("roles") val roles: List<PartyRole>,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Person>?
+        @field:JsonProperty("persones") @param:JsonProperty("persones") val persones: List<Person>?,
 
-    ) {
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("details") @param:JsonProperty("details") val details: Details?
+        ) {
 
         data class Identifier(
             @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
@@ -329,5 +334,16 @@ data class FEEntity(
                 )
             }
         }
+
+        data class Details(
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("typeOfBuyer") @param:JsonProperty("typeOfBuyer") val typeOfBuyer: TypeOfBuyer?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("mainGeneralActivity") @param:JsonProperty("mainGeneralActivity") val mainGeneralActivity: MainGeneralActivity?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("mainSectoralActivity") @param:JsonProperty("mainSectoralActivity") val mainSectoralActivity: MainSectoralActivity?
+        )
     }
 }
