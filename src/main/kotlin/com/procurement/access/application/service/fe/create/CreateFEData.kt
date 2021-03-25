@@ -56,7 +56,6 @@ data class CreateFEData(
             val persons: List<Person>
         ) {
             data class Person(
-                val id: String,
                 val title: String,
                 val name: String,
                 val identifier: Identifier,
