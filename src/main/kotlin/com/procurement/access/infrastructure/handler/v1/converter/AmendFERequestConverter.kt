@@ -31,7 +31,6 @@ fun AmendFERequest.Tender.ProcuringEntity.convert() = AmendFEData.Tender.Procuri
 )
 
 fun AmendFERequest.Tender.ProcuringEntity.Person.convert() = AmendFEData.Tender.ProcuringEntity.Person(
-    id = this.id,
     title = this.title,
     name = this.name,
     identifier = this.identifier.convert(),

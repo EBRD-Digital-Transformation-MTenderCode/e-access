@@ -103,14 +103,24 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
     private fun FEEntity.updateParties(
         persons: List<AmendFEData.Tender.ProcuringEntity.Person>
     ): List<FEEntity.Party> {
-        val receivedPersonsById = persons.associateBy { it.identifier.id }
+        val receivedPersonsById = persons.associateBy {
+            PersonId.generate(
+                id = it.identifier.id,
+                scheme = it.identifier.scheme
+            )
+        }
         val partyRole = PartyRole.PROCURING_ENTITY
 
         val procuringEntityParty = this.parties
             .firstOrNull { it.roles.contains(partyRole) }
             ?: throw ErrorException(ErrorType.MISSING_PARTIES, "Party with role '$partyRole' is missing.")
 
-        val savedPersonsById = procuringEntityParty.persones?.associateBy { it.identifier.id }.orEmpty()
+        val savedPersonsById = procuringEntityParty.persones?.associateBy {
+            PersonId.generate(
+                id = it.identifier.id,
+                scheme = it.identifier.scheme
+            )
+        }.orEmpty()
 
         val receivedPersonsIds = receivedPersonsById.keys
         val savedPersonsIds = savedPersonsById.keys
