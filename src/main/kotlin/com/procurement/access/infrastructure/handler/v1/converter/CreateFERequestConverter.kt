@@ -70,7 +70,6 @@ fun CreateFERequest.Tender.ProcuringEntity.convert() = CreateFEData.Tender.Procu
 )
 
 fun CreateFERequest.Tender.ProcuringEntity.Person.convert() = CreateFEData.Tender.ProcuringEntity.Person(
-    id = this.id,
     title = this.title,
     name = this.name,
     identifier = this.identifier.convert(),
