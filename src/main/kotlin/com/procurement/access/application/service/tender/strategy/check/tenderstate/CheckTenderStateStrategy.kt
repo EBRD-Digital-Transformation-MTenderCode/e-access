@@ -5,6 +5,7 @@ import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.Fail.Incident.DatabaseIncident
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.rule.TenderStatesRule
 import com.procurement.access.infrastructure.entity.TenderStateInfo
 import com.procurement.access.lib.functional.ValidationResult
@@ -18,6 +19,9 @@ class CheckTenderStateStrategy(
 ) {
 
     fun execute(params: CheckTenderStateParams): ValidationResult<Fail> {
+        checkStage(params)
+            .doOnError { return it.asValidationFailure() }
+
         val cpid = params.cpid
         val ocid = params.ocid
 
@@ -46,4 +50,18 @@ class CheckTenderStateStrategy(
 
         return ValidationResult.ok()
     }
+    private fun checkStage(params: CheckTenderStateParams): ValidationResult<ValidationErrors.InvalidStageOnCheckTenderState> =
+        when (val stage = params.ocid.stage) {
+            Stage.PN,
+            Stage.AP,
+            Stage.EV,
+            Stage.NP,
+            Stage.TP,
+            Stage.FE,
+            Stage.RQ -> ValidationResult.ok()
+            Stage.AC,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC -> ValidationResult.error(ValidationErrors.InvalidStageOnCheckTenderState(stage))
+        }
 }
