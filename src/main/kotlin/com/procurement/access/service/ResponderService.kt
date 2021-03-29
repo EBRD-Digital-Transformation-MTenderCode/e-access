@@ -270,6 +270,7 @@ class ResponderServiceImpl(
             OperationType.CREATE_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
+            OperationType.CREATE_RFQ,
             OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,
             OperationType.ISSUING_FRAMEWORK_CONTRACT,
