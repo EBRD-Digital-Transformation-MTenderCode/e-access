@@ -77,7 +77,8 @@ class SetStateForTenderStrategy(
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC ->
+            Stage.PC,
+            Stage.RQ ->
                 return Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
                 )

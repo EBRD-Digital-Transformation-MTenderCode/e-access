@@ -145,7 +145,8 @@ class CriteriaServiceImpl(
             Stage.FS,
             Stage.NP,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.RQ -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage $validatedStage not allowed at the command."
             )
@@ -344,7 +345,8 @@ class CriteriaServiceImpl(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN ->
+            Stage.PN,
+            Stage.RQ ->
                 failure(
                     ValidationErrors.UnexpectedStageForGetQualificationCriteriaAndMethod(stage = params.ocid.stage)
                 )
@@ -399,7 +401,8 @@ class CriteriaServiceImpl(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN ->
+            Stage.PN,
+            Stage.RQ ->
                 failure(
                     ValidationErrors.UnexpectedStageForFindCriteria(stage = params.ocid.stage)
                 )
@@ -497,7 +500,8 @@ class CriteriaServiceImpl(
             Stage.EI,
             Stage.PC,
             Stage.PN,
-            Stage.FS ->
+            Stage.FS,
+            Stage.RQ ->
                 failure(
                     ValidationErrors.UnexpectedStageForCreateCriteriaForProcuringEntity(stage = params.ocid.stage)
                 )
