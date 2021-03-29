@@ -146,6 +146,7 @@ class ValidationService(
             Stage.FS,
             Stage.NP,
             Stage.PC,
+            Stage.RQ,
             Stage.TP -> return ValidationResult.error(ValidationErrors.InvalidStageOnCheckRelation(stage))
         }
 
