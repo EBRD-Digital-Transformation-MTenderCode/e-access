@@ -38,9 +38,9 @@ import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.validation.CheckBid
 import com.procurement.access.service.RulesService
+import com.procurement.access.service.validation.strategy.CheckAccessToTenderStrategy
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy
 import com.procurement.access.service.validation.strategy.CheckLotStrategy
-import com.procurement.access.service.validation.strategy.CheckOwnerAndTokenStrategy
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
@@ -55,7 +55,7 @@ class ValidationService(
 
     private val checkItemsStrategy = CheckItemsStrategy(tenderProcessDao)
     private val checkAwardStrategy = CheckAwardStrategy(tenderProcessDao)
-    private val checkOwnerAndTokenStrategy = CheckOwnerAndTokenStrategy(tenderProcessDao, tenderProcessRepository)
+    private val checkAccessToTenderStrategy = CheckAccessToTenderStrategy(tenderProcessDao, tenderProcessRepository)
     private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
     private val checkTenderStateStrategy = CheckTenderStateStrategy(tenderProcessRepository, rulesService)
 
@@ -86,17 +86,17 @@ class ValidationService(
     }
 
     fun checkToken(cm: CommandMessage): ApiResponseV1.Success {
-        checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
+        checkAccessToTenderStrategy.checkAccessToTender(cm)
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkOwnerAndToken(cm: CommandMessage): ApiResponseV1.Success {
-        checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
+    fun checkAccessToTender(cm: CommandMessage): ApiResponseV1.Success {
+        checkAccessToTenderStrategy.checkAccessToTender(cm)
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
-        return checkOwnerAndTokenStrategy.checkOwnerAndToken(params)
+    fun checkAccessToTender(params: CheckAccessToTenderParams): ValidationResult<Fail> {
+        return checkAccessToTenderStrategy.checkAccessToTender(params)
     }
 
     fun checkLotStatus(cm: CommandMessage): ApiResponseV1.Success {

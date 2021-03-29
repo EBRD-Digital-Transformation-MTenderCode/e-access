@@ -18,12 +18,12 @@ import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
 
-class CheckOwnerAndTokenStrategy(
+class CheckAccessToTenderStrategy(
     private val tenderProcessDao: TenderProcessDao,
     private val tenderProcessRepository: TenderProcessRepository
 ) {
 
-    fun checkOwnerAndToken(cm: CommandMessage) {
+    fun checkAccessToTender(cm: CommandMessage) {
         val cpid = cm.cpid
         val token = cm.token
         val owner = cm.owner
@@ -42,7 +42,7 @@ class CheckOwnerAndTokenStrategy(
         }
     }
 
-    fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
+    fun checkAccessToTender(params: CheckAccessToTenderParams): ValidationResult<Fail> {
 
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
