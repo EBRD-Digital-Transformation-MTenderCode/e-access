@@ -63,6 +63,11 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )
 
+    class InvalidStageCheckAccessToTender(val stage: Stage) : ValidationErrors(
+        numberError = "10.1.1.4",
+        description = "Invalid stage: '$stage'."
+    )
+
     class TenderNotFoundSetStateForTender(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
         numberError = "10.1.6.1",
         description = "Tender not found by cpid '$cpid' and '$ocid'."
