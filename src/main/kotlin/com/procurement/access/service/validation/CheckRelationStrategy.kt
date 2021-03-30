@@ -27,13 +27,11 @@ sealed class CheckRelationStrategy {
         ): ValidationResult<Fail> {
             val relatedProcesses = super.getRelatedProcess(tenderProcessRepository, params.cpid, params.ocid, stage)
                 .onFailure { return it.reason.asValidationFailure() }
-            if (params.existenceRelation)
+
+            return if (params.existenceRelation)
                 super.checkRelationExists(relatedProcesses, params)
-                    .doOnError { return it.asValidationFailure() }
             else
                 super.checkRelationNotExists(relatedProcesses, params)
-                    .doOnError { return it.asValidationFailure() }
-            return ValidationResult.ok()
         }
     }
 
@@ -45,10 +43,10 @@ sealed class CheckRelationStrategy {
         ): ValidationResult<Fail> {
             val relatedProcesses = super.getRelatedProcess(tenderProcessRepository, params.cpid, params.ocid, stage)
                 .onFailure { return it.reason.asValidationFailure() }
-            if (params.existenceRelation)
+
+            return if (params.existenceRelation)
                 super.checkRelationExists(relatedProcesses, params)
-                    .doOnError { return it.asValidationFailure() }
-            return ValidationResult.ok()
+            else ValidationResult.ok()
         }
     }
 
