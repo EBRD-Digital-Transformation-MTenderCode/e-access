@@ -242,7 +242,8 @@ class LotServiceImpl(
             Stage.EI,
             Stage.FE,
             Stage.FS,
-            Stage.PC ->
+            Stage.PC,
+            Stage.RQ ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
                 )
@@ -362,7 +363,8 @@ class LotServiceImpl(
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC ->
+            Stage.PC,
+            Stage.RQ ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
                 )

@@ -7,6 +7,7 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
@@ -18,12 +19,12 @@ import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
 
-class CheckOwnerAndTokenStrategy(
+class CheckAccessToTenderStrategy(
     private val tenderProcessDao: TenderProcessDao,
     private val tenderProcessRepository: TenderProcessRepository
 ) {
 
-    fun checkOwnerAndToken(cm: CommandMessage) {
+    fun checkAccessToTender(cm: CommandMessage) {
         val cpid = cm.cpid
         val token = cm.token
         val owner = cm.owner
@@ -42,7 +43,9 @@ class CheckOwnerAndTokenStrategy(
         }
     }
 
-    fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
+    fun checkAccessToTender(params: CheckAccessToTenderParams): ValidationResult<Fail> {
+        checkStage(params)
+            .doOnError { return it.asValidationFailure() }
 
         val tenderProcessEntity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
@@ -55,6 +58,21 @@ class CheckOwnerAndTokenStrategy(
 
         return ValidationResult.ok()
     }
+
+    private fun checkStage(params: CheckAccessToTenderParams): ValidationResult<ValidationErrors.InvalidStageCheckAccessToTender> =
+        when (val stage = params.ocid.stage) {
+            Stage.PN,
+            Stage.AP,
+            Stage.EV,
+            Stage.NP,
+            Stage.TP,
+            Stage.FE,
+            Stage.RQ -> ValidationResult.ok()
+            Stage.AC,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC -> ValidationResult.error(ValidationErrors.InvalidStageCheckAccessToTender(stage))
+        }
 
     private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
