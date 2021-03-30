@@ -174,7 +174,14 @@
         "faxNumber": "",
         "url": ""
       },
-      "roles":  ["centralPurchasingBody"]
+      "roles": [
+        "centralPurchasingBody"
+      ],
+      "details": {
+        "typeOfBuyer": "BODY_PUBLIC",
+        "mainGeneralActivity": "DEFENCE",
+        "mainSectoralActivity": "AIRPORT_RELATED_ACTIVITIES"
+      }
     }
   ]
 }
