@@ -185,6 +185,12 @@ sealed class ValidationErrors(
         entityId = cpid.toString()
     )
 
+    class InvalidStageOnCheckTenderState(val stage: Stage) : ValidationErrors(
+        numberError = "1.17.3",
+        prefix = "VR.COM-",
+        description = "Invalid stage: '$stage'."
+    )
+
     class TenderNotFoundOnFindAuctions(cpid: Cpid, ocid: Ocid) : ValidationErrors(
         numberError = "1.19.1",
         prefix = "VR.COM-",
