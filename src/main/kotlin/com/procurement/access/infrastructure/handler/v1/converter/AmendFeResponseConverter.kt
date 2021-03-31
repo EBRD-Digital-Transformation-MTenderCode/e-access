@@ -253,5 +253,13 @@ private fun AmendFEResult.Party.convert(): AmendFEResponse.Party =
                         )
                     }
             )
-        }
+        },
+        details = details
+            ?.let { details ->
+                AmendFEResponse.Party.Details(
+                    typeOfBuyer = details.typeOfBuyer,
+                    mainGeneralActivity = details.mainGeneralActivity,
+                    mainSectoralActivity = details.mainSectoralActivity
+                )
+            }
     )
