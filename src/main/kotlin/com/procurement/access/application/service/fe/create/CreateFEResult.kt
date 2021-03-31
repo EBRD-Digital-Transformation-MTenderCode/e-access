@@ -7,7 +7,9 @@ import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
+import com.procurement.access.domain.model.enums.MainGeneralActivity
 import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.MainSectoralActivity
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
@@ -17,6 +19,7 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.requirement.Requirement
@@ -157,8 +160,8 @@ data class CreateFEResult(
         val address: Address,
         val contactPoint: ContactPoint,
         val roles: List<PartyRole>,
-        val persones: List<Person>?
-
+        val persones: List<Person>?,
+        val details: Details?
     ) {
         data class Identifier(
             val scheme: String,
@@ -249,5 +252,11 @@ data class CreateFEResult(
                 )
             }
         }
+
+        data class Details(
+            val typeOfBuyer: TypeOfBuyer?,
+            val mainGeneralActivity: MainGeneralActivity?,
+            val mainSectoralActivity: MainSectoralActivity?
+        )
     }
 }
