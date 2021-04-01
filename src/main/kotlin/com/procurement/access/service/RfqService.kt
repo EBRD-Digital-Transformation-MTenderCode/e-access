@@ -219,7 +219,7 @@ class RfqServiceImpl(
 
     private fun generateElectronicAuctions(
         params: CreateRfqParams,
-        newLotIdsByOldLotIds: Map<LotId, LotId>
+        newLotIdsByOldLotIds: Map<String, LotId>
     ) = params.tender.electronicAuctions
         ?.let { electronicAuctions ->
             RfqEntity.Tender.ElectronicAuctions(
@@ -290,7 +290,7 @@ class RfqServiceImpl(
 
     private fun generateItems(
         params: CreateRfqParams,
-        newLotIdsByOldLotIds: Map<LotId, LotId>
+        newLotIdsByOldLotIds: Map<String, LotId>
     ) = params.tender.items
         .map { item ->
             RfqEntity.Tender.Item(

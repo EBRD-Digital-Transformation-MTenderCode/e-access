@@ -2,7 +2,6 @@ package com.procurement.access.application.model.params
 
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
-import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.owner.Owner
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -24,7 +23,7 @@ data class CreateRfqParams(
         val procurementMethodModalities: List<String>?
     ) {
         data class Lot(
-            val id: LotId,
+            val id: String,
             val internalId: String?,
             val title: String,
             val description: String?,
@@ -88,7 +87,7 @@ data class CreateRfqParams(
             val classification: Classification,
             val quantity: BigDecimal,
             val unit: Unit,
-            val relatedLot: LotId
+            val relatedLot: String
         ) {
             data class Classification(
                 val id: String,
@@ -107,7 +106,7 @@ data class CreateRfqParams(
         ) {
             data class Detail(
                 val id: String,
-                val relatedLot: LotId
+                val relatedLot: String
             )
         }
     }

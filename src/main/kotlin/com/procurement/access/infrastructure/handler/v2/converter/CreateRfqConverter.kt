@@ -4,7 +4,6 @@ import com.procurement.access.application.model.notEmptyRule
 import com.procurement.access.application.model.params.CreateRfqParams
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseDate
-import com.procurement.access.application.model.parseLotId
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parseOwner
 import com.procurement.access.domain.fail.error.DataErrors
@@ -62,7 +61,7 @@ private fun CreateRfqRequest.Tender.ElectronicAuctions.convert(path: String): Re
 private fun CreateRfqRequest.Tender.ElectronicAuctions.Detail.convert(path: String): Result<CreateRfqParams.Tender.ElectronicAuctions.Detail, DataErrors> =
     CreateRfqParams.Tender.ElectronicAuctions.Detail(
         id = id,
-        relatedLot = parseLotId(relatedLot, "$path.relatedLot").onFailure { return it }
+        relatedLot = relatedLot
     ).asSuccess()
 
 private fun CreateRfqRequest.Tender.Item.convert(path: String): Result<CreateRfqParams.Tender.Item, DataErrors> =
@@ -70,7 +69,7 @@ private fun CreateRfqRequest.Tender.Item.convert(path: String): Result<CreateRfq
         id = id,
         internalId = internalId,
         description = description,
-        relatedLot = parseLotId(relatedLot, "$path.relatedLot").onFailure { return it },
+        relatedLot = relatedLot,
         classification = CreateRfqParams.Tender.Item.Classification(
             id = classification.id,
             description = classification.description,
@@ -85,7 +84,7 @@ private fun CreateRfqRequest.Tender.Item.convert(path: String): Result<CreateRfq
 
 private fun CreateRfqRequest.Tender.Lot.convert(path: String): Result<CreateRfqParams.Tender.Lot, DataErrors> {
     return CreateRfqParams.Tender.Lot(
-        id = parseLotId(id, "$path.id").onFailure { return it },
+        id = id,
         description = description,
         internalId = internalId,
         title = title,
