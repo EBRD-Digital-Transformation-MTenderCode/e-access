@@ -82,4 +82,6 @@ class GenerationService {
     fun coefficientId(): String = UUID.randomUUID().toString()
 
     fun lotId(): LotId = UUID.randomUUID()
+
+    fun relatedProcessId(): String = UUID.randomUUID().toString()
 }
