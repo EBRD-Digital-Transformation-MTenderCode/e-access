@@ -9,6 +9,7 @@ enum class RelatedProcessType(@JsonValue override val key: String) : EnumElement
     FRAMEWORK("framework"),
     PARENT("parent"),
     PLANNING("planning"),
+    X_CATALOGUE("x_catalogue"),
     X_CONTRACTING("x_contracting"),
     X_DEMAND("x_demand"),
     X_EVALUATION("x_evaluation"),
