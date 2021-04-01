@@ -4,8 +4,11 @@ package com.procurement.access.infrastructure.handler.v2.model.response
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.AwardCriteria
+import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -33,8 +36,8 @@ data class CreateRfqResult(
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @param:JsonProperty("procurementMethodModalities") @field:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?,
 
-        @param:JsonProperty("awardCriteria") @field:JsonProperty("awardCriteria") val awardCriteria: String,
-        @param:JsonProperty("awardCriteriaDetails") @field:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String
+        @param:JsonProperty("awardCriteria") @field:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria,
+        @param:JsonProperty("awardCriteriaDetails") @field:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails
     ) {
         data class Lot(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: LotId,
@@ -109,7 +112,10 @@ data class CreateRfqResult(
 
         data class Item(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
-            @param:JsonProperty("internalId") @field:JsonProperty("internalId") val internalId: String,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @param:JsonProperty("internalId") @field:JsonProperty("internalId") val internalId: String?,
+
             @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
             @param:JsonProperty("classification") @field:JsonProperty("classification") val classification: Classification,
             @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: BigDecimal,
@@ -140,7 +146,7 @@ data class CreateRfqResult(
 
     data class RelatedProcess(
         @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
-        @param:JsonProperty("relationship") @field:JsonProperty("relationship") val relationship: List<String>,
+        @param:JsonProperty("relationship") @field:JsonProperty("relationship") val relationship: List<RelatedProcessType>,
         @param:JsonProperty("scheme") @field:JsonProperty("scheme") val scheme: String,
         @param:JsonProperty("identifier") @field:JsonProperty("identifier") val identifier: String,
         @param:JsonProperty("uri") @field:JsonProperty("uri") val uri: String
