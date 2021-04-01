@@ -99,7 +99,7 @@ private fun CreateRfqRequest.Tender.Lot.PlaceOfPerformance.convert() =
     CreateRfqParams.Tender.Lot.PlaceOfPerformance(
         description = description,
         address = address
-            ?.let { address ->
+            .let { address ->
                 CreateRfqParams.Tender.Lot.PlaceOfPerformance.Address(
                     streetAddress = address.streetAddress,
                     postalCode = address.postalCode,
