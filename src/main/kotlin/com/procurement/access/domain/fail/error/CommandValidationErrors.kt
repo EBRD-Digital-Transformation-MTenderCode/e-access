@@ -7,7 +7,7 @@ import com.procurement.access.domain.model.Ocid
 
 abstract class CommandValidationErrors(
     numberError: String,
-    prefix: String = "VR-COM",
+    prefix: String = "VR.COM-",
     override val description: String
 ) : Fail.Error(prefix = prefix) {
 
@@ -50,7 +50,7 @@ abstract class CommandValidationErrors(
         
         class UnknownRelatedLot(itemId: String, relatedLot: String) : CommandValidationErrors(
             numberError = "46.1.7",
-            description = "Item '$itemId' contain unknown relatedLot '$relatedLot'."
+            description = "Item '$itemId' contains unknown relatedLot '$relatedLot'."
         )
 
         class ElectronicAuctionsAreMissing() : CommandValidationErrors(
