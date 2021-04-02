@@ -38,6 +38,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     VALIDATE_CLASSIFICATION("validateClassification"),
     VALIDATE_LOTS_DATA_FOR_DIVISION("validateLotsDataForDivision"),
     VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses"),
+    VALIDATE_RFQ_DATA("ValidateRfqData"),
     VERIFY_REQUIREMENT_RESPONSE("verifyRequirementResponse"),
     ;
 
