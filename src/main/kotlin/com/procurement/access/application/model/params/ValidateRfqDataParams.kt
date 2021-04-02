@@ -3,6 +3,7 @@ package com.procurement.access.application.model.params
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class ValidateRfqDataParams(
@@ -76,7 +77,7 @@ data class ValidateRfqDataParams(
             val internalId: String?,
             val description: String,
             val classification: Classification,
-            val quantity: Int,
+            val quantity: BigDecimal,
             val unit: Unit,
             val relatedLot: String
         ) {

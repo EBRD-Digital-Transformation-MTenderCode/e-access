@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.handler.v2.model.request
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.math.BigDecimal
 
 data class ValidateRfqDataRequest(
     @param:JsonProperty("tender") @field:JsonProperty("tender") val tender: Tender,
@@ -92,7 +93,7 @@ data class ValidateRfqDataRequest(
 
             @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
             @param:JsonProperty("classification") @field:JsonProperty("classification") val classification: Classification,
-            @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: Int,
+            @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: BigDecimal,
             @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
             @param:JsonProperty("relatedLot") @field:JsonProperty("relatedLot") val relatedLot: String
         ) {
