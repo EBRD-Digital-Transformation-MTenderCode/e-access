@@ -26,7 +26,7 @@ class RfqServiceImpl(
     private val transform: Transform
 ) : RfqService {
     override fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail> {
-        val pnEntity = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
+        val pnEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return CommandValidationErrors.ValidateRfqData.PnNotFound(params.relatedCpid, params.relatedOcid)
                 .asValidationFailure()
