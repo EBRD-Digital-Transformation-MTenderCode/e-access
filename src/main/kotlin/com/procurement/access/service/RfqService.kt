@@ -26,9 +26,11 @@ class RfqServiceImpl(
     private val transform: Transform
 ) : RfqService {
     override fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail> {
-
         val pnEntity = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
-            .onFailure { return it.reason.asValidationFailure() }!!
+            .onFailure { return it.reason.asValidationFailure() }
+            ?: return CommandValidationErrors.ValidateRfqData.PnNotFound(params.relatedCpid, params.relatedOcid)
+                .asValidationFailure()
+
 
         val pn = pnEntity.jsonData.tryToObject(PNEntity::class.java)
             .onFailure { return it.reason.asValidationFailure() }
