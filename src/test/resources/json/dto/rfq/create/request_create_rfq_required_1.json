@@ -14,7 +14,6 @@
           "endDate": "2021-04-01T10:18:12.162Z"
         },
         "placeOfPerformance": {
-          "description": "string",
           "address": {
             "streetAddress": "string",
             "addressDetails": {

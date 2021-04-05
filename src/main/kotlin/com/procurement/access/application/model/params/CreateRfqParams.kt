@@ -41,7 +41,7 @@ data class CreateRfqParams(
             )
 
             data class PlaceOfPerformance(
-                val description: String,
+                val description: String?,
 
                 val address: Address
             ) {
