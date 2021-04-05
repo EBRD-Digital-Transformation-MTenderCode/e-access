@@ -22,11 +22,13 @@ import com.procurement.access.infrastructure.configuration.properties.UriPropert
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfqResult
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
+import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
 interface RfqService {
@@ -46,7 +48,6 @@ class RfqServiceImpl(
             .onFailure { return it.reason.asValidationFailure() }
             ?: return CommandValidationErrors.ValidateRfqData.PnNotFound(params.relatedCpid, params.relatedOcid)
                 .asValidationFailure()
-
 
         val pn = pnEntity.jsonData.tryToObject(PNEntity::class.java)
             .onFailure { return it.reason.asValidationFailure() }
