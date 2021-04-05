@@ -37,6 +37,7 @@ import com.procurement.access.infrastructure.handler.v2.SetStateForTenderHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateLotsDataForDivisionHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateRequirementResponsesHandler
+import com.procurement.access.infrastructure.handler.v2.ValidateRfqDataHandler
 import com.procurement.access.infrastructure.handler.v2.VerifyRequirementResponseHandler
 import org.springframework.stereotype.Service
 
@@ -74,6 +75,7 @@ class CommandServiceV2(
     private val validateClassificationHandler: ValidateClassificationHandler,
     private val validateLotsDataForDivisionHandler: ValidateLotsDataForDivisionHandler,
     private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
+    private val validateRfqDataHandler: ValidateRfqDataHandler,
     private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler
 ) {
 
@@ -111,6 +113,7 @@ class CommandServiceV2(
                     CommandTypeV2.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(descriptor)
                     CommandTypeV2.VALIDATE_LOTS_DATA_FOR_DIVISION -> validateLotsDataForDivisionHandler.handle(descriptor)
                     CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(descriptor)
+                    CommandTypeV2.VALIDATE_RFQ_DATA -> validateRfqDataHandler.handle(descriptor)
                     CommandTypeV2.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(descriptor)
 
                     else -> {
