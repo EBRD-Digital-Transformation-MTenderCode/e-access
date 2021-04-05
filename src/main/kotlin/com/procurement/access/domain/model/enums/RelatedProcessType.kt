@@ -21,6 +21,7 @@ enum class RelatedProcessType(@JsonValue override val key: String) : EnumElement
     X_PLANNED("x_planned"),
     X_PRESELECTION("x_preselection"),
     X_PRE_QUALIFICATION("x_prequalification"),
+    X_PURCHASING("x_purchasing"),
     X_SCOPE("x_scope");
 
     override fun toString(): String = key
