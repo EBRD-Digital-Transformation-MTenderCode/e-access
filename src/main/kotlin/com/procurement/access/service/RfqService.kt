@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.params.CreateRelationToContractProcessStageParams
 import com.procurement.access.application.model.params.CreateRfqParams
 import com.procurement.access.application.model.params.ValidateRfqDataParams
 import com.procurement.access.application.repository.TenderProcessRepository
@@ -11,6 +12,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
@@ -18,9 +20,12 @@ import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.extension.nowDefaultUTC
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
+import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToContractProcessStageResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfqResult
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.functional.Result
@@ -34,6 +39,7 @@ import org.springframework.stereotype.Service
 interface RfqService {
     fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail>
     fun createRfq(params: CreateRfqParams): Result<CreateRfqResult, Fail>
+    fun createRelationToContractProcessStage(params: CreateRelationToContractProcessStageParams): Result<CreateRelationToContractProcessStageResult, Fail>
 }
 
 @Service
@@ -406,6 +412,59 @@ class RfqServiceImpl(
                     )
                 }
             )
+        }
+
+    override fun createRelationToContractProcessStage(params: CreateRelationToContractProcessStageParams)
+        : Result<CreateRelationToContractProcessStageResult, Fail> =
+        CreateRelationToContractProcessStageResult(
+            relatedProcesses = listOf(
+                CreateRelationToContractProcessStageResult.RelatedProcess(
+                    id = generationService.relatedProcessId(),
+                    relationship = getRelationship(params),
+                    scheme = "ocid",
+                    identifier = params.relatedOcid.toString(),
+                    uri = "${uriProperties.tender}/${params.cpid}/${params.relatedOcid}"
+                )
+            )
+        ).asSuccess()
+
+    private fun getRelationship(params: CreateRelationToContractProcessStageParams) =
+        when (params.operationType) {
+            OperationType.CREATE_RFQ -> listOf(RelatedProcessType.X_PURCHASING)
+            OperationType.UPDATE_AWARD,
+            OperationType.SUBMIT_BID,
+            OperationType.ISSUING_FRAMEWORK_CONTRACT,
+            OperationType.DIVIDE_LOT,
+            OperationType.CREATE_AWARD,
+            OperationType.AWARD_CONSIDERATION,
+            OperationType.AMEND_FE,
+            OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
+            OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
+            OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_CN,
+            OperationType.CREATE_CN_ON_PIN,
+            OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_FE,
+            OperationType.CREATE_NEGOTIATION_CN_ON_PN,
+            OperationType.CREATE_PCR,
+            OperationType.CREATE_PIN,
+            OperationType.CREATE_PIN_ON_PN,
+            OperationType.CREATE_PN,
+            OperationType.CREATE_SUBMISSION,
+            OperationType.OUTSOURCING_PN,
+            OperationType.QUALIFICATION,
+            OperationType.QUALIFICATION_CONSIDERATION,
+            OperationType.QUALIFICATION_PROTOCOL,
+            OperationType.RELATION_AP,
+            OperationType.START_SECONDSTAGE,
+            OperationType.SUBMISSION_PERIOD_END,
+            OperationType.TENDER_PERIOD_END,
+            OperationType.UPDATE_AP,
+            OperationType.UPDATE_CN,
+            OperationType.UPDATE_PN,
+            OperationType.WITHDRAW_BID,
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_OPERATION_TYPE)
         }
 }
 
