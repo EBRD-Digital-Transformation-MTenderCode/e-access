@@ -141,7 +141,6 @@ class RfqServiceImpl(
 
         val lots = lotsByOldIds.values.toList()
         val items = generateItems(params, newLotIdsByOldLotIds)
-        val electronicAuctions = generateElectronicAuctions(params, newLotIdsByOldLotIds)
         val rfqOcid = Ocid.generate(params.cpid, Stage.RQ, nowDefaultUTC())
         val relatedProcesses = generateRelatedProcess(params, rfqOcid)
 
@@ -156,8 +155,7 @@ class RfqServiceImpl(
                 awardCriteriaDetails = AwardCriteriaDetails.AUTOMATED,
                 lots = lots,
                 items = items,
-                procurementMethodModalities = params.tender.procurementMethodModalities,
-                electronicAuctions = electronicAuctions
+                procurementMethodModalities = params.tender.procurementMethodModalities
             ),
             relatedProcesses = relatedProcesses,
             token = generationService.generateToken()
@@ -175,10 +173,11 @@ class RfqServiceImpl(
         tenderProcessRepository.save(entity)
             .onFailure { return it }
 
-        return convertToCreateRfqResult(createdRfq).asSuccess()
+        val electronicAuctions = generateElectronicAuctions(params, newLotIdsByOldLotIds)
+        return generateCreateRfqResult(createdRfq, electronicAuctions).asSuccess()
     }
 
-    private fun convertToCreateRfqResult(createdRfq: RfqEntity) =
+    private fun generateCreateRfqResult(createdRfq: RfqEntity, electronicAuctions: CreateRfqResult.Tender.ElectronicAuctions?) =
         CreateRfqResult(
             ocid = createdRfq.ocid,
             token = createdRfq.token,
@@ -194,17 +193,7 @@ class RfqServiceImpl(
             tender = createdRfq.tender.let { tender ->
                 CreateRfqResult.Tender(
                     id = tender.id,
-                    electronicAuctions = tender.electronicAuctions
-                        ?.let { electronicAuctions ->
-                            CreateRfqResult.Tender.ElectronicAuctions(
-                                details = electronicAuctions.details.map { detail ->
-                                    CreateRfqResult.Tender.ElectronicAuctions.Detail(
-                                        id = detail.id,
-                                        relatedLot = detail.relatedLot
-                                    )
-                                }
-                            )
-                        },
+                    electronicAuctions = electronicAuctions,
                     procurementMethodModalities = tender.procurementMethodModalities,
                     items = tender.items
                         .map { item ->
@@ -320,10 +309,10 @@ class RfqServiceImpl(
         newLotIdsByOldLotIds: Map<String, LotId>
     ) = params.tender.electronicAuctions
         ?.let { electronicAuctions ->
-            RfqEntity.Tender.ElectronicAuctions(
+            CreateRfqResult.Tender.ElectronicAuctions(
                 details = electronicAuctions.details
                     .map { detail ->
-                        RfqEntity.Tender.ElectronicAuctions.Detail(
+                        CreateRfqResult.Tender.ElectronicAuctions.Detail(
                             id = detail.id,
                             relatedLot = newLotIdsByOldLotIds.getValue(detail.relatedLot)
                         )
