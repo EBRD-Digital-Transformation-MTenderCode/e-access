@@ -19,6 +19,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     CHECK_TENDER_STATE("checkTenderState"),
     CREATE_CRITERIA_FOR_PROCURING_ENTITY("createCriteriaForProcuringEntity"),
     CREATE_RELATION_TO_OTHER_PROCESS("createRelationToOtherProcess"),
+    CREATE_RFQ("createRfq"),
     DIVIDE_LOT("divideLot"),
     FIND_AUCTIONS("findAuctions"),
     FIND_CRITERIA("findCriteria"),
