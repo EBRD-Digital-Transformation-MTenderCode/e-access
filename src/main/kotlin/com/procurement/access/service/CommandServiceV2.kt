@@ -16,6 +16,7 @@ import com.procurement.access.infrastructure.handler.v2.CheckRelationHandler
 import com.procurement.access.infrastructure.handler.v2.CheckTenderStateHandler
 import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 import com.procurement.access.infrastructure.handler.v2.CreateCriteriaForProcuringEntityHandler
+import com.procurement.access.infrastructure.handler.v2.CreateRelationToContractProcessStageHandler
 import com.procurement.access.infrastructure.handler.v2.CreateRelationToOtherProcessHandler
 import com.procurement.access.infrastructure.handler.v2.CreateRfqHandler
 import com.procurement.access.infrastructure.handler.v2.DivideLotHandler
@@ -53,6 +54,7 @@ class CommandServiceV2(
     private val checkRelationHandler: CheckRelationHandler,
     private val checkTenderStateHandler: CheckTenderStateHandler,
     private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
+    private val createRelationToContractProcessStageHandler: CreateRelationToContractProcessStageHandler,
     private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
     private val createRfqHandler: CreateRfqHandler,
     private val divideLotHandler: DivideLotHandler,
@@ -91,6 +93,7 @@ class CommandServiceV2(
                     CommandTypeV2.CHECK_RELATION -> checkRelationHandler.handle(descriptor)
                     CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(descriptor)
                     CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(descriptor)
+                    CommandTypeV2.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE -> createRelationToContractProcessStageHandler.handle(descriptor)
                     CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(descriptor)
                     CommandTypeV2.CREATE_RFQ -> createRfqHandler.handle(descriptor)
                     CommandTypeV2.DIVIDE_LOT -> divideLotHandler.handle(descriptor)
