@@ -49,7 +49,8 @@ data class CreateRfqRequest(
             )
 
             data class PlaceOfPerformance(
-                @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @param:JsonProperty("description") @field:JsonProperty("description") val description: String?,
                 @param:JsonProperty("address") @field:JsonProperty("address") val address: Address
             ) {
                 data class Address(
