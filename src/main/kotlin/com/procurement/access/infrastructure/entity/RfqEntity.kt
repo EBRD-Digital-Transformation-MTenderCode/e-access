@@ -30,9 +30,6 @@ data class RfqEntity(
         @param:JsonProperty("lots") @field:JsonProperty("lots") val lots: List<Lot>,
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @param:JsonProperty("electronicAuctions") @field:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
-
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @param:JsonProperty("procurementMethodModalities") @field:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?,
 
@@ -131,15 +128,6 @@ data class RfqEntity(
             data class Unit(
                 @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
                 @param:JsonProperty("name") @field:JsonProperty("name") val name: String
-            )
-        }
-
-        data class ElectronicAuctions(
-            @param:JsonProperty("details") @field:JsonProperty("details") val details: List<Detail>
-        ) {
-            data class Detail(
-                @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
-                @param:JsonProperty("relatedLot") @field:JsonProperty("relatedLot") val relatedLot: LotId
             )
         }
     }
