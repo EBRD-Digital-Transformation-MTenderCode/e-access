@@ -303,7 +303,7 @@ class RfqServiceImpl(
         val pcrRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.X_CATALOGUE),
-            scheme = rfqOcid.toString(),
+            scheme = "ocid",
             identifier = params.additionalOcid.toString(),
             uri = "${uriProperties.tender}/${params.additionalCpid}/${params.additionalOcid}"
         )
