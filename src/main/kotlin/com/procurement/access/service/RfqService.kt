@@ -300,7 +300,7 @@ class RfqServiceImpl(
         val msRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.PARENT),
-            scheme = rfqOcid.toString(),
+            scheme = "ocid",
             identifier = params.cpid.toString(),
             uri = "${uriProperties.tender}/${params.cpid}/${params.cpid}"
         )
