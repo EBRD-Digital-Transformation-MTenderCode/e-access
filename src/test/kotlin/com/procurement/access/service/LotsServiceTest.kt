@@ -36,7 +36,7 @@ internal class LotsServiceTest {
 
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
-        private val OCID = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
         private val STORED_LOT_ID = UUID.fromString("0124de77-8143-49dd-8fca-eda3f682f013")
         private val LOT_ID_1 = UUID.fromString("dccd933c-10d1-463f-97f2-8966dfc211c8")
         private val LOT_ID_2 = UUID.fromString("03af0741-32d0-41a1-a953-42b43278eacd")

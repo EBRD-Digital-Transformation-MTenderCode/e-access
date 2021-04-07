@@ -12,7 +12,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class CheckRelationParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val relatedCpid: Cpid,
     val operationType: OperationType,
     val existenceRelation: Boolean

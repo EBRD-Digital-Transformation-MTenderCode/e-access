@@ -16,7 +16,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForLotsParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val lots: List<Lot>
 ) {
     companion object {

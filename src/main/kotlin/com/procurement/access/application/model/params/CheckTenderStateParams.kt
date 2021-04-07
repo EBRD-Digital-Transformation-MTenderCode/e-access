@@ -13,7 +13,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class CheckTenderStateParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val pmd: ProcurementMethod,
     val country: String,
     val operationType: OperationType

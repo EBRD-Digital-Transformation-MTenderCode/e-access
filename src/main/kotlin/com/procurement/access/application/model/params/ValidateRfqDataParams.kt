@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 data class ValidateRfqDataParams(
     val tender: Tender,
     val relatedCpid: Cpid,
-    val relatedOcid: Ocid
+    val relatedOcid: Ocid.SingleStage
 ) {
     data class Tender(
         val lots: List<Lot>,

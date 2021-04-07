@@ -12,9 +12,9 @@ data class CreateRfqParams(
     val tender: Tender,
     val cpid: Cpid,
     val relatedCpid: Cpid,
-    val relatedOcid: Ocid,
+    val relatedOcid: Ocid.SingleStage,
     val additionalCpid: Cpid,
-    val additionalOcid: Ocid
+    val additionalOcid: Ocid.SingleStage
 ) {
     data class Tender(
         val lots: List<Lot>,

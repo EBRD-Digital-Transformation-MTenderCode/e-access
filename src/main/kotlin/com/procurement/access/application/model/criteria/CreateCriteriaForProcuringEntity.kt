@@ -15,7 +15,7 @@ class CreateCriteriaForProcuringEntity {
 
     class Params private constructor(
         val cpid: Cpid,
-        val ocid: Ocid,
+        val ocid: Ocid.SingleStage,
         val date: LocalDateTime,
         val criteria: List<Criterion>,
         val operationType: OperationType

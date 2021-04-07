@@ -17,7 +17,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class CreateRfqResult(
-    @param:JsonProperty("ocid") @field:JsonProperty("ocid") val ocid: Ocid,
+    @param:JsonProperty("ocid") @field:JsonProperty("ocid") val ocid: Ocid.SingleStage,
     @param:JsonProperty("token") @field:JsonProperty("token") val token: Token,
     @param:JsonProperty("tender") @field:JsonProperty("tender") val tender: Tender,
     @param:JsonProperty("relatedProcesses") @field:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>

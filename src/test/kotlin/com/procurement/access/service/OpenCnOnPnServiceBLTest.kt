@@ -82,7 +82,7 @@ class OpenCnOnPnServiceBLTest {
                 .thenReturn(PERMANENT_AUCTION_ID_1, PERMANENT_AUCTION_ID_2)
 
             val context = createContext()
-            val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+            val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
             whenever(generationService.generateOcid(cpid = context.cpid, stage = context.stage))
                 .thenReturn(ocid)
 

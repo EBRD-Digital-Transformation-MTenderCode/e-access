@@ -61,14 +61,14 @@ class GenerationService {
         return organizationReference.identifier.scheme + "-" + organizationReference.identifier.id
     }
 
-    fun generateOcid(cpid: String, stage: String): Ocid {
+    fun generateOcid(cpid: String, stage: String): Ocid.SingleStage {
         val cpidParsed = Cpid.tryCreateOrNull(cpid)
             ?: throw ErrorException(ErrorType.INVALID_CPID_FROM_DTO)
 
         val stageParsed = Stage.orNull(stage)
             ?: throw ErrorException(ErrorType.INVALID_STAGE)
 
-        return Ocid.generate(cpid = cpidParsed, stage = stageParsed, timestamp = nowDefaultUTC())
+        return Ocid.SingleStage.generate(cpid = cpidParsed, stage = stageParsed, timestamp = nowDefaultUTC())
     }
 
     fun criterionId(): String = UUID.randomUUID().toString()

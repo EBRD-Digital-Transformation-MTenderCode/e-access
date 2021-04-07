@@ -14,7 +14,7 @@ import com.procurement.access.lib.functional.asSuccess
 class GetLotStateByIdsParams private constructor(
     val lotIds: List<LotId>,
     val cpid: Cpid,
-    val ocid: Ocid
+    val ocid: Ocid.SingleStage
 ) {
     companion object {
         fun tryCreate(

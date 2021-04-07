@@ -10,9 +10,9 @@ import com.procurement.access.lib.functional.Result.Companion.success
 
 class CheckEqualityCurrenciesParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val relatedCpid: Cpid,
-    val relatedOcid: Ocid
+    val relatedOcid: Ocid.SingleStage
 ) {
 
     companion object {

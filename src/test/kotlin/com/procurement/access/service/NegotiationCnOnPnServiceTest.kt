@@ -862,7 +862,7 @@ class NegotiationCnOnPnServiceTest {
             )
                 .thenReturn(tenderProcessEntity)
 
-            val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+            val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
             whenever(generationService.generateOcid(cpid = any(), stage = any()))
                 .thenReturn(ocid)
 

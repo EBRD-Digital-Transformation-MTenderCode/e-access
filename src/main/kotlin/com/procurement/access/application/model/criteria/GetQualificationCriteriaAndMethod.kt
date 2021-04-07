@@ -9,7 +9,7 @@ import com.procurement.access.lib.functional.Result
 
 class GetQualificationCriteriaAndMethod {
 
-    class Params private constructor(val cpid: Cpid, val ocid: Ocid) {
+    class Params private constructor(val cpid: Cpid, val ocid: Ocid.SingleStage) {
         companion object {
             fun tryCreate(cpid: String, ocid: String): Result<Params, DataErrors> {
                 val cpidResult = parseCpid(value = cpid)

@@ -15,7 +15,7 @@ class GetOrganization {
 
     class Params private constructor(
         val cpid: Cpid,
-        val ocid: Ocid,
+        val ocid: Ocid.SingleStage,
         val role: OrganizationRole
     ) {
         companion object {
