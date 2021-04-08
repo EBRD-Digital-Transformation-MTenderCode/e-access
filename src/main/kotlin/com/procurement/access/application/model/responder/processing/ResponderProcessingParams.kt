@@ -22,7 +22,7 @@ class ResponderProcessing {
 
     class Params private constructor(
         val cpid: Cpid,
-        val ocid: Ocid,
+        val ocid: Ocid.SingleStage,
         val date: LocalDateTime,
         val responder: Responder
     ) {

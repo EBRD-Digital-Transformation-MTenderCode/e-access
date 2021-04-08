@@ -10,7 +10,7 @@ import com.procurement.access.lib.functional.Result.Companion.success
 
 class OutsourcingPNParams(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val cpidFA: String
 ) {
 

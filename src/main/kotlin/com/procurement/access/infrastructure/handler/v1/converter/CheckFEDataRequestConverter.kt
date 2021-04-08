@@ -125,7 +125,6 @@ fun CheckFEDataRequest.Tender.ProcuringEntity.convert() = CheckFEDataData.Tender
 )
 
 fun CheckFEDataRequest.Tender.ProcuringEntity.Person.convert() = CheckFEDataData.Tender.ProcuringEntity.Person(
-    id = this.id,
     title = this.title,
     name = this.name,
     identifier = this.identifier.convert(),

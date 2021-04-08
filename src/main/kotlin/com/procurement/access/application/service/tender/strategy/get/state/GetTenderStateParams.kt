@@ -9,7 +9,7 @@ import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
 
 class GetTenderStateParams private constructor(
-    val cpid: Cpid, val ocid: Ocid
+    val cpid: Cpid, val ocid: Ocid.SingleStage
 ) {
     companion object {
         fun tryCreate(

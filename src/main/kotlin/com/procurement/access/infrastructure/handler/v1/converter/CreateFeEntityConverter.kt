@@ -263,6 +263,13 @@ class CreateFeEntityConverter {
                                 )
                             }
                     )
+                },
+                details = entity.details?.let { details ->
+                    CreateFEResult.Party.Details(
+                        typeOfBuyer = details.typeOfBuyer,
+                        mainGeneralActivity = details.mainGeneralActivity,
+                        mainSectoralActivity = details.mainSectoralActivity
+                    )
                 }
             )
     }

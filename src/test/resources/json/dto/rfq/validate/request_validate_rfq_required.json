@@ -1,0 +1,59 @@
+{
+  "tender": {
+    "lots": [
+      {
+        "id": "string",
+        "title": "string",
+        "value": {
+          "currency": "string"
+        },
+        "contractPeriod": {
+          "startDate": "2021-03-31T09:29:53Z",
+          "endDate": "2021-03-31T09:29:53Z"
+        },
+        "placeOfPerformance": {
+          "address": {
+            "streetAddress": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "description": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        },
+        "quantity": 0.000,
+        "unit": {
+          "id": "string"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "tenderPeriod": {
+      "endDate": "2021-03-31T09:29:53Z"
+    }
+  },
+  "relatedCpid": "ocds-b3wdp1-MD-1580458690892",
+  "relatedOcid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+}

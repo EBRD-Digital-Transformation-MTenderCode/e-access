@@ -22,7 +22,7 @@ class VerifyRequirementResponse {
 
     class Params private constructor(
         val cpid: Cpid,
-        val ocid: Ocid,
+        val ocid: Ocid.SingleStage,
         val requirementResponseId: RequirementResponseId,
         val value: RequirementRsValue,
         val responder: Responder,

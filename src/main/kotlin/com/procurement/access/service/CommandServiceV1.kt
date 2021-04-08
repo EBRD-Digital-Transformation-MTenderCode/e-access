@@ -987,7 +987,7 @@ class CommandServiceV1(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
-            CommandTypeV1.VALIDATE_OWNER_AND_TOKEN -> validationService.checkOwnerAndToken(cm)
+            CommandTypeV1.VALIDATE_OWNER_AND_TOKEN -> validationService.checkAccessToTender(cm)
             CommandTypeV1.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
                     cpid = cm.cpid,

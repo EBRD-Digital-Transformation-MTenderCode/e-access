@@ -9,7 +9,13 @@ import com.procurement.access.lib.functional.Result
 import java.io.Serializable
 import java.time.LocalDateTime
 
-class Ocid private constructor(private val value: String, val stage: Stage) : Serializable {
+/**
+ * `private val` used for correct deserialization. With public it's fail
+ *
+ * Alternative way it's use annotation (above constructor or factory method of child class) with specifying mode.
+ * Ex: @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+ */
+sealed class Ocid(private val value: String) : Serializable {
 
     override fun equals(other: Any?): Boolean {
         return if (this !== other)
@@ -24,35 +30,54 @@ class Ocid private constructor(private val value: String, val stage: Stage) : Se
     @JsonValue
     override fun toString(): String = value
 
-    companion object {
-        private const val STAGE_POSITION = 4
-        private val STAGES: String
-            get() = Stage.allowedElements.keysAsStrings()
-                .joinToString(separator = "|", prefix = "(", postfix = ")") { it.toUpperCase() }
+    class MultiStage private constructor(value: String) : Ocid(value = value) {
 
-        private val regex = "^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-$STAGES-[0-9]{13}\$".toRegex()
+        companion object {
+            private val regex = "^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}\$".toRegex()
 
-        val pattern: String
-            get() = regex.pattern
+            val pattern: String
+                get() = regex.pattern
 
+            @JvmStatic
+            @JsonCreator
+            fun tryCreateOrNull(value: String): MultiStage? =
+                if (value.matches(regex)) MultiStage(value = value) else null
 
-        @JvmStatic
-        @JsonCreator
-        fun tryCreateOrNull(value: String): Ocid? =
-            if (value.matches(regex)) {
-                val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!
-                Ocid(value = value, stage = stage)
-            } else
-                null
+            fun generate(cpid: Cpid): MultiStage = MultiStage(cpid.toString())
+        }
+    }
 
-        fun tryCreate(value: String): Result<Ocid, String> =
-            if (value.matches(regex)) {
-                val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!
-                Result.success(Ocid(value = value, stage = stage))
-            } else
-                Result.failure(pattern)
+    class SingleStage private constructor(value: String, val stage: Stage) : Ocid(value = value) {
 
-        fun generate(cpid: Cpid, stage: Stage, timestamp: LocalDateTime): Ocid =
-            Ocid("$cpid-$stage-${timestamp.toMilliseconds()}", stage)
+        companion object {
+            private const val STAGE_POSITION = 4
+            private val STAGES: String
+                get() = Stage.allowedElements.keysAsStrings()
+                    .joinToString(separator = "|", prefix = "(", postfix = ")") { it.toUpperCase() }
+
+            private val regex = "^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-$STAGES-[0-9]{13}\$".toRegex()
+
+            val pattern: String
+                get() = regex.pattern
+
+            @JvmStatic
+            @JsonCreator
+            fun tryCreateOrNull(value: String): SingleStage? =
+                if (value.matches(regex)) {
+                    val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!
+                    SingleStage(stage = stage, value = value)
+                } else
+                    null
+
+            fun tryCreate(value: String): Result<SingleStage, String> =
+                if (value.matches(regex)) {
+                    val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!
+                    Result.success(SingleStage(stage = stage, value = value))
+                } else
+                    Result.failure(pattern)
+
+            fun generate(cpid: Cpid, stage: Stage, timestamp: LocalDateTime): SingleStage =
+                SingleStage("$cpid-$stage-${timestamp.toMilliseconds()}", stage)
+        }
     }
 }

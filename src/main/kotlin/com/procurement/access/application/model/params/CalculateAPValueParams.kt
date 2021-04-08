@@ -10,7 +10,7 @@ import com.procurement.access.lib.functional.Result.Companion.success
 
 class CalculateAPValueParams(
     val cpid: Cpid,
-    val ocid: Ocid
+    val ocid: Ocid.SingleStage
 ) {
 
     companion object {

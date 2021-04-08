@@ -77,7 +77,8 @@ class SetStateForTenderStrategy(
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC ->
+            Stage.PC,
+            Stage.RQ ->
                 return Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
                 )
@@ -93,7 +94,7 @@ class SetStateForTenderStrategy(
             .asSuccess()
     }
 
-    private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity, Fail> {
+    private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid.SingleStage): Result<TenderProcessEntity, Fail> {
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
             .onFailure { error -> return error }
             ?: return Result.failure(ValidationErrors.TenderNotFoundSetStateForTender(cpid = cpid, ocid = ocid))

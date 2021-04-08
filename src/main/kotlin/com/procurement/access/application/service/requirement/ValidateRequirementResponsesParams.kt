@@ -17,7 +17,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class ValidateRequirementResponsesParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val requirementResponses: List<RequirementResponse>,
     val organizationIds: List<OrganizationId>,
     val operationType: OperationType
@@ -42,6 +42,7 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
+                    OperationType.CREATE_RFQ,
                     OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.DIVIDE_LOT,
                     OperationType.ISSUING_FRAMEWORK_CONTRACT,

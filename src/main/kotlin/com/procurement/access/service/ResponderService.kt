@@ -139,7 +139,8 @@ class ResponderServiceImpl(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN ->
+            Stage.PN,
+            Stage.RQ ->
                 failure(
                     ValidationErrors.UnexpectedStageForResponderProcessing(stage = params.ocid.stage)
                 )
@@ -270,6 +271,7 @@ class ResponderServiceImpl(
             OperationType.CREATE_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
+            OperationType.CREATE_RFQ,
             OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,
             OperationType.ISSUING_FRAMEWORK_CONTRACT,
@@ -373,7 +375,8 @@ class ResponderServiceImpl(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> failure(ValidationErrors.UnexpectedStageForGetOrganization(stage = stage))
+            Stage.PN,
+            Stage.RQ -> failure(ValidationErrors.UnexpectedStageForGetOrganization(stage = stage))
         }
             .onFailure { fail -> return fail }
 
@@ -724,7 +727,8 @@ private fun getRequirementToTenderer(
     Stage.EI,
     Stage.FS,
     Stage.PC,
-    Stage.PN ->
+    Stage.PN,
+    Stage.RQ ->
         failure(
             ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
         )
@@ -766,7 +770,8 @@ private fun getAllRequirement(
     Stage.EI,
     Stage.FS,
     Stage.PC,
-    Stage.PN ->
+    Stage.PN,
+    Stage.RQ ->
         failure(
             ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
         )

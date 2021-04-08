@@ -32,7 +32,6 @@ data class AmendFERequest(
             @field:JsonProperty("persones") @param:JsonProperty("persones") val persons: List<Person>
         ) {
             data class Person(
-                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
                 @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
                 @field:JsonProperty("name") @param:JsonProperty("name") val name: String,
                 @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: Identifier,

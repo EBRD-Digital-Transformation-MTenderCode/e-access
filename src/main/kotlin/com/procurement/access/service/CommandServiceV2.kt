@@ -16,7 +16,9 @@ import com.procurement.access.infrastructure.handler.v2.CheckRelationHandler
 import com.procurement.access.infrastructure.handler.v2.CheckTenderStateHandler
 import com.procurement.access.infrastructure.handler.v2.CommandDescriptor
 import com.procurement.access.infrastructure.handler.v2.CreateCriteriaForProcuringEntityHandler
+import com.procurement.access.infrastructure.handler.v2.CreateRelationToContractProcessStageHandler
 import com.procurement.access.infrastructure.handler.v2.CreateRelationToOtherProcessHandler
+import com.procurement.access.infrastructure.handler.v2.CreateRfqHandler
 import com.procurement.access.infrastructure.handler.v2.DivideLotHandler
 import com.procurement.access.infrastructure.handler.v2.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.v2.FindCriteriaHandler
@@ -36,6 +38,7 @@ import com.procurement.access.infrastructure.handler.v2.SetStateForTenderHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateClassificationHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateLotsDataForDivisionHandler
 import com.procurement.access.infrastructure.handler.v2.ValidateRequirementResponsesHandler
+import com.procurement.access.infrastructure.handler.v2.ValidateRfqDataHandler
 import com.procurement.access.infrastructure.handler.v2.VerifyRequirementResponseHandler
 import org.springframework.stereotype.Service
 
@@ -51,7 +54,9 @@ class CommandServiceV2(
     private val checkRelationHandler: CheckRelationHandler,
     private val checkTenderStateHandler: CheckTenderStateHandler,
     private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
+    private val createRelationToContractProcessStageHandler: CreateRelationToContractProcessStageHandler,
     private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
+    private val createRfqHandler: CreateRfqHandler,
     private val divideLotHandler: DivideLotHandler,
     private val findAuctionsHandler: FindAuctionsHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
@@ -72,6 +77,7 @@ class CommandServiceV2(
     private val validateClassificationHandler: ValidateClassificationHandler,
     private val validateLotsDataForDivisionHandler: ValidateLotsDataForDivisionHandler,
     private val validateRequirementResponsesHandler: ValidateRequirementResponsesHandler,
+    private val validateRfqDataHandler: ValidateRfqDataHandler,
     private val verifyRequirementResponseHandler: VerifyRequirementResponseHandler
 ) {
 
@@ -87,7 +93,9 @@ class CommandServiceV2(
                     CommandTypeV2.CHECK_RELATION -> checkRelationHandler.handle(descriptor)
                     CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(descriptor)
                     CommandTypeV2.CREATE_CRITERIA_FOR_PROCURING_ENTITY -> createCriteriaForProcuringEntityHandler.handle(descriptor)
+                    CommandTypeV2.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE -> createRelationToContractProcessStageHandler.handle(descriptor)
                     CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(descriptor)
+                    CommandTypeV2.CREATE_RFQ -> createRfqHandler.handle(descriptor)
                     CommandTypeV2.DIVIDE_LOT -> divideLotHandler.handle(descriptor)
                     CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(descriptor)
                     CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(descriptor)
@@ -108,6 +116,7 @@ class CommandServiceV2(
                     CommandTypeV2.VALIDATE_CLASSIFICATION -> validateClassificationHandler.handle(descriptor)
                     CommandTypeV2.VALIDATE_LOTS_DATA_FOR_DIVISION -> validateLotsDataForDivisionHandler.handle(descriptor)
                     CommandTypeV2.VALIDATE_REQUIREMENT_RESPONSES -> validateRequirementResponsesHandler.handle(descriptor)
+                    CommandTypeV2.VALIDATE_RFQ_DATA -> validateRfqDataHandler.handle(descriptor)
                     CommandTypeV2.VERIFY_REQUIREMENT_RESPONSE -> verifyRequirementResponseHandler.handle(descriptor)
 
                     else -> {

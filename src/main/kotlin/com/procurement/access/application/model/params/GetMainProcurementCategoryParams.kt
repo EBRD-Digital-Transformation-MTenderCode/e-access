@@ -5,5 +5,5 @@ import com.procurement.access.domain.model.Ocid
 
 data class GetMainProcurementCategoryParams(
     val cpid: Cpid,
-    val ocid: Ocid
+    val ocid: Ocid.SingleStage
 )

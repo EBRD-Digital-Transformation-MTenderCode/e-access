@@ -12,35 +12,34 @@ import com.procurement.access.application.service.tender.strategy.check.tenderst
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
-import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.infrastructure.entity.APEntity
-import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
-import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckBSRq
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckLotStatusRq
 import com.procurement.access.lib.extension.toSet
+import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asFailure
+import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.dto.validation.CheckBid
 import com.procurement.access.service.RulesService
+import com.procurement.access.service.validation.strategy.CheckAccessToTenderStrategy
 import com.procurement.access.service.validation.strategy.CheckItemsStrategy
 import com.procurement.access.service.validation.strategy.CheckLotStrategy
-import com.procurement.access.service.validation.strategy.CheckOwnerAndTokenStrategy
 import com.procurement.access.service.validation.strategy.award.CheckAwardStrategy
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
@@ -55,7 +54,7 @@ class ValidationService(
 
     private val checkItemsStrategy = CheckItemsStrategy(tenderProcessDao)
     private val checkAwardStrategy = CheckAwardStrategy(tenderProcessDao)
-    private val checkOwnerAndTokenStrategy = CheckOwnerAndTokenStrategy(tenderProcessDao, tenderProcessRepository)
+    private val checkAccessToTenderStrategy = CheckAccessToTenderStrategy(tenderProcessDao, tenderProcessRepository)
     private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
     private val checkTenderStateStrategy = CheckTenderStateStrategy(tenderProcessRepository, rulesService)
 
@@ -86,17 +85,17 @@ class ValidationService(
     }
 
     fun checkToken(cm: CommandMessage): ApiResponseV1.Success {
-        checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
+        checkAccessToTenderStrategy.checkAccessToTender(cm)
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkOwnerAndToken(cm: CommandMessage): ApiResponseV1.Success {
-        checkOwnerAndTokenStrategy.checkOwnerAndToken(cm)
+    fun checkAccessToTender(cm: CommandMessage): ApiResponseV1.Success {
+        checkAccessToTenderStrategy.checkAccessToTender(cm)
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
     }
 
-    fun checkOwnerAndToken(params: CheckAccessToTenderParams): ValidationResult<Fail> {
-        return checkOwnerAndTokenStrategy.checkOwnerAndToken(params)
+    fun checkAccessToTender(params: CheckAccessToTenderParams): ValidationResult<Fail> {
+        return checkAccessToTenderStrategy.checkAccessToTender(params)
     }
 
     fun checkLotStatus(cm: CommandMessage): ApiResponseV1.Success {
@@ -133,46 +132,13 @@ class ValidationService(
     enum class StageForCheckingRelation { AP, PN }
 
     fun checkRelation(params: CheckRelationParams): ValidationResult<Fail> {
-        val cpid = params.cpid
         val ocid = params.ocid
-        val stage = when (val stage = ocid.stage) {
-            Stage.AP -> StageForCheckingRelation.AP
-            Stage.PN -> StageForCheckingRelation.PN
+        val stage = getStageForCheckRelation(ocid)
+            .onFailure { return it.reason.asValidationFailure() }
 
-            Stage.AC,
-            Stage.EI,
-            Stage.EV,
-            Stage.FE,
-            Stage.FS,
-            Stage.NP,
-            Stage.PC,
-            Stage.TP -> return ValidationResult.error(ValidationErrors.InvalidStageOnCheckRelation(stage))
-        }
-
-        return when (params.operationType) {
-
-            OperationType.RELATION_AP -> {
-                val entity = tenderProcessRepository
-                    .getByCpIdAndOcid(cpid, ocid)
-                    .onFailure { return it.reason.asValidationFailure() }
-                    ?: return ValidationResult.error(ValidationErrors.TenderNotFoundOnCheckRelation(cpid, ocid))
-
-                val relatedProcesses = when (stage) {
-
-                    StageForCheckingRelation.AP -> entity.jsonData.tryToObject(APEntity::class.java)
-                        .onFailure { return it.reason.asValidationFailure() }
-                        .relatedProcesses
-
-                    StageForCheckingRelation.PN -> entity.jsonData.tryToObject(PNEntity::class.java)
-                        .onFailure { return it.reason.asValidationFailure() }
-                        .relatedProcesses
-                }
-
-                if (params.existenceRelation)
-                    checkRelationExistsOnAp(relatedProcesses, params)
-                else
-                    checkRelationNotExistsOnAp(relatedProcesses, params)
-            }
+        val checkRelationStrategy: CheckRelationStrategy = when (params.operationType) {
+            OperationType.RELATION_AP -> CheckRelationStrategy.RelationApStrategy
+            OperationType.CREATE_RFQ -> CheckRelationStrategy.CreateRfqStrategy
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -206,63 +172,27 @@ class ValidationService(
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_BID,
-            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> ValidationResult.ok()
-        }
-    }
-
-
-    val checkRelationExistsOnApPredicate: (RelatedProcess, Cpid) -> Boolean = { relatedProcess, cpid ->
-        relatedProcess.relationship.any { it == RelatedProcessType.FRAMEWORK }
-            && relatedProcess.identifier == cpid.toString()
-    }
-
-    fun checkRelationExistsOnAp(relatedProcesses: List<RelatedProcess>?, params: CheckRelationParams): ValidationResult<ValidationErrors> {
-
-        if (relatedProcesses == null || relatedProcesses.isEmpty())
-            return ValidationResult.error(
-                ValidationErrors.RelatedProcessNotExistsOnCheckRelation(params.cpid, params.ocid)
-            )
-        else {
-            val isMissing = relatedProcesses.none { checkRelationExistsOnApPredicate(it, params.relatedCpid) }
-            if (isMissing)
-                return ValidationResult.error(
-                    ValidationErrors.MissingAttributesOnCheckRelation(
-                        relatedCpid = params.relatedCpid, cpid = params.cpid, ocid = params.ocid
-                    )
-                )
+            OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> return ValidationResult.ok()
         }
 
-        return ValidationResult.ok()
+        return checkRelationStrategy.check(tenderProcessRepository, params, stage)
     }
 
-    val checkRelationNotExistsOnApPredicate: (RelatedProcess, Cpid) -> Boolean = { relatedProcess, cpid ->
-        relatedProcess.relationship.any { it == RelatedProcessType.X_SCOPE }
-            && relatedProcess.identifier == cpid.toString()
-    }
+    private fun getStageForCheckRelation(ocid: Ocid.SingleStage): Result<StageForCheckingRelation, ValidationErrors.InvalidStageOnCheckRelation> =
+        when (val stage = ocid.stage) {
+            Stage.AP -> StageForCheckingRelation.AP.asSuccess()
+            Stage.PN -> StageForCheckingRelation.PN.asSuccess()
 
-    fun checkRelationNotExistsOnAp(
-        relatedProcesses: List<RelatedProcess>?,
-        params: CheckRelationParams
-    ): ValidationResult<ValidationErrors> {
-
-        if (relatedProcesses == null || relatedProcesses.isEmpty())
-            return ValidationResult.ok()
-        else {
-            relatedProcesses.forEach { relatedProcess ->
-                if (checkRelationNotExistsOnApPredicate(relatedProcess, params.relatedCpid))
-                    return ValidationResult.error(
-                        ValidationErrors.UnexpectedAttributesValueOnCheckRelation(
-                            id = relatedProcess.id,
-                            relatedCpid = params.relatedCpid,
-                            cpid = params.cpid,
-                            ocid = params.ocid
-                        )
-                    )
-            }
+            Stage.AC,
+            Stage.EI,
+            Stage.EV,
+            Stage.FE,
+            Stage.FS,
+            Stage.NP,
+            Stage.PC,
+            Stage.RQ,
+            Stage.TP -> ValidationErrors.InvalidStageOnCheckRelation(stage).asFailure()
         }
-
-        return ValidationResult.ok()
-    }
 
     fun checkLotActive(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)

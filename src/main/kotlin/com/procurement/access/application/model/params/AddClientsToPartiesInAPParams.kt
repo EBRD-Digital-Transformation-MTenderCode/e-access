@@ -6,7 +6,7 @@ import com.procurement.access.domain.model.Ocid
 
 data class AddClientsToPartiesInAPParams(
      val cpid: Cpid,
-     val ocid: Ocid,
+     val ocid: Ocid.SingleStage,
      val relatedCpid: Cpid,
-     val relatedOcid: Ocid
+     val relatedOcid: Ocid.SingleStage
 )
