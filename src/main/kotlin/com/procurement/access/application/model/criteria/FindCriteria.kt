@@ -11,7 +11,7 @@ import com.procurement.access.lib.functional.Result
 
 class FindCriteria {
 
-    class Params private constructor(val cpid: Cpid, val ocid: Ocid, val source: List<CriteriaSource>) {
+    class Params private constructor(val cpid: Cpid, val ocid: Ocid.SingleStage, val source: List<CriteriaSource>) {
         companion object {
             private val allowedSources = CriteriaSource.allowedElements
                 .filter { source ->

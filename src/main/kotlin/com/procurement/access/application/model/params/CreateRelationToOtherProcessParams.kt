@@ -14,7 +14,7 @@ class CreateRelationToOtherProcessParams(
     val cpid: Cpid,
     val ocid: String,
     val relatedCpid: Cpid,
-    val relatedOcid: Ocid?,
+    val relatedOcid: Ocid.SingleStage?,
     val operationType: OperationType
 ) {
 

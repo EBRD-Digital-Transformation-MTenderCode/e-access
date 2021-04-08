@@ -34,9 +34,9 @@ class ValidationServiceTest {
 
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
-        private val OCID = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
         private val RELATED_CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-OT-1565251033097")!!
-        private val RELATED_OCID = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-FE-1581509653045")!!
+        private val RELATED_OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-FE-1581509653045")!!
         private val VALID_CLASSIFICATION_ID = "7a6cd0c8-006d-474b-8ab3-7a2a6cb9aa22"
         private val STORED_CLASSIFICATION_ID = "7a6b670f-858b-4bed-8f19-dc5886b03ca4"
     }

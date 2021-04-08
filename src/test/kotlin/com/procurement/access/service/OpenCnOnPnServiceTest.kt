@@ -1439,7 +1439,7 @@ class OpenCnOnPnServiceTest {
                 requestNode.getObject("tender")
                     .remove("procuringEntity")
 
-                val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+                val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
                 whenever(generationService.generateOcid(cpid = any(), stage = any()))
                     .thenReturn(ocid)
 
@@ -1467,7 +1467,7 @@ class OpenCnOnPnServiceTest {
                     OpenCnOnPnRequest.Tender.ProcuringEntity::class.java,
                     jsonProcuringEntity
                 )
-                val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+                val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
                 whenever(generationService.generateOcid(cpid = any(), stage = any()))
                     .thenReturn(ocid)
                 val context: CreateOpenCnOnPnContext = createContext()
@@ -1600,7 +1600,7 @@ class OpenCnOnPnServiceTest {
             )
                 .thenReturn(tenderProcessEntity)
 
-            val ocid = Ocid.tryCreateOrNull(ContextGenerator.OCID)!!
+            val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
             whenever(generationService.generateOcid(cpid = any(), stage = any()))
                 .thenReturn(ocid)
 

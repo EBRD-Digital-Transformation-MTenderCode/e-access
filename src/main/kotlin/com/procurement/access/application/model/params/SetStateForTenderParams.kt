@@ -14,7 +14,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class SetStateForTenderParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val tender: Tender
 ) {
 

@@ -14,7 +14,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class CheckAccessToTenderParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val owner: Owner,
     val token: Token
 ) {

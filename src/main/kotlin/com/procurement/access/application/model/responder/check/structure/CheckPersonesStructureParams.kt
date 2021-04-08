@@ -23,7 +23,7 @@ class CheckPersonesStructure {
 
     class Params private constructor(
         val cpid: Cpid,
-        val ocid: Ocid,
+        val ocid: Ocid.SingleStage,
         val persones: List<Person>,
         val locationOfPersones: LocationOfPersonsType
     ) {

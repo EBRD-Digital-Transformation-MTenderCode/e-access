@@ -30,15 +30,14 @@ fun parseCpid(value: String): Result<Cpid, DataErrors.Validation.DataMismatchToP
             )
         }
 
-fun parseOcid(value: String): Result<Ocid, DataErrors.Validation.DataMismatchToPattern> =
-    Ocid.tryCreate(value = value)
+fun parseOcid(value: String): Result<Ocid.SingleStage, DataErrors.Validation.DataMismatchToPattern> =
+    Ocid.SingleStage.tryCreate(value = value)
         .mapFailure { expectedPattern ->
             DataErrors.Validation.DataMismatchToPattern(
                 name = "ocid",
                 pattern = expectedPattern,
                 actualValue = value
             )
-
         }
 
 fun parseOwner(value: String): Result<Owner, DataErrors.Validation.DataFormatMismatch> =

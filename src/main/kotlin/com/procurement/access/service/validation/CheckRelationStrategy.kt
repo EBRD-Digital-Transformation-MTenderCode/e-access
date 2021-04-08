@@ -59,7 +59,7 @@ sealed class CheckRelationStrategy {
     private fun getRelatedProcess(
         tenderProcessRepository: TenderProcessRepository,
         cpid: Cpid,
-        ocid: Ocid,
+        ocid: Ocid.SingleStage,
         stage: ValidationService.StageForCheckingRelation
     ): Result<List<RelatedProcess>?, Fail> {
         val entity = tenderProcessRepository

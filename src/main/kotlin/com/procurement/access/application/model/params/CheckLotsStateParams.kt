@@ -8,7 +8,7 @@ import com.procurement.access.domain.model.lot.LotId
 
 data class CheckLotsStateParams(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val pmd: ProcurementMethod,
     val country: String,
     val operationType: OperationType,

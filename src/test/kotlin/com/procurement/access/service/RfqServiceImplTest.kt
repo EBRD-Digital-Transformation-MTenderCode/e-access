@@ -26,7 +26,7 @@ import java.util.*
 internal class RfqServiceImplTest {
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
-        private val OCID = Ocid.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
         private val LOT_ID = UUID.fromString("dccd933c-10d1-463f-97f2-8966dfc211c8")
         private val ITEM_ID = "item_id"
         private val CURRENCY = "currency"

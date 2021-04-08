@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 data class DivideLotParams(
      val cpid: Cpid,
-     val ocid: Ocid,
+     val ocid: Ocid.SingleStage,
      val tender: Tender
 ) {
     data class Tender(

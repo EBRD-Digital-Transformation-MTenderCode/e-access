@@ -5,18 +5,31 @@ import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parseOperationType
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.infrastructure.handler.v2.model.request.CreateRelationToContractProcessStageRequest
 import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.asSuccess
 
-fun CreateRelationToContractProcessStageRequest.convert(): Result<CreateRelationToContractProcessStageParams, DataErrors> =
-    CreateRelationToContractProcessStageParams(
+fun CreateRelationToContractProcessStageRequest.convert(): Result<CreateRelationToContractProcessStageParams, DataErrors> {
+    val parsedOcid = Ocid.SingleStage.tryCreateOrNull(value = ocid)
+        ?: Ocid.MultiStage.tryCreateOrNull(value = ocid)
+        ?: return failure(
+            DataErrors.Validation.DataMismatchToPattern(
+                name = "ocid",
+                pattern = "${Ocid.SingleStage.pattern}, ${Ocid.MultiStage.pattern} ",
+                actualValue = ocid
+            )
+        )
+
+    return CreateRelationToContractProcessStageParams(
         cpid = parseCpid(cpid).onFailure { return it },
-        ocid = parseOcid(ocid).onFailure { return it },
+        ocid = parsedOcid,
         relatedOcid = parseOcid(relatedOcid).onFailure { return it },
         operationType = parseOperationType(operationType, allowedOperationTypes).onFailure { return it }
     ).asSuccess()
+}
 
 private val allowedOperationTypes = OperationType.values()
     .filter {

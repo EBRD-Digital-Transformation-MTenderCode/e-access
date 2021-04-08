@@ -7,6 +7,6 @@ import com.procurement.access.domain.model.enums.OperationType
 data class CreateRelationToContractProcessStageParams(
     val cpid: Cpid,
     val ocid: Ocid,
-    val relatedOcid: Ocid,
+    val relatedOcid: Ocid.SingleStage,
     val operationType: OperationType
 )

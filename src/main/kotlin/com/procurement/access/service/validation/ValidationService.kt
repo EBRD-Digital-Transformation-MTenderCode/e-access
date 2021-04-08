@@ -178,7 +178,7 @@ class ValidationService(
         return checkRelationStrategy.check(tenderProcessRepository, params, stage)
     }
 
-    private fun getStageForCheckRelation(ocid: Ocid): Result<StageForCheckingRelation, ValidationErrors.InvalidStageOnCheckRelation> =
+    private fun getStageForCheckRelation(ocid: Ocid.SingleStage): Result<StageForCheckingRelation, ValidationErrors.InvalidStageOnCheckRelation> =
         when (val stage = ocid.stage) {
             Stage.AP -> StageForCheckingRelation.AP.asSuccess()
             Stage.PN -> StageForCheckingRelation.PN.asSuccess()

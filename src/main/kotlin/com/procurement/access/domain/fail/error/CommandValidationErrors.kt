@@ -23,7 +23,7 @@ abstract class CommandValidationErrors(
             description = "Expected number of lots: 1. Actual: '$numberOfLots'."
         )
 
-        class PnNotFound(cpid: Cpid, ocid: Ocid) : CommandValidationErrors(
+        class PnNotFound(cpid: Cpid, ocid: Ocid.SingleStage) : CommandValidationErrors(
             numberError = "46.1.2",
             description = "Pn record by cpid '$cpid' and ocid '$ocid' not found."
         )

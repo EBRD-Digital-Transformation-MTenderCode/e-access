@@ -6,7 +6,7 @@ import com.procurement.access.domain.model.lot.LotId
 
 data class GetLotsValueParams(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val tender: Tender
 ) {
     data class Tender(

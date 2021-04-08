@@ -8,7 +8,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
 
-class FindAuctionsParams private constructor(val cpid: Cpid, val ocid: Ocid) {
+class FindAuctionsParams private constructor(val cpid: Cpid, val ocid: Ocid.SingleStage) {
     companion object {
 
         fun tryCreate(cpid: String, ocid: String): Result<FindAuctionsParams, DataErrors> {

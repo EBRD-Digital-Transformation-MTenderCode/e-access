@@ -147,8 +147,8 @@ class RfqServiceImpl(
 
         val lots = lotsByOldIds.values.toList()
         val items = generateItems(params, newLotIdsByOldLotIds)
-        val rfqOcid = Ocid.generate(params.cpid, Stage.RQ, nowDefaultUTC())
-        val relatedProcesses = generateRelatedProcess(params, rfqOcid)
+        val rfqOcid = Ocid.SingleStage.generate(params.cpid, Stage.RQ, nowDefaultUTC())
+        val relatedProcesses = generateRelatedProcess(params)
 
         val createdRfq = RfqEntity(
             ocid = rfqOcid,
@@ -291,7 +291,7 @@ class RfqServiceImpl(
             }
         )
 
-    private fun generateRelatedProcess(params: CreateRfqParams, rfqOcid: Ocid): List<RfqEntity.RelatedProcess> {
+    private fun generateRelatedProcess(params: CreateRfqParams): List<RfqEntity.RelatedProcess> {
         val msRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.PARENT),

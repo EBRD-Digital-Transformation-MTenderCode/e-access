@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 data class ValidateLotsDataForDivisionParams(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val tender: Tender
 ) {
     data class Tender(

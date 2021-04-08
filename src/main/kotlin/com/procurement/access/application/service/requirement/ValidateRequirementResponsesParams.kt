@@ -17,7 +17,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class ValidateRequirementResponsesParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val requirementResponses: List<RequirementResponse>,
     val organizationIds: List<OrganizationId>,
     val operationType: OperationType
