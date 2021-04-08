@@ -14,7 +14,7 @@ class CreateRelationToOtherProcessParams(
     val cpid: Cpid,
     val ocid: String,
     val relatedCpid: Cpid,
-    val relatedOcid: Ocid?,
+    val relatedOcid: Ocid.SingleStage?,
     val operationType: OperationType
 ) {
 
@@ -39,6 +39,7 @@ class CreateRelationToOtherProcessParams(
                     OperationType.CREATE_PIN,
                     OperationType.CREATE_PIN_ON_PN,
                     OperationType.CREATE_PN,
+                    OperationType.CREATE_RFQ,
                     OperationType.CREATE_SUBMISSION,
                     OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.DIVIDE_LOT,

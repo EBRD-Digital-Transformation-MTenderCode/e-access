@@ -12,7 +12,7 @@ import com.procurement.access.lib.functional.Result
 
 class FindLotIdsParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val states: List<State>
 ) {
     companion object {

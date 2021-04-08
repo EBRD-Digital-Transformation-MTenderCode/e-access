@@ -117,7 +117,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
             ?.convertToTenderProcessEntity()
             .asSuccess()
 
-    override fun getByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity?, Fail.Incident.Database> =
+    override fun getByCpIdAndOcid(cpid: Cpid, ocid: Ocid.SingleStage): Result<TenderProcessEntity?, Fail.Incident.Database> =
         getByCpIdAndStage(cpid, ocid.stage)
 
     private fun Row.convertToTenderProcessEntity(): TenderProcessEntity {

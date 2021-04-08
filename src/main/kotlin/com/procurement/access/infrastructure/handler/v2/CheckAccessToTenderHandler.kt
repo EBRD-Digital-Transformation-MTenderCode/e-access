@@ -27,6 +27,6 @@ class CheckAccessToTenderHandler(
             .flatMap { it.convert() }
             .onFailure { return it.reason.asValidationFailure() }
 
-        return validationService.checkOwnerAndToken(params = params)
+        return validationService.checkAccessToTender(params = params)
     }
 }

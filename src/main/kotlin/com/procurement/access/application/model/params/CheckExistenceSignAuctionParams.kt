@@ -16,7 +16,7 @@ import com.procurement.access.lib.functional.validate
 
 class CheckExistenceSignAuctionParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val tender: Tender?
 ) {
 

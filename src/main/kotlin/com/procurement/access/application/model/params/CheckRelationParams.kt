@@ -12,7 +12,7 @@ import com.procurement.access.lib.functional.asSuccess
 
 class CheckRelationParams private constructor(
     val cpid: Cpid,
-    val ocid: Ocid,
+    val ocid: Ocid.SingleStage,
     val relatedCpid: Cpid,
     val operationType: OperationType,
     val existenceRelation: Boolean
@@ -21,7 +21,8 @@ class CheckRelationParams private constructor(
         private val allowedOperationType = OperationType.allowedElements
             .filter {
                 when (it) {
-                    OperationType.RELATION_AP -> true
+                    OperationType.RELATION_AP,
+                    OperationType.CREATE_RFQ -> true
 
                     OperationType.AMEND_FE,
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,

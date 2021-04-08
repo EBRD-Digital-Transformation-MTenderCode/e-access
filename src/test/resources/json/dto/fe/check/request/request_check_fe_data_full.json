@@ -24,7 +24,6 @@
       "persones": [
         {
           "title": "string",
-          "id": "string",
           "name": "string",
           "identifier": {
             "scheme": "string",

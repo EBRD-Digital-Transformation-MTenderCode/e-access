@@ -48,7 +48,7 @@ sealed class ValidationErrors(
         description = "Lots '$lotsId' do not found."
     )
 
-    class TenderNotFoundGetLotStateByIds(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundGetLotStateByIds(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "10.1.3.1",
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )
@@ -58,12 +58,17 @@ sealed class ValidationErrors(
         description = "Lots '$lotsId' do not found."
     )
 
-    class TenderNotFoundCheckAccessToTender(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundCheckAccessToTender(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "10.1.1.3",
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )
 
-    class TenderNotFoundSetStateForTender(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class InvalidStageCheckAccessToTender(val stage: Stage) : ValidationErrors(
+        numberError = "10.1.1.4",
+        description = "Invalid stage: '$stage'."
+    )
+
+    class TenderNotFoundSetStateForTender(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "10.1.6.1",
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )
@@ -78,22 +83,22 @@ sealed class ValidationErrors(
         description = "Document '${id}' has invalid type. Allowed values: ${allowedValues}"
     )
 
-    class TenderNotFoundOnGetTenderState(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnGetTenderState(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "10.1.8.1",
         description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
     )
 
-    class TenderNotFoundOnGetOrganization(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnGetOrganization(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.9.1",
         description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
     )
 
-    class RequirementsNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class RequirementsNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.5.1",
         description = "Requirements not found by cpid '$cpid' and ocid '$ocid'."
     )
 
-    class RequirementNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class RequirementNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.5.2",
         description = "Requirement not found by cpid '$cpid' and ocid '$ocid'."
     )
@@ -113,7 +118,7 @@ sealed class ValidationErrors(
             "Expected: ${available}, Actual: ${received}."
     )
 
-    class TenderNotFoundOnGetQualificationCriteriaAndMethod(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnGetQualificationCriteriaAndMethod(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.11.1",
         description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
     )
@@ -137,7 +142,7 @@ sealed class ValidationErrors(
             "cannot founded in 'organizationIds' array."
     )
 
-    class TenderNotFoundOnCreateCriteriaForProcuringEntity(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCreateCriteriaForProcuringEntity(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.12.1",
         description = "Tender entity not found by cpid '$cpid' and ocid '$ocid'."
     )
@@ -167,7 +172,7 @@ sealed class ValidationErrors(
         description = "Parameter '$parameter' not found by country='$country' and pmd='${pmd.name}' and operationType='$operationType'."
     )
 
-    class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCheckTenderState(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.17.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -180,25 +185,31 @@ sealed class ValidationErrors(
         entityId = cpid.toString()
     )
 
-    class TenderNotFoundOnFindAuctions(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class InvalidStageOnCheckTenderState(val stage: Stage) : ValidationErrors(
+        numberError = "1.17.3",
+        prefix = "VR.COM-",
+        description = "Invalid stage: '$stage'."
+    )
+
+    class TenderNotFoundOnFindAuctions(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.19.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderNotFoundOnOutsourcingPN(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnOutsourcingPN(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.21.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderNotFoundOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCheckRelation(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.24.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderNotFoundOnCreateRelationToOtherProcess(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCreateRelationToOtherProcess(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.22.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -210,13 +221,13 @@ sealed class ValidationErrors(
         description = "Parameter 'relatedOcid' hasn't been received."
     )
 
-    class RelatedProcessNotExistsOnCheckRelation(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class RelatedProcessNotExistsOnCheckRelation(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.24.2",
         prefix = "VR.COM-",
         description = "Cannot find relatedProcesses for tender with cpid='$cpid' and ocid='$ocid'."
     )
 
-    class MissingAttributesOnCheckRelation(relatedCpid: Cpid, cpid: Cpid, ocid: Ocid) :
+    class MissingAttributesOnCheckRelation(relatedCpid: Cpid, cpid: Cpid, ocid: Ocid.SingleStage) :
         ValidationErrors(
             numberError = "1.24.3",
             prefix = "VR.COM-",
@@ -224,7 +235,7 @@ sealed class ValidationErrors(
                 "Tender with cpid='$cpid' and ocid='$ocid'."
         )
 
-    class UnexpectedAttributesValueOnCheckRelation(id: RelatedProcessId, relatedCpid: Cpid, cpid: Cpid, ocid: Ocid) :
+    class UnexpectedAttributesValueOnCheckRelation(id: RelatedProcessId, relatedCpid: Cpid, cpid: Cpid, ocid: Ocid.SingleStage) :
         ValidationErrors(
             numberError = "1.24.4",
             prefix = "VR.COM-",
@@ -312,25 +323,25 @@ sealed class ValidationErrors(
             description = "Stage '${stage}' not allowed at this command"
         )
 
-    class TenderNotFoundOnCalculateAPValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCalculateAPValue(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.31.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class RelationNotFoundOnCalculateAPValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class RelationNotFoundOnCalculateAPValue(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.31.2",
         prefix = "VR.COM-",
         description = "Cannot find relation with PN in AP with cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.33.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class RelatedTenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class RelatedTenderNotFoundOnCheckEqualityCurrencies(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.33.2",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -342,13 +353,13 @@ sealed class ValidationErrors(
         description = "Tenders' currencies do not match."
     )
 
-    class TenderNotFoundOnGetCurrency(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnGetCurrency(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.34.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderNotFoundOnCheckExistenceSignAuction(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCheckExistenceSignAuction(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.32.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -366,7 +377,7 @@ sealed class ValidationErrors(
         description = "Stored tender must not contain 'electronicAuction' in procurementMethodModalities."
     )
 
-    class TenderNotFoundOnValidateClassification(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnValidateClassification(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.30.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -379,13 +390,13 @@ sealed class ValidationErrors(
 
     )
 
-    class TenderNotFoundOnGetMainProcurementCategory(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnGetMainProcurementCategory(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.37.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
     )
 
-    class TenderNotFoundOnGetLotsValue(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnGetLotsValue(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.38.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -397,7 +408,7 @@ sealed class ValidationErrors(
         description = "Lot(s) by id(s) '${lotIds.joinToString()}' not found."
     )
 
-    class TenderNotFoundOnCheckLotsState(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnCheckLotsState(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.36.1",
         description = "Tender not found by cpid '$cpid' and '$ocid'."
     )
@@ -412,7 +423,7 @@ sealed class ValidationErrors(
         description = "State of lot'$lotId' is invalid."
     )
 
-    class TenderNotFoundOnValidateLotsDataForDivision(cpid: Cpid, ocid: Ocid) : ValidationErrors(
+    class TenderNotFoundOnValidateLotsDataForDivision(cpid: Cpid, ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.39.1",
         prefix = "VR.COM-",
         description = "Tender not found by cpid='$cpid' and ocid='$ocid'."
@@ -533,7 +544,7 @@ sealed class ValidationErrors(
     )
 
     object AddClientsToPartiesInAP{
-        class PnRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        class PnRecordNotFound(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
             numberError = "1.44.1",
             description = "PN record not found by cpid '$cpid' and '$ocid'."
         )
@@ -543,7 +554,7 @@ sealed class ValidationErrors(
             description = "Buyer is missing."
         )
 
-        class ApRecordNotFound(val cpid: Cpid, val ocid: Ocid) : ValidationErrors(
+        class ApRecordNotFound(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
             numberError = "1.44.3",
             description = "AP record not found by cpid '$cpid' and '$ocid'."
         )

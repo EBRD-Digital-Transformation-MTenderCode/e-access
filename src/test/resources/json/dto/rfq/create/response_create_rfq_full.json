@@ -1,0 +1,96 @@
+{
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "token": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "tender": {
+    "id": "string",
+    "status": "active",
+    "statusDetails": "tendering",
+    "date": "2021-04-01T10:18:12Z",
+    "lots": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "internalId": "string",
+        "title": "string",
+        "description": "string",
+        "value": {
+          "currency": "string"
+        },
+        "contractPeriod": {
+          "startDate": "2021-04-01T10:18:12Z",
+          "endDate": "2021-04-01T10:18:12Z"
+        },
+        "placeOfPerformance": {
+          "description": "string",
+          "address": {
+            "streetAddress": "string",
+            "postalCode": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              }
+            }
+          }
+        },
+        "status": "active",
+        "statusDetails": "empty"
+      }
+    ],
+    "items": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "internalId": "string",
+        "description": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        },
+        "quantity": 0,
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "relatedLot": "ba866114-91cd-4af1-acfc-6bc248ccb65e"
+      }
+    ],
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "string",
+          "relatedLot": "ba866114-91cd-4af1-acfc-6bc248ccb65e"
+        }
+      ]
+    },
+    "procurementMethodModalities": [
+      "electronicAuction"
+    ],
+    "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "automated"
+  },
+  "relatedProcesses": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "relationship": [
+        "parent"
+      ],
+      "scheme": "ocid",
+      "identifier": "string",
+      "uri": "string"
+    }
+  ]
+}

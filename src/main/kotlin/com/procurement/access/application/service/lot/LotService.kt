@@ -242,7 +242,8 @@ class LotServiceImpl(
             Stage.EI,
             Stage.FE,
             Stage.FS,
-            Stage.PC ->
+            Stage.PC,
+            Stage.RQ ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
                 )
@@ -362,7 +363,8 @@ class LotServiceImpl(
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC ->
+            Stage.PC,
+            Stage.RQ ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
                 )
@@ -486,6 +488,7 @@ class LotServiceImpl(
             OperationType.CREATE_PIN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
+            OperationType.CREATE_RFQ,
             OperationType.CREATE_SUBMISSION,
             OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.DIVIDE_LOT,

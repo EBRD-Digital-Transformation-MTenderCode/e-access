@@ -150,7 +150,8 @@
         "email": "",
         "telephone": ""
       },
-      "roles":  ["centralPurchasingBody"]
+      "roles":  ["centralPurchasingBody"],
+      "details": {}
     }
   ]
 }

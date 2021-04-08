@@ -261,7 +261,15 @@ class AmendFeEntityConverter {
                                 )
                             }
                     )
-                }
+                },
+                details = entity.details
+                    ?.let { details ->
+                        AmendFEResult.Party.Details(
+                            typeOfBuyer = details.typeOfBuyer,
+                            mainGeneralActivity = details.mainGeneralActivity,
+                            mainSectoralActivity = details.mainSectoralActivity
+                        )
+                    }
             )
     }
 }

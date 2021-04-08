@@ -43,7 +43,7 @@ fun CreateFEResult.Tender.convert(): CreateFEResponse.Tender =
         secondStage = this.secondStage?.convert(),
         otherCriteria = this.otherCriteria.convert(),
         contractPeriod = this.contractPeriod.convert(),
-        criteria = this.criteria.map { it.convert() }        
+        criteria = this.criteria.map { it.convert() }
     )
 
 fun CreateFEResult.Tender.Classification.convert(): CreateFEResponse.Tender.Classification =
@@ -254,6 +254,13 @@ private fun CreateFEResult.Party.convert(): CreateFEResponse.Party =
                                 }
                         )
                     }
+            )
+        },
+        details = details?.let { details ->
+            CreateFEResponse.Party.Details(
+                typeOfBuyer = details.typeOfBuyer,
+                mainSectoralActivity = details.mainSectoralActivity,
+                mainGeneralActivity = details.mainGeneralActivity
             )
         }
     )

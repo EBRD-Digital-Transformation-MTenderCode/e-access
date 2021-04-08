@@ -73,7 +73,7 @@ class FeCreateServiceImpl(
         return result
     }
 
-    private fun createEntity(ocid: Ocid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
+    private fun createEntity(ocid: Ocid.SingleStage, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
         val parties = createParties(data, ap)
         return FEEntity(
             ocid = ocid.toString(),
@@ -255,12 +255,19 @@ class FeCreateServiceImpl(
                     )
                 },
             roles = roles,
+            details = details?.let { details ->
+                FEEntity.Party.Details(
+                    typeOfBuyer = details.typeOfBuyer,
+                    mainGeneralActivity = details.mainGeneralActivity,
+                    mainSectoralActivity = details.mainSectoralActivity
+                )
+            },
             persones = null
         )
 
     private fun CreateFEData.Tender.ProcuringEntity.Person.convert(): FEEntity.Party.Person =
         FEEntity.Party.Person(
-            id = PersonId.parse(id)!!,
+            id = PersonId.generate(scheme = identifier.scheme, id = identifier.id),
             title = title,
             name = name,
             identifier = identifier
