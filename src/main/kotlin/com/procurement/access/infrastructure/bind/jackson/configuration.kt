@@ -21,6 +21,7 @@ fun ObjectMapper.configuration() {
 
     this.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
     this.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
+    this.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
     this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     this.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false)
     this.configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, false)
