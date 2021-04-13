@@ -109,7 +109,7 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
         preparedGetByCpIdAndStageCQL.bind()
             .apply {
                 setString(COLUMN_CPID, cpid.value)
-                setString(COLUMN_STAGE, stage.toString())
+                setString(COLUMN_STAGE, stage.key)
             }
             .tryExecute(session)
             .onFailure { return it }
