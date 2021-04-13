@@ -10,11 +10,13 @@ import com.procurement.access.infrastructure.bind.api.v2.incident.IncidentModule
 import com.procurement.access.infrastructure.bind.api.version.ApiVersionModule
 import com.procurement.access.infrastructure.bind.date.JsonDateTimeModule
 import com.procurement.access.infrastructure.bind.money.MoneyModule
+import com.procurement.access.infrastructure.bind.process.ProcessIdentifierModule
 
 fun ObjectMapper.configuration() {
     this.registerModule(MoneyModule())
     this.registerModule(ApiVersionModule())
     this.registerModule(CommandIdModule())
+    this.registerModule(ProcessIdentifierModule())
     this.registerModule(IncidentModule())
     this.registerModule(JsonDateTimeModule())
     this.registerModule(KotlinModule())

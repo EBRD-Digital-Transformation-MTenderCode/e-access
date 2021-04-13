@@ -73,7 +73,7 @@ internal class TenderServiceTest {
         }
 
         private fun getParams() = GetCurrencyParams.tryCreate(
-            cpid = CPID.toString(), ocid = OCID.toString()
+            cpid = CPID.value, ocid = OCID.value
         ).get
     }
 

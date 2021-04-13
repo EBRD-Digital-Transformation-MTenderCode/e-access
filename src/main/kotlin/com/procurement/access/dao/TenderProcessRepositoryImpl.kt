@@ -108,8 +108,8 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     override fun getByCpIdAndStage(cpid: Cpid, stage: Stage): Result<TenderProcessEntity?, Fail.Incident.Database> =
         preparedGetByCpIdAndStageCQL.bind()
             .apply {
-                setString(COLUMN_CPID, cpid.toString())
-                setString(COLUMN_STAGE, stage.toString())
+                setString(COLUMN_CPID, cpid.value)
+                setString(COLUMN_STAGE, stage.key)
             }
             .tryExecute(session)
             .onFailure { return it }

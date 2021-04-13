@@ -1,12 +1,13 @@
 package com.procurement.access.domain.model
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.access.domain.model.country.CountryId
 import com.procurement.access.domain.util.extension.toMilliseconds
 import com.procurement.access.lib.functional.Result
 import java.time.LocalDateTime
 
-class Cpid private constructor(private val value: String) {
+class Cpid private constructor(@JsonValue val value: String) {
 
     override fun equals(other: Any?): Boolean {
         return if (this !== other)
@@ -18,7 +19,6 @@ class Cpid private constructor(private val value: String) {
 
     override fun hashCode(): Int = value.hashCode()
 
-    @JsonValue
     override fun toString(): String = value
 
     companion object {
@@ -27,6 +27,8 @@ class Cpid private constructor(private val value: String) {
         val pattern: String
             get() = regex.pattern
 
+        @JvmStatic
+        @JsonCreator
         fun tryCreateOrNull(value: String): Cpid? = if (value.matches(regex)) Cpid(value = value) else null
 
         fun tryCreate(value: String): Result<Cpid, String> =

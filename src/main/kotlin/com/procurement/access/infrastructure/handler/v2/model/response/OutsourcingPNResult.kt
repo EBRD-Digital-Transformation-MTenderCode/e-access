@@ -5,6 +5,7 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.lib.functional.Result
 
 import com.procurement.access.infrastructure.entity.process.RelatedProcess as RelatedProcessDomain
@@ -17,7 +18,7 @@ data class OutsourcingPNResult(
 
         @field:JsonProperty("relationship") @param:JsonProperty("relationship") val relationship: List<RelatedProcessType>,
         @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: RelatedProcessScheme,
-        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: String,
+        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: RelatedProcessIdentifier,
         @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
     )
 

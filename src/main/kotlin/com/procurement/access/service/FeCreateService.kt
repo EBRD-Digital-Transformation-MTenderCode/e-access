@@ -4,19 +4,26 @@ import com.procurement.access.application.service.fe.create.CreateFEContext
 import com.procurement.access.application.service.fe.create.CreateFEData
 import com.procurement.access.application.service.fe.create.CreateFEResult
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.PartyRole
+import com.procurement.access.domain.model.enums.RelatedProcessScheme
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementStatus
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
+import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.v1.converter.CreateFeEntityConverter
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
@@ -34,17 +41,18 @@ interface FeCreateService {
 @Service
 class FeCreateServiceImpl(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderProcessDao: TenderProcessDao,
+    private val uriProperties: UriProperties
 ) : FeCreateService {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(FeCreateService::class.java)
     }
 
     override fun createFe(context: CreateFEContext, request: CreateFEData): CreateFEResult {
-        val cpid = context.cpid
+        val cpid = Cpid.tryCreateOrNull(context.cpid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
         val stage = context.prevStage
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid.value, stage = stage)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
                 message = "Cannot find tender by cpid='$cpid' and stage='$stage'."
@@ -53,15 +61,15 @@ class FeCreateServiceImpl(
         val ap = toObject(APEntity::class.java, entity.jsonData)
 
         // BR-1.0.1.21.1
-        val ocid = generationService.generateOcid(cpid = cpid, stage = context.stage)
+        val ocid = generationService.generateOcid(cpid = cpid.value, stage = context.stage)
 
-        val fe = createEntity(ocid = ocid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
+        val fe = createEntity(ocid = ocid, cpid = cpid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
 
         val result = CreateFeEntityConverter.fromEntity(fe);
 
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = cpid,
+                cpId = cpid.value,
                 token = entity.token,
                 stage = context.stage,
                 owner = context.owner,
@@ -73,10 +81,10 @@ class FeCreateServiceImpl(
         return result
     }
 
-    private fun createEntity(ocid: Ocid.SingleStage, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
+    private fun createEntity(ocid: Ocid.SingleStage, cpid: Cpid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
         val parties = createParties(data, ap)
         return FEEntity(
-            ocid = ocid.toString(),
+            ocid = ocid.value,
             token = token.toString(),
             tender = FEEntity.Tender(
                 id = generationService.generatePermanentTenderId(),
@@ -156,7 +164,22 @@ class FeCreateServiceImpl(
                 framework = FEEntity.Tender.Framework(isAFramework = true)
             ),
             parties = parties,
-            relatedProcesses = emptyList()
+            relatedProcesses = listOf(
+                RelatedProcess( // для связи FE с AP:
+                    id = RelatedProcessId.fromString(generationService.relatedProcessId()),
+                    relationship = listOf(RelatedProcessType.AGGREGATE_PLANNING),
+                    scheme = RelatedProcessScheme.OCID,
+                    identifier = RelatedProcessIdentifier.of(ocid),
+                    uri = "${uriProperties.tender}/${cpid.value}/${ocid.value}"
+                ),
+                RelatedProcess( // для связи FE с MS
+                    id = RelatedProcessId.fromString(generationService.relatedProcessId()),
+                    relationship = listOf(RelatedProcessType.PARENT),
+                    scheme = RelatedProcessScheme.OCID,
+                    identifier = RelatedProcessIdentifier.of(cpid),
+                    uri = "${uriProperties.tender}/${cpid.value}/${cpid.value}"
+                )
+            )
         )
     }
 

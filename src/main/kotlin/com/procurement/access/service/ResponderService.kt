@@ -149,7 +149,7 @@ class ResponderServiceImpl(
 
         tenderProcessRepository.save(
             TenderProcessEntity(
-                cpId = params.cpid.toString(),
+                cpId = params.cpid.value,
                 token = entity.token,
                 stage = stage.toString(),
                 owner = entity.owner,

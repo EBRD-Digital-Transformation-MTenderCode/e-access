@@ -14,6 +14,7 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -168,7 +169,7 @@ class RfqServiceImpl(
         )
 
         val entity = TenderProcessEntity(
-            cpId = params.cpid.toString(),
+            cpId = params.cpid.value,
             token = createdRfq.token,
             owner = params.owner.toString(),
             createdDate = nowDefaultUTC(),
@@ -295,17 +296,17 @@ class RfqServiceImpl(
         val msRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.PARENT),
-            scheme = "ocid",
-            identifier = params.cpid.toString(),
-            uri = "${uriProperties.tender}/${params.cpid}/${params.cpid}"
+            scheme = RelatedProcessScheme.OCID.key,
+            identifier = params.cpid.value,
+            uri = "${uriProperties.tender}/${params.cpid.value}/${params.cpid.value}"
         )
 
         val pcrRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.X_CATALOGUE),
-            scheme = "ocid",
-            identifier = params.additionalOcid.toString(),
-            uri = "${uriProperties.tender}/${params.additionalCpid}/${params.additionalOcid}"
+            scheme = RelatedProcessScheme.OCID.key,
+            identifier = params.additionalOcid.value,
+            uri = "${uriProperties.tender}/${params.additionalCpid.value}/${params.additionalOcid.value}"
         )
         return listOf(msRelation, pcrRelation)
     }
@@ -410,9 +411,9 @@ class RfqServiceImpl(
                 CreateRelationToContractProcessStageResult.RelatedProcess(
                     id = generationService.relatedProcessId(),
                     relationship = getRelationship(params),
-                    scheme = "ocid",
-                    identifier = params.relatedOcid.toString(),
-                    uri = "${uriProperties.tender}/${params.cpid}/${params.relatedOcid}"
+                    scheme = RelatedProcessScheme.OCID.key,
+                    identifier = params.relatedOcid.value,
+                    uri = "${uriProperties.tender}/${params.cpid.value}/${params.relatedOcid.value}"
                 )
             )
         ).asSuccess()

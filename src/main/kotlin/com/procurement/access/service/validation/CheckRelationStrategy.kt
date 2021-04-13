@@ -7,6 +7,7 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.RelatedProcessType
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
@@ -81,9 +82,9 @@ sealed class CheckRelationStrategy {
         return relatedProcesses.asSuccess()
     }
 
-    private val checkRelationExistsPredicate: (RelatedProcess, Cpid) -> Boolean = { relatedProcess, cpid ->
+    private val checkRelationExistsPredicate: (RelatedProcess, RelatedProcessIdentifier) -> Boolean = { relatedProcess, targetIdentifier ->
         relatedProcess.relationship.any { it == RelatedProcessType.FRAMEWORK }
-            && relatedProcess.identifier == cpid.toString()
+            && relatedProcess.identifier == targetIdentifier
     }
 
     private fun checkRelationExists(
@@ -96,7 +97,8 @@ sealed class CheckRelationStrategy {
                 ValidationErrors.RelatedProcessNotExistsOnCheckRelation(params.cpid, params.ocid)
             )
         else {
-            val isMissing = relatedProcesses.none { checkRelationExistsPredicate(it, params.relatedCpid) }
+            val targetProcessIdentifier = RelatedProcessIdentifier.of(params.relatedCpid)
+            val isMissing = relatedProcesses.none { checkRelationExistsPredicate(it, targetProcessIdentifier) }
             if (isMissing)
                 return ValidationResult.error(
                     ValidationErrors.MissingAttributesOnCheckRelation(
@@ -108,9 +110,9 @@ sealed class CheckRelationStrategy {
         return ValidationResult.ok()
     }
 
-    private val checkRelationNotExistsPredicate: (RelatedProcess, Cpid) -> Boolean = { relatedProcess, cpid ->
+    private val checkRelationNotExistsPredicate: (RelatedProcess, RelatedProcessIdentifier) -> Boolean = { relatedProcess, targetIdentifier ->
         relatedProcess.relationship.any { it == RelatedProcessType.X_SCOPE }
-            && relatedProcess.identifier == cpid.toString()
+            && relatedProcess.identifier == targetIdentifier
     }
 
     private fun checkRelationNotExists(
@@ -121,8 +123,9 @@ sealed class CheckRelationStrategy {
         if (relatedProcesses == null || relatedProcesses.isEmpty())
             return ValidationResult.ok()
         else {
+            val targetProcessIdentifier = RelatedProcessIdentifier.of(params.relatedCpid)
             relatedProcesses.forEach { relatedProcess ->
-                if (checkRelationNotExistsPredicate(relatedProcess, params.relatedCpid))
+                if (checkRelationNotExistsPredicate(relatedProcess, targetProcessIdentifier))
                     return ValidationResult.error(
                         ValidationErrors.UnexpectedAttributesValueOnCheckRelation(
                             id = relatedProcess.id,
