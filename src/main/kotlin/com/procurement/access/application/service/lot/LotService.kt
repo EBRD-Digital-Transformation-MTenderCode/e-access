@@ -20,6 +20,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v1.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetLotStateByIdsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
@@ -358,13 +359,30 @@ class LotServiceImpl(
                 success(lotIds)
             }
 
+            Stage.RQ -> {
+                val rfq = tenderProcessEntity.jsonData
+                    .tryToObject(RfqEntity::class.java)
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
+
+                val lotIds = when {
+                    params.states.isEmpty() -> rfq.tender.lots
+                        .map { lot -> lot.id }
+
+                    else -> params.states.sorted()
+                            .let { sortedStatuses -> getRfqLotsOnStates(lots = rfq.tender.lots, states = sortedStatuses) }
+                            .map { lot -> lot.id }
+                }
+
+                success(lotIds)
+            }
+
             Stage.FE -> success(emptyList())
 
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC,
-            Stage.RQ ->
+            Stage.PC ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
                 )
@@ -702,6 +720,22 @@ class LotServiceImpl(
         lots: List<PNEntity.Tender.Lot>,
         states: List<FindLotIdsParams.State>
     ): List<PNEntity.Tender.Lot> {
+        return lots.filter { lot ->
+            val state = states.firstOrNull { state ->
+                when {
+                    state.status == null -> lot.statusDetails == state.statusDetails
+                    state.statusDetails == null -> lot.status == state.status
+                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+                }
+            }
+            state != null
+        }
+    }
+
+    private fun getRfqLotsOnStates(
+        lots: List<RfqEntity.Tender.Lot>,
+        states: List<FindLotIdsParams.State>
+    ): List<RfqEntity.Tender.Lot> {
         return lots.filter { lot ->
             val state = states.firstOrNull { state ->
                 when {
