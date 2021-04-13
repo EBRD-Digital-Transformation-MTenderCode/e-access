@@ -67,7 +67,7 @@ class APServiceImpl(
             return failure(ValidationErrors.RelationNotFoundOnCalculateAPValue(params.cpid, params.ocid))
 
         val relatedPns = relatedPNProcesses.map { pnProcess ->
-            parseCpid(pnProcess.identifier)
+            parseCpid(pnProcess.identifier.value)
                 .flatMap { parsedCpid -> tenderProcessRepository.getByCpIdAndStage(parsedCpid, Stage.PN) }
                 .flatMap { pnEntity -> pnEntity!!.jsonData.tryToObject(PNEntity::class.java) }
                 .onFailure { fail -> return fail }

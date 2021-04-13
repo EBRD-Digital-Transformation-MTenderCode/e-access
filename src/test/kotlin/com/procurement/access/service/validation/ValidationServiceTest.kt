@@ -131,10 +131,10 @@ class ValidationServiceTest {
         }
 
         private fun getParams() = CheckEqualityCurrenciesParams.tryCreate(
-            cpid = CPID.toString(),
-            ocid = OCID.toString(),
-            relatedCpid = RELATED_CPID.toString(),
-            relatedOcid = RELATED_OCID.toString()
+            cpid = CPID.value,
+            ocid = OCID.value,
+            relatedCpid = RELATED_CPID.value,
+            relatedOcid = RELATED_OCID.value
         ).get
     }
 
@@ -228,8 +228,8 @@ class ValidationServiceTest {
         }
 
         private fun getParams(procurementMethodModality:ProcurementMethodModalities) = CheckExistenceSignAuctionParams.tryCreate(
-            cpid = CPID.toString(),
-            ocid = OCID.toString(),
+            cpid = CPID.value,
+            ocid = OCID.value,
             tender = CheckExistenceSignAuctionParams.Tender.tryCreate(
                 procurementMethodModalities = listOf(procurementMethodModality.key)
             ).get
@@ -290,8 +290,8 @@ class ValidationServiceTest {
         }
 
         private fun getParams(classificationId: String) = ValidateClassificationParams.tryCreate(
-            cpid = CPID.toString(),
-            ocid = OCID.toString(),
+            cpid = CPID.value,
+            ocid = OCID.value,
             tender = ValidateClassificationParams.Tender(ValidateClassificationParams.Tender.Classification(id = classificationId))
         ).get
     }

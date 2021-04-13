@@ -4,6 +4,7 @@ import com.procurement.access.application.service.fe.create.CreateFEContext
 import com.procurement.access.application.service.fe.create.CreateFEData
 import com.procurement.access.application.service.fe.create.CreateFEResult
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.PartyRole
@@ -15,6 +16,7 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -47,10 +49,10 @@ class FeCreateServiceImpl(
     }
 
     override fun createFe(context: CreateFEContext, request: CreateFEData): CreateFEResult {
-        val cpid = context.cpid
+        val cpid = Cpid.tryCreateOrNull(context.cpid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
         val stage = context.prevStage
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid.value, stage = stage)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
                 message = "Cannot find tender by cpid='$cpid' and stage='$stage'."
@@ -59,7 +61,7 @@ class FeCreateServiceImpl(
         val ap = toObject(APEntity::class.java, entity.jsonData)
 
         // BR-1.0.1.21.1
-        val ocid = generationService.generateOcid(cpid = cpid, stage = context.stage)
+        val ocid = generationService.generateOcid(cpid = cpid.value, stage = context.stage)
 
         val fe = createEntity(ocid = ocid, cpid = cpid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
 
@@ -67,7 +69,7 @@ class FeCreateServiceImpl(
 
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = cpid,
+                cpId = cpid.value,
                 token = entity.token,
                 stage = context.stage,
                 owner = context.owner,
@@ -79,10 +81,10 @@ class FeCreateServiceImpl(
         return result
     }
 
-    private fun createEntity(ocid: Ocid.SingleStage, cpid: String, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
+    private fun createEntity(ocid: Ocid.SingleStage, cpid: Cpid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
         val parties = createParties(data, ap)
         return FEEntity(
-            ocid = ocid.toString(),
+            ocid = ocid.value,
             token = token.toString(),
             tender = FEEntity.Tender(
                 id = generationService.generatePermanentTenderId(),
@@ -167,15 +169,15 @@ class FeCreateServiceImpl(
                     id = RelatedProcessId.fromString(generationService.relatedProcessId()),
                     relationship = listOf(RelatedProcessType.AGGREGATE_PLANNING),
                     scheme = RelatedProcessScheme.OCID,
-                    identifier = ocid.toString(),
-                    uri = "${uriProperties.tender}/${cpid}/${ocid}"
+                    identifier = RelatedProcessIdentifier.of(ocid),
+                    uri = "${uriProperties.tender}/${cpid.value}/${ocid.value}"
                 ),
                 RelatedProcess( // для связи FE с MS
                     id = RelatedProcessId.fromString(generationService.relatedProcessId()),
                     relationship = listOf(RelatedProcessType.PARENT),
                     scheme = RelatedProcessScheme.OCID,
-                    identifier = cpid,
-                    uri = "${uriProperties.tender}/${cpid}/${cpid}"
+                    identifier = RelatedProcessIdentifier.of(cpid),
+                    uri = "${uriProperties.tender}/${cpid.value}/${cpid.value}"
                 )
             )
         )

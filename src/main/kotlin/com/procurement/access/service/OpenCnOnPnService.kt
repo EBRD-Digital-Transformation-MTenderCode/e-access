@@ -274,7 +274,7 @@ class OpenCnOnPnService(
         )
 
         val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
-        val responseCnEntity = cnEntity.copy(ocid = newOcid.toString())
+        val responseCnEntity = cnEntity.copy(ocid = newOcid.value)
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
     }

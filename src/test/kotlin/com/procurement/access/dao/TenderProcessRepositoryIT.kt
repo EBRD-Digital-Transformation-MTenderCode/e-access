@@ -97,7 +97,7 @@ class TenderProcessRepositoryIT {
     }
 
     val SAMPLE_ENTITY = TenderProcessEntity(
-        cpId = CPID.toString(),
+        cpId = CPID.value,
         stage = STAGE.toString(),
         owner = "sample-owner",
         token = TOKEN,

@@ -12,6 +12,7 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
@@ -63,8 +64,8 @@ class OutsourcingServiceImpl(
                 id = RelatedProcessId.randomUUID(), // FR.COM-1.21.1
                 relationship = listOf(RelatedProcessType.FRAMEWORK), // FR.COM-1.21.2
                 scheme = RelatedProcessScheme.OCID, // FR.COM-1.21.3
-                identifier = params.cpidFA, // FR.COM-1.21.4
-                uri = "${uriProperties.tender}/${params.cpidFA}/${params.cpidFA}" //FR.COM-1.21.5
+                identifier = RelatedProcessIdentifier.of(params.cpidFA), // FR.COM-1.21.4
+                uri = "${uriProperties.tender}/${params.cpidFA.value}/${params.cpidFA.value}" //FR.COM-1.21.5
             )
         )
         val updatedPn = pnEntity.copy(relatedProcesses = relatedProcesses)
@@ -333,9 +334,9 @@ class OutsourcingServiceImpl(
 
     private fun defineUri(params: CreateRelationToOtherProcessParams): Result<String, DataErrors.Validation.UnknownValue> =
     when (params.operationType) {
-        OperationType.CREATE_PCR -> "${uriProperties.tender}/${params.relatedCpid}/${params.relatedOcid}".asSuccess()
+        OperationType.CREATE_PCR -> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedOcid!!.value}".asSuccess()
         OperationType.OUTSOURCING_PN,
-        OperationType.RELATION_AP -> "${uriProperties.tender}/${params.relatedCpid}/${params.relatedCpid}".asSuccess()
+        OperationType.RELATION_AP -> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedCpid.value}".asSuccess()
 
         OperationType.AMEND_FE,
         OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -383,7 +384,8 @@ class OutsourcingServiceImpl(
             .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
             .onFailure { return it }
 
-        val suitableRelatedProcess = relatedProcess.relatedProcesses?.firstOrNull { it.identifier == params.relatedCpid.toString() }
+        val targetIdentifier = RelatedProcessIdentifier.of(params.relatedCpid)
+        val suitableRelatedProcess = relatedProcess.relatedProcesses?.firstOrNull { it.identifier == targetIdentifier }
 
         return suitableRelatedProcess?.let {
             CreateRelationToOtherProcessResult(
@@ -395,11 +397,11 @@ class OutsourcingServiceImpl(
         }.asSuccess()
     }
 
-    private fun defineIdentifier(params: CreateRelationToOtherProcessParams): Result<String, DataErrors.Validation.UnknownValue> =
+    private fun defineIdentifier(params: CreateRelationToOtherProcessParams): Result<RelatedProcessIdentifier, DataErrors.Validation.UnknownValue> =
         when (params.operationType) {
-            OperationType.CREATE_PCR -> params.relatedOcid.toString().asSuccess()
+            OperationType.CREATE_PCR -> RelatedProcessIdentifier.of(params.relatedOcid!!).asSuccess()
             OperationType.OUTSOURCING_PN,
-            OperationType.RELATION_AP -> params.relatedCpid.toString().asSuccess()
+            OperationType.RELATION_AP -> RelatedProcessIdentifier.of(params.relatedCpid).asSuccess()
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,

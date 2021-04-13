@@ -182,7 +182,7 @@ sealed class ValidationErrors(
         numberError = "1.17.2",
         prefix = "VR.COM-",
         description = "Tender with cpid='$cpid' and stage='${stage}' has invalid states.",
-        entityId = cpid.toString()
+        entityId = cpid.value
     )
 
     class InvalidStageOnCheckTenderState(val stage: Stage) : ValidationErrors(

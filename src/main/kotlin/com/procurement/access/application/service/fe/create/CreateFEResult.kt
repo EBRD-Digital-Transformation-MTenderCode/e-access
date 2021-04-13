@@ -25,6 +25,7 @@ import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
@@ -268,7 +269,7 @@ data class CreateFEResult(
         val id: RelatedProcessId,
         val relationship: List<RelatedProcessType>,
         val scheme: RelatedProcessScheme,
-        val identifier: String,
+        val identifier: RelatedProcessIdentifier,
         val uri: String
     )
 }

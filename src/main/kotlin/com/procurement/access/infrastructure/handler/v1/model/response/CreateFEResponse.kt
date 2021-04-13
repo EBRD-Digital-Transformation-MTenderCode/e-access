@@ -29,6 +29,7 @@ import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
@@ -345,7 +346,7 @@ data class CreateFEResponse(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: RelatedProcessId,
         @field:JsonProperty("relationship") @param:JsonProperty("relationship") val relationship: List<RelatedProcessType>,
         @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: RelatedProcessScheme,
-        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: String,
+        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: RelatedProcessIdentifier,
         @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
     )
 }
