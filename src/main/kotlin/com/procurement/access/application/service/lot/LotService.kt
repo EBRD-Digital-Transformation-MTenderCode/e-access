@@ -309,7 +309,7 @@ class LotServiceImpl(
                         .map { lot -> LotId.fromString(lot.id) }
 
                     else -> {
-                        params.states.sorted()
+                        params.states
                             .let { sortedStatuses -> getLotsOnStates(lots = cn.tender.lots, states = sortedStatuses) }
                             .map { lot -> LotId.fromString(lot.id) }
                     }
@@ -330,7 +330,7 @@ class LotServiceImpl(
                         .map { lot -> LotId.fromString(lot.id) }
 
                     else -> {
-                        params.states.sorted()
+                        params.states
                             .let { sortedStatuses -> getAPLotsOnStates(lots = lots, states = sortedStatuses) }
                             .map { lot -> LotId.fromString(lot.id) }
                     }
@@ -350,7 +350,7 @@ class LotServiceImpl(
                         .map { lot -> LotId.fromString(lot.id) }
 
                     else -> {
-                        params.states.sorted()
+                        params.states
                             .let { sortedStatuses -> getPNLotsOnStates(lots = pn.tender.lots, states = sortedStatuses) }
                             .map { lot -> LotId.fromString(lot.id) }
                     }
@@ -369,7 +369,7 @@ class LotServiceImpl(
                     params.states.isEmpty() -> rfq.tender.lots
                         .map { lot -> lot.id }
 
-                    else -> params.states.sorted()
+                    else -> params.states
                             .let { sortedStatuses -> getRfqLotsOnStates(lots = rfq.tender.lots, states = sortedStatuses) }
                             .map { lot -> lot.id }
                 }
@@ -689,13 +689,15 @@ class LotServiceImpl(
         states: List<FindLotIdsParams.State>
     ): List<CNEntity.Tender.Lot> {
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+            val state = states.sorted()
+                .firstOrNull { state ->
+                    when {
+                        state.status == null && state.statusDetails != null -> lot.statusDetails == state.statusDetails
+                        state.status != null && state.statusDetails == null -> lot.status == state.status
+                        state.status != null && state.statusDetails != null -> lot.status == state.status && lot.statusDetails == state.statusDetails
+                        else -> throw IllegalArgumentException("State must contains 'status' or/and 'statusDetails'. Missing 'state' and 'statusDetails'")
+                    }
                 }
-            }
             state != null
         }
     }
@@ -705,13 +707,15 @@ class LotServiceImpl(
         states: List<FindLotIdsParams.State>
     ): List<APEntity.Tender.Lot> {
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+            val state = states.sorted()
+                .firstOrNull { state ->
+                    when {
+                        state.status == null && state.statusDetails != null -> lot.statusDetails == state.statusDetails
+                        state.status != null && state.statusDetails == null -> lot.status == state.status
+                        state.status != null && state.statusDetails != null -> lot.status == state.status && lot.statusDetails == state.statusDetails
+                        else -> throw IllegalArgumentException("State must contains 'status' or/and 'statusDetails'. Missing 'state' and 'statusDetails'")
+                    }
                 }
-            }
             state != null
         }
     }
@@ -721,13 +725,15 @@ class LotServiceImpl(
         states: List<FindLotIdsParams.State>
     ): List<PNEntity.Tender.Lot> {
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+            val state = states.sorted()
+                .firstOrNull { state ->
+                    when {
+                        state.status == null && state.statusDetails != null -> lot.statusDetails == state.statusDetails
+                        state.status != null && state.statusDetails == null -> lot.status == state.status
+                        state.status != null && state.statusDetails != null -> lot.status == state.status && lot.statusDetails == state.statusDetails
+                        else -> throw IllegalArgumentException("State must contains 'status' or/and 'statusDetails'. Missing 'state' and 'statusDetails'")
+                    }
                 }
-            }
             state != null
         }
     }
@@ -737,13 +743,15 @@ class LotServiceImpl(
         states: List<FindLotIdsParams.State>
     ): List<RfqEntity.Tender.Lot> {
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
+            val state = states.sorted()
+                .firstOrNull { state ->
+                    when {
+                        state.status == null && state.statusDetails != null -> lot.statusDetails == state.statusDetails
+                        state.status != null && state.statusDetails == null -> lot.status == state.status
+                        state.status != null && state.statusDetails != null -> lot.status == state.status && lot.statusDetails == state.statusDetails
+                        else -> throw IllegalArgumentException("State must contains 'status' or/and 'statusDetails'. Missing 'state' and 'statusDetails'")
+                    }
                 }
-            }
             state != null
         }
     }
