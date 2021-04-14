@@ -158,6 +158,7 @@ class RfqServiceImpl(
         val items = generateItems(params, newLotIdsByOldLotIds)
         val rfqOcid = Ocid.SingleStage.generate(params.cpid, Stage.RQ, nowDefaultUTC())
         val relatedProcesses = generateRelatedProcess(params)
+        val tenderValue = RfqEntity.Tender.Value(currency = lots.first().value.currency)
 
         val createdRfq = RfqEntity(
             ocid = rfqOcid,
@@ -165,6 +166,7 @@ class RfqServiceImpl(
                 id = generationService.generatePermanentTenderId(),
                 status = TenderStatus.ACTIVE,
                 statusDetails = TenderStatusDetails.TENDERING,
+                value = tenderValue,
                 date = params.date,
                 awardCriteria = AwardCriteria.PRICE_ONLY,
                 awardCriteriaDetails = AwardCriteriaDetails.AUTOMATED,
@@ -295,7 +297,10 @@ class RfqServiceImpl(
                     statusDetails = tender.statusDetails,
                     awardCriteriaDetails = tender.awardCriteriaDetails,
                     awardCriteria = tender.awardCriteria,
-                    date = tender.date
+                    date = tender.date,
+                    value = tender.value.let {
+                        CreateRfqResult.Tender.Value(currency = it.currency)
+                    }
                 )
             }
         )
