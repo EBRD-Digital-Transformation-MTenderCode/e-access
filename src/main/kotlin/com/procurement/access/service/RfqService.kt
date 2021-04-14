@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.errors.ValidateRfqDataErrors
 import com.procurement.access.application.model.params.CreateRelationToContractProcessStageParams
 import com.procurement.access.application.model.params.CreateRfqParams
 import com.procurement.access.application.model.params.ValidateRfqDataParams
@@ -29,6 +30,7 @@ import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToContractProcessStageResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfqResult
 import com.procurement.access.lib.extension.getDuplicate
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asSuccess
@@ -36,6 +38,7 @@ import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 interface RfqService {
     fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail>
@@ -53,7 +56,7 @@ class RfqServiceImpl(
     override fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail> {
         val pnEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
             .onFailure { return it.reason.asValidationFailure() }
-            ?: return CommandValidationErrors.ValidateRfqData.PnNotFound(params.relatedCpid, params.relatedOcid)
+            ?: return ValidateRfqDataErrors.PnNotFound(params.relatedCpid, params.relatedOcid)
                 .asValidationFailure()
 
         val pn = pnEntity.jsonData.tryToObject(PNEntity::class.java)
@@ -71,7 +74,7 @@ class RfqServiceImpl(
         pn: PNEntity
     ): ValidationResult<CommandValidationErrors> {
         if (params.tender.lots.size != 1)
-            return CommandValidationErrors.ValidateRfqData.InvalidNumberOfLots(params.tender.lots.size)
+            return ValidateRfqDataErrors.InvalidNumberOfLots(params.tender.lots.size)
                 .asValidationFailure()
 
         val lot = params.tender.lots.first()
@@ -87,10 +90,10 @@ class RfqServiceImpl(
         params: ValidateRfqDataParams
     ): ValidationResult<CommandValidationErrors> {
         if (!lot.contractPeriod.endDate.isAfter(lot.contractPeriod.startDate))
-            return CommandValidationErrors.ValidateRfqData.InvalidContractPeriod().asValidationFailure()
+            return ValidateRfqDataErrors.InvalidContractPeriod().asValidationFailure()
 
         if (!lot.contractPeriod.startDate.isAfter(params.tender.tenderPeriod.endDate))
-            return CommandValidationErrors.ValidateRfqData.InvalidTenderPeriod().asValidationFailure()
+            return ValidateRfqDataErrors.InvalidTenderPeriod().asValidationFailure()
 
         return ValidationResult.ok()
     }
@@ -98,12 +101,12 @@ class RfqServiceImpl(
     private fun checkLotCurrency(
         lot: ValidateRfqDataParams.Tender.Lot,
         pn: PNEntity
-    ): ValidationResult<CommandValidationErrors.ValidateRfqData.InvalidCurrency> {
+    ): ValidationResult<ValidateRfqDataErrors.InvalidCurrency> {
         val requestCurrency = lot.value.currency
         val storedCurrency = pn.tender.value.currency
 
         if (requestCurrency != storedCurrency)
-            return CommandValidationErrors.ValidateRfqData.InvalidCurrency(
+            return ValidateRfqDataErrors.InvalidCurrency(
                 expectedCurrency = storedCurrency, receivedCurrency = requestCurrency
             ).asValidationFailure()
 
@@ -115,13 +118,19 @@ class RfqServiceImpl(
 
         val duplicateItemId = params.tender.items.getDuplicate { it.id }
         if (duplicateItemId != null)
-            return CommandValidationErrors.ValidateRfqData.DuplicatedItemId(duplicateItemId.id).asValidationFailure()
+            return ValidateRfqDataErrors.DuplicatedItemId(duplicateItemId.id).asValidationFailure()
 
         val itemWithUnknownLot = params.tender.items.firstOrNull { it.relatedLot != lot.id }
         if (itemWithUnknownLot != null)
-            return CommandValidationErrors.ValidateRfqData.UnknownRelatedLot(
+            return ValidateRfqDataErrors.UnknownRelatedLot(
                 itemId = itemWithUnknownLot.id, relatedLot = itemWithUnknownLot.relatedLot
             ).asValidationFailure()
+
+        val itemsWithInvalidQuantity = params.tender.items.filter { it.quantity <= BigDecimal.ZERO }
+        if (itemsWithInvalidQuantity.isNotEmpty()) {
+            val itemsIds = itemsWithInvalidQuantity.toSet { it.id }
+            return ValidateRfqDataErrors.InvalidItemQuantity(itemsIds).asValidationFailure()
+        }
 
         return ValidationResult.ok()
     }
@@ -132,9 +141,9 @@ class RfqServiceImpl(
 
         when (procurementMethodModalities.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION)) {
             true -> if (electronicAuctions == null)
-                return CommandValidationErrors.ValidateRfqData.ElectronicAuctionsAreMissing().asValidationFailure()
+                return ValidateRfqDataErrors.ElectronicAuctionsAreMissing().asValidationFailure()
             false -> if (electronicAuctions != null)
-                return CommandValidationErrors.ValidateRfqData.RedundantElectronicAuctions().asValidationFailure()
+                return ValidateRfqDataErrors.RedundantElectronicAuctions().asValidationFailure()
         }
 
         return ValidationResult.ok()
