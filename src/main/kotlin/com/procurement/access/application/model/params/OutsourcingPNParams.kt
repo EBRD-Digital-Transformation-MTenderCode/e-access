@@ -19,7 +19,7 @@ class OutsourcingPNParams(
             val cpidResult = parseCpid(value = cpid)
                 .onFailure { error -> return error }
 
-            val cpidFAResult = parseCpid(value = cpid)
+            val cpidFAResult = parseCpid(value = cpidFA)
                 .onFailure { error -> return error }
 
             val ocidResult = parseOcid(value = ocid)
