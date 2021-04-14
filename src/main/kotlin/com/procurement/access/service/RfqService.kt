@@ -1,5 +1,6 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.errors.CreateRfqErrors
 import com.procurement.access.application.model.params.CreateRelationToContractProcessStageParams
 import com.procurement.access.application.model.params.CreateRfqParams
 import com.procurement.access.application.model.params.ValidateRfqDataParams
@@ -31,6 +32,7 @@ import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfq
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -141,6 +143,12 @@ class RfqServiceImpl(
     }
 
     override fun createRfq(params: CreateRfqParams): Result<CreateRfqResult, Fail> {
+        val pnProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
+            .onFailure { return it }
+            ?: return CreateRfqErrors.RecordNotFound(params.relatedCpid, params.relatedOcid).asFailure()
+
+        val pnToken = pnProcessEntity.token
+
         val lotsByOldIds = params.tender.lots.associateBy(
             keySelector = { it.id },
             valueTransform = { generateLot(it) })
@@ -150,6 +158,7 @@ class RfqServiceImpl(
         val items = generateItems(params, newLotIdsByOldLotIds)
         val rfqOcid = Ocid.SingleStage.generate(params.cpid, Stage.RQ, nowDefaultUTC())
         val relatedProcesses = generateRelatedProcess(params)
+        val tenderValue = RfqEntity.Tender.Value(currency = lots.first().value.currency)
 
         val createdRfq = RfqEntity(
             ocid = rfqOcid,
@@ -157,6 +166,7 @@ class RfqServiceImpl(
                 id = generationService.generatePermanentTenderId(),
                 status = TenderStatus.ACTIVE,
                 statusDetails = TenderStatusDetails.TENDERING,
+                value = tenderValue,
                 date = params.date,
                 awardCriteria = AwardCriteria.PRICE_ONLY,
                 awardCriteriaDetails = AwardCriteriaDetails.AUTOMATED,
@@ -165,7 +175,7 @@ class RfqServiceImpl(
                 procurementMethodModalities = params.tender.procurementMethodModalities
             ),
             relatedProcesses = relatedProcesses,
-            token = generationService.generateToken()
+            token = pnToken
         )
 
         val entity = TenderProcessEntity(
@@ -287,7 +297,10 @@ class RfqServiceImpl(
                     statusDetails = tender.statusDetails,
                     awardCriteriaDetails = tender.awardCriteriaDetails,
                     awardCriteria = tender.awardCriteria,
-                    date = tender.date
+                    date = tender.date,
+                    value = tender.value.let {
+                        CreateRfqResult.Tender.Value(currency = it.currency)
+                    }
                 )
             }
         )
