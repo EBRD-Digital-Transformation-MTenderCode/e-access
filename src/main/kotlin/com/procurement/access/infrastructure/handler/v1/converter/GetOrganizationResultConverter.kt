@@ -2,14 +2,14 @@ package com.procurement.access.infrastructure.handler.v1.converter
 
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
-import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationsResult
 
-fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationResult =
-    GetOrganizationResult(
+fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationsResult.Party =
+    GetOrganizationsResult.Party(
         id = procuringEntity.id,
         identifier = procuringEntity.identifier
             .let { identifier ->
-                GetOrganizationResult.Identifier(
+                GetOrganizationsResult.Party.Identifier(
                     id = identifier.id,
                     scheme = identifier.scheme,
                     legalName = identifier.legalName,
@@ -18,7 +18,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
             },
         additionalIdentifiers = procuringEntity.additionalIdentifiers
             ?.map { additionalIdentifiers ->
-                GetOrganizationResult.AdditionalIdentifier(
+                GetOrganizationsResult.Party.AdditionalIdentifier(
                     id = additionalIdentifiers.id,
                     scheme = additionalIdentifiers.scheme,
                     legalName = additionalIdentifiers.legalName,
@@ -28,7 +28,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
         name = procuringEntity.name,
         contactPoint = procuringEntity.contactPoint
             .let { contactPoint ->
-                GetOrganizationResult.ContactPoint(
+                GetOrganizationsResult.Party.ContactPoint(
                     name = contactPoint.name,
                     url = contactPoint.url,
                     email = contactPoint.email,
@@ -38,15 +38,15 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
             },
         address = procuringEntity.address
             .let { address ->
-                GetOrganizationResult.Address(
+                GetOrganizationsResult.Party.Address(
                     streetAddress = address.streetAddress,
                     postalCode = address.postalCode,
                     addressDetails = address.addressDetails
                         .let { addressDetails ->
-                            GetOrganizationResult.Address.AddressDetails(
+                            GetOrganizationsResult.Party.Address.AddressDetails(
                                 country = addressDetails.country
                                     .let { country ->
-                                        GetOrganizationResult.Address.AddressDetails.Country(
+                                        GetOrganizationsResult.Party.Address.AddressDetails.Country(
                                             id = country.id,
                                             scheme = country.scheme,
                                             description = country.description,
@@ -55,7 +55,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
                                     },
                                 region = addressDetails.region
                                     .let { region ->
-                                        GetOrganizationResult.Address.AddressDetails.Region(
+                                        GetOrganizationsResult.Party.Address.AddressDetails.Region(
                                             id = region.id,
                                             scheme = region.scheme,
                                             description = region.description,
@@ -64,7 +64,7 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
                                     },
                                 locality = addressDetails.locality
                                     .let { locality ->
-                                        GetOrganizationResult.Address.AddressDetails.Locality(
+                                        GetOrganizationsResult.Party.Address.AddressDetails.Locality(
                                             id = locality.id,
                                             scheme = locality.scheme,
                                             description = locality.description,
@@ -77,13 +77,13 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
             },
         persons = procuringEntity.persones
             ?.map { person ->
-                GetOrganizationResult.Person(
+                GetOrganizationsResult.Party.Person(
                     id = person.id,
                     title = person.title,
                     name = person.name,
                     identifier = person.identifier
                         .let { identifier ->
-                            GetOrganizationResult.Person.Identifier(
+                            GetOrganizationsResult.Party.Person.Identifier(
                                 id = identifier.id,
                                 scheme = identifier.scheme,
                                 uri = identifier.uri
@@ -91,19 +91,19 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
                         },
                     businessFunctions = person.businessFunctions
                         .map { businessFunction ->
-                            GetOrganizationResult.Person.BusinessFunction(
+                            GetOrganizationsResult.Party.Person.BusinessFunction(
                                 id = businessFunction.id,
                                 type = businessFunction.type,
                                 jobTitle = businessFunction.jobTitle,
                                 period = businessFunction.period
                                     .let { period ->
-                                        GetOrganizationResult.Person.BusinessFunction.Period(
+                                        GetOrganizationsResult.Party.Person.BusinessFunction.Period(
                                             startDate = period.startDate
                                         )
                                     },
                                 documents = businessFunction.documents
                                     ?.map { document ->
-                                        GetOrganizationResult.Person.BusinessFunction.Document(
+                                        GetOrganizationsResult.Party.Person.BusinessFunction.Document(
                                             id = document.id,
                                             title = document.title,
                                             description = document.description,
@@ -116,12 +116,12 @@ fun convert(procuringEntity: CNEntity.Tender.ProcuringEntity): GetOrganizationRe
             }
     )
 
-fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
-    GetOrganizationResult(
+fun convert(procuringEntity: FEEntity.Party): GetOrganizationsResult.Party =
+    GetOrganizationsResult.Party(
         id = procuringEntity.id,
         identifier = procuringEntity.identifier
             .let { identifier ->
-                GetOrganizationResult.Identifier(
+                GetOrganizationsResult.Party.Identifier(
                     id = identifier.id,
                     scheme = identifier.scheme,
                     legalName = identifier.legalName,
@@ -130,7 +130,7 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
             },
         additionalIdentifiers = procuringEntity.additionalIdentifiers
             ?.map { additionalIdentifiers ->
-                GetOrganizationResult.AdditionalIdentifier(
+                GetOrganizationsResult.Party.AdditionalIdentifier(
                     id = additionalIdentifiers.id,
                     scheme = additionalIdentifiers.scheme,
                     legalName = additionalIdentifiers.legalName,
@@ -140,7 +140,7 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
         name = procuringEntity.name,
         contactPoint = procuringEntity.contactPoint
             .let { contactPoint ->
-                GetOrganizationResult.ContactPoint(
+                GetOrganizationsResult.Party.ContactPoint(
                     name = contactPoint.name,
                     url = contactPoint.url,
                     email = contactPoint.email,
@@ -150,15 +150,15 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
             },
         address = procuringEntity.address
             .let { address ->
-                GetOrganizationResult.Address(
+                GetOrganizationsResult.Party.Address(
                     streetAddress = address.streetAddress,
                     postalCode = address.postalCode,
                     addressDetails = address.addressDetails
                         .let { addressDetails ->
-                            GetOrganizationResult.Address.AddressDetails(
+                            GetOrganizationsResult.Party.Address.AddressDetails(
                                 country = addressDetails.country
                                     .let { country ->
-                                        GetOrganizationResult.Address.AddressDetails.Country(
+                                        GetOrganizationsResult.Party.Address.AddressDetails.Country(
                                             id = country.id,
                                             scheme = country.scheme,
                                             description = country.description,
@@ -167,7 +167,7 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
                                     },
                                 region = addressDetails.region
                                     .let { region ->
-                                        GetOrganizationResult.Address.AddressDetails.Region(
+                                        GetOrganizationsResult.Party.Address.AddressDetails.Region(
                                             id = region.id,
                                             scheme = region.scheme,
                                             description = region.description,
@@ -176,7 +176,7 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
                                     },
                                 locality = addressDetails.locality
                                     .let { locality ->
-                                        GetOrganizationResult.Address.AddressDetails.Locality(
+                                        GetOrganizationsResult.Party.Address.AddressDetails.Locality(
                                             id = locality.id,
                                             scheme = locality.scheme,
                                             description = locality.description,
@@ -189,13 +189,13 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
             },
         persons = procuringEntity.persones
             ?.map { person ->
-                GetOrganizationResult.Person(
+                GetOrganizationsResult.Party.Person(
                     id = person.id,
                     title = person.title,
                     name = person.name,
                     identifier = person.identifier
                         .let { identifier ->
-                            GetOrganizationResult.Person.Identifier(
+                            GetOrganizationsResult.Party.Person.Identifier(
                                 id = identifier.id,
                                 scheme = identifier.scheme,
                                 uri = identifier.uri
@@ -203,19 +203,19 @@ fun convert(procuringEntity: FEEntity.Party): GetOrganizationResult =
                         },
                     businessFunctions = person.businessFunctions
                         .map { businessFunction ->
-                            GetOrganizationResult.Person.BusinessFunction(
+                            GetOrganizationsResult.Party.Person.BusinessFunction(
                                 id = businessFunction.id,
                                 type = businessFunction.type,
                                 jobTitle = businessFunction.jobTitle,
                                 period = businessFunction.period
                                     .let { period ->
-                                        GetOrganizationResult.Person.BusinessFunction.Period(
+                                        GetOrganizationsResult.Party.Person.BusinessFunction.Period(
                                             startDate = period.startDate
                                         )
                                     },
                                 documents = businessFunction.documents
                                     ?.map { document ->
-                                        GetOrganizationResult.Person.BusinessFunction.Document(
+                                        GetOrganizationsResult.Party.Person.BusinessFunction.Document(
                                             id = document.id,
                                             title = document.title,
                                             description = document.description,

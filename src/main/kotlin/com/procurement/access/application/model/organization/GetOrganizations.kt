@@ -11,7 +11,7 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.lib.functional.Result
 
-class GetOrganization {
+class GetOrganizations {
 
     class Params private constructor(
         val cpid: Cpid,
@@ -22,6 +22,7 @@ class GetOrganization {
             private val allowedRoles = OrganizationRole.allowedElements
                 .filter { value ->
                     when (value) {
+                        OrganizationRole.BUYER,
                         OrganizationRole.PROCURING_ENTITY -> true
                     }
                 }.toSet()
@@ -51,6 +52,7 @@ class GetOrganization {
         }
 
         enum class OrganizationRole(@JsonValue override val key: String) : EnumElementProvider.Key {
+            BUYER("buyer"),
             PROCURING_ENTITY("procuringEntity");
 
             override fun toString(): String = key
