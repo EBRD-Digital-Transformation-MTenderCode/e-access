@@ -15,6 +15,8 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
+import com.procurement.access.domain.model.enums.RelatedProcessScheme
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -22,12 +24,15 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.domain.model.requirement.Requirement
 import java.time.LocalDateTime
 
 data class AmendFEResult(
     val tender: Tender,
-    val parties: List<Party>
+    val parties: List<Party>,
+    val relatedProcesses: List<RelatedProcess>
 ) {
     data class Tender(
         val id: String,
@@ -257,4 +262,12 @@ data class AmendFEResult(
             val mainSectoralActivity: MainSectoralActivity?
         )
     }
+
+    data class RelatedProcess(
+        val id: RelatedProcessId,
+        val relationship: List<RelatedProcessType>,
+        val scheme: RelatedProcessScheme,
+        val identifier: RelatedProcessIdentifier,
+        val uri: String
+    )
 }
