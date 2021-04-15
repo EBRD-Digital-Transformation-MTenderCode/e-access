@@ -19,6 +19,8 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.QualificationSystemMethod
 import com.procurement.access.domain.model.enums.ReductionCriteria
+import com.procurement.access.domain.model.enums.RelatedProcessScheme
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -26,6 +28,8 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.enums.TypeOfBuyer
 import com.procurement.access.domain.model.money.Money
 import com.procurement.access.domain.model.persone.PersonId
+import com.procurement.access.domain.model.process.RelatedProcessId
+import com.procurement.access.domain.model.process.RelatedProcessIdentifier
 import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializer
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
@@ -35,7 +39,8 @@ import java.time.LocalDateTime
 
 data class AmendFEResponse(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
-    @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>
+    @field:JsonProperty("parties") @param:JsonProperty("parties") val parties: List<Party>,
+    @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcess>
 ) {
     data class Tender(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
@@ -334,4 +339,12 @@ data class AmendFEResponse(
             @field:JsonProperty("mainSectoralActivity") @param:JsonProperty("mainSectoralActivity") val mainSectoralActivity: MainSectoralActivity?
         )
     }
+
+    data class RelatedProcess(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: RelatedProcessId,
+        @field:JsonProperty("relationship") @param:JsonProperty("relationship") val relationship: List<RelatedProcessType>,
+        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: RelatedProcessScheme,
+        @field:JsonProperty("identifier") @param:JsonProperty("identifier") val identifier: RelatedProcessIdentifier,
+        @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
+    )
 }

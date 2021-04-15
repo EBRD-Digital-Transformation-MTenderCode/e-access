@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.handler.v1.converter
 
 import com.procurement.access.application.service.fe.update.AmendFEResult
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.process.RelatedProcess
 
 class AmendFeEntityConverter {
     companion object {
@@ -9,7 +10,8 @@ class AmendFeEntityConverter {
         fun fromEntity(entity: FEEntity): AmendFEResult =
             AmendFEResult(
                 tender = fromEntity(entity.tender),
-                parties = entity.parties.map { convert(it) }
+                parties = entity.parties.map { convert(it) },
+                relatedProcesses = entity.relatedProcesses.orEmpty().map { convert(it) }
             )
 
         private fun fromEntity(entity: FEEntity.Tender): AmendFEResult.Tender =
@@ -150,6 +152,15 @@ class AmendFeEntityConverter {
             AmendFEResult.Tender.ProcuringEntity(
                 id = entity.id,
                 name = entity.name
+            )
+
+        private fun convert(entity: RelatedProcess): AmendFEResult.RelatedProcess =
+            AmendFEResult.RelatedProcess(
+                id = entity.id,
+                scheme = entity.scheme,
+                identifier = entity.identifier,
+                uri = entity.uri,
+                relationship = entity.relationship
             )
 
         private fun convert(entity: FEEntity.Party): AmendFEResult.Party =
