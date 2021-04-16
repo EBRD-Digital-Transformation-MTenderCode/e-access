@@ -81,7 +81,7 @@ class LotsService(
 ) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
             ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE)
@@ -243,7 +243,7 @@ class LotsService(
         val stage = cm.stage
         val dto = toObject(CanCancellationRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val lot = process.tender.lots.first { it.id == dto.lotId }
         lot.apply {

@@ -4,6 +4,7 @@ import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.CPVCodePattern
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.patternBySymbols
 import com.procurement.access.domain.model.patternOfGroups
 import com.procurement.access.domain.model.startsWithPattern
@@ -172,7 +173,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.UPDATE_PN -> {
                 val cpid = cm.cpid
                 val stage = cm.stage
-                val process: TenderProcess = loadTenderProcess(cpid, stage)
+                val process: TenderProcess = loadTenderProcess(cpid, stage.key)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
                         .also {
@@ -260,14 +261,14 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
         return toObject(TenderProcess::class.java, entity.jsonData)
     }
 
-    private fun loadAP(cpid: String, stage: String): APEntity {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
+    private fun loadAP(cpid: String, stage: Stage): APEntity {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(APEntity::class.java, entity.jsonData)
     }
 
-    private fun loadCN(cpid: String, stage: String): CNEntity {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
+    private fun loadCN(cpid: String, stage: Stage): CNEntity {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(CNEntity::class.java, entity.jsonData)
     }
