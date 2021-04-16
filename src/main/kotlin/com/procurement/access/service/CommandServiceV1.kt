@@ -247,6 +247,7 @@ class CommandServiceV1(
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CreateFEContext(
                             cpid = cm.cpid,
+                            ocid = cm.ocid,
                             startDate = cm.startDate,
                             stage = cm.stage,
                             prevStage = cm.prevStage,
