@@ -50,6 +50,7 @@ class FeCreateServiceImpl(
 
     override fun createFe(context: CreateFEContext, request: CreateFEData): CreateFEResult {
         val cpid = Cpid.tryCreateOrNull(context.cpid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
+        val ocidAP = Ocid.SingleStage.tryCreateOrNull(context.ocid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
         val stage = context.prevStage
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid.value, stage = stage)
@@ -61,9 +62,9 @@ class FeCreateServiceImpl(
         val ap = toObject(APEntity::class.java, entity.jsonData)
 
         // BR-1.0.1.21.1
-        val ocid = generationService.generateOcid(cpid = cpid.value, stage = context.stage)
+        val ocidFE = generationService.generateOcid(cpid = cpid.value, stage = context.stage)
 
-        val fe = createEntity(ocid = ocid, cpid = cpid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
+        val fe = createEntity(ocidFe = ocidFE, ocidAp = ocidAP, cpid = cpid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
 
         val result = CreateFeEntityConverter.fromEntity(fe);
 
@@ -81,10 +82,10 @@ class FeCreateServiceImpl(
         return result
     }
 
-    private fun createEntity(ocid: Ocid.SingleStage, cpid: Cpid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
+    private fun createEntity(ocidFe: Ocid.SingleStage, ocidAp: Ocid.SingleStage, cpid: Cpid, token: UUID, data: CreateFEData, ap: APEntity, datePublished: LocalDateTime): FEEntity {
         val parties = createParties(data, ap)
         return FEEntity(
-            ocid = ocid.value,
+            ocid = ocidFe.value,
             token = token.toString(),
             tender = FEEntity.Tender(
                 id = generationService.generatePermanentTenderId(),
@@ -169,8 +170,8 @@ class FeCreateServiceImpl(
                     id = RelatedProcessId.fromString(generationService.relatedProcessId()),
                     relationship = listOf(RelatedProcessType.AGGREGATE_PLANNING),
                     scheme = RelatedProcessScheme.OCID,
-                    identifier = RelatedProcessIdentifier.of(ocid),
-                    uri = "${uriProperties.tender}/${cpid.value}/${ocid.value}"
+                    identifier = RelatedProcessIdentifier.of(ocidAp),
+                    uri = "${uriProperties.tender}/${cpid.value}/${ocidAp.value}"
                 ),
                 RelatedProcess( // для связи FE с MS
                     id = RelatedProcessId.fromString(generationService.relatedProcessId()),
