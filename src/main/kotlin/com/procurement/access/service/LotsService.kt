@@ -18,6 +18,7 @@ import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -33,6 +34,7 @@ import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.pmd
 import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.entity.TenderLotValueInfo
 import com.procurement.access.infrastructure.entity.TenderLotsAndItemsInfo
 import com.procurement.access.infrastructure.entity.TenderLotsInfo
@@ -83,14 +85,34 @@ class LotsService(
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
         val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
             ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE)
-            .map { activeLot ->
-                GetActiveLotsResult.Lot(
-                    id = LotId.fromString(activeLot.id)
-                )
-            }
-            .toList()
+
+        val activeLotsIds = when (context.stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.PC,
+            Stage.TP -> toObject(TenderProcess::class.java, entity.jsonData).tender.lots
+                .filter { lot -> isActiveLot(lot.status) }
+                .map { lot -> LotId.fromString(lot.id) }
+
+            Stage.RQ -> toObject(RfqEntity::class.java, entity.jsonData).tender.lots
+                .filter { lot -> isActiveLot(lot.status) }
+                .map { lot -> lot.id }
+
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage ${context.stage} not allowed at the command."
+            )
+        }
+
+        val activeLots = activeLotsIds
+            .map { activeLotId -> GetActiveLotsResult.Lot(id = activeLotId) }
+
         return GetActiveLotsResult(lots = activeLots)
     }
 
@@ -119,6 +141,8 @@ class LotsService(
             )
         )
     }
+
+    private fun isActiveLot(status: LotStatus?): Boolean = status == LotStatus.ACTIVE
 
     fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
