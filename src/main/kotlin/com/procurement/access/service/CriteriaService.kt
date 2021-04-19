@@ -275,7 +275,6 @@ class CriteriaServiceImpl(
                     GetAwardCriteriaAndConversionsResult.fromDomain(cn)
                 }
 
-
             Stage.RQ ->
                 tenderEntity?.let { entity ->
                     val rq = toObject(RfqEntity::class.java, entity.jsonData)
