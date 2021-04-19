@@ -1069,7 +1069,7 @@ class CommandServiceV1(
                 ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.GET_ITEMS_BY_LOTS -> {
-                val context = GetItemsByLotsContext(cpid = cm.cpid, stage = cm.stage.key)
+                val context = GetItemsByLotsContext(cpid = cm.cpid, stage = cm.stage)
                 val request = toObject(GetItemsByLotsRequest::class.java, cm.data)
                 val data = request.convert()
 
