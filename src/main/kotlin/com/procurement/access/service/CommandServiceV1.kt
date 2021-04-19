@@ -517,7 +517,7 @@ class CommandServiceV1(
             CommandTypeV1.SET_TENDER_UNSUCCESSFUL -> {
                 val context = SetTenderUnsuccessfulContext(
                     cpid = cm.cpid,
-                    stage = cm.stage.key,
+                    stage = cm.stage,
                     startDate = cm.startDate
                 )
 

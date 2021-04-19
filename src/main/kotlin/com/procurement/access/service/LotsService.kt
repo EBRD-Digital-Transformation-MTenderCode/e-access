@@ -91,7 +91,6 @@ class LotsService(
             Stage.EV,
             Stage.FE,
             Stage.NP,
-            Stage.PC,
             Stage.TP -> toObject(TenderProcess::class.java, entity.jsonData).tender.lots
                 .filter { lot -> isActiveLot(lot.status) }
                 .map { lot -> LotId.fromString(lot.id) }
@@ -100,10 +99,10 @@ class LotsService(
                 .filter { lot -> isActiveLot(lot.status) }
                 .map { lot -> lot.id }
 
-
             Stage.AP,
             Stage.EI,
             Stage.FS,
+            Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${context.stage} not allowed at the command."
