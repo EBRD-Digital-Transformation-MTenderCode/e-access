@@ -164,13 +164,50 @@ class CriteriaServiceImpl(
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
+        val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
-        val tender = cnEntity.tender
-        val criteria = tender.criteria.orEmpty()
 
-        val criterion = CNEntity.Tender.Criteria(
+        val result = when (context.stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = toObject(CNEntity::class.java, entity.jsonData)
+                val tender = cn.tender
+                val storedCriteria = tender.criteria.orEmpty()
+                val criterionForEvPanels = createCriterionForEvPanels(context.startDate)
+
+                val updatedTender = tender.copy(criteria =  storedCriteria + listOf(criterionForEvPanels))
+                val updatedCNEntity = cn.copy(tender = updatedTender)
+
+                tenderProcessDao.save(entity.copy(jsonData = toJson(updatedCNEntity)))
+
+                RequestsForEvPanelsResult.Criteria.fromDomain(criterionForEvPanels)
+                    .let { RequestsForEvPanelsResult(it) }
+            }
+
+            Stage.RQ -> {
+                val criterionForEvPanels = createCriterionForEvPanels(context.startDate)
+                RequestsForEvPanelsResult.Criteria.fromDomain(criterionForEvPanels)
+                    .let { RequestsForEvPanelsResult(it) }
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage ${context.stage} not allowed at the command."
+            )
+        }
+
+        return result
+    }
+
+    fun createCriterionForEvPanels(datePublished: LocalDateTime) =
+        CNEntity.Tender.Criteria(
             id = CriteriaId.Permanent.generate().toString(),
             title = "",
             description = "",
@@ -195,64 +232,12 @@ class CriteriaServiceImpl(
                             description = null,
                             eligibleEvidences = emptyList(),
                             status = RequirementStatus.ACTIVE,
-                            datePublished = context.startDate
+                            datePublished = datePublished
                         )
                     )
                 )
             )
         )
-
-        val updatedCriteria = criteria + listOf(criterion)
-        val updatedTender = tender.copy(
-            criteria = updatedCriteria
-        )
-        val updatedCNEntity = cnEntity.copy(
-            tender = updatedTender
-        )
-
-        tenderProcessDao.save(
-            entity.copy(
-                jsonData = toJson(updatedCNEntity)
-            )
-        )
-
-        return RequestsForEvPanelsResult(
-            criteria = RequestsForEvPanelsResult.Criteria(
-                id = criterion.id,
-                title = criterion.title,
-                description = criterion.description,
-                source = criterion.source!!,
-                relatesTo = criterion.relatesTo!!,
-                classification = criterion.classification
-                    .let { classification ->
-                        RequestsForEvPanelsResult.Criteria.Classification(
-                            id = classification.id,
-                            scheme = classification.scheme
-                        )
-                    },
-                requirementGroups = criterion.requirementGroups
-                    .map { requirementGroup ->
-                        RequestsForEvPanelsResult.Criteria.RequirementGroup(
-                            id = requirementGroup.id,
-                            requirements = requirementGroup.requirements
-                                .map { requirement ->
-                                    Requirement(
-                                        id = requirement.id,
-                                        title = requirement.title,
-                                        dataType = requirement.dataType,
-                                        value = requirement.value,
-                                        period = requirement.period,
-                                        description = requirement.description,
-                                        eligibleEvidences = requirement.eligibleEvidences?.toList(),
-                                        status = requirement.status,
-                                        datePublished = requirement.datePublished
-                                    )
-                                }
-                        )
-                    }
-            )
-        )
-    }
 
     override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? {
         val tenderEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
