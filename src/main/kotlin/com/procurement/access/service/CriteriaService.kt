@@ -108,22 +108,14 @@ class CriteriaServiceImpl(
                 )
             }
 
-        val validatedStage = Stage.tryOf(context.stage)
-            .orThrow { _ ->
-                ErrorException(
-                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                    message = "Attribute 'stage' has invalid value."
-                )
-            }
-
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = validatedCpid, stage = validatedStage)
+        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = validatedCpid, stage = context.stage)
             .orThrow { it.exception }
             ?: throw ErrorException(
                 error = ErrorType.DATA_NOT_FOUND,
                 message = "VR.COM-1.42.1"
             )
 
-        val criteriaForTenderer = when (validatedStage) {
+        val criteriaForTenderer = when (context.stage) {
             Stage.EV,
             Stage.TP -> {
                 toObject(CNEntity::class.java, entity.jsonData)
@@ -141,16 +133,17 @@ class CriteriaServiceImpl(
                     .map { criterion -> GetCriteriaForTendererResult.fromDomain(criterion) }
             }
 
+            Stage.RQ -> emptyList()
+
             Stage.AC,
             Stage.AP,
             Stage.EI,
             Stage.FS,
             Stage.NP,
             Stage.PC,
-            Stage.PN,
-            Stage.RQ -> throw ErrorException(
+            Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage $validatedStage not allowed at the command."
+                message = "Stage ${context.stage} not allowed at the command."
             )
         }
 

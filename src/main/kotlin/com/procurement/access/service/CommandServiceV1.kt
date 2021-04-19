@@ -605,10 +605,7 @@ class CommandServiceV1(
                 }
             }
             CommandTypeV1.GET_CRITERIA_FOR_TENDERER -> {
-                val context = GetCriteriaForTendererContext(
-                    cpid = cm.cpid,
-                    stage = cm.stage.key
-                )
+                val context = GetCriteriaForTendererContext(cpid = cm.cpid, stage = cm.stage)
                 val result = criteriaService.getCriteriaForTenderer(context = context)
 
                 if (log.isDebugEnabled)
