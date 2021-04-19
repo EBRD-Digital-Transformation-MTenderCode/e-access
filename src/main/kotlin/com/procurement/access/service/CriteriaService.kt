@@ -13,6 +13,7 @@ import com.procurement.access.application.model.criteria.RequirementId
 import com.procurement.access.application.model.data.GetAwardCriteriaAndConversionsResult
 import com.procurement.access.application.model.data.GetCriteriaForTendererResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
+import com.procurement.access.application.model.data.fromDomain
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.CheckResponsesData
 import com.procurement.access.application.service.tender.checkAnsweredOnce
@@ -38,6 +39,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.converter.convertToResponse
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateCriteriaForProcuringEntityResult
@@ -259,35 +261,39 @@ class CriteriaServiceImpl(
         )
     }
 
-    override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? =
-        tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
-            ?.let { entity ->
-                val cn = toObject(CNEntity::class.java, entity.jsonData)
-                val conversions = cn.tender.conversions
-                    ?.map { conversion ->
-                        GetAwardCriteriaAndConversionsResult.Conversion(
-                            id = conversion.id,
-                            relatesTo = conversion.relatesTo,
-                            relatedItem = conversion.relatedItem,
-                            description = conversion.description,
-                            rationale = conversion.rationale,
-                            coefficients = conversion.coefficients
-                                .map { coefficient ->
-                                    GetAwardCriteriaAndConversionsResult.Conversion.Coefficient(
-                                        id = coefficient.id,
-                                        value = coefficient.value,
-                                        coefficient = coefficient.coefficient
-                                    )
-                                }
-                        )
-                    }
+    override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? {
+        val tenderEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
 
-                GetAwardCriteriaAndConversionsResult(
-                    awardCriteria = cn.tender.awardCriteria!!,
-                    awardCriteriaDetails = cn.tender.awardCriteriaDetails!!,
-                    conversions = conversions
-                )
-            }
+        val result = when (context.stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP ->
+                tenderEntity?.let { entity ->
+                    val cn = toObject(CNEntity::class.java, tenderEntity.jsonData)
+                    GetAwardCriteriaAndConversionsResult.fromDomain(cn)
+                }
+
+
+            Stage.RQ ->
+                tenderEntity?.let { entity ->
+                    val rq = toObject(RfqEntity::class.java, entity.jsonData)
+                    GetAwardCriteriaAndConversionsResult.fromDomain(rq)
+                }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage ${context.stage} not allowed at the command."
+            )
+        }
+
+        return result
+    }
 
     override fun getQualificationCriteriaAndMethod(params: GetQualificationCriteriaAndMethod.Params): Result<GetQualificationCriteriaAndMethodResult, Fail> {
         val stage = params.ocid.stage
