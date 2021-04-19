@@ -537,46 +537,80 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val cn: CNEntity = toObject(CNEntity::class.java, entity.jsonData)
+        val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }
 
-        val idsUnsuccessfulLots: Set<LotId> = data.lots.toSet { it.id }
-        val updatedLots: List<CNEntity.Tender.Lot> = cn.tender.lots.setUnsuccessfulStatus(ids = idsUnsuccessfulLots)
-        val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
+        val (tenderJson, result) = when (context.stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = toObject(CNEntity::class.java, entity.jsonData)
+                val updatedLots: List<CNEntity.Tender.Lot> = cn.tender.lots.map { lot ->
+                    if (lot.id in idsUnsuccessfulLots)
+                        lot.copy(status = LotStatus.UNSUCCESSFUL)
+                    else
+                        lot
+                }
+                val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
 
-        val updatedCN = cn.copy(
-            tender = cn.tender.copy(
-                status = if (activeLotsIsPresent) cn.tender.status else TenderStatus.UNSUCCESSFUL,
-                statusDetails = if (activeLotsIsPresent) cn.tender.statusDetails else TenderStatusDetails.EMPTY,
-                lots = updatedLots
+                val updatedCN = cn.copy(
+                    tender = cn.tender.copy(
+                        status = if (activeLotsIsPresent) cn.tender.status else TenderStatus.UNSUCCESSFUL,
+                        statusDetails = if (activeLotsIsPresent) cn.tender.statusDetails else TenderStatusDetails.EMPTY,
+                        lots = updatedLots
+                    )
+                )
+
+                toJson(updatedCN) to SettedLotsStatusUnsuccessful.fromDomain(updatedCN, data)
+            }
+
+            Stage.RQ -> {
+                val rq = toObject(RfqEntity::class.java, entity.jsonData)
+                val updatedLots: List<RfqEntity.Tender.Lot> = rq.tender.lots.map { lot ->
+                    if (lot.id.toString() in idsUnsuccessfulLots)
+                        lot.copy(status = LotStatus.UNSUCCESSFUL)
+                    else
+                        lot
+                }
+                val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
+
+                val updatedRfq = rq.copy(
+                    tender = rq.tender.copy(
+                        status = if (activeLotsIsPresent) rq.tender.status else TenderStatus.UNSUCCESSFUL,
+                        statusDetails = if (activeLotsIsPresent) rq.tender.statusDetails else TenderStatusDetails.EMPTY,
+                        lots = updatedLots
+                    )
+                )
+
+                toJson(updatedRfq) to SettedLotsStatusUnsuccessful.fromDomain(updatedRfq, data)
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage ${context.stage} not allowed at the command."
             )
-        )
+        }
 
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                stage = context.stage,
+                stage = context.stage.key,
                 owner = entity.owner,
                 createdDate = context.startDate,
-                jsonData = toJson(updatedCN)
+                jsonData = tenderJson
             )
         )
 
-        return SettedLotsStatusUnsuccessful(
-            tender = SettedLotsStatusUnsuccessful.Tender(
-                status = updatedCN.tender.status,
-                statusDetails = updatedCN.tender.statusDetails
-            ),
-            lots = data.lots.map { lot ->
-                SettedLotsStatusUnsuccessful.Lot(
-                    id = lot.id,
-                    status = LotStatus.UNSUCCESSFUL
-                )
-            }
-        )
+        return result
     }
 
     private fun Lot.convertToGetLotStateByIdsResult(): Result<GetLotStateByIdsResult, Fail> {
