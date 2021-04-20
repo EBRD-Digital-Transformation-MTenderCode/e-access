@@ -24,6 +24,8 @@ data class CreateRfqResult(
 ) {
     data class Tender(
         @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
+        @param:JsonProperty("title") @field:JsonProperty("title") val title: String,
+        @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
         @param:JsonProperty("status") @field:JsonProperty("status") val status: TenderStatus,
         @param:JsonProperty("statusDetails") @field:JsonProperty("statusDetails") val statusDetails: TenderStatusDetails,
         @param:JsonProperty("value") @field:JsonProperty("value") val value: Value,

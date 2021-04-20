@@ -41,6 +41,8 @@ private fun CreateRfqRequest.Tender.convert(path: String): Result<CreateRfqParam
 
 
     return CreateRfqParams.Tender(
+        title = title,
+        description = description,
         lots = lots,
         items = items,
         electronicAuctions = electronicAuctions?.convert("$path.electronicAuctions")?.onFailure { return it },

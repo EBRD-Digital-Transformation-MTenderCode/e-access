@@ -3,6 +3,8 @@
   "token": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "tender": {
     "id": "string",
+    "title": "string",
+    "description": "string",
     "status": "active",
     "statusDetails": "tendering",
     "date": "2021-04-01T10:18:12Z",

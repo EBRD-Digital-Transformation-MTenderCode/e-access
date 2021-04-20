@@ -173,6 +173,8 @@ class RfqServiceImpl(
             ocid = rfqOcid,
             tender = RfqEntity.Tender(
                 id = generationService.generatePermanentTenderId(),
+                title = params.tender.title,
+                description = params.tender.description,
                 status = TenderStatus.ACTIVE,
                 statusDetails = TenderStatusDetails.TENDERING,
                 value = tenderValue,
@@ -219,6 +221,8 @@ class RfqServiceImpl(
             tender = createdRfq.tender.let { tender ->
                 CreateRfqResult.Tender(
                     id = tender.id,
+                    title = tender.title,
+                    description = tender.description,
                     electronicAuctions = electronicAuctions,
                     procurementMethodModalities = tender.procurementMethodModalities,
                     items = tender.items
