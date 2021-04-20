@@ -332,6 +332,8 @@ internal class RfqServiceImplTest {
             relatedCpid = CPID,
             relatedOcid = OCID,
             tender = ValidateRfqDataParams.Tender(
+                title = "string",
+                description = "description",
                 lots = listOf(
                     ValidateRfqDataParams.Tender.Lot(
                         id = LOT_ID.toString(),

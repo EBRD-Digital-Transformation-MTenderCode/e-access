@@ -52,6 +52,8 @@ private fun ValidateRfqDataRequest.Tender.convert(path: String): Result<Validate
         .onFailure { return it }
 
     return ValidateRfqDataParams.Tender(
+        title = title,
+        description = description,
         lots = lots,
         items = items,
         electronicAuctions = electronicAuctions?.convert("$path.electronicAuctions")?.onFailure { return it },
