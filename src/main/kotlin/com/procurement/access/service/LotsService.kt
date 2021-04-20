@@ -310,24 +310,59 @@ class LotsService(
         val dto = toObject(CanCancellationRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val lot = process.tender.lots.first { it.id == dto.lotId }
-        lot.apply {
-            status = LotStatus.ACTIVE
-            statusDetails = LotStatusDetails.EMPTY
+
+        val result = when (stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val process = toObject(TenderProcess::class.java, entity.jsonData)
+                val lot = process.tender.lots.first { it.id == dto.lotId }
+                lot.apply {
+                    status = LotStatus.ACTIVE
+                    statusDetails = LotStatusDetails.EMPTY
+                }
+                entity.jsonData = toJson(process)
+                tenderProcessDao.save(entity)
+
+                CanCancellationRs.fromDomain(lot)
+            }
+
+            Stage.RQ -> {
+                val targetLotid = LotId.fromString(dto.lotId)
+                val rfq = toObject(RfqEntity::class.java, entity.jsonData)
+                val updatedLotsByIds = rfq.tender.lots
+                    .map { storedLot ->
+                        if (storedLot.id == targetLotid)
+                            storedLot.copy(status = LotStatus.ACTIVE, statusDetails = LotStatusDetails.EMPTY)
+                        else
+                            storedLot
+                    }
+                    .associateBy { it.id }
+
+                val updatedRfq = rfq.copy(tender = rfq.tender.copy(lots = updatedLotsByIds.values.toList()))
+
+                val updatedEntity = entity.copy(jsonData = toJson(updatedRfq))
+                tenderProcessDao.save(updatedEntity)
+
+                CanCancellationRs.fromDomain(updatedLotsByIds.getValue(targetLotid))
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage $stage not allowed at the command."
+            )
         }
-        entity.jsonData = toJson(process)
-        tenderProcessDao.save(entity)
+
         return ApiResponseV1.Success(
             version = cm.version,
             id = cm.commandId,
-            data = CanCancellationRs(
-                lot = CanCancellationLot(
-                    id = lot.id,
-                    status = lot.status!!,
-                    statusDetails = lot.statusDetails!!
-                )
-            )
+            data = result
         )
     }
 
