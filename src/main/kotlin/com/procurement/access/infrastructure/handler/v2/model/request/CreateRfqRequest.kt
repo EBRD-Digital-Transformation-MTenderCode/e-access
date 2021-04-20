@@ -15,6 +15,8 @@ data class CreateRfqRequest(
     @param:JsonProperty("additionalOcid") @field:JsonProperty("additionalOcid") val additionalOcid: String
 ) {
     data class Tender(
+        @param:JsonProperty("title") @field:JsonProperty("title") val title: String,
+        @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
         @param:JsonProperty("lots") @field:JsonProperty("lots") val lots: List<Lot>,
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>,
 

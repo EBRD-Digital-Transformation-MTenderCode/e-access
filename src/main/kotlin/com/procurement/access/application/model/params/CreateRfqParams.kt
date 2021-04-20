@@ -17,6 +17,8 @@ data class CreateRfqParams(
     val additionalOcid: Ocid.SingleStage
 ) {
     data class Tender(
+        val title: String,
+        val description: String,
         val lots: List<Lot>,
         val items: List<Item>,
         val electronicAuctions: ElectronicAuctions?,
