@@ -34,7 +34,7 @@ object ContextGenerator {
     val TOKEN: UUID = UUID.fromString("bd56490f-57ca-4d1a-9210-250cb9b4eed3")
     const val OWNER = "owner-1"
     const val COUNTRY = "MD"
-    const val STAGE = "stage"
+    const val STAGE = "EV"
     const val PREV_STAGE = "prev_stage"
     const val START_DATE = "2011-06-05T17:59:00Z"
 
