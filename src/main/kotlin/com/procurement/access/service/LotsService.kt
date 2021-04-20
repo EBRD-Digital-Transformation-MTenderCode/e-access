@@ -43,7 +43,6 @@ import com.procurement.access.infrastructure.handler.v1.model.request.Activation
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRq
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcRs
 import com.procurement.access.infrastructure.handler.v1.model.request.ActivationAcTender
-import com.procurement.access.infrastructure.handler.v1.model.request.CanCancellationLot
 import com.procurement.access.infrastructure.handler.v1.model.request.CanCancellationRq
 import com.procurement.access.infrastructure.handler.v1.model.request.CanCancellationRs
 import com.procurement.access.infrastructure.handler.v1.model.request.FinalLot
@@ -68,7 +67,6 @@ import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.dto.ocds.Lot
 import com.procurement.access.model.dto.ocds.TenderProcess
-import com.procurement.access.model.dto.ocds.asMoney
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 import com.procurement.access.utils.tryToObject
@@ -118,29 +116,47 @@ class LotsService(
     }
 
     fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
             ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        val activeLots = getLotsByStatus(process.tender.lots, LotStatus.ACTIVE)
-            .toList()
-            .takeIf { it.isNotEmpty() }
-            ?.map {
-                GetLotsAuctionResponseData.Tender.Lot(
-                    id = LotId.fromString(it.id),
-                    title = it.title!!,
-                    description = it.description!!,
-                    value = it.value.asMoney
-                )
-            } ?: throw ErrorException(NO_ACTIVE_LOTS)
 
-        return GetLotsAuctionResponseData(
-            tender = GetLotsAuctionResponseData.Tender(
-                id = process.tender.id!!,
-                title = process.tender.title,
-                description = process.tender.description,
-                lots = activeLots
+        val responseData = when (context.stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val process = toObject(TenderProcess::class.java, entity.jsonData)
+                val activeLots = process.tender.lots
+                    .filter { it.status == LotStatus.ACTIVE }
+                    .takeIf { it.isNotEmpty() }
+                    ?.map { GetLotsAuctionResponseData.Tender.Lot.fromDomain(it) }
+                    ?: throw ErrorException(NO_ACTIVE_LOTS)
+
+                GetLotsAuctionResponseData.fromDomain(process.tender, activeLots)
+            }
+
+            Stage.RQ -> {
+                val rfq = toObject(RfqEntity::class.java, entity.jsonData)
+                val activeLots = rfq.tender.lots
+                    .filter { it.status == LotStatus.ACTIVE }
+                    .takeIf { it.isNotEmpty() }
+                    ?.map { GetLotsAuctionResponseData.Tender.Lot.fromDomain(it) }
+                    ?: throw ErrorException(NO_ACTIVE_LOTS)
+
+                GetLotsAuctionResponseData.fromDomain(rfq.tender, activeLots)
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage ${context.stage} not allowed at the command."
             )
-        )
+        }
+
+        return responseData
     }
 
     private fun isActiveLot(status: LotStatus?): Boolean = status == LotStatus.ACTIVE
