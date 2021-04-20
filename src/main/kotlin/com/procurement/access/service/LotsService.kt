@@ -55,6 +55,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotB
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotByBidRs
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRq
 import com.procurement.access.infrastructure.handler.v1.model.request.UpdateLotsRs
+import com.procurement.access.infrastructure.handler.v1.model.request.fromDomain
 import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsByLotRs
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
 import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
@@ -170,20 +171,61 @@ class LotsService(
 
     fun setLotsStatusDetailsAwarded(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
-        val dto = toObject(UpdateLotByBidRq::class.java, cm.data)
+        val stage = cm.stage
+        val requestDto = toObject(UpdateLotByBidRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        var statusDetails = if (dto.lotAwarded) {
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
+
+        val statusDetails = if (requestDto.lotAwarded)
             LotStatusDetails.AWARDED
-        } else {
+        else
             LotStatusDetails.EMPTY
+
+        val result = when (stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val process = toObject(TenderProcess::class.java, entity.jsonData)
+                val updatedLot = setLotsStatusDetails(process.tender.lots, requestDto.lotId, statusDetails)
+                entity.jsonData = toJson(process)
+                tenderProcessDao.save(entity)
+
+                UpdateLotByBidRs.fromDomain(updatedLot)
+            }
+
+            Stage.RQ -> {
+                val targetLot = LotId.fromString(requestDto.lotId)
+                val rfq = toObject(RfqEntity::class.java, entity.jsonData)
+                val updatedLotsByids = rfq.tender.lots
+                    .map { storedLot ->
+                        if (storedLot.id == targetLot)
+                            storedLot.copy(statusDetails = statusDetails)
+                        else
+                            storedLot
+                    }
+                    .associateBy { it.id }
+
+                val updatedRfq = rfq.copy(tender = rfq.tender.copy(lots = updatedLotsByids.values.toList()))
+                val updatedEntity = entity.copy(jsonData = toJson(updatedRfq))
+
+                tenderProcessDao.save(updatedEntity)
+
+                UpdateLotByBidRs.fromDomain(updatedLotsByids.getValue(targetLot))
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage $stage not allowed at the command."
+            )
         }
-        val updatedLot = setLotsStatusDetails(process.tender.lots, dto.lotId, statusDetails)
-        entity.jsonData = toJson(process)
-        tenderProcessDao.save(entity)
-        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = UpdateLotByBidRs(updatedLot))
+
+        return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = result)
     }
 
     fun setFinalStatuses(cm: CommandMessage): ApiResponseV1.Success {
