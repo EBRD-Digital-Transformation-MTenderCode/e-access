@@ -24,8 +24,11 @@ data class RfqEntity(
 ) {
     data class Tender(
         @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
+        @param:JsonProperty("title") @field:JsonProperty("title") val title: String,
+        @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
         @param:JsonProperty("status") @field:JsonProperty("status") val status: TenderStatus,
         @param:JsonProperty("statusDetails") @field:JsonProperty("statusDetails") val statusDetails: TenderStatusDetails,
+        @param:JsonProperty("value") @field:JsonProperty("value") val value: Value,
         @param:JsonProperty("date") @field:JsonProperty("date") val date: LocalDateTime,
         @param:JsonProperty("lots") @field:JsonProperty("lots") val lots: List<Lot>,
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>,
@@ -36,6 +39,11 @@ data class RfqEntity(
         @param:JsonProperty("awardCriteria") @field:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria,
         @param:JsonProperty("awardCriteriaDetails") @field:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails
     ) {
+
+        data class Value(
+            @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
+        )
+
         data class Lot(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: LotId,
 

@@ -32,8 +32,10 @@ import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.entity.TenderCategoryInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderStateInfo
@@ -191,20 +193,54 @@ class TenderService(
 
     fun setStatusDetails(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
+        val stage = cm.stage
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
-        val process = toObject(TenderProcess::class.java, entity.jsonData)
-        process.tender.statusDetails = TenderStatusDetails.creator(phase)
-        tenderProcessDao.save(getEntity(process, entity))
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
+
+        val result = when (stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val process = toObject(TenderProcess::class.java, entity.jsonData)
+                process.tender.statusDetails = TenderStatusDetails.creator(phase)
+                tenderProcessDao.save(getEntity(process, entity))
+                UpdateTenderStatusRs(
+                    process.tender.status.key,
+                    process.tender.statusDetails.key
+                )
+            }
+
+            Stage.RQ -> {
+                val rfq = toObject(RfqEntity::class.java, entity.jsonData)
+                val updatedRfq = rfq.copy(tender = rfq.tender.copy(statusDetails = TenderStatusDetails.creator(phase)))
+                val updatedRfqEntity = entity.copy(
+                    createdDate = nowDefaultUTC(),
+                    jsonData = toJson(updatedRfq)
+                )
+                tenderProcessDao.save(updatedRfqEntity)
+                UpdateTenderStatusRs(
+                    updatedRfq.tender.status.key,
+                    updatedRfq.tender.statusDetails.key
+                )
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = INVALID_STAGE,
+                message = "Stage ${stage} not allowed at the command."
+            )
+        }
+
         return ApiResponseV1.Success(
             version = cm.version,
             id = cm.commandId,
-            data = UpdateTenderStatusRs(
-                process.tender.status.key,
-                process.tender.statusDetails.key
-            )
+            data = result
         )
     }
 

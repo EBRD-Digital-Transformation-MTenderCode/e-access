@@ -115,7 +115,7 @@ class OpenCnOnPnServiceBLTest {
             assertEquals(firstItemIdExcepted, response.tender.criteria!![2].relatedItem)
             assertEquals(secondItemIdExcepted, response.tender.criteria!![3].relatedItem)
 
-            assertEquals(ocid.toString(), response.ocid)
+            assertEquals(ocid.value, response.ocid)
 
             verify(generationService, times(2))
                 .generatePermanentLotId()

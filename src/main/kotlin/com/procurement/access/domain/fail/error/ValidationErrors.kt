@@ -88,11 +88,6 @@ sealed class ValidationErrors(
         description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
     )
 
-    class TenderNotFoundOnGetOrganization(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
-        numberError = "1.9.1",
-        description = "Tender not found by cpid '$cpid' and ocid '$ocid'."
-    )
-
     class RequirementsNotFoundOnVerifyRequirementResponse(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
         numberError = "1.5.1",
         description = "Requirements not found by cpid '$cpid' and ocid '$ocid'."
@@ -182,7 +177,7 @@ sealed class ValidationErrors(
         numberError = "1.17.2",
         prefix = "VR.COM-",
         description = "Tender with cpid='$cpid' and stage='${stage}' has invalid states.",
-        entityId = cpid.toString()
+        entityId = cpid.value
     )
 
     class InvalidStageOnCheckTenderState(val stage: Stage) : ValidationErrors(
@@ -292,13 +287,6 @@ sealed class ValidationErrors(
         ValidationErrors(
             prefix = "VR.COM-",
             numberError = "10.1.6.2",
-            description = "Stage '${stage}' not allowed at this command"
-        )
-
-    class UnexpectedStageForGetOrganization(stage: Stage) :
-        ValidationErrors(
-            prefix = "VR.COM-",
-            numberError = "1.9.3",
             description = "Stage '${stage}' not allowed at this command"
         )
 

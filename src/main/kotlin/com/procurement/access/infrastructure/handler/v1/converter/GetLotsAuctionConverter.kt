@@ -14,7 +14,12 @@ fun GetLotsAuctionResponseData.toResponseDto(): GetLotsAuctionResponse {
                     id = lot.id,
                     title = lot.title,
                     description = lot.description,
-                    value = lot.value
+                    value = lot.value.let { value ->
+                        GetLotsAuctionResponse.Tender.Lot.Value(
+                            amount = value.amount,
+                            currency = value.currency
+                        )
+                    }
                 )
             }
         )

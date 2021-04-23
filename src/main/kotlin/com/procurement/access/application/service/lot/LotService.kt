@@ -20,6 +20,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v1.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetLotStateByIdsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
@@ -308,7 +309,7 @@ class LotServiceImpl(
                         .map { lot -> LotId.fromString(lot.id) }
 
                     else -> {
-                        params.states.sorted()
+                        params.states
                             .let { sortedStatuses -> getLotsOnStates(lots = cn.tender.lots, states = sortedStatuses) }
                             .map { lot -> LotId.fromString(lot.id) }
                     }
@@ -329,7 +330,7 @@ class LotServiceImpl(
                         .map { lot -> LotId.fromString(lot.id) }
 
                     else -> {
-                        params.states.sorted()
+                        params.states
                             .let { sortedStatuses -> getAPLotsOnStates(lots = lots, states = sortedStatuses) }
                             .map { lot -> LotId.fromString(lot.id) }
                     }
@@ -349,10 +350,28 @@ class LotServiceImpl(
                         .map { lot -> LotId.fromString(lot.id) }
 
                     else -> {
-                        params.states.sorted()
+                        params.states
                             .let { sortedStatuses -> getPNLotsOnStates(lots = pn.tender.lots, states = sortedStatuses) }
                             .map { lot -> LotId.fromString(lot.id) }
                     }
+                }
+
+                success(lotIds)
+            }
+
+            Stage.RQ -> {
+                val rfq = tenderProcessEntity.jsonData
+                    .tryToObject(RfqEntity::class.java)
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
+
+                val lotIds = when {
+                    params.states.isEmpty() -> rfq.tender.lots
+                        .map { lot -> lot.id }
+
+                    else -> params.states
+                            .let { sortedStatuses -> getRfqLotsOnStates(lots = rfq.tender.lots, states = sortedStatuses) }
+                            .map { lot -> lot.id }
                 }
 
                 success(lotIds)
@@ -363,8 +382,7 @@ class LotServiceImpl(
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC,
-            Stage.RQ ->
+            Stage.PC ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
                 )
@@ -519,46 +537,80 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val cn: CNEntity = toObject(CNEntity::class.java, entity.jsonData)
+        val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }
 
-        val idsUnsuccessfulLots: Set<LotId> = data.lots.toSet { it.id }
-        val updatedLots: List<CNEntity.Tender.Lot> = cn.tender.lots.setUnsuccessfulStatus(ids = idsUnsuccessfulLots)
-        val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
+        val (tenderJson, result) = when (context.stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val cn = toObject(CNEntity::class.java, entity.jsonData)
+                val updatedLots: List<CNEntity.Tender.Lot> = cn.tender.lots.map { lot ->
+                    if (lot.id in idsUnsuccessfulLots)
+                        lot.copy(status = LotStatus.UNSUCCESSFUL)
+                    else
+                        lot
+                }
+                val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
 
-        val updatedCN = cn.copy(
-            tender = cn.tender.copy(
-                status = if (activeLotsIsPresent) cn.tender.status else TenderStatus.UNSUCCESSFUL,
-                statusDetails = if (activeLotsIsPresent) cn.tender.statusDetails else TenderStatusDetails.EMPTY,
-                lots = updatedLots
+                val updatedCN = cn.copy(
+                    tender = cn.tender.copy(
+                        status = if (activeLotsIsPresent) cn.tender.status else TenderStatus.UNSUCCESSFUL,
+                        statusDetails = if (activeLotsIsPresent) cn.tender.statusDetails else TenderStatusDetails.EMPTY,
+                        lots = updatedLots
+                    )
+                )
+
+                toJson(updatedCN) to SettedLotsStatusUnsuccessful.fromDomain(updatedCN, data)
+            }
+
+            Stage.RQ -> {
+                val rq = toObject(RfqEntity::class.java, entity.jsonData)
+                val updatedLots: List<RfqEntity.Tender.Lot> = rq.tender.lots.map { lot ->
+                    if (lot.id.toString() in idsUnsuccessfulLots)
+                        lot.copy(status = LotStatus.UNSUCCESSFUL)
+                    else
+                        lot
+                }
+                val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
+
+                val updatedRfq = rq.copy(
+                    tender = rq.tender.copy(
+                        status = if (activeLotsIsPresent) rq.tender.status else TenderStatus.UNSUCCESSFUL,
+                        statusDetails = if (activeLotsIsPresent) rq.tender.statusDetails else TenderStatusDetails.EMPTY,
+                        lots = updatedLots
+                    )
+                )
+
+                toJson(updatedRfq) to SettedLotsStatusUnsuccessful.fromDomain(updatedRfq, data)
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage ${context.stage} not allowed at the command."
             )
-        )
+        }
 
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                stage = context.stage,
+                stage = context.stage.key,
                 owner = entity.owner,
                 createdDate = context.startDate,
-                jsonData = toJson(updatedCN)
+                jsonData = tenderJson
             )
         )
 
-        return SettedLotsStatusUnsuccessful(
-            tender = SettedLotsStatusUnsuccessful.Tender(
-                status = updatedCN.tender.status,
-                statusDetails = updatedCN.tender.statusDetails
-            ),
-            lots = data.lots.map { lot ->
-                SettedLotsStatusUnsuccessful.Lot(
-                    id = lot.id,
-                    status = LotStatus.UNSUCCESSFUL
-                )
-            }
-        )
+        return result
     }
 
     private fun Lot.convertToGetLotStateByIdsResult(): Result<GetLotStateByIdsResult, Fail> {
@@ -666,19 +718,22 @@ class LotServiceImpl(
             lot
     }
 
+    private fun FindLotIdsParams.State.matchesWith(lotStatus: LotStatus, lotStatusDetails: LotStatusDetails) =
+        when {
+            status == null && statusDetails != null -> lotStatusDetails == statusDetails
+            status != null && statusDetails == null -> lotStatus == status
+            status != null && statusDetails != null -> lotStatus == status && lotStatusDetails == statusDetails
+            else -> throw IllegalArgumentException("State must contains 'status' or/and 'statusDetails'. Missing 'state' and 'statusDetails'")
+        }
+
     private fun getLotsOnStates(
         lots: List<CNEntity.Tender.Lot>,
         states: List<FindLotIdsParams.State>
     ): List<CNEntity.Tender.Lot> {
+        val sortedStates = states.sorted()
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
-                }
-            }
-            state != null
+            val foundedState = sortedStates.find { state -> state.matchesWith(lot.status, lot.statusDetails) }
+            foundedState != null
         }
     }
 
@@ -686,15 +741,10 @@ class LotServiceImpl(
         lots: List<APEntity.Tender.Lot>,
         states: List<FindLotIdsParams.State>
     ): List<APEntity.Tender.Lot> {
+        val sortedStates = states.sorted()
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
-                }
-            }
-            state != null
+            val foundedState = sortedStates.find { state -> state.matchesWith(lot.status, lot.statusDetails) }
+            foundedState != null
         }
     }
 
@@ -702,15 +752,21 @@ class LotServiceImpl(
         lots: List<PNEntity.Tender.Lot>,
         states: List<FindLotIdsParams.State>
     ): List<PNEntity.Tender.Lot> {
+        val sortedStates = states.sorted()
         return lots.filter { lot ->
-            val state = states.firstOrNull { state ->
-                when {
-                    state.status == null -> lot.statusDetails == state.statusDetails
-                    state.statusDetails == null -> lot.status == state.status
-                    else -> lot.statusDetails == state.statusDetails && lot.status == state.status
-                }
-            }
-            state != null
+            val foundedState = sortedStates.find { state -> state.matchesWith(lot.status, lot.statusDetails) }
+            foundedState != null
+        }
+    }
+
+    private fun getRfqLotsOnStates(
+        lots: List<RfqEntity.Tender.Lot>,
+        states: List<FindLotIdsParams.State>
+    ): List<RfqEntity.Tender.Lot> {
+        val sortedStates = states.sorted()
+        return lots.filter { lot ->
+            val foundedState = sortedStates.find { state -> state.matchesWith(lot.status, lot.statusDetails) }
+            foundedState != null
         }
     }
 

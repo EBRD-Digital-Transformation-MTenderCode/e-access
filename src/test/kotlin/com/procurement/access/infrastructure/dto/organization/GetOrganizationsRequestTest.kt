@@ -1,11 +1,11 @@
 package com.procurement.access.infrastructure.dto.organization
 
-import com.procurement.access.application.model.organization.GetOrganization
+import com.procurement.access.application.model.organization.GetOrganizations
 import com.procurement.access.infrastructure.AbstractDTOTestBase
 import org.junit.jupiter.api.Test
 
-class GetOrganizationRequestTest : AbstractDTOTestBase<GetOrganization.Params>(
-    GetOrganization.Params::class.java
+class GetOrganizationsRequestTest : AbstractDTOTestBase<GetOrganizations.Params>(
+    GetOrganizations.Params::class.java
 ) {
     @Test
     fun fully() {

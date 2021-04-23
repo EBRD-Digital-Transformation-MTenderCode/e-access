@@ -1,5 +1,7 @@
 {
   "tender": {
+    "title": "string",
+    "description": "string",
     "lots": [
       {
         "id": "string",

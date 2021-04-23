@@ -8,7 +8,8 @@ fun CreateFEResult.convert(): CreateFEResponse =
         ocid = this.ocid,
         token = this.token,
         tender = this.tender.convert(),
-        parties = this.parties.map { it.convert() }
+        parties = this.parties.map { it.convert() },
+        relatedProcesses = this.relatedProcesses.map { it.convert() }
     )
 
 fun CreateFEResult.Tender.convert(): CreateFEResponse.Tender =
@@ -144,6 +145,15 @@ fun CreateFEResult.Tender.ProcuringEntity.convert(): CreateFEResponse.Tender.Pro
     CreateFEResponse.Tender.ProcuringEntity(
         id = this.id,
         name = this.name
+    )
+
+fun CreateFEResult.RelatedProcess.convert(): CreateFEResponse.RelatedProcess =
+    CreateFEResponse.RelatedProcess(
+        id = id,
+        uri = uri,
+        scheme = scheme,
+        identifier = identifier,
+        relationship = relationship
     )
 
 private fun CreateFEResult.Party.convert(): CreateFEResponse.Party =

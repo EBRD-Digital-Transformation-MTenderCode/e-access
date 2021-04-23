@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  * Alternative way it's use annotation (above constructor or factory method of child class) with specifying mode.
  * Ex: @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
  */
-sealed class Ocid(private val value: String) : Serializable {
+sealed class Ocid(@JsonValue val value: String) : Serializable {
 
     override fun equals(other: Any?): Boolean {
         return if (this !== other)
@@ -27,7 +27,6 @@ sealed class Ocid(private val value: String) : Serializable {
 
     override fun hashCode(): Int = value.hashCode()
 
-    @JsonValue
     override fun toString(): String = value
 
     class MultiStage private constructor(value: String) : Ocid(value = value) {
@@ -39,11 +38,11 @@ sealed class Ocid(private val value: String) : Serializable {
                 get() = regex.pattern
 
             @JvmStatic
-            @JsonCreator
+            @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
             fun tryCreateOrNull(value: String): MultiStage? =
                 if (value.matches(regex)) MultiStage(value = value) else null
 
-            fun generate(cpid: Cpid): MultiStage = MultiStage(cpid.toString())
+            fun generate(cpid: Cpid): MultiStage = MultiStage(cpid.value)
         }
     }
 
@@ -61,7 +60,7 @@ sealed class Ocid(private val value: String) : Serializable {
                 get() = regex.pattern
 
             @JvmStatic
-            @JsonCreator
+            @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
             fun tryCreateOrNull(value: String): SingleStage? =
                 if (value.matches(regex)) {
                     val stage = Stage.orNull(value.split("-")[STAGE_POSITION])!!

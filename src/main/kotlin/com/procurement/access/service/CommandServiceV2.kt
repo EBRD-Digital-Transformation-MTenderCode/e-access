@@ -28,7 +28,7 @@ import com.procurement.access.infrastructure.handler.v2.GetItemsByLotIdsHandler
 import com.procurement.access.infrastructure.handler.v2.GetLotStateByIdsHandler
 import com.procurement.access.infrastructure.handler.v2.GetLotsValueHandler
 import com.procurement.access.infrastructure.handler.v2.GetMainProcurementCategoryHandler
-import com.procurement.access.infrastructure.handler.v2.GetOrganizationHandler
+import com.procurement.access.infrastructure.handler.v2.GetOrganizationsHandler
 import com.procurement.access.infrastructure.handler.v2.GetQualificationCriteriaAndMethodHandler
 import com.procurement.access.infrastructure.handler.v2.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.v2.OutsourcingPNHandler
@@ -67,7 +67,7 @@ class CommandServiceV2(
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
     private val getLotsValueHandler: GetLotsValueHandler,
     private val getMainProcurementCategoryHandler: GetMainProcurementCategoryHandler,
-    private val getOrganizationHandler: GetOrganizationHandler,
+    private val getOrganizationsHandler: GetOrganizationsHandler,
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
     private val outsourcingPNHandler: OutsourcingPNHandler,
@@ -106,7 +106,7 @@ class CommandServiceV2(
                     CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_LOTS_VALUE -> getLotsValueHandler.handle(descriptor)
                     CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(descriptor)
-                    CommandTypeV2.GET_ORGANIZATION -> getOrganizationHandler.handle(descriptor)
+                    CommandTypeV2.GET_ORGANIZATIONS -> getOrganizationsHandler.handle(descriptor)
                     CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(descriptor)
                     CommandTypeV2.GET_TENDER_STATE -> getTenderStateHandler.handle(descriptor)
                     CommandTypeV2.OUTSOURCING_PN -> outsourcingPNHandler.handle(descriptor)

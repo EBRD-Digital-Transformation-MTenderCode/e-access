@@ -6,6 +6,7 @@ import com.procurement.access.domain.EnumElementProvider
 
 enum class RelatedProcessType(@JsonValue override val key: String) : EnumElementProvider.Key {
 
+    AGGREGATE_PLANNING("aggregatePlanning"),
     FRAMEWORK("framework"),
     PARENT("parent"),
     PLANNING("planning"),
