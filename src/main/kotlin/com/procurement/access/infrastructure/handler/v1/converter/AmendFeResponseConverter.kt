@@ -6,7 +6,8 @@ import com.procurement.access.infrastructure.handler.v1.model.response.AmendFERe
 fun AmendFEResult.convert(): AmendFEResponse =
     AmendFEResponse(
         tender = this.tender.convert(),
-        parties = this.parties.map { it.convert() }
+        parties = this.parties.map { it.convert() },
+        relatedProcesses = this.relatedProcesses.map { it.convert() }
     )
 
 fun AmendFEResult.Tender.convert(): AmendFEResponse.Tender =
@@ -142,6 +143,15 @@ fun AmendFEResult.Tender.ProcuringEntity.convert(): AmendFEResponse.Tender.Procu
     AmendFEResponse.Tender.ProcuringEntity(
         id = this.id,
         name = this.name
+    )
+
+fun AmendFEResult.RelatedProcess.convert(): AmendFEResponse.RelatedProcess =
+    AmendFEResponse.RelatedProcess(
+        id = id,
+        scheme = scheme,
+        identifier = identifier,
+        relationship = relationship,
+        uri = uri
     )
 
 private fun AmendFEResult.Party.convert(): AmendFEResponse.Party =

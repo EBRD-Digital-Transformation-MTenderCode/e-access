@@ -1,5 +1,7 @@
 package com.procurement.access.service
 
+import com.procurement.access.application.model.errors.CreateRfqErrors
+import com.procurement.access.application.model.errors.ValidateRfqDataErrors
 import com.procurement.access.application.model.params.CreateRelationToContractProcessStageParams
 import com.procurement.access.application.model.params.CreateRfqParams
 import com.procurement.access.application.model.params.ValidateRfqDataParams
@@ -14,6 +16,7 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -28,13 +31,16 @@ import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToContractProcessStageResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfqResult
 import com.procurement.access.lib.extension.getDuplicate
+import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
+import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 interface RfqService {
     fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail>
@@ -52,7 +58,7 @@ class RfqServiceImpl(
     override fun validateRfqData(params: ValidateRfqDataParams): ValidationResult<Fail> {
         val pnEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
             .onFailure { return it.reason.asValidationFailure() }
-            ?: return CommandValidationErrors.ValidateRfqData.PnNotFound(params.relatedCpid, params.relatedOcid)
+            ?: return ValidateRfqDataErrors.PnNotFound(params.relatedCpid, params.relatedOcid)
                 .asValidationFailure()
 
         val pn = pnEntity.jsonData.tryToObject(PNEntity::class.java)
@@ -70,7 +76,7 @@ class RfqServiceImpl(
         pn: PNEntity
     ): ValidationResult<CommandValidationErrors> {
         if (params.tender.lots.size != 1)
-            return CommandValidationErrors.ValidateRfqData.InvalidNumberOfLots(params.tender.lots.size)
+            return ValidateRfqDataErrors.InvalidNumberOfLots(params.tender.lots.size)
                 .asValidationFailure()
 
         val lot = params.tender.lots.first()
@@ -86,10 +92,10 @@ class RfqServiceImpl(
         params: ValidateRfqDataParams
     ): ValidationResult<CommandValidationErrors> {
         if (!lot.contractPeriod.endDate.isAfter(lot.contractPeriod.startDate))
-            return CommandValidationErrors.ValidateRfqData.InvalidContractPeriod().asValidationFailure()
+            return ValidateRfqDataErrors.InvalidContractPeriod().asValidationFailure()
 
         if (!lot.contractPeriod.startDate.isAfter(params.tender.tenderPeriod.endDate))
-            return CommandValidationErrors.ValidateRfqData.InvalidTenderPeriod().asValidationFailure()
+            return ValidateRfqDataErrors.InvalidTenderPeriod().asValidationFailure()
 
         return ValidationResult.ok()
     }
@@ -97,12 +103,12 @@ class RfqServiceImpl(
     private fun checkLotCurrency(
         lot: ValidateRfqDataParams.Tender.Lot,
         pn: PNEntity
-    ): ValidationResult<CommandValidationErrors.ValidateRfqData.InvalidCurrency> {
+    ): ValidationResult<ValidateRfqDataErrors.InvalidCurrency> {
         val requestCurrency = lot.value.currency
         val storedCurrency = pn.tender.value.currency
 
         if (requestCurrency != storedCurrency)
-            return CommandValidationErrors.ValidateRfqData.InvalidCurrency(
+            return ValidateRfqDataErrors.InvalidCurrency(
                 expectedCurrency = storedCurrency, receivedCurrency = requestCurrency
             ).asValidationFailure()
 
@@ -114,13 +120,19 @@ class RfqServiceImpl(
 
         val duplicateItemId = params.tender.items.getDuplicate { it.id }
         if (duplicateItemId != null)
-            return CommandValidationErrors.ValidateRfqData.DuplicatedItemId(duplicateItemId.id).asValidationFailure()
+            return ValidateRfqDataErrors.DuplicatedItemId(duplicateItemId.id).asValidationFailure()
 
         val itemWithUnknownLot = params.tender.items.firstOrNull { it.relatedLot != lot.id }
         if (itemWithUnknownLot != null)
-            return CommandValidationErrors.ValidateRfqData.UnknownRelatedLot(
+            return ValidateRfqDataErrors.UnknownRelatedLot(
                 itemId = itemWithUnknownLot.id, relatedLot = itemWithUnknownLot.relatedLot
             ).asValidationFailure()
+
+        val itemsWithInvalidQuantity = params.tender.items.filter { it.quantity <= BigDecimal.ZERO }
+        if (itemsWithInvalidQuantity.isNotEmpty()) {
+            val itemsIds = itemsWithInvalidQuantity.toSet { it.id }
+            return ValidateRfqDataErrors.InvalidItemQuantity(itemsIds).asValidationFailure()
+        }
 
         return ValidationResult.ok()
     }
@@ -131,15 +143,21 @@ class RfqServiceImpl(
 
         when (procurementMethodModalities.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION)) {
             true -> if (electronicAuctions == null)
-                return CommandValidationErrors.ValidateRfqData.ElectronicAuctionsAreMissing().asValidationFailure()
+                return ValidateRfqDataErrors.ElectronicAuctionsAreMissing().asValidationFailure()
             false -> if (electronicAuctions != null)
-                return CommandValidationErrors.ValidateRfqData.RedundantElectronicAuctions().asValidationFailure()
+                return ValidateRfqDataErrors.RedundantElectronicAuctions().asValidationFailure()
         }
 
         return ValidationResult.ok()
     }
 
     override fun createRfq(params: CreateRfqParams): Result<CreateRfqResult, Fail> {
+        val pnProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
+            .onFailure { return it }
+            ?: return CreateRfqErrors.RecordNotFound(params.relatedCpid, params.relatedOcid).asFailure()
+
+        val pnToken = pnProcessEntity.token
+
         val lotsByOldIds = params.tender.lots.associateBy(
             keySelector = { it.id },
             valueTransform = { generateLot(it) })
@@ -149,13 +167,17 @@ class RfqServiceImpl(
         val items = generateItems(params, newLotIdsByOldLotIds)
         val rfqOcid = Ocid.SingleStage.generate(params.cpid, Stage.RQ, nowDefaultUTC())
         val relatedProcesses = generateRelatedProcess(params)
+        val tenderValue = RfqEntity.Tender.Value(currency = lots.first().value.currency)
 
         val createdRfq = RfqEntity(
             ocid = rfqOcid,
             tender = RfqEntity.Tender(
                 id = generationService.generatePermanentTenderId(),
+                title = params.tender.title,
+                description = params.tender.description,
                 status = TenderStatus.ACTIVE,
                 statusDetails = TenderStatusDetails.TENDERING,
+                value = tenderValue,
                 date = params.date,
                 awardCriteria = AwardCriteria.PRICE_ONLY,
                 awardCriteriaDetails = AwardCriteriaDetails.AUTOMATED,
@@ -164,11 +186,11 @@ class RfqServiceImpl(
                 procurementMethodModalities = params.tender.procurementMethodModalities
             ),
             relatedProcesses = relatedProcesses,
-            token = generationService.generateToken()
+            token = pnToken
         )
 
         val entity = TenderProcessEntity(
-            cpId = params.cpid.toString(),
+            cpId = params.cpid.value,
             token = createdRfq.token,
             owner = params.owner.toString(),
             createdDate = nowDefaultUTC(),
@@ -199,6 +221,8 @@ class RfqServiceImpl(
             tender = createdRfq.tender.let { tender ->
                 CreateRfqResult.Tender(
                     id = tender.id,
+                    title = tender.title,
+                    description = tender.description,
                     electronicAuctions = electronicAuctions,
                     procurementMethodModalities = tender.procurementMethodModalities,
                     items = tender.items
@@ -286,7 +310,10 @@ class RfqServiceImpl(
                     statusDetails = tender.statusDetails,
                     awardCriteriaDetails = tender.awardCriteriaDetails,
                     awardCriteria = tender.awardCriteria,
-                    date = tender.date
+                    date = tender.date,
+                    value = tender.value.let {
+                        CreateRfqResult.Tender.Value(currency = it.currency)
+                    }
                 )
             }
         )
@@ -295,17 +322,17 @@ class RfqServiceImpl(
         val msRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.PARENT),
-            scheme = "ocid",
-            identifier = params.cpid.toString(),
-            uri = "${uriProperties.tender}/${params.cpid}/${params.cpid}"
+            scheme = RelatedProcessScheme.OCID.key,
+            identifier = params.cpid.value,
+            uri = "${uriProperties.tender}/${params.cpid.value}/${params.cpid.value}"
         )
 
         val pcrRelation = RfqEntity.RelatedProcess(
             id = generationService.relatedProcessId(),
             relationship = listOf(RelatedProcessType.X_CATALOGUE),
-            scheme = "ocid",
-            identifier = params.additionalOcid.toString(),
-            uri = "${uriProperties.tender}/${params.additionalCpid}/${params.additionalOcid}"
+            scheme = RelatedProcessScheme.OCID.key,
+            identifier = params.additionalOcid.value,
+            uri = "${uriProperties.tender}/${params.additionalCpid.value}/${params.additionalOcid.value}"
         )
         return listOf(msRelation, pcrRelation)
     }
@@ -410,9 +437,9 @@ class RfqServiceImpl(
                 CreateRelationToContractProcessStageResult.RelatedProcess(
                     id = generationService.relatedProcessId(),
                     relationship = getRelationship(params),
-                    scheme = "ocid",
-                    identifier = params.relatedOcid.toString(),
-                    uri = "${uriProperties.tender}/${params.cpid}/${params.relatedOcid}"
+                    scheme = RelatedProcessScheme.OCID.key,
+                    identifier = params.relatedOcid.value,
+                    uri = "${uriProperties.tender}/${params.cpid.value}/${params.relatedOcid.value}"
                 )
             )
         ).asSuccess()

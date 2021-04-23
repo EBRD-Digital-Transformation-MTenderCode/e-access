@@ -1,67 +1,71 @@
 {
-  "id": "string",
-  "name": "string",
-  "identifier": {
-    "id": "string",
-    "legalName": "string",
-    "scheme": "string"
-  },
-  "additionalIdentifiers": [
+  "parties": [
     {
       "id": "string",
-      "legalName": "string",
-      "scheme": "string"
-    }
-  ],
-  "address": {
-    "streetAddress": "string",
-    "addressDetails": {
-      "country": {
-        "id": "string",
-        "description": "string",
-        "scheme": "string",
-        "uri": "string"
-      },
-      "region": {
-        "id": "string",
-        "description": "string",
-        "scheme": "string",
-        "uri": "string"
-      },
-      "locality": {
-        "id": "string",
-        "description": "string",
-        "scheme": "string"
-      }
-    }
-  },
-  "contactPoint": {
-    "name": "string",
-    "email": "string",
-    "telephone": "string"
-  },
-  "persones": [
-    {
-      "id": "scheme-id",
-      "title": "string",
       "name": "string",
       "identifier": {
-        "scheme": "string",
-        "id": "string"
+        "id": "string",
+        "legalName": "string",
+        "scheme": "string"
       },
-      "businessFunctions": [
+      "additionalIdentifiers": [
         {
           "id": "string",
-          "type": "chairman",
-          "jobTitle": "string",
-          "period": {
-            "startDate": "2020-03-18T07:35:37Z"
+          "legalName": "string",
+          "scheme": "string"
+        }
+      ],
+      "address": {
+        "streetAddress": "string",
+        "addressDetails": {
+          "country": {
+            "id": "string",
+            "description": "string",
+            "scheme": "string",
+            "uri": "string"
           },
-          "documents": [
+          "region": {
+            "id": "string",
+            "description": "string",
+            "scheme": "string",
+            "uri": "string"
+          },
+          "locality": {
+            "id": "string",
+            "description": "string",
+            "scheme": "string"
+          }
+        }
+      },
+      "contactPoint": {
+        "name": "string",
+        "email": "string",
+        "telephone": "string"
+      },
+      "persones": [
+        {
+          "id": "scheme-id",
+          "title": "string",
+          "name": "string",
+          "identifier": {
+            "scheme": "string",
+            "id": "string"
+          },
+          "businessFunctions": [
             {
               "id": "string",
-              "documentType": "regulatoryDocument",
-              "title": "string"
+              "type": "chairman",
+              "jobTitle": "string",
+              "period": {
+                "startDate": "2020-03-18T07:35:37Z"
+              },
+              "documents": [
+                {
+                  "id": "string",
+                  "documentType": "regulatoryDocument",
+                  "title": "string"
+                }
+              ]
             }
           ]
         }

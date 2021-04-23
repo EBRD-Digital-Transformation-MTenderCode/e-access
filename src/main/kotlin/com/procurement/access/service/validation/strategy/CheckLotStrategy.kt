@@ -3,10 +3,12 @@ package com.procurement.access.service.validation.strategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.model.dto.ocds.Lot
+import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 import java.util.*
@@ -24,32 +26,56 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
     fun check(cm: CommandMessage) {
         val cpid = getCPID(cm)
         val lotId = getLotId(cm)
-        val stage = getStage(cm)
-        val process: TenderProcess = loadTenderProcess(cpid, stage)
+        val stage = cm.stage
 
-        val lot = process.tender.lots.firstOrNull {
-            UUID.fromString(it.id) == lotId
-        } ?: throw ErrorException(
-            error = ErrorType.LOT_NOT_FOUND,
-            message = "Lot with id: $lotId is not found."
-        )
-
-        checkLotStatuses(lot)
-    }
-
-    private fun loadTenderProcess(cpid: String, stage: String): TenderProcess {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        return toObject(TenderProcess::class.java, entity.jsonData)
+
+        val lotState = when (stage) {
+            Stage.AC,
+            Stage.EV,
+            Stage.FE,
+            Stage.NP,
+            Stage.TP -> {
+                val process = toObject(TenderProcess::class.java, entity.jsonData)
+                process.tender.lots
+                    .find { UUID.fromString(it.id) == lotId }
+                    ?.let { LotState(it.status, it.statusDetails) }
+            }
+
+            Stage.RQ -> {
+                val rfq = toObject(RfqEntity::class.java, entity.jsonData)
+                rfq.tender.lots
+                    .find { it.id == lotId }
+                    ?.let { LotState(it.status, it.statusDetails) }
+            }
+
+            Stage.AP,
+            Stage.EI,
+            Stage.FS,
+            Stage.PC,
+            Stage.PN -> throw ErrorException(
+                error = ErrorType.INVALID_STAGE,
+                message = "Stage $stage not allowed at the command."
+            )
+        }
+
+        if (lotState == null)
+            throw ErrorException(
+                error = ErrorType.LOT_NOT_FOUND,
+                message = "Lot with id: $lotId is not found."
+            )
+
+        checkLotState(lotState)
     }
 
-    private fun checkLotStatuses(lot: Lot) {
-        if (lot.status != LotStatus.ACTIVE)
+    private fun checkLotState(lotState: LotState) {
+        if (lotState.status != LotStatus.ACTIVE)
             throw ErrorException(
                 error = ErrorType.INVALID_LOT_STATUS,
                 message = "Lot must be with status: 'ACTIVE'."
             )
-        if (lot.statusDetails != LotStatusDetails.EMPTY)
+        if (lotState.statusDetails != LotStatusDetails.EMPTY)
             throw ErrorException(
                 error = ErrorType.INVALID_LOT_STATUS_DETAILS,
                 message = "Lot must be with status details: 'EMPTY'."
@@ -64,14 +90,6 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
             )
     }
 
-    private fun getStage(cm: CommandMessage): String {
-        return cm.context.stage
-            ?: throw ErrorException(
-                error = ErrorType.CONTEXT,
-                message = "Missing the 'stage' attribute in context."
-            )
-    }
-
     private fun getLotId(cm: CommandMessage): UUID = cm.context.id
         ?.let { id ->
             try {
@@ -81,4 +99,6 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
             }
         }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'id' attribute in context.")
+
+    private data class LotState(val status: LotStatus?, val statusDetails: LotStatusDetails?)
 }

@@ -10,17 +10,20 @@ import com.procurement.access.infrastructure.bind.api.v2.incident.IncidentModule
 import com.procurement.access.infrastructure.bind.api.version.ApiVersionModule
 import com.procurement.access.infrastructure.bind.date.JsonDateTimeModule
 import com.procurement.access.infrastructure.bind.money.MoneyModule
+import com.procurement.access.infrastructure.bind.process.ProcessIdentifierModule
 
 fun ObjectMapper.configuration() {
     this.registerModule(MoneyModule())
     this.registerModule(ApiVersionModule())
     this.registerModule(CommandIdModule())
+    this.registerModule(ProcessIdentifierModule())
     this.registerModule(IncidentModule())
     this.registerModule(JsonDateTimeModule())
     this.registerModule(KotlinModule())
 
     this.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true)
     this.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
+    this.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
     this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     this.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false)
     this.configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, false)

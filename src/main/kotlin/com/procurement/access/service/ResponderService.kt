@@ -1,6 +1,7 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.organization.GetOrganization
+import com.procurement.access.application.model.errors.GetOrganizationsErrors
+import com.procurement.access.application.model.organization.GetOrganizations
 import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
@@ -22,7 +23,7 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.converter.toReference
-import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.ResponderProcessingResult
 import com.procurement.access.infrastructure.handler.v2.model.response.ValidateRequirementResponsesResult
 import com.procurement.access.lib.extension.getDuplicate
@@ -44,7 +45,7 @@ interface ResponderService {
     fun checkPersonesStructure(params: CheckPersonesStructure.Params): ValidationResult<Fail.Error>
     fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail>
     fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail>
-    fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail>
+    fun getOrganizations(params: GetOrganizations.Params): Result<GetOrganizationsResult, Fail>
 }
 
 @Service
@@ -149,7 +150,7 @@ class ResponderServiceImpl(
 
         tenderProcessRepository.save(
             TenderProcessEntity(
-                cpId = params.cpid.toString(),
+                cpId = params.cpid.value,
                 token = entity.token,
                 stage = stage.toString(),
                 owner = entity.owner,
@@ -332,28 +333,30 @@ class ResponderServiceImpl(
         return success(requirementResponsesForTenderer.convert())
     }
 
-    override fun getOrganization(params: GetOrganization.Params): Result<GetOrganizationResult, Fail> {
+    override fun getOrganizations(params: GetOrganizations.Params): Result<GetOrganizationsResult, Fail> {
         val stage = params.ocid.stage
 
         val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
             .onFailure { error -> return error }
             ?: return failure(
-                ValidationErrors.TenderNotFoundOnGetOrganization(cpid = params.cpid, ocid = params.ocid)
+                GetOrganizationsErrors.TenderNotFound(cpid = params.cpid, ocid = params.ocid)
             )
 
         // FR.COM-1.9.1
-        val result = when (stage) {
+        val parties = when (stage) {
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
                     .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
                     .onFailure { return it }
-                val procuringEntityParty = fe.parties.firstOrNull { it.roles.contains(PartyRole.PROCURING_ENTITY) }!!
 
-                val organization = when (params.role) {
-                    GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(procuringEntityParty)
+                val organizations = when (params.role) {
+                    GetOrganizations.Params.OrganizationRole.PROCURING_ENTITY -> fe.parties.filter { it.roles.contains(PartyRole.PROCURING_ENTITY) }
+                    GetOrganizations.Params.OrganizationRole.BUYER -> fe.parties.filter { it.roles.contains(PartyRole.BUYER) }
                 }
-                success(organization)
+                val convertedOrganizations = organizations.map { convert(it) }
+
+                success(convertedOrganizations)
             }
 
             Stage.EV,
@@ -365,9 +368,10 @@ class ResponderServiceImpl(
                     .onFailure { return it }
 
                 val organization = when (params.role) {
-                    GetOrganization.Params.OrganizationRole.PROCURING_ENTITY -> convert(cn.tender.procuringEntity)
+                    GetOrganizations.Params.OrganizationRole.PROCURING_ENTITY -> convert(cn.tender.procuringEntity)
+                    GetOrganizations.Params.OrganizationRole.BUYER -> return failure(GetOrganizationsErrors.OrganizationByRoleNotFound(params.role))
                 }
-                success(organization)
+                success(listOf(organization))
             }
 
             Stage.AC,
@@ -376,11 +380,14 @@ class ResponderServiceImpl(
             Stage.FS,
             Stage.PC,
             Stage.PN,
-            Stage.RQ -> failure(ValidationErrors.UnexpectedStageForGetOrganization(stage = stage))
+            Stage.RQ -> failure(GetOrganizationsErrors.UnexpectedStage(stage = stage))
         }
             .onFailure { fail -> return fail }
 
-        return success(result)
+        if (parties.isEmpty())
+            return failure(GetOrganizationsErrors.OrganizationByRoleNotFound(params.role))
+
+        return success(GetOrganizationsResult(parties = parties))
     }
 
     private fun getValidBusinessFunctionTypesForPersons(params: CheckPersonesStructure.Params) =

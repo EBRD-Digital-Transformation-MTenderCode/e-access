@@ -30,7 +30,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     GET_LOTS_VALUE("getLotsValue"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
     GET_MAIN_PROCUREMENT_CATEGORY("getMainProcurementCategory"),
-    GET_ORGANIZATION("getOrganization"),
+    GET_ORGANIZATIONS("getOrganizations"),
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
     GET_TENDER_STATE("getTenderState"),
     OUTSOURCING_PN("outsourcingPN"),

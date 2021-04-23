@@ -625,7 +625,7 @@ class PnServiceTest {
 
     private fun getCreatePnPayload(cm: CommandMessage): CreatePnPayload {
         val context = CreatePnContext(
-            stage = cm.stage,
+            stage = cm.stage.key,
             owner = cm.owner,
             pmd = cm.pmd,
             country = cm.country,

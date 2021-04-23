@@ -1,6 +1,8 @@
 package com.procurement.access.application.model.data
 
 import com.procurement.access.domain.model.enums.Scheme
+import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import java.math.BigDecimal
 
 data class GetItemsByLotsResult(
@@ -15,7 +17,7 @@ data class GetItemsByLotsResult(
         val additionalClassifications: List<AdditionalClassification>?,
         val unit: Unit,
         val relatedLot: String
-    ) {
+    ) { companion object {}
         data class Classification(
              val id: String,
              val scheme: Scheme,
@@ -34,3 +36,56 @@ data class GetItemsByLotsResult(
         )
     }
 }
+
+fun GetItemsByLotsResult.Item.Companion.fromDomain(item: CNEntity.Tender.Item) =
+    GetItemsByLotsResult.Item(
+        id = item.id,
+        description = item.description,
+        internalId = item.internalId,
+        classification = item.classification.let { classification ->
+            GetItemsByLotsResult.Item.Classification(
+                id = classification.id,
+                description = classification.description,
+                scheme = classification.scheme
+            )
+        },
+        additionalClassifications = item.additionalClassifications
+            ?.map { additionalClassification ->
+                GetItemsByLotsResult.Item.AdditionalClassification(
+                    id = additionalClassification.id,
+                    scheme = additionalClassification.scheme,
+                    description = additionalClassification.description
+                )
+            },
+        quantity = item.quantity,
+        relatedLot = item.relatedLot,
+        unit = item.unit.let { unit ->
+            GetItemsByLotsResult.Item.Unit(
+                id = unit.id,
+                name = unit.name
+            )
+        }
+    )
+
+fun GetItemsByLotsResult.Item.Companion.fromDomain(item: RfqEntity.Tender.Item) =
+    GetItemsByLotsResult.Item(
+        id = item.id,
+        description = item.description,
+        internalId = item.internalId,
+        classification = item.classification.let { classification ->
+            GetItemsByLotsResult.Item.Classification(
+                id = classification.id,
+                description = classification.description,
+                scheme = Scheme.creator(classification.scheme)
+            )
+        },
+        additionalClassifications = emptyList(),
+        quantity = item.quantity,
+        relatedLot = item.relatedLot.toString(),
+        unit = item.unit.let { unit ->
+            GetItemsByLotsResult.Item.Unit(
+                id = unit.id,
+                name = unit.name
+            )
+        }
+    )

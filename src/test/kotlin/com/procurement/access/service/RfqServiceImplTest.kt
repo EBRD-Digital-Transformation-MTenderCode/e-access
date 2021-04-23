@@ -2,6 +2,7 @@ package com.procurement.access.service
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import com.procurement.access.application.model.errors.ValidateRfqDataErrors
 import com.procurement.access.application.model.params.ValidateRfqDataParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Transform
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
@@ -257,6 +259,44 @@ internal class RfqServiceImplTest {
         }
 
         @Test
+        fun `fail on invalid quantity`() {
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/rfq/entity_pn.json"))
+
+            whenever(tenderProcessRepository.getByCpIdAndOcid(CPID, OCID)).thenReturn(tenderProcessEntity.asSuccess())
+            val params = getParams()
+            val invalidQuantity = BigDecimal.ZERO
+            val paramsWithInvalidQuantity = params.copy(
+                tender = params.tender.copy(
+                    items = listOf(params.tender.items.first().copy(
+                        quantity = invalidQuantity)
+                    )
+                )
+            )
+            val actual = rfqService.validateRfqData(paramsWithInvalidQuantity) as ValidationResult.Error
+            val expectedErrorCode = ValidateRfqDataErrors.InvalidItemQuantity(emptyList()).code
+
+            assertEquals(expectedErrorCode, actual.reason.code)
+        }
+
+        @Test
+        fun `success on valid quantity`() {
+            val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/rfq/entity_pn.json"))
+
+            whenever(tenderProcessRepository.getByCpIdAndOcid(CPID, OCID)).thenReturn(tenderProcessEntity.asSuccess())
+            val params = getParams()
+            val invalidQuantity = BigDecimal.TEN
+            val paramsWithInvalidQuantity = params.copy(
+                tender = params.tender.copy(
+                    items = listOf(params.tender.items.first().copy(
+                        quantity = invalidQuantity)
+                    )
+                )
+            )
+            val actual = rfqService.validateRfqData(paramsWithInvalidQuantity)
+            assertTrue(actual is ValidationResult.Ok)
+        }
+
+        @Test
         fun electronicAuctionsAreMissing_fail() {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/rfq/entity_pn.json"))
 
@@ -292,6 +332,8 @@ internal class RfqServiceImplTest {
             relatedCpid = CPID,
             relatedOcid = OCID,
             tender = ValidateRfqDataParams.Tender(
+                title = "string",
+                description = "description",
                 lots = listOf(
                     ValidateRfqDataParams.Tender.Lot(
                         id = LOT_ID.toString(),

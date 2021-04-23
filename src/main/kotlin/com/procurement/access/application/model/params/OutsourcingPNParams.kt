@@ -11,7 +11,7 @@ import com.procurement.access.lib.functional.Result.Companion.success
 class OutsourcingPNParams(
     val cpid: Cpid,
     val ocid: Ocid.SingleStage,
-    val cpidFA: String
+    val cpidFA: Cpid
 ) {
 
     companion object {
@@ -19,10 +19,13 @@ class OutsourcingPNParams(
             val cpidResult = parseCpid(value = cpid)
                 .onFailure { error -> return error }
 
+            val cpidFAResult = parseCpid(value = cpidFA)
+                .onFailure { error -> return error }
+
             val ocidResult = parseOcid(value = ocid)
                 .onFailure { error -> return error }
 
-            return success(OutsourcingPNParams(cpid = cpidResult, ocid = ocidResult, cpidFA = cpidFA))
+            return success(OutsourcingPNParams(cpid = cpidResult, ocid = ocidResult, cpidFA = cpidFAResult))
         }
     }
 }
