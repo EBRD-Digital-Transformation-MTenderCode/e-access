@@ -60,7 +60,7 @@ class DivideLotHandler(
                 item.relatedLot.checkForBlank("tender.items[$i].relatedLot")
             }
         } catch (exception: EmptyStringException) {
-            return DataErrors.Validation.EmptyString(exception.attributeName).asFailure()
+            return DataErrors.Validation.EmptyString(exception.path).asFailure()
         }
 
         return this.asSuccess()
