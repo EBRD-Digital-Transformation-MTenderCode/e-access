@@ -21,46 +21,6 @@ import com.procurement.access.lib.functional.validate
 
 val allowedRoles = PartyRole.allowedElements
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     .filter {
         when (it) {
             PartyRole.BUYER -> true
