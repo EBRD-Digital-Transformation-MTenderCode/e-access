@@ -519,24 +519,27 @@ class ResponderServiceImpl(
     private fun getUpdatedPersones(
         receivedParty: PersonesProcessingParams.Party,
         party: FEEntity.Party
-    ): List<FEEntity.Party.Person> {
-        val receivedPersonsById = receivedParty.persones.associateBy { it.id }
-        val knownPersons = party.persones.orEmpty().map { knownPerson ->
-            receivedPersonsById[knownPerson.id]
-                ?.let { receivedPerson -> knownPerson.updateBy(receivedPerson) }
-                ?: knownPerson
-        }
-        val unknownPersons = receivedPersonsById
-            .minus(knownPersons.toSet { it.id })
-            .map { it.value.toDomain() }
-
-        return knownPersons + unknownPersons
-    }
+    ): List<FEEntity.Party.Person> =
+        updateStrategy(
+            receivedElements = receivedParty.persones,
+            keyExtractorForReceivedElement = { it.id },
+            availableElements = party.persones.orEmpty(),
+            keyExtractorForAvailableElement = { it.id },
+            updateBlock = { received -> this.updateBy(received) },
+            createBlock = { received -> received.toDomain() }
+        )
 
     private fun FEEntity.Party.Person.updateBy(
         receivedPerson: PersonesProcessingParams.Party.Persone
     ): FEEntity.Party.Person {
-        val updatedBusinessFunctions = getUpdatedBusinessFunctions(receivedPerson, this)
+        val updatedBusinessFunctions = updateStrategy(
+            receivedElements = receivedPerson.businessFunctions,
+            keyExtractorForReceivedElement = { it.id },
+            availableElements = businessFunctions,
+            keyExtractorForAvailableElement = { it.id },
+            updateBlock = { received -> this.updateBy(received) },
+            createBlock = { received -> received.toDomain() }
+        )
 
         return this.copy(
             title = receivedPerson.title,
@@ -550,23 +553,6 @@ class ResponderServiceImpl(
             },
             businessFunctions = updatedBusinessFunctions
         )
-    }
-
-    private fun getUpdatedBusinessFunctions(
-        receivedPerson: PersonesProcessingParams.Party.Persone,
-        knownPerson: FEEntity.Party.Person
-    ): List<FEEntity.Party.Person.BusinessFunction> {
-        val receivedBusinessFunctionsById = receivedPerson.businessFunctions.associateBy { it.id }
-        val knownBusinessFunctions = knownPerson.businessFunctions.map { knownBusinessFunction ->
-            receivedBusinessFunctionsById[knownBusinessFunction.id]
-                ?.let { receivedBusinessFunction -> knownBusinessFunction.updateBy(receivedBusinessFunction) }
-                ?: knownBusinessFunction
-        }
-        val unknownBusinessFunctions = receivedBusinessFunctionsById
-            .minus(knownBusinessFunctions.toSet { it.id })
-            .map { it.value.toDomain() }
-
-        return knownBusinessFunctions + unknownBusinessFunctions
     }
 
     private fun PersonesProcessingParams.Party.Persone.toDomain() =
@@ -602,17 +588,14 @@ class ResponderServiceImpl(
         )
 
     private fun FEEntity.Party.Person.BusinessFunction.updateBy(receivedBusinessFunction: PersonesProcessingParams.Party.Persone.BusinessFunction): FEEntity.Party.Person.BusinessFunction {
-        val receivedDocumentsById = receivedBusinessFunction.documents.orEmpty().associateBy { it.id }
-        val knownDocuments = this.documents.orEmpty().map { document ->
-            receivedDocumentsById[document.id]
-                ?.let { receivedDocument -> document.updateBy(receivedDocument) }
-                ?: document
-        }
-        val unknownDocuments = receivedDocumentsById
-            .minus(knownDocuments.toSet { it.id })
-            .map { it.value.toDomain() }
-
-        val updatedDocuments = knownDocuments + unknownDocuments
+        val updatedDocuments = updateStrategy(
+            receivedElements = receivedBusinessFunction.documents.orEmpty(),
+            keyExtractorForReceivedElement = { it.id },
+            availableElements = documents.orEmpty(),
+            keyExtractorForAvailableElement = { it.id },
+            updateBlock = { received -> this.updateBy(received) },
+            createBlock = { received -> received.toDomain() }
+        )
 
         return this.copy(
             type = receivedBusinessFunction.type,
