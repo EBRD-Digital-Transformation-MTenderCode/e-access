@@ -5,13 +5,14 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.persone.PersonId
 import java.time.LocalDateTime
 
 data class PersonesProcessingParams(
     val cpid: Cpid,
-    val ocid: Ocid,
-    val role: String,
+    val ocid: Ocid.SingleStage,
+    val role: PartyRole,
     val parties: List<Party>
 ) {
     data class Party(
