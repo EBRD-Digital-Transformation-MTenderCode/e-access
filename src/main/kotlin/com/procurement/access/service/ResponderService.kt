@@ -1,7 +1,9 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.model.errors.GetOrganizationsErrors
+import com.procurement.access.application.model.errors.PersonesProcessingErrors
 import com.procurement.access.application.model.organization.GetOrganizations
+import com.procurement.access.application.model.params.PersonesProcessingParams
 import com.procurement.access.application.model.responder.check.structure.CheckPersonesStructure
 import com.procurement.access.application.model.responder.processing.ResponderProcessing
 import com.procurement.access.application.model.responder.verify.VerifyRequirementResponse
@@ -19,11 +21,14 @@ import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.requirement.Requirement
+import com.procurement.access.exception.ErrorException
+import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.converter.toReference
 import com.procurement.access.infrastructure.handler.v2.model.response.GetOrganizationsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.PersonesProcessingResult
 import com.procurement.access.infrastructure.handler.v2.model.response.ResponderProcessingResult
 import com.procurement.access.infrastructure.handler.v2.model.response.ValidateRequirementResponsesResult
 import com.procurement.access.lib.extension.getDuplicate
@@ -35,8 +40,10 @@ import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.asValidationFailure
+import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
+import com.procurement.access.utils.trySerialization
 import com.procurement.access.utils.tryToObject
 import org.springframework.stereotype.Service
 
@@ -46,6 +53,7 @@ interface ResponderService {
     fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail>
     fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail>
     fun getOrganizations(params: GetOrganizations.Params): Result<GetOrganizationsResult, Fail>
+    fun personesProcessing(params: PersonesProcessingParams): Result<PersonesProcessingResult, Fail>
 }
 
 @Service
@@ -204,9 +212,11 @@ class ResponderServiceImpl(
 
         val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
             .onFailure { return Fail.Incident.DatabaseIncident(exception = it.reason.exception).asValidationFailure() }
-            ?: return ValidationErrors.RequirementsNotFoundOnVerifyRequirementResponse(cpid = params.cpid, ocid = params.ocid)
+            ?: return ValidationErrors.RequirementsNotFoundOnVerifyRequirementResponse(
+                cpid = params.cpid,
+                ocid = params.ocid
+            )
                 .asValidationFailure()
-
 
         val cn = cnEntity.jsonData
             .tryToObject(CNEntity::class.java)
@@ -351,7 +361,11 @@ class ResponderServiceImpl(
                     .onFailure { return it }
 
                 val organizations = when (params.role) {
-                    GetOrganizations.Params.OrganizationRole.PROCURING_ENTITY -> fe.parties.filter { it.roles.contains(PartyRole.PROCURING_ENTITY) }
+                    GetOrganizations.Params.OrganizationRole.PROCURING_ENTITY -> fe.parties.filter {
+                        it.roles.contains(
+                            PartyRole.PROCURING_ENTITY
+                        )
+                    }
                     GetOrganizations.Params.OrganizationRole.BUYER -> fe.parties.filter { it.roles.contains(PartyRole.BUYER) }
                 }
                 val convertedOrganizations = organizations.map { convert(it) }
@@ -369,7 +383,11 @@ class ResponderServiceImpl(
 
                 val organization = when (params.role) {
                     GetOrganizations.Params.OrganizationRole.PROCURING_ENTITY -> convert(cn.tender.procuringEntity)
-                    GetOrganizations.Params.OrganizationRole.BUYER -> return failure(GetOrganizationsErrors.OrganizationByRoleNotFound(params.role))
+                    GetOrganizations.Params.OrganizationRole.BUYER -> return failure(
+                        GetOrganizationsErrors.OrganizationByRoleNotFound(
+                            params.role
+                        )
+                    )
                 }
                 success(listOf(organization))
             }
@@ -451,7 +469,290 @@ class ResponderServiceImpl(
 
         return success(entity)
     }
+
+    override fun personesProcessing(params: PersonesProcessingParams): Result<PersonesProcessingResult, Fail> {
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
+            .onFailure { error -> return error }
+            ?: return PersonesProcessingErrors.TenderNotFound(cpid = params.cpid, ocid = params.ocid).asFailure()
+
+        val fe = entity.jsonData.tryToObject(FEEntity::class.java)
+            .onFailure { return it }
+
+        val receivedParty = params.parties.first()
+
+        return when (params.role) {
+            PartyRole.BUYER -> {
+                val party = fe.parties.firstOrNull { it.id == receivedParty.id }
+                    ?: return PersonesProcessingErrors.OrganizationNotFound(params.role, receivedParty.id).asFailure()
+                val updatedPersones = getUpdatedPersones(receivedParty, party)
+                val updatedParty = party.copy(persones = updatedPersones)
+                val updatedParties = fe.parties.map { party ->
+                    if (party.id == receivedParty.id) updatedParty
+                    else party
+                }
+                val updatedFe = fe.copy(parties = updatedParties)
+
+                trySerialization(updatedFe)
+                    .map { json -> entity.copy(jsonData = json) }
+                    .flatMap { updatedEntity -> tenderProcessRepository.update(updatedEntity) }
+                    .onFailure { fail -> return fail }
+
+                updatedParty.toPersonesProcessingResult().asSuccess()
+            }
+            PartyRole.PROCURING_ENTITY,
+            PartyRole.CLIENT,
+            PartyRole.CENTRAL_PURCHASING_BODY,
+            PartyRole.AUTHOR,
+            PartyRole.CANDIDATE,
+            PartyRole.ENQUIRER,
+            PartyRole.FUNDER,
+            PartyRole.INVITED_CANDIDATE,
+            PartyRole.INVITED_TENDERER,
+            PartyRole.PAYEE,
+            PartyRole.PAYER,
+            PartyRole.REVIEW_BODY,
+            PartyRole.SUPPLIER,
+            PartyRole.TENDERER -> throw ErrorException(ErrorType.INVALID_ROLE)
+        }
+    }
+
+    private fun getUpdatedPersones(
+        receivedParty: PersonesProcessingParams.Party,
+        party: FEEntity.Party
+    ): List<FEEntity.Party.Person> {
+        val receivedPersonsById = receivedParty.persones.associateBy { it.id }
+        val knownPersons = party.persones.orEmpty().map { knownPerson ->
+            receivedPersonsById[knownPerson.id]
+                ?.let { receivedPerson -> knownPerson.updateBy(receivedPerson) }
+                ?: knownPerson
+        }
+        val unknownPersons = receivedPersonsById
+            .minus(knownPersons.toSet { it.id })
+            .map { it.value.toDomain() }
+
+        return knownPersons + unknownPersons
+    }
+
+    private fun FEEntity.Party.Person.updateBy(
+        receivedPerson: PersonesProcessingParams.Party.Persone
+    ): FEEntity.Party.Person {
+        val updatedBusinessFunctions = getUpdatedBusinessFunctions(receivedPerson, this)
+
+        return this.copy(
+            title = receivedPerson.title,
+            name = receivedPerson.name,
+            identifier = receivedPerson.identifier.let { identifier ->
+                FEEntity.Party.Person.Identifier(
+                    id = identifier.id,
+                    scheme = identifier.scheme,
+                    uri = identifier.uri
+                )
+            },
+            businessFunctions = updatedBusinessFunctions
+        )
+    }
+
+    private fun getUpdatedBusinessFunctions(
+        receivedPerson: PersonesProcessingParams.Party.Persone,
+        knownPerson: FEEntity.Party.Person
+    ): List<FEEntity.Party.Person.BusinessFunction> {
+        val receivedBusinessFunctionsById = receivedPerson.businessFunctions.associateBy { it.id }
+        val knownBusinessFunctions = knownPerson.businessFunctions.map { knownBusinessFunction ->
+            receivedBusinessFunctionsById[knownBusinessFunction.id]
+                ?.let { receivedBusinessFunction -> knownBusinessFunction.updateBy(receivedBusinessFunction) }
+                ?: knownBusinessFunction
+        }
+        val unknownBusinessFunctions = receivedBusinessFunctionsById
+            .minus(knownBusinessFunctions.toSet { it.id })
+            .map { it.value.toDomain() }
+
+        return knownBusinessFunctions + unknownBusinessFunctions
+    }
+
+    private fun PersonesProcessingParams.Party.Persone.toDomain() =
+        FEEntity.Party.Person(
+            id = id,
+            name = name,
+            title = title,
+            identifier = FEEntity.Party.Person.Identifier(
+                id = identifier.id,
+                scheme = identifier.scheme,
+                uri = identifier.uri
+            ),
+            businessFunctions = businessFunctions.map { businessFunction -> businessFunction.toDomain() }
+        )
+
+    private fun PersonesProcessingParams.Party.Persone.BusinessFunction.Document.toDomain() =
+        FEEntity.Party.Person.BusinessFunction.Document(
+            id = id,
+            title = title,
+            documentType = documentType,
+            description = description
+        )
+
+    private fun PersonesProcessingParams.Party.Persone.BusinessFunction.toDomain() =
+        FEEntity.Party.Person.BusinessFunction(
+            id = id,
+            period = period.let { FEEntity.Party.Person.BusinessFunction.Period(startDate = it.startDate) },
+            jobTitle = jobTitle,
+            type = type,
+            documents = documents?.map { document ->
+                document.toDomain()
+            }
+        )
+
+    private fun FEEntity.Party.Person.BusinessFunction.updateBy(receivedBusinessFunction: PersonesProcessingParams.Party.Persone.BusinessFunction): FEEntity.Party.Person.BusinessFunction {
+        val receivedDocumentsById = receivedBusinessFunction.documents.orEmpty().associateBy { it.id }
+        val knownDocuments = this.documents.orEmpty().map { document ->
+            receivedDocumentsById[document.id]
+                ?.let { receivedDocument -> document.updateBy(receivedDocument) }
+                ?: document
+        }
+        val unknownDocuments = receivedDocumentsById
+            .minus(knownDocuments.toSet { it.id })
+            .map { it.value.toDomain() }
+
+        val updatedDocuments = knownDocuments + unknownDocuments
+
+        return this.copy(
+            type = receivedBusinessFunction.type,
+            jobTitle = receivedBusinessFunction.jobTitle,
+            period = receivedBusinessFunction.period.let {
+                FEEntity.Party.Person.BusinessFunction.Period(it.startDate)
+            },
+            documents = updatedDocuments
+        )
+    }
+
+    private fun FEEntity.Party.Person.BusinessFunction.Document.updateBy(receivedDocument: PersonesProcessingParams.Party.Persone.BusinessFunction.Document) = this.copy(
+        documentType = receivedDocument.documentType,
+        description = receivedDocument.description,
+        title = receivedDocument.title
+    )
+
+    private fun FEEntity.Party.toPersonesProcessingResult() = PersonesProcessingResult(
+        parties = listOf(
+            PersonesProcessingResult.Party(
+            id = id,
+            name = name,
+            identifier = identifier
+                .let { identifier ->
+                    PersonesProcessingResult.Party.Identifier(
+                        scheme = identifier.scheme,
+                        id = identifier.id,
+                        legalName = identifier.legalName,
+                        uri = identifier.uri
+                    )
+                },
+            additionalIdentifiers = additionalIdentifiers
+                ?.map { additionalIdentifier ->
+                    PersonesProcessingResult.Party.AdditionalIdentifier(
+                        scheme = additionalIdentifier.scheme,
+                        id = additionalIdentifier.id,
+                        legalName = additionalIdentifier.legalName,
+                        uri = additionalIdentifier.uri
+                    )
+                },
+            address = address
+                .let { address ->
+                    PersonesProcessingResult.Party.Address(
+                        streetAddress = address.streetAddress,
+                        postalCode = address.postalCode,
+                        addressDetails = address.addressDetails
+                            .let { addressDetails ->
+                                PersonesProcessingResult.Party.Address.AddressDetails(
+                                    country = addressDetails.country
+                                        .let { country ->
+                                            PersonesProcessingResult.Party.Address.AddressDetails.Country(
+                                                scheme = country.scheme,
+                                                id = country.id,
+                                                description = country.description,
+                                                uri = country.uri
+                                            )
+                                        },
+                                    region = addressDetails.region
+                                        .let { region ->
+                                            PersonesProcessingResult.Party.Address.AddressDetails.Region(
+                                                scheme = region.scheme,
+                                                id = region.id,
+                                                description = region.description,
+                                                uri = region.uri
+                                            )
+                                        },
+                                    locality = addressDetails.locality
+                                        .let { locality ->
+                                            PersonesProcessingResult.Party.Address.AddressDetails.Locality(
+                                                scheme = locality.scheme,
+                                                id = locality.id,
+                                                description = locality.description,
+                                                uri = locality.uri
+                                            )
+                                        }
+                                )
+                            }
+                    )
+                },
+            contactPoint = contactPoint
+                .let { contactPoint ->
+                    PersonesProcessingResult.Party.ContactPoint(
+                        name = contactPoint.name,
+                        email = contactPoint.email,
+                        telephone = contactPoint.telephone,
+                        faxNumber = contactPoint.faxNumber,
+                        url = contactPoint.url
+                    )
+                },
+            roles = roles,
+            persones = persones?.map { person ->
+                PersonesProcessingResult.Party.Persone(
+                    id = person.id,
+                    title = person.title,
+                    name = person.name,
+                    identifier = person.identifier
+                        .let { identifier ->
+                            PersonesProcessingResult.Party.Persone.Identifier(
+                                id = identifier.id,
+                                scheme = identifier.scheme,
+                                uri = identifier.uri
+                            )
+                        },
+                    businessFunctions = person.businessFunctions
+                        .map { businessFunctions ->
+                            PersonesProcessingResult.Party.Persone.BusinessFunction(
+                                id = businessFunctions.id,
+                                jobTitle = businessFunctions.jobTitle,
+                                type = businessFunctions.type,
+                                period = businessFunctions.period
+                                    .let { period ->
+                                        PersonesProcessingResult.Party.Persone.BusinessFunction.Period(
+                                            startDate = period.startDate
+                                        )
+                                    },
+                                documents = businessFunctions.documents
+                                    ?.map { document ->
+                                        PersonesProcessingResult.Party.Persone.BusinessFunction.Document(
+                                            id = document.id,
+                                            title = document.title,
+                                            description = document.description,
+                                            documentType = document.documentType
+                                        )
+                                    }
+                            )
+                        }
+                )
+            },
+            details = details
+                ?.let { details ->
+                    PersonesProcessingResult.Party.Details(
+                        typeOfBuyer = details.typeOfBuyer,
+                        mainGeneralActivity = details.mainGeneralActivity,
+                        mainSectoralActivity = details.mainSectoralActivity
+                    )
+                }
+            ))
+    )
 }
+
 
 private val responderPersonKeyExtractor: (ResponderProcessing.Params.Responder) -> String =
     { it.identifier.id + it.identifier.scheme }
@@ -622,19 +923,19 @@ private fun FEEntity.Party.Person.BusinessFunction.update(
     received: ResponderProcessing.Params.Responder.BusinessFunction
 ): FEEntity.Party.Person.BusinessFunction =
     FEEntity.Party.Person.BusinessFunction(
-    id = received.id,
-    jobTitle = received.jobTitle,
-    type = received.type,
-    period = this.period.update(received.period),
-    documents = updateStrategy(
-        receivedElements = received.documents,
-        keyExtractorForReceivedElement = responderDocumentKeyExtractor,
-        availableElements = this.documents.orEmpty(),
-        keyExtractorForAvailableElement = dbFEDocumentKeyExtractor,
-        updateBlock = FEEntity.Party.Person.BusinessFunction.Document::update,
-        createBlock = ::createFEDocument
+        id = received.id,
+        jobTitle = received.jobTitle,
+        type = received.type,
+        period = this.period.update(received.period),
+        documents = updateStrategy(
+            receivedElements = received.documents,
+            keyExtractorForReceivedElement = responderDocumentKeyExtractor,
+            availableElements = this.documents.orEmpty(),
+            keyExtractorForAvailableElement = dbFEDocumentKeyExtractor,
+            updateBlock = FEEntity.Party.Person.BusinessFunction.Document::update,
+            createBlock = ::createFEDocument
+        )
     )
-)
 
 private val dbFEDocumentKeyExtractor: (FEEntity.Party.Person.BusinessFunction.Document) -> String =
     { it.id }
