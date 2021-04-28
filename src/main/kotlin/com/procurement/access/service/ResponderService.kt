@@ -555,6 +555,32 @@ class ResponderServiceImpl(
         )
     }
 
+    private fun FEEntity.Party.Person.BusinessFunction.updateBy(receivedBusinessFunction: PersonesProcessingParams.Party.Persone.BusinessFunction): FEEntity.Party.Person.BusinessFunction {
+        val updatedDocuments = updateStrategy(
+            receivedElements = receivedBusinessFunction.documents.orEmpty(),
+            keyExtractorForReceivedElement = { it.id },
+            availableElements = documents.orEmpty(),
+            keyExtractorForAvailableElement = { it.id },
+            updateBlock = { received -> this.updateBy(received) },
+            createBlock = { received -> received.toDomain() }
+        )
+
+        return this.copy(
+            type = receivedBusinessFunction.type,
+            jobTitle = receivedBusinessFunction.jobTitle,
+            period = receivedBusinessFunction.period.let {
+                FEEntity.Party.Person.BusinessFunction.Period(it.startDate)
+            },
+            documents = updatedDocuments
+        )
+    }
+
+    private fun FEEntity.Party.Person.BusinessFunction.Document.updateBy(receivedDocument: PersonesProcessingParams.Party.Persone.BusinessFunction.Document) = this.copy(
+        documentType = receivedDocument.documentType,
+        description = receivedDocument.description,
+        title = receivedDocument.title
+    )
+
     private fun PersonesProcessingParams.Party.Persone.toDomain() =
         FEEntity.Party.Person(
             id = id,
@@ -586,32 +612,6 @@ class ResponderServiceImpl(
                 document.toDomain()
             }
         )
-
-    private fun FEEntity.Party.Person.BusinessFunction.updateBy(receivedBusinessFunction: PersonesProcessingParams.Party.Persone.BusinessFunction): FEEntity.Party.Person.BusinessFunction {
-        val updatedDocuments = updateStrategy(
-            receivedElements = receivedBusinessFunction.documents.orEmpty(),
-            keyExtractorForReceivedElement = { it.id },
-            availableElements = documents.orEmpty(),
-            keyExtractorForAvailableElement = { it.id },
-            updateBlock = { received -> this.updateBy(received) },
-            createBlock = { received -> received.toDomain() }
-        )
-
-        return this.copy(
-            type = receivedBusinessFunction.type,
-            jobTitle = receivedBusinessFunction.jobTitle,
-            period = receivedBusinessFunction.period.let {
-                FEEntity.Party.Person.BusinessFunction.Period(it.startDate)
-            },
-            documents = updatedDocuments
-        )
-    }
-
-    private fun FEEntity.Party.Person.BusinessFunction.Document.updateBy(receivedDocument: PersonesProcessingParams.Party.Persone.BusinessFunction.Document) = this.copy(
-        documentType = receivedDocument.documentType,
-        description = receivedDocument.description,
-        title = receivedDocument.title
-    )
 
     private fun FEEntity.Party.toPersonesProcessingResult() = PersonesProcessingResult(
         parties = listOf(
