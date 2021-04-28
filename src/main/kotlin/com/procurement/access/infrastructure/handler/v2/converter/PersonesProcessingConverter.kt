@@ -8,14 +8,78 @@ import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parsePersonId
+import com.procurement.access.application.model.parseRole
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.infrastructure.handler.v2.model.request.PersonesProcessingRequest
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.validate
+
+val allowedRoles = PartyRole.allowedElements
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .filter {
+        when (it) {
+            PartyRole.BUYER -> true
+            PartyRole.PROCURING_ENTITY,
+            PartyRole.CLIENT,
+            PartyRole.CENTRAL_PURCHASING_BODY,
+            PartyRole.AUTHOR,
+            PartyRole.CANDIDATE,
+            PartyRole.ENQUIRER,
+            PartyRole.FUNDER,
+            PartyRole.INVITED_CANDIDATE,
+            PartyRole.INVITED_TENDERER,
+            PartyRole.PAYEE,
+            PartyRole.PAYER,
+            PartyRole.REVIEW_BODY,
+            PartyRole.SUPPLIER,
+            PartyRole.TENDERER -> false
+        }
+    }.toSet()
 
 fun PersonesProcessingRequest.convert(): Result<PersonesProcessingParams, DataErrors> {
     val parties = parties.validate(notEmptyRule("parties"))
@@ -24,7 +88,7 @@ fun PersonesProcessingRequest.convert(): Result<PersonesProcessingParams, DataEr
     return PersonesProcessingParams(
         cpid = parseCpid(cpid).onFailure { return it },
         ocid = parseOcid(ocid).onFailure { return it },
-        role = role,
+        role = parseRole(role, allowedRoles, "role").onFailure { return it },
         parties = parties.mapResult { it.convert() }.onFailure { return it }
 
     ).asSuccess()
