@@ -9,6 +9,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.lot.LotId
@@ -123,6 +124,11 @@ fun parseBusinessFunctionDocumentType(
     value: String, allowedEnums: Set<BusinessFunctionDocumentType>, attributeName: String
 ): Result<BusinessFunctionDocumentType, DataErrors> =
     parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = BusinessFunctionDocumentType)
+
+fun parseRole(
+    value: String, allowedEnums: Set<PartyRole>, attributeName: String
+): Result<PartyRole, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = PartyRole)
 
 fun parsePmd(value: String, allowedEnums: Set<ProcurementMethod>): Result<ProcurementMethod, DataErrors> {
     fun getFailureResult() = Result.failure(
