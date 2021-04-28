@@ -1,0 +1,38 @@
+{
+  "cpid": "ocds-b3wdp1-MD-1580458690892",
+  "ocid": "ocds-b3wdp1-MD-1580458690892-EV-1580458791896",
+  "role": "buyer",
+  "parties": [
+    {
+      "id": "string",
+      "persones": [
+        {
+          "id": "string",
+          "title": "Mr.",
+          "name": "string",
+          "identifier": {
+            "scheme": "string",
+            "id": "string"
+          },
+          "businessFunctions": [
+            {
+              "id": "string",
+              "type": "authority",
+              "jobTitle": "string",
+              "period": {
+                "startDate": "2021-04-28T14:15:46Z"
+              },
+              "documents": [
+                {
+                  "id": "string",
+                  "documentType": "regulatoryDocument",
+                  "title": "string"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
