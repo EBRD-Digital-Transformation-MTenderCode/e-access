@@ -548,7 +548,7 @@ class ResponderServiceImpl(
                 FEEntity.Party.Person.Identifier(
                     id = identifier.id,
                     scheme = identifier.scheme,
-                    uri = identifier.uri
+                    uri = identifier.uri ?: this.identifier.uri
                 )
             },
             businessFunctions = updatedBusinessFunctions
@@ -577,7 +577,7 @@ class ResponderServiceImpl(
 
     private fun FEEntity.Party.Person.BusinessFunction.Document.updateBy(receivedDocument: PersonesProcessingParams.Party.Persone.BusinessFunction.Document) = this.copy(
         documentType = receivedDocument.documentType,
-        description = receivedDocument.description,
+        description = receivedDocument.description ?: this.description,
         title = receivedDocument.title
     )
 
