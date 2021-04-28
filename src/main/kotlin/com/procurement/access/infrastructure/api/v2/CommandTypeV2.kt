@@ -34,6 +34,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     GET_QUALIFICATION_CRITERIA_AND_METHOD("getQualificationCriteriaAndMethod"),
     GET_TENDER_STATE("getTenderState"),
     OUTSOURCING_PN("outsourcingPN"),
+    PERSONES_PROCESSING("personesProcessing"),
     RESPONDER_PROCESSING("responderProcessing"),
     SET_STATE_FOR_LOTS("setStateForLots"),
     SET_STATE_FOR_TENDER("setStateForTender"),
