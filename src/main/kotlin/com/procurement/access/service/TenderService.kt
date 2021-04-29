@@ -7,6 +7,7 @@ import com.procurement.access.application.model.params.GetBuyersOwnersParams
 import com.procurement.access.application.model.params.GetCurrencyParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.Transform
 import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsErrors
 import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsParams
 import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsResult
@@ -75,7 +76,8 @@ import org.springframework.stereotype.Service
 class TenderService(
     private val tenderProcessDao: TenderProcessDao,
     private val generationService: GenerationService,
-    private val tenderProcessRepository: TenderProcessRepository
+    private val tenderProcessRepository: TenderProcessRepository,
+    private val transform: Transform
 ) {
 
     fun setSuspended(cm: CommandMessage): ApiResponseV1.Success {
@@ -477,7 +479,7 @@ class TenderService(
     fun getBuyersOwners(params: GetBuyersOwnersParams): Result<GetBuyersOwnersResult, Fail> {
         val fe = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
-            ?.jsonData?.tryToObject(FEEntity::class.java)
+            ?.let { transform.tryDeserialization(it.jsonData, FEEntity::class.java) }
             ?.onFailure { return it }
             ?: return GetBuyersOwnersErrors.FeRecordNotFound(params.cpid, params.ocid).asFailure()
 
@@ -489,7 +491,7 @@ class TenderService(
 
         val ap = tenderProcessRepository.getByCpIdAndOcid(params.cpid, apOcid)
             .onFailure { fail -> return fail }
-            ?.jsonData?.tryToObject(APEntity::class.java)
+            ?.let { transform.tryDeserialization(it.jsonData, APEntity::class.java) }
             ?.onFailure { return it }
             ?: return GetBuyersOwnersErrors.ApRecordNotFound(params.cpid, apOcid).asFailure()
 
@@ -505,11 +507,11 @@ class TenderService(
             val cpid = ocid.extractCpidOrNull()!!
             tenderProcessRepository.getByCpIdAndOcid(cpid, ocid)
                 .onFailure { fail -> return fail }
-                ?: return GetBuyersOwnersErrors.PnRecordNotFound(params.cpid, params.ocid).asFailure()
+                ?: return GetBuyersOwnersErrors.PnRecordNotFound(cpid, ocid).asFailure()
         }
 
         val entitiesByPn = pnEntities.associateBy {
-            it.jsonData.tryToObject(PNEntity::class.java)
+            transform.tryDeserialization(it.jsonData, PNEntity::class.java)
                 .onFailure { return it }
         }
 
