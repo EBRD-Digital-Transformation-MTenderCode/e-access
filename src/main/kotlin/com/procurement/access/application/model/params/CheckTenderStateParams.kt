@@ -44,6 +44,8 @@ class CheckTenderStateParams private constructor(
                     OperationType.AWARD_CONSIDERATION,
                     OperationType.COMPLETE_QUALIFICATION,
                     OperationType.CREATE_AWARD,
+                    OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                    OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                     OperationType.CREATE_PCR,
                     OperationType.CREATE_RFQ,
                     OperationType.CREATE_SUBMISSION,

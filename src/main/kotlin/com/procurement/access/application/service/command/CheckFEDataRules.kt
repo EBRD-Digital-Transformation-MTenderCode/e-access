@@ -478,6 +478,8 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
@@ -514,9 +516,12 @@ class CheckFEDataRules {
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
@@ -542,8 +547,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_BID,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                OperationType.CREATE_AWARD-> false
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
         fun CheckFEDataData.Tender.OtherCriteria?.isNeedValidate(operationType: OperationType) =
@@ -558,6 +562,8 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
@@ -595,9 +601,12 @@ class CheckFEDataRules {
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
+                OperationType.CREATE_AWARD,
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER, 
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
@@ -623,8 +632,7 @@ class CheckFEDataRules {
                 OperationType.UPDATE_CN,
                 OperationType.UPDATE_PN,
                 OperationType.WITHDRAW_BID,
-                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                OperationType.CREATE_AWARD -> throw ErrorException(ErrorType.INVALID_PMD)
+                OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_PMD)
             }
             return tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
                 ?: throw ErrorException(
