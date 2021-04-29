@@ -29,6 +29,8 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
     override fun toString(): String = value
 
+    fun extractCpidOrNull() = Cpid.tryCreateOrNull(value.substring(0..28))
+
     class MultiStage private constructor(value: String) : Ocid(value = value) {
 
         companion object {
