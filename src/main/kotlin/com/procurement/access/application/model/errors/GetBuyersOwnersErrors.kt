@@ -14,7 +14,7 @@ object GetBuyersOwnersErrors {
 
     class MissingAggregatePlanningRelationship() : CommandValidationErrors(
         numberError = "1.48.2",
-        description = "${RelatedProcessType.AGGREGATE_PLANNING} relationship not found."
+        description = "Relationship '${RelatedProcessType.AGGREGATE_PLANNING}' not found."
     )
 
     class ApRecordNotFound(cpid: Cpid, ocid: Ocid.SingleStage) : CommandValidationErrors(
@@ -24,7 +24,7 @@ object GetBuyersOwnersErrors {
 
     class MissingXScopeRelationship() : CommandValidationErrors(
         numberError = "1.48.4",
-        description = "${RelatedProcessType.X_SCOPE} relationship not found."
+        description = "Relationship '${RelatedProcessType.X_SCOPE}' not found."
     )
 
     class PnRecordNotFound(cpid: Cpid, ocid: Ocid.SingleStage) : CommandValidationErrors(
