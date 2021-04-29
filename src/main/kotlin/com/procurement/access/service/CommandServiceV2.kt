@@ -32,6 +32,7 @@ import com.procurement.access.infrastructure.handler.v2.GetOrganizationsHandler
 import com.procurement.access.infrastructure.handler.v2.GetQualificationCriteriaAndMethodHandler
 import com.procurement.access.infrastructure.handler.v2.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.v2.OutsourcingPNHandler
+import com.procurement.access.infrastructure.handler.v2.PersonesProcessingHandler
 import com.procurement.access.infrastructure.handler.v2.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.v2.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.v2.SetStateForTenderHandler
@@ -71,6 +72,7 @@ class CommandServiceV2(
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
     private val outsourcingPNHandler: OutsourcingPNHandler,
+    private val personesProcessingHandler: PersonesProcessingHandler,
     private val responderProcessingHandler: ResponderProcessingHandler,
     private val setStateForLotsHandler: SetStateForLotsHandler,
     private val setStateForTenderHandler: SetStateForTenderHandler,
@@ -110,6 +112,7 @@ class CommandServiceV2(
                     CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(descriptor)
                     CommandTypeV2.GET_TENDER_STATE -> getTenderStateHandler.handle(descriptor)
                     CommandTypeV2.OUTSOURCING_PN -> outsourcingPNHandler.handle(descriptor)
+                    CommandTypeV2.PERSONES_PROCESSING -> personesProcessingHandler.handle(descriptor)
                     CommandTypeV2.RESPONDER_PROCESSING -> responderProcessingHandler.handle(descriptor)
                     CommandTypeV2.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(descriptor)
                     CommandTypeV2.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(descriptor)

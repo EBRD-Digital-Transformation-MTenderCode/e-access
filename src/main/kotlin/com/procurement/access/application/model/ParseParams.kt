@@ -6,13 +6,17 @@ import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.DataTimeError
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
+import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.OperationType
+import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.domain.model.owner.Owner
 import com.procurement.access.domain.model.owner.tryCreateOwner
+import com.procurement.access.domain.model.persone.PersonId
 import com.procurement.access.domain.model.token.Token
 import com.procurement.access.domain.model.token.tryCreateToken
 import com.procurement.access.domain.util.extension.toLocalDateTime
@@ -90,6 +94,17 @@ fun parseLotId(value: String, attributeName: String): Result<LotId, DataErrors.V
 
         }
 
+fun parsePersonId(value: String, attributeName: String): Result<PersonId, DataErrors.Validation.DataFormatMismatch> =
+    PersonId.tryCreate(value)
+        .mapFailure {
+            DataErrors.Validation.DataFormatMismatch(
+                name = attributeName,
+                actualValue = value,
+                expectedFormat = "string"
+            )
+
+        }
+
 fun parseProcurementMethodModalities(
     value: String, allowedEnums: Set<ProcurementMethodModalities>, attributeName: String
 ): Result<ProcurementMethodModalities, DataErrors> =
@@ -99,6 +114,21 @@ fun parseOperationType(
     value: String, allowedEnums: Set<OperationType>
 ): Result<OperationType, DataErrors> =
     parseEnum(value = value, allowedEnums = allowedEnums, attributeName = "operationType", target = OperationType)
+
+fun parseBusinessFunctionType(
+    value: String, allowedEnums: Set<BusinessFunctionType>, attributeName: String
+): Result<BusinessFunctionType, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = BusinessFunctionType)
+
+fun parseBusinessFunctionDocumentType(
+    value: String, allowedEnums: Set<BusinessFunctionDocumentType>, attributeName: String
+): Result<BusinessFunctionDocumentType, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = BusinessFunctionDocumentType)
+
+fun parseRole(
+    value: String, allowedEnums: Set<PartyRole>, attributeName: String
+): Result<PartyRole, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = PartyRole)
 
 fun parsePmd(value: String, allowedEnums: Set<ProcurementMethod>): Result<ProcurementMethod, DataErrors> {
     fun getFailureResult() = Result.failure(
