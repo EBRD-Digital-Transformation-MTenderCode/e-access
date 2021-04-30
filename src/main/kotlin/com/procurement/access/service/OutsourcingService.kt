@@ -267,6 +267,8 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
             OperationType.CREATE_PIN,
@@ -280,8 +282,8 @@ class OutsourcingServiceImpl(
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
-            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> Unit

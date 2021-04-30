@@ -128,6 +128,8 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE, 
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
@@ -661,6 +663,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE ->
                     if (data.criteria.isEmpty())
                         throw ErrorException(ErrorType.MISSING_REFERENCE_CRITERIA, message = "VR-1.0.1.14.1")
+
                 OperationType.AMEND_FE,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
@@ -669,6 +672,8 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
                 OperationType.CREATE_PIN,
