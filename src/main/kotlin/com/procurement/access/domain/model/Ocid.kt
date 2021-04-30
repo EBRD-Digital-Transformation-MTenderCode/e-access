@@ -29,7 +29,7 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
     override fun toString(): String = value
 
-    fun extractCpidOrNull() = Cpid.tryCreateOrNull(value.substring(0..27))
+    abstract fun extractCpidOrNull(): Cpid?
 
     class MultiStage private constructor(value: String) : Ocid(value = value) {
 
@@ -46,6 +46,8 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
             fun generate(cpid: Cpid): MultiStage = MultiStage(cpid.value)
         }
+
+        override fun extractCpidOrNull() = Cpid.tryCreateOrNull(value)
     }
 
     class SingleStage private constructor(value: String, val stage: Stage) : Ocid(value = value) {
@@ -79,6 +81,17 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
             fun generate(cpid: Cpid, stage: Stage, timestamp: LocalDateTime): SingleStage =
                 SingleStage("$cpid-$stage-${timestamp.toMilliseconds()}", stage)
+        }
+
+        override fun extractCpidOrNull() : Cpid? {
+            val cpidRegexDisclosed = Cpid.regex.pattern
+                .dropLast(1)
+                .toRegex()
+
+            return cpidRegexDisclosed
+                .find(value)
+                ?.value
+                ?.let { Cpid.tryCreateOrNull(it) }
         }
     }
 }
