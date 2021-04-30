@@ -201,7 +201,6 @@ internal class TenderServiceTest {
             assertEquals(errorMessage, actual.reason.description)
         }
 
-
         @Test
         fun apNotFound_fail() {
             val params = getParams()
