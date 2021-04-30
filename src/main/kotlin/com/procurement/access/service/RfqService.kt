@@ -28,6 +28,7 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
+import com.procurement.access.infrastructure.handler.v1.converter.allowedOperationType
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToContractProcessStageResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfqResult
 import com.procurement.access.lib.extension.getDuplicate
@@ -447,20 +448,17 @@ class RfqServiceImpl(
     private fun getRelationship(params: CreateRelationToContractProcessStageParams) =
         when (params.operationType) {
             OperationType.CREATE_RFQ -> listOf(RelatedProcessType.X_PURCHASING)
-            OperationType.UPDATE_AWARD,
-            OperationType.SUBMIT_BID,
-            OperationType.ISSUING_FRAMEWORK_CONTRACT,
-            OperationType.DIVIDE_LOT,
-            OperationType.CREATE_AWARD,
-            OperationType.AWARD_CONSIDERATION,
+            
             OperationType.AMEND_FE,
-            OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
-            OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
+            OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
+            OperationType.CREATE_AWARD,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
             OperationType.CREATE_PCR,
@@ -468,15 +466,21 @@ class RfqServiceImpl(
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_PN,
             OperationType.CREATE_SUBMISSION,
+            OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
+            OperationType.DIVIDE_LOT,
+            OperationType.ISSUING_FRAMEWORK_CONTRACT,
             OperationType.OUTSOURCING_PN,
             OperationType.QUALIFICATION,
             OperationType.QUALIFICATION_CONSIDERATION,
+            OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.QUALIFICATION_PROTOCOL,
             OperationType.RELATION_AP,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
+            OperationType.SUBMIT_BID,
             OperationType.TENDER_PERIOD_END,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_BID,
