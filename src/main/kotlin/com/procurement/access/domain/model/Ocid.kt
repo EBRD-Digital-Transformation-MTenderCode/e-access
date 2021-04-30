@@ -84,7 +84,7 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
         }
 
         override fun extractCpidOrNull() : Cpid? {
-            val cpidRegexDisclosed = Cpid.regex.pattern
+            val cpidRegexDisclosed = Cpid.pattern
                 .dropLast(1)
                 .toRegex()
 

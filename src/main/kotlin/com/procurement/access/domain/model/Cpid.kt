@@ -22,7 +22,7 @@ class Cpid private constructor(@JsonValue val value: String) {
     override fun toString(): String = value
 
     companion object {
-        val regex = "^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}\$".toRegex()
+        private val regex = "^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}\$".toRegex()
 
         val pattern: String
             get() = regex.pattern
