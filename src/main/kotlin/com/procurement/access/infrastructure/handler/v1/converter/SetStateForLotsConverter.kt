@@ -7,6 +7,7 @@ import com.procurement.access.domain.model.lot.tryCreateLotId
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v2.model.request.SetStateForLotsRequest
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
 import com.procurement.access.lib.extension.mapResult
@@ -67,6 +68,13 @@ fun PNEntity.Tender.Lot.convertToSetStateForLotsResult():Result<SetStateForLotsR
     SetStateForLotsResult(
         id = id.tryCreateLotId()
             .onFailure { fail -> return fail },
+        status = status,
+        statusDetails = statusDetails
+    ).asSuccess()
+
+fun RfqEntity.Tender.Lot.convertToSetStateForLotsResult(): Result<SetStateForLotsResult, Fail.Incident.Parsing> =
+    SetStateForLotsResult(
+        id = id,
         status = status,
         statusDetails = statusDetails
     ).asSuccess()

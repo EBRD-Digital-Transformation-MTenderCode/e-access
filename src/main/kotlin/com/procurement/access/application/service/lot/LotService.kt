@@ -238,13 +238,62 @@ class LotServiceImpl(
 
                 resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
             }
+            Stage.RQ -> {
+                val rfq = tenderProcessEntity.jsonData
+                    .tryToObject(RfqEntity::class.java)
+                    .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                    .onFailure { return it }
 
+                val dbLotsIds: Set<LotId> = rfq.tender.lots
+                    .toSet { it.id }
+
+                val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
+                if (unknownLotsIds.isNotEmpty()) {
+                    return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds.map { it.toString() }))
+                }
+
+                val mapRequestIds = params.lots
+                    .associateBy { it.id }
+
+                val resultLots = mutableListOf<RfqEntity.Tender.Lot>()
+
+                val updatedLots = rfq.tender.lots
+                    .map { dbLot ->
+                        mapRequestIds[dbLot.id]
+                            ?.let { requestLot ->
+                                val dbLotState = LotStateInfo(dbLot.status, dbLot.statusDetails)
+                                if (statusOrStatusDetailsVaries(
+                                        databaseLotStateInfo = dbLotState,
+                                        requestLot = requestLot
+                                    )) {
+                                    val updatedLot = dbLot.copy(
+                                        status = requestLot.status,
+                                        statusDetails = requestLot.statusDetails ?: dbLot.statusDetails
+                                    )
+                                    resultLots.add(updatedLot)
+                                    updatedLot
+                                } else dbLot
+                            }
+                            ?: dbLot
+                    }
+                val updatedRfqEntity = rfq.copy(
+                    tender = rfq.tender.copy(
+                        lots = updatedLots
+                    )
+                )
+
+                val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedRfqEntity))
+
+                tenderProcessRepository.save(updatedTenderProcessEntity)
+                    .onFailure { incident -> return incident }
+
+                resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
+            }
             Stage.AC,
             Stage.EI,
             Stage.FE,
             Stage.FS,
-            Stage.PC,
-            Stage.RQ ->
+            Stage.PC ->
                 Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
                 )
