@@ -1,10 +1,13 @@
 package com.procurement.access.service
 
 
+import com.procurement.access.application.model.errors.GetBuyersOwnersErrors
 import com.procurement.access.application.model.params.FindAuctionsParams
+import com.procurement.access.application.model.params.GetBuyersOwnersParams
 import com.procurement.access.application.model.params.GetCurrencyParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
+import com.procurement.access.application.service.Transform
 import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsErrors
 import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsParams
 import com.procurement.access.application.service.tender.strategy.get.items.GetItemsByLotIdsResult
@@ -13,8 +16,10 @@ import com.procurement.access.application.service.tender.strategy.get.state.GetT
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -33,8 +38,10 @@ import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.entity.TenderCategoryInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
@@ -49,6 +56,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.Unsuspend
 import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTenderRs
 import com.procurement.access.infrastructure.handler.v1.model.response.UpdateTenderStatusRs
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetBuyersOwnersResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
 import com.procurement.access.lib.extension.toSet
@@ -68,7 +76,8 @@ import org.springframework.stereotype.Service
 class TenderService(
     private val tenderProcessDao: TenderProcessDao,
     private val generationService: GenerationService,
-    private val tenderProcessRepository: TenderProcessRepository
+    private val tenderProcessRepository: TenderProcessRepository,
+    private val transform: Transform
 ) {
 
     fun setSuspended(cm: CommandMessage): ApiResponseV1.Success {
@@ -465,5 +474,55 @@ class TenderService(
             .onFailure { return it }
 
         return GetMainProcurementCategoryResult(tender = GetMainProcurementCategoryResult.Tender(tenderCategory.tender.mainProcurementCategory)).asSuccess()
+    }
+
+    fun getBuyersOwners(params: GetBuyersOwnersParams): Result<GetBuyersOwnersResult, Fail> {
+        val fe = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
+            .onFailure { fail -> return fail }
+            ?.let { transform.tryDeserialization(it.jsonData, FEEntity::class.java) }
+            ?.onFailure { return it }
+            ?: return GetBuyersOwnersErrors.FeRecordNotFound(params.cpid, params.ocid).asFailure()
+
+        val apOcid = fe.relatedProcesses
+            ?.firstOrNull { it.relationship.contains(RelatedProcessType.AGGREGATE_PLANNING) }
+            ?.identifier
+            ?.let { Ocid.SingleStage.tryCreateOrNull(it.value)!! }
+            ?: return GetBuyersOwnersErrors.MissingAggregatePlanningRelationship().asFailure()
+
+        val ap = tenderProcessRepository.getByCpIdAndOcid(params.cpid, apOcid)
+            .onFailure { fail -> return fail }
+            ?.let { transform.tryDeserialization(it.jsonData, APEntity::class.java) }
+            ?.onFailure { return it }
+            ?: return GetBuyersOwnersErrors.ApRecordNotFound(params.cpid, apOcid).asFailure()
+
+        val pnOcids = ap.relatedProcesses
+            .orEmpty()
+            .filter { it.relationship.contains(RelatedProcessType.X_SCOPE) }
+            .map { Ocid.SingleStage.tryCreateOrNull(it.identifier.value)!! }
+
+        if (pnOcids.isEmpty())
+            return GetBuyersOwnersErrors.MissingXScopeRelationship().asFailure()
+
+        val pnEntities = pnOcids.map { ocid ->
+            val cpid = ocid.extractCpidOrNull()!!
+            tenderProcessRepository.getByCpIdAndOcid(cpid, ocid)
+                .onFailure { fail -> return fail }
+                ?: return GetBuyersOwnersErrors.PnRecordNotFound(cpid, ocid).asFailure()
+        }
+
+        val entitiesByPn = pnEntities.associateBy {
+            transform.tryDeserialization(it.jsonData, PNEntity::class.java)
+                .onFailure { return it }
+        }
+
+        return GetBuyersOwnersResult(buyers = entitiesByPn.mapNotNull { pn ->
+            pn.key.buyer?.let { buyer ->
+                GetBuyersOwnersResult.Buyer(
+                    id = buyer.id,
+                    name = buyer.name,
+                    owner = pn.value.owner
+                )
+            }
+        }).asSuccess()
     }
 }

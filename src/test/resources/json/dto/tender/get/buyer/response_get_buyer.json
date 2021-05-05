@@ -1,0 +1,9 @@
+{
+  "buyers": [
+    {
+      "id": "string",
+      "name": "string",
+      "owner": "string"
+    }
+  ]
+}
