@@ -6,6 +6,7 @@ import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.PartyRole
+import com.procurement.access.domain.model.enums.PersonTitle
 import com.procurement.access.domain.model.persone.PersonId
 import java.time.LocalDateTime
 
@@ -21,7 +22,7 @@ data class PersonesProcessingParams(
     ) {
         data class Persone(
             val id: PersonId,
-            val title: String,
+            val title: PersonTitle,
             val name: String,
             val identifier: Identifier,
 
