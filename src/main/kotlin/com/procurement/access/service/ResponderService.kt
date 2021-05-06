@@ -544,7 +544,7 @@ class ResponderServiceImpl(
         )
 
         return this.copy(
-            title = receivedPerson.title,
+            title = receivedPerson.title.key,
             name = receivedPerson.name,
             identifier = receivedPerson.identifier.let { identifier ->
                 FEEntity.Party.Person.Identifier(
@@ -587,7 +587,7 @@ class ResponderServiceImpl(
         FEEntity.Party.Person(
             id = id,
             name = name,
-            title = title,
+            title = title.key,
             identifier = FEEntity.Party.Person.Identifier(
                 id = identifier.id,
                 scheme = identifier.scheme,

@@ -8,11 +8,13 @@ import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parsePersonId
+import com.procurement.access.application.model.parsePersonTitle
 import com.procurement.access.application.model.parseRole
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.PartyRole
+import com.procurement.access.domain.model.enums.PersonTitle
 import com.procurement.access.infrastructure.handler.v2.model.request.PersonesProcessingRequest
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
@@ -66,6 +68,8 @@ private fun PersonesProcessingRequest.Party.convert(): Result<PersonesProcessing
     ).asSuccess()
 }
 
+val allowedPersonTitles = PersonTitle.allowedElements.toSet()
+
 private fun PersonesProcessingRequest.Party.Persone.convert(): Result<PersonesProcessingParams.Party.Persone, DataErrors> {
     val businessFunctions = businessFunctions.validate(notEmptyRule("parties.persones.businessFunctions"))
         .onFailure { return it }
@@ -74,7 +78,7 @@ private fun PersonesProcessingRequest.Party.Persone.convert(): Result<PersonesPr
 
     return PersonesProcessingParams.Party.Persone(
         id = parsePersonId(id, "parties.persones.id").onFailure { return it },
-        title = title,
+        title = parsePersonTitle(title, allowedPersonTitles, "parties.persones.title").onFailure { return it },
         name = name,
         identifier = identifier.let { identifier ->
             PersonesProcessingParams.Party.Persone.Identifier(

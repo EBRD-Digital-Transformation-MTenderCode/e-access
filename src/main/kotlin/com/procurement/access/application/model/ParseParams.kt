@@ -10,6 +10,7 @@ import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.PartyRole
+import com.procurement.access.domain.model.enums.PersonTitle
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.lot.LotId
@@ -145,6 +146,11 @@ fun parsePmd(value: String, allowedEnums: Set<ProcurementMethod>): Result<Procur
         ?.asSuccess()
         ?: getFailureResult()
 }
+
+fun parsePersonTitle(
+    value: String, allowedEnums: Set<PersonTitle>, attributeName: String
+): Result<PersonTitle, DataErrors> =
+    parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = PersonTitle)
 
 fun <T> parseEnum(value: String, allowedEnums: Set<T>, attributeName: String, target: EnumElementProvider<T>)
     : Result<T, DataErrors.Validation.UnknownValue> where T : Enum<T>,
