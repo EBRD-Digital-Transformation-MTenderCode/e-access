@@ -10,4 +10,9 @@ class CheckRelationRequestTest : AbstractDTOTestBase<CheckRelationRequest>(Check
     fun test() {
         testBindingAndMapping("json/dto/check/relation/check_relationg_request_full.json")
     }
+
+    @Test
+    fun required() {
+        testBindingAndMapping("json/dto/check/relation/check_relationg_request_required.json")
+    }
 }
