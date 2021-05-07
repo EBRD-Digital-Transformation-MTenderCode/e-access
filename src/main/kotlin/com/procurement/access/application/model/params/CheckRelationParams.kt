@@ -14,7 +14,7 @@ class CheckRelationParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid.SingleStage,
     val relatedCpid: Cpid,
-    val relatedOcid: Ocid.SingleStage,
+    val relatedOcid: Ocid.SingleStage?,
     val operationType: OperationType,
     val existenceRelation: Boolean
 ) {
@@ -68,7 +68,7 @@ class CheckRelationParams private constructor(
             cpid: String,
             ocid: String,
             relatedCpid: String,
-            relatedOcid: String,
+            relatedOcid: String?,
             operationType: String,
             existenceRelation: Boolean
         ): Result<CheckRelationParams, DataErrors> {
@@ -81,8 +81,9 @@ class CheckRelationParams private constructor(
             val relatedCpidParsed = parseCpid(value = relatedCpid)
                 .onFailure { error -> return error }
 
-            val relatedOcidParsed = parseOcid(value = relatedOcid)
-                .onFailure { error -> return error }
+            val relatedOcidParsed = relatedOcid?.let {
+                parseOcid(it).onFailure { error -> return error }
+            }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
