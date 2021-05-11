@@ -71,9 +71,6 @@ class LotServiceImpl(
                 ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
             )
 
-        val receivedLotsIds = params.lots
-            .toSet { it.id.toString() }
-
         val result = when (params.ocid.stage) {
             Stage.EV,
             Stage.NP,
@@ -87,6 +84,8 @@ class LotServiceImpl(
 
                 val dbLotsIds: Set<String> = cn.tender.lots
                     .toSet { it.id }
+                val receivedLotsIds = params.lots
+                    .toSet { it.id.toString() }
 
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
@@ -143,6 +142,8 @@ class LotServiceImpl(
 
                 val dbLotsIds: Set<String> = storedLots
                     .toSet { it.id }
+                val receivedLotsIds = params.lots
+                    .toSet { it.id.toString() }
 
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
@@ -195,6 +196,8 @@ class LotServiceImpl(
 
                 val dbLotsIds: Set<String> = pn.tender.lots
                     .toSet { it.id }
+                val receivedLotsIds = params.lots
+                    .toSet { it.id.toString() }
 
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
@@ -246,7 +249,8 @@ class LotServiceImpl(
 
                 val dbLotsIds: Set<LotId> = rfq.tender.lots
                     .toSet { it.id }
-
+                val receivedLotsIds = params.lots
+                    .toSet { it.id }
                 val unknownLotsIds = getUnknownElements(received = receivedLotsIds, known = dbLotsIds)
                 if (unknownLotsIds.isNotEmpty()) {
                     return Result.failure(ValidationErrors.LotsNotFoundSetStateForLots(lotsId = unknownLotsIds.map { it.toString() }))
