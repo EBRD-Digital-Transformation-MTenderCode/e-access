@@ -27,7 +27,7 @@ internal class OcidTest {
         val cpidString = "ocds-b3wdp1-MD-1580458690892"
         val ocid = Ocid.SingleStage.tryCreateOrNull("$cpidString-EV-1580458791896")!!
 
-        val actual = ocid.extractCpidOrNull()
+        val actual = ocid.extractCpid()
         val expected = Cpid.tryCreateOrNull(cpidString)!!
 
         assertEquals(expected, actual)
@@ -38,7 +38,7 @@ internal class OcidTest {
         val cpidString = "ocds-b3wdp1-MD-1580458690892"
         val ocid = Ocid.MultiStage.tryCreateOrNull(cpidString)!!
 
-        val actual = ocid.extractCpidOrNull()
+        val actual = ocid.extractCpid()
         val expected = Cpid.tryCreateOrNull(cpidString)!!
 
         assertEquals(expected, actual)

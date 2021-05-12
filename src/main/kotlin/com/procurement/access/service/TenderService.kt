@@ -504,7 +504,7 @@ class TenderService(
             return GetBuyersOwnersErrors.MissingXScopeRelationship().asFailure()
 
         val pnEntities = pnOcids.map { ocid ->
-            val cpid = ocid.extractCpidOrNull()!!
+            val cpid = ocid.extractCpid()
             tenderProcessRepository.getByCpIdAndOcid(cpid, ocid)
                 .onFailure { fail -> return fail }
                 ?: return GetBuyersOwnersErrors.PnRecordNotFound(cpid, ocid).asFailure()
