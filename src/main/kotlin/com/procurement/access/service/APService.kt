@@ -258,7 +258,7 @@ class APServiceImpl(
                         url = contactPoint.url
                     )
                 },
-            details = APEntity.Party.Details(
+            details = APEntity.Party.Details.of(
                 mainSectoralActivity = details?.mainSectoralActivity?.let { MainSectoralActivity.creator(it) },
                 mainGeneralActivity = details?.mainGeneralActivity?.let { MainGeneralActivity.creator(it) },
                 typeOfBuyer = details?.typeOfBuyer
