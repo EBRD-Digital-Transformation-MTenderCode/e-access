@@ -10,6 +10,7 @@ fun CheckRelationRequest.convert(): Result<CheckRelationParams, DataErrors> =
         cpid = this.cpid,
         ocid = this.ocid,
         relatedCpid = this.relatedCpid,
+        relatedOcid = this.relatedOcid,
         operationType = this.operationType,
         existenceRelation = this.existenceRelation
     )

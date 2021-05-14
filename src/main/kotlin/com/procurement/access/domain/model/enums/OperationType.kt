@@ -13,6 +13,8 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     CREATE_CN("createCN"),
     CREATE_CN_ON_PIN("createCNonPIN"),
     CREATE_CN_ON_PN("createCNonPN"),
+    CREATE_CONFIRMATION_RESPONSE_BY_BUYER("createConfirmationResponseByBuyer"),
+    CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE("createConfirmationResponseByInvitedCandidate"),
     CREATE_FE("createFE"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn"),
     CREATE_PCR("createPcr"),
@@ -39,7 +41,8 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     UPDATE_CN("updateCN"),
     UPDATE_PN("updatePN"),
     WITHDRAW_BID("withdrawBid"),
-    WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol");
+    WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol"),
+    ;
 
     override fun toString(): String = key
 

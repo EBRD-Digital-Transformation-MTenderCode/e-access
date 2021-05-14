@@ -29,6 +29,9 @@ sealed class CheckRelationStrategy {
             val relatedProcesses = super.getRelatedProcess(tenderProcessRepository, params.cpid, params.ocid, stage)
                 .onFailure { return it.reason.asValidationFailure() }
 
+            if (params.relatedOcid == null)
+                return ValidationErrors.RelatedOcidMissingOnCheckRelation().asValidationFailure()
+
             return if (params.existenceRelation)
                 super.checkRelationExists(relatedProcesses, params)
             else
@@ -123,13 +126,13 @@ sealed class CheckRelationStrategy {
         if (relatedProcesses == null || relatedProcesses.isEmpty())
             return ValidationResult.ok()
         else {
-            val targetProcessIdentifier = RelatedProcessIdentifier.of(params.relatedCpid)
+            val targetProcessIdentifier = RelatedProcessIdentifier.of(params.relatedOcid!!)
             relatedProcesses.forEach { relatedProcess ->
                 if (checkRelationNotExistsPredicate(relatedProcess, targetProcessIdentifier))
                     return ValidationResult.error(
                         ValidationErrors.UnexpectedAttributesValueOnCheckRelation(
                             id = relatedProcess.id,
-                            relatedCpid = params.relatedCpid,
+                            relatedOcid = params.relatedOcid,
                             cpid = params.cpid,
                             ocid = params.ocid
                         )

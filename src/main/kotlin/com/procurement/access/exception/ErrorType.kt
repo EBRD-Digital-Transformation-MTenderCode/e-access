@@ -114,5 +114,7 @@ enum class ErrorType constructor(val code: String, val message: String) {
     INVALID_ELIGIBLE_EVIDENCES("10.99", "Invalid eligible evidences."),
     RELATED_ITEMS_NOT_FOUND("11.00", "Related items not found."),
     MISSING_PARTIES("11.01", "Missing parties."),
+    INVALID_ROLE("11.02", "Invalid role."),
+
     ;
 }

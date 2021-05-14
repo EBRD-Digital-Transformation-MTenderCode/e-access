@@ -1,3 +1,3 @@
 package com.procurement.access.exception
 
-class EmptyStringException(val attributeName: String) : RuntimeException(attributeName)
+class EmptyStringException(val path: String) : RuntimeException(path)
