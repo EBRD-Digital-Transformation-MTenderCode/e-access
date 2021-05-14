@@ -23,6 +23,7 @@ import com.procurement.access.infrastructure.handler.v2.DivideLotHandler
 import com.procurement.access.infrastructure.handler.v2.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.v2.FindCriteriaHandler
 import com.procurement.access.infrastructure.handler.v2.FindLotIdsHandler
+import com.procurement.access.infrastructure.handler.v2.GetBuyersOwnersHandler
 import com.procurement.access.infrastructure.handler.v2.GetCurrencyHandler
 import com.procurement.access.infrastructure.handler.v2.GetItemsByLotIdsHandler
 import com.procurement.access.infrastructure.handler.v2.GetLotStateByIdsHandler
@@ -32,6 +33,7 @@ import com.procurement.access.infrastructure.handler.v2.GetOrganizationsHandler
 import com.procurement.access.infrastructure.handler.v2.GetQualificationCriteriaAndMethodHandler
 import com.procurement.access.infrastructure.handler.v2.GetTenderStateHandler
 import com.procurement.access.infrastructure.handler.v2.OutsourcingPNHandler
+import com.procurement.access.infrastructure.handler.v2.PersonesProcessingHandler
 import com.procurement.access.infrastructure.handler.v2.ResponderProcessingHandler
 import com.procurement.access.infrastructure.handler.v2.SetStateForLotsHandler
 import com.procurement.access.infrastructure.handler.v2.SetStateForTenderHandler
@@ -62,6 +64,7 @@ class CommandServiceV2(
     private val findCriteriaHandler: FindCriteriaHandler,
     private val findLotIdsHandler: FindLotIdsHandler,
     private val checkLotsStateHandler: CheckLotsStateHandler,
+    private val getBuyersOwnersHandler: GetBuyersOwnersHandler,
     private val getCurrencyHandler: GetCurrencyHandler,
     private val getItemsByLotIdsHandler: GetItemsByLotIdsHandler,
     private val getLotStateByIdsHandler: GetLotStateByIdsHandler,
@@ -71,6 +74,7 @@ class CommandServiceV2(
     private val getQualificationCriteriaAndMethodHandler: GetQualificationCriteriaAndMethodHandler,
     private val getTenderStateHandler: GetTenderStateHandler,
     private val outsourcingPNHandler: OutsourcingPNHandler,
+    private val personesProcessingHandler: PersonesProcessingHandler,
     private val responderProcessingHandler: ResponderProcessingHandler,
     private val setStateForLotsHandler: SetStateForLotsHandler,
     private val setStateForTenderHandler: SetStateForTenderHandler,
@@ -101,6 +105,7 @@ class CommandServiceV2(
                     CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(descriptor)
                     CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(descriptor)
                     CommandTypeV2.CHECK_LOTS_STATE -> checkLotsStateHandler.handle(descriptor)
+                    CommandTypeV2.GET_BUYERS_OWNERS -> getBuyersOwnersHandler.handle(descriptor)
                     CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(descriptor)
                     CommandTypeV2.GET_ITEMS_BY_LOT_IDS -> getItemsByLotIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
@@ -110,6 +115,7 @@ class CommandServiceV2(
                     CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(descriptor)
                     CommandTypeV2.GET_TENDER_STATE -> getTenderStateHandler.handle(descriptor)
                     CommandTypeV2.OUTSOURCING_PN -> outsourcingPNHandler.handle(descriptor)
+                    CommandTypeV2.PERSONES_PROCESSING -> personesProcessingHandler.handle(descriptor)
                     CommandTypeV2.RESPONDER_PROCESSING -> responderProcessingHandler.handle(descriptor)
                     CommandTypeV2.SET_STATE_FOR_LOTS -> setStateForLotsHandler.handle(descriptor)
                     CommandTypeV2.SET_STATE_FOR_TENDER -> setStateForTenderHandler.handle(descriptor)

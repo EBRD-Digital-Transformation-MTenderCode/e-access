@@ -2,7 +2,7 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.params.AddClientsToPartiesInAPParams
 import com.procurement.access.application.model.params.CalculateAPValueParams
-import com.procurement.access.application.model.parseCpid
+import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.ap.get.GetAPTitleAndDescriptionContext
@@ -67,8 +67,8 @@ class APServiceImpl(
             return failure(ValidationErrors.RelationNotFoundOnCalculateAPValue(params.cpid, params.ocid))
 
         val relatedPns = relatedPNProcesses.map { pnProcess ->
-            parseCpid(pnProcess.identifier.value)
-                .flatMap { parsedCpid -> tenderProcessRepository.getByCpIdAndStage(parsedCpid, Stage.PN) }
+            parseOcid(pnProcess.identifier.value)
+                .flatMap { ocidPn -> tenderProcessRepository.getByCpIdAndOcid(ocidPn.extractCpid(), ocidPn) }
                 .flatMap { pnEntity -> pnEntity!!.jsonData.tryToObject(PNEntity::class.java) }
                 .onFailure { fail -> return fail }
         }
@@ -258,7 +258,7 @@ class APServiceImpl(
                         url = contactPoint.url
                     )
                 },
-            details = APEntity.Party.Details(
+            details = APEntity.Party.Details.of(
                 mainSectoralActivity = details?.mainSectoralActivity?.let { MainSectoralActivity.creator(it) },
                 mainGeneralActivity = details?.mainGeneralActivity?.let { MainGeneralActivity.creator(it) },
                 typeOfBuyer = details?.typeOfBuyer

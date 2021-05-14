@@ -12,6 +12,7 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForTenderResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
@@ -73,12 +74,18 @@ class SetStateForTenderStrategy(
                     it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
                 .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
-
+            Stage.RQ -> tenderProcessEntity.jsonData
+                .tryToObject(RfqEntity::class.java)
+                .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+                .onFailure { return it }
+                .let {
+                    it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
+                }
+                .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC,
-            Stage.RQ ->
+            Stage.PC ->
                 return Result.failure(
                     ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
                 )

@@ -29,6 +29,8 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
     override fun toString(): String = value
 
+    abstract fun extractCpid(): Cpid
+
     class MultiStage private constructor(value: String) : Ocid(value = value) {
 
         companion object {
@@ -44,6 +46,8 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
             fun generate(cpid: Cpid): MultiStage = MultiStage(cpid.value)
         }
+
+        override fun extractCpid() = Cpid.tryCreateOrNull(value)!!
     }
 
     class SingleStage private constructor(value: String, val stage: Stage) : Ocid(value = value) {
@@ -77,6 +81,15 @@ sealed class Ocid(@JsonValue val value: String) : Serializable {
 
             fun generate(cpid: Cpid, stage: Stage, timestamp: LocalDateTime): SingleStage =
                 SingleStage("$cpid-$stage-${timestamp.toMilliseconds()}", stage)
+        }
+
+        override fun extractCpid() : Cpid {
+            val cpidRegexDisclosed = Cpid.pattern
+                .dropLast(1)
+                .toRegex()
+
+            return cpidRegexDisclosed
+                .find(value)!!.value.let { Cpid.tryCreateOrNull(it)!! }
         }
     }
 }

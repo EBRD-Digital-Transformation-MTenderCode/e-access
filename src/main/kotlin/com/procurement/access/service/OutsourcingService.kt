@@ -102,6 +102,8 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE, 
                 OperationType.CREATE_FE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PIN,
@@ -148,6 +150,8 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_FE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                 OperationType.CREATE_PCR,
@@ -196,6 +200,9 @@ class OutsourcingServiceImpl(
 
         val isNeedToFindStoredRelatedProcess = isNeedToFindStoredRelatedProcess(params.operationType)
 
+        checkRelatedOcidPresence(params)
+            .doOnError { return it.asFailure() }
+
         if (isNeedToFindStoredRelatedProcess) {
             val storedRelatedProcess = findStoredRelatedProcess(params)
                 .onFailure { return it }
@@ -203,9 +210,6 @@ class OutsourcingServiceImpl(
             if (storedRelatedProcess != null)
                 return storedRelatedProcess.asSuccess()
         }
-
-        checkRelatedOcidPresence(params)
-            .doOnError { return it.asFailure() }
 
         val definedRelationship = defineRelationProcessType(params.operationType)
             .onFailure { fail -> return fail }
@@ -263,6 +267,8 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
             OperationType.CREATE_PIN,
@@ -276,8 +282,8 @@ class OutsourcingServiceImpl(
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.TENDER_PERIOD_END,
-            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> Unit
@@ -289,19 +295,22 @@ class OutsourcingServiceImpl(
 
     private fun checkRelatedOcidPresence(params: CreateRelationToOtherProcessParams): ValidationResult<Fail> =
         when (params.operationType) {
-            OperationType.CREATE_PCR ->
+            OperationType.CREATE_PCR,
+            OperationType.RELATION_AP ->
                 if (params.relatedOcid == null)
                     ValidationErrors.RelatedOcidIsAbsent().asValidationFailure()
                 else ValidationResult.ok()
 
-            OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AMEND_FE,
+            OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_AWARD,
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,    
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
             OperationType.CREATE_PIN,
@@ -317,13 +326,12 @@ class OutsourcingServiceImpl(
             OperationType.QUALIFICATION_CONSIDERATION,
             OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
             OperationType.QUALIFICATION_PROTOCOL,
-            OperationType.RELATION_AP,
             OperationType.START_SECONDSTAGE,
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.SUBMIT_BID,
             OperationType.TENDER_PERIOD_END,
-            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_BID,
@@ -334,9 +342,9 @@ class OutsourcingServiceImpl(
 
     private fun defineUri(params: CreateRelationToOtherProcessParams): Result<String, DataErrors.Validation.UnknownValue> =
     when (params.operationType) {
-        OperationType.CREATE_PCR -> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedOcid!!.value}".asSuccess()
-        OperationType.OUTSOURCING_PN,
-        OperationType.RELATION_AP -> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedCpid.value}".asSuccess()
+        OperationType.CREATE_PCR,
+        OperationType.RELATION_AP-> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedOcid!!.value}".asSuccess()
+        OperationType.OUTSOURCING_PN -> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedCpid.value}".asSuccess()
 
         OperationType.AMEND_FE,
         OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -346,6 +354,8 @@ class OutsourcingServiceImpl(
         OperationType.CREATE_CN,
         OperationType.CREATE_CN_ON_PIN,
         OperationType.CREATE_CN_ON_PN,
+        OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+        OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
         OperationType.CREATE_FE,
         OperationType.CREATE_NEGOTIATION_CN_ON_PN,
         OperationType.CREATE_PIN,
@@ -364,8 +374,8 @@ class OutsourcingServiceImpl(
         OperationType.SUBMISSION_PERIOD_END,
         OperationType.SUBMIT_BID,
         OperationType.TENDER_PERIOD_END,
-        OperationType.UPDATE_AWARD,
         OperationType.UPDATE_AP,
+        OperationType.UPDATE_AWARD,
         OperationType.UPDATE_CN,
         OperationType.UPDATE_PN,
         OperationType.WITHDRAW_BID,
@@ -384,7 +394,7 @@ class OutsourcingServiceImpl(
             .mapFailure { Fail.Incident.DatabaseIncident(it.exception) }
             .onFailure { return it }
 
-        val targetIdentifier = RelatedProcessIdentifier.of(params.relatedCpid)
+        val targetIdentifier = RelatedProcessIdentifier.of(params.relatedOcid!!)
         val suitableRelatedProcess = relatedProcess.relatedProcesses?.firstOrNull { it.identifier == targetIdentifier }
 
         return suitableRelatedProcess?.let {
@@ -399,9 +409,9 @@ class OutsourcingServiceImpl(
 
     private fun defineIdentifier(params: CreateRelationToOtherProcessParams): Result<RelatedProcessIdentifier, DataErrors.Validation.UnknownValue> =
         when (params.operationType) {
-            OperationType.CREATE_PCR -> RelatedProcessIdentifier.of(params.relatedOcid!!).asSuccess()
-            OperationType.OUTSOURCING_PN,
-            OperationType.RELATION_AP -> RelatedProcessIdentifier.of(params.relatedCpid).asSuccess()
+            OperationType.CREATE_PCR,
+            OperationType.RELATION_AP -> RelatedProcessIdentifier.of(params.relatedOcid!!).asSuccess()
+            OperationType.OUTSOURCING_PN -> RelatedProcessIdentifier.of(params.relatedCpid).asSuccess()
 
             OperationType.AMEND_FE,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -411,6 +421,8 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
             OperationType.CREATE_FE,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN,
             OperationType.CREATE_PIN,
@@ -429,8 +441,8 @@ class OutsourcingServiceImpl(
             OperationType.SUBMISSION_PERIOD_END,
             OperationType.SUBMIT_BID,
             OperationType.TENDER_PERIOD_END,
-            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_AP,
+            OperationType.UPDATE_AWARD,
             OperationType.UPDATE_CN,
             OperationType.UPDATE_PN,
             OperationType.WITHDRAW_BID,

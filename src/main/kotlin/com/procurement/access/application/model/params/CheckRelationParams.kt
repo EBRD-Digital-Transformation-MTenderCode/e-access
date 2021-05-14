@@ -14,6 +14,7 @@ class CheckRelationParams private constructor(
     val cpid: Cpid,
     val ocid: Ocid.SingleStage,
     val relatedCpid: Cpid,
+    val relatedOcid: Ocid.SingleStage?,
     val operationType: OperationType,
     val existenceRelation: Boolean
 ) {
@@ -32,6 +33,8 @@ class CheckRelationParams private constructor(
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
+                    OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                    OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                     OperationType.CREATE_FE,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                     OperationType.CREATE_PCR,
@@ -48,8 +51,8 @@ class CheckRelationParams private constructor(
                     OperationType.QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.QUALIFICATION_PROTOCOL,
                     OperationType.START_SECONDSTAGE,
-                    OperationType.SUBMIT_BID,
                     OperationType.SUBMISSION_PERIOD_END,
+                    OperationType.SUBMIT_BID,
                     OperationType.TENDER_PERIOD_END,
                     OperationType.UPDATE_AP,
                     OperationType.UPDATE_AWARD,
@@ -65,6 +68,7 @@ class CheckRelationParams private constructor(
             cpid: String,
             ocid: String,
             relatedCpid: String,
+            relatedOcid: String?,
             operationType: String,
             existenceRelation: Boolean
         ): Result<CheckRelationParams, DataErrors> {
@@ -76,6 +80,10 @@ class CheckRelationParams private constructor(
 
             val relatedCpidParsed = parseCpid(value = relatedCpid)
                 .onFailure { error -> return error }
+
+            val relatedOcidParsed = relatedOcid?.let {
+                parseOcid(it).onFailure { error -> return error }
+            }
 
             val parsedOperationType = parseEnum(
                 value = operationType,
@@ -89,6 +97,7 @@ class CheckRelationParams private constructor(
                 cpid = cpidParsed,
                 ocid = ocidParsed,
                 relatedCpid = relatedCpidParsed,
+                relatedOcid = relatedOcidParsed,
                 operationType = parsedOperationType,
                 existenceRelation = existenceRelation
             ).asSuccess()

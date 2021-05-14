@@ -31,9 +31,12 @@ class CreateRelationToOtherProcessParams(
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.AWARD_CONSIDERATION,
                     OperationType.COMPLETE_QUALIFICATION,
+                    OperationType.CREATE_AWARD,
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
+                    OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
+                    OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                     OperationType.CREATE_FE,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                     OperationType.CREATE_PIN,
@@ -57,8 +60,7 @@ class CreateRelationToOtherProcessParams(
                     OperationType.UPDATE_CN,
                     OperationType.UPDATE_PN,
                     OperationType.WITHDRAW_BID,
-                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL,
-                    OperationType.CREATE_AWARD-> false
+                    OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
                 }
             }
             .toSet()

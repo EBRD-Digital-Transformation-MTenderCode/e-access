@@ -230,12 +230,12 @@ sealed class ValidationErrors(
                 "Tender with cpid='$cpid' and ocid='$ocid'."
         )
 
-    class UnexpectedAttributesValueOnCheckRelation(id: RelatedProcessId, relatedCpid: Cpid, cpid: Cpid, ocid: Ocid.SingleStage) :
+    class UnexpectedAttributesValueOnCheckRelation(id: RelatedProcessId, relatedOcid: Ocid.SingleStage?, cpid: Cpid, ocid: Ocid.SingleStage) :
         ValidationErrors(
             numberError = "1.24.4",
             prefix = "VR.COM-",
             description = "Unexpected attributes value in related process with id='${id}': " +
-                "relationship='${RelatedProcessType.X_SCOPE}', identifier='${relatedCpid}'. Tender with cpid='$cpid' and ocid='$ocid'."
+                "relationship='${RelatedProcessType.X_SCOPE}', identifier='${relatedOcid}'. Tender with cpid='$cpid' and ocid='$ocid'."
         )
 
     class InvalidStageOnCheckRelation(val stage: Stage) :
@@ -247,6 +247,12 @@ sealed class ValidationErrors(
             numberError = "1.24.4",
             description = "Stage '${stage}' not allowed at this command"
         )
+
+    class RelatedOcidMissingOnCheckRelation() : ValidationErrors(
+        numberError = "1.24.6",
+        prefix = "VR.COM-",
+        description = "Related ocid is missing."
+    )
 
     class UnexpectedStageForFindCriteria(stage: Stage) :
         ValidationErrors(

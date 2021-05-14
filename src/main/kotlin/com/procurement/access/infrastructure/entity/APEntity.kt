@@ -1,5 +1,6 @@
 package com.procurement.access.infrastructure.entity
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -26,7 +27,6 @@ import com.procurement.access.infrastructure.bind.amount.positive.AmountPositive
 import com.procurement.access.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.access.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
-
 
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -348,7 +348,7 @@ data class APEntity(
             @field:JsonProperty("url") @param:JsonProperty("url") val url: String?
         )
 
-        data class Details(
+        class Details private constructor(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("typeOfBuyer") @param:JsonProperty("typeOfBuyer") val typeOfBuyer: TypeOfBuyer?,
 
@@ -357,6 +357,22 @@ data class APEntity(
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("mainSectoralActivity") @param:JsonProperty("mainSectoralActivity") val mainSectoralActivity: MainSectoralActivity?
-        )
+        ) {
+
+            companion object {
+
+                @JvmStatic
+                @JsonCreator
+                fun of(
+                    typeOfBuyer: TypeOfBuyer?,
+                    mainGeneralActivity: MainGeneralActivity?,
+                    mainSectoralActivity: MainSectoralActivity?
+                ): Details? =
+                    if (mainSectoralActivity != null || mainGeneralActivity != null || typeOfBuyer != null)
+                        Details(typeOfBuyer, mainGeneralActivity, mainSectoralActivity)
+                    else
+                        null
+            }
+        }
     }
 }
