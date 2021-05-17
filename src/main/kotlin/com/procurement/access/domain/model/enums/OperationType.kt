@@ -26,6 +26,8 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     DECLARE_NON_CONFLICT_OF_INTEREST("declareNonConflictOfInterest"),
     DIVIDE_LOT("divideLot"),
     ISSUING_FRAMEWORK_CONTRACT("issuingFrameworkContract"),
+    NEXT_STEP_AFTER_BUYERS_CONFIRMATION("nextStepAfterBuyersConfirmation"),
+    NEXT_STEP_AFTER_INVITED_CANDIDATES_CONFIRMATION("nextStepAfterInvitedCandidatesConfirmation"),
     OUTSOURCING_PN("outsourcingPN"),
     QUALIFICATION("qualification"),
     QUALIFICATION_CONSIDERATION("qualificationConsideration"),
@@ -41,7 +43,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     UPDATE_CN("updateCN"),
     UPDATE_PN("updatePN"),
     WITHDRAW_BID("withdrawBid"),
-    WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol"),
+    WITHDRAW_QUALIFICATION_PROTOCOL("withdrawQualificationProtocol")
     ;
 
     override fun toString(): String = key
