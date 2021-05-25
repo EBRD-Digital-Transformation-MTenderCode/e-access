@@ -48,6 +48,8 @@ class ValidateRequirementResponsesParams private constructor(
                     OperationType.DECLARE_NON_CONFLICT_OF_INTEREST,
                     OperationType.DIVIDE_LOT,
                     OperationType.ISSUING_FRAMEWORK_CONTRACT,
+                    OperationType.NEXT_STEP_AFTER_BUYERS_CONFIRMATION,
+                    OperationType.NEXT_STEP_AFTER_INVITED_CANDIDATES_CONFIRMATION,
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
