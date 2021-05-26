@@ -95,6 +95,7 @@ class OutsourcingServiceImpl(
                 OperationType.RELATION_AP -> success(RelatedProcessType.X_SCOPE)
 
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
@@ -143,6 +144,7 @@ class OutsourcingServiceImpl(
                 OperationType.RELATION_AP -> true
 
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
@@ -302,6 +304,7 @@ class OutsourcingServiceImpl(
                 else ValidationResult.ok()
 
             OperationType.AMEND_FE,
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
@@ -347,6 +350,7 @@ class OutsourcingServiceImpl(
         OperationType.OUTSOURCING_PN -> "${uriProperties.tender}/${params.relatedCpid.value}/${params.relatedCpid.value}".asSuccess()
 
         OperationType.AMEND_FE,
+        OperationType.APPLY_CONFIRMATIONS,
         OperationType.APPLY_QUALIFICATION_PROTOCOL,
         OperationType.AWARD_CONSIDERATION,
         OperationType.COMPLETE_QUALIFICATION,
@@ -414,6 +418,7 @@ class OutsourcingServiceImpl(
             OperationType.OUTSOURCING_PN -> RelatedProcessIdentifier.of(params.relatedCpid).asSuccess()
 
             OperationType.AMEND_FE,
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,

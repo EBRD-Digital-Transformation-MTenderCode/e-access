@@ -6,6 +6,7 @@ import com.procurement.access.domain.EnumElementProvider
 
 enum class OperationType(@JsonValue override val key: String) : EnumElementProvider.Key {
     AMEND_FE("amendFE"),
+    APPLY_CONFIRMATIONS("applyConfirmations"),
     APPLY_QUALIFICATION_PROTOCOL("applyQualificationProtocol"),
     AWARD_CONSIDERATION("awardConsideration"),
     COMPLETE_QUALIFICATION("completeQualification"),

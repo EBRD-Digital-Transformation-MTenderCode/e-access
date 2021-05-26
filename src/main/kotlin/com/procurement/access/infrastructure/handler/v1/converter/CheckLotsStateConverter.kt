@@ -49,6 +49,7 @@ val allowedOperationType = OperationType.allowedElements
             OperationType.UPDATE_AWARD -> true
 
             OperationType.AMEND_FE,
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_CN,

@@ -547,6 +547,7 @@ class LotServiceImpl(
             OperationType.UPDATE_CN -> getLotsForUpdateCn(context, data)
 
             OperationType.AMEND_FE,
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
