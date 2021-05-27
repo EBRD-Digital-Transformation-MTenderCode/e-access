@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.handler.v1.model.response
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.procurement.access.domain.model.lot.LotId
@@ -16,14 +17,18 @@ data class GetLotsAuctionResponse(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
         @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
-        @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>
+        @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("value") @param:JsonProperty("value") val value: Value?
     ) {
         data class Lot(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: LotId,
             @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
 
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: Value
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: Value?
         ) {
             data class Value(
                 @field:JsonDeserialize(using = MoneyDeserializer::class)
@@ -32,5 +37,10 @@ data class GetLotsAuctionResponse(
                 @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
             )
         }
+
+        data class Value(
+            @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
+        )
+
     }
 }
