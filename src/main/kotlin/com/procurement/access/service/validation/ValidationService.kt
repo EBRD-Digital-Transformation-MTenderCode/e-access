@@ -141,6 +141,7 @@ class ValidationService(
             OperationType.CREATE_RFQ -> CheckRelationStrategy.CreateRfqStrategy
 
             OperationType.AMEND_FE,
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
