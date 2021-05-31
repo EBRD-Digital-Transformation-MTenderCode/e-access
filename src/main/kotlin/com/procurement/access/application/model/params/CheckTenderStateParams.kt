@@ -52,6 +52,8 @@ class CheckTenderStateParams private constructor(
                     OperationType.CREATE_SUBMISSION,
                     OperationType.DIVIDE_LOT,
                     OperationType.ISSUING_FRAMEWORK_CONTRACT,
+                    OperationType.NEXT_STEP_AFTER_BUYERS_CONFIRMATION,
+                    OperationType.NEXT_STEP_AFTER_INVITED_CANDIDATES_CONFIRMATION,
                     OperationType.OUTSOURCING_PN,
                     OperationType.QUALIFICATION,
                     OperationType.QUALIFICATION_CONSIDERATION,
