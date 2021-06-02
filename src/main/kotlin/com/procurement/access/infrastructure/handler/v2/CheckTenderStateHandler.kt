@@ -26,6 +26,7 @@ class CheckTenderStateHandler(
             .params<CheckTenderStateRequest>()
             .flatMap { it.convert() }
             .onFailure { return it.reason.asValidationFailure() }
+
         return validationService.checkTenderState(params = params)
     }
 }

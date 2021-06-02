@@ -473,6 +473,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE -> true
 
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
@@ -517,6 +518,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE -> true
 
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
@@ -561,6 +563,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_FE -> true
 
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
@@ -606,6 +609,7 @@ class CheckFEDataRules {
                 OperationType.AMEND_FE -> context.stage
                 OperationType.CREATE_FE -> context.prevStage
 
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,

@@ -28,7 +28,6 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.configuration.properties.UriProperties
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
-import com.procurement.access.infrastructure.handler.v1.converter.allowedOperationType
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRelationToContractProcessStageResult
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateRfqResult
 import com.procurement.access.lib.extension.getDuplicate
@@ -450,6 +449,7 @@ class RfqServiceImpl(
             OperationType.CREATE_RFQ -> listOf(RelatedProcessType.X_PURCHASING)
             
             OperationType.AMEND_FE,
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,

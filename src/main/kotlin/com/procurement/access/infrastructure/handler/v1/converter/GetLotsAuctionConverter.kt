@@ -6,15 +6,20 @@ import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsAu
 fun GetLotsAuctionResponseData.toResponseDto(): GetLotsAuctionResponse {
     return GetLotsAuctionResponse(
         tender = GetLotsAuctionResponse.Tender(
-            id = this.tender.id,
-            title = this.tender.title,
-            description = this.tender.description,
-            lots = this.tender.lots.map { lot ->
+            id = tender.id,
+            title = tender.title,
+            description = tender.description,
+            value = tender.value?.let { value ->
+                GetLotsAuctionResponse.Tender.Value(
+                    currency = value.currency
+                )
+            },
+            lots = tender.lots.map { lot ->
                 GetLotsAuctionResponse.Tender.Lot(
                     id = lot.id,
                     title = lot.title,
                     description = lot.description,
-                    value = lot.value.let { value ->
+                    value = lot.value?.let { value ->
                         GetLotsAuctionResponse.Tender.Lot.Value(
                             amount = value.amount,
                             currency = value.currency

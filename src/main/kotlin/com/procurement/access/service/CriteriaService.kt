@@ -534,6 +534,7 @@ class CriteriaServiceImpl(
             source = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
             relatesTo = when (operationType) {
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,
@@ -618,6 +619,7 @@ class CriteriaServiceImpl(
             source = CriteriaSource.PROCURING_ENTITY, // FR.COM-1.12.1
             relatesTo = when (operationType) {
                 OperationType.AMEND_FE,
+                OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
                 OperationType.AWARD_CONSIDERATION,
                 OperationType.COMPLETE_QUALIFICATION,

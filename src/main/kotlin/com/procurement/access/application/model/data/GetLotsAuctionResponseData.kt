@@ -14,13 +14,14 @@ data class GetLotsAuctionResponseData(
         val id: String,
         val title: String,
         val description: String,
-        val lots: List<Lot>
+        val lots: List<Lot>,
+        val value: Value?
     ) {
         data class Lot(
             val id: LotId,
             val title: String,
             val description: String,
-            val value: Value
+            val value: Value?
         ) { companion object {}
 
             data class Value(
@@ -28,6 +29,10 @@ data class GetLotsAuctionResponseData(
                 val currency: String
             )
         }
+
+        data class Value(
+            val currency: String
+        )
     }
 }
 
@@ -50,7 +55,8 @@ fun GetLotsAuctionResponseData.Companion.fromDomain(tender: Tender, activeLots: 
             id = tender.id!!,
             title = tender.title,
             description = tender.description,
-            lots = activeLots
+            lots = activeLots,
+            value = null
         )
     )
 
@@ -59,12 +65,7 @@ fun GetLotsAuctionResponseData.Tender.Lot.Companion.fromDomain(lot: RfqEntity.Te
         id = lot.id,
         title = lot.title,
         description = lot.description!!,
-        value = lot.value.let { value ->
-            GetLotsAuctionResponseData.Tender.Lot.Value(
-                amount = null,
-                currency = value.currency
-            )
-        }
+        value = null
     )
 
 fun GetLotsAuctionResponseData.Companion.fromDomain(tender: RfqEntity.Tender, activeLots: List<GetLotsAuctionResponseData.Tender.Lot>) =
@@ -73,6 +74,9 @@ fun GetLotsAuctionResponseData.Companion.fromDomain(tender: RfqEntity.Tender, ac
             id = tender.id,
             title = tender.title,
             description = tender.description,
-            lots = activeLots
+            lots = activeLots,
+            value = tender.value.let { value ->
+                GetLotsAuctionResponseData.Tender.Value(currency = value.currency)
+            }
         )
     )
