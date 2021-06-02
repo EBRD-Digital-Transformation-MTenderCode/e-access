@@ -120,10 +120,7 @@ class LotsService(
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val responseData = when (context.stage) {
-            Stage.AC,
             Stage.EV,
-            Stage.FE,
-            Stage.NP,
             Stage.TP -> {
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 val activeLots = process.tender.lots
@@ -146,9 +143,12 @@ class LotsService(
                 GetLotsAuctionResponseData.fromDomain(rfq.tender, activeLots)
             }
 
+            Stage.AC,
             Stage.AP,
             Stage.EI,
+            Stage.FE,
             Stage.FS,
+            Stage.NP,
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,

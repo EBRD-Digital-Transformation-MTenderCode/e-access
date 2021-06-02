@@ -11,4 +11,9 @@ class GetLotsAuctionResponseTest : AbstractDTOTestBase<GetLotsAuctionResponse>(G
         testBindingAndMapping("json/dto/lot/auction/response/response_get_lots_auction_full.json")
     }
 
+    @Test
+    fun required1() {
+        testBindingAndMapping("json/dto/lot/auction/response/response_get_lots_auction_required_1.json")
+    }
+
 }

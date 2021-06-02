@@ -28,6 +28,7 @@ class CreateRelationToOtherProcessParams(
                     OperationType.RELATION_AP -> true
 
                     OperationType.AMEND_FE,
+                    OperationType.APPLY_CONFIRMATIONS,
                     OperationType.APPLY_QUALIFICATION_PROTOCOL,
                     OperationType.AWARD_CONSIDERATION,
                     OperationType.COMPLETE_QUALIFICATION,
