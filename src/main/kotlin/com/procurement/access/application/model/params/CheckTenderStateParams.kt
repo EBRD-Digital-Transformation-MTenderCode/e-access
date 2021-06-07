@@ -27,6 +27,7 @@ class CheckTenderStateParams private constructor(
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
+                    OperationType.CREATE_CONTRACT,
                     OperationType.CREATE_FE,
                     OperationType.CREATE_NEGOTIATION_CN_ON_PN,
                     OperationType.CREATE_PIN,

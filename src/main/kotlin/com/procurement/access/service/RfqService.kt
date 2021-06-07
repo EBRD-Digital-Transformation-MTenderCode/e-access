@@ -447,7 +447,8 @@ class RfqServiceImpl(
     private fun getRelationship(params: CreateRelationToContractProcessStageParams) =
         when (params.operationType) {
             OperationType.CREATE_RFQ -> listOf(RelatedProcessType.X_PURCHASING)
-            
+            OperationType.CREATE_CONTRACT -> listOf(RelatedProcessType.X_CONTRACTING)
+
             OperationType.AMEND_FE,
             OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,
