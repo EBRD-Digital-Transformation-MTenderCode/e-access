@@ -338,11 +338,11 @@ class APServiceImpl(
                             url = contactPoint.url
                         )
                     },
-                details = party.details.let { details ->
+                details = party.details?.let { details ->
                     AddClientsToPartiesInAPResult.Party.Details(
-                        mainSectoralActivity = details?.mainSectoralActivity,
-                        mainGeneralActivity = details?.mainGeneralActivity,
-                        typeOfBuyer = details?.typeOfBuyer
+                        mainSectoralActivity = details.mainSectoralActivity,
+                        mainGeneralActivity = details.mainGeneralActivity,
+                        typeOfBuyer = details.typeOfBuyer
                     )
                 },
                 roles = party.roles
