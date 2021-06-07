@@ -8,7 +8,10 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.MainProcurementCategory
+import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.RelatedProcessType
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.lot.LotId
@@ -34,6 +37,21 @@ data class CreateRfqResult(
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
+        @param:JsonProperty("classification") @field:JsonProperty("classification") val classification: Classification?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @param:JsonProperty("procurementMethod") @field:JsonProperty("procurementMethod") val procurementMethod: ProcurementMethod?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @param:JsonProperty("procurementMethodDetails") @field:JsonProperty("procurementMethodDetails") val procurementMethodDetails: String?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @param:JsonProperty("mainProcurementCategory") @field:JsonProperty("mainProcurementCategory") val mainProcurementCategory: MainProcurementCategory?,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @param:JsonProperty("additionalProcurementCategories") @field:JsonProperty("additionalProcurementCategories") val additionalProcurementCategories: List<MainProcurementCategory>,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         @param:JsonProperty("electronicAuctions") @field:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -42,6 +60,12 @@ data class CreateRfqResult(
         @param:JsonProperty("awardCriteria") @field:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria,
         @param:JsonProperty("awardCriteriaDetails") @field:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails
     ) {
+
+        data class Classification(
+            @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
+            @param:JsonProperty("scheme") @field:JsonProperty("scheme") val scheme: Scheme,
+            @param:JsonProperty("description") @field:JsonProperty("description") val description: String
+        )
 
         data class Value(
             @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
