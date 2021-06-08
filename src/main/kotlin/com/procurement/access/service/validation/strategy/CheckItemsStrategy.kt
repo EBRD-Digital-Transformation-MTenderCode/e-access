@@ -230,6 +230,7 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_QUALIFICATION,
             OperationType.CREATE_AWARD,
+            OperationType.CREATE_CONTRACT,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
             OperationType.CREATE_FE,
