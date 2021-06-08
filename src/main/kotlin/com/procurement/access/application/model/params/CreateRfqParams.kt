@@ -2,6 +2,7 @@ package com.procurement.access.application.model.params
 
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.owner.Owner
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -21,9 +22,17 @@ data class CreateRfqParams(
         val description: String,
         val lots: List<Lot>,
         val items: List<Item>,
+        val classification: Classification,
         val electronicAuctions: ElectronicAuctions?,
         val procurementMethodModalities: List<String>?
     ) {
+
+        data class Classification(
+            val id: String,
+            val scheme: Scheme,
+            val description: String
+        )
+
         data class Lot(
             val id: String,
             val internalId: String?,
