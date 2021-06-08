@@ -19,6 +19,7 @@ import com.procurement.access.infrastructure.handler.v2.CreateCriteriaForProcuri
 import com.procurement.access.infrastructure.handler.v2.CreateRelationToContractProcessStageHandler
 import com.procurement.access.infrastructure.handler.v2.CreateRelationToOtherProcessHandler
 import com.procurement.access.infrastructure.handler.v2.CreateRfqHandler
+import com.procurement.access.infrastructure.handler.v2.DefineTenderClassificationHandler
 import com.procurement.access.infrastructure.handler.v2.DivideLotHandler
 import com.procurement.access.infrastructure.handler.v2.FindAuctionsHandler
 import com.procurement.access.infrastructure.handler.v2.FindCriteriaHandler
@@ -53,17 +54,18 @@ class CommandServiceV2(
     private val checkExistenceFAHandler: CheckExistenceFAHandler,
     private val checkExistenceSignAuctionHandler: CheckExistenceSignAuctionHandler,
     private val checkPersonsStructureHandler: CheckPersonsStructureHandler,
+    private val checkLotsStateHandler: CheckLotsStateHandler,
     private val checkRelationHandler: CheckRelationHandler,
     private val checkTenderStateHandler: CheckTenderStateHandler,
     private val createCriteriaForProcuringEntityHandler: CreateCriteriaForProcuringEntityHandler,
     private val createRelationToContractProcessStageHandler: CreateRelationToContractProcessStageHandler,
     private val createRelationToOtherProcessHandler: CreateRelationToOtherProcessHandler,
     private val createRfqHandler: CreateRfqHandler,
+    private val defineTenderClassificationHandler: DefineTenderClassificationHandler,
     private val divideLotHandler: DivideLotHandler,
     private val findAuctionsHandler: FindAuctionsHandler,
     private val findCriteriaHandler: FindCriteriaHandler,
     private val findLotIdsHandler: FindLotIdsHandler,
-    private val checkLotsStateHandler: CheckLotsStateHandler,
     private val getBuyersOwnersHandler: GetBuyersOwnersHandler,
     private val getCurrencyHandler: GetCurrencyHandler,
     private val getItemsByLotIdsHandler: GetItemsByLotIdsHandler,
@@ -93,6 +95,7 @@ class CommandServiceV2(
                     CommandTypeV2.CHECK_EQUALITY_CURRENCIES -> checkEqualPNAndAPCurrencyHandler.handle(descriptor)
                     CommandTypeV2.CHECK_EXISTENCE_FA -> checkExistenceFAHandler.handle(descriptor)
                     CommandTypeV2.CHECK_EXISTENCE_SIGN_AUCTION -> checkExistenceSignAuctionHandler.handle(descriptor)
+                    CommandTypeV2.CHECK_LOTS_STATE -> checkLotsStateHandler.handle(descriptor)
                     CommandTypeV2.CHECK_PERSONES_STRUCTURE -> checkPersonsStructureHandler.handle(descriptor)
                     CommandTypeV2.CHECK_RELATION -> checkRelationHandler.handle(descriptor)
                     CommandTypeV2.CHECK_TENDER_STATE -> checkTenderStateHandler.handle(descriptor)
@@ -100,16 +103,16 @@ class CommandServiceV2(
                     CommandTypeV2.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE -> createRelationToContractProcessStageHandler.handle(descriptor)
                     CommandTypeV2.CREATE_RELATION_TO_OTHER_PROCESS -> createRelationToOtherProcessHandler.handle(descriptor)
                     CommandTypeV2.CREATE_RFQ -> createRfqHandler.handle(descriptor)
+                    CommandTypeV2.DEFINE_TENDER_CLASSIFICATION -> defineTenderClassificationHandler.handle(descriptor)
                     CommandTypeV2.DIVIDE_LOT -> divideLotHandler.handle(descriptor)
                     CommandTypeV2.FIND_AUCTIONS -> findAuctionsHandler.handle(descriptor)
                     CommandTypeV2.FIND_CRITERIA -> findCriteriaHandler.handle(descriptor)
                     CommandTypeV2.FIND_LOT_IDS -> findLotIdsHandler.handle(descriptor)
-                    CommandTypeV2.CHECK_LOTS_STATE -> checkLotsStateHandler.handle(descriptor)
                     CommandTypeV2.GET_BUYERS_OWNERS -> getBuyersOwnersHandler.handle(descriptor)
                     CommandTypeV2.GET_CURRENCY -> getCurrencyHandler.handle(descriptor)
                     CommandTypeV2.GET_ITEMS_BY_LOT_IDS -> getItemsByLotIdsHandler.handle(descriptor)
-                    CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_LOTS_VALUE -> getLotsValueHandler.handle(descriptor)
+                    CommandTypeV2.GET_LOT_STATE_BY_IDS -> getLotStateByIdsHandler.handle(descriptor)
                     CommandTypeV2.GET_MAIN_PROCUREMENT_CATEGORY -> getMainProcurementCategoryHandler.handle(descriptor)
                     CommandTypeV2.GET_ORGANIZATIONS -> getOrganizationsHandler.handle(descriptor)
                     CommandTypeV2.GET_QUALIFICATION_CRITERIA_AND_METHOD -> getQualificationCriteriaAndMethodHandler.handle(descriptor)

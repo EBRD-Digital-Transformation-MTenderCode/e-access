@@ -1,7 +1,9 @@
 package com.procurement.access.service
 
 
+import com.procurement.access.application.model.errors.DefineTenderClassificationErrors
 import com.procurement.access.application.model.errors.GetBuyersOwnersErrors
+import com.procurement.access.application.model.params.DefineTenderClassificationParams
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.model.params.GetBuyersOwnersParams
 import com.procurement.access.application.model.params.GetCurrencyParams
@@ -20,9 +22,11 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.RelatedProcessType
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.toCPVCode
 import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -55,10 +59,12 @@ import com.procurement.access.infrastructure.handler.v1.model.response.GetTender
 import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTender
 import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTenderRs
 import com.procurement.access.infrastructure.handler.v1.model.response.UpdateTenderStatusRs
+import com.procurement.access.infrastructure.handler.v2.model.response.DefineTenderClassificationResult
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetBuyersOwnersResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
+import com.procurement.access.infrastructure.handler.v2.model.response.from
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
@@ -79,6 +85,11 @@ class TenderService(
     private val tenderProcessRepository: TenderProcessRepository,
     private val transform: Transform
 ) {
+
+    companion object {
+        private const val ITEMS_CATEGORY_LENGTH_MIN = 3
+        private const val ITEMS_CATEGORY_LENGTH_MAX = 4
+    }
 
     fun setSuspended(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
@@ -525,4 +536,61 @@ class TenderService(
             }
         }).asSuccess()
     }
+
+    fun defineTenderClassification(params: DefineTenderClassificationParams): Result<DefineTenderClassificationResult, Fail> {
+        val isHomogeneous = isIdHomogeneous(params.tender.items) // FR.COM-1.51.1
+
+        val homogeneousItems =
+            if (!isHomogeneous) {
+                // FR.COM-1.51.2
+                val pnEntity = tenderProcessRepository
+                    .getByCpIdAndOcid(params.relatedCpid, params.relatedOcid).onFailure { return it }
+                    ?: return DefineTenderClassificationErrors.RecordNotFound(params.relatedCpid, params.relatedOcid).asFailure()
+
+                val pn = transform.tryDeserialization(pnEntity.jsonData, PNEntity::class.java)
+                    .onFailure { return it }
+
+                val pnItemsCategory = pn.tender.classification.id.take(ITEMS_CATEGORY_LENGTH_MIN)
+                params.tender.items.filter { it.classification.id.startsWith(pnItemsCategory) }
+            } else {
+                params.tender.items
+            }
+
+        if (homogeneousItems.isEmpty())
+            return DefineTenderClassificationErrors.NoHomogeneousItems().asFailure()
+
+        val commonCategory = defineCommonCategory(homogeneousItems) // FR.COM-1.51.4
+
+        val definedClassificationId = commonCategory.toCPVCode() // FR.COM-1.51.4
+        val definedClassificationScheme = getSchemeIfHomogeneous(homogeneousItems).onFailure { return it } // FR.COM-1.51.5
+
+       return DefineTenderClassificationResult.from(definedClassificationId, definedClassificationScheme).asSuccess()
+    }
+
+    private fun isIdHomogeneous(items: List<DefineTenderClassificationParams.Tender.Item>): Boolean {
+        val uniqCategories = items.toSet { it.classification.id.take(ITEMS_CATEGORY_LENGTH_MIN) }
+        return uniqCategories.size == 1
+    }
+
+    private fun isSchemeHomogeneous(items: List<DefineTenderClassificationParams.Tender.Item>): Boolean {
+        val uniqSchemes = items.toSet { it.classification.scheme }
+        return uniqSchemes.size == 1
+    }
+
+    private fun getSchemeIfHomogeneous(items: List<DefineTenderClassificationParams.Tender.Item>): Result<Scheme, Fail> =
+        if (isSchemeHomogeneous(items))
+            items.first().classification.scheme.asSuccess()
+        else
+            DefineTenderClassificationErrors.MultiScheme().asFailure()
+
+    private fun defineCommonCategory(items: List<DefineTenderClassificationParams.Tender.Item>): String {
+        var commonCategory = ""
+        for (categoryLength in ITEMS_CATEGORY_LENGTH_MIN .. ITEMS_CATEGORY_LENGTH_MAX) {
+            val uniqCategories = items.toSet { it.classification.id.take(categoryLength) }
+            if (uniqCategories.size == 1)
+                commonCategory = uniqCategories.first()
+        }
+        return commonCategory
+    }
+
 }
