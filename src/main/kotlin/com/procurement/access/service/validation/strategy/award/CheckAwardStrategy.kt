@@ -29,7 +29,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
         val contextRequest = context(cm)
         val request: CheckAwardRequest = toObject(CheckAwardRequest::class.java, cm.data)
 
-        val entity: TenderProcessEntity = loadTenderProcessEntity(contextRequest.cpid, contextRequest.stage)
+        val entity: TenderProcessEntity = loadTenderProcessEntity(contextRequest.cpid, contextRequest.ocid)
 
         //VR-3.11.6
         checkOwner(ownerFromRequest = contextRequest.owner, entity = entity)
@@ -54,8 +54,8 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
         return CheckAwardResponse()
     }
 
-    private fun loadTenderProcessEntity(cpid: String, stage: String): TenderProcessEntity {
-        return tenderProcessDao.getByCpIdAndStage(cpid, stage)
+    private fun loadTenderProcessEntity(cpid: String, ocid: String): TenderProcessEntity {
+        return tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
     }
 
@@ -138,15 +138,15 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
         val owner = cm.context.owner
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
+        val ocid = cm.context.ocid
+            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
         val lotId: String = cm.context.id
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'id' attribute in context.")
 
         return ContextRequest(
             cpid = cpid,
             token = token,
-            stage = stage,
+            ocid = ocid,
             owner = owner,
             lotId = lotId
         )
@@ -156,7 +156,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
         val cpid: String,
         val token: String,
         val owner: String,
-        val stage: String,
+        val ocid: String,
         val lotId: String
     )
 }
