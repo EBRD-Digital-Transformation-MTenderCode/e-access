@@ -188,7 +188,7 @@ class NegotiationCnOnPnService(
     }
 
     fun create(context: CreateNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): NegotiationCnOnPnResponse {
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
+        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
@@ -205,18 +205,19 @@ class NegotiationCnOnPnService(
             relatedProcesses = pnEntity.relatedProcesses
         )
 
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = tenderProcessEntity.token,
-                stage = context.stage,
+                ocid = newOcid.value,
                 owner = tenderProcessEntity.owner,
                 createdDate = context.startDate,
                 jsonData = toJson(cnEntity)
             )
         )
 
-        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
         val responseCnEntity = cnEntity.copy(ocid = newOcid.value)
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)
