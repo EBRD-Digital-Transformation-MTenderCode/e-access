@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class CreateSelectiveCnOnPnContext(
     val cpid: String,
-    val previousStage: String,
+    val ocid: String,
     val stage: String,
     val country: String,
     val pmd: ProcurementMethod,
