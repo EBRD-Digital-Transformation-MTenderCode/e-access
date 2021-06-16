@@ -6,7 +6,7 @@ import java.util.*
 data class UpdateApContext(
     val cpid: String,
     val token: UUID,
-    val stage: String,
+    val ocid: String,
     val owner: String,
     val startDate: LocalDateTime
 )
