@@ -209,7 +209,7 @@ class RfqServiceImpl(
             token = createdRfq.token,
             owner = params.owner.toString(),
             createdDate = nowDefaultUTC(),
-            stage = rfqOcid.stage.key,
+            ocid = rfqOcid.value,
             jsonData = transform.trySerialization(createdRfq).onFailure { return it }
 
         )
