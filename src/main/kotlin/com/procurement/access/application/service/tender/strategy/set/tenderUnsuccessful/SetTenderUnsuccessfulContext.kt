@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 
 data class SetTenderUnsuccessfulContext(
     val cpid: String,
+    val ocid: String,
     val stage: Stage,
     val startDate: LocalDateTime
 )
