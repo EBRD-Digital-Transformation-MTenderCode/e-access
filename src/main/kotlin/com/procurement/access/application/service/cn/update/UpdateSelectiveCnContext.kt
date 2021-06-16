@@ -6,8 +6,8 @@ import java.util.*
 
 data class UpdateSelectiveCnContext(
     val cpid: String,
+    val ocid: String,
     val token: UUID,
-    val stage: String,
     val owner: String,
     val pmd: ProcurementMethod,
     val startDate: LocalDateTime,
