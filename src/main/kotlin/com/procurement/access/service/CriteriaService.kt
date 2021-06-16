@@ -80,7 +80,7 @@ class CriteriaServiceImpl(
 
     override fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData) {
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
         val criteria = cnEntity.tender.criteria.orEmpty()
@@ -155,7 +155,7 @@ class CriteriaServiceImpl(
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
+        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val result = when (context.stage) {
@@ -231,7 +231,7 @@ class CriteriaServiceImpl(
         )
 
     override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? {
-        val tenderEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
+        val tenderEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
 
         val result = when (context.stage) {
             Stage.AC,

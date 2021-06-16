@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 
 data class EvPanelsContext(
     val cpid: String,
+    val ocid: String,
     val stage: Stage,
     val owner: String,
     val startDate: LocalDateTime

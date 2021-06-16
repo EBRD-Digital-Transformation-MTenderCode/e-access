@@ -4,5 +4,6 @@ import com.procurement.access.domain.model.enums.Stage
 
 data class GetAwardCriteriaAndConversionsContext(
     val cpid: String,
+    val ocid: String,
     val stage: Stage
 )
