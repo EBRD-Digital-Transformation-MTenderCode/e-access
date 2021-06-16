@@ -8,6 +8,7 @@ import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.model.entity.TenderProcessEntity
 
@@ -31,6 +32,8 @@ class TenderProcessRepositoryIT {
 
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
+
         private val STAGE = Stage.PN
         private val TOKEN = UUID.randomUUID()
         private val DATE = LocalDateTime.now()
@@ -87,9 +90,9 @@ class TenderProcessRepositoryIT {
         val wasApplied = tenderProccessRepository.update(updatedEntity).get
         assertTrue(wasApplied)
 
-        val storedEntity = tenderProccessRepository.getByCpIdAndStage(
+        val storedEntity = tenderProccessRepository.getByCpIdAndOcid(
             Cpid.tryCreateOrNull(entity.cpId)!!,
-            Stage.creator(entity.stage)
+            Ocid.SingleStage.tryCreateOrNull(entity.ocid)!!
         ).get!!
 
         assertEquals(dataForUpdate, storedEntity.jsonData)
@@ -98,7 +101,7 @@ class TenderProcessRepositoryIT {
 
     val SAMPLE_ENTITY = TenderProcessEntity(
         cpId = CPID.value,
-        stage = STAGE.toString(),
+        ocid = OCID.value,
         owner = "sample-owner",
         token = TOKEN,
         createdDate = DATE,
