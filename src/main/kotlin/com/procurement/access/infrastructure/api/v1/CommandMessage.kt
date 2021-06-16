@@ -3,6 +3,8 @@ package com.procurement.access.infrastructure.api.v1
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Stage
@@ -30,9 +32,27 @@ val CommandMessage.cpid: String
     get() = this.context.cpid
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context.")
 
+val CommandMessage.cpidParsed: Cpid
+    get() = Cpid.tryCreate(cpid)
+        .orThrow { _ ->
+            ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "Attribute 'cpid' has invalid format."
+            )
+        }
+
 val CommandMessage.ocid: String
     get() = this.context.ocid
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
+
+val CommandMessage.ocidParsed: Ocid.SingleStage
+    get() = Ocid.SingleStage.tryCreate(ocid)
+        .orThrow { _ ->
+            ErrorException(
+                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                message = "Attribute 'ocid' has invalid format."
+            )
+        }
 
 val CommandMessage.token: UUID
     get() = this.context
