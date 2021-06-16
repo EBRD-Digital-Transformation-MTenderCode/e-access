@@ -42,7 +42,7 @@ class TenderProcessDao(private val session: Session) {
         insert.value(columnCpid, entity.cpId)
             .value(columnToken, entity.token)
             .value(columnOwner, entity.owner)
-            .value(columnStage, entity.stage)
+            .value(columnStage, entity.ocid)
             .value(columnCreateDate, entity.createdDate.toCassandraTimestamp())
             .value(columnJsonData, entity.jsonData)
         session.execute(insert)
