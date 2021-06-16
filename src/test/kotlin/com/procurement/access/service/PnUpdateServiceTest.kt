@@ -28,7 +28,7 @@ class PnUpdateServiceTest {
 
     companion object {
         private const val CPID = "ocds-t1s2t3-MD-1579523524876"
-        private const val STAGE = "PN"
+        private const val OCID = "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
         private const val PMD = "PMD"
         const val REQUEST_PATH = "json/service/update/pn/update_pn_full.json"
         const val MOCK_TENDER_PATH = "json/service/update/pn/tender_process.json"
@@ -116,7 +116,7 @@ class PnUpdateServiceTest {
         private fun getByCpidAndStage(tenderProcess: ObjectNode) {
             val entity = TenderProcessEntity(
                 cpId = CPID,
-                stage = STAGE,
+                ocid = OCID,
                 createdDate = nowDefaultUTC(),
                 jsonData = tenderProcess.toJson(),
                 owner = ContextGenerator.OWNER,

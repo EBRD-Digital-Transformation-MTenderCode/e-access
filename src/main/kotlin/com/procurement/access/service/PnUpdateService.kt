@@ -519,7 +519,7 @@ class PnUpdateService(private val generationService: GenerationService,
         return TenderProcessEntity(
             cpId = entity.cpId,
             token = entity.token,
-            stage = entity.stage,
+            ocid = entity.ocid,
             owner = entity.owner,
             createdDate = dateTime,
             jsonData = toJson(tp)
