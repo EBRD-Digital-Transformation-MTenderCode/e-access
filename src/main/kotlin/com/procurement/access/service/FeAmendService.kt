@@ -35,12 +35,12 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
 
     override fun amendFe(context: AmendFEContext, request: AmendFEData): AmendFEResult {
         val cpid = context.cpid
-        val stage = context.stage
+        val ocid = context.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = ocid)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
-                message = "Cannot find tender by cpid='$cpid' and stage='$stage'."
+                message = "Cannot find tender by cpid='$cpid' and ocid='$ocid'."
             )
 
         val storedFE = toObject(FEEntity::class.java, entity.jsonData)
@@ -75,7 +75,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
             TenderProcessEntity(
                 cpId = cpid,
                 token = entity.token,
-                stage = stage,
+                ocid = ocid,
                 owner = entity.owner,
                 createdDate = context.startDate,
                 jsonData = toJson(updatedFE)
