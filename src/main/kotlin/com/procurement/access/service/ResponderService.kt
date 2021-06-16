@@ -12,6 +12,7 @@ import com.procurement.access.application.service.requirement.ValidateRequiremen
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
@@ -62,12 +63,10 @@ class ResponderServiceImpl(
 ) : ResponderService {
 
     override fun responderProcessing(params: ResponderProcessing.Params): Result<ResponderProcessingResult, Fail> {
-        val stage = params.ocid.stage
-
-        val entity = getTenderProcessEntityByCpIdAndStage(cpid = params.cpid, stage = stage)
+        val entity = getTenderProcessEntityByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { error -> return error }
 
-        val updatedTenderJson = when (stage) {
+        val updatedTenderJson = when (params.ocid.stage) {
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
@@ -160,7 +159,7 @@ class ResponderServiceImpl(
             TenderProcessEntity(
                 cpId = params.cpid.value,
                 token = entity.token,
-                stage = stage.toString(),
+                ocid = params.ocid.value,
                 owner = entity.owner,
                 createdDate = params.date,
                 jsonData = updatedTenderJson
@@ -210,7 +209,7 @@ class ResponderServiceImpl(
 
     override fun verifyRequirementResponse(params: VerifyRequirementResponse.Params): ValidationResult<Fail> {
 
-        val cnEntity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+        val cnEntity = tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { return Fail.Incident.DatabaseIncident(exception = it.reason.exception).asValidationFailure() }
             ?: return ValidationErrors.RequirementsNotFoundOnVerifyRequirementResponse(
                 cpid = params.cpid,
@@ -260,7 +259,7 @@ class ResponderServiceImpl(
     override fun validateRequirementResponses(params: ValidateRequirementResponsesParams): Result<ValidateRequirementResponsesResult, Fail> {
 
         val tenderProcessEntity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
             .onFailure { return it }
             ?: return success(ValidateRequirementResponsesResult(emptyList()))
@@ -350,16 +349,14 @@ class ResponderServiceImpl(
     }
 
     override fun getOrganizations(params: GetOrganizations.Params): Result<GetOrganizationsResult, Fail> {
-        val stage = params.ocid.stage
-
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { error -> return error }
             ?: return failure(
                 GetOrganizationsErrors.TenderNotFound(cpid = params.cpid, ocid = params.ocid)
             )
 
         // FR.COM-1.9.1
-        val parties = when (stage) {
+        val parties = when (val stage = params.ocid.stage) {
             Stage.FE -> {
                 val fe = entity.jsonData
                     .tryToObject(FEEntity::class.java)
@@ -464,13 +461,13 @@ class ResponderServiceImpl(
                     }.toSet()
         }
 
-    private fun getTenderProcessEntityByCpIdAndStage(
+    private fun getTenderProcessEntityByCpIdAndOcid(
         cpid: Cpid,
-        stage: Stage
+        ocid: Ocid.SingleStage
     ): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = cpid, ocid = ocid)
             .onFailure { return it }
-            ?: return ValidationErrors.TenderNotFoundForResponderProcessing(cpid = cpid, stage = stage)
+            ?: return ValidationErrors.TenderNotFoundForResponderProcessing(cpid = cpid, ocid = ocid)
                 .asFailure()
 
         return success(entity)
