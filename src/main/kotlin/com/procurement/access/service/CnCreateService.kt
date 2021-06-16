@@ -177,7 +177,7 @@ class CnCreateService(
                 ),
                 relatedProcesses = null
         )
-        val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
+        val entity = getEntity(tp, cpId, context.ocid, context.startDate, context.owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tp)
@@ -358,13 +358,13 @@ class CnCreateService(
 
     private fun getEntity(tp: TenderProcess,
                           cpId: String,
-                          stage: String,
+                          ocid: String,
                           dateTime: LocalDateTime,
                           owner: String): TenderProcessEntity {
         return TenderProcessEntity(
             cpId = cpId,
             token = generationService.generateRandomUUID(),
-            stage = stage,
+            ocid = ocid,
             owner = owner,
             createdDate = dateTime,
             jsonData = toJson(tp)

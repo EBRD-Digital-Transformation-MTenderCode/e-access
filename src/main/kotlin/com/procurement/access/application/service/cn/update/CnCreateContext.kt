@@ -8,7 +8,7 @@ data class CnCreateContext(
     val country: String,
     val pmd: ProcurementMethod,
     val owner: String,
-    val stage: String,
+    val ocid: String,
     val startDate: LocalDateTime,
     val phase: String,
     val mode: Mode
