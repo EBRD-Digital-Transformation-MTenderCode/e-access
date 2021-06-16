@@ -480,7 +480,7 @@ class LotsService(
     }
 
     fun getLotsValue(params: GetLotsValueParams): Result<GetLotsValueResult, Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it }
             ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
 
@@ -503,7 +503,7 @@ class LotsService(
     }
 
     fun checkLotsState(params: CheckLotsStateParams): ValidationResult<Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationErrors.TenderNotFoundOnCheckLotsState(cpid = params.cpid, ocid = params.ocid)
                 .asValidationFailure()
@@ -554,7 +554,7 @@ class LotsService(
         }
 
     fun validateLotsDataForDivision(params: ValidateLotsDataForDivisionParams): ValidationResult<Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationErrors.TenderNotFoundOnValidateLotsDataForDivision(params.cpid, params.ocid).asValidationFailure()
 
@@ -791,7 +791,7 @@ class LotsService(
     }
 
     fun divideLot(params: DivideLotParams): Result<DivideLotResult, Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it }
             ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
 
