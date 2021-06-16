@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 data class CreateFEContext(
     val cpid: String,
     val ocid: String,
-    val prevStage: String,
     val stage: String,
     val owner: String,
     val startDate: LocalDateTime

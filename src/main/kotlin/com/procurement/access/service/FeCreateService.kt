@@ -51,12 +51,11 @@ class FeCreateServiceImpl(
     override fun createFe(context: CreateFEContext, request: CreateFEData): CreateFEResult {
         val cpid = Cpid.tryCreateOrNull(context.cpid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
         val ocidAP = Ocid.SingleStage.tryCreateOrNull(context.ocid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
-        val stage = context.prevStage
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid.value, stage = stage)
+        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid.value, stage = ocidAP.value)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
-                message = "Cannot find tender by cpid='$cpid' and stage='$stage'."
+                message = "Cannot find tender by cpid='$cpid' and ocid='$ocidAP.value'."
             )
 
         val ap = toObject(APEntity::class.java, entity.jsonData)
@@ -72,7 +71,7 @@ class FeCreateServiceImpl(
             TenderProcessEntity(
                 cpId = cpid.value,
                 token = entity.token,
-                stage = context.stage,
+                ocid = ocidFE.value,
                 owner = context.owner,
                 createdDate = context.startDate,
                 jsonData = toJson(fe)
