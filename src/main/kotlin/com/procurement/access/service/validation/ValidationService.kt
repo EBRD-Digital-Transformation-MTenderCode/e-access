@@ -120,7 +120,7 @@ class ValidationService(
         val stage = Stage.AP
 
         tenderProcessRepository
-            .getByCpIdAndStage(cpid, stage)
+            .getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceFA(cpid, stage)
@@ -261,13 +261,13 @@ class ValidationService(
         checkTenderStateStrategy.execute(params)
 
     fun checkEqualityCurrencies(params: CheckEqualityCurrenciesParams): ValidationResult<Fail> {
-        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val record = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckEqualityCurrencies(params.cpid, params.ocid)
             )
 
-        val relatedRecord = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
+        val relatedRecord = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.RelatedTenderNotFoundOnCheckEqualityCurrencies(params.relatedCpid, params.relatedOcid)
@@ -290,7 +290,7 @@ class ValidationService(
     }
 
     fun checkExistenceSignAuction(params: CheckExistenceSignAuctionParams): ValidationResult<Fail> {
-        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val record = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnCheckExistenceSignAuction(params.cpid, params.ocid)
@@ -315,7 +315,7 @@ class ValidationService(
         tender?.procurementMethodModalities?.contains(ProcurementMethodModalities.ELECTRONIC_AUCTION) ?: false
 
     fun validateClassification(params: ValidateClassificationParams): ValidationResult<Fail> {
-        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val record = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationResult.error(
                 ValidationErrors.TenderNotFoundOnValidateClassification(params.cpid, params.ocid)
