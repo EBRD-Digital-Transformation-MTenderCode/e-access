@@ -5,7 +5,7 @@ import com.procurement.access.domain.model.enums.ProcurementMethod
 import java.time.LocalDateTime
 
 data class CreatePnContext(
-    val stage: String,
+    val ocid: String,
     val owner: String,
     val country: String,
     val pmd: ProcurementMethod,

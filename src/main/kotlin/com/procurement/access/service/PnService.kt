@@ -86,7 +86,7 @@ class PnService(
             TenderProcessEntity(
                 cpId = cpid,
                 token = token,
-                stage = contextRequest.stage,
+                ocid = contextRequest.ocid,
                 owner = contextRequest.owner,
                 createdDate = contextRequest.startDate,
                 jsonData = toJson(pnEntity)
