@@ -7,7 +7,7 @@ import java.util.*
 data class UpdateOpenCnContext(
     val cpid: String,
     val token: UUID,
-    val stage: String,
+    val ocid: String,
     val owner: String,
     val pmd: ProcurementMethod,
     val startDate: LocalDateTime,
