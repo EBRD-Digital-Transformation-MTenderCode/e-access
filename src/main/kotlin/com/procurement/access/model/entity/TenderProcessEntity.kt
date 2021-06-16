@@ -12,7 +12,7 @@ data class TenderProcessEntity(
 
     var owner: String,
 
-    var stage: String,
+    var ocid: String,
 
     var createdDate: LocalDateTime,
 
