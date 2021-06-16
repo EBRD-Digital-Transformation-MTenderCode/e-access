@@ -37,7 +37,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
         val cpid = context.cpid
         val ocid = context.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = ocid)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = cpid, ocid = ocid)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
                 message = "Cannot find tender by cpid='$cpid' and ocid='$ocid'."
