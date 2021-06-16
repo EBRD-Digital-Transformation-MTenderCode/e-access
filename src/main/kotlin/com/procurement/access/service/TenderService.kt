@@ -131,7 +131,7 @@ class TenderService(
                     TenderProcessEntity(
                         cpId = entity.cpId,
                         token = entity.token,
-                        stage = entity.stage,
+                        ocid = entity.ocid,
                         owner = entity.owner,
                         createdDate = nowDefaultUTC(),
                         jsonData = toJson(process)
@@ -365,7 +365,7 @@ class TenderService(
         return TenderProcessEntity(
             cpId = entity.cpId,
             token = entity.token,
-            stage = entity.stage,
+            ocid = entity.ocid,
             owner = entity.owner,
             createdDate = nowDefaultUTC(),
             jsonData = toJson(process)
@@ -374,7 +374,7 @@ class TenderService(
 
     fun getTenderState(params: GetTenderStateParams): Result<GetTenderStateResult, Fail> {
         val entity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { incident -> return incident }
             ?: return ValidationErrors.TenderNotFoundOnGetTenderState(cpid = params.cpid, ocid = params.ocid)
                 .asFailure()
@@ -395,7 +395,7 @@ class TenderService(
 
     fun getItemsByLotIds(params: GetItemsByLotIdsParams): Result<GetItemsByLotIdsResult, Fail> {
         val entity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { incident -> return incident }
             ?: return GetItemsByLotIdsErrors.RecordNotFound(cpid = params.cpid, ocid = params.ocid)
                 .asFailure()
@@ -422,7 +422,7 @@ class TenderService(
     }
 
     fun findAuctions(params: FindAuctionsParams): Result<FindAuctionsResult?, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return ValidationErrors.TenderNotFoundOnFindAuctions(params.cpid, params.ocid).asFailure()
 
@@ -462,7 +462,7 @@ class TenderService(
     }
 
     fun getCurrency(params: GetCurrencyParams): Result<GetCurrencyResult, Fail> {
-        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val record = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetCurrency(params.cpid, params.ocid)
@@ -475,7 +475,7 @@ class TenderService(
     }
 
     fun getMainProcurementCategory(params: GetMainProcurementCategoryParams): Result<GetMainProcurementCategoryResult, Fail> {
-        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure(ValidationErrors.TenderNotFoundOnGetMainProcurementCategory(params.cpid, params.ocid))
 
