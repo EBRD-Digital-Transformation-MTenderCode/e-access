@@ -86,7 +86,7 @@ object TenderProcessEntityGenerator {
         cpid: String = ContextGenerator.CPID,
         token: UUID = ContextGenerator.TOKEN,
         owner: String = ContextGenerator.OWNER,
-        stage: String = ContextGenerator.STAGE,
+        ocid: String = ContextGenerator.OCID,
         createdDate: LocalDateTime = nowDefaultUTC(),
         data: String
     ): TenderProcessEntity {
@@ -94,7 +94,7 @@ object TenderProcessEntityGenerator {
             cpId = cpid,
             token = token,
             owner = owner,
-            stage = stage,
+            ocid = ocid,
             createdDate = createdDate,
             jsonData = data
         )
