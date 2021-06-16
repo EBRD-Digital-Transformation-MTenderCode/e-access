@@ -66,10 +66,12 @@ import com.procurement.access.infrastructure.api.v1.businessError
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.country
 import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.cpidParsed
 import com.procurement.access.infrastructure.api.v1.internalServerError
 import com.procurement.access.infrastructure.api.v1.isAuction
 import com.procurement.access.infrastructure.api.v1.lotId
 import com.procurement.access.infrastructure.api.v1.ocid
+import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.api.v1.operationType
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.phase
@@ -182,7 +184,7 @@ class CommandServiceV1(
             CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
             CommandTypeV1.CREATE_PN -> {
                 val context = CreatePnContext(
-                    stage = cm.stage.key,
+                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
@@ -250,7 +252,6 @@ class CommandServiceV1(
                             ocid = cm.ocid,
                             startDate = cm.startDate,
                             stage = cm.stage.key,
-                            prevStage = cm.prevStage,
                             owner = cm.owner
                         )
                         val request: CreateFERequest = toObject(CreateFERequest::class.java, cm.data)
@@ -290,7 +291,7 @@ class CommandServiceV1(
                         val context = AmendFEContext(
                             cpid = cm.cpid,
                             startDate = cm.startDate,
-                            stage = cm.stage.key,
+                            ocid = cm.ocid,
                             owner = cm.owner
                         )
                         val request: AmendFERequest = toObject(AmendFERequest::class.java, cm.data)
@@ -326,7 +327,7 @@ class CommandServiceV1(
             CommandTypeV1.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandTypeV1.CREATE_CN -> {
                 val context = CnCreateContext(
-                    stage = cm.stage.key,
+                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     startDate = cm.startDate,
@@ -345,7 +346,7 @@ class CommandServiceV1(
                         val context = UpdateOpenCnContext(
                             cpid = cm.cpid,
                             token = cm.token,
-                            stage = cm.stage.key,
+                            ocid = cm.ocid,
                             owner = cm.owner,
                             pmd = cm.pmd,
                             startDate = cm.startDate,
@@ -368,8 +369,8 @@ class CommandServiceV1(
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = UpdateSelectiveCnContext(
                             cpid = cm.cpid,
+                            ocid = cm.ocid,
                             token = cm.token,
-                            stage = cm.stage.key,
                             owner = cm.owner,
                             pmd = cm.pmd,
                             startDate = cm.startDate,
@@ -411,7 +412,7 @@ class CommandServiceV1(
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
                         val context = CreateOpenCnOnPnContext(
                             cpid = cm.cpid,
-                            previousStage = cm.prevStage,
+                            ocid = cm.ocid,
                             stage = cm.stage.key,
                             country = cm.country,
                             pmd = cm.pmd,
@@ -433,7 +434,7 @@ class CommandServiceV1(
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CreateSelectiveCnOnPnContext(
                             cpid = cm.cpid,
-                            previousStage = cm.prevStage,
+                            ocid = cm.ocid,
                             stage = cm.stage.key,
                             country = cm.country,
                             pmd = cm.pmd,
@@ -457,7 +458,7 @@ class CommandServiceV1(
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
                         val context = CreateNegotiationCnOnPnContext(
                             cpid = cm.cpid,
-                            previousStage = cm.prevStage,
+                            ocid = cm.ocid,
                             stage = cm.stage.key,
                             startDate = cm.startDate
                         )
@@ -517,6 +518,7 @@ class CommandServiceV1(
             CommandTypeV1.SET_TENDER_UNSUCCESSFUL -> {
                 val context = SetTenderUnsuccessfulContext(
                     cpid = cm.cpid,
+                    ocid = cm.ocid,
                     stage = cm.stage,
                     startDate = cm.startDate
                 )
@@ -605,7 +607,7 @@ class CommandServiceV1(
                 }
             }
             CommandTypeV1.GET_CRITERIA_FOR_TENDERER -> {
-                val context = GetCriteriaForTendererContext(cpid = cm.cpid, stage = cm.stage)
+                val context = GetCriteriaForTendererContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
                 val result = criteriaService.getCriteriaForTenderer(context = context)
 
                 if (log.isDebugEnabled)
@@ -767,6 +769,7 @@ class CommandServiceV1(
             CommandTypeV1.SET_LOTS_UNSUCCESSFUL -> {
                 val context = SetLotsStatusUnsuccessfulContext(
                     cpid = cm.cpid,
+                    ocid = cm.ocid,
                     stage = cm.stage,
                     startDate = cm.startDate
                 )
