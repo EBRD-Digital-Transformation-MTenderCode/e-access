@@ -65,7 +65,7 @@ class LotServiceImpl(
 
     override fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail> {
         val tenderProcessEntity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { return it }
             ?: return Result.failure(
                 ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
@@ -309,9 +309,9 @@ class LotServiceImpl(
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
 
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(
             cpid = params.cpid,
-            stage = params.ocid.stage
+            ocid = params.ocid
         )
             .onFailure { return it }
             ?: return Result.failure(
@@ -344,7 +344,7 @@ class LotServiceImpl(
         val stage = params.ocid.stage
 
         val tenderProcessEntity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { error -> return error }
             ?: return emptyList<LotId>().asSuccess()
 
@@ -596,7 +596,7 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
+        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }
@@ -662,7 +662,7 @@ class LotServiceImpl(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                stage = context.stage.key,
+                ocid = context.ocid,
                 owner = entity.owner,
                 createdDate = context.startDate,
                 jsonData = tenderJson
