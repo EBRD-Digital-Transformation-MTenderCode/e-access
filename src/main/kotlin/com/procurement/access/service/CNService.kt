@@ -53,7 +53,7 @@ class CNServiceImpl(
             .checkIdsPersons() //VR-1.0.1.10.3
             .checkBusinessFunctions(context.startDate) //VR-1.0.1.10.5, VR-1.0.1.10.6, VR-1.0.1.10.7, VR-1.0.1.2.1, VR-1.0.1.2.8
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.ocid)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         if (entity.owner != context.owner) throw ErrorException(error = ErrorType.INVALID_OWNER)
