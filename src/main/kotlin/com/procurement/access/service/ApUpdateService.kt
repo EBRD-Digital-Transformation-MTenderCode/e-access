@@ -715,7 +715,7 @@ class ApUpdateServiceImpl(
         TenderProcessEntity(
             cpId = entity.cpId,
             token = entity.token,
-            stage = entity.stage,
+            ocid = entity.ocid,
             owner = entity.owner,
             createdDate = dateTime,
             jsonData = toJson(tender)
