@@ -7,6 +7,7 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.model.dto.ocds.TenderProcess
@@ -27,8 +28,9 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
         val cpid = getCPID(cm)
         val lotId = getLotId(cm)
         val stage = cm.stage
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val lotState = when (stage) {
