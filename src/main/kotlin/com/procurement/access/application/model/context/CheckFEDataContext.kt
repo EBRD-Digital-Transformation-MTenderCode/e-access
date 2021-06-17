@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class CheckFEDataContext(
     val cpid: String,
-    val prevStage: String,
+    val ocid: String,
     val stage: String,
     val operationType: OperationType,
     val startDate: LocalDateTime
