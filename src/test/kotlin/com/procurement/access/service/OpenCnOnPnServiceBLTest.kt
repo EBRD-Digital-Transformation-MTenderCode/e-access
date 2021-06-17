@@ -95,7 +95,7 @@ class OpenCnOnPnServiceBLTest {
 
             mockGetByCpIdAndStage(
                 cpid = ContextGenerator.CPID,
-                stage = ContextGenerator.PREV_STAGE,
+                ocid = ContextGenerator.OCID,
                 data = pnWithoutItems
             )
 
@@ -126,9 +126,9 @@ class OpenCnOnPnServiceBLTest {
         }
     }
 
-    private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
+    private fun mockGetByCpIdAndStage(cpid: String, ocid: String, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-        whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
+        whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)
     }
 }
@@ -137,7 +137,7 @@ fun createContext(
     startDate: String = ContextGenerator.START_DATE
 ): CreateOpenCnOnPnContext = CreateOpenCnOnPnContext(
     cpid = ContextGenerator.CPID,
-    previousStage = ContextGenerator.PREV_STAGE,
+    ocid = ContextGenerator.OCID,
     stage = ContextGenerator.STAGE,
     country = ContextGenerator.COUNTRY,
     pmd = ProcurementMethod.SV,
