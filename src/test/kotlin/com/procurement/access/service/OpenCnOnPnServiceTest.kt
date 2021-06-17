@@ -141,7 +141,7 @@ class OpenCnOnPnServiceTest {
             fun success() {
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -163,7 +163,7 @@ class OpenCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -188,7 +188,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -209,7 +209,7 @@ class OpenCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -236,7 +236,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -259,7 +259,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -299,7 +299,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -322,7 +322,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -342,7 +342,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -375,7 +375,7 @@ class OpenCnOnPnServiceTest {
             fun success() {
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -397,7 +397,7 @@ class OpenCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -422,7 +422,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -443,7 +443,7 @@ class OpenCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -463,7 +463,7 @@ class OpenCnOnPnServiceTest {
                     .setAttribute("amount", BigDecimal(1.0))
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -487,7 +487,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -525,7 +525,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -569,7 +569,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -594,7 +594,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -626,7 +626,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -651,7 +651,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -675,7 +675,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -698,7 +698,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -722,7 +722,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -746,7 +746,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -767,7 +767,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -788,7 +788,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -814,7 +814,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -837,7 +837,7 @@ class OpenCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -858,7 +858,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -885,7 +885,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnEntity
                 )
 
@@ -1417,7 +1417,7 @@ class OpenCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnEntity
                 )
 
@@ -1617,9 +1617,9 @@ class OpenCnOnPnServiceTest {
         }
     }
 
-    private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
+    private fun mockGetByCpIdAndStage(cpid: String, ocid: String, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-        whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(stage)))
+        whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)
     }
 
