@@ -110,7 +110,7 @@ class SelectiveCnOnPnService(
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
+            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
@@ -272,7 +272,7 @@ class SelectiveCnOnPnService(
     }
 
     fun create(context: CreateSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.ocid)
+        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
