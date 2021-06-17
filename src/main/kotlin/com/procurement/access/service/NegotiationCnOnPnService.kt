@@ -83,7 +83,7 @@ class NegotiationCnOnPnService(
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
+            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
@@ -188,7 +188,7 @@ class NegotiationCnOnPnService(
     }
 
     fun create(context: CreateNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): NegotiationCnOnPnResponse {
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.ocid)
+        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
