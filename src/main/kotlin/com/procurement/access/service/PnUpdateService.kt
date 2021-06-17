@@ -23,6 +23,7 @@ import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
@@ -89,7 +90,7 @@ class PnUpdateService(private val generationService: GenerationService,
 
     fun updatePn(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val ocid = cm.ocid
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.startDate
@@ -103,7 +104,7 @@ class PnUpdateService(private val generationService: GenerationService,
         //VR-3.6.1
         checkTenderDocumentsTypes(pnDto)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
