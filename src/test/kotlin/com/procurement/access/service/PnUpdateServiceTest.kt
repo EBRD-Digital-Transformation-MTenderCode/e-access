@@ -122,7 +122,7 @@ class PnUpdateServiceTest {
                 owner = ContextGenerator.OWNER,
                 token = ContextGenerator.TOKEN
             )
-            whenever(tenderProcessDao.getByCpIdAndStage(cpId = any(), stage = any()))
+            whenever(tenderProcessDao.getByCpidAndOcid(cpid = any(), ocid = any()))
                 .thenReturn(entity)
         }
     }
