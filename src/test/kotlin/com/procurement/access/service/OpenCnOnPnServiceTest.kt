@@ -108,7 +108,7 @@ class OpenCnOnPnServiceTest {
                     .toObject()
 
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
+                tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.PREV_STAGE)
                 )
@@ -1222,7 +1222,7 @@ class OpenCnOnPnServiceTest {
                     .toObject()
 
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
+                tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.PREV_STAGE)
                 )
@@ -1593,7 +1593,7 @@ class OpenCnOnPnServiceTest {
             whenever(rulesService.isAuctionRequired(any(), any(), any()))
                 .thenReturn(testData.isAuctionRequired)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
+                tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.PREV_STAGE)
                 )
@@ -1619,7 +1619,7 @@ class OpenCnOnPnServiceTest {
 
     private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-        whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
+        whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(stage)))
             .thenReturn(tenderProcessEntity)
     }
 
@@ -1627,7 +1627,7 @@ class OpenCnOnPnServiceTest {
         startDate: String = ContextGenerator.START_DATE
     ): CheckOpenCnOnPnContext = CheckOpenCnOnPnContext(
         cpid = ContextGenerator.CPID,
-        previousStage = ContextGenerator.PREV_STAGE,
+        ocid = ContextGenerator.OCID,
         country = ContextGenerator.COUNTRY,
         pmd = ProcurementMethod.SV,
         startDate = startDate.toLocalDateTime().orThrow { it.reason }
@@ -1637,7 +1637,7 @@ class OpenCnOnPnServiceTest {
         startDate: String = ContextGenerator.START_DATE
     ): CreateOpenCnOnPnContext = CreateOpenCnOnPnContext(
         cpid = ContextGenerator.CPID,
-        previousStage = ContextGenerator.PREV_STAGE,
+        ocid = ContextGenerator.OCID,
         stage = ContextGenerator.STAGE,
         country = ContextGenerator.COUNTRY,
         pmd = ProcurementMethod.SV,
