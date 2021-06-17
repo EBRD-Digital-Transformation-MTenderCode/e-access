@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class CheckOpenCnOnPnContext(
     val cpid: String,
-    val previousStage: String,
+    val ocid: String,
     val country: String,
     val pmd: ProcurementMethod,
     val startDate: LocalDateTime
