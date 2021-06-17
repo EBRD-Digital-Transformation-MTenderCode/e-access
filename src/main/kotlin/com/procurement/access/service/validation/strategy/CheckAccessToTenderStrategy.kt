@@ -75,7 +75,7 @@ class CheckAccessToTenderStrategy(
         }
 
     private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid.SingleStage): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = cpid, ocid = ocid)
             .onFailure { return it }
             ?: return Result.failure(ValidationErrors.TenderNotFoundCheckAccessToTender(cpid = cpid, ocid = ocid))
 
