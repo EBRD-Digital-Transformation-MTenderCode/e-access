@@ -40,7 +40,7 @@ object ContextGenerator {
 
     fun generate(
         cpid: String? = CPID,
-        ocid: String? = null,
+        ocid: String? = OCID,
         token: String? = TOKEN.toString(),
         owner: String? = OWNER,
         requestId: String? = null,
