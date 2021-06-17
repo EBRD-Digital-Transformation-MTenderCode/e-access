@@ -10,7 +10,6 @@ enum class CommandTypeV1(@JsonValue override val key: String) : EnumElementProvi
     AMEND_FE("amendFE"),
     CHECK_AWARD("checkAward"),
     CHECK_BID("checkBid"),
-    CHECK_BUDGET_SOURCES("checkBudgetSources"),
     CHECK_CN_ON_PN("checkCnOnPn"),
     CHECK_EXISTANCE_ITEMS_AND_LOTS("checkExistenceItemsAndLots"),
     CHECK_FE_DATA("checkFEData"),

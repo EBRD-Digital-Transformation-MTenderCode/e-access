@@ -798,7 +798,6 @@ class CommandServiceV1(
             CommandTypeV1.CHECK_BID -> validationService.checkBid(cm)
             CommandTypeV1.CHECK_ITEMS -> validationService.checkItems(cm)
             CommandTypeV1.CHECK_TOKEN -> validationService.checkToken(cm)
-            CommandTypeV1.CHECK_BUDGET_SOURCES -> validationService.checkBudgetSources(cm)
             CommandTypeV1.CHECK_CN_ON_PN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
