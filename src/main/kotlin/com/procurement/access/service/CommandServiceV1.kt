@@ -145,7 +145,6 @@ class CommandServiceV1(
     private val cnCreateService: CnCreateService,
     private val cnService: CNService,
     private val selectiveCNService: SelectiveCNService,
-    private val cnOnPinService: CnOnPinService,
     private val cnOnPnService: OpenCnOnPnService,
     private val selectiveCnOnPnService: SelectiveCnOnPnService,
     private val negotiationCnOnPnService: NegotiationCnOnPnService,
@@ -404,7 +403,6 @@ class CommandServiceV1(
                 }
             }
             CommandTypeV1.CREATE_PIN_ON_PN -> pinOnPnService.createPinOnPn(cm)
-            CommandTypeV1.CREATE_CN_ON_PIN -> cnOnPinService.createCnOnPin(cm)
             CommandTypeV1.CREATE_CN_ON_PN -> {
                 when (cm.pmd) {
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
