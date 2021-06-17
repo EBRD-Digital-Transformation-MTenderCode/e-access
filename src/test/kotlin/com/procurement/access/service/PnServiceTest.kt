@@ -18,9 +18,9 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.api.v1.country
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.pmd
-import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
@@ -625,7 +625,7 @@ class PnServiceTest {
 
     private fun getCreatePnPayload(cm: CommandMessage): CreatePnPayload {
         val context = CreatePnContext(
-            stage = cm.stage.key,
+            ocid = cm.ocid,
             owner = cm.owner,
             pmd = cm.pmd,
             country = cm.country,
