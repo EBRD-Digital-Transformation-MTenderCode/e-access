@@ -20,9 +20,9 @@ class TenderProcessDao(private val session: Session) {
     companion object {
         private const val keySpace = "ocds"
         private const val tableName = "access_tender"
-        private const val columnCpid = "cp_id"
+        private const val columnCpid = "cpid"
         private const val columnToken = "token_entity"
-        private const val columnStage = "stage"
+        private const val columnOcid = "ocid"
         private const val columnCreateDate = "created_date"
         private const val columnOwner = "owner"
         private const val columnJsonData = "json_data"
@@ -42,24 +42,24 @@ class TenderProcessDao(private val session: Session) {
         insert.value(columnCpid, entity.cpId)
             .value(columnToken, entity.token)
             .value(columnOwner, entity.owner)
-            .value(columnStage, entity.ocid)
+            .value(columnOcid, entity.ocid)
             .value(columnCreateDate, entity.createdDate.toCassandraTimestamp())
             .value(columnJsonData, entity.jsonData)
         session.execute(insert)
     }
 
-    fun getByCpIdAndStage(cpId: String, stage: String): TenderProcessEntity? {
+    fun getByCpidAndOcid(cpid: String, ocid: String): TenderProcessEntity? {
         val query = select()
             .all()
             .from(tableName)
-            .where(eq(columnCpid, cpId))
-            .and(eq(columnStage, stage)).limit(1)
+            .where(eq(columnCpid, cpid))
+            .and(eq(columnOcid, ocid)).limit(1)
         val row = session.execute(query).one()
         return if (row != null) TenderProcessEntity(
             row.getString(columnCpid),
             row.getUUID(columnToken),
             row.getString(columnOwner),
-            row.getString(columnStage),
+            row.getString(columnOcid),
             row.getTimestamp(columnCreateDate).toLocalDateTime(),
             row.getString(columnJsonData)
         ) else null
