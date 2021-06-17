@@ -307,9 +307,9 @@ class CheckItemsStrategyTest {
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems)
                         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                         whenever(
-                            tenderProcessDao.getByCpIdAndStage(
+                            tenderProcessDao.getByCpidAndOcid(
                                 eq(ContextGenerator.CPID),
-                                eq(ContextGenerator.STAGE)
+                                eq(ContextGenerator.OCID)
                             )
                         ).thenReturn(tenderProcessEntity)
 
@@ -493,7 +493,7 @@ class CheckItemsStrategyTest {
 
         private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JSON) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data)
-            whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
+            whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(stage)))
                 .thenReturn(tenderProcessEntity)
         }
     }
