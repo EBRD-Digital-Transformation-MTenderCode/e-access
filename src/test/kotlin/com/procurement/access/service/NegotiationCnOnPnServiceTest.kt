@@ -90,9 +90,9 @@ class NegotiationCnOnPnServiceTest {
                     .toObject<NegotiationCnOnPnRequest>()
 
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
+                tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
-                    eq(ContextGenerator.PREV_STAGE)
+                    eq(ContextGenerator.OCID)
                 )
             )
                 .thenReturn(null)
@@ -123,7 +123,7 @@ class NegotiationCnOnPnServiceTest {
             fun success() {
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -146,7 +146,7 @@ class NegotiationCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -171,7 +171,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -192,7 +192,7 @@ class NegotiationCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithItems
                     )
 
@@ -222,7 +222,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -245,7 +245,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -265,7 +265,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithItems
                 )
 
@@ -298,7 +298,7 @@ class NegotiationCnOnPnServiceTest {
             fun success() {
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -321,7 +321,7 @@ class NegotiationCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -346,7 +346,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -367,7 +367,7 @@ class NegotiationCnOnPnServiceTest {
                         }
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -387,7 +387,7 @@ class NegotiationCnOnPnServiceTest {
                     .setAttribute("amount", BigDecimal(1.0))
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -411,7 +411,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -449,7 +449,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -492,7 +492,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -517,7 +517,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -549,7 +549,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -571,7 +571,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -595,7 +595,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -618,7 +618,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -642,7 +642,7 @@ class NegotiationCnOnPnServiceTest {
 
                     mockGetByCpIdAndStage(
                         cpid = ContextGenerator.CPID,
-                        stage = ContextGenerator.PREV_STAGE,
+                        ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
                     )
 
@@ -665,7 +665,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -686,7 +686,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -707,7 +707,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -727,7 +727,7 @@ class NegotiationCnOnPnServiceTest {
 
                 mockGetByCpIdAndStage(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.PREV_STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
                 )
 
@@ -740,9 +740,9 @@ class NegotiationCnOnPnServiceTest {
             }
         }
 
-        private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JsonNode) {
+        private fun mockGetByCpIdAndStage(cpid: String, ocid: String, data: JsonNode) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-            whenever(tenderProcessDao.getByCpIdAndStage(eq(cpid), eq(stage)))
+            whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
                 .thenReturn(tenderProcessEntity)
         }
     }
@@ -759,7 +759,7 @@ class NegotiationCnOnPnServiceTest {
                     .toObject()
 
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
+                tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.PREV_STAGE)
                 )
@@ -855,7 +855,7 @@ class NegotiationCnOnPnServiceTest {
             whenever(generationService.generatePermanentItemId())
                 .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
+                tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.PREV_STAGE)
                 )
@@ -886,7 +886,7 @@ class NegotiationCnOnPnServiceTest {
         startDate: String = ContextGenerator.START_DATE
     ): CheckNegotiationCnOnPnContext = CheckNegotiationCnOnPnContext(
         cpid = ContextGenerator.CPID,
-        previousStage = ContextGenerator.PREV_STAGE,
+        ocid = ContextGenerator.OCID,
         startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
 
@@ -894,7 +894,7 @@ class NegotiationCnOnPnServiceTest {
         startDate: String = ContextGenerator.START_DATE
     ): CreateNegotiationCnOnPnContext = CreateNegotiationCnOnPnContext(
         cpid = ContextGenerator.CPID,
-        previousStage = ContextGenerator.PREV_STAGE,
+        ocid = ContextGenerator.OCID,
         stage = ContextGenerator.STAGE,
         startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
