@@ -84,9 +84,9 @@ class CheckItemsStrategyTest {
                         val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                        mockGetByCpIdAndStage(
+                        mockGetByCpIdAndOcid(
                             cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
+                            ocid = ContextGenerator.OCID,
                             data = dataEntity
                         )
 
@@ -124,9 +124,9 @@ class CheckItemsStrategyTest {
                             val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                             val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                            mockGetByCpIdAndStage(
+                            mockGetByCpIdAndOcid(
                                 cpid = ContextGenerator.CPID,
-                                stage = ContextGenerator.PREV_STAGE,
+                                ocid = ContextGenerator.OCID,
                                 data = dataEntity
                             )
 
@@ -149,9 +149,9 @@ class CheckItemsStrategyTest {
                             val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                             val dataEntity = tenderProcessEntityData(hasItems = hasItems, id ="non.consistent.id")
-                            mockGetByCpIdAndStage(
+                            mockGetByCpIdAndOcid(
                                 cpid = ContextGenerator.CPID,
-                                stage = ContextGenerator.PREV_STAGE,
+                                ocid = ContextGenerator.OCID,
                                 data = dataEntity
                             )
 
@@ -174,9 +174,9 @@ class CheckItemsStrategyTest {
                         val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                        mockGetByCpIdAndStage(
+                        mockGetByCpIdAndOcid(
                             cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
+                            ocid = ContextGenerator.OCID,
                             data = dataEntity
                         )
 
@@ -212,9 +212,9 @@ class CheckItemsStrategyTest {
                         val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems, id = INVALID_PN_TENDER_CPV_CODE)
-                        mockGetByCpIdAndStage(
+                        mockGetByCpIdAndOcid(
                             cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
+                            ocid = ContextGenerator.OCID,
                             data = dataEntity
                         )
 
@@ -242,9 +242,9 @@ class CheckItemsStrategyTest {
                         val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                        mockGetByCpIdAndStage(
+                        mockGetByCpIdAndOcid(
                             cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.PREV_STAGE,
+                            ocid = ContextGenerator.OCID,
                             data = dataEntity
                         )
 
@@ -332,9 +332,9 @@ class CheckItemsStrategyTest {
                             val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                             val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                            mockGetByCpIdAndStage(
+                            mockGetByCpIdAndOcid(
                                 cpid = ContextGenerator.CPID,
-                                stage = ContextGenerator.STAGE,
+                                ocid = ContextGenerator.OCID,
                                 data = dataEntity
                             )
 
@@ -355,9 +355,9 @@ class CheckItemsStrategyTest {
                             val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                             val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                            mockGetByCpIdAndStage(
+                            mockGetByCpIdAndOcid(
                                 cpid = ContextGenerator.CPID,
-                                stage = ContextGenerator.STAGE,
+                                ocid = ContextGenerator.OCID,
                                 data = dataEntity
                             )
 
@@ -384,9 +384,9 @@ class CheckItemsStrategyTest {
                         val cm = commandMessage(operationName = operationName, data = dataRequest)
 
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems)
-                        mockGetByCpIdAndStage(
+                        mockGetByCpIdAndOcid(
                             cpid = ContextGenerator.CPID,
-                            stage = ContextGenerator.STAGE,
+                            ocid = ContextGenerator.OCID,
                             data = dataEntity
                         )
 
@@ -439,9 +439,9 @@ class CheckItemsStrategyTest {
                 val cm = commandMessage(operationName = operationName, data = dataRequest.toJson().toNode())
 
                 val dataEntity = loadJson("json/service/check/items/entity/pn/entity_cn.json")
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = dataEntity
                 )
 
@@ -477,9 +477,9 @@ class CheckItemsStrategyTest {
                 val cm = commandMessage(operationName = operationName, data = dataRequest.toJson().toNode())
 
                 val dataEntity = loadJson("json/service/check/items/entity/pn/entity_cn.json")
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
-                    stage = ContextGenerator.STAGE,
+                    ocid = ContextGenerator.OCID,
                     data = dataEntity
                 )
 
@@ -491,9 +491,9 @@ class CheckItemsStrategyTest {
             }
         }
 
-        private fun mockGetByCpIdAndStage(cpid: String, stage: String, data: JSON) {
+        private fun mockGetByCpIdAndOcid(cpid: String, ocid: String, data: JSON) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data)
-            whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(stage)))
+            whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
                 .thenReturn(tenderProcessEntity)
         }
     }
