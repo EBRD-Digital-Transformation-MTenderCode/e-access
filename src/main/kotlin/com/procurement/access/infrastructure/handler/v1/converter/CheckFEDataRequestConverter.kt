@@ -255,7 +255,7 @@ private fun CheckFEDataRequest.validateTextAttributes() {
                     requirementGroup.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].description")
                     requirementGroup.requirements.forEachIndexed { requirementIndex, requirement ->
                         requirement.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].description")
-                        requirement.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].description")
+                        requirement.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].title")
                         requirement.eligibleEvidences?.forEachIndexed { eligibleEvidenceIndex, eligibleEvidence ->
                             eligibleEvidence.id.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].id")
                             eligibleEvidence.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].title")
