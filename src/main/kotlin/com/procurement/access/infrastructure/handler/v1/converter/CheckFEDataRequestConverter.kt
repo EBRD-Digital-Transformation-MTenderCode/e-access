@@ -236,6 +236,7 @@ private fun CheckFEDataRequest.validateTextAttributes() {
                 person.identifier.apply {
                     id.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.id")
                     uri.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.uri")
+                    scheme.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.scheme")
                 }
                 person.businessFunctions.forEachIndexed { businessFunctionindex, businessFunction ->
                     businessFunction.id.checkForBlank("tender.procuringEntity.persones[$personIndex].businessFunctions[$businessFunctionindex].id")
@@ -253,7 +254,7 @@ private fun CheckFEDataRequest.validateTextAttributes() {
                 criteria.requirementGroups.forEachIndexed { requirementGroupIndex, requirementGroup ->
                     requirementGroup.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].description")
                     requirementGroup.requirements.forEachIndexed { requirementIndex, requirement ->
-                        requirement.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].title")
+                        requirement.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].description")
                         requirement.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].description")
                         requirement.eligibleEvidences?.forEachIndexed { eligibleEvidenceIndex, eligibleEvidence ->
                             eligibleEvidence.id.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].id")
@@ -265,7 +266,7 @@ private fun CheckFEDataRequest.validateTextAttributes() {
             }
             tender.documents?.forEachIndexed { documentIndex, document ->
                 document.title.checkForBlank("tender.documents[$documentIndex].title")
-                document.description.checkForBlank("tender.documents[$documentIndex].title")
+                document.description.checkForBlank("tender.documents[$documentIndex].description")
             }
         }
     }
