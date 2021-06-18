@@ -761,7 +761,7 @@ class NegotiationCnOnPnServiceTest {
             whenever(
                 tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
-                    eq(ContextGenerator.PREV_STAGE)
+                    eq(ContextGenerator.OCID)
                 )
             )
                 .thenReturn(null)
@@ -857,7 +857,7 @@ class NegotiationCnOnPnServiceTest {
             whenever(
                 tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
-                    eq(ContextGenerator.PREV_STAGE)
+                    eq(ContextGenerator.OCID)
                 )
             )
                 .thenReturn(tenderProcessEntity)
