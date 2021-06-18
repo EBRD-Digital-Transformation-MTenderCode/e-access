@@ -236,7 +236,7 @@ private fun CheckFEDataRequest.validateTextAttributes() {
                 person.identifier.apply {
                     id.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.id")
                     uri.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.uri")
-                    scheme.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.uri")
+                    scheme.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.scheme")
                 }
                 person.businessFunctions.forEachIndexed { businessFunctionindex, businessFunction ->
                     businessFunction.id.checkForBlank("tender.procuringEntity.persones[$personIndex].businessFunctions[$businessFunctionindex].id")
