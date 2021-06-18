@@ -110,7 +110,7 @@ class OpenCnOnPnServiceTest {
             whenever(
                 tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
-                    eq(ContextGenerator.PREV_STAGE)
+                    eq(ContextGenerator.OCID)
                 )
             )
                 .thenReturn(null)
@@ -139,7 +139,7 @@ class OpenCnOnPnServiceTest {
 
             @Test
             fun success() {
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithItems
@@ -161,7 +161,7 @@ class OpenCnOnPnServiceTest {
                             val copyDocument = getObject(0).deepCopy()
                             putObject(copyDocument)
                         }
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithItems
@@ -186,7 +186,7 @@ class OpenCnOnPnServiceTest {
                     pnWithItems.getObject("tender")
                         .remove("documents")
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithItems
@@ -207,7 +207,7 @@ class OpenCnOnPnServiceTest {
                         .getArray("documents") {
                             remove(0)
                         }
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithItems
@@ -234,7 +234,7 @@ class OpenCnOnPnServiceTest {
                     whenever(rulesService.isAuctionRequired(any(), any(), any()))
                         .thenReturn(true)
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithItems
@@ -257,7 +257,7 @@ class OpenCnOnPnServiceTest {
                     whenever(rulesService.isAuctionRequired(any(), any(), any()))
                         .thenReturn(true)
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithItems
@@ -297,7 +297,7 @@ class OpenCnOnPnServiceTest {
                         value = tenderPeriodEndDate.asString()
                     )
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithItems
@@ -320,7 +320,7 @@ class OpenCnOnPnServiceTest {
                     .getArray("relatedLots")
                     .add("UNKNOWN")
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithItems
@@ -340,7 +340,7 @@ class OpenCnOnPnServiceTest {
                 pnWithItems.getObject("tender")
                     .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithItems
@@ -373,7 +373,7 @@ class OpenCnOnPnServiceTest {
 
             @Test
             fun success() {
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -395,7 +395,7 @@ class OpenCnOnPnServiceTest {
                             val copyDocument = getObject(0).deepCopy()
                             putObject(copyDocument)
                         }
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -420,7 +420,7 @@ class OpenCnOnPnServiceTest {
                     pnWithoutItems.getObject("tender")
                         .remove("documents")
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -441,7 +441,7 @@ class OpenCnOnPnServiceTest {
                         .getArray("documents") {
                             remove(0)
                         }
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -461,7 +461,7 @@ class OpenCnOnPnServiceTest {
             fun vr3_8_04() {
                 pnWithoutItems.getObject("planning", "budget", "amount")
                     .setAttribute("amount", BigDecimal(1.0))
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -485,7 +485,7 @@ class OpenCnOnPnServiceTest {
                     }
                 }
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -523,7 +523,7 @@ class OpenCnOnPnServiceTest {
                         .getObject("period")
                         .putAttribute("endDate", budgetBreakdownPeriodEndDate.asString())
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -567,7 +567,7 @@ class OpenCnOnPnServiceTest {
                             )
                         }
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -592,7 +592,7 @@ class OpenCnOnPnServiceTest {
                     }
                 }
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -624,7 +624,7 @@ class OpenCnOnPnServiceTest {
                         }
                     }
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -649,7 +649,7 @@ class OpenCnOnPnServiceTest {
 
                     }
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -673,7 +673,7 @@ class OpenCnOnPnServiceTest {
                     }
                 }
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -696,7 +696,7 @@ class OpenCnOnPnServiceTest {
                 fun vr3_8_10_1() {
                     requestNode.getObject("tender").putArray("lots")
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -720,7 +720,7 @@ class OpenCnOnPnServiceTest {
                     }
                     lots.add(newLot)
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -744,7 +744,7 @@ class OpenCnOnPnServiceTest {
                 }
                 items.putObject(item)
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -765,7 +765,7 @@ class OpenCnOnPnServiceTest {
                 val duplicate = lots.getObject(0).deepCopy()
                 lots.putObject(duplicate)
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -786,7 +786,7 @@ class OpenCnOnPnServiceTest {
                 val duplicate = items.getObject(0).deepCopy()
                 items.putObject(duplicate)
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -812,7 +812,7 @@ class OpenCnOnPnServiceTest {
                     whenever(rulesService.isAuctionRequired(any(), any(), any()))
                         .thenReturn(true)
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -835,7 +835,7 @@ class OpenCnOnPnServiceTest {
                     whenever(rulesService.isAuctionRequired(any(), any(), any()))
                         .thenReturn(true)
 
-                    mockGetByCpIdAndStage(
+                    mockGetByCpIdAndOcid(
                         cpid = ContextGenerator.CPID,
                         ocid = ContextGenerator.OCID,
                         data = pnWithoutItems
@@ -856,7 +856,7 @@ class OpenCnOnPnServiceTest {
                 pnWithoutItems.getObject("tender")
                     .setAttribute("status", TenderStatus.UNSUCCESSFUL.key)
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnWithoutItems
@@ -883,7 +883,7 @@ class OpenCnOnPnServiceTest {
                 requestNode = loadJson(CHECK_REQUEST_JSON).toNode() as ObjectNode
                 pnEntity = loadJson(PATH_PN_JSON).toNode() as ObjectNode
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnEntity
@@ -1224,7 +1224,7 @@ class OpenCnOnPnServiceTest {
             whenever(
                 tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
-                    eq(ContextGenerator.PREV_STAGE)
+                    eq(ContextGenerator.OCID)
                 )
             )
                 .thenReturn(null)
@@ -1415,7 +1415,7 @@ class OpenCnOnPnServiceTest {
                 requestNode = loadJson(CHECK_REQUEST_JSON).toNode() as ObjectNode
                 pnEntity = loadJson(PATH_PN_JSON).toNode() as ObjectNode
 
-                mockGetByCpIdAndStage(
+                mockGetByCpIdAndOcid(
                     cpid = ContextGenerator.CPID,
                     ocid = ContextGenerator.OCID,
                     data = pnEntity
@@ -1595,7 +1595,7 @@ class OpenCnOnPnServiceTest {
             whenever(
                 tenderProcessDao.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
-                    eq(ContextGenerator.PREV_STAGE)
+                    eq(ContextGenerator.OCID)
                 )
             )
                 .thenReturn(tenderProcessEntity)
@@ -1617,7 +1617,7 @@ class OpenCnOnPnServiceTest {
         }
     }
 
-    private fun mockGetByCpIdAndStage(cpid: String, ocid: String, data: JsonNode) {
+    private fun mockGetByCpIdAndOcid(cpid: String, ocid: String, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
         whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)
