@@ -7,31 +7,36 @@ import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckFEDataRequest
+import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.errorIfEmpty
 import com.procurement.access.lib.extension.mapIfNotEmpty
 import com.procurement.access.lib.extension.orThrow
 
-fun CheckFEDataRequest.convert() = CheckFEDataData(
-    tender = this.tender.convert(),
-    criteria = this.criteria
-        .errorIfEmpty {
-            ErrorException(
-                error = ErrorType.IS_EMPTY,
-                message = "The request contains empty list of the criteria."
-            )
-        }
-        ?.map { criteria ->
-            CheckFEDataData.Criterion(
-                id = criteria.id,
-                classification = criteria.classification.let { classification ->
-                    CheckFEDataData.Criterion.Classification(
-                        id = classification.id,
-                        scheme = classification.scheme
-                    )
-                }
-            )
-        }.orEmpty()
-)
+fun CheckFEDataRequest.convert() : CheckFEDataData{
+    this.validateTextAttributes()
+
+    return CheckFEDataData(
+        tender = this.tender.convert(),
+        criteria = this.criteria
+            .errorIfEmpty {
+                ErrorException(
+                    error = ErrorType.IS_EMPTY,
+                    message = "The request contains empty list of the criteria."
+                )
+            }
+            ?.map { criteria ->
+                CheckFEDataData.Criterion(
+                    id = criteria.id,
+                    classification = criteria.classification.let { classification ->
+                        CheckFEDataData.Criterion.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme
+                        )
+                    }
+                )
+            }.orEmpty()
+    )
+}
 
 fun CheckFEDataRequest.Tender.convert() = CheckFEDataData.Tender(
     title = this.title,
@@ -220,6 +225,55 @@ private val allowedTenderDocumentTypes = DocumentType.allowedElements
         }
     }.toSet()
 
+private fun CheckFEDataRequest.validateTextAttributes() {
+    tender.apply {
+        procurementMethodRationale.checkForBlank("tender.procurementMethodRationale")
+        procuringEntity?.apply {
+            id.checkForBlank("tender.procuringEntity.id")
+            persons.forEachIndexed { personIndex, person ->
+                person.title.checkForBlank("tender.procuringEntity.persones[$personIndex].title")
+                person.name.checkForBlank("tender.procuringEntity.persones[$personIndex].name")
+                person.identifier.apply {
+                    id.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.id")
+                    uri.checkForBlank("tender.procuringEntity.persones[$personIndex].identifier.uri")
+                }
+                person.businessFunctions.forEachIndexed { businessFunctionindex, businessFunction ->
+                    businessFunction.id.checkForBlank("tender.procuringEntity.persones[$personIndex].businessFunctions[$businessFunctionindex].id")
+                    businessFunction.jobTitle.checkForBlank("tender.procuringEntity.persones[$personIndex].businessFunctions[$businessFunctionindex].jobTitle")
+                    businessFunction.documents?.forEachIndexed { documentIndex, document ->
+                        document.title.checkForBlank("tender.procuringEntity.persones[$personIndex].businessFunctions[$businessFunctionindex].documents[$documentIndex].title")
+                        document.description.checkForBlank("tender.procuringEntity.persones[$personIndex].businessFunctions[$businessFunctionindex].documents[$documentIndex].description")
+                    }
+                }
 
+            }
+            criteria?.forEachIndexed { criteriaIndex, criteria ->
+                criteria.title.checkForBlank("tender.criteria[$criteriaIndex].title")
+                criteria.description.checkForBlank("tender.criteria[$criteriaIndex].description")
+                criteria.requirementGroups.forEachIndexed { requirementGroupIndex, requirementGroup ->
+                    requirementGroup.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].description")
+                    requirementGroup.requirements.forEachIndexed { requirementIndex, requirement ->
+                        requirement.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].title")
+                        requirement.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].description")
+                        requirement.eligibleEvidences?.forEachIndexed { eligibleEvidenceIndex, eligibleEvidence ->
+                            eligibleEvidence.id.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].id")
+                            eligibleEvidence.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].title")
+                            eligibleEvidence.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].description")
+                        }
+                    }
+                }
+            }
+            tender.documents?.forEachIndexed { documentIndex, document ->
+                document.title.checkForBlank("tender.documents[$documentIndex].title")
+                document.description.checkForBlank("tender.documents[$documentIndex].title")
+            }
+        }
+    }
+}
 
-
+private fun String?.checkForBlank(name: String) = this.errorIfBlank {
+    ErrorException(
+        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+        message = "The attribute '$name' is empty or blank."
+    )
+}
