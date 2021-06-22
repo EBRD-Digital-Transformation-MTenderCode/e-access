@@ -895,7 +895,6 @@ class NegotiationCnOnPnServiceTest {
     ): CreateNegotiationCnOnPnContext = CreateNegotiationCnOnPnContext(
         cpid = ContextGenerator.CPID,
         ocid = ContextGenerator.OCID,
-        stage = ContextGenerator.STAGE,
         startDate = startDate.toLocalDateTime().orThrow { it.reason }
     )
 

@@ -1638,7 +1638,6 @@ class OpenCnOnPnServiceTest {
     ): CreateOpenCnOnPnContext = CreateOpenCnOnPnContext(
         cpid = ContextGenerator.CPID,
         ocid = ContextGenerator.OCID,
-        stage = ContextGenerator.STAGE,
         country = ContextGenerator.COUNTRY,
         pmd = ProcurementMethod.SV,
         startDate = startDate.toLocalDateTime().orThrow { it.reason }

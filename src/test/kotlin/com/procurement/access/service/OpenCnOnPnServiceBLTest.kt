@@ -12,6 +12,7 @@ import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
@@ -83,7 +84,7 @@ class OpenCnOnPnServiceBLTest {
 
             val context = createContext()
             val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
-            whenever(generationService.generateOcid(cpid = context.cpid, stage = context.stage))
+            whenever(generationService.generateOcid(cpid = context.cpid, stage = Stage.EV.key))
                 .thenReturn(ocid)
 
             val pnWithoutItems = (loadJson(PATH_PN_JSON).toNode() as ObjectNode).apply {
@@ -138,7 +139,6 @@ fun createContext(
 ): CreateOpenCnOnPnContext = CreateOpenCnOnPnContext(
     cpid = ContextGenerator.CPID,
     ocid = ContextGenerator.OCID,
-    stage = ContextGenerator.STAGE,
     country = ContextGenerator.COUNTRY,
     pmd = ProcurementMethod.SV,
     startDate = startDate.toLocalDateTime().orThrow { it.reason }
