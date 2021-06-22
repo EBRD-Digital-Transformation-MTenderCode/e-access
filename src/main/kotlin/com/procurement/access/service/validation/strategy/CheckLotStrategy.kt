@@ -7,8 +7,7 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.ocid
-import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
@@ -27,13 +26,12 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
     fun check(cm: CommandMessage) {
         val cpid = getCPID(cm)
         val lotId = getLotId(cm)
-        val stage = cm.stage
-        val ocid = cm.ocid
+        val ocid = cm.ocidParsed
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid.value)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val lotState = when (stage) {
+        val lotState = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -58,7 +56,7 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage $stage not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
