@@ -687,7 +687,7 @@ class LotServiceImpl(
     }
 
     private fun getLotsForCnOnPn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction =
-        tenderProcessDao.getByCpidAndOcid(context.cpid, context.prevStage)
+        tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?.let { entity ->
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 getLotFromTender(lots = process.tender.lots)
@@ -727,7 +727,7 @@ class LotServiceImpl(
     private fun getLotsForUpdateCn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
         val receivedLotsByIds: Map<TemporalLotId, LotsForAuctionData.Lot> = data.lots.associateBy { it.id }
         val savedLotsByIds: Map<String, CNEntity.Tender.Lot> =
-            tenderProcessDao.getByCpidAndOcid(context.cpid, context.prevStage)
+            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
                 ?.let { entity ->
                     val cn = toObject(CNEntity::class.java, entity.jsonData)
                     cn.tender.lots

@@ -76,7 +76,6 @@ import com.procurement.access.infrastructure.api.v1.operationType
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.phase
 import com.procurement.access.infrastructure.api.v1.pmd
-import com.procurement.access.infrastructure.api.v1.prevStage
 import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.api.v1.testMode
@@ -984,7 +983,7 @@ class CommandServiceV1(
             CommandTypeV1.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
                     cpid = cm.cpid,
-                    prevStage = cm.prevStage,
+                    ocid = cm.ocid,
                     operationType = cm.operationType
                 )
                 val request = toObject(LotsForAuctionRequest::class.java, cm.data)
