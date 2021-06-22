@@ -30,8 +30,8 @@ import java.util.*
 class TenderProcessDaoIT {
     companion object {
         private const val CPID = "cpid-1"
-        private const val STAGE_PN = "PN"
-        private const val STAGE_EV = "EV"
+        private const val OCID = "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+        private const val OCID_1 = "ocds-b3wdp1-MD-1581509539187-EV-1581509653044"
         private val TOKEN = UUID.randomUUID()
         private val OWNER = UUID.randomUUID().toString()
     }
@@ -108,13 +108,13 @@ class TenderProcessDaoIT {
         session.execute(
             """
                 CREATE TABLE IF NOT EXISTS ocds.access_tender (
-                    cp_id text,
-                    stage text,
+                    cpid text,
+                    ocid text,
                     token_entity UUID,
                     owner text,
                     created_date timestamp,
                     json_data text,
-                    PRIMARY KEY(cp_id, stage, token_entity)
+                    PRIMARY KEY(cpid, ocid, token_entity)
                 );
             """
         )
@@ -122,14 +122,14 @@ class TenderProcessDaoIT {
 
     private fun insertAuths() {
         val recPN = QueryBuilder.insertInto("ocds", "access_tender")
-            .value("cp_id", CPID)
-            .value("stage", STAGE_PN)
+            .value("cpid", CPID)
+            .value("ocid", OCID)
             .value("token_entity", TOKEN)
             .value("owner", OWNER)
 
         val recEV = QueryBuilder.insertInto("ocds", "access_tender")
-            .value("cp_id", CPID)
-            .value("stage", STAGE_EV)
+            .value("cpid", CPID)
+            .value("ocid", OCID_1)
             .value("token_entity", TOKEN)
             .value("owner", OWNER)
 
