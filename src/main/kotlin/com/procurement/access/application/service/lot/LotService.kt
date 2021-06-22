@@ -596,12 +596,12 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid.value)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }
 
-        val (tenderJson, result) = when (context.stage) {
+        val (tenderJson, result) = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -654,7 +654,7 @@ class LotServiceImpl(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -662,7 +662,7 @@ class LotServiceImpl(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                ocid = context.ocid,
+                ocid = context.ocid.value,
                 owner = entity.owner,
                 createdDate = context.startDate,
                 jsonData = tenderJson

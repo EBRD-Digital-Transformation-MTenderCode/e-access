@@ -763,8 +763,7 @@ class CommandServiceV1(
             CommandTypeV1.SET_LOTS_UNSUCCESSFUL -> {
                 val context = SetLotsStatusUnsuccessfulContext(
                     cpid = cm.cpid,
-                    ocid = cm.ocid,
-                    stage = cm.stage,
+                    ocid = cm.ocidParsed,
                     startDate = cm.startDate
                 )
                 val request: SetLotsStatusUnsuccessfulRequest =
