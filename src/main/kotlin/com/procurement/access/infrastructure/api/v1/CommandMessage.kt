@@ -7,7 +7,6 @@ import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
@@ -72,15 +71,6 @@ val CommandMessage.token: UUID
 val CommandMessage.owner: String
     get() = this.context.owner
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
-
-val CommandMessage.stage: Stage
-    get() = this.context.stage
-        ?.let { Stage.creator(it) }
-        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
-
-val CommandMessage.prevStage: String
-    get() = this.context.prevStage
-        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'prevStage' attribute in context.")
 
 val CommandMessage.country: String
     get() = this.context.country
