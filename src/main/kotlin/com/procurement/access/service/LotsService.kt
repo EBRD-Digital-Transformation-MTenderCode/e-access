@@ -32,6 +32,7 @@ import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.ocid
+import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
@@ -186,18 +187,17 @@ class LotsService(
 
     fun setLotsStatusDetailsAwarded(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val ocid = cm.ocid
-        val stage = cm.stage
+        val ocid = cm.ocidParsed
         val requestDto = toObject(UpdateLotByBidRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid.value) ?: throw ErrorException(DATA_NOT_FOUND)
 
         val statusDetails = if (requestDto.lotAwarded)
             LotStatusDetails.AWARDED
         else
             LotStatusDetails.EMPTY
 
-        val result = when (stage) {
+        val result = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -237,7 +237,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage $stage not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
