@@ -582,8 +582,7 @@ class CommandServiceV1(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
                         val context = GetActiveLotsContext(
                             cpid = cm.cpid,
-                            ocid = cm.ocid,
-                            stage = cm.stage
+                            ocid = cm.ocidParsed
                         )
                         val serviceResponse = lotsService.getActiveLots(context = context)
                         val response = serviceResponse.convert()

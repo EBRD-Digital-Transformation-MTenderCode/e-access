@@ -82,10 +82,10 @@ class LotsService(
 ) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid.value)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val activeLotsIds = when (context.stage) {
+        val activeLotsIds = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -104,7 +104,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
