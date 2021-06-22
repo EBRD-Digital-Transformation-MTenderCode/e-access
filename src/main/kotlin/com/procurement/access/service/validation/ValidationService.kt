@@ -100,7 +100,6 @@ class ValidationService(
     fun checkLotStatus(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
         val ocid = cm.ocid
-        val stage = cm.context.stage ?: throw ErrorException(ErrorType.CONTEXT)
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(ErrorType.CONTEXT)
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)

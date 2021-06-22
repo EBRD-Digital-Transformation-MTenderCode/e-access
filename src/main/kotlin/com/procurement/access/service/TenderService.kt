@@ -112,13 +112,12 @@ class TenderService(
 
     fun setUnsuspended(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val ocid = cm.ocid
+        val ocid = cm.ocidParsed
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid.value) ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val result = when (Stage.creator(stage)) {
+        val result = when (ocid.stage) {
 
             Stage.FE -> {
                 val process = toObject(FEEntity::class.java, entity.jsonData)

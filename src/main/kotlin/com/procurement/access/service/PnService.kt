@@ -1071,8 +1071,6 @@ class PnService(
     }
 
     private fun context(cm: CommandMessage): ContextRequest {
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'stage' attribute in context.")
         val owner = cm.context.owner
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'owner' attribute in context.")
         val country = cm.context.country
@@ -1083,7 +1081,6 @@ class PnService(
         val testMode: Boolean = cm.testMode
 
         return ContextRequest(
-            stage = stage,
             owner = owner,
             country = country,
             pmd = pmd,
@@ -1507,7 +1504,6 @@ class PnService(
     }
 
     data class ContextRequest(
-        val stage: String,
         val owner: String,
         val country: String,
         val pmd: ProcurementMethod,
