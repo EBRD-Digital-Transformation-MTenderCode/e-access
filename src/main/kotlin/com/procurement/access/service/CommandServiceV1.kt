@@ -622,8 +622,7 @@ class CommandServiceV1(
             CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
                     cpid = cm.cpid,
-                    ocid = cm.ocidParsed,
-                    stage = cm.stage.key
+                    ocid = cm.ocidParsed
                 )
 
                 val result = apService.getAPTitleAndDescription(context = context)
@@ -954,7 +953,6 @@ class CommandServiceV1(
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CheckFEDataContext(
                             cpid = cm.cpid,
-                            stage = cm.stage.key,
                             ocid = cm.ocid,
                             operationType = cm.operationType,
                             startDate = cm.startDate
@@ -986,7 +984,6 @@ class CommandServiceV1(
             CommandTypeV1.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
                     cpid = cm.cpid,
-                    stage = cm.stage.key,
                     prevStage = cm.prevStage,
                     operationType = cm.operationType
                 )
