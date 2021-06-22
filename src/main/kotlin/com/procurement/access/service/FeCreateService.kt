@@ -11,6 +11,7 @@ import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
 import com.procurement.access.domain.model.enums.RelatedProcessType
 import com.procurement.access.domain.model.enums.RequirementStatus
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
@@ -61,7 +62,7 @@ class FeCreateServiceImpl(
         val ap = toObject(APEntity::class.java, entity.jsonData)
 
         // BR-1.0.1.21.1
-        val ocidFE = generationService.generateOcid(cpid = cpid.value, stage = context.stage)
+        val ocidFE = generationService.generateOcid(cpid = cpid.value, stage = Stage.FE.key)
 
         val fe = createEntity(ocidFe = ocidFE, ocidAp = ocidAP, cpid = cpid, token = entity.token, datePublished = context.startDate, data = request, ap = ap)
 

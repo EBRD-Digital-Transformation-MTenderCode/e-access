@@ -75,7 +75,6 @@ import com.procurement.access.infrastructure.api.v1.operationType
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.phase
 import com.procurement.access.infrastructure.api.v1.pmd
-import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.api.v1.token
@@ -247,7 +246,6 @@ class CommandServiceV1(
                             cpid = cm.cpid,
                             ocid = cm.ocid,
                             startDate = cm.startDate,
-                            stage = cm.stage.key,
                             owner = cm.owner
                         )
                         val request: CreateFERequest = toObject(CreateFERequest::class.java, cm.data)
@@ -408,7 +406,6 @@ class CommandServiceV1(
                         val context = CreateOpenCnOnPnContext(
                             cpid = cm.cpid,
                             ocid = cm.ocid,
-                            stage = cm.stage.key,
                             country = cm.country,
                             pmd = cm.pmd,
                             startDate = cm.startDate
@@ -430,7 +427,6 @@ class CommandServiceV1(
                         val context = CreateSelectiveCnOnPnContext(
                             cpid = cm.cpid,
                             ocid = cm.ocid,
-                            stage = cm.stage.key,
                             country = cm.country,
                             pmd = cm.pmd,
                             startDate = cm.startDate
@@ -454,7 +450,6 @@ class CommandServiceV1(
                         val context = CreateNegotiationCnOnPnContext(
                             cpid = cm.cpid,
                             ocid = cm.ocid,
-                            stage = cm.stage.key,
                             startDate = cm.startDate
                         )
                         val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)

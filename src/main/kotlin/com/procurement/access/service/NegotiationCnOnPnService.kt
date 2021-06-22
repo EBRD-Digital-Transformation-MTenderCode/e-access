@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -205,7 +206,7 @@ class NegotiationCnOnPnService(
             relatedProcesses = pnEntity.relatedProcesses
         )
 
-        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.NP.key)
 
         tenderProcessDao.save(
             TenderProcessEntity(

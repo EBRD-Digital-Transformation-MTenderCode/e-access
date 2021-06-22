@@ -6,7 +6,6 @@ import java.time.LocalDateTime
 data class CreateOpenCnOnPnContext(
     val cpid: String,
     val ocid: String,
-    val stage: String,
     val country: String,
     val pmd: ProcurementMethod,
     val startDate: LocalDateTime

@@ -18,6 +18,7 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.persone.PersonId
@@ -261,7 +262,7 @@ class OpenCnOnPnService(
             tender = tender,
             relatedProcesses = pnEntity.relatedProcesses
         )
-        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.EV.key)
 
         tenderProcessDao.save(
             TenderProcessEntity(
