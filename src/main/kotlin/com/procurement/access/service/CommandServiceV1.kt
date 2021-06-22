@@ -748,7 +748,7 @@ class CommandServiceV1(
                 }
             }
             CommandTypeV1.GET_AWARD_CRITERIA -> {
-                val context = GetAwardCriteriaContext(cpid = cm.cpid, ocid = cm.ocid, stage = cm.stage)
+                val context = GetAwardCriteriaContext(cpid = cm.cpid, ocid = cm.ocidParsed)
                 val result = extendTenderService.getAwardCriteria(context = context)
                 if (log.isDebugEnabled)
                     log.debug("Tender award criteria. Result: ${toJson(result)}")
