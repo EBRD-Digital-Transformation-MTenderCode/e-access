@@ -1102,12 +1102,12 @@ class LotsService(
         )
 
     fun getItemsByLots(context: GetItemsByLotsContext, data: GetItemsByLotsData): GetItemsByLotsResult {
-        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid.value)
             ?: throw ErrorException(DATA_NOT_FOUND, "Tender by '${context.cpid}' and ocid ${context.ocid} not found")
 
         val receivedLotIds = data.lots.toSet { it.id }
 
-        val itemsRelatedToReceivedLots = when (context.stage) {
+        val itemsRelatedToReceivedLots = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -1146,7 +1146,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
