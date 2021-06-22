@@ -18,7 +18,6 @@ enum class CommandTypeV1(@JsonValue override val key: String) : EnumElementProvi
     CHECK_LOT_ACTIVE("checkLotActive"),
     CHECK_LOT_AWARDED("checkLotAwarded"),
     CHECK_LOT_STATUS("checkLotStatus"),
-    CHECK_RESPONSES("checkResponses"),
     CHECK_TOKEN("checkToken"),
     COMPLETE_LOTS("completeLots"),
     CREATE_AP("createAp"),

@@ -7,7 +7,6 @@ import com.procurement.access.application.model.context.CheckExistanceItemsAndLo
 import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
-import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.EvPanelsContext
@@ -88,7 +87,6 @@ import com.procurement.access.infrastructure.handler.v1.model.request.AmendFEReq
 import com.procurement.access.infrastructure.handler.v1.model.request.ApCreateRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.ApUpdateRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckFEDataRequest
-import com.procurement.access.infrastructure.handler.v1.model.request.CheckResponsesRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.CreateFERequest
 import com.procurement.access.infrastructure.handler.v1.model.request.GetItemsByLotsRequest
 import com.procurement.access.infrastructure.handler.v1.model.request.LotsForAuctionRequest
@@ -880,43 +878,6 @@ class CommandServiceV1(
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF,
                     ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
-                }
-            }
-            CommandTypeV1.CHECK_RESPONSES -> {
-                when (cm.pmd) {
-                    ProcurementMethod.MC, ProcurementMethod.TEST_MC,
-                    ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
-                    ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ,
-                    ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
-                    ProcurementMethod.MV, ProcurementMethod.TEST_MV,
-                    ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-                    ProcurementMethod.RT, ProcurementMethod.TEST_RT,
-                    ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = CheckResponsesContext(
-                            cpid = cm.cpid,
-                            ocid = cm.ocid,
-                            stage = cm.stage.key,
-                            owner = cm.owner,
-                            pmd = cm.pmd
-                        )
-                        val request: CheckResponsesRequest = toObject(CheckResponsesRequest::class.java, cm.data)
-
-                        criteriaService.checkResponses(context = context, data = request.convert())
-                            .also {
-                                log.debug("Checking response was a success.")
-                            }
-                        ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
-                    }
-
-                    ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-                    ProcurementMethod.OF, ProcurementMethod.TEST_OF,
-                    ProcurementMethod.CD, ProcurementMethod.TEST_CD,
-                    ProcurementMethod.DA, ProcurementMethod.TEST_DA,
-                    ProcurementMethod.DC, ProcurementMethod.TEST_DC,
-                    ProcurementMethod.FA, ProcurementMethod.TEST_FA,
-                    ProcurementMethod.IP, ProcurementMethod.TEST_IP,
-                    ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-                    ProcurementMethod.OP, ProcurementMethod.TEST_OP -> throw ErrorException(ErrorType.INVALID_PMD)
                 }
             }
             CommandTypeV1.CHECK_EXISTANCE_ITEMS_AND_LOTS -> {
