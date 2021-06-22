@@ -115,10 +115,10 @@ class LotsService(
     }
 
     fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid.value)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val responseData = when (context.stage) {
+        val responseData = when (context.ocid.stage) {
             Stage.EV,
             Stage.TP -> {
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -151,7 +151,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 

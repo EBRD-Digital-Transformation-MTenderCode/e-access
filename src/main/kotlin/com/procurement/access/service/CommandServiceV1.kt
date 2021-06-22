@@ -730,7 +730,7 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = GetLotsAuctionContext(cpid = cm.cpid, ocid = cm.ocid, stage = cm.stage)
+                        val context = GetLotsAuctionContext(cpid = cm.cpid, ocid = cm.ocidParsed)
                         val serviceResponse = lotsService.getLotsAuction(context = context)
                         val response = serviceResponse.toResponseDto()
                         ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
