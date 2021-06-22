@@ -998,7 +998,7 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = GetAwardCriteriaAndConversionsContext(cpid = cm.cpid, ocid = cm.ocid, stage = cm.stage)
+                        val context = GetAwardCriteriaAndConversionsContext(cpid = cm.cpid, ocid = cm.ocidParsed)
                         criteriaService.getAwardCriteriaAndConversions(context = context)
                             .also { result ->
                                 if (result != null)
