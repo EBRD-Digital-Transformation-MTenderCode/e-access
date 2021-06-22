@@ -484,8 +484,7 @@ class CommandServiceV1(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
                         val context = EvPanelsContext(
                             cpid = cm.cpid,
-                            ocid = cm.ocid,
-                            stage = cm.stage,
+                            ocid = cm.ocidParsed,
                             owner = cm.owner,
                             startDate = cm.startDate
                         )

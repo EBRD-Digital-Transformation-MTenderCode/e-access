@@ -125,10 +125,10 @@ class CriteriaServiceImpl(
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
+        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid.value)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val result = when (context.stage) {
+        val result = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -160,7 +160,7 @@ class CriteriaServiceImpl(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
