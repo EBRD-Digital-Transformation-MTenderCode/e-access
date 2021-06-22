@@ -41,7 +41,7 @@ class ApCreateService(
             TenderProcessEntity(
                 cpId = cpid,
                 token = token,
-                ocid = contextRequest.stage,
+                ocid = contextRequest.ocid,
                 owner = contextRequest.owner,
                 createdDate = contextRequest.startDate,
                 jsonData = toJson(apEntity)

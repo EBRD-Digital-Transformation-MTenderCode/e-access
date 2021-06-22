@@ -204,7 +204,7 @@ class CommandServiceV1(
             }
             CommandTypeV1.CREATE_AP -> {
                 val context = CreateApContext(
-                    stage = cm.stage.key,
+                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
