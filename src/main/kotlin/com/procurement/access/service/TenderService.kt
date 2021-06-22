@@ -42,7 +42,7 @@ import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.ocid
-import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
@@ -216,12 +216,11 @@ class TenderService(
     fun setStatusDetails(cm: CommandMessage): ApiResponseV1.Success {
         val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val stage = cm.stage
-        val ocid = cm.ocid
+        val ocid = cm.ocidParsed
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid.value) ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val result = when (stage) {
+        val result = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -256,7 +255,7 @@ class TenderService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = INVALID_STAGE,
-                message = "Stage ${stage} not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
