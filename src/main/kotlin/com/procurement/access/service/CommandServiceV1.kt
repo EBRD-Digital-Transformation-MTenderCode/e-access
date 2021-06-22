@@ -622,6 +622,7 @@ class CommandServiceV1(
             CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
                     cpid = cm.cpid,
+                    ocid = cm.ocidParsed,
                     stage = cm.stage.key
                 )
 

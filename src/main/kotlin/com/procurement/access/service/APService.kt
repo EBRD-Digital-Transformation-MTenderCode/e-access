@@ -14,7 +14,6 @@ import com.procurement.access.domain.model.enums.MainGeneralActivity
 import com.procurement.access.domain.model.enums.MainSectoralActivity
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.RelatedProcessType
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
@@ -49,7 +48,7 @@ class APServiceImpl(
     override fun calculateAPValue(params: CalculateAPValueParams): Result<CalculateAPValueResult, Fail> {
 
         // FR.COM-1.31.1
-        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure( // VR.COM-1.31.1
                 ValidationErrors.TenderNotFoundOnCalculateAPValue(params.cpid, params.ocid)
@@ -120,13 +119,13 @@ class APServiceImpl(
          * Why stage getting not from context?,
          * Because this command now used in PCR process, so there is no place when we can get appropriate stage
          */
-        val stage = Stage.AP
+        //val stage = Stage.AP
 
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = cpid, ocid = context.ocid) // TODO Does not work correctly, to be fixed in future
             .orThrow { fail -> throw fail.exception }
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
-                message = "VR.COM-1.35.1. Cannot found record by cpid = '$cpid' and stage = '$stage' "
+                message = "VR.COM-1.35.1. Cannot found record by cpid = '$cpid' and ocid = '${context.ocid}' "
             )
 
         val ap = toObject(APEntity::class.java, entity.jsonData)
@@ -138,7 +137,7 @@ class APServiceImpl(
         relatedProcess.relationship.any { relationship -> relationship == RelatedProcessType.X_SCOPE }
 
     override fun addClientsToPartiesInAP(params: AddClientsToPartiesInAPParams): Result<AddClientsToPartiesInAPResult, Fail> {
-        val pnEntity = tenderProcessRepository.getByCpIdAndStage(params.relatedCpid, params.relatedOcid.stage)
+        val pnEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
             .onFailure { fail -> return fail }
             ?: return failure(
                 ValidationErrors.AddClientsToPartiesInAP.PnRecordNotFound(params.relatedCpid, params.relatedOcid)
@@ -150,7 +149,7 @@ class APServiceImpl(
         if (pn.buyer == null)
             return failure(ValidationErrors.AddClientsToPartiesInAP.BuyerIsMissing())
 
-        val apEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val apEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure(ValidationErrors.AddClientsToPartiesInAP.ApRecordNotFound(params.cpid, params.ocid))
 
