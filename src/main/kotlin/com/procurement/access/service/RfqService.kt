@@ -205,11 +205,11 @@ class RfqServiceImpl(
         )
 
         val entity = TenderProcessEntity(
-            cpId = params.cpid.value,
+            cpId = params.cpid,
             token = createdRfq.token,
             owner = params.owner.toString(),
             createdDate = nowDefaultUTC(),
-            ocid = rfqOcid.value,
+            ocid = rfqOcid,
             jsonData = transform.trySerialization(createdRfq).onFailure { return it }
 
         )

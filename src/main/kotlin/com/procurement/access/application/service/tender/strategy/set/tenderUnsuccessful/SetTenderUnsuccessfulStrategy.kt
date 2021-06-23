@@ -104,7 +104,7 @@ class SetTenderUnsuccessfulStrategy(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                ocid = context.ocid.value,
+                ocid = context.ocid,
                 owner = entity.owner,
                 createdDate = context.startDate,
                 jsonData = tenderJson

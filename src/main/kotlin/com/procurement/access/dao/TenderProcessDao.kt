@@ -41,10 +41,10 @@ class TenderProcessDao(private val session: Session) {
 
     fun save(entity: TenderProcessEntity) {
         val insert = insertInto(tableName)
-        insert.value(columnCpid, entity.cpId)
+        insert.value(columnCpid, entity.cpId.value)
             .value(columnToken, entity.token)
             .value(columnOwner, entity.owner)
-            .value(columnOcid, entity.ocid)
+            .value(columnOcid, entity.ocid.value)
             .value(columnCreateDate, entity.createdDate.toCassandraTimestamp())
             .value(columnJsonData, entity.jsonData)
         session.execute(insert)
@@ -58,10 +58,10 @@ class TenderProcessDao(private val session: Session) {
             .and(eq(columnOcid, ocid.value)).limit(1)
         val row = session.execute(query).one()
         return if (row != null) TenderProcessEntity(
-            row.getString(columnCpid),
+            Cpid.tryCreateOrNull(row.getString(columnCpid))!!,
             row.getUUID(columnToken),
             row.getString(columnOwner),
-            row.getString(columnOcid),
+            Ocid.SingleStage.tryCreateOrNull(row.getString(columnOcid))!!,
             row.getTimestamp(columnCreateDate).toLocalDateTime(),
             row.getString(columnJsonData)
         ) else null

@@ -6,6 +6,7 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -80,7 +81,7 @@ class PnService(
         request.validateDuplicates()
 
         val pnEntity: PNEntity = businessRules(contextRequest, request)
-        val cpid = pnEntity.ocid
+        val cpid = Cpid.tryCreateOrNull(pnEntity.ocid)!!
         val token = generationService.generateToken()
         tenderProcessDao.save(
             TenderProcessEntity(

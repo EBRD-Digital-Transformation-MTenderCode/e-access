@@ -157,9 +157,9 @@ class ResponderServiceImpl(
 
         tenderProcessRepository.save(
             TenderProcessEntity(
-                cpId = params.cpid.value,
+                cpId = params.cpid,
                 token = entity.token,
-                ocid = params.ocid.value,
+                ocid = params.ocid,
                 owner = entity.owner,
                 createdDate = params.date,
                 jsonData = updatedTenderJson

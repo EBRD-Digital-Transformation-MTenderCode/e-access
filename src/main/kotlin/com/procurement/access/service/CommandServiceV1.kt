@@ -179,7 +179,7 @@ class CommandServiceV1(
             CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
             CommandTypeV1.CREATE_PN -> {
                 val context = CreatePnContext(
-                    ocid = cm.ocid,
+                    ocid = cm.ocidParsed,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
@@ -200,7 +200,7 @@ class CommandServiceV1(
             }
             CommandTypeV1.CREATE_AP -> {
                 val context = CreateApContext(
-                    ocid = cm.ocid,
+                    ocid = cm.ocidParsed,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
@@ -321,7 +321,7 @@ class CommandServiceV1(
             CommandTypeV1.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandTypeV1.CREATE_CN -> {
                 val context = CnCreateContext(
-                    ocid = cm.ocid,
+                    ocid = cm.ocidParsed,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     startDate = cm.startDate,

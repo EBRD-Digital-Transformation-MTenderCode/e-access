@@ -4,6 +4,7 @@ import com.procurement.access.application.service.ap.create.ApCreateData
 import com.procurement.access.application.service.ap.create.ApCreateResult
 import com.procurement.access.application.service.ap.create.CreateApContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -39,7 +40,7 @@ class ApCreateService(
         val token = generationService.generateToken()
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = cpid,
+                cpId = Cpid.tryCreateOrNull(cpid)!!,
                 token = token,
                 ocid = contextRequest.ocid,
                 owner = contextRequest.owner,

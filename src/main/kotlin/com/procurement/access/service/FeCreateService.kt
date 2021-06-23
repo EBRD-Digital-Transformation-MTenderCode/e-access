@@ -70,9 +70,9 @@ class FeCreateServiceImpl(
 
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = cpid.value,
+                cpId = cpid,
                 token = entity.token,
-                ocid = ocidFE.value,
+                ocid = ocidFE,
                 owner = context.owner,
                 createdDate = context.startDate,
                 jsonData = toJson(fe)

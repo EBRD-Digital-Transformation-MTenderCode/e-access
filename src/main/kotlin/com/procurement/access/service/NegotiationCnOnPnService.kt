@@ -212,7 +212,7 @@ class NegotiationCnOnPnService(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = tenderProcessEntity.token,
-                ocid = newOcid.value,
+                ocid = newOcid,
                 owner = tenderProcessEntity.owner,
                 createdDate = context.startDate,
                 jsonData = toJson(cnEntity)

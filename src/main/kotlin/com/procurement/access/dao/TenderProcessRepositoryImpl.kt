@@ -70,8 +70,8 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident> =
         updateCQL.bind()
             .apply {
-                setString(COLUMN_CPID, entity.cpId)
-                setString(COLUMN_OCID, entity.ocid)
+                setString(COLUMN_CPID, entity.cpId.value)
+                setString(COLUMN_OCID, entity.ocid.value)
                 setUUID(COLUMN_TOKEN, entity.token)
                 setString(COLUMN_JSON_DATA, entity.jsonData)
             }
@@ -80,8 +80,8 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
                 if (!it.wasApplied()) {
                     val mdc = mapOf(
                         "description" to "Cannot update record",
-                        "cpid" to entity.cpId,
-                        "ocid" to entity.ocid,
+                        "cpid" to entity.cpId.value,
+                        "ocid" to entity.ocid.value,
                         "data" to entity.jsonData
                     )
                     failure(Fail.Incident.DatabaseIncident(mdc = mdc))
@@ -92,8 +92,8 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     override fun save(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database> =
         preparedSaveCQL.bind()
             .apply {
-                setString(COLUMN_CPID, entity.cpId)
-                setString(COLUMN_OCID, entity.ocid)
+                setString(COLUMN_CPID, entity.cpId.value)
+                setString(COLUMN_OCID, entity.ocid.value)
                 setUUID(COLUMN_TOKEN, entity.token)
                 setString(COLUMN_OWNER, entity.owner)
                 setTimestamp(COLUMN_CREATION_DATE, entity.createdDate.toCassandraTimestamp())
@@ -118,10 +118,10 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
 
     private fun Row.convertToTenderProcessEntity(): TenderProcessEntity {
         return TenderProcessEntity(
-            this.getString(COLUMN_CPID),
+            Cpid.tryCreateOrNull(this.getString(COLUMN_CPID))!!,
             this.getUUID(COLUMN_TOKEN),
             this.getString(COLUMN_OWNER),
-            this.getString(COLUMN_OCID),
+            Ocid.SingleStage.tryCreateOrNull(this.getString(COLUMN_OCID))!!,
             this.getTimestamp(COLUMN_CREATION_DATE).toLocalDateTime(),
             this.getString(COLUMN_JSON_DATA)
         )
