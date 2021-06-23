@@ -8,6 +8,8 @@ import com.datastax.driver.core.querybuilder.QueryBuilder.eq
 import com.datastax.driver.core.querybuilder.QueryBuilder.insertInto
 import com.datastax.driver.core.querybuilder.QueryBuilder.select
 import com.procurement.access.application.exception.repository.ReadEntityException
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -48,12 +50,12 @@ class TenderProcessDao(private val session: Session) {
         session.execute(insert)
     }
 
-    fun getByCpidAndOcid(cpid: String, ocid: String): TenderProcessEntity? {
+    fun getByCpidAndOcid(cpid: Cpid, ocid: Ocid): TenderProcessEntity? {
         val query = select()
             .all()
             .from(tableName)
-            .where(eq(columnCpid, cpid))
-            .and(eq(columnOcid, ocid)).limit(1)
+            .where(eq(columnCpid, cpid.value))
+            .and(eq(columnOcid, ocid.value)).limit(1)
         val row = session.execute(query).one()
         return if (row != null) TenderProcessEntity(
             row.getString(columnCpid),
@@ -65,10 +67,10 @@ class TenderProcessDao(private val session: Session) {
         ) else null
     }
 
-    fun findAuthByCpid(cpid: String): List<Auth> {
+    fun findAuthByCpid(cpid: Cpid): List<Auth> {
         val query = preparedFindAuthByCpidCQL.bind()
             .apply {
-                setString(columnCpid, cpid)
+                setString(columnCpid, cpid.value)
             }
 
         val resultSet = load(query)
