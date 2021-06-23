@@ -1,6 +1,9 @@
 package com.procurement.access.application.model.context
 
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
+
 data class CheckExistanceItemsAndLotsContext(
-    val cpid: String,
-    val ocid: String
+    val cpid: Cpid,
+    val ocid: Ocid.SingleStage
 )

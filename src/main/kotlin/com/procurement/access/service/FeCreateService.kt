@@ -50,10 +50,10 @@ class FeCreateServiceImpl(
     }
 
     override fun createFe(context: CreateFEContext, request: CreateFEData): CreateFEResult {
-        val cpid = Cpid.tryCreateOrNull(context.cpid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
-        val ocidAP = Ocid.SingleStage.tryCreateOrNull(context.ocid) ?: throw ErrorException(ErrorType.INCORRECT_VALUE_ATTRIBUTE)
+        val cpid = context.cpid
+        val ocidAP = context.ocid
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = cpid.value, ocid = ocidAP.value)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = cpid, ocid = ocidAP)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
                 message = "Cannot find tender by cpid='$cpid' and ocid='$ocidAP.value'."

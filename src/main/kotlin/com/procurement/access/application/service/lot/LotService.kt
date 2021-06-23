@@ -596,7 +596,7 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid.value)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }

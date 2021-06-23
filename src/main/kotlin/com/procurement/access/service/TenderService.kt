@@ -41,7 +41,7 @@ import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.infrastructure.api.v1.ocid
+import com.procurement.access.infrastructure.api.v1.cpidParsed
 import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -93,8 +93,8 @@ class TenderService(
     }
 
     fun setSuspended(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
 
         val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -111,11 +111,11 @@ class TenderService(
     }
 
     fun setUnsuspended(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpidParsed
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val ocid = cm.ocidParsed
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid.value) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
         val result = when (ocid.stage) {
 
@@ -184,11 +184,11 @@ class TenderService(
     }
 
     fun setCancellation(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpidParsed
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val operationType = cm.context.operationType ?: throw ErrorException(CONTEXT)
-        val ocid = cm.ocid
+        val ocid = cm.ocidParsed
 
         val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
@@ -213,11 +213,11 @@ class TenderService(
     }
 
     fun setStatusDetails(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpidParsed
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
         val ocid = cm.ocidParsed
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid.value) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
         val result = when (ocid.stage) {
             Stage.AC,
@@ -266,8 +266,8 @@ class TenderService(
     }
 
     fun getTenderOwner(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
 
         val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = GetTenderOwnerRs(entity.owner))
@@ -275,8 +275,8 @@ class TenderService(
 
     fun getDataForAc(cm: CommandMessage): ApiResponseV1.Success {
 
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
         val dto = toObject(GetDataForAcRq::class.java, cm.data)
         val lotsIdsSet = dto.awards.asSequence().map { it.relatedLots[0] }.toSet()
 

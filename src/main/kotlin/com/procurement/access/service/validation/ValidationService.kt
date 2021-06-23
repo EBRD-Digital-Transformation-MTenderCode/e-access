@@ -23,7 +23,8 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.infrastructure.api.v1.ocid
+import com.procurement.access.infrastructure.api.v1.cpidParsed
+import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
@@ -59,8 +60,8 @@ class ValidationService(
 
     fun checkBid(cm: CommandMessage): ApiResponseV1.Success {
         val checkDto = toObject(CheckBid::class.java, cm.data)
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
         val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         checkDto.bid.value?.let {
@@ -98,8 +99,8 @@ class ValidationService(
     }
 
     fun checkLotStatus(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
         val token = cm.context.token ?: throw ErrorException(ErrorType.CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(ErrorType.CONTEXT)
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
@@ -200,8 +201,8 @@ class ValidationService(
         }
 
     fun checkLotActive(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
 
         val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
@@ -216,8 +217,8 @@ class ValidationService(
     }
 
     fun checkLotsStatus(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(ErrorType.CONTEXT)
-        val ocid = cm.ocid
+        val cpId = cm.cpidParsed
+        val ocid = cm.ocidParsed
         val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
 
         val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)

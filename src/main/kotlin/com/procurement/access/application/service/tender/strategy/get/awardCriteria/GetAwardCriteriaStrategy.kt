@@ -13,7 +13,7 @@ class GetAwardCriteriaStrategy(
     private val tenderProcessDao: TenderProcessDao
 ) {
     fun execute(context: GetAwardCriteriaContext): GetAwardCriteriaResult {
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid.value)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         return when (context.ocid.stage) {

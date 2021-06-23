@@ -1,10 +1,14 @@
 package com.procurement.access.service.validation.strategy.award
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.cpidParsed
+import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
@@ -54,7 +58,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
         return CheckAwardResponse()
     }
 
-    private fun loadTenderProcessEntity(cpid: String, ocid: String): TenderProcessEntity {
+    private fun loadTenderProcessEntity(cpid: Cpid, ocid: Ocid): TenderProcessEntity {
         return tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
     }
@@ -132,14 +136,12 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun context(cm: CommandMessage): ContextRequest {
-        val cpid: String = cm.context.cpid
-            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context..")
+        val cpid = cm.cpidParsed
         val token = cm.context.token
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
         val owner = cm.context.owner
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val ocid = cm.context.ocid
-            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
+        val ocid = cm.ocidParsed
         val lotId: String = cm.context.id
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'id' attribute in context.")
 
@@ -153,10 +155,10 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     data class ContextRequest(
-        val cpid: String,
+        val cpid: Cpid,
         val token: String,
         val owner: String,
-        val ocid: String,
+        val ocid: Ocid.SingleStage,
         val lotId: String
     )
 }

@@ -11,7 +11,7 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.cpidParsed
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.token
 import com.procurement.access.lib.functional.Result
@@ -25,7 +25,7 @@ class CheckAccessToTenderStrategy(
 ) {
 
     fun checkAccessToTender(cm: CommandMessage) {
-        val cpid = cm.cpid
+        val cpid = cm.cpidParsed
         val token = cm.token
         val owner = cm.owner
 

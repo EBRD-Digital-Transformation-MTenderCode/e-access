@@ -20,7 +20,7 @@ class SetTenderUnsuccessfulStrategy(
     private val tenderProcessDao: TenderProcessDao
 ) {
     fun execute(context: SetTenderUnsuccessfulContext): SetTenderUnsuccessfulResult {
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid.value)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val (tenderJson, result) = when (context.ocid.stage) {
