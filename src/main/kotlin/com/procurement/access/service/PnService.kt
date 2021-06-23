@@ -6,6 +6,7 @@ import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -80,13 +81,13 @@ class PnService(
         request.validateDuplicates()
 
         val pnEntity: PNEntity = businessRules(contextRequest, request)
-        val cpid = pnEntity.ocid
+        val cpid = Cpid.tryCreateOrNull(pnEntity.ocid)!!
         val token = generationService.generateToken()
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = cpid,
                 token = token,
-                stage = contextRequest.stage,
+                ocid = contextRequest.ocid,
                 owner = contextRequest.owner,
                 createdDate = contextRequest.startDate,
                 jsonData = toJson(pnEntity)
@@ -1071,8 +1072,6 @@ class PnService(
     }
 
     private fun context(cm: CommandMessage): ContextRequest {
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = CONTEXT, message = "Missing the 'stage' attribute in context.")
         val owner = cm.context.owner
             ?: throw ErrorException(error = CONTEXT, message = "Missing the 'owner' attribute in context.")
         val country = cm.context.country
@@ -1083,7 +1082,6 @@ class PnService(
         val testMode: Boolean = cm.testMode
 
         return ContextRequest(
-            stage = stage,
             owner = owner,
             country = country,
             pmd = pmd,
@@ -1507,7 +1505,6 @@ class PnService(
     }
 
     data class ContextRequest(
-        val stage: String,
         val owner: String,
         val country: String,
         val pmd: ProcurementMethod,

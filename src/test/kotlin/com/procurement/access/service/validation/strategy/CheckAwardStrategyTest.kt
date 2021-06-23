@@ -69,9 +69,9 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(ContextGenerator.CPID),
-                    stage = eq(ContextGenerator.STAGE)
+                tenderProcessDao.getByCpidAndOcid(
+                    cpid = eq(ContextGenerator.CPID),
+                    ocid = eq(ContextGenerator.OCID)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -88,9 +88,9 @@ class CheckAwardStrategyTest {
             val cm = commandMessage(data = dataRequest)
 
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(ContextGenerator.CPID),
-                    stage = eq(ContextGenerator.PREV_STAGE)
+                tenderProcessDao.getByCpidAndOcid(
+                    cpid = eq(ContextGenerator.CPID),
+                    ocid = eq(ContextGenerator.OCID)
                 )
             ).thenReturn(null)
 
@@ -113,9 +113,9 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(ContextGenerator.CPID),
-                    stage = eq(ContextGenerator.STAGE)
+                tenderProcessDao.getByCpidAndOcid(
+                    cpid = eq(ContextGenerator.CPID),
+                    ocid = eq(ContextGenerator.OCID)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -137,9 +137,9 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(ContextGenerator.CPID),
-                    stage = eq(ContextGenerator.STAGE)
+                tenderProcessDao.getByCpidAndOcid(
+                    cpid = eq(ContextGenerator.CPID),
+                    ocid = eq(ContextGenerator.OCID)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -169,9 +169,9 @@ class CheckAwardStrategyTest {
                 .toJson()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(ContextGenerator.CPID),
-                    stage = eq(ContextGenerator.STAGE)
+                tenderProcessDao.getByCpidAndOcid(
+                    cpid = eq(ContextGenerator.CPID),
+                    ocid = eq(ContextGenerator.OCID)
                 )
             ).thenReturn(tenderProcessEntity)
 
@@ -198,9 +198,9 @@ class CheckAwardStrategyTest {
                 val dataEntity = tenderProcessEntityData()
                 val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                 whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        cpId = eq(ContextGenerator.CPID),
-                        stage = eq(ContextGenerator.STAGE)
+                    tenderProcessDao.getByCpidAndOcid(
+                        cpid = eq(ContextGenerator.CPID),
+                        ocid = eq(ContextGenerator.OCID)
                     )
                 ).thenReturn(tenderProcessEntity)
 
@@ -223,9 +223,9 @@ class CheckAwardStrategyTest {
                 val dataEntity = tenderProcessEntityData()
                 val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                 whenever(
-                    tenderProcessDao.getByCpIdAndStage(
-                        cpId = eq(ContextGenerator.CPID),
-                        stage = eq(ContextGenerator.STAGE)
+                    tenderProcessDao.getByCpidAndOcid(
+                        cpid = eq(ContextGenerator.CPID),
+                        ocid = eq(ContextGenerator.OCID)
                     )
                 ).thenReturn(tenderProcessEntity)
 
@@ -248,9 +248,9 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpIdAndStage(
-                    cpId = eq(ContextGenerator.CPID),
-                    stage = eq(ContextGenerator.STAGE)
+                tenderProcessDao.getByCpidAndOcid(
+                    cpid = eq(ContextGenerator.CPID),
+                    ocid = eq(ContextGenerator.OCID)
                 )
             ).thenReturn(tenderProcessEntity)
 

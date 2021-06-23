@@ -24,7 +24,7 @@ class PrepareCancellationStrategy(
         //VR-3.16.10
         checkDocumentType(data.amendments)
 
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         //VR-3.16.1

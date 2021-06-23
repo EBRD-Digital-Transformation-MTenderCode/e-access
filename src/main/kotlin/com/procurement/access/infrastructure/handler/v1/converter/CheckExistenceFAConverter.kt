@@ -6,4 +6,4 @@ import com.procurement.access.infrastructure.handler.v2.model.request.CheckExist
 import com.procurement.access.lib.functional.Result
 
 fun CheckExistenceFARequest.convert(): Result<CheckExistenceFAParams, DataErrors> =
-    CheckExistenceFAParams.tryCreate(this.cpid)
+    CheckExistenceFAParams.tryCreate(cpid, ocid)

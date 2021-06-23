@@ -1,6 +1,5 @@
 package com.procurement.access.service
 
-import com.procurement.access.application.model.context.CheckResponsesContext
 import com.procurement.access.application.model.context.EvPanelsContext
 import com.procurement.access.application.model.context.GetAwardCriteriaAndConversionsContext
 import com.procurement.access.application.model.context.GetCriteriaForTendererContext
@@ -15,18 +14,11 @@ import com.procurement.access.application.model.data.GetCriteriaForTendererResul
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.model.data.fromDomain
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.application.service.CheckResponsesData
-import com.procurement.access.application.service.tender.checkAnsweredOnce
-import com.procurement.access.application.service.tender.checkDataTypeValue
-import com.procurement.access.application.service.tender.checkIdsUniqueness
-import com.procurement.access.application.service.tender.checkPeriod
-import com.procurement.access.application.service.tender.checkResponsesCompleteness
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.CriteriaSource
 import com.procurement.access.domain.model.enums.OperationType
@@ -58,8 +50,6 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 interface CriteriaService {
-    fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData)
-
     fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult
 
     fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult
@@ -78,44 +68,15 @@ class CriteriaServiceImpl(
     private val tenderProcessRepository: TenderProcessRepository,
     private val tenderProcessDao: TenderProcessDao
 ) : CriteriaService {
-
-    override fun checkResponses(context: CheckResponsesContext, data: CheckResponsesData) {
-
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage)
-            ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
-        val cnEntity = toObject(CNEntity::class.java, entity.jsonData)
-        val criteria = cnEntity.tender.criteria.orEmpty()
-
-        // FR.COM-1.16.12 & FR.COM-1.16.13 && FR.COM-1.16.15 && FR.COM-1.16.14
-        checkResponsesCompleteness(criteria, data, Stage.creator(context.stage))
-
-        // FR.COM-1.16.5
-        checkDataTypeValue(data = data, criteria = criteria)
-        // FR.COM-1.16.6
-        checkAnsweredOnce(data = data)
-        // FR.COM-1.16.7 & FR.COM-1.16.8
-        checkPeriod(data = data)
-        // FR.COM-1.16.9
-        checkIdsUniqueness(data = data)
-    }
-
     override fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult {
-        val validatedCpid = Cpid.tryCreate(context.cpid)
-            .orThrow { _ ->
-                ErrorException(
-                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                    message = "Attribute 'cpid' has invalid format."
-                )
-            }
-
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = validatedCpid, stage = context.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = context.cpid, ocid = context.ocid)
             .orThrow { it.exception }
             ?: throw ErrorException(
                 error = ErrorType.DATA_NOT_FOUND,
                 message = "VR.COM-1.42.1"
             )
 
-        val criteriaForTenderer = when (context.stage) {
+        val criteriaForTenderer = when (context.ocid.stage) {
             Stage.EV,
             Stage.TP -> {
                 toObject(CNEntity::class.java, entity.jsonData)
@@ -143,7 +104,7 @@ class CriteriaServiceImpl(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -164,10 +125,10 @@ class CriteriaServiceImpl(
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
+        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val result = when (context.stage) {
+        val result = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -199,7 +160,7 @@ class CriteriaServiceImpl(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -240,9 +201,9 @@ class CriteriaServiceImpl(
         )
 
     override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? {
-        val tenderEntity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
+        val tenderEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
 
-        val result = when (context.stage) {
+        val result = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -265,7 +226,7 @@ class CriteriaServiceImpl(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -273,9 +234,7 @@ class CriteriaServiceImpl(
     }
 
     override fun getQualificationCriteriaAndMethod(params: GetQualificationCriteriaAndMethod.Params): Result<GetQualificationCriteriaAndMethodResult, Fail> {
-        val stage = params.ocid.stage
-
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { error -> return error }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetQualificationCriteriaAndMethod(
@@ -341,7 +300,7 @@ class CriteriaServiceImpl(
 
     override fun findCriteria(params: FindCriteria.Params): Result<FindCriteriaResult, Fail> {
 
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { error -> return error }
             ?: return success(FindCriteriaResult(emptyList()))
 
@@ -414,9 +373,9 @@ class CriteriaServiceImpl(
         val stage = params.ocid.stage
         val datePublished = params.date
 
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(
             cpid = params.cpid,
-            stage = stage
+            ocid = params.ocid
         )
             .onFailure { error -> return error }
             ?: return failure(

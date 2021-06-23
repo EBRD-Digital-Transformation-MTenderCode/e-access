@@ -3,8 +3,9 @@ package com.procurement.access.service.validation.strategy
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.CPVCodePattern
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.patternBySymbols
 import com.procurement.access.domain.model.patternOfGroups
 import com.procurement.access.domain.model.startsWithPattern
@@ -13,9 +14,8 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.operationType
-import com.procurement.access.infrastructure.api.v1.prevStage
-import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckItemsRequest
@@ -66,8 +66,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN -> {
                 val cpid = cm.cpid
-                val prevStage = cm.prevStage
-                val process: TenderProcess = loadTenderProcess(cpid, prevStage)
+                val ocid = cm.ocid
+                val process: TenderProcess = loadTenderProcess(cpid, ocid)
                 if (process.tender.items.isEmpty()) {
                     val itemsCpvCodes = getCPVCodes(request)
                     val itemsAreHomogeneous = areHomogeneous(itemsCpvCodes)
@@ -141,8 +141,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
 
             OperationType.UPDATE_AP -> {
                 val cpid = cm.cpid
-                val stage = cm.stage
-                val process: APEntity = loadAP(cpid, stage)
+                val ocid = cm.ocid
+                val process: APEntity = loadAP(cpid, ocid)
                 if (request.items.isNotEmpty()) {
                     val cpvCodes = getCPVCodes(request)
                         .also {
@@ -172,8 +172,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             }
             OperationType.UPDATE_PN -> {
                 val cpid = cm.cpid
-                val stage = cm.stage
-                val process: TenderProcess = loadTenderProcess(cpid, stage.key)
+                val ocid = cm.ocid
+                val process: TenderProcess = loadTenderProcess(cpid, ocid)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
                         .also {
@@ -204,8 +204,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
 
             OperationType.UPDATE_CN -> {
                 val cpid = cm.cpid
-                val stage = cm.stage
-                val cn: CNEntity = loadCN(cpid, stage)
+                val ocid = cm.ocid
+                val cn: CNEntity = loadCN(cpid, ocid)
 
                 checkItems(request = request, cn = cn)
 
@@ -261,20 +261,20 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
         }
     }
 
-    private fun loadTenderProcess(cpid: String, stage: String): TenderProcess {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage)
+    private fun loadTenderProcess(cpid: Cpid, ocid: Ocid): TenderProcess {
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(TenderProcess::class.java, entity.jsonData)
     }
 
-    private fun loadAP(cpid: String, stage: Stage): APEntity {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
+    private fun loadAP(cpid: Cpid, ocid: Ocid): APEntity {
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(APEntity::class.java, entity.jsonData)
     }
 
-    private fun loadCN(cpid: String, stage: Stage): CNEntity {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
+    private fun loadCN(cpid: Cpid, ocid: Ocid): CNEntity {
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(CNEntity::class.java, entity.jsonData)
     }

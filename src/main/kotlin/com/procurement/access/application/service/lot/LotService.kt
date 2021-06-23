@@ -65,7 +65,7 @@ class LotServiceImpl(
 
     override fun setStateForLots(params: SetStateForLotsParams): Result<List<SetStateForLotsResult>, Fail> {
         val tenderProcessEntity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { return it }
             ?: return Result.failure(
                 ValidationErrors.LotsNotFoundSetStateForLots(lotsId = params.lots.map { it.id.toString() })
@@ -309,9 +309,9 @@ class LotServiceImpl(
 
     override fun getLotStateByIds(params: GetLotStateByIdsParams): Result<List<GetLotStateByIdsResult>, Fail> {
 
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(
             cpid = params.cpid,
-            stage = params.ocid.stage
+            ocid = params.ocid
         )
             .onFailure { return it }
             ?: return Result.failure(
@@ -344,7 +344,7 @@ class LotServiceImpl(
         val stage = params.ocid.stage
 
         val tenderProcessEntity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { error -> return error }
             ?: return emptyList<LotId>().asSuccess()
 
@@ -446,7 +446,7 @@ class LotServiceImpl(
     }
 
     override fun getLot(context: GetLotContext): GettedLot {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         return toObject(CNEntity::class.java, entity.jsonData)
@@ -535,7 +535,7 @@ class LotServiceImpl(
             .orThrow {
                 ErrorException(
                     error = ErrorType.LOT_NOT_FOUND,
-                    message = "In tender by cpid '${context.cpid}' and stage '${context.stage}' the lot by id '${context.lotId}' not found."
+                    message = "In tender by cpid '${context.cpid}' and ocid '${context.ocid}' the lot by id '${context.lotId}' not found."
                 )
             }
     }
@@ -596,12 +596,12 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }
 
-        val (tenderJson, result) = when (context.stage) {
+        val (tenderJson, result) = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -654,7 +654,7 @@ class LotServiceImpl(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -662,7 +662,7 @@ class LotServiceImpl(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                stage = context.stage.key,
+                ocid = context.ocid,
                 owner = entity.owner,
                 createdDate = context.startDate,
                 jsonData = tenderJson
@@ -687,7 +687,7 @@ class LotServiceImpl(
     }
 
     private fun getLotsForCnOnPn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction =
-        tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
+        tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?.let { entity ->
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 getLotFromTender(lots = process.tender.lots)
@@ -727,7 +727,7 @@ class LotServiceImpl(
     private fun getLotsForUpdateCn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
         val receivedLotsByIds: Map<TemporalLotId, LotsForAuctionData.Lot> = data.lots.associateBy { it.id }
         val savedLotsByIds: Map<String, CNEntity.Tender.Lot> =
-            tenderProcessDao.getByCpIdAndStage(context.cpid, context.prevStage)
+            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
                 ?.let { entity ->
                     val cn = toObject(CNEntity::class.java, entity.jsonData)
                     cn.tender.lots

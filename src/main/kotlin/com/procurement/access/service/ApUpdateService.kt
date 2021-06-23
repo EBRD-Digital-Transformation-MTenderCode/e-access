@@ -46,7 +46,7 @@ class ApUpdateServiceImpl(
     override fun updateAp(context: UpdateApContext, data: ApUpdateData): ApUpdateResponse {
         data.validateTextAttributes()
 
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         // VR.COM-1.26.1
@@ -715,7 +715,7 @@ class ApUpdateServiceImpl(
         TenderProcessEntity(
             cpId = entity.cpId,
             token = entity.token,
-            stage = entity.stage,
+            ocid = entity.ocid,
             owner = entity.owner,
             createdDate = dateTime,
             jsonData = toJson(tender)

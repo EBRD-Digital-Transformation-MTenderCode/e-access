@@ -13,6 +13,8 @@ import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.exception.repository.ReadEntityException
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -29,9 +31,9 @@ import java.util.*
 @ContextConfiguration(classes = [DatabaseTestConfiguration::class])
 class TenderProcessDaoIT {
     companion object {
-        private const val CPID = "cpid-1"
-        private const val STAGE_PN = "PN"
-        private const val STAGE_EV = "EV"
+        private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1543525135421")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
+        private val OCID_1 = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
         private val TOKEN = UUID.randomUUID()
         private val OWNER = UUID.randomUUID().toString()
     }
@@ -108,13 +110,13 @@ class TenderProcessDaoIT {
         session.execute(
             """
                 CREATE TABLE IF NOT EXISTS ocds.access_tender (
-                    cp_id text,
-                    stage text,
+                    cpid text,
+                    ocid text,
                     token_entity UUID,
                     owner text,
                     created_date timestamp,
                     json_data text,
-                    PRIMARY KEY(cp_id, stage, token_entity)
+                    PRIMARY KEY(cpid, ocid, token_entity)
                 );
             """
         )
@@ -122,14 +124,14 @@ class TenderProcessDaoIT {
 
     private fun insertAuths() {
         val recPN = QueryBuilder.insertInto("ocds", "access_tender")
-            .value("cp_id", CPID)
-            .value("stage", STAGE_PN)
+            .value("cpid", CPID.value)
+            .value("ocid", OCID.value)
             .value("token_entity", TOKEN)
             .value("owner", OWNER)
 
         val recEV = QueryBuilder.insertInto("ocds", "access_tender")
-            .value("cp_id", CPID)
-            .value("stage", STAGE_EV)
+            .value("cpid", CPID.value)
+            .value("ocid", OCID_1.value)
             .value("token_entity", TOKEN)
             .value("owner", OWNER)
 

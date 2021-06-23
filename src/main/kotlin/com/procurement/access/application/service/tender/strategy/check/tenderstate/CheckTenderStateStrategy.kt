@@ -25,7 +25,7 @@ class CheckTenderStateStrategy(
         val cpid = params.cpid
         val ocid = params.ocid
 
-        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
+        val tenderEntity = tenderProcessRepository.getByCpIdAndOcid(cpid = cpid, ocid = ocid)
             .onFailure { return ValidationResult.error(it.reason) }
             ?: return ValidationErrors.TenderNotFoundOnCheckTenderState(cpid = cpid, ocid = ocid)
                 .asValidationFailure()

@@ -1,10 +1,14 @@
 package com.procurement.access.service.validation.strategy.award
 
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
@@ -29,7 +33,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
         val contextRequest = context(cm)
         val request: CheckAwardRequest = toObject(CheckAwardRequest::class.java, cm.data)
 
-        val entity: TenderProcessEntity = loadTenderProcessEntity(contextRequest.cpid, contextRequest.stage)
+        val entity: TenderProcessEntity = loadTenderProcessEntity(contextRequest.cpid, contextRequest.ocid)
 
         //VR-3.11.6
         checkOwner(ownerFromRequest = contextRequest.owner, entity = entity)
@@ -54,8 +58,8 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
         return CheckAwardResponse()
     }
 
-    private fun loadTenderProcessEntity(cpid: String, stage: String): TenderProcessEntity {
-        return tenderProcessDao.getByCpIdAndStage(cpid, stage)
+    private fun loadTenderProcessEntity(cpid: Cpid, ocid: Ocid): TenderProcessEntity {
+        return tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
     }
 
@@ -132,31 +136,29 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun context(cm: CommandMessage): ContextRequest {
-        val cpid: String = cm.context.cpid
-            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context..")
+        val cpid = cm.cpid
         val token = cm.context.token
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
         val owner = cm.context.owner
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val stage = cm.context.stage
-            ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
+        val ocid = cm.ocid
         val lotId: String = cm.context.id
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'id' attribute in context.")
 
         return ContextRequest(
             cpid = cpid,
             token = token,
-            stage = stage,
+            ocid = ocid,
             owner = owner,
             lotId = lotId
         )
     }
 
     data class ContextRequest(
-        val cpid: String,
+        val cpid: Cpid,
         val token: String,
         val owner: String,
-        val stage: String,
+        val ocid: Ocid.SingleStage,
         val lotId: String
     )
 }

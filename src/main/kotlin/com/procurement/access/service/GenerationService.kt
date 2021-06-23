@@ -71,6 +71,13 @@ class GenerationService {
         return Ocid.SingleStage.generate(cpid = cpidParsed, stage = stageParsed, timestamp = nowDefaultUTC())
     }
 
+    fun generateOcid(cpid: Cpid, stage: String): Ocid.SingleStage {
+        val stageParsed = Stage.orNull(stage)
+            ?: throw ErrorException(ErrorType.INVALID_STAGE)
+
+        return Ocid.SingleStage.generate(cpid = cpid, stage = stageParsed, timestamp = nowDefaultUTC())
+    }
+
     fun criterionId(): String = UUID.randomUUID().toString()
 
     fun requirementGroupId(): String = UUID.randomUUID().toString()

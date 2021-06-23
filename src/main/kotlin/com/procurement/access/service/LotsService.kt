@@ -18,7 +18,6 @@ import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
-import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -32,8 +31,8 @@ import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.infrastructure.api.v1.pmd
-import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.entity.TenderLotValueInfo
@@ -83,10 +82,10 @@ class LotsService(
 ) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val activeLotsIds = when (context.stage) {
+        val activeLotsIds = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -105,7 +104,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -116,10 +115,10 @@ class LotsService(
     }
 
     fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val responseData = when (context.stage) {
+        val responseData = when (context.ocid.stage) {
             Stage.EV,
             Stage.TP -> {
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -152,7 +151,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -162,11 +161,11 @@ class LotsService(
     private fun isActiveLot(status: LotStatus?): Boolean = status == LotStatus.ACTIVE
 
     fun setLotsStatusDetailsUnsuccessful(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
+        val ocid = cm.ocid
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.apply {
             setLotsStatusDetails(lots, lotsDto, LotStatusDetails.UNSUCCESSFUL)
@@ -186,18 +185,18 @@ class LotsService(
     }
 
     fun setLotsStatusDetailsAwarded(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.stage
+        val cpId = cm.cpid
+        val ocid = cm.ocid
         val requestDto = toObject(UpdateLotByBidRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
         val statusDetails = if (requestDto.lotAwarded)
             LotStatusDetails.AWARDED
         else
             LotStatusDetails.EMPTY
 
-        val result = when (stage) {
+        val result = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -237,7 +236,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage $stage not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
@@ -245,11 +244,11 @@ class LotsService(
     }
 
     fun setFinalStatuses(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
+        val ocid = cm.ocid
         val dto = toObject(FinalStatusesRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val lots = process.tender.lots
 
@@ -321,13 +320,13 @@ class LotsService(
     }
 
     fun setLotInitialStatus(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.stage
+        val cpId = cm.cpid
+        val ocid = cm.ocid
         val dto = toObject(CanCancellationRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val result = when (stage) {
+        val result = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -371,7 +370,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage $stage not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
@@ -383,11 +382,11 @@ class LotsService(
     }
 
     fun getItemsByLot(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
         val lotId = cm.context.id ?: throw ErrorException(CONTEXT)
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val items = process.tender.items.filter { it.relatedLot == lotId }
             .map { ItemDto(id = it.id) }
@@ -395,34 +394,11 @@ class LotsService(
     }
 
     fun completeLots(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = when (cm.pmd) {
-            ProcurementMethod.OT, ProcurementMethod.TEST_OT,
-            ProcurementMethod.SV, ProcurementMethod.TEST_SV,
-            ProcurementMethod.MV, ProcurementMethod.TEST_MV -> "EV"
-
-            ProcurementMethod.CD, ProcurementMethod.TEST_CD,
-            ProcurementMethod.DA, ProcurementMethod.TEST_DA,
-            ProcurementMethod.DC, ProcurementMethod.TEST_DC,
-            ProcurementMethod.IP, ProcurementMethod.TEST_IP,
-            ProcurementMethod.NP, ProcurementMethod.TEST_NP,
-            ProcurementMethod.OP, ProcurementMethod.TEST_OP -> "NP"
-
-            ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
-            ProcurementMethod.RT, ProcurementMethod.TEST_RT -> "TP"
-
-            ProcurementMethod.MC, ProcurementMethod.TEST_MC,
-            ProcurementMethod.DCO, ProcurementMethod.TEST_DCO,
-            ProcurementMethod.RFQ, ProcurementMethod.TEST_RFQ -> "CO"
-
-            ProcurementMethod.CF, ProcurementMethod.TEST_CF,
-            ProcurementMethod.OF, ProcurementMethod.TEST_OF -> "FE"
-
-            ProcurementMethod.FA, ProcurementMethod.TEST_FA -> throw ErrorException(ErrorType.INVALID_PMD)
-        }
+        val cpId = cm.cpid
+        val ocid = cm.ocid  // TODO Does not work correctly, to be fixed in future
         val dto = toObject(ActivationAcRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
 
         val updatedLots = process.tender.lots
@@ -480,7 +456,7 @@ class LotsService(
     }
 
     fun getLotsValue(params: GetLotsValueParams): Result<GetLotsValueResult, Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it }
             ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
 
@@ -503,7 +479,7 @@ class LotsService(
     }
 
     fun checkLotsState(params: CheckLotsStateParams): ValidationResult<Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationErrors.TenderNotFoundOnCheckLotsState(cpid = params.cpid, ocid = params.ocid)
                 .asValidationFailure()
@@ -554,9 +530,10 @@ class LotsService(
         }
 
     fun validateLotsDataForDivision(params: ValidateLotsDataForDivisionParams): ValidationResult<Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
-            ?: return ValidationErrors.TenderNotFoundOnValidateLotsDataForDivision(params.cpid, params.ocid).asValidationFailure()
+            ?: return ValidationErrors.TenderNotFoundOnValidateLotsDataForDivision(params.cpid, params.ocid)
+                .asValidationFailure()
 
         val process = entity.jsonData.tryToObject(TenderLotsAndItemsInfo::class.java)
             .onFailure { return it.reason.asValidationFailure() }
@@ -585,7 +562,7 @@ class LotsService(
     private fun getNewLots(
         receivedLotsByIds: Map<String, ValidateLotsDataForDivisionParams.Tender.Lot>,
         knownLot: TenderLotsAndItemsInfo.Tender.Lot
-    ): Result<List<ValidateLotsDataForDivisionParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots>  {
+    ): Result<List<ValidateLotsDataForDivisionParams.Tender.Lot>, ValidationErrors.IncorrectNumberOfNewLots> {
         val newLots = receivedLotsByIds.minus(knownLot.id.toString())
         val minimumNumberOfNewLots = 2
         return if (newLots.size < minimumNumberOfNewLots)
@@ -606,13 +583,17 @@ class LotsService(
         return storedLotsByIds.getValue(knownLotsIds.first()).asSuccess()
     }
 
-    private fun checkForMissingParameters(newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>) : ValidationResult<Fail>{
+    private fun checkForMissingParameters(newLots: List<ValidateLotsDataForDivisionParams.Tender.Lot>): ValidationResult<Fail> {
         newLots.map { lot ->
-            lot.title ?: return ValidationErrors.MissingTittleOnValidateLotsDataForDivision(lot.id).asValidationFailure()
-            lot.description ?: return ValidationErrors.MissingDescriptionOnValidateLotsDataForDivision(lot.id).asValidationFailure()
+            lot.title ?: return ValidationErrors.MissingTittleOnValidateLotsDataForDivision(lot.id)
+                .asValidationFailure()
+            lot.description ?: return ValidationErrors.MissingDescriptionOnValidateLotsDataForDivision(lot.id)
+                .asValidationFailure()
             lot.value ?: return ValidationErrors.MissingValueOnValidateLotsDataForDivision(lot.id).asValidationFailure()
-            lot.contractPeriod ?: return ValidationErrors.MissingContractPeriodOnValidateLotsDataForDivision(lot.id).asValidationFailure()
-            lot.placeOfPerformance ?: return ValidationErrors.MissingPlaceOfPerformanceOnValidateLotsDataForDivision(lot.id).asValidationFailure()
+            lot.contractPeriod ?: return ValidationErrors.MissingContractPeriodOnValidateLotsDataForDivision(lot.id)
+                .asValidationFailure()
+            lot.placeOfPerformance ?: return ValidationErrors.MissingPlaceOfPerformanceOnValidateLotsDataForDivision(lot.id)
+                .asValidationFailure()
         }
         return ValidationResult.ok()
     }
@@ -621,7 +602,7 @@ class LotsService(
         lots.map { lot ->
             if (lot.mustContainNoOptions() && lot.options.isNotEmpty())
                 return ValidationErrors.OptionsMustBeAbsent(lot.id).asValidationFailure()
-            if (lot.mustContainNoRecurrence() && lot.recurrence!=null)
+            if (lot.mustContainNoRecurrence() && lot.recurrence != null)
                 return ValidationErrors.RecurrenceMustBeAbsent(lot.id).asValidationFailure()
             if (lot.mustContainNoRenewal() && lot.renewal != null)
                 return ValidationErrors.RenewalMustBeAbsent(lot.id).asValidationFailure()
@@ -643,7 +624,7 @@ class LotsService(
         dividedLot: TenderLotsAndItemsInfo.Tender.Lot,
         receivedItems: List<ValidateLotsDataForDivisionParams.Tender.Item>,
         storedItems: List<TenderLotsAndItemsInfo.Tender.Item>
-    ) : ValidationResult<Fail>{
+    ): ValidationResult<Fail> {
         checkLotsValue(newLots, dividedLot)
             .doOnError { return it.asValidationFailure() }
 
@@ -791,7 +772,7 @@ class LotsService(
     }
 
     fun divideLot(params: DivideLotParams): Result<DivideLotResult, Fail> {
-        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderProcessEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it }
             ?: return ValidationErrors.TenderNotFoundOnGetLotsValue(cpid = params.cpid, ocid = params.ocid).asFailure()
 
@@ -810,7 +791,12 @@ class LotsService(
         val newLotIdsByOldLotIds = generatedLotsByOldIds.mapValues { it.value.id }
         val updatedItems = getUpdatedItems(params, newLotIdsByOldLotIds, tenderProcess)
 
-        val updatedTenderProcess = tenderProcess.copy(tender = tenderProcess.tender.copy(lots = updatedLots, items = updatedItems))
+        val updatedTenderProcess = tenderProcess.copy(
+            tender = tenderProcess.tender.copy(
+                lots = updatedLots,
+                items = updatedItems
+            )
+        )
         val updatedTenderProcessEntity = tenderProcessEntity.copy(jsonData = toJson(updatedTenderProcess))
         tenderProcessRepository.save(updatedTenderProcessEntity)
             .onFailure { return it }
@@ -1029,7 +1015,7 @@ class LotsService(
             placeOfPerformance = lot.placeOfPerformance!!.let { placeOfPerformance ->
                 CNEntity.Tender.Lot.PlaceOfPerformance(
                     description = placeOfPerformance.description,
-                    address =  placeOfPerformance.address.let { address ->
+                    address = placeOfPerformance.address.let { address ->
                         CNEntity.Tender.Lot.PlaceOfPerformance.Address(
                             streetAddress = address.streetAddress,
                             postalCode = address.postalCode,
@@ -1114,12 +1100,12 @@ class LotsService(
         )
 
     fun getItemsByLots(context: GetItemsByLotsContext, data: GetItemsByLotsData): GetItemsByLotsResult {
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage.key)
-            ?: throw ErrorException(DATA_NOT_FOUND, "Tender by '${context.cpid}' and stage ${context.stage} not found")
+        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+            ?: throw ErrorException(DATA_NOT_FOUND, "Tender by '${context.cpid}' and ocid ${context.ocid} not found")
 
         val receivedLotIds = data.lots.toSet { it.id }
 
-        val itemsRelatedToReceivedLots = when (context.stage) {
+        val itemsRelatedToReceivedLots = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -1130,9 +1116,10 @@ class LotsService(
                 checkLotsRelation(receivedLotIds, itemsByLots.keys)
 
                 receivedLotIds
-                    .flatMap { lotId -> itemsByLots
-                        .getValue(lotId)
-                        .map { item -> GetItemsByLotsResult.Item.fromDomain(item) }
+                    .flatMap { lotId ->
+                        itemsByLots
+                            .getValue(lotId)
+                            .map { item -> GetItemsByLotsResult.Item.fromDomain(item) }
                     }
                     .let { GetItemsByLotsResult(it) }
             }
@@ -1143,9 +1130,10 @@ class LotsService(
                 checkLotsRelation(receivedLotIds, itemsByLots.keys)
 
                 receivedLotIds
-                    .flatMap { lotId -> itemsByLots
-                        .getValue(lotId)
-                        .map { item -> GetItemsByLotsResult.Item.fromDomain(item) }
+                    .flatMap { lotId ->
+                        itemsByLots
+                            .getValue(lotId)
+                            .map { item -> GetItemsByLotsResult.Item.fromDomain(item) }
                     }
                     .let { GetItemsByLotsResult(it) }
             }
@@ -1156,7 +1144,7 @@ class LotsService(
             Stage.PC,
             Stage.PN -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -1172,5 +1160,4 @@ class LotsService(
                 "No items are linked via relatedLot to lot(s) '${lotsWithoutRelatedItems.joinToString()}' "
             )
     }
-
 }
