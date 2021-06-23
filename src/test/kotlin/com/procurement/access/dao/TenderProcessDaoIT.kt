@@ -32,8 +32,8 @@ import java.util.*
 class TenderProcessDaoIT {
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1543525135421")!!
-        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")
-        private const val OCID_1 = "ocds-b3wdp1-MD-1581509539187-EV-1581509653044"
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
+        private val OCID_1 = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1581509539187-EV-1581509653044")!!
         private val TOKEN = UUID.randomUUID()
         private val OWNER = UUID.randomUUID().toString()
     }
@@ -124,14 +124,14 @@ class TenderProcessDaoIT {
 
     private fun insertAuths() {
         val recPN = QueryBuilder.insertInto("ocds", "access_tender")
-            .value("cpid", CPID)
-            .value("ocid", OCID)
+            .value("cpid", CPID.value)
+            .value("ocid", OCID.value)
             .value("token_entity", TOKEN)
             .value("owner", OWNER)
 
         val recEV = QueryBuilder.insertInto("ocds", "access_tender")
-            .value("cpid", CPID)
-            .value("ocid", OCID_1)
+            .value("cpid", CPID.value)
+            .value("ocid", OCID_1.value)
             .value("token_entity", TOKEN)
             .value("owner", OWNER)
 
