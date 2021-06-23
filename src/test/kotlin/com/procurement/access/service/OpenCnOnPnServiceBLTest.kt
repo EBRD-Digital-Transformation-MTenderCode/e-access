@@ -10,6 +10,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.Stage
@@ -83,7 +84,7 @@ class OpenCnOnPnServiceBLTest {
                 .thenReturn(PERMANENT_AUCTION_ID_1, PERMANENT_AUCTION_ID_2)
 
             val context = createContext()
-            val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
+            val ocid = ContextGenerator.OCID
             whenever(generationService.generateOcid(cpid = context.cpid, stage = Stage.EV.key))
                 .thenReturn(ocid)
 
@@ -94,7 +95,7 @@ class OpenCnOnPnServiceBLTest {
                 }
             }
 
-            mockGetByCpIdAndStage(
+            mockGetByCpIdAndOcid(
                 cpid = ContextGenerator.CPID,
                 ocid = ContextGenerator.OCID,
                 data = pnWithoutItems
@@ -127,7 +128,7 @@ class OpenCnOnPnServiceBLTest {
         }
     }
 
-    private fun mockGetByCpIdAndStage(cpid: String, ocid: String, data: JsonNode) {
+    private fun mockGetByCpIdAndOcid(cpid: Cpid, ocid: Ocid, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
         whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)

@@ -11,6 +11,7 @@ import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -1439,8 +1440,8 @@ class OpenCnOnPnServiceTest {
                 requestNode.getObject("tender")
                     .remove("procuringEntity")
 
-                val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
-                whenever(generationService.generateOcid(cpid = any(), stage = any()))
+                val ocid = ContextGenerator.OCID
+                whenever(generationService.generateOcid(cpid = any<Cpid>(), stage = any()))
                     .thenReturn(ocid)
 
                 val context: CreateOpenCnOnPnContext = createContext()
@@ -1467,8 +1468,8 @@ class OpenCnOnPnServiceTest {
                     OpenCnOnPnRequest.Tender.ProcuringEntity::class.java,
                     jsonProcuringEntity
                 )
-                val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
-                whenever(generationService.generateOcid(cpid = any(), stage = any()))
+                val ocid = ContextGenerator.OCID
+                whenever(generationService.generateOcid(cpid = any<Cpid>(), stage = any()))
                     .thenReturn(ocid)
                 val context: CreateOpenCnOnPnContext = createContext()
                 val response: OpenCnOnPnResponse = service.create(context = context, data = requestNode.toObject())
@@ -1600,8 +1601,8 @@ class OpenCnOnPnServiceTest {
             )
                 .thenReturn(tenderProcessEntity)
 
-            val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
-            whenever(generationService.generateOcid(cpid = any(), stage = any()))
+            val ocid = ContextGenerator.OCID
+            whenever(generationService.generateOcid(cpid = any<Cpid>(), stage = any()))
                 .thenReturn(ocid)
 
             val actualJson = service.create(context = context, data = data).toJson()
@@ -1617,7 +1618,7 @@ class OpenCnOnPnServiceTest {
         }
     }
 
-    private fun mockGetByCpIdAndOcid(cpid: String, ocid: String, data: JsonNode) {
+    private fun mockGetByCpIdAndOcid(cpid: Cpid, ocid: Ocid, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
         whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)

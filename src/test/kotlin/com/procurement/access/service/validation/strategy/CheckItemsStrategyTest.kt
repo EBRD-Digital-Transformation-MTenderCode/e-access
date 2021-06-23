@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -491,7 +493,7 @@ class CheckItemsStrategyTest {
             }
         }
 
-        private fun mockGetByCpIdAndOcid(cpid: String, ocid: String, data: JSON) {
+        private fun mockGetByCpIdAndOcid(cpid: Cpid, ocid: Ocid, data: JSON) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data)
             whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
                 .thenReturn(tenderProcessEntity)

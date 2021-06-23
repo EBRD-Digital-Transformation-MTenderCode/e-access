@@ -88,8 +88,7 @@ class TenderProcessRepositoryIT {
         assertTrue(wasApplied)
 
         val storedEntity = tenderProccessRepository.getByCpIdAndOcid(
-            Cpid.tryCreateOrNull(entity.cpId)!!,
-            Ocid.SingleStage.tryCreateOrNull(entity.ocid)!!
+            entity.cpId, entity.ocid
         ).get!!
 
         assertEquals(dataForUpdate, storedEntity.jsonData)
@@ -97,8 +96,8 @@ class TenderProcessRepositoryIT {
     }
 
     val SAMPLE_ENTITY = TenderProcessEntity(
-        cpId = CPID.value,
-        ocid = OCID.value,
+        cpId = CPID,
+        ocid = OCID,
         owner = "sample-owner",
         token = TOKEN,
         createdDate = DATE,

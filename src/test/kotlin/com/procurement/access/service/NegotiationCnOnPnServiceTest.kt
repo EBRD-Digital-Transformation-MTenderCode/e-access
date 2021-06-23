@@ -9,6 +9,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.util.extension.asString
@@ -740,7 +741,7 @@ class NegotiationCnOnPnServiceTest {
             }
         }
 
-        private fun mockGetByCpIdAndStage(cpid: String, ocid: String, data: JsonNode) {
+        private fun mockGetByCpIdAndStage(cpid: Cpid, ocid: Ocid, data: JsonNode) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
             whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
                 .thenReturn(tenderProcessEntity)
@@ -862,8 +863,8 @@ class NegotiationCnOnPnServiceTest {
             )
                 .thenReturn(tenderProcessEntity)
 
-            val ocid = Ocid.SingleStage.tryCreateOrNull(ContextGenerator.OCID)!!
-            whenever(generationService.generateOcid(cpid = any(), stage = any()))
+            val ocid = ContextGenerator.OCID
+            whenever(generationService.generateOcid(cpid = any<Cpid>(), stage = any()))
                 .thenReturn(ocid)
 
             whenever(generationService.generatePermanentTenderId())

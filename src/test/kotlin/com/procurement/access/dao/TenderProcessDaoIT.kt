@@ -13,6 +13,8 @@ import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.exception.repository.ReadEntityException
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -29,8 +31,8 @@ import java.util.*
 @ContextConfiguration(classes = [DatabaseTestConfiguration::class])
 class TenderProcessDaoIT {
     companion object {
-        private const val CPID = "cpid-1"
-        private const val OCID = "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+        private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1543525135421")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")
         private const val OCID_1 = "ocds-b3wdp1-MD-1581509539187-EV-1581509653044"
         private val TOKEN = UUID.randomUUID()
         private val OWNER = UUID.randomUUID().toString()
