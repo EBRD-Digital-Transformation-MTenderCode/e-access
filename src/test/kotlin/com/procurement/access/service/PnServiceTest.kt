@@ -10,7 +10,6 @@ import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.dao.TenderProcessDao
-import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.util.extension.asString
 import com.procurement.access.domain.util.extension.toLocalDateTime
@@ -626,7 +625,7 @@ class PnServiceTest {
 
     private fun getCreatePnPayload(cm: CommandMessage): CreatePnPayload {
         val context = CreatePnContext(
-            ocid = Ocid.SingleStage.tryCreateOrNull(cm.ocid)!!,
+            ocid = cm.ocid,
             owner = cm.owner,
             pmd = cm.pmd,
             country = cm.country,

@@ -27,31 +27,31 @@ data class CommandMessage @JsonCreator constructor(
 val CommandMessage.commandId: CommandId
     get() = this.id
 
-val CommandMessage.cpid: String
+val CommandMessage.cpid: Cpid
     get() = this.context.cpid
+        ?.let {
+            Cpid.tryCreate(it)
+                .orThrow { _ ->
+                    ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Attribute 'cpid' has invalid format."
+                    )
+                }
+        }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context.")
 
-val CommandMessage.cpidParsed: Cpid
-    get() = Cpid.tryCreate(cpid)
-        .orThrow { _ ->
-            ErrorException(
-                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                message = "Attribute 'cpid' has invalid format."
-            )
-        }
-
-val CommandMessage.ocid: String
+val CommandMessage.ocid: Ocid.SingleStage
     get() = this.context.ocid
-        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
-
-val CommandMessage.ocidParsed: Ocid.SingleStage
-    get() = Ocid.SingleStage.tryCreate(ocid)
-        .orThrow { _ ->
-            ErrorException(
-                error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                message = "Attribute 'ocid' has invalid format."
-            )
+        ?.let {
+            Ocid.SingleStage.tryCreate(it)
+                .orThrow { _ ->
+                    ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Attribute 'ocid' has invalid format."
+                    )
+                }
         }
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
 
 val CommandMessage.token: UUID
     get() = this.context

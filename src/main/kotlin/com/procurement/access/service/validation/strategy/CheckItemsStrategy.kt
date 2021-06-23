@@ -13,8 +13,8 @@ import com.procurement.access.domain.model.toCPVCode
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.cpidParsed
-import com.procurement.access.infrastructure.api.v1.ocidParsed
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.operationType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
@@ -65,8 +65,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             OperationType.CREATE_CN_ON_PN,
             OperationType.CREATE_PIN_ON_PN,
             OperationType.CREATE_NEGOTIATION_CN_ON_PN -> {
-                val cpid = cm.cpidParsed
-                val ocid = cm.ocidParsed
+                val cpid = cm.cpid
+                val ocid = cm.ocid
                 val process: TenderProcess = loadTenderProcess(cpid, ocid)
                 if (process.tender.items.isEmpty()) {
                     val itemsCpvCodes = getCPVCodes(request)
@@ -140,8 +140,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             }
 
             OperationType.UPDATE_AP -> {
-                val cpid = cm.cpidParsed
-                val ocid = cm.ocidParsed
+                val cpid = cm.cpid
+                val ocid = cm.ocid
                 val process: APEntity = loadAP(cpid, ocid)
                 if (request.items.isNotEmpty()) {
                     val cpvCodes = getCPVCodes(request)
@@ -171,8 +171,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
                 }
             }
             OperationType.UPDATE_PN -> {
-                val cpid = cm.cpidParsed
-                val ocid = cm.ocidParsed
+                val cpid = cm.cpid
+                val ocid = cm.ocid
                 val process: TenderProcess = loadTenderProcess(cpid, ocid)
                 if (process.tender.items.isEmpty()) {
                     val cpvCodes = getCPVCodes(request)
@@ -203,8 +203,8 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
             }
 
             OperationType.UPDATE_CN -> {
-                val cpid = cm.cpidParsed
-                val ocid = cm.ocidParsed
+                val cpid = cm.cpid
+                val ocid = cm.ocid
                 val cn: CNEntity = loadCN(cpid, ocid)
 
                 checkItems(request = request, cn = cn)

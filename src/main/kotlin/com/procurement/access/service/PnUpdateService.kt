@@ -23,8 +23,8 @@ import com.procurement.access.exception.ErrorType.NO_ACTIVE_LOTS
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.infrastructure.api.v1.cpidParsed
-import com.procurement.access.infrastructure.api.v1.ocidParsed
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
@@ -90,8 +90,8 @@ class PnUpdateService(private val generationService: GenerationService,
         }.toSet()
 
     fun updatePn(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.cpidParsed
-        val ocid = cm.ocidParsed
+        val cpId = cm.cpid
+        val ocid = cm.ocid
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val dateTime = cm.startDate

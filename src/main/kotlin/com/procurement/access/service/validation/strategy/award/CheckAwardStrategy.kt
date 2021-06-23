@@ -7,8 +7,8 @@ import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.cpidParsed
-import com.procurement.access.infrastructure.api.v1.ocidParsed
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
@@ -136,12 +136,12 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun context(cm: CommandMessage): ContextRequest {
-        val cpid = cm.cpidParsed
+        val cpid = cm.cpid
         val token = cm.context.token
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'token' attribute in context.")
         val owner = cm.context.owner
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
-        val ocid = cm.ocidParsed
+        val ocid = cm.ocid
         val lotId: String = cm.context.id
             ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'id' attribute in context.")
 

@@ -9,7 +9,6 @@ import com.procurement.access.application.service.ap.get.GetAPTitleAndDescriptio
 import com.procurement.access.application.service.ap.get.GetAPTitleAndDescriptionResult
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
-import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.MainGeneralActivity
 import com.procurement.access.domain.model.enums.MainSectoralActivity
 import com.procurement.access.domain.model.enums.PartyRole
@@ -107,13 +106,7 @@ class APServiceImpl(
     }
 
     override fun getAPTitleAndDescription(context: GetAPTitleAndDescriptionContext): GetAPTitleAndDescriptionResult {
-        val cpid = Cpid.tryCreate(context.cpid)
-            .orThrow { pattern ->
-                ErrorException(
-                    error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
-                    message = "cpid '${context.cpid}' mismatch to pattern $pattern."
-                )
-            }
+        val cpid = context.cpid
 
         /**
          * Why stage getting not from context?,

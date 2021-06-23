@@ -7,8 +7,8 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.cpidParsed
-import com.procurement.access.infrastructure.api.v1.ocidParsed
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
@@ -25,9 +25,9 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
      * Validates the values of lot.status && lot.statusDetails in lot object found before by rule VR-1.5.1.1;
      */
     fun check(cm: CommandMessage) {
-        val cpid = cm.cpidParsed
+        val cpid = cm.cpid
         val lotId = getLotId(cm)
-        val ocid = cm.ocidParsed
+        val ocid = cm.ocid
 
         val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)

@@ -15,8 +15,6 @@ import com.procurement.access.application.model.context.GetCriteriaForTendererCo
 import com.procurement.access.application.model.context.GetItemsByLotsContext
 import com.procurement.access.application.model.context.GetLotsAuctionContext
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
-import com.procurement.access.application.model.parseCpid
-import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
@@ -65,12 +63,10 @@ import com.procurement.access.infrastructure.api.v1.businessError
 import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.country
 import com.procurement.access.infrastructure.api.v1.cpid
-import com.procurement.access.infrastructure.api.v1.cpidParsed
 import com.procurement.access.infrastructure.api.v1.internalServerError
 import com.procurement.access.infrastructure.api.v1.isAuction
 import com.procurement.access.infrastructure.api.v1.lotId
 import com.procurement.access.infrastructure.api.v1.ocid
-import com.procurement.access.infrastructure.api.v1.ocidParsed
 import com.procurement.access.infrastructure.api.v1.operationType
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.phase
@@ -179,7 +175,7 @@ class CommandServiceV1(
             CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
             CommandTypeV1.CREATE_PN -> {
                 val context = CreatePnContext(
-                    ocid = cm.ocidParsed,
+                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
@@ -200,7 +196,7 @@ class CommandServiceV1(
             }
             CommandTypeV1.CREATE_AP -> {
                 val context = CreateApContext(
-                    ocid = cm.ocidParsed,
+                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
@@ -223,9 +219,9 @@ class CommandServiceV1(
             }
             CommandTypeV1.UPDATE_AP -> {
                 val context = UpdateApContext(
-                    ocid = cm.ocidParsed,
+                    ocid = cm.ocid,
                     owner = cm.owner,
-                    cpid = cm.cpidParsed,
+                    cpid = cm.cpid,
                     token = cm.token,
                     startDate = cm.startDate
                 )
@@ -243,8 +239,8 @@ class CommandServiceV1(
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CreateFEContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             startDate = cm.startDate,
                             owner = cm.owner
                         )
@@ -283,9 +279,9 @@ class CommandServiceV1(
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = AmendFEContext(
-                            cpid = cm.cpidParsed,
+                            cpid = cm.cpid,
                             startDate = cm.startDate,
-                            ocid = cm.ocidParsed,
+                            ocid = cm.ocid,
                             owner = cm.owner
                         )
                         val request: AmendFERequest = toObject(AmendFERequest::class.java, cm.data)
@@ -321,7 +317,7 @@ class CommandServiceV1(
             CommandTypeV1.UPDATE_PN -> pnUpdateService.updatePn(cm)
             CommandTypeV1.CREATE_CN -> {
                 val context = CnCreateContext(
-                    ocid = cm.ocidParsed,
+                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     startDate = cm.startDate,
@@ -338,9 +334,9 @@ class CommandServiceV1(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
                         val context = UpdateOpenCnContext(
-                            cpid = cm.cpidParsed,
+                            cpid = cm.cpid,
                             token = cm.token,
-                            ocid = cm.ocidParsed,
+                            ocid = cm.ocid,
                             owner = cm.owner,
                             pmd = cm.pmd,
                             startDate = cm.startDate,
@@ -362,8 +358,8 @@ class CommandServiceV1(
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = UpdateSelectiveCnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             token = cm.token,
                             owner = cm.owner,
                             pmd = cm.pmd,
@@ -404,8 +400,8 @@ class CommandServiceV1(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
                         val context = CreateOpenCnOnPnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             country = cm.country,
                             pmd = cm.pmd,
                             startDate = cm.startDate
@@ -425,8 +421,8 @@ class CommandServiceV1(
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CreateSelectiveCnOnPnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             country = cm.country,
                             pmd = cm.pmd,
                             startDate = cm.startDate
@@ -448,8 +444,8 @@ class CommandServiceV1(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
                         val context = CreateNegotiationCnOnPnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             startDate = cm.startDate
                         )
                         val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
@@ -478,8 +474,8 @@ class CommandServiceV1(
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
                         val context = EvPanelsContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             owner = cm.owner,
                             startDate = cm.startDate
                         )
@@ -507,8 +503,8 @@ class CommandServiceV1(
             CommandTypeV1.SET_TENDER_UNSUSPENDED -> tenderService.setUnsuspended(cm)
             CommandTypeV1.SET_TENDER_UNSUCCESSFUL -> {
                 val context = SetTenderUnsuccessfulContext(
-                    cpid = cm.cpidParsed,
-                    ocid = cm.ocidParsed,
+                    cpid = cm.cpid,
+                    ocid = cm.ocid,
                     startDate = cm.startDate
                 )
 
@@ -523,10 +519,10 @@ class CommandServiceV1(
             }
             CommandTypeV1.SET_TENDER_PRECANCELLATION -> {
                 val context = PrepareCancellationContext(
-                    cpid = cm.cpidParsed,
+                    cpid = cm.cpid,
                     token = cm.token,
                     owner = cm.owner,
-                    ocid = cm.ocidParsed
+                    ocid = cm.ocid
                 )
                 val request = toObject(PrepareCancellationRequest::class.java, cm.data)
                 val data = PrepareCancellationData(
@@ -576,8 +572,8 @@ class CommandServiceV1(
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
                         val context = GetActiveLotsContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed
+                            cpid = cm.cpid,
+                            ocid = cm.ocid
                         )
                         val serviceResponse = lotsService.getActiveLots(context = context)
                         val response = serviceResponse.convert()
@@ -596,7 +592,7 @@ class CommandServiceV1(
                 }
             }
             CommandTypeV1.GET_CRITERIA_FOR_TENDERER -> {
-                val context = GetCriteriaForTendererContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
+                val context = GetCriteriaForTendererContext(cpid = cm.cpid, ocid = cm.ocid)
                 val result = criteriaService.getCriteriaForTenderer(context = context)
 
                 if (log.isDebugEnabled)
@@ -611,7 +607,7 @@ class CommandServiceV1(
             CommandTypeV1.GET_AP_TITLE_AND_DESCRIPTION -> {
                 val context = GetAPTitleAndDescriptionContext(
                     cpid = cm.cpid,
-                    ocid = cm.ocidParsed
+                    ocid = cm.ocid
                 )
 
                 val result = apService.getAPTitleAndDescription(context = context)
@@ -626,8 +622,8 @@ class CommandServiceV1(
             }
             CommandTypeV1.GET_LOT -> {
                 val context = GetLotContext(
-                    cpid = cm.cpidParsed,
-                    ocid = cm.ocidParsed,
+                    cpid = cm.cpid,
+                    ocid = cm.ocid,
                     lotId = cm.lotId
                 )
                 val result = lotService.getLot(context = context)
@@ -725,7 +721,7 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = GetLotsAuctionContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
+                        val context = GetLotsAuctionContext(cpid = cm.cpid, ocid = cm.ocid)
                         val serviceResponse = lotsService.getLotsAuction(context = context)
                         val response = serviceResponse.toResponseDto()
                         ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
@@ -743,7 +739,7 @@ class CommandServiceV1(
                 }
             }
             CommandTypeV1.GET_AWARD_CRITERIA -> {
-                val context = GetAwardCriteriaContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
+                val context = GetAwardCriteriaContext(cpid = cm.cpid, ocid = cm.ocid)
                 val result = extendTenderService.getAwardCriteria(context = context)
                 if (log.isDebugEnabled)
                     log.debug("Tender award criteria. Result: ${toJson(result)}")
@@ -757,8 +753,8 @@ class CommandServiceV1(
             CommandTypeV1.SET_LOTS_SD_AWARDED -> lotsService.setLotsStatusDetailsAwarded(cm)
             CommandTypeV1.SET_LOTS_UNSUCCESSFUL -> {
                 val context = SetLotsStatusUnsuccessfulContext(
-                    cpid = cm.cpidParsed,
-                    ocid = cm.ocidParsed,
+                    cpid = cm.cpid,
+                    ocid = cm.ocid,
                     startDate = cm.startDate
                 )
                 val request: SetLotsStatusUnsuccessfulRequest =
@@ -792,8 +788,8 @@ class CommandServiceV1(
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV,
                     ProcurementMethod.MV, ProcurementMethod.TEST_MV -> {
                         val context = CheckOpenCnOnPnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             country = cm.country,
                             pmd = cm.pmd,
                             startDate = cm.startDate
@@ -819,8 +815,8 @@ class CommandServiceV1(
                     ProcurementMethod.NP, ProcurementMethod.TEST_NP,
                     ProcurementMethod.OP, ProcurementMethod.TEST_OP -> {
                         val context = CheckNegotiationCnOnPnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             startDate = cm.startDate
                         )
                         val request: NegotiationCnOnPnRequest = toObject(NegotiationCnOnPnRequest::class.java, cm.data)
@@ -845,8 +841,8 @@ class CommandServiceV1(
                     ProcurementMethod.GPA, ProcurementMethod.TEST_GPA,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT -> {
                         val context = CheckSelectiveCnOnPnContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             country = cm.country,
                             pmd = cm.pmd,
                             startDate = cm.startDate
@@ -875,7 +871,7 @@ class CommandServiceV1(
                 when (cm.pmd) {
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
-                        val context = CheckExistanceItemsAndLotsContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
+                        val context = CheckExistanceItemsAndLotsContext(cpid = cm.cpid, ocid = cm.ocid)
                         apValidationService.checkExistanceItemsAndLots(context = context)
                             .also { log.debug("Checking was a success.") }
                         ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = "ok")
@@ -903,8 +899,8 @@ class CommandServiceV1(
                     ProcurementMethod.CF, ProcurementMethod.TEST_CF,
                     ProcurementMethod.OF, ProcurementMethod.TEST_OF -> {
                         val context = CheckFEDataContext(
-                            cpid = cm.cpidParsed,
-                            ocid = cm.ocidParsed,
+                            cpid = cm.cpid,
+                            ocid = cm.ocid,
                             operationType = cm.operationType,
                             startDate = cm.startDate
                         )
@@ -934,8 +930,8 @@ class CommandServiceV1(
             CommandTypeV1.VALIDATE_OWNER_AND_TOKEN -> validationService.checkAccessToTender(cm)
             CommandTypeV1.GET_LOTS_FOR_AUCTION -> {
                 val context = LotsForAuctionContext(
-                    cpid = cm.cpidParsed,
-                    ocid = cm.ocidParsed,
+                    cpid = cm.cpid,
+                    ocid = cm.ocid,
                     operationType = cm.operationType
                 )
                 val request = toObject(LotsForAuctionRequest::class.java, cm.data)
@@ -964,10 +960,8 @@ class CommandServiceV1(
                 ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = dataResponse)
             }
             CommandTypeV1.GET_MAIN_PROCUREMENT_CATEGORY -> {
-                val cpid = parseCpid(cm.cpid)
-                    .onFailure { return responseError(version = cm.version, id = cm.commandId, fail = it.reason) }
-                val ocid = parseOcid(cm.ocid)
-                    .onFailure { return responseError(version = cm.version, id = cm.commandId, fail = it.reason) }
+                val cpid = cm.cpid
+                val ocid = cm.ocid
                 val params = GetMainProcurementCategoryParams(cpid = cpid, ocid = ocid)
                 val result: GetMainProcurementCategoryResult = tenderService.getMainProcurementCategory(params = params)
                     .onFailure { return responseError(version = cm.version, id = cm.commandId, fail = it.reason) }
@@ -993,7 +987,7 @@ class CommandServiceV1(
                     ProcurementMethod.OT, ProcurementMethod.TEST_OT,
                     ProcurementMethod.RT, ProcurementMethod.TEST_RT,
                     ProcurementMethod.SV, ProcurementMethod.TEST_SV -> {
-                        val context = GetAwardCriteriaAndConversionsContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
+                        val context = GetAwardCriteriaAndConversionsContext(cpid = cm.cpid, ocid = cm.ocid)
                         criteriaService.getAwardCriteriaAndConversions(context = context)
                             .also { result ->
                                 if (result != null)
@@ -1018,7 +1012,7 @@ class CommandServiceV1(
                 ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = response)
             }
             CommandTypeV1.GET_ITEMS_BY_LOTS -> {
-                val context = GetItemsByLotsContext(cpid = cm.cpidParsed, ocid = cm.ocidParsed)
+                val context = GetItemsByLotsContext(cpid = cm.cpid, ocid = cm.ocid)
                 val request = toObject(GetItemsByLotsRequest::class.java, cm.data)
                 val data = request.convert()
 
