@@ -3,10 +3,12 @@ package com.procurement.access.service
 
 import com.procurement.access.application.model.errors.DefineTenderClassificationErrors
 import com.procurement.access.application.model.errors.GetBuyersOwnersErrors
+import com.procurement.access.application.model.errors.GetDataForContractErrors
 import com.procurement.access.application.model.params.DefineTenderClassificationParams
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.model.params.GetBuyersOwnersParams
 import com.procurement.access.application.model.params.GetCurrencyParams
+import com.procurement.access.application.model.params.GetDataForContractParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Transform
@@ -46,6 +48,7 @@ import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.GetDataForContractInfo
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.entity.TenderCategoryInfo
@@ -64,6 +67,7 @@ import com.procurement.access.infrastructure.handler.v2.model.response.DefineTen
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetBuyersOwnersResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetDataForContractResponse
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
 import com.procurement.access.infrastructure.handler.v2.model.response.from
 import com.procurement.access.lib.extension.toSet
@@ -594,4 +598,129 @@ class TenderService(
         return commonCategory
     }
 
+    fun getDataForContract(params: GetDataForContractParams): Result<GetDataForContractResponse, Fail> {
+        val tenderEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
+            .onFailure { return it }
+            ?: return GetDataForContractErrors.RecordNotFound(params.relatedCpid, params.relatedOcid).asFailure()
+
+        val tenderInfo = transform.tryDeserialization(tenderEntity.jsonData, GetDataForContractInfo::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
+
+        val lots = getLots(params, tenderInfo)
+            .onFailure { return it }
+        val lotsIds = lots.toSet { it.id }
+        val items = tenderInfo.tender.items.filter { it.relatedLot in lotsIds }
+
+        return GetDataForContractResponse(
+            tender = tenderInfo.tender.let { tender ->
+                GetDataForContractResponse.Tender(
+                    classification = tender.classification.let { classification ->
+                        GetDataForContractResponse.Tender.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme,
+                            description = classification.description
+                        )
+                    },
+                    lots = lots.map { lot ->
+                        GetDataForContractResponse.Tender.Lot(
+                            id = lot.id,
+                            description = lot.description,
+                            title = lot.title,
+                            placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                                GetDataForContractResponse.Tender.Lot.PlaceOfPerformance(
+                                    description = placeOfPerformance.description,
+                                    address = placeOfPerformance.address.let { address ->
+                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address(
+                                            streetAddress = address.streetAddress,
+                                            postalCode = address.postalCode,
+                                            addressDetails = address.addressDetails.let { addressDetails ->
+                                                GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                    country = addressDetails.country.let { country ->
+                                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                            scheme = country.scheme,
+                                                            id = country.id,
+                                                            description = country.description,
+                                                            uri = country.uri
+                                                        )
+                                                    },
+                                                    region = addressDetails.region.let { region ->
+                                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                            scheme = region.scheme,
+                                                            id = region.id,
+                                                            description = region.description,
+                                                            uri = region.uri
+                                                        )
+                                                    },
+                                                    locality = addressDetails.locality.let { locality ->
+                                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                            scheme = locality.scheme,
+                                                            id = locality.id,
+                                                            description = locality.description,
+                                                            uri = locality.uri
+                                                        )
+                                                    }
+
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            },
+                            internalId = lot.internalId
+                        )
+                    },
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                    mainProcurementCategory = tender.mainProcurementCategory,
+                    procurementMethodDetails = tender.procurementMethodDetails,
+                    items = items.map { item ->
+                        GetDataForContractResponse.Tender.Item(
+                            id = item.id,
+                            internalId = item.internalId,
+                            description = item.description,
+                            classification = item.classification.let { classification ->
+                                GetDataForContractResponse.Tender.Item.Classification(
+                                    id = classification.id,
+                                    description = classification.description,
+                                    scheme = classification.scheme
+                                )
+                            },
+                            additionalClassifications = item.additionalClassifications
+                                ?.map { additionalClassification ->
+                                    GetDataForContractResponse.Tender.Item.AdditionalClassification(
+                                        id = additionalClassification.id,
+                                        scheme = additionalClassification.scheme,
+                                        description = additionalClassification.description
+                                    )
+                                },
+                            unit = item.unit.let { unit ->
+                                GetDataForContractResponse.Tender.Item.Unit(
+                                    id = unit.id,
+                                    name = unit.name
+                                )
+                            },
+                            quantity = item.quantity,
+                            relatedLot = item.relatedLot
+                        )
+                    },
+                    procurementMethod = tender.procurementMethod
+                )
+            }
+        ).asSuccess()
+    }
+
+    private fun getLots(
+        params: GetDataForContractParams,
+        tenderInfo: GetDataForContractInfo
+    ): Result<List<GetDataForContractInfo.Tender.Lot>, GetDataForContractErrors.MissingLots> {
+        val receivedLots = params.awards.flatMap { it.relatedLots }.toSet { it.toString() }
+        val storedLots = tenderInfo.tender.lots.filter { it.id in receivedLots }
+        val storedLotsIds = storedLots.toSet { it.id }
+        val missingLots = receivedLots - storedLotsIds
+
+        if (missingLots.isNotEmpty())
+            return GetDataForContractErrors.MissingLots(missingLots).asFailure()
+
+        return storedLots.asSuccess()
+    }
 }

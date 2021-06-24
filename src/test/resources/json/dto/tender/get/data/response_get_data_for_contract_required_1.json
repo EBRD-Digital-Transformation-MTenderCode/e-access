@@ -1,0 +1,60 @@
+{
+  "tender": {
+    "classification": {
+      "id": "string",
+      "scheme": "string",
+      "description": "string"
+    },
+    "mainProcurementCategory": "goods",
+    "lots": [
+      {
+        "id": "string",
+        "title": "string",
+        "placeOfPerformance": {
+          "description": "string",
+          "address": {
+            "streetAddress": "string",
+            "addressDetails": {
+              "country": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "region": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string",
+                "uri": "string"
+              },
+              "locality": {
+                "id": "string",
+                "description": "string",
+                "scheme": "string"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string",
+          "description": "string"
+        },
+        "quantity": 0,
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "description": "string",
+        "relatedLot": "string"
+      }
+    ],
+    "procurementMethod": "string",
+    "procurementMethodDetails": "string"
+  }
+}
