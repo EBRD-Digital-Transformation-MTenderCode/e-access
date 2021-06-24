@@ -175,7 +175,6 @@ class CommandServiceV1(
             CommandTypeV1.CREATE_PIN -> pinService.createPin(cm)
             CommandTypeV1.CREATE_PN -> {
                 val context = CreatePnContext(
-                    ocid = cm.ocid,
                     owner = cm.owner,
                     pmd = cm.pmd,
                     country = cm.country,
