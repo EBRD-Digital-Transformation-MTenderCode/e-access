@@ -7,14 +7,17 @@ import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.domain.model.money.Money
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -80,20 +83,22 @@ class PnService(
         checkValidationRules(request, contextRequest)
         request.validateDuplicates()
 
-        val pnEntity: PNEntity = businessRules(contextRequest, request)
-        val cpid = Cpid.tryCreateOrNull(pnEntity.ocid)!!
+        val cpid = generationService.generateCpid(contextRequest.mode.prefix, contextRequest.country, nowDefaultUTC())
+        val ocid = generationService.generateOcid(cpid, Stage.PN.key)
+        val pnEntity: PNEntity = businessRules(contextRequest, request, ocid)
+
         val token = generationService.generateToken()
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = cpid,
                 token = token,
-                ocid = contextRequest.ocid,
+                ocid = ocid,
                 owner = contextRequest.owner,
                 createdDate = contextRequest.startDate,
                 jsonData = toJson(pnEntity)
             )
         )
-        return getResponse(pnEntity, token)
+        return getResponse(pnEntity, token, cpid)
     }
 
     /**
@@ -494,7 +499,7 @@ class PnService(
     /**
      * Business rules
      */
-    private fun businessRules(contextRequest: CreatePnContext, request: PnCreateData): PNEntity {
+    private fun businessRules(contextRequest: CreatePnContext, request: PnCreateData, ocid: Ocid.SingleStage): PNEntity {
         val invalidIds = request.planning.budget.budgetBreakdowns
             .asSequence()
             .map { it.id }
@@ -514,7 +519,6 @@ class PnService(
             }
         }
 
-        val id = generationService.getCpId(country = contextRequest.country, mode = contextRequest.mode)
         val contractPeriod: PNEntity.Tender.ContractPeriod?
         val value: PNEntity.Tender.Value
         val lots: List<PNEntity.Tender.Lot>
@@ -556,7 +560,7 @@ class PnService(
         else null
 
         return PNEntity(
-            ocid = id,
+            ocid = ocid.value,
             planning = planning(request),
             tender = tender(
                 pmd = contextRequest.pmd,
@@ -1092,11 +1096,12 @@ class PnService(
 
     private fun getPmd(pmd: String): ProcurementMethod = ProcurementMethod.creator(pmd)
 
-    private fun getResponse(cn: PNEntity, token: UUID): PnCreateResult {
+    private fun getResponse(pn: PNEntity, token: UUID, cpid: Cpid): PnCreateResult {
         return PnCreateResult(
-            ocid = cn.ocid,
+            cpid = cpid,
+            ocid = pn.ocid,
             token = token.toString(),
-            planning = cn.planning.let { planning ->
+            planning = pn.planning.let { planning ->
                 PnCreateResult.Planning(
                     rationale = planning.rationale,
                     budget = planning.budget.let { budget ->
@@ -1144,7 +1149,7 @@ class PnService(
                     }
                 )
             },
-            tender = cn.tender.let { tender ->
+            tender = pn.tender.let { tender ->
                 PnCreateResult.Tender(
                     id = tender.id,
                     status = tender.status,
@@ -1423,7 +1428,7 @@ class PnService(
                         .orEmpty()
                 )
             },
-            buyer = cn.buyer
+            buyer = pn.buyer
                 ?.let { buyer ->
                     PnCreateResult.Buyer(
                         id = buyer.id,
