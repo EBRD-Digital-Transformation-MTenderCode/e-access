@@ -2,6 +2,7 @@ package com.procurement.access.infrastructure.entity
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.math.BigDecimal
 
 data class GetDataForContractInfo(
     @param:JsonProperty("tender") @field:JsonProperty("tender") val tender: Tender
@@ -91,7 +92,7 @@ data class GetDataForContractInfo(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @param:JsonProperty("additionalClassifications") @field:JsonProperty("additionalClassifications") val additionalClassifications: List<AdditionalClassification>?,
 
-            @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: Int,
+            @param:JsonProperty("quantity") @field:JsonProperty("quantity") val quantity: BigDecimal,
             @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
             @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
             @param:JsonProperty("relatedLot") @field:JsonProperty("relatedLot") val relatedLot: String
