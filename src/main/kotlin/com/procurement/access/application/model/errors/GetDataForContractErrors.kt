@@ -11,5 +11,9 @@ object GetDataForContractErrors {
         description = "Record not found by cpid='$cpid' and ocid='$ocid'."
     )
 
+    class MissingLots(lotIds: Collection<String>) : CommandValidationErrors(
+        numberError = "1.51.2",
+        description = "Lot(s) by id(s) '${lotIds.joinToString()}' not found."
+    )
 }
 
