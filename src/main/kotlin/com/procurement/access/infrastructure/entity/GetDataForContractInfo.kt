@@ -14,7 +14,9 @@ data class GetDataForContractInfo(
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>,
         @param:JsonProperty("procurementMethod") @field:JsonProperty("procurementMethod") val procurementMethod: String,
         @param:JsonProperty("procurementMethodDetails") @field:JsonProperty("procurementMethodDetails") val procurementMethodDetails: String,
-        @param:JsonProperty("additionalProcurementCategories") @field:JsonProperty("additionalProcurementCategories") val additionalProcurementCategories: List<String>
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @param:JsonProperty("additionalProcurementCategories") @field:JsonProperty("additionalProcurementCategories") val additionalProcurementCategories: List<String>?
     ) {
         data class Classification(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
