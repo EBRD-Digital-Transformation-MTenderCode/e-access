@@ -28,6 +28,7 @@ enum class CommandTypeV2(@JsonValue override val key: String) : EnumElementProvi
     FIND_LOT_IDS("findLotIds"),
     GET_BUYERS_OWNERS("getBuyersOwners"),
     GET_CURRENCY("getCurrency"),
+    GET_DATA_FOR_CONTRACT("getDataForContract"),
     GET_ITEMS_BY_LOT_IDS("getItemsByLotIds"),
     GET_LOTS_VALUE("getLotsValue"),
     GET_LOT_STATE_BY_IDS("getLotStateByIds"),
