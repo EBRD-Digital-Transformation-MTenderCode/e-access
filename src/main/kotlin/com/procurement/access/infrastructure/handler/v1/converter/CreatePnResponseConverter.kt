@@ -5,6 +5,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.PnCreateR
 
 fun PnCreateResult.convert(): PnCreateResponse =
     PnCreateResponse(
+        cpid = this.cpid.value,
         ocid = this.ocid,
         token = this.token,
         planning = this.planning

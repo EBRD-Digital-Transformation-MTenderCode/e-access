@@ -1,6 +1,7 @@
 package com.procurement.access.application.service.pn.create
 
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.LotStatus
@@ -17,6 +18,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class PnCreateResult(
+    val cpid: Cpid,
     val ocid: String,
     val token: String,
     val planning: Planning,
