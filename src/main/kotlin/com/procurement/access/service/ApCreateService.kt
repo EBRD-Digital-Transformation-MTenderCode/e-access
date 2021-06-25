@@ -5,12 +5,15 @@ import com.procurement.access.application.service.ap.create.ApCreateResult
 import com.procurement.access.application.service.ap.create.CreateApContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.ProcurementMethod
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.SubmissionMethod
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
@@ -35,20 +38,22 @@ class ApCreateService(
 
     fun createAp(contextRequest: CreateApContext, request: ApCreateData): ApCreateResult {
         checkValidationRules(request, contextRequest)
-        val apEntity: APEntity = applyBusinessRules(contextRequest, request)
-        val cpid = apEntity.ocid
+        val cpid = generationService.generateCpid(contextRequest.mode.prefix, contextRequest.country, nowDefaultUTC())
+        val ocid = generationService.generateOcid(cpid, Stage.AP.key)
+
+        val apEntity: APEntity = applyBusinessRules(contextRequest, request, ocid)
         val token = generationService.generateToken()
         tenderProcessDao.save(
             TenderProcessEntity(
-                cpId = Cpid.tryCreateOrNull(cpid)!!,
+                cpId = cpid,
                 token = token,
-                ocid = contextRequest.ocid,
+                ocid = ocid,
                 owner = contextRequest.owner,
                 createdDate = contextRequest.startDate,
                 jsonData = toJson(apEntity)
             )
         )
-        return getResponse(apEntity, token)
+        return getResponse(apEntity, token, cpid)
     }
 
     /**
@@ -144,15 +149,12 @@ class ApCreateService(
     /**
      * Business rules
      */
-    private fun applyBusinessRules(contextRequest: CreateApContext, request: ApCreateData): APEntity {
-
-        val id = generationService.getCpId(country = contextRequest.country, mode = contextRequest.mode)
-
+    private fun applyBusinessRules(contextRequest: CreateApContext, request: ApCreateData, ocid: Ocid): APEntity {
         val documents: List<APEntity.Tender.Document>? = request.tender.documents
             .map { document -> convertRequestDocument(document) }
 
         return APEntity(
-            ocid = id,
+            ocid = ocid.value,
             tender = tender(
                 pmd = contextRequest.pmd,
                 documents = documents,
@@ -337,8 +339,9 @@ class ApCreateService(
         )
     }
 
-    private fun getResponse(cn: APEntity, token: UUID): ApCreateResult {
+    private fun getResponse(cn: APEntity, token: UUID, cpid: Cpid): ApCreateResult {
         return ApCreateResult(
+            cpid = cpid,
             ocid = cn.ocid,
             token = token.toString(),
             tender = cn.tender
