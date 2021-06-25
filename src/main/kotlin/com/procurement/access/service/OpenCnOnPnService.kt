@@ -256,13 +256,14 @@ class OpenCnOnPnService(
         else
             createTenderBasedPNWithItems(datePublished = context.startDate, request = data, pnEntity = pnEntity)
 
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.EV.key)
+
         val cnEntity = CNEntity(
-            ocid = pnEntity.ocid,
+            ocid = newOcid.value,
             planning = planning(pnEntity), //BR-3.8.1
             tender = tender,
             relatedProcesses = pnEntity.relatedProcesses
         )
-        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.EV.key)
 
         tenderProcessDao.save(
             TenderProcessEntity(
