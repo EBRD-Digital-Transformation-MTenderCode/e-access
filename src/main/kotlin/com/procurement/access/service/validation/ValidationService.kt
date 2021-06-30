@@ -196,6 +196,7 @@ class ValidationService(
             Stage.FS,
             Stage.NP,
             Stage.PC,
+            Stage.PO,
             Stage.RQ,
             Stage.TP -> ValidationErrors.InvalidStageOnCheckRelation(stage).asFailure()
         }

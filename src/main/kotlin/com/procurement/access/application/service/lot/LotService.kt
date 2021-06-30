@@ -293,14 +293,13 @@ class LotServiceImpl(
 
                 resultLots.toList().mapResult { it.convertToSetStateForLotsResult() }
             }
+
             Stage.AC,
             Stage.EI,
             Stage.FE,
             Stage.FS,
-            Stage.PC ->
-                Result.failure(
-                    ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage)
-                )
+            Stage.PC,
+            Stage.PO -> Result.failure(ValidationErrors.UnexpectedStageForSetStateForLots(stage = params.ocid.stage))
         }
             .onFailure { error -> return error }
 
@@ -435,10 +434,8 @@ class LotServiceImpl(
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC ->
-                Result.failure(
-                    ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage)
-                )
+            Stage.PC,
+            Stage.PO -> Result.failure(ValidationErrors.UnexpectedStageForFindLotIds(stage = params.ocid.stage))
         }
             .onFailure { error -> return error }
 
@@ -652,7 +649,8 @@ class LotServiceImpl(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${context.ocid.stage} not allowed at the command."
             )

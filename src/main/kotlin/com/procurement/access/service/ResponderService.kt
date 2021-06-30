@@ -148,6 +148,7 @@ class ResponderServiceImpl(
             Stage.FS,
             Stage.PC,
             Stage.PN,
+            Stage.PO,
             Stage.RQ ->
                 failure(
                     ValidationErrors.UnexpectedStageForResponderProcessing(stage = params.ocid.stage)
@@ -401,6 +402,7 @@ class ResponderServiceImpl(
             Stage.FS,
             Stage.PC,
             Stage.PN,
+            Stage.PO,
             Stage.RQ -> failure(GetOrganizationsErrors.UnexpectedStage(stage = stage))
         }
             .onFailure { fail -> return fail }
@@ -1022,6 +1024,7 @@ private fun getRequirementToTenderer(
     Stage.FS,
     Stage.PC,
     Stage.PN,
+    Stage.PO,
     Stage.RQ ->
         failure(
             ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)
@@ -1065,6 +1068,7 @@ private fun getAllRequirement(
     Stage.FS,
     Stage.PC,
     Stage.PN,
+    Stage.PO,
     Stage.RQ ->
         failure(
             ValidationErrors.UnexpectedStageForValidateRequirementResponse(stage = stage)

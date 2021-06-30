@@ -68,10 +68,12 @@ class CheckAccessToTenderStrategy(
             Stage.TP,
             Stage.FE,
             Stage.RQ -> ValidationResult.ok()
+
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC -> ValidationResult.error(ValidationErrors.InvalidStageCheckAccessToTender(stage))
+            Stage.PC,
+            Stage.PO -> ValidationResult.error(ValidationErrors.InvalidStageCheckAccessToTender(stage))
         }
 
     private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid.SingleStage): Result<TenderProcessEntity, Fail> {

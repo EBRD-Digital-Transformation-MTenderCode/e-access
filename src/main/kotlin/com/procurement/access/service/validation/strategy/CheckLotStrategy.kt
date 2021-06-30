@@ -55,7 +55,8 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${ocid.stage} not allowed at the command."
             )

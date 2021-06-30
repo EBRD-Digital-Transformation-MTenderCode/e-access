@@ -102,7 +102,8 @@ class LotsService(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${context.ocid.stage} not allowed at the command."
             )
@@ -149,7 +150,8 @@ class LotsService(
             Stage.FS,
             Stage.NP,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${context.ocid.stage} not allowed at the command."
             )
@@ -234,7 +236,8 @@ class LotsService(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${ocid.stage} not allowed at the command."
             )
@@ -368,7 +371,8 @@ class LotsService(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${ocid.stage} not allowed at the command."
             )
@@ -1142,7 +1146,8 @@ class LotsService(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
                 message = "Stage ${context.ocid.stage} not allowed at the command."
             )
