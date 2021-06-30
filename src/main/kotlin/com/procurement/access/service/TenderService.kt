@@ -180,8 +180,8 @@ class TenderService(
             Stage.FS,
             Stage.PC,
             Stage.PN,
-            Stage.RQ ->
-                throw ErrorException(INVALID_STAGE)
+            Stage.PO,
+            Stage.RQ -> throw ErrorException(INVALID_STAGE)
         }
 
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = result)
@@ -256,7 +256,8 @@ class TenderService(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = INVALID_STAGE,
                 message = "Stage ${ocid.stage} not allowed at the command."
             )

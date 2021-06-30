@@ -59,9 +59,11 @@ class CheckTenderStateStrategy(
             Stage.TP,
             Stage.FE,
             Stage.RQ -> ValidationResult.ok()
+
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC -> ValidationResult.error(ValidationErrors.InvalidStageOnCheckTenderState(stage))
+            Stage.PC,
+            Stage.PO -> ValidationResult.error(ValidationErrors.InvalidStageOnCheckTenderState(stage))
         }
 }
