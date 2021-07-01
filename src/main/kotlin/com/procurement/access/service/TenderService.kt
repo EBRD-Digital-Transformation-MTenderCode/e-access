@@ -1,10 +1,14 @@
 package com.procurement.access.service
 
 
+import com.procurement.access.application.model.errors.DefineTenderClassificationErrors
 import com.procurement.access.application.model.errors.GetBuyersOwnersErrors
+import com.procurement.access.application.model.errors.GetDataForContractErrors
+import com.procurement.access.application.model.params.DefineTenderClassificationParams
 import com.procurement.access.application.model.params.FindAuctionsParams
 import com.procurement.access.application.model.params.GetBuyersOwnersParams
 import com.procurement.access.application.model.params.GetCurrencyParams
+import com.procurement.access.application.model.params.GetDataForContractParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Transform
@@ -20,9 +24,11 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.RelatedProcessType
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
+import com.procurement.access.domain.model.toCPVCode
 import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType.CONTEXT
@@ -37,10 +43,12 @@ import com.procurement.access.exception.ErrorType.TENDER_IN_UNSUCCESSFUL_STATUS
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
-import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.entity.GetDataForContractInfo
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.entity.TenderCategoryInfo
@@ -55,10 +63,13 @@ import com.procurement.access.infrastructure.handler.v1.model.response.GetTender
 import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTender
 import com.procurement.access.infrastructure.handler.v1.model.response.UnsuspendedTenderRs
 import com.procurement.access.infrastructure.handler.v1.model.response.UpdateTenderStatusRs
+import com.procurement.access.infrastructure.handler.v2.model.response.DefineTenderClassificationResult
 import com.procurement.access.infrastructure.handler.v2.model.response.FindAuctionsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetBuyersOwnersResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
+import com.procurement.access.infrastructure.handler.v2.model.response.GetDataForContractResponse
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
+import com.procurement.access.infrastructure.handler.v2.model.response.from
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
@@ -80,11 +91,16 @@ class TenderService(
     private val transform: Transform
 ) {
 
-    fun setSuspended(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+    companion object {
+        private const val ITEMS_CATEGORY_LENGTH_MIN = 3
+        private const val ITEMS_CATEGORY_LENGTH_MAX = 4
+    }
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+    fun setSuspended(cm: CommandMessage): ApiResponseV1.Success {
+        val cpId = cm.cpid
+        val ocid = cm.ocid
+
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.statusDetails = TenderStatusDetails.SUSPENDED
         tenderProcessDao.save(getEntity(process, entity))
@@ -99,13 +115,13 @@ class TenderService(
     }
 
     fun setUnsuspended(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val result = when (Stage.creator(stage)) {
+        val result = when (ocid.stage) {
 
             Stage.FE -> {
                 val process = toObject(FEEntity::class.java, entity.jsonData)
@@ -120,7 +136,7 @@ class TenderService(
                     TenderProcessEntity(
                         cpId = entity.cpId,
                         token = entity.token,
-                        stage = entity.stage,
+                        ocid = entity.ocid,
                         owner = entity.owner,
                         createdDate = nowDefaultUTC(),
                         jsonData = toJson(process)
@@ -164,21 +180,21 @@ class TenderService(
             Stage.FS,
             Stage.PC,
             Stage.PN,
-            Stage.RQ ->
-                throw ErrorException(INVALID_STAGE)
+            Stage.PO,
+            Stage.RQ -> throw ErrorException(INVALID_STAGE)
         }
 
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = result)
     }
 
     fun setCancellation(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
         val owner = cm.context.owner ?: throw ErrorException(CONTEXT)
         val token = cm.context.token ?: throw ErrorException(CONTEXT)
         val operationType = cm.context.operationType ?: throw ErrorException(CONTEXT)
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -201,13 +217,13 @@ class TenderService(
     }
 
     fun setStatusDetails(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
         val phase = cm.context.phase ?: throw ErrorException(CONTEXT)
-        val stage = cm.stage
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage.key) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val result = when (stage) {
+        val result = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -240,9 +256,10 @@ class TenderService(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = INVALID_STAGE,
-                message = "Stage ${stage} not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
@@ -254,21 +271,21 @@ class TenderService(
     }
 
     fun getTenderOwner(cm: CommandMessage): ApiResponseV1.Success {
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = GetTenderOwnerRs(entity.owner))
     }
 
     fun getDataForAc(cm: CommandMessage): ApiResponseV1.Success {
 
-        val cpId = cm.context.cpid ?: throw ErrorException(CONTEXT)
-        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)
+        val cpId = cm.cpid
+        val ocid = cm.ocid
         val dto = toObject(GetDataForAcRq::class.java, cm.data)
         val lotsIdsSet = dto.awards.asSequence().map { it.relatedLots[0] }.toSet()
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId, stage) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val lots = process.tender.lots.asSequence().filter { lotsIdsSet.contains(it.id) }.toList()
         if (lots.asSequence().any { it.status == LotStatus.CANCELLED || it.status == LotStatus.UNSUCCESSFUL }) {
@@ -354,7 +371,7 @@ class TenderService(
         return TenderProcessEntity(
             cpId = entity.cpId,
             token = entity.token,
-            stage = entity.stage,
+            ocid = entity.ocid,
             owner = entity.owner,
             createdDate = nowDefaultUTC(),
             jsonData = toJson(process)
@@ -363,7 +380,7 @@ class TenderService(
 
     fun getTenderState(params: GetTenderStateParams): Result<GetTenderStateResult, Fail> {
         val entity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { incident -> return incident }
             ?: return ValidationErrors.TenderNotFoundOnGetTenderState(cpid = params.cpid, ocid = params.ocid)
                 .asFailure()
@@ -384,7 +401,7 @@ class TenderService(
 
     fun getItemsByLotIds(params: GetItemsByLotIdsParams): Result<GetItemsByLotIdsResult, Fail> {
         val entity = tenderProcessRepository
-            .getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage)
+            .getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid)
             .onFailure { incident -> return incident }
             ?: return GetItemsByLotIdsErrors.RecordNotFound(cpid = params.cpid, ocid = params.ocid)
                 .asFailure()
@@ -411,7 +428,7 @@ class TenderService(
     }
 
     fun findAuctions(params: FindAuctionsParams): Result<FindAuctionsResult?, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return ValidationErrors.TenderNotFoundOnFindAuctions(params.cpid, params.ocid).asFailure()
 
@@ -451,7 +468,7 @@ class TenderService(
     }
 
     fun getCurrency(params: GetCurrencyParams): Result<GetCurrencyResult, Fail> {
-        val record = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val record = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnGetCurrency(params.cpid, params.ocid)
@@ -464,7 +481,7 @@ class TenderService(
     }
 
     fun getMainProcurementCategory(params: GetMainProcurementCategoryParams): Result<GetMainProcurementCategoryResult, Fail> {
-        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val tenderEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure(ValidationErrors.TenderNotFoundOnGetMainProcurementCategory(params.cpid, params.ocid))
 
@@ -524,5 +541,187 @@ class TenderService(
                 )
             }
         }).asSuccess()
+    }
+
+    fun defineTenderClassification(params: DefineTenderClassificationParams): Result<DefineTenderClassificationResult, Fail> {
+        val isHomogeneous = isIdHomogeneous(params.tender.items) // FR.COM-1.51.1
+
+        val homogeneousItems =
+            if (!isHomogeneous) {
+                // FR.COM-1.51.2
+                val pnEntity = tenderProcessRepository
+                    .getByCpIdAndOcid(params.relatedCpid, params.relatedOcid).onFailure { return it }
+                    ?: return DefineTenderClassificationErrors.RecordNotFound(params.relatedCpid, params.relatedOcid).asFailure()
+
+                val pn = transform.tryDeserialization(pnEntity.jsonData, PNEntity::class.java)
+                    .onFailure { return it }
+
+                val pnItemsCategory = pn.tender.classification.id.take(ITEMS_CATEGORY_LENGTH_MIN)
+                params.tender.items.filter { it.classification.id.startsWith(pnItemsCategory) }
+            } else {
+                params.tender.items
+            }
+
+        if (homogeneousItems.isEmpty())
+            return DefineTenderClassificationErrors.NoHomogeneousItems().asFailure()
+
+        val commonCategory = defineCommonCategory(homogeneousItems) // FR.COM-1.51.4
+
+        val definedClassificationId = commonCategory.toCPVCode() // FR.COM-1.51.4
+        val definedClassificationScheme = getSchemeIfHomogeneous(homogeneousItems).onFailure { return it } // FR.COM-1.51.5
+
+       return DefineTenderClassificationResult.from(definedClassificationId, definedClassificationScheme).asSuccess()
+    }
+
+    private fun isIdHomogeneous(items: List<DefineTenderClassificationParams.Tender.Item>): Boolean {
+        val uniqCategories = items.toSet { it.classification.id.take(ITEMS_CATEGORY_LENGTH_MIN) }
+        return uniqCategories.size == 1
+    }
+
+    private fun isSchemeHomogeneous(items: List<DefineTenderClassificationParams.Tender.Item>): Boolean {
+        val uniqSchemes = items.toSet { it.classification.scheme }
+        return uniqSchemes.size == 1
+    }
+
+    private fun getSchemeIfHomogeneous(items: List<DefineTenderClassificationParams.Tender.Item>): Result<Scheme, Fail> =
+        if (isSchemeHomogeneous(items))
+            items.first().classification.scheme.asSuccess()
+        else
+            DefineTenderClassificationErrors.MultiScheme().asFailure()
+
+    private fun defineCommonCategory(items: List<DefineTenderClassificationParams.Tender.Item>): String {
+        var commonCategory = ""
+        for (categoryLength in ITEMS_CATEGORY_LENGTH_MIN .. ITEMS_CATEGORY_LENGTH_MAX) {
+            val uniqCategories = items.toSet { it.classification.id.take(categoryLength) }
+            if (uniqCategories.size == 1)
+                commonCategory = uniqCategories.first()
+        }
+        return commonCategory
+    }
+
+    fun getDataForContract(params: GetDataForContractParams): Result<GetDataForContractResponse, Fail> {
+        val tenderEntity = tenderProcessRepository.getByCpIdAndOcid(params.relatedCpid, params.relatedOcid)
+            .onFailure { return it }
+            ?: return GetDataForContractErrors.RecordNotFound(params.relatedCpid, params.relatedOcid).asFailure()
+
+        val tenderInfo = transform.tryDeserialization(tenderEntity.jsonData, GetDataForContractInfo::class.java)
+            .mapFailure { Fail.Incident.DatabaseIncident(exception = it.exception) }
+            .onFailure { return it }
+
+        val lots = getLots(params, tenderInfo)
+            .onFailure { return it }
+        val lotsIds = lots.toSet { it.id }
+        val items = tenderInfo.tender.items.filter { it.relatedLot in lotsIds }
+
+        return GetDataForContractResponse(
+            tender = tenderInfo.tender.let { tender ->
+                GetDataForContractResponse.Tender(
+                    classification = tender.classification.let { classification ->
+                        GetDataForContractResponse.Tender.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme,
+                            description = classification.description
+                        )
+                    },
+                    lots = lots.map { lot ->
+                        GetDataForContractResponse.Tender.Lot(
+                            id = lot.id,
+                            description = lot.description,
+                            title = lot.title,
+                            placeOfPerformance = lot.placeOfPerformance.let { placeOfPerformance ->
+                                GetDataForContractResponse.Tender.Lot.PlaceOfPerformance(
+                                    description = placeOfPerformance.description,
+                                    address = placeOfPerformance.address.let { address ->
+                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address(
+                                            streetAddress = address.streetAddress,
+                                            postalCode = address.postalCode,
+                                            addressDetails = address.addressDetails.let { addressDetails ->
+                                                GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails(
+                                                    country = addressDetails.country.let { country ->
+                                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Country(
+                                                            scheme = country.scheme,
+                                                            id = country.id,
+                                                            description = country.description,
+                                                            uri = country.uri
+                                                        )
+                                                    },
+                                                    region = addressDetails.region.let { region ->
+                                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Region(
+                                                            scheme = region.scheme,
+                                                            id = region.id,
+                                                            description = region.description,
+                                                            uri = region.uri
+                                                        )
+                                                    },
+                                                    locality = addressDetails.locality.let { locality ->
+                                                        GetDataForContractResponse.Tender.Lot.PlaceOfPerformance.Address.AddressDetails.Locality(
+                                                            scheme = locality.scheme,
+                                                            id = locality.id,
+                                                            description = locality.description,
+                                                            uri = locality.uri
+                                                        )
+                                                    }
+
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            },
+                            internalId = lot.internalId
+                        )
+                    },
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                    mainProcurementCategory = tender.mainProcurementCategory,
+                    procurementMethodDetails = tender.procurementMethodDetails,
+                    items = items.map { item ->
+                        GetDataForContractResponse.Tender.Item(
+                            id = item.id,
+                            internalId = item.internalId,
+                            description = item.description,
+                            classification = item.classification.let { classification ->
+                                GetDataForContractResponse.Tender.Item.Classification(
+                                    id = classification.id,
+                                    description = classification.description,
+                                    scheme = classification.scheme
+                                )
+                            },
+                            additionalClassifications = item.additionalClassifications
+                                ?.map { additionalClassification ->
+                                    GetDataForContractResponse.Tender.Item.AdditionalClassification(
+                                        id = additionalClassification.id,
+                                        scheme = additionalClassification.scheme,
+                                        description = additionalClassification.description
+                                    )
+                                },
+                            unit = item.unit.let { unit ->
+                                GetDataForContractResponse.Tender.Item.Unit(
+                                    id = unit.id,
+                                    name = unit.name
+                                )
+                            },
+                            quantity = item.quantity,
+                            relatedLot = item.relatedLot
+                        )
+                    },
+                    procurementMethod = tender.procurementMethod
+                )
+            }
+        ).asSuccess()
+    }
+
+    private fun getLots(
+        params: GetDataForContractParams,
+        tenderInfo: GetDataForContractInfo
+    ): Result<List<GetDataForContractInfo.Tender.Lot>, GetDataForContractErrors.MissingLots> {
+        val receivedLots = params.awards.flatMap { it.relatedLots }.toSet { it.toString() }
+        val storedLots = tenderInfo.tender.lots.filter { it.id in receivedLots }
+        val storedLotsIds = storedLots.toSet { it.id }
+        val missingLots = receivedLots - storedLotsIds
+
+        if (missingLots.isNotEmpty())
+            return GetDataForContractErrors.MissingLots(missingLots).asFailure()
+
+        return storedLots.asSuccess()
     }
 }

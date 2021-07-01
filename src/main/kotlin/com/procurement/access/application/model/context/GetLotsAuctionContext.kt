@@ -1,8 +1,9 @@
 package com.procurement.access.application.model.context
 
-import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 
 data class GetLotsAuctionContext(
-    val cpid: String,
-    val stage: Stage
+    val cpid: Cpid,
+    val ocid: Ocid.SingleStage
 )

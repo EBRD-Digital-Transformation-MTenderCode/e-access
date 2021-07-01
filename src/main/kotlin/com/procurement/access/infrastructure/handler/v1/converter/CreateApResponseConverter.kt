@@ -5,6 +5,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.ApCreateR
 
 fun ApCreateResult.convert(): ApCreateResponse =
     ApCreateResponse(
+        cpid = this.cpid.value,
         ocid = this.ocid,
         token = this.token,
         tender = this.tender

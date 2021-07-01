@@ -41,12 +41,12 @@ interface ApUpdateService {
 class ApUpdateServiceImpl(
     private val generationService: GenerationService,
     private val tenderProcessDao: TenderProcessDao
-): ApUpdateService {
+) : ApUpdateService {
 
     override fun updateAp(context: UpdateApContext, data: ApUpdateData): ApUpdateResponse {
         data.validateTextAttributes()
 
-        val entity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.stage)
+        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         // VR.COM-1.26.1
@@ -68,7 +68,8 @@ class ApUpdateServiceImpl(
         val updatedDescription = data.tender.description
 
         // FR.COM-1.26.3
-        val updatedProcurementMethodRationale = data.tender.procurementMethodRationale ?: tenderProcess.tender.procurementMethodRationale
+        val updatedProcurementMethodRationale =
+            data.tender.procurementMethodRationale ?: tenderProcess.tender.procurementMethodRationale
 
         // FR.COM-1.26.3
         val updatedClassification = data.tender.classification
@@ -85,7 +86,8 @@ class ApUpdateServiceImpl(
         val updatedTenderPeriod = APEntity.Tender.TenderPeriod(startDate = data.tender.tenderPeriod.startDate)
 
         // FR.COM-1.26.3
-        val updatedMainProcurementCategory = data.tender.mainProcurementCategory ?: tenderProcess.tender.mainProcurementCategory
+        val updatedMainProcurementCategory =
+            data.tender.mainProcurementCategory ?: tenderProcess.tender.mainProcurementCategory
 
         val temporalToPermanentLotId = mutableMapOf<String, String>()
         val updatedLots =
@@ -160,7 +162,7 @@ class ApUpdateServiceImpl(
                     }
                     updatedItems + newItems
                 }
-                ?:tenderProcess.tender.items
+                ?: tenderProcess.tender.items
 
         // FR.COM-1.26.4
         val updatedTenderDocuments = updateTenderDocuments(
@@ -195,31 +197,51 @@ class ApUpdateServiceImpl(
     private fun ApUpdateData.validateTextAttributes() {
         tender.lots
             .forEach { lot ->
-                lot.id.checkForBlank("tender.lots.id")
-                lot.title.checkForBlank("tender.lots.description")
-                lot.description.checkForBlank("tender.lots.description")
-                lot.internalId.checkForBlank("tender.lots.internalId")
+                lot.apply {
+                    id.checkForBlank("tender.lots.id")
+                    title.checkForBlank("tender.lots.title")
+                    description.checkForBlank("tender.lots.description")
+                    internalId.checkForBlank("tender.lots.internalId")
 
-                lot.placeOfPerformance?.address?.addressDetails?.locality?.description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
-                lot.placeOfPerformance?.address?.addressDetails?.locality?.id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
-                lot.placeOfPerformance?.address?.addressDetails?.locality?.scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
-                lot.placeOfPerformance?.address?.addressDetails?.locality?.uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
-                lot.placeOfPerformance?.address?.postalCode.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.placeOfPerformance?.address?.streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
-                lot.title.checkForBlank("tender.lots.title")
+                    placeOfPerformance?.apply {
+                        address.apply {
+                            postalCode.checkForBlank("tender.lots.placeOfPerformance.address.postalCode")
+                            streetAddress.checkForBlank("tender.lots.placeOfPerformance.address.streetAddress")
+
+                            addressDetails.apply {
+                                locality?.apply {
+                                    description.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.description")
+                                    id.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.id")
+                                    scheme.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.scheme")
+                                    uri.checkForBlank("tender.lots.placeOfPerformance.address.addressDetails.locality.uri")
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
         tender.items
             .forEach { item ->
-                item.id.checkForBlank("tender.items.id")
-                item.internalId.checkForBlank("tender.items.internalId")
-                item.description.checkForBlank("tender.items.description")
-                item.classification.description.checkForBlank("tender.items.classification.description")
-                item.deliveryAddress?.streetAddress.checkForBlank("tender.items.deliveryAddress.streetAddress")
-                item.deliveryAddress?.postalCode.checkForBlank("tender.items.deliveryAddress.postalCode")
-                item.deliveryAddress?.addressDetails?.locality?.id.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.id")
-                item.deliveryAddress?.addressDetails?.locality?.scheme.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.scheme")
-                item.deliveryAddress?.addressDetails?.locality?.description.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.description")
+                item.apply {
+                    id.checkForBlank("tender.items.id")
+                    internalId.checkForBlank("tender.items.internalId")
+                    description.checkForBlank("tender.items.description")
+                    classification.description.checkForBlank("tender.items.classification.description")
+
+                    deliveryAddress?.apply {
+                        streetAddress.checkForBlank("tender.items.deliveryAddress.streetAddress")
+                        postalCode.checkForBlank("tender.items.deliveryAddress.postalCode")
+
+                        addressDetails.apply {
+                            locality?.apply {
+                                id.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.id")
+                                scheme.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.scheme")
+                                description.checkForBlank("tender.items.deliveryAddress.addressDetails.locality.description")
+                            }
+                        }
+                    }
+                }
             }
     }
 
@@ -296,7 +318,7 @@ class ApUpdateServiceImpl(
      * VR.COM-1.26.18
      */
     fun checkLotStatusForUpdate(status: LotStatus) {
-        when(status) {
+        when (status) {
             LotStatus.PLANNING -> Unit
             LotStatus.PLANNED,
             LotStatus.ACTIVE,
@@ -395,7 +417,6 @@ class ApUpdateServiceImpl(
             tenderProcess.tender.value.copy(currency = data.tender.value.currency)
         }
 
-
     private fun isRelatedToPN(relatedProcess: RelatedProcess): Boolean =
         relatedProcess.relationship.any { relationship -> relationship == RelatedProcessType.X_SCOPE }
 
@@ -470,8 +491,7 @@ class ApUpdateServiceImpl(
                         ?.updateBy(it)
                         ?: it.toEntity()
                 }
-                ?: this.deliveryAddress
-            ,
+                ?: this.deliveryAddress,
             classification = this.classification.updateBy(received.classification),
             additionalClassifications = updateAdditionalClassifications(
                 received.additionalClassifications,
@@ -695,7 +715,7 @@ class ApUpdateServiceImpl(
         TenderProcessEntity(
             cpId = entity.cpId,
             token = entity.token,
-            stage = entity.stage,
+            ocid = entity.ocid,
             owner = entity.owner,
             createdDate = dateTime,
             jsonData = toJson(tender)

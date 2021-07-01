@@ -1,6 +1,7 @@
 package com.procurement.access.application.service.ap.create
 
 import com.procurement.access.domain.model.CPVCode
+import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LegalBasis
 import com.procurement.access.domain.model.enums.PartyRole
@@ -12,6 +13,7 @@ import com.procurement.access.domain.model.enums.TenderStatusDetails
 import java.time.LocalDateTime
 
 data class ApCreateResult(
+    val cpid: Cpid,
     val ocid: String,
     val token: String,
     val tender: Tender,

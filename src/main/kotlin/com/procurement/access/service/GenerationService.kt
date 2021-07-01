@@ -4,6 +4,7 @@ import com.datastax.driver.core.utils.UUIDs
 import com.procurement.access.application.model.Mode
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.domain.model.country.CountryId
 import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.extension.nowDefaultUTC
@@ -12,6 +13,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.model.dto.ocds.OrganizationReference
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -69,6 +71,17 @@ class GenerationService {
             ?: throw ErrorException(ErrorType.INVALID_STAGE)
 
         return Ocid.SingleStage.generate(cpid = cpidParsed, stage = stageParsed, timestamp = nowDefaultUTC())
+    }
+
+    fun generateCpid(prefix: String, country: CountryId, timestamp: LocalDateTime): Cpid =
+        Cpid.generate(prefix, country, timestamp)
+
+
+    fun generateOcid(cpid: Cpid, stage: String): Ocid.SingleStage {
+        val stageParsed = Stage.orNull(stage)
+            ?: throw ErrorException(ErrorType.INVALID_STAGE)
+
+        return Ocid.SingleStage.generate(cpid = cpid, stage = stageParsed, timestamp = nowDefaultUTC())
     }
 
     fun criterionId(): String = UUID.randomUUID().toString()

@@ -72,7 +72,7 @@ internal class LotsServiceTest {
         fun success() {
             val params = getLotsValueParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/lots/value/tender_lots_value.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.getLotsValue(params)
 
@@ -102,7 +102,7 @@ internal class LotsServiceTest {
         @Test
         fun tenderNotFound_fail() {
             val params = getLotsValueParams()
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(null))
             val actual = lotsService.getLotsValue(params)
             val expectedErrorCode = "VR.COM-1.38.1"
@@ -128,7 +128,7 @@ internal class LotsServiceTest {
         fun someLotsNotFound_fail() {
             val params = getParamsWithOneUnknownLot()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/lots/value/tender_lots_value.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.getLotsValue(params)
             val expectedErrorCode = "VR.COM-1.38.2"
@@ -158,7 +158,7 @@ internal class LotsServiceTest {
         fun success() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params)
 
@@ -168,7 +168,7 @@ internal class LotsServiceTest {
         @Test
         fun tenderNotFound() {
             val params = getParams()
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(null))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -183,7 +183,7 @@ internal class LotsServiceTest {
         fun receivedTwoLotsThatAreAlreadyStored() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_that_mathces_two_received_lots.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -198,7 +198,7 @@ internal class LotsServiceTest {
         fun noMatchingLotsStored() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_no_matching_lots.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -222,7 +222,7 @@ internal class LotsServiceTest {
             )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithOneStoredAndOneNewLot) as ValidationResult.Error
 
@@ -242,7 +242,7 @@ internal class LotsServiceTest {
                 )
             }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithNullTitle) as ValidationResult.Error
 
@@ -262,7 +262,7 @@ internal class LotsServiceTest {
                 )
             }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithNullTitle) as ValidationResult.Error
 
@@ -282,7 +282,7 @@ internal class LotsServiceTest {
                 )
             }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithNullTitle) as ValidationResult.Error
 
@@ -302,7 +302,7 @@ internal class LotsServiceTest {
                 )
             }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithNullTitle) as ValidationResult.Error
 
@@ -322,7 +322,7 @@ internal class LotsServiceTest {
                 )
             }))
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithNullTitle) as ValidationResult.Error
 
@@ -337,7 +337,7 @@ internal class LotsServiceTest {
         fun currencyDoesNotMatch() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_unmatching_currency.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -352,7 +352,7 @@ internal class LotsServiceTest {
         fun amountDoesNotMatch() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_unmatching_amount_sum.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -367,7 +367,7 @@ internal class LotsServiceTest {
         fun contractPeriodStartDoesNotMatch() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_unmatching_contract_period_start.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -382,7 +382,7 @@ internal class LotsServiceTest {
         fun contractPeriodEndDoesNotMatch() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_unmatching_contract_period_end.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(params) as ValidationResult.Error
 
@@ -403,7 +403,7 @@ internal class LotsServiceTest {
             )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithoutItemForOneNewLot) as ValidationResult.Error
 
@@ -424,7 +424,7 @@ internal class LotsServiceTest {
             )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithoutItemForDividedLot) as ValidationResult.Error
 
@@ -448,7 +448,7 @@ internal class LotsServiceTest {
             )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithRedundantReceivedItem) as ValidationResult.Error
 
@@ -472,7 +472,7 @@ internal class LotsServiceTest {
             )
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity_with_additional_item.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithUnrelatedItem) as ValidationResult.Error
 
@@ -498,7 +498,7 @@ internal class LotsServiceTest {
             }))
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
 
@@ -527,7 +527,7 @@ internal class LotsServiceTest {
                     }))
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
 
@@ -554,7 +554,7 @@ internal class LotsServiceTest {
                     }))
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/validate/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             val actual = lotsService.validateLotsDataForDivision(paramsWithOptions) as ValidationResult.Error
 
@@ -697,7 +697,7 @@ internal class LotsServiceTest {
         fun success() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/divide/lot/tender_entity.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
             whenever(generationService.lotId())
                 .thenReturn(LOT_ID_1)

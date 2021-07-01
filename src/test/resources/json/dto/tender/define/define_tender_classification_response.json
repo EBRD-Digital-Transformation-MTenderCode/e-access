@@ -1,0 +1,8 @@
+{
+  "tender": {
+    "classification": {
+      "id": "string",
+      "scheme": "CPV"
+    }
+  }
+}

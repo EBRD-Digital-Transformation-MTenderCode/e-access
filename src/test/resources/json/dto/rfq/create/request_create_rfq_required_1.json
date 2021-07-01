@@ -4,6 +4,11 @@
   "tender": {
     "title": "string",
     "description": "string",
+    "classification": {
+      "id": "string",
+      "scheme": "string",
+      "description": "string"
+    },
     "lots": [
       {
         "id": "string",

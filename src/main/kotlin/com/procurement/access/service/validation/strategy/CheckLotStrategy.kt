@@ -7,7 +7,8 @@ import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.api.v1.CommandMessage
-import com.procurement.access.infrastructure.api.v1.stage
+import com.procurement.access.infrastructure.api.v1.cpid
+import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
@@ -24,14 +25,14 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
      * Validates the values of lot.status && lot.statusDetails in lot object found before by rule VR-1.5.1.1;
      */
     fun check(cm: CommandMessage) {
-        val cpid = getCPID(cm)
+        val cpid = cm.cpid
         val lotId = getLotId(cm)
-        val stage = cm.stage
+        val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpIdAndStage(cpid, stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val lotState = when (stage) {
+        val lotState = when (ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -54,9 +55,10 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage $stage not allowed at the command."
+                message = "Stage ${ocid.stage} not allowed at the command."
             )
         }
 
@@ -79,14 +81,6 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
             throw ErrorException(
                 error = ErrorType.INVALID_LOT_STATUS_DETAILS,
                 message = "Lot must be with status details: 'EMPTY'."
-            )
-    }
-
-    private fun getCPID(cm: CommandMessage): String {
-        return cm.context.cpid
-            ?: throw ErrorException(
-                error = ErrorType.CONTEXT,
-                message = "Missing the 'cpid' attribute in context."
             )
     }
 

@@ -11,6 +11,17 @@
     "value": {
       "currency": "MDL"
     },
+    "classification": {
+      "id": "string",
+      "scheme": "CPV",
+      "description": "string"
+    },
+    "procurementMethod": "selective",
+    "procurementMethodDetails": "string",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "works"
+    ],
     "lots": [
       {
         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",

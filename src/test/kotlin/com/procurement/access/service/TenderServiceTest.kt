@@ -27,7 +27,6 @@ import com.procurement.access.infrastructure.handler.v2.model.response.GetMainPr
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -52,7 +51,7 @@ internal class TenderServiceTest {
         tenderProcessRepository = mock()
         generationService = mock()
         transform = mock()
-        tenderService = TenderService(tenderProcessDao, generationService,  tenderProcessRepository, transform)
+        tenderService = TenderService(tenderProcessDao, generationService, tenderProcessRepository, transform)
     }
 
     @Nested
@@ -62,7 +61,7 @@ internal class TenderServiceTest {
         fun getCurrency_success() {
             val params = getParams()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/currency/get/tender_currency.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(Result.success(tenderProcessEntity))
             val actual = tenderService.getCurrency(params).get
 
@@ -70,21 +69,21 @@ internal class TenderServiceTest {
                 GetCurrencyResult.Tender(GetCurrencyResult.Tender.Value("tenderCurrency"))
             )
 
-            Assertions.assertEquals(expected, actual)
+            assertEquals(expected, actual)
         }
 
         @Test
         fun recordNotFound_fail() {
             val params = getParams()
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(Result.success(null))
             val actual = tenderService.getCurrency(params).failure()
 
             val expectedErrorCode = "VR.COM-1.34.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
 
-            Assertions.assertEquals(expectedErrorCode, actual.code)
-            Assertions.assertEquals(expectedErrorMessage, actual.description)
+            assertEquals(expectedErrorCode, actual.code)
+            assertEquals(expectedErrorMessage, actual.description)
         }
 
         private fun getParams() = GetCurrencyParams.tryCreate(
@@ -99,7 +98,7 @@ internal class TenderServiceTest {
         fun getCategory_success() {
             val params = getParams()
             val tenderCategoryEntity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/procurement/category/get/tender_main_procurement_category.json"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(Result.success(tenderCategoryEntity))
             val actual = tenderService.getMainProcurementCategory(params).get
 
@@ -107,21 +106,21 @@ internal class TenderServiceTest {
                 GetMainProcurementCategoryResult.Tender(MainProcurementCategory.GOODS)
             )
 
-            Assertions.assertEquals(expected, actual)
+            assertEquals(expected, actual)
         }
 
         @Test
         fun recordNotFound_fail() {
             val params = getParams()
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(Result.success(null))
             val actual = tenderService.getMainProcurementCategory(params).failure()
 
             val expectedErrorCode = "VR.COM-1.37.1"
             val expectedErrorMessage = "Tender not found by cpid='${params.cpid}' and ocid='${params.ocid}'."
 
-            Assertions.assertEquals(expectedErrorCode, actual.code)
-            Assertions.assertEquals(expectedErrorMessage, actual.description)
+            assertEquals(expectedErrorCode, actual.code)
+            assertEquals(expectedErrorMessage, actual.description)
         }
 
         private fun getParams() = GetMainProcurementCategoryParams(
@@ -130,7 +129,7 @@ internal class TenderServiceTest {
     }
 
     @Nested
-    inner class GetBuyersOwners{
+    inner class GetBuyersOwners {
         @Test
         fun success() {
             val params = getParams()
@@ -146,7 +145,12 @@ internal class TenderServiceTest {
                 .thenReturn(Result.success(stubTenderEntity))
             whenever(transform.tryDeserialization("", APEntity::class.java))
                 .thenReturn(getApEntity(pnOcid).asSuccess())
-            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = Cpid.tryCreateOrNull("ocds-b3wdp3-MD-1581509539187")!!, ocid = pnOcid))
+            whenever(
+                tenderProcessRepository.getByCpIdAndOcid(
+                    cpid = Cpid.tryCreateOrNull("ocds-b3wdp3-MD-1581509539187")!!,
+                    ocid = pnOcid
+                )
+            )
                 .thenReturn(Result.success(stubTenderEntity))
             whenever(transform.tryDeserialization("", PNEntity::class.java)).thenReturn(getPnEntity())
 
@@ -155,10 +159,11 @@ internal class TenderServiceTest {
             val expected = GetBuyersOwnersResult(
                 listOf(
                     GetBuyersOwnersResult.Buyer(
-                    id = "buyer.id",
-                    name = "buyer.name",
-                    owner = stubTenderEntity.owner
-                ))
+                        id = "buyer.id",
+                        name = "buyer.name",
+                        owner = stubTenderEntity.owner
+                    )
+                )
             )
 
             assertEquals(expected, actual)
@@ -238,7 +243,6 @@ internal class TenderServiceTest {
             whenever(transform.tryDeserialization("", APEntity::class.java))
                 .thenReturn(getApEntity(pnOcid).copy(relatedProcesses = emptyList()).asSuccess())
 
-
             val actual = tenderService.getBuyersOwners(params) as Result.Failure
             val errorCode = "VR.COM-1.48.4"
             val errorMessage = "Relationship '${RelatedProcessType.X_SCOPE}' not found."
@@ -262,7 +266,12 @@ internal class TenderServiceTest {
                 .thenReturn(Result.success(stubTenderEntity))
             whenever(transform.tryDeserialization("", APEntity::class.java))
                 .thenReturn(getApEntity(pnOcid).asSuccess())
-            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = Cpid.tryCreateOrNull("ocds-b3wdp3-MD-1581509539187")!!, ocid = pnOcid))
+            whenever(
+                tenderProcessRepository.getByCpIdAndOcid(
+                    cpid = Cpid.tryCreateOrNull("ocds-b3wdp3-MD-1581509539187")!!,
+                    ocid = pnOcid
+                )
+            )
                 .thenReturn(Result.success(null))
 
             val actual = tenderService.getBuyersOwners(params) as Result.Failure
@@ -328,5 +337,4 @@ internal class TenderServiceTest {
             ocid = OCID
         )
     }
-
 }

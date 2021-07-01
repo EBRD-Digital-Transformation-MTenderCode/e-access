@@ -16,6 +16,7 @@ import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ApCreateResponse(
+    @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("token") @param:JsonProperty("token") val token: String,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,

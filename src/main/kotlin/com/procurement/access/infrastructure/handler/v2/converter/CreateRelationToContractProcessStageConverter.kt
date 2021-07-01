@@ -34,8 +34,9 @@ fun CreateRelationToContractProcessStageRequest.convert(): Result<CreateRelation
 private val allowedOperationTypes = OperationType.values()
     .filter {
         when (it) {
+            OperationType.CREATE_CONTRACT,
             OperationType.CREATE_RFQ -> true
-            
+
             OperationType.AMEND_FE,
             OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,

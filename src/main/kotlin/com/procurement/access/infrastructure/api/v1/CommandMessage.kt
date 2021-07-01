@@ -3,9 +3,10 @@ package com.procurement.access.infrastructure.api.v1
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethod
-import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.domain.util.extension.toLocalDateTime
 import com.procurement.access.exception.ErrorException
@@ -26,12 +27,30 @@ data class CommandMessage @JsonCreator constructor(
 val CommandMessage.commandId: CommandId
     get() = this.id
 
-val CommandMessage.cpid: String
+val CommandMessage.cpid: Cpid
     get() = this.context.cpid
+        ?.let {
+            Cpid.tryCreate(it)
+                .orThrow { _ ->
+                    ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Attribute 'cpid' has invalid format."
+                    )
+                }
+        }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'cpid' attribute in context.")
 
-val CommandMessage.ocid: String
+val CommandMessage.ocid: Ocid.SingleStage
     get() = this.context.ocid
+        ?.let {
+            Ocid.SingleStage.tryCreate(it)
+                .orThrow { _ ->
+                    ErrorException(
+                        error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+                        message = "Attribute 'ocid' has invalid format."
+                    )
+                }
+        }
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'ocid' attribute in context.")
 
 val CommandMessage.token: UUID
@@ -52,15 +71,6 @@ val CommandMessage.token: UUID
 val CommandMessage.owner: String
     get() = this.context.owner
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'owner' attribute in context.")
-
-val CommandMessage.stage: Stage
-    get() = this.context.stage
-        ?.let { Stage.creator(it) }
-        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'stage' attribute in context.")
-
-val CommandMessage.prevStage: String
-    get() = this.context.prevStage
-        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'prevStage' attribute in context.")
 
 val CommandMessage.country: String
     get() = this.context.country
@@ -108,8 +118,6 @@ data class Context @JsonCreator constructor(
     val requestId: String?,
     val cpid: String?,
     val ocid: String?,
-    val stage: String?,
-    val prevStage: String?,
     val processType: String?,
     val operationType: String?,
     val phase: String?,
