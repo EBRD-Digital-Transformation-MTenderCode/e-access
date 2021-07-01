@@ -3,6 +3,8 @@ package com.procurement.access.service
 import com.procurement.access.application.service.cn.update.CnCreateContext
 import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.EnumElementProviderParser.checkAndParseEnum
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
@@ -177,7 +179,7 @@ class CnCreateService(
                 ),
                 relatedProcesses = null
         )
-        val entity = getEntity(tp, cpId, context.stage, context.startDate, context.owner)
+        val entity = getEntity(tp, Cpid.tryCreateOrNull(cpId)!!, context.ocid, context.startDate, context.owner)
         tenderProcessDao.save(entity)
         tp.token = entity.token.toString()
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tp)
@@ -357,14 +359,14 @@ class CnCreateService(
     }
 
     private fun getEntity(tp: TenderProcess,
-                          cpId: String,
-                          stage: String,
+                          cpId: Cpid,
+                          ocid: Ocid,
                           dateTime: LocalDateTime,
                           owner: String): TenderProcessEntity {
         return TenderProcessEntity(
             cpId = cpId,
             token = generationService.generateRandomUUID(),
-            stage = stage,
+            ocid = ocid,
             owner = owner,
             createdDate = dateTime,
             jsonData = toJson(tp)

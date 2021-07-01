@@ -145,3 +145,15 @@ INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'OF', 'all', 'maxDurationOfFA', '126144000');
 INSERT INTO ocds.access_rules (country, pmd, operation_type, parameter, value)
 VALUES ('MD', 'CF', 'all', 'maxDurationOfFA', '126144000');
+
+DROP TABLE IF EXISTS ocds.access_tender;
+
+CREATE TABLE IF NOT EXISTS  ocds.access_tender (
+    cpid text,
+    ocid text,
+    token_entity uuid,
+    owner text,
+    created_date timestamp,
+    json_data text,
+    primary key(cpid, ocid, token_entity)
+);

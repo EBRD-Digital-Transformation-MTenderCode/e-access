@@ -7,9 +7,11 @@ import com.procurement.access.application.model.parseDate
 import com.procurement.access.application.model.parseOcid
 import com.procurement.access.application.model.parseOwner
 import com.procurement.access.domain.fail.error.DataErrors
+import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.infrastructure.handler.v2.model.request.CreateRfqRequest
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
+import com.procurement.access.lib.functional.asFailure
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.lib.functional.validate
@@ -39,14 +41,28 @@ private fun CreateRfqRequest.Tender.convert(path: String): Result<CreateRfqParam
         .validate(notEmptyRule("$path/procurementMethodModalities"))
         .onFailure { return it }
 
+    val classification = classification.convert()
+        .onFailure { return it }
 
     return CreateRfqParams.Tender(
         title = title,
         description = description,
         lots = lots,
         items = items,
+        classification = classification,
         electronicAuctions = electronicAuctions?.convert("$path.electronicAuctions")?.onFailure { return it },
         procurementMethodModalities = procurementMethodModalities
+    ).asSuccess()
+}
+
+private fun CreateRfqRequest.Tender.Classification.convert(): Result<CreateRfqParams.Tender.Classification, DataErrors> {
+    val scheme = Scheme.orNull(scheme)
+        ?: return DataErrors.Validation.UnknownValue("scheme", Scheme.allowedElements.map { it.name }, scheme).asFailure()
+
+    return CreateRfqParams.Tender.Classification(
+        id = id,
+        scheme = scheme,
+        description = description
     ).asSuccess()
 }
 

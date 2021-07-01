@@ -34,6 +34,7 @@ class CheckRelationParams private constructor(
                     OperationType.CREATE_CN,
                     OperationType.CREATE_CN_ON_PIN,
                     OperationType.CREATE_CN_ON_PN,
+                    OperationType.CREATE_CONTRACT,
                     OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
                     OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                     OperationType.CREATE_FE,

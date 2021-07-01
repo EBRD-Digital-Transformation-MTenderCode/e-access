@@ -19,6 +19,7 @@ data class CreateRfqRequest(
         @param:JsonProperty("description") @field:JsonProperty("description") val description: String,
         @param:JsonProperty("lots") @field:JsonProperty("lots") val lots: List<Lot>,
         @param:JsonProperty("items") @field:JsonProperty("items") val items: List<Item>,
+        @param:JsonProperty("classification") @field:JsonProperty("classification") val classification: Classification,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @param:JsonProperty("electronicAuctions") @field:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
@@ -26,6 +27,13 @@ data class CreateRfqRequest(
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @param:JsonProperty("procurementMethodModalities") @field:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?
     ) {
+
+        data class Classification(
+            @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
+            @param:JsonProperty("scheme") @field:JsonProperty("scheme") val scheme: String,
+            @param:JsonProperty("description") @field:JsonProperty("description") val description: String
+        )
+
         data class Lot(
             @param:JsonProperty("id") @field:JsonProperty("id") val id: String,
 

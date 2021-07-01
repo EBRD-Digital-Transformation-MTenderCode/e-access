@@ -10,6 +10,8 @@ import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
 import com.procurement.access.domain.util.extension.asString
 import com.procurement.access.domain.util.extension.toLocalDateTime
@@ -20,7 +22,6 @@ import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.api.v1.country
 import com.procurement.access.infrastructure.api.v1.owner
 import com.procurement.access.infrastructure.api.v1.pmd
-import com.procurement.access.infrastructure.api.v1.stage
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
@@ -56,6 +57,9 @@ import java.util.*
 class PnServiceTest {
     companion object {
         private const val PERMANENT_CPID = "ocds-t1s2t3-MD-1552650554287"
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-PN-1580458791896")
+        private val CPID = Cpid.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892")!!
+
         private const val PERMANENT_TENDER_PROCURING_ENTITY_ID_1 = "procuring-entity-id-1"
 
         private const val PERMANENT_LOT_ID_1 = "permanent-lot-1"
@@ -457,6 +461,9 @@ class PnServiceTest {
 
                 @Test
                 fun test() {
+                    whenever(generationService.generateCpid(any(), any(), any())).thenReturn(CPID)
+                    whenever(generationService.generateOcid(any<Cpid>(), any())).thenReturn(OCID)
+
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
@@ -471,6 +478,9 @@ class PnServiceTest {
 
                 @Test
                 fun test() {
+                    whenever(generationService.generateCpid(any(), any(), any())).thenReturn(CPID)
+                    whenever(generationService.generateOcid(any<Cpid>(), any())).thenReturn(OCID)
+
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
@@ -490,6 +500,9 @@ class PnServiceTest {
 
                 @Test
                 fun test() {
+                    whenever(generationService.generateCpid(any(), any(), any())).thenReturn(CPID)
+                    whenever(generationService.generateOcid(any<Cpid>(), any())).thenReturn(OCID)
+
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
@@ -504,6 +517,9 @@ class PnServiceTest {
 
                 @Test
                 fun test() {
+                    whenever(generationService.generateCpid(any(), any(), any())).thenReturn(CPID)
+                    whenever(generationService.generateOcid(any<Cpid>(), any())).thenReturn(OCID)
+
                     val testData = WhenTestData(
                         hasItemsInRequest = hasItems,
                         hasDocumentsInRequest = hasDocuments
@@ -625,7 +641,6 @@ class PnServiceTest {
 
     private fun getCreatePnPayload(cm: CommandMessage): CreatePnPayload {
         val context = CreatePnContext(
-            stage = cm.stage.key,
             owner = cm.owner,
             pmd = cm.pmd,
             country = cm.country,

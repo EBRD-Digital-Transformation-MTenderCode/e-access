@@ -481,6 +481,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONTRACT,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
@@ -526,6 +527,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONTRACT,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
@@ -571,6 +573,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONTRACT,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
@@ -605,9 +608,10 @@ class CheckFEDataRules {
 
         fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
             val cpid = context.cpid
-            val stage = when (context.operationType) {
-                OperationType.AMEND_FE -> context.stage
-                OperationType.CREATE_FE -> context.prevStage
+            val ocid = context.ocid
+            when (context.operationType) {
+                OperationType.AMEND_FE,
+                OperationType.CREATE_FE -> Unit
 
                 OperationType.APPLY_CONFIRMATIONS,
                 OperationType.APPLY_QUALIFICATION_PROTOCOL,
@@ -617,6 +621,7 @@ class CheckFEDataRules {
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONTRACT,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER, 
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_NEGOTIATION_CN_ON_PN,
@@ -648,10 +653,10 @@ class CheckFEDataRules {
                 OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_PMD)
             }
-            return tenderProcessDao.getByCpIdAndStage(cpId = cpid, stage = stage)
+            return tenderProcessDao.getByCpidAndOcid(cpid = cpid, ocid = ocid)
                 ?: throw ErrorException(
                     error = ErrorType.ENTITY_NOT_FOUND,
-                    message = "Cannot found tender (cpid='${cpid}' and stage='${stage}')"
+                    message = "Cannot found tender (cpid='${cpid}' and ocid='${ocid}')"
                 )
         }
 

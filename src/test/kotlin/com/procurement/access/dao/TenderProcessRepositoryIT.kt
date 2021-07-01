@@ -8,9 +8,8 @@ import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.model.Cpid
-import com.procurement.access.domain.model.enums.Stage
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -31,7 +30,8 @@ class TenderProcessRepositoryIT {
 
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1565251033096")!!
-        private val STAGE = Stage.PN
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
+
         private val TOKEN = UUID.randomUUID()
         private val DATE = LocalDateTime.now()
 
@@ -87,9 +87,8 @@ class TenderProcessRepositoryIT {
         val wasApplied = tenderProccessRepository.update(updatedEntity).get
         assertTrue(wasApplied)
 
-        val storedEntity = tenderProccessRepository.getByCpIdAndStage(
-            Cpid.tryCreateOrNull(entity.cpId)!!,
-            Stage.creator(entity.stage)
+        val storedEntity = tenderProccessRepository.getByCpIdAndOcid(
+            entity.cpId, entity.ocid
         ).get!!
 
         assertEquals(dataForUpdate, storedEntity.jsonData)
@@ -97,8 +96,8 @@ class TenderProcessRepositoryIT {
     }
 
     val SAMPLE_ENTITY = TenderProcessEntity(
-        cpId = CPID.value,
-        stage = STAGE.toString(),
+        cpId = CPID,
+        ocid = OCID,
         owner = "sample-owner",
         token = TOKEN,
         createdDate = DATE,
@@ -121,13 +120,13 @@ class TenderProcessRepositoryIT {
         session.execute(
             """
                 CREATE TABLE IF NOT EXISTS ${KEYSPACE}.access_tender (
-                    cp_id text,
-                    stage text,
+                    cpid text,
+                    ocid text,
                     token_entity UUID,
                     owner text,
                     created_date timestamp,
                     json_data text,
-                    PRIMARY KEY(cp_id, stage, token_entity)
+                    PRIMARY KEY(cpid, ocid, token_entity)
                 );
             """
         )

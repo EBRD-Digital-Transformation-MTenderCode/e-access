@@ -13,10 +13,10 @@ class GetAwardCriteriaStrategy(
     private val tenderProcessDao: TenderProcessDao
 ) {
     fun execute(context: GetAwardCriteriaContext): GetAwardCriteriaResult {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
-        return when (context.stage) {
+        return when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -35,9 +35,10 @@ class GetAwardCriteriaStrategy(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
     }

@@ -14,6 +14,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.AwardCriteriaDetails
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.MainProcurementCategory
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.domain.model.enums.RelatedProcessScheme
@@ -158,6 +159,9 @@ class RfqServiceImpl(
 
         val pnToken = pnProcessEntity.token
 
+        val storedPn = pnProcessEntity.jsonData.tryToObject(PNEntity::class.java)
+            .onFailure { return it }
+
         val lotsByOldIds = params.tender.lots.associateBy(
             keySelector = { it.id },
             valueTransform = { generateLot(it) })
@@ -183,18 +187,29 @@ class RfqServiceImpl(
                 awardCriteriaDetails = AwardCriteriaDetails.AUTOMATED,
                 lots = lots,
                 items = items,
-                procurementMethodModalities = params.tender.procurementMethodModalities
+                procurementMethodModalities = params.tender.procurementMethodModalities,
+                classification = params.tender.classification.let { pnClassification -> // FR.COM-1.45.33
+                    RfqEntity.Tender.Classification(
+                        id = pnClassification.id,
+                        scheme = pnClassification.scheme,
+                        description = pnClassification.description
+                    )
+                },
+                mainProcurementCategory = storedPn.tender.mainProcurementCategory, // FR.COM-1.45.29
+                additionalProcurementCategories = defineAdditionalProcurementCategories(params.tender.items, storedPn.tender.mainProcurementCategory), // FR.COM-1.45.30
+                procurementMethod = storedPn.tender.procurementMethod, // FR.COM-1.45.31
+                procurementMethodDetails = storedPn.tender.procurementMethodDetails // FR.COM-1.45.32
             ),
             relatedProcesses = relatedProcesses,
             token = pnToken
         )
 
         val entity = TenderProcessEntity(
-            cpId = params.cpid.value,
+            cpId = params.cpid,
             token = createdRfq.token,
             owner = params.owner.toString(),
             createdDate = nowDefaultUTC(),
-            stage = rfqOcid.stage.key,
+            ocid = rfqOcid,
             jsonData = transform.trySerialization(createdRfq).onFailure { return it }
 
         )
@@ -204,6 +219,28 @@ class RfqServiceImpl(
         val electronicAuctions = generateElectronicAuctions(params, newLotIdsByOldLotIds)
         return generateCreateRfqResult(createdRfq, electronicAuctions).asSuccess()
     }
+
+    val goodsCategoryRange = ((3 .. 44) + 48).toSet { it.toString().padStart(2, '0') }
+    val worksCategoryRange = setOf("45")
+    val servicesCategoryRange = (50 .. 98).map { it.toString() }.toSet()
+
+    private fun defineAdditionalProcurementCategories(
+        items: List<CreateRfqParams.Tender.Item>,
+        mainProcurementCategory: MainProcurementCategory
+    ): List<MainProcurementCategory> =
+        items
+            .toSet { item ->
+                val category = item.classification.id.take(2)
+                when (category) {
+                    in goodsCategoryRange -> MainProcurementCategory.GOODS
+                    in worksCategoryRange -> MainProcurementCategory.WORKS
+                    in servicesCategoryRange -> MainProcurementCategory.SERVICES
+                    else -> throw IllegalArgumentException("Invalid classification category. ${item.classification.id}")
+                }
+            }
+            .minus(mainProcurementCategory)
+            .toList()
+
 
     private fun generateCreateRfqResult(createdRfq: RfqEntity, electronicAuctions: CreateRfqResult.Tender.ElectronicAuctions?) =
         CreateRfqResult(
@@ -313,6 +350,17 @@ class RfqServiceImpl(
                     date = tender.date,
                     value = tender.value.let {
                         CreateRfqResult.Tender.Value(currency = it.currency)
+                    },
+                    mainProcurementCategory = tender.mainProcurementCategory,
+                    procurementMethod = tender.procurementMethod,
+                    procurementMethodDetails = tender.procurementMethodDetails,
+                    additionalProcurementCategories = tender.additionalProcurementCategories,
+                    classification = tender.classification?.let { classification ->
+                        CreateRfqResult.Tender.Classification(
+                            id = classification.id,
+                            scheme = classification.scheme,
+                            description = classification.description
+                        )
                     }
                 )
             }
@@ -447,7 +495,8 @@ class RfqServiceImpl(
     private fun getRelationship(params: CreateRelationToContractProcessStageParams) =
         when (params.operationType) {
             OperationType.CREATE_RFQ -> listOf(RelatedProcessType.X_PURCHASING)
-            
+            OperationType.CREATE_CONTRACT -> listOf(RelatedProcessType.X_CONTRACTING)
+
             OperationType.AMEND_FE,
             OperationType.APPLY_CONFIRMATIONS,
             OperationType.APPLY_QUALIFICATION_PROTOCOL,

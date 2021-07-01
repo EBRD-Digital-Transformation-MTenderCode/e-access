@@ -8,6 +8,7 @@ import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
+import com.procurement.access.domain.model.enums.Stage
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
 import com.procurement.access.exception.ErrorException
@@ -83,7 +84,7 @@ class NegotiationCnOnPnService(
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
+            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
@@ -188,7 +189,7 @@ class NegotiationCnOnPnService(
     }
 
     fun create(context: CreateNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): NegotiationCnOnPnResponse {
-        val tenderProcessEntity = tenderProcessDao.getByCpIdAndStage(context.cpid, context.previousStage)
+        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
@@ -205,18 +206,19 @@ class NegotiationCnOnPnService(
             relatedProcesses = pnEntity.relatedProcesses
         )
 
+        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.NP.key)
+
         tenderProcessDao.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = tenderProcessEntity.token,
-                stage = context.stage,
+                ocid = newOcid,
                 owner = tenderProcessEntity.owner,
                 createdDate = context.startDate,
                 jsonData = toJson(cnEntity)
             )
         )
 
-        val newOcid = generationService.generateOcid(cpid = context.cpid, stage = context.stage)
         val responseCnEntity = cnEntity.copy(ocid = newOcid.value)
 
         return getResponse(responseCnEntity, tenderProcessEntity.token)

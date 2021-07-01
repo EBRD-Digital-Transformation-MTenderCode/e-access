@@ -6,6 +6,8 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
@@ -27,8 +29,8 @@ import org.junit.jupiter.api.Test
 class PnUpdateServiceTest {
 
     companion object {
-        private const val CPID = "ocds-t1s2t3-MD-1579523524876"
-        private const val STAGE = "PN"
+        private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1579523524876")!!
+        private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
         private const val PMD = "PMD"
         const val REQUEST_PATH = "json/service/update/pn/update_pn_full.json"
         const val MOCK_TENDER_PATH = "json/service/update/pn/tender_process.json"
@@ -116,13 +118,13 @@ class PnUpdateServiceTest {
         private fun getByCpidAndStage(tenderProcess: ObjectNode) {
             val entity = TenderProcessEntity(
                 cpId = CPID,
-                stage = STAGE,
+                ocid = OCID,
                 createdDate = nowDefaultUTC(),
                 jsonData = tenderProcess.toJson(),
                 owner = ContextGenerator.OWNER,
                 token = ContextGenerator.TOKEN
             )
-            whenever(tenderProcessDao.getByCpIdAndStage(cpId = any(), stage = any()))
+            whenever(tenderProcessDao.getByCpidAndOcid(cpid = any(), ocid = any()))
                 .thenReturn(entity)
         }
     }

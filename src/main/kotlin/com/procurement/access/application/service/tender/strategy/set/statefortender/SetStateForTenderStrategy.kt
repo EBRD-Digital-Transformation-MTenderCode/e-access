@@ -82,13 +82,13 @@ class SetStateForTenderStrategy(
                     it.copy(tender = it.tender.copy(status = newState.status, statusDetails = newState.statusDetails))
                 }
                 .let { updatedTenderProcess -> toJson(updatedTenderProcess) }
+
             Stage.AC,
             Stage.EI,
             Stage.FS,
-            Stage.PC ->
-                return Result.failure(
-                    ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage)
-                )
+            Stage.PC,
+            Stage.PO ->
+                return Result.failure(ValidationErrors.UnexpectedStageForSetStateForTender(stage = params.ocid.stage))
         }
 
         tenderProcessRepository.save(tenderProcessEntity.copy(jsonData = updatedTenderJson))
@@ -102,7 +102,7 @@ class SetStateForTenderStrategy(
     }
 
     private fun getTenderProcessEntityByCpIdAndOcid(cpid: Cpid, ocid: Ocid.SingleStage): Result<TenderProcessEntity, Fail> {
-        val entity = tenderProcessRepository.getByCpIdAndStage(cpid = cpid, stage = ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = cpid, ocid = ocid)
             .onFailure { error -> return error }
             ?: return Result.failure(ValidationErrors.TenderNotFoundSetStateForTender(cpid = cpid, ocid = ocid))
 

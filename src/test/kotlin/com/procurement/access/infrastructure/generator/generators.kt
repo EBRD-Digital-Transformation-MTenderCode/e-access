@@ -1,6 +1,8 @@
 package com.procurement.access.infrastructure.generator
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.procurement.access.domain.model.Cpid
+import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.infrastructure.api.ApiVersion
 import com.procurement.access.infrastructure.api.command.id.CommandId
@@ -29,24 +31,20 @@ object CommandMessageGenerator {
 }
 
 object ContextGenerator {
-    const val CPID = "cpid-1"
-    const val OCID = "ocds-b3wdp1-MD-1580458690892-EV-1580458791896"
+    val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1543525135421")!!
+    val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
     val TOKEN: UUID = UUID.fromString("bd56490f-57ca-4d1a-9210-250cb9b4eed3")
     const val OWNER = "owner-1"
     const val COUNTRY = "MD"
-    const val STAGE = "EV"
-    const val PREV_STAGE = "prev_stage"
     const val START_DATE = "2011-06-05T17:59:00Z"
 
     fun generate(
-        cpid: String? = CPID,
-        ocid: String? = null,
+        cpid: Cpid? = CPID,
+        ocid: Ocid? = OCID,
         token: String? = TOKEN.toString(),
         owner: String? = OWNER,
         requestId: String? = null,
         operationId: String? = null,
-        stage: String? = STAGE,
-        prevStage: String? = PREV_STAGE,
         processType: String? = null,
         operationType: String? = null,
         phase: String? = null,
@@ -61,10 +59,8 @@ object ContextGenerator {
             id = id,
             operationId = operationId,
             requestId = requestId,
-            cpid = cpid,
-            ocid = ocid,
-            stage = stage,
-            prevStage = prevStage,
+            cpid = cpid?.value,
+            ocid = ocid?.value,
             processType = processType,
             operationType = operationType,
             phase = phase,
@@ -83,10 +79,10 @@ object ContextGenerator {
 
 object TenderProcessEntityGenerator {
     fun generate(
-        cpid: String = ContextGenerator.CPID,
+        cpid: Cpid = ContextGenerator.CPID,
         token: UUID = ContextGenerator.TOKEN,
         owner: String = ContextGenerator.OWNER,
-        stage: String = ContextGenerator.STAGE,
+        ocid: Ocid = ContextGenerator.OCID,
         createdDate: LocalDateTime = nowDefaultUTC(),
         data: String
     ): TenderProcessEntity {
@@ -94,7 +90,7 @@ object TenderProcessEntityGenerator {
             cpId = cpid,
             token = token,
             owner = owner,
-            stage = stage,
+            ocid = ocid,
             createdDate = createdDate,
             jsonData = data
         )

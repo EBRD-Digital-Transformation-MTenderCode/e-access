@@ -50,7 +50,7 @@ class OutsourcingServiceImpl(
 
     override fun outsourcingPN(params: OutsourcingPNParams): Result<OutsourcingPNResult, Fail> {
 
-        val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, params.ocid.stage)
+        val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { fail -> return fail }
             ?: return failure(
                 ValidationErrors.TenderNotFoundOnOutsourcingPN(params.cpid, params.ocid)
@@ -103,6 +103,7 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONTRACT,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE, 
                 OperationType.CREATE_FE,
@@ -154,6 +155,7 @@ class OutsourcingServiceImpl(
                 OperationType.CREATE_CN,
                 OperationType.CREATE_CN_ON_PIN,
                 OperationType.CREATE_CN_ON_PN,
+                OperationType.CREATE_CONTRACT,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
                 OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
                 OperationType.CREATE_FE,
@@ -192,7 +194,7 @@ class OutsourcingServiceImpl(
         ): Result<TenderProcessEntity, Fail> {
             val ocid = parseOcid(params.ocid).onFailure { return it }
 
-            val entity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
+            val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, ocid)
                 .onFailure { fail -> return fail }
                 ?: return failure(
                     ValidationErrors.TenderNotFoundOnCreateRelationToOtherProcess(params.cpid, ocid)
@@ -316,6 +318,7 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONTRACT,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,    
             OperationType.CREATE_FE,
@@ -364,6 +367,7 @@ class OutsourcingServiceImpl(
         OperationType.CREATE_CN,
         OperationType.CREATE_CN_ON_PIN,
         OperationType.CREATE_CN_ON_PN,
+        OperationType.CREATE_CONTRACT,
         OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
         OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
         OperationType.CREATE_FE,
@@ -397,7 +401,7 @@ class OutsourcingServiceImpl(
     private fun findStoredRelatedProcess(params: CreateRelationToOtherProcessParams): Result<CreateRelationToOtherProcessResult?, Fail> {
         val ocid = parseOcid(params.ocid).onFailure { return it }
 
-        val tenderEntity = tenderProcessRepository.getByCpIdAndStage(params.cpid, ocid.stage)
+        val tenderEntity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, ocid)
             .onFailure { fail -> return fail }
             ?: return null.asSuccess()
 
@@ -434,6 +438,7 @@ class OutsourcingServiceImpl(
             OperationType.CREATE_CN,
             OperationType.CREATE_CN_ON_PIN,
             OperationType.CREATE_CN_ON_PN,
+            OperationType.CREATE_CONTRACT,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_BUYER,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE,
             OperationType.CREATE_FE,

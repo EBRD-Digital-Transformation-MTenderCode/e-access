@@ -58,12 +58,12 @@ class ValidationServiceTest {
 
             val entityJson = loadJson("json/service/check/currency/currency.json")
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = entityJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
 
             val relatedEntityJson = loadJson("json/service/check/currency/currency.json")
             val relatedTenderProcessEntity = TenderProcessEntityGenerator.generate(data = relatedEntityJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.relatedCpid, ocid = params.relatedOcid))
                 .thenReturn(success(relatedTenderProcessEntity))
 
             val actual =  validationService.checkEqualityCurrencies(params = getParams())
@@ -75,7 +75,7 @@ class ValidationServiceTest {
         fun recordNotFound_fail(){
             val params = getParams()
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(null))
 
             val actual = validationService.checkEqualityCurrencies(params = getParams()).failure()
@@ -92,10 +92,10 @@ class ValidationServiceTest {
             val params = getParams()
 
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = "")
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.relatedCpid, ocid = params.relatedOcid))
                 .thenReturn(success(null))
 
             val actual = validationService.checkEqualityCurrencies(params = getParams()).failure()
@@ -113,12 +113,12 @@ class ValidationServiceTest {
 
             val entityJson = loadJson("json/service/check/currency/currency.json")
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = entityJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
 
             val relatedEntityJson = loadJson("json/service/check/currency/unmatching_currency.json")
             val relatedTenderProcessEntity = TenderProcessEntityGenerator.generate(data = relatedEntityJson)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.relatedCpid, stage = params.relatedOcid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.relatedCpid, ocid = params.relatedOcid))
                 .thenReturn(success(relatedTenderProcessEntity))
 
             val actual = validationService.checkEqualityCurrencies(params = getParams()).failure()
@@ -149,7 +149,7 @@ class ValidationServiceTest {
         fun electronicAuctionReceivedButNotStored_fail(jsonPath: String) {
             val params = getParams(ProcurementMethodModalities.ELECTRONIC_AUCTION)
             val entity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/check/auction/$jsonPath"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(entity))
 
             val actual = validationService.checkExistenceSignAuction(params).failure()
@@ -169,7 +169,7 @@ class ValidationServiceTest {
         fun electronicAuctionReceivedAndStored_success(jsonPath: String) {
             val params = getParams(ProcurementMethodModalities.ELECTRONIC_AUCTION)
             val entity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/check/auction/$jsonPath"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(entity))
 
             val actual = validationService.checkExistenceSignAuction(params)
@@ -185,7 +185,7 @@ class ValidationServiceTest {
         fun electronicAuctionNotReceivedButStored_fail(jsonPath: String) {
             val params = getParams(ProcurementMethodModalities.REQUIRES_ELECTRONIC_CATALOGUE)
             val entity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/check/auction/$jsonPath"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(entity))
 
             val actual = validationService.checkExistenceSignAuction(params).failure()
@@ -205,7 +205,7 @@ class ValidationServiceTest {
         fun electronicAuctionNotReceivedAndNotStored_success(jsonPath: String) {
             val params = getParams(ProcurementMethodModalities.REQUIRES_ELECTRONIC_CATALOGUE)
             val entity = TenderProcessEntityGenerator.generate(data = loadJson("json/service/check/auction/$jsonPath"))
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(entity))
 
             val actual = validationService.checkExistenceSignAuction(params)
@@ -216,7 +216,7 @@ class ValidationServiceTest {
         @Test
         fun tenderNotFound_fail() {
             val params = getParams(ProcurementMethodModalities.ELECTRONIC_AUCTION)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(null))
             val actual = validationService.checkExistenceSignAuction(params).failure()
 
@@ -243,7 +243,7 @@ class ValidationServiceTest {
         fun recordNotFound_fail(){
             val params = getParams(UUID.randomUUID().toString())
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(null))
 
             val actual = validationService.validateClassification(params).failure()
@@ -262,7 +262,7 @@ class ValidationServiceTest {
             val json = loadJson("json/service/validate/classification/tender_classification_entity.json")
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = json)
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
 
             val actual = validationService.validateClassification(params).failure()
@@ -281,7 +281,7 @@ class ValidationServiceTest {
             val json = loadJson("json/service/validate/classification/tender_classification_entity.json")
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = json)
 
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = params.cpid, stage = params.ocid.stage))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = params.cpid, ocid = params.ocid))
                 .thenReturn(success(tenderProcessEntity))
 
             val actual =  validationService.validateClassification(params)

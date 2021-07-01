@@ -49,7 +49,7 @@ class LotServiceTest {
             request = loadJson(PATH_TO_REQUEST)
             tenderProcess = loadJson(PATH_TO_TENDER_PROCESS)
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = tenderProcess)
-            whenever(tenderProcessRepository.getByCpIdAndStage(cpid = any(), stage = any()))
+            whenever(tenderProcessRepository.getByCpIdAndOcid(cpid = any(), ocid = any()))
                 .thenReturn(Result.success(tenderProcessEntity))
         }
 

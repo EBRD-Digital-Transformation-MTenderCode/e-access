@@ -16,6 +16,7 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
     CREATE_CN_ON_PN("createCNonPN"),
     CREATE_CONFIRMATION_RESPONSE_BY_BUYER("createConfirmationResponseByBuyer"),
     CREATE_CONFIRMATION_RESPONSE_BY_INVITED_CANDIDATE("createConfirmationResponseByInvitedCandidate"),
+    CREATE_CONTRACT("createContract"),
     CREATE_FE("createFE"),
     CREATE_NEGOTIATION_CN_ON_PN("createNegotiationCnOnPn"),
     CREATE_PCR("createPcr"),

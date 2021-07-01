@@ -20,10 +20,10 @@ class SetTenderUnsuccessfulStrategy(
     private val tenderProcessDao: TenderProcessDao
 ) {
     fun execute(context: SetTenderUnsuccessfulContext): SetTenderUnsuccessfulResult {
-        val entity = tenderProcessDao.getByCpIdAndStage(cpId = context.cpid, stage = context.stage.key)
+        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
-        val (tenderJson, result) = when (context.stage) {
+        val (tenderJson, result) = when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -94,9 +94,10 @@ class SetTenderUnsuccessfulStrategy(
             Stage.EI,
             Stage.FS,
             Stage.PC,
-            Stage.PN -> throw ErrorException(
+            Stage.PN,
+            Stage.PO -> throw ErrorException(
                 error = ErrorType.INVALID_STAGE,
-                message = "Stage ${context.stage} not allowed at the command."
+                message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
 
@@ -104,7 +105,7 @@ class SetTenderUnsuccessfulStrategy(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
-                stage = context.stage.key,
+                ocid = context.ocid,
                 owner = entity.owner,
                 createdDate = context.startDate,
                 jsonData = tenderJson
