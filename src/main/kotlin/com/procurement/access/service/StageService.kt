@@ -1,13 +1,13 @@
 package com.procurement.access.service
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import org.springframework.stereotype.Service
 
 @Service
-class StageService(private val tenderProcessDao: TenderProcessDao) {
+class StageService(private val tenderRepository: CassandraTenderProcessRepositoryV1) {
 
     fun startNewStage(cm: CommandMessage): ApiResponseV1.Success {
 //        val cpId = cm.context.country ?: throw ErrorException(CONTEXT)

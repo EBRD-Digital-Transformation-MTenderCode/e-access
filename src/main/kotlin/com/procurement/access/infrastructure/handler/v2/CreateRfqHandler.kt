@@ -4,7 +4,8 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.Transform
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
-import com.procurement.access.infrastructure.handler.HistoryRepository
+import com.procurement.access.infrastructure.handler.HistoryRepositoryNew
+import com.procurement.access.infrastructure.handler.HistoryRepositoryOld
 import com.procurement.access.infrastructure.handler.v2.base.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.handler.v2.converter.convert
 import com.procurement.access.infrastructure.handler.v2.model.request.CreateRfqRequest
@@ -18,9 +19,10 @@ import org.springframework.stereotype.Service
 class CreateRfqHandler(
     transform: Transform,
     private val rfqService: RfqService,
-    historyRepository: HistoryRepository,
+    historyRepositoryOld: HistoryRepositoryOld,
+    historyRepositoryNew: HistoryRepositoryNew,
     logger: Logger
-) : AbstractHistoricalHandler<CreateRfqResult>(transform, historyRepository, logger) {
+) : AbstractHistoricalHandler<CreateRfqResult>(transform, historyRepositoryOld, historyRepositoryNew, logger) {
 
     override val action: CommandTypeV2
         get() = CommandTypeV2.CREATE_RFQ

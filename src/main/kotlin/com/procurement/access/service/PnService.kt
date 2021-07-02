@@ -5,7 +5,6 @@ import com.procurement.access.application.model.TestMode
 import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
 import com.procurement.access.application.service.pn.create.PnCreateResult
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.DocumentType
@@ -25,6 +24,7 @@ import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.entity.PNEntity
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
@@ -41,7 +41,7 @@ import java.util.*
 @Service
 class PnService(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(PnService::class.java)
@@ -88,7 +88,7 @@ class PnService(
         val pnEntity: PNEntity = businessRules(contextRequest, request, ocid)
 
         val token = generationService.generateToken()
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = cpid,
                 token = token,

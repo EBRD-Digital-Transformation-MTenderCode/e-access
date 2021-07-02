@@ -1,16 +1,17 @@
 package com.procurement.access.service
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.infrastructure.api.v1.ApiResponseV1
 import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.commandId
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.dto.pin.PinProcess
 import com.procurement.access.utils.toObject
 import org.springframework.stereotype.Service
 
 @Service
 class PinService(private val generationService: GenerationService,
-                 private val tenderProcessDao: TenderProcessDao) {
+                 private val tenderRepository: CassandraTenderProcessRepositoryV1
+) {
 
     fun createPin(cm: CommandMessage): ApiResponseV1.Success {
 //        val stage = cm.context.stage ?: throw ErrorException(CONTEXT)

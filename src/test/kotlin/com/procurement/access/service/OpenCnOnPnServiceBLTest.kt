@@ -9,7 +9,6 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -19,6 +18,7 @@ import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.getObject
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
@@ -40,17 +40,17 @@ class OpenCnOnPnServiceBLTest {
 
     private lateinit var cnOnPnService: OpenCnOnPnService
     private val generationService: GenerationService = mock()
-    private val tenderProcessDao: TenderProcessDao = mock()
+    private val tenderRepository: CassandraTenderProcessRepositoryV1 = mock()
     private val rulesService: RulesService = mock()
 
     @BeforeAll
     fun init() {
-        cnOnPnService = OpenCnOnPnService(generationService, tenderProcessDao, rulesService)
+        cnOnPnService = OpenCnOnPnService(generationService, tenderRepository, rulesService)
     }
 
     @AfterEach
     fun clear() {
-        clearInvocations(generationService, tenderProcessDao, rulesService)
+        clearInvocations(generationService, tenderRepository, rulesService)
     }
 
     @Nested
@@ -130,7 +130,7 @@ class OpenCnOnPnServiceBLTest {
 
     private fun mockGetByCpIdAndOcid(cpid: Cpid, ocid: Ocid, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-        whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
+        whenever(tenderRepository.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)
     }
 }

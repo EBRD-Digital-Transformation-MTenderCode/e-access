@@ -7,35 +7,36 @@ import com.procurement.access.infrastructure.api.Action
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.access.infrastructure.extension.cassandra.tryExecute
-import com.procurement.access.infrastructure.handler.HistoryRepository
+import com.procurement.access.infrastructure.handler.HistoryRepositoryNew
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
 
 @Repository
-class CassandraHistoryRepository(private val session: Session) : HistoryRepository {
+class CassandraHistoryRepositoryV2(@Qualifier("access") private val session: Session) : HistoryRepositoryNew {
 
     companion object {
 
         private const val SAVE_HISTORY_CQL = """
-               INSERT INTO ${Database.KEYSPACE}.${Database.History.TABLE}(
-                      ${Database.History.COMMAND_ID},
-                      ${Database.History.COMMAND_NAME},
-                      ${Database.History.COMMAND_DATE},
-                      ${Database.History.JSON_DATA}
+               INSERT INTO ${Database.KEYSPACE_ACCESS}.${Database.HistoryNew.TABLE}(
+                      ${Database.HistoryNew.COMMAND_ID},
+                      ${Database.HistoryNew.COMMAND_NAME},
+                      ${Database.HistoryNew.COMMAND_DATE},
+                      ${Database.HistoryNew.JSON_DATA}
                )
                VALUES(?, ?, ?, ?)
                IF NOT EXISTS
             """
 
         private const val FIND_HISTORY_ENTRY_CQL = """
-               SELECT ${Database.History.COMMAND_ID},
-                      ${Database.History.COMMAND_NAME},
-                      ${Database.History.COMMAND_DATE},
-                      ${Database.History.JSON_DATA}
-                 FROM ${Database.KEYSPACE}.${Database.History.TABLE}
-                WHERE ${Database.History.COMMAND_ID}=?
-                  AND ${Database.History.COMMAND_NAME}=?
+               SELECT ${Database.HistoryNew.COMMAND_ID},
+                      ${Database.HistoryNew.COMMAND_NAME},
+                      ${Database.HistoryNew.COMMAND_DATE},
+                      ${Database.HistoryNew.JSON_DATA}
+                 FROM ${Database.KEYSPACE_ACCESS}.${Database.HistoryNew.TABLE}
+                WHERE ${Database.HistoryNew.COMMAND_ID}=?
+                  AND ${Database.HistoryNew.COMMAND_NAME}=?
             """
     }
 
@@ -45,13 +46,13 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
     override fun getHistory(commandId: CommandId, action: Action): Result<String?, Fail.Incident.Database> =
         preparedFindHistoryByCpidAndCommandCQL.bind()
             .apply {
-                setString(Database.History.COMMAND_ID, commandId.underlying)
-                setString(Database.History.COMMAND_NAME, action.key)
+                setString(Database.HistoryNew.COMMAND_ID, commandId.underlying)
+                setString(Database.HistoryNew.COMMAND_NAME, action.key)
             }
             .tryExecute(session)
             .onFailure { return it }
             .one()
-            ?.getString(Database.History.JSON_DATA)
+            ?.getString(Database.HistoryNew.JSON_DATA)
             .asSuccess()
 
     override fun saveHistory(
@@ -60,10 +61,10 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
         data: String
     ): Result<Boolean, Fail.Incident.Database> = preparedSaveHistoryCQL.bind()
         .apply {
-            setString(Database.History.COMMAND_ID, commandId.underlying)
-            setString(Database.History.COMMAND_NAME, action.key)
-            setTimestamp(Database.History.COMMAND_DATE, nowDefaultUTC().toCassandraTimestamp())
-            setString(Database.History.JSON_DATA, data)
+            setString(Database.HistoryNew.COMMAND_ID, commandId.underlying)
+            setString(Database.HistoryNew.COMMAND_NAME, action.key)
+            setTimestamp(Database.HistoryNew.COMMAND_DATE, nowDefaultUTC().toCassandraTimestamp())
+            setString(Database.HistoryNew.JSON_DATA, data)
         }
         .tryExecute(session)
         .onFailure { return it }

@@ -13,9 +13,9 @@ import com.procurement.access.application.service.tender.strategy.set.stateforte
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulContext
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulResult
 import com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful.SetTenderUnsuccessfulStrategy
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForTenderResult
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.functional.Result
 import org.springframework.stereotype.Service
 
@@ -34,13 +34,13 @@ interface ExtendTenderService {
 
 @Service
 class ExtendTenderServiceImpl(
-    tenderProcessDao: TenderProcessDao,
+    tenderRepository: CassandraTenderProcessRepositoryV1,
     tenderProcessRepository: TenderProcessRepository
 ) : ExtendTenderService {
 
-    private val prepareCancellationStrategy = PrepareCancellationStrategy(tenderProcessDao)
-    private val getAwardCriteriaStrategy = GetAwardCriteriaStrategy(tenderProcessDao)
-    private val setTenderUnsuccessfulStrategy = SetTenderUnsuccessfulStrategy(tenderProcessDao)
+    private val prepareCancellationStrategy = PrepareCancellationStrategy(tenderRepository)
+    private val getAwardCriteriaStrategy = GetAwardCriteriaStrategy(tenderRepository)
+    private val setTenderUnsuccessfulStrategy = SetTenderUnsuccessfulStrategy(tenderRepository)
     private val setStateForTenderStrategy = SetStateForTenderStrategy(tenderProcessRepository)
 
     override fun prepareCancellation(

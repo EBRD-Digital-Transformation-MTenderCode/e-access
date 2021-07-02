@@ -1,6 +1,5 @@
 package com.procurement.access.service
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
@@ -26,6 +25,7 @@ import com.procurement.access.infrastructure.api.v1.commandId
 import com.procurement.access.infrastructure.api.v1.cpid
 import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.startDate
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.toSet
@@ -55,7 +55,8 @@ import java.time.LocalDateTime
 
 @Service
 class PnUpdateService(private val generationService: GenerationService,
-                      private val tenderProcessDao: TenderProcessDao) {
+                      private val tenderRepository: CassandraTenderProcessRepositoryV1
+) {
 
     private val allowedTenderDocumentTypes = DocumentType.allowedElements
         .filter {
@@ -105,7 +106,7 @@ class PnUpdateService(private val generationService: GenerationService,
         //VR-3.6.1
         checkTenderDocumentsTypes(pnDto)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         if (entity.owner != owner) throw ErrorException(INVALID_OWNER)
         if (entity.token.toString() != token) throw ErrorException(INVALID_TOKEN)
         val tenderProcess = toObject(TenderProcess::class.java, entity.jsonData)
@@ -186,7 +187,7 @@ class PnUpdateService(private val generationService: GenerationService,
         if (isAnyLotInDb) {
             if (!tenderProcess.tender.lots.any { it.status == LotStatus.PLANNING }) throw ErrorException(NO_ACTIVE_LOTS)
         }
-        tenderProcessDao.save(getEntity(tenderProcess, entity, dateTime))
+        tenderRepository.save(getEntity(tenderProcess, entity, dateTime))
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tenderProcess)
     }
 

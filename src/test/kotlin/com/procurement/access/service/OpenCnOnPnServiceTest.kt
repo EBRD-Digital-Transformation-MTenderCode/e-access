@@ -10,7 +10,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckOpenCnOnPnContext
 import com.procurement.access.application.service.CheckedOpenCnOnPn
 import com.procurement.access.application.service.CreateOpenCnOnPnContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -26,6 +25,7 @@ import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.request.OpenCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.OpenCnOnPnResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -80,7 +80,7 @@ class OpenCnOnPnServiceTest {
     }
 
     private lateinit var generationService: GenerationService
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var rulesService: RulesService
 
     private lateinit var service: OpenCnOnPnService
@@ -88,10 +88,10 @@ class OpenCnOnPnServiceTest {
     @BeforeEach
     fun init() {
         generationService = mock()
-        tenderProcessDao = mock()
+        tenderRepository = mock()
         rulesService = mock()
 
-        service = OpenCnOnPnService(generationService, tenderProcessDao, rulesService)
+        service = OpenCnOnPnService(generationService, tenderRepository, rulesService)
 
         whenever(generationService.generatePermanentTenderId())
             .thenReturn(TENDER_ID)
@@ -109,7 +109,7 @@ class OpenCnOnPnServiceTest {
                     .toObject()
 
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.OCID)
                 )
@@ -896,7 +896,7 @@ class OpenCnOnPnServiceTest {
 
             @AfterEach
             fun clear() {
-                clearInvocations(tenderProcessDao)
+                clearInvocations(tenderRepository)
             }
 
             @Test
@@ -1223,7 +1223,7 @@ class OpenCnOnPnServiceTest {
                     .toObject()
 
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.OCID)
                 )
@@ -1428,7 +1428,7 @@ class OpenCnOnPnServiceTest {
 
             @AfterEach
             fun clear() {
-                clearInvocations(tenderProcessDao)
+                clearInvocations(tenderRepository)
             }
 
             @Test
@@ -1594,7 +1594,7 @@ class OpenCnOnPnServiceTest {
             whenever(rulesService.isAuctionRequired(any(), any(), any()))
                 .thenReturn(testData.isAuctionRequired)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.OCID)
                 )
@@ -1620,7 +1620,7 @@ class OpenCnOnPnServiceTest {
 
     private fun mockGetByCpIdAndOcid(cpid: Cpid, ocid: Ocid, data: JsonNode) {
         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-        whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
+        whenever(tenderRepository.getByCpidAndOcid(eq(cpid), eq(ocid)))
             .thenReturn(tenderProcessEntity)
     }
 

@@ -11,8 +11,8 @@ import com.procurement.access.dao.DatabaseTestConfiguration
 import com.procurement.access.infrastructure.api.Action
 import com.procurement.access.infrastructure.api.command.id.CommandId
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
-import com.procurement.access.infrastructure.handler.HistoryRepository
-import com.procurement.access.infrastructure.repository.CassandraHistoryRepository
+import com.procurement.access.infrastructure.handler.HistoryRepositoryOld
+import com.procurement.access.infrastructure.repository.CassandraHistoryRepositoryV1
 import com.procurement.access.infrastructure.repository.Database
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,7 +28,7 @@ import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [DatabaseTestConfiguration::class])
-class CassandraHistoryRepositoryIT {
+class CassandraHistoryRepositoryV1IT {
 
     companion object {
         private val COMMAND_ID: CommandId = CommandId(UUID.randomUUID().toString())
@@ -39,7 +39,7 @@ class CassandraHistoryRepositoryIT {
     @Autowired
     private lateinit var container: CassandraTestContainer
     private lateinit var session: Session
-    private lateinit var repository: HistoryRepository
+    private lateinit var repository: HistoryRepositoryOld
 
     @BeforeEach
     fun init() {
@@ -58,7 +58,7 @@ class CassandraHistoryRepositoryIT {
         createKeyspace()
         createTable()
 
-        repository = CassandraHistoryRepository(session)
+        repository = CassandraHistoryRepositoryV1(session)
     }
 
     @AfterEach
@@ -96,25 +96,25 @@ class CassandraHistoryRepositoryIT {
 
     private fun createKeyspace() {
         session.execute(
-            "CREATE KEYSPACE ${Database.KEYSPACE} " +
+            "CREATE KEYSPACE ${Database.KEYSPACE_OLD} " +
                 "WITH replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1};"
         )
     }
 
     private fun dropKeyspace() {
-        session.execute("DROP KEYSPACE ${Database.KEYSPACE};")
+        session.execute("DROP KEYSPACE ${Database.KEYSPACE_OLD};")
     }
 
     private fun createTable() {
         session.execute(
             """
-                CREATE TABLE IF NOT EXISTS ${Database.KEYSPACE}.${Database.History.TABLE}
+                CREATE TABLE IF NOT EXISTS ${Database.KEYSPACE_OLD}.${Database.HistoryOld.TABLE}
                     (
-                        ${Database.History.COMMAND_ID}   TEXT,
-                        ${Database.History.COMMAND_NAME} TEXT,
-                        ${Database.History.COMMAND_DATE} TIMESTAMP,
-                        ${Database.History.JSON_DATA}    TEXT,
-                        PRIMARY KEY (${Database.History.COMMAND_ID}, ${Database.History.COMMAND_NAME})
+                        ${Database.HistoryOld.COMMAND_ID}   TEXT,
+                        ${Database.HistoryOld.COMMAND_NAME} TEXT,
+                        ${Database.HistoryOld.COMMAND_DATE} TIMESTAMP,
+                        ${Database.HistoryOld.JSON_DATA}    TEXT,
+                        PRIMARY KEY (${Database.HistoryOld.COMMAND_ID}, ${Database.HistoryOld.COMMAND_NAME})
                     );
             """
         )

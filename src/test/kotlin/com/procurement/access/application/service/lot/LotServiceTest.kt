@@ -4,11 +4,11 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.model.request.FindLotIdsRequest
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JSON
 import com.procurement.access.json.loadJson
 import com.procurement.access.json.toNode
@@ -27,15 +27,15 @@ class LotServiceTest {
         private const val PATH_TO_TENDER_PROCESS = "json/service/lots/getLotIds/tender_process.json"
     }
 
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var handler: LotServiceImpl
 
     @BeforeEach
     fun init() {
-        tenderProcessDao = mock()
+        tenderRepository = mock()
         tenderProcessRepository = mock()
-        handler = LotServiceImpl(tenderProcessDao = tenderProcessDao, tenderProcessRepository = tenderProcessRepository)
+        handler = LotServiceImpl(tenderRepository = tenderRepository, tenderProcessRepository = tenderProcessRepository)
     }
 
     @DisplayName("Get Lot Ids Handler")

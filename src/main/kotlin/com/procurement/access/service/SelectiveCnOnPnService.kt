@@ -3,7 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckSelectiveCnOnPnContext
 import com.procurement.access.application.model.context.CreateSelectiveCnOnPnContext
 import com.procurement.access.application.service.CheckedSelectiveCnOnPn
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.coefficient.CoefficientValue
 import com.procurement.access.domain.model.conversion.buildConversion
 import com.procurement.access.domain.model.criteria.buildCriterion
@@ -49,6 +48,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.criterion.
 import com.procurement.access.infrastructure.handler.v1.model.request.document.DocumentRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CriterionClassificationResponse
 import com.procurement.access.infrastructure.handler.v1.model.response.SelectiveCnOnPnResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.infrastructure.service.command.checkCriteriaAndConversion
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
@@ -65,7 +65,7 @@ import java.time.LocalDateTime
 @Service
 class SelectiveCnOnPnService(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao,
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
     private val rulesService: RulesService,
     private val criteriaService: CriteriaService
 ) {
@@ -111,7 +111,7 @@ class SelectiveCnOnPnService(
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+            tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
@@ -273,7 +273,7 @@ class SelectiveCnOnPnService(
     }
 
     fun create(context: CreateSelectiveCnOnPnContext, data: SelectiveCnOnPnRequest): SelectiveCnOnPnResponse {
-        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val tenderProcessEntity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
@@ -292,7 +292,7 @@ class SelectiveCnOnPnService(
 
         val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.TP.key)
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = tenderProcessEntity.token,

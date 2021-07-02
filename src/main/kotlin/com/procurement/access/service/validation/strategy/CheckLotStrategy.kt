@@ -1,6 +1,5 @@
 package com.procurement.access.service.validation.strategy
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.Stage
@@ -10,11 +9,12 @@ import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.cpid
 import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.RfqEntity
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 import java.util.*
 
-class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
+class CheckLotStrategy(private val tenderRepository: CassandraTenderProcessRepositoryV1) {
 
     /**
      * CR-1.5.1.1
@@ -29,7 +29,7 @@ class CheckLotStrategy(private val tenderProcessDao: TenderProcessDao) {
         val lotId = getLotId(cm)
         val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val lotState = when (ocid.stage) {

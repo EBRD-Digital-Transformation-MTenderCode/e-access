@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.util.extension.nowDefaultUTC
@@ -13,6 +12,7 @@ import com.procurement.access.infrastructure.api.v1.CommandMessage
 import com.procurement.access.infrastructure.api.v1.CommandTypeV1
 import com.procurement.access.infrastructure.generator.CommandMessageGenerator
 import com.procurement.access.infrastructure.generator.ContextGenerator
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
 import com.procurement.access.json.getObject
@@ -38,14 +38,14 @@ class PnUpdateServiceTest {
     }
 
     private lateinit var generationService: GenerationService
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var service: PnUpdateService
 
     @BeforeEach
     fun init() {
         generationService = mock()
-        tenderProcessDao = mock()
-        service = PnUpdateService(generationService, tenderProcessDao)
+        tenderRepository = mock()
+        service = PnUpdateService(generationService, tenderRepository)
     }
 
     @Nested
@@ -124,7 +124,7 @@ class PnUpdateServiceTest {
                 owner = ContextGenerator.OWNER,
                 token = ContextGenerator.TOKEN
             )
-            whenever(tenderProcessDao.getByCpidAndOcid(cpid = any(), ocid = any()))
+            whenever(tenderRepository.getByCpidAndOcid(cpid = any(), ocid = any()))
                 .thenReturn(entity)
         }
     }

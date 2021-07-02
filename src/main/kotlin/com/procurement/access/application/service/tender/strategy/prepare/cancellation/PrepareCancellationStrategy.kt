@@ -1,6 +1,5 @@
 package com.procurement.access.application.service.tender.strategy.prepare.cancellation
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.TenderStatus
 import com.procurement.access.domain.model.enums.TenderStatusDetails
@@ -12,19 +11,20 @@ import com.procurement.access.exception.ErrorType.INVALID_OWNER
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_STATUS
 import com.procurement.access.exception.ErrorType.INVALID_TENDER_STATUS_DETAILS
 import com.procurement.access.exception.ErrorType.INVALID_TOKEN
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 
 class PrepareCancellationStrategy(
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) {
     fun execute(context: PrepareCancellationContext, data: PrepareCancellationData): PreparedCancellationData {
         //VR-3.16.10
         checkDocumentType(data.amendments)
 
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity: TenderProcessEntity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         //VR-3.16.1
@@ -45,7 +45,7 @@ class PrepareCancellationStrategy(
             )
         )
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             entity = entity.copy(
                 createdDate = nowDefaultUTC(),
                 jsonData = toJson(updatedTenderProcess)

@@ -3,7 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.service.ap.create.ApCreateData
 import com.procurement.access.application.service.ap.create.ApCreateResult
 import com.procurement.access.application.service.ap.create.CreateApContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.DocumentType
@@ -17,8 +16,8 @@ import com.procurement.access.domain.util.extension.nowDefaultUTC
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.entity.TenderProcessEntity
-
 import com.procurement.access.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -30,7 +29,7 @@ import java.util.*
 class ApCreateService(
     private val generationService: GenerationService,
     private val rulesService: RulesService,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(ApCreateService::class.java)
@@ -43,7 +42,7 @@ class ApCreateService(
 
         val apEntity: APEntity = applyBusinessRules(contextRequest, request, ocid)
         val token = generationService.generateToken()
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = cpid,
                 token = token,

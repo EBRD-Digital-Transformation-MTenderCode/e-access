@@ -14,7 +14,6 @@ import com.procurement.access.application.model.data.GetCriteriaForTendererResul
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.model.data.fromDomain
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.DataErrors
@@ -37,6 +36,7 @@ import com.procurement.access.infrastructure.handler.v1.converter.convertToRespo
 import com.procurement.access.infrastructure.handler.v2.model.response.CreateCriteriaForProcuringEntityResult
 import com.procurement.access.infrastructure.handler.v2.model.response.FindCriteriaResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetQualificationCriteriaAndMethodResult
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
@@ -66,7 +66,7 @@ interface CriteriaService {
 @Service
 class CriteriaServiceImpl(
     private val tenderProcessRepository: TenderProcessRepository,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) : CriteriaService {
     override fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult {
         val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = context.cpid, ocid = context.ocid)
@@ -126,7 +126,7 @@ class CriteriaServiceImpl(
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
-        val entity: TenderProcessEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
+        val entity: TenderProcessEntity = tenderRepository.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val result = when (context.ocid.stage) {
@@ -143,7 +143,7 @@ class CriteriaServiceImpl(
                 val updatedTender = tender.copy(criteria =  storedCriteria + listOf(criterionForEvPanels))
                 val updatedCNEntity = cn.copy(tender = updatedTender)
 
-                tenderProcessDao.save(entity.copy(jsonData = toJson(updatedCNEntity)))
+                tenderRepository.save(entity.copy(jsonData = toJson(updatedCNEntity)))
 
                 RequestsForEvPanelsResult.Criteria.fromDomain(criterionForEvPanels)
                     .let { RequestsForEvPanelsResult(it) }
@@ -203,7 +203,7 @@ class CriteriaServiceImpl(
         )
 
     override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? {
-        val tenderEntity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
+        val tenderEntity = tenderRepository.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
 
         val result = when (context.ocid.stage) {
             Stage.AC,

@@ -157,3 +157,36 @@ CREATE TABLE IF NOT EXISTS  ocds.access_tender (
     json_data text,
     primary key(cpid, ocid, token_entity)
 );
+
+/**
+  New Keyspace
+ */
+
+CREATE KEYSPACE IF NOT EXISTS access WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
+
+CREATE TABLE IF NOT EXISTS ocds.tenders (
+    cpid         TEXT,
+    ocid         TEXT,
+    token_entity TEXT,
+    owner        TEXT,
+    created_date TIMESTAMP,
+    json_data    TEXT,
+    primary key (cpid, ocid, token_entity)
+);
+
+CREATE TABLE IF NOT EXISTS access.history (
+    operation_id   TEXT,
+    command        TEXT,
+    operation_date TIMESTAMP,
+    json_data      TEXT,
+    primary key (operation_id, command)
+);
+
+CREATE TABLE IF NOT EXISTS access.rules (
+    country        TEXT,
+    pmd            TEXT,
+    operation_type TEXT,
+    parameter      TEXT,
+    value          TEXT,
+    primary key (country, pmd, operation_type, parameter)
+);
