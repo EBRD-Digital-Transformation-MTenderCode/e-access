@@ -1,4 +1,4 @@
-package com.procurement.access.dao
+package com.procurement.access.infrastructure.repository
 
 import com.datastax.driver.core.Row
 import com.datastax.driver.core.Session
@@ -15,50 +15,43 @@ import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.asSuccess
 import com.procurement.access.lib.functional.flatMap
 import com.procurement.access.model.entity.TenderProcessEntity
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
-class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessRepository {
+class CassandraTenderProcessRepositoryV2(@Qualifier("access") private val session: Session) : TenderProcessRepository {
 
     companion object {
-        private const val KEY_SPACE = "ocds"
-        private const val TABLE_NAME = "access_tender"
-        private const val COLUMN_CPID = "cpid"
-        private const val COLUMN_OCID = "ocid"
-        private const val COLUMN_TOKEN = "token_entity"
-        private const val COLUMN_CREATION_DATE = "created_date"
-        private const val COLUMN_OWNER = "owner"
-        private const val COLUMN_JSON_DATA = "json_data"
-
         private const val GET_BY_CPID_AND_OCID_CQL = """
-               SELECT $COLUMN_CPID,
-                      $COLUMN_OCID,
-                      $COLUMN_TOKEN,
-                      $COLUMN_OWNER,                     
-                      $COLUMN_CREATION_DATE,
-                      $COLUMN_JSON_DATA
-                 FROM $KEY_SPACE.$TABLE_NAME
-                WHERE $COLUMN_CPID=?
-                  AND $COLUMN_OCID=?
+               SELECT ${Database.Tender.CPID},
+                      ${Database.Tender.OCID},
+                      ${Database.Tender.TOKEN},
+                      ${Database.Tender.OWNER},                     
+                      ${Database.Tender.CREATION_DATE},
+                      ${Database.Tender.JSON_DATA}
+                 FROM ${Database.KEYSPACE_ACCESS}.${Database.Tender.TABLE}
+                WHERE ${Database.Tender.CPID}=?
+                  AND ${Database.Tender.OCID}=?
             """
         private const val SAVE_CQL = """
-          INSERT INTO $KEY_SPACE.$TABLE_NAME(
-                      $COLUMN_CPID,
-                      $COLUMN_OCID,
-                      $COLUMN_TOKEN,
-                      $COLUMN_OWNER,          
-                      $COLUMN_CREATION_DATE,
-                      $COLUMN_JSON_DATA
+          INSERT INTO ${Database.KEYSPACE_ACCESS}.${Database.Tender.TABLE}(
+                      ${Database.Tender.CPID},
+                      ${Database.Tender.OCID},
+                      ${Database.Tender.TOKEN},
+                      ${Database.Tender.OWNER},          
+                      ${Database.Tender.CREATION_DATE},
+                      ${Database.Tender.JSON_DATA}
           ) 
                 VALUES(?, ?, ?, ?, ?, ?)
             """
 
         private const val UPDATE_CQL = """
-               UPDATE $KEY_SPACE.$TABLE_NAME
-                  SET $COLUMN_JSON_DATA=?
-                WHERE $COLUMN_CPID=?
-                  AND $COLUMN_OCID=?
-                  AND $COLUMN_TOKEN=?
+               UPDATE ${Database.KEYSPACE_ACCESS}.${Database.Tender.TABLE}
+                  SET ${Database.Tender.JSON_DATA}=?
+                WHERE ${Database.Tender.CPID}=?
+                  AND ${Database.Tender.OCID}=?
+                  AND ${Database.Tender.TOKEN}=?
                 IF EXISTS
             """
     }
@@ -70,10 +63,10 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     override fun update(entity: TenderProcessEntity): Result<Boolean, Fail.Incident> =
         updateCQL.bind()
             .apply {
-                setString(COLUMN_CPID, entity.cpId.value)
-                setString(COLUMN_OCID, entity.ocid.value)
-                setUUID(COLUMN_TOKEN, entity.token)
-                setString(COLUMN_JSON_DATA, entity.jsonData)
+                setString(Database.Tender.CPID, entity.cpId.value)
+                setString(Database.Tender.OCID, entity.ocid.value)
+                setString(Database.Tender.TOKEN, entity.token.toString())
+                setString(Database.Tender.JSON_DATA, entity.jsonData)
             }
             .tryExecute(session)
             .flatMap {
@@ -92,12 +85,12 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     override fun save(entity: TenderProcessEntity): Result<Boolean, Fail.Incident.Database> =
         preparedSaveCQL.bind()
             .apply {
-                setString(COLUMN_CPID, entity.cpId.value)
-                setString(COLUMN_OCID, entity.ocid.value)
-                setUUID(COLUMN_TOKEN, entity.token)
-                setString(COLUMN_OWNER, entity.owner)
-                setTimestamp(COLUMN_CREATION_DATE, entity.createdDate.toCassandraTimestamp())
-                setString(COLUMN_JSON_DATA, entity.jsonData)
+                setString(Database.Tender.CPID, entity.cpId.value)
+                setString(Database.Tender.OCID, entity.ocid.value)
+                setString(Database.Tender.TOKEN, entity.token.toString())
+                setString(Database.Tender.OWNER, entity.owner)
+                setTimestamp(Database.Tender.CREATION_DATE, entity.createdDate.toCassandraTimestamp())
+                setString(Database.Tender.JSON_DATA, entity.jsonData)
             }
             .tryExecute(session)
             .onFailure { return it }
@@ -107,8 +100,8 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
     override fun getByCpIdAndOcid(cpid: Cpid, ocid: Ocid): Result<TenderProcessEntity?, Fail.Incident.Database> =
         preparedGetByCpIdAndOcidCQL.bind()
             .apply {
-                setString(COLUMN_CPID, cpid.value)
-                setString(COLUMN_OCID, ocid.value)
+                setString(Database.Tender.CPID, cpid.value)
+                setString(Database.Tender.OCID, ocid.value)
             }
             .tryExecute(session)
             .onFailure { return it }
@@ -118,12 +111,12 @@ class TenderProcessRepositoryImpl(private val session: Session) : TenderProcessR
 
     private fun Row.convertToTenderProcessEntity(): TenderProcessEntity {
         return TenderProcessEntity(
-            Cpid.tryCreateOrNull(this.getString(COLUMN_CPID))!!,
-            this.getUUID(COLUMN_TOKEN),
-            this.getString(COLUMN_OWNER),
-            Ocid.SingleStage.tryCreateOrNull(this.getString(COLUMN_OCID))!!,
-            this.getTimestamp(COLUMN_CREATION_DATE).toLocalDateTime(),
-            this.getString(COLUMN_JSON_DATA)
+            Cpid.tryCreateOrNull(this.getString(Database.Tender.CPID))!!,
+            UUID.fromString(getString(Database.Tender.TOKEN)),
+            getString(Database.Tender.OWNER),
+            Ocid.SingleStage.tryCreateOrNull(this.getString(Database.Tender.OCID))!!,
+            getTimestamp(Database.Tender.CREATION_DATE).toLocalDateTime(),
+            getString(Database.Tender.JSON_DATA)
         )
     }
 }

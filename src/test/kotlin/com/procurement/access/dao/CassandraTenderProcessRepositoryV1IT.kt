@@ -15,6 +15,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.exception.repository.ReadEntityException
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -29,7 +30,7 @@ import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [DatabaseTestConfiguration::class])
-class TenderProcessDaoIT {
+class CassandraTenderProcessRepositoryV1IT {
     companion object {
         private val CPID = Cpid.tryCreateOrNull("ocds-t1s2t3-MD-1543525135421")!!
         private val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
@@ -42,7 +43,7 @@ class TenderProcessDaoIT {
     private lateinit var container: CassandraTestContainer
 
     private lateinit var session: Session
-    private lateinit var repository: TenderProcessDao
+    private lateinit var repository: CassandraTenderProcessRepositoryV1
 
     @BeforeEach
     fun init() {
@@ -61,7 +62,7 @@ class TenderProcessDaoIT {
         createKeyspace()
         createTable()
 
-        repository = TenderProcessDao(session)
+        repository = CassandraTenderProcessRepositoryV1(session)
     }
 
     @AfterEach

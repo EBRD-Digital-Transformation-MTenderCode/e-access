@@ -6,7 +6,8 @@ import com.procurement.access.application.service.lot.LotService
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.lot.LotId
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
-import com.procurement.access.infrastructure.handler.HistoryRepository
+import com.procurement.access.infrastructure.handler.HistoryRepositoryNew
+import com.procurement.access.infrastructure.handler.HistoryRepositoryOld
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v2.base.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.handler.v2.model.request.FindLotIdsRequest
@@ -18,9 +19,10 @@ import org.springframework.stereotype.Service
 class FindLotIdsHandler(
     private val lotService: LotService,
     transform: Transform,
-    historyRepository: HistoryRepository,
+    historyRepositoryOld: HistoryRepositoryOld,
+    historyRepositoryNew: HistoryRepositoryNew,
     logger: Logger
-) : AbstractHistoricalHandler<List<LotId>>(transform, historyRepository, logger) {
+) : AbstractHistoricalHandler<List<LotId>>(transform, historyRepositoryOld, historyRepositoryNew, logger) {
 
     override val action: CommandTypeV2
         get() = CommandTypeV2.FIND_LOT_IDS

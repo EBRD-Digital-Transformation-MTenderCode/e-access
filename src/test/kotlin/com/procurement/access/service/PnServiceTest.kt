@@ -9,7 +9,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.MainMode
 import com.procurement.access.application.service.pn.create.CreatePnContext
 import com.procurement.access.application.service.pn.create.PnCreateData
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethod
@@ -28,6 +27,7 @@ import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.model.request.PnCreateRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.PnCreateResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -78,16 +78,16 @@ class PnServiceTest {
     }
 
     private lateinit var generationService: GenerationService
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
 
     private lateinit var service: PnService
 
     @BeforeEach
     fun init() {
         generationService = mock()
-        tenderProcessDao = mock()
+        tenderRepository = mock()
 
-        service = PnService(generationService, tenderProcessDao)
+        service = PnService(generationService, tenderRepository)
 
         whenever(generationService.generateOrganizationId(any(), any()))
             .thenReturn(PERMANENT_TENDER_PROCURING_ENTITY_ID_1)

@@ -1,6 +1,5 @@
 package com.procurement.access.application.service.tender.strategy.set.tenderUnsuccessful
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.Stage
@@ -12,15 +11,16 @@ import com.procurement.access.exception.ErrorType
 import com.procurement.access.exception.ErrorType.DATA_NOT_FOUND
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.RfqEntity
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
 
 class SetTenderUnsuccessfulStrategy(
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) {
     fun execute(context: SetTenderUnsuccessfulContext): SetTenderUnsuccessfulResult {
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val (tenderJson, result) = when (context.ocid.stage) {
@@ -101,7 +101,7 @@ class SetTenderUnsuccessfulStrategy(
             )
         }
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,

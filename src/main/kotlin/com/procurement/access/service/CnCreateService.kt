@@ -1,7 +1,6 @@
 package com.procurement.access.service
 
 import com.procurement.access.application.service.cn.update.CnCreateContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.EnumElementProviderParser.checkAndParseEnum
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -37,6 +36,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.ItemCnCrea
 import com.procurement.access.infrastructure.handler.v1.model.request.LotCnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.TenderCnCreate
 import com.procurement.access.infrastructure.handler.v1.model.request.validate
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.ocds.AcceleratedProcedure
 import com.procurement.access.model.dto.ocds.Budget
@@ -72,7 +72,7 @@ import java.time.LocalDateTime
 @Service
 class CnCreateService(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao,
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
     private val rulesService: RulesService
 ) {
 
@@ -180,7 +180,7 @@ class CnCreateService(
                 relatedProcesses = null
         )
         val entity = getEntity(tp, Cpid.tryCreateOrNull(cpId)!!, context.ocid, context.startDate, context.owner)
-        tenderProcessDao.save(entity)
+        tenderRepository.save(entity)
         tp.token = entity.token.toString()
         return ApiResponseV1.Success(version = cm.version, id = cm.commandId, data = tp)
     }

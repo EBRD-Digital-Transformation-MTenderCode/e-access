@@ -13,7 +13,6 @@ import com.procurement.access.application.model.params.ValidateLotsDataForDivisi
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.lot.GetActiveLotsContext
 import com.procurement.access.application.service.tender.strategy.get.lots.GetActiveLotsResult
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
@@ -57,6 +56,7 @@ import com.procurement.access.infrastructure.handler.v1.model.request.fromDomain
 import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsByLotRs
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
 import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
@@ -75,14 +75,14 @@ import java.math.RoundingMode
 
 @Service
 class LotsService(
-    private val tenderProcessDao: TenderProcessDao,
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
     private val tenderProcessRepository: TenderProcessRepository,
     private val generationService: GenerationService,
     private val rulesService: RulesService
 ) {
 
     fun getActiveLots(context: GetActiveLotsContext): GetActiveLotsResult {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val activeLotsIds = when (context.ocid.stage) {
@@ -116,7 +116,7 @@ class LotsService(
     }
 
     fun getLotsAuction(context: GetLotsAuctionContext): GetLotsAuctionResponseData {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val responseData = when (context.ocid.stage) {
@@ -167,13 +167,13 @@ class LotsService(
         val ocid = cm.ocid
         val lotsDto = toObject(UpdateLotsRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.apply {
             setLotsStatusDetails(lots, lotsDto, LotStatusDetails.UNSUCCESSFUL)
         }
         entity.jsonData = toJson(process)
-        tenderProcessDao.save(entity)
+        tenderRepository.save(entity)
         return ApiResponseV1.Success(
             version = cm.version,
             id = cm.commandId,
@@ -191,7 +191,7 @@ class LotsService(
         val ocid = cm.ocid
         val requestDto = toObject(UpdateLotByBidRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
         val statusDetails = if (requestDto.lotAwarded)
             LotStatusDetails.AWARDED
@@ -207,7 +207,7 @@ class LotsService(
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 val updatedLot = setLotsStatusDetails(process.tender.lots, requestDto.lotId, statusDetails)
                 entity.jsonData = toJson(process)
-                tenderProcessDao.save(entity)
+                tenderRepository.save(entity)
 
                 UpdateLotByBidRs.fromDomain(updatedLot)
             }
@@ -227,7 +227,7 @@ class LotsService(
                 val updatedRfq = rfq.copy(tender = rfq.tender.copy(lots = updatedLotsByids.values.toList()))
                 val updatedEntity = entity.copy(jsonData = toJson(updatedRfq))
 
-                tenderProcessDao.save(updatedEntity)
+                tenderRepository.save(updatedEntity)
 
                 UpdateLotByBidRs.fromDomain(updatedLotsByids.getValue(targetLot))
             }
@@ -251,7 +251,7 @@ class LotsService(
         val ocid = cm.ocid
         val dto = toObject(FinalStatusesRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val lots = process.tender.lots
 
@@ -301,7 +301,7 @@ class LotsService(
             }
         }
         entity.jsonData = toJson(process)
-        tenderProcessDao.save(entity)
+        tenderRepository.save(entity)
         val tenderRs =
             FinalTender(
                 id = process.tender.id!!,
@@ -327,7 +327,7 @@ class LotsService(
         val ocid = cm.ocid
         val dto = toObject(CanCancellationRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
 
         val result = when (ocid.stage) {
             Stage.AC,
@@ -342,7 +342,7 @@ class LotsService(
                     statusDetails = LotStatusDetails.EMPTY
                 }
                 entity.jsonData = toJson(process)
-                tenderProcessDao.save(entity)
+                tenderRepository.save(entity)
 
                 CanCancellationRs.fromDomain(lot)
             }
@@ -362,7 +362,7 @@ class LotsService(
                 val updatedRfq = rfq.copy(tender = rfq.tender.copy(lots = updatedLotsByIds.values.toList()))
 
                 val updatedEntity = entity.copy(jsonData = toJson(updatedRfq))
-                tenderProcessDao.save(updatedEntity)
+                tenderRepository.save(updatedEntity)
 
                 CanCancellationRs.fromDomain(updatedLotsByIds.getValue(targetLotid))
             }
@@ -390,7 +390,7 @@ class LotsService(
         val lotId = cm.context.id ?: throw ErrorException(CONTEXT)
         val ocid = cm.ocid
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         val items = process.tender.items.filter { it.relatedLot == lotId }
             .map { ItemDto(id = it.id) }
@@ -402,7 +402,7 @@ class LotsService(
         val ocid = cm.ocid  // TODO Does not work correctly, to be fixed in future
         val dto = toObject(ActivationAcRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
 
         val updatedLots = process.tender.lots
@@ -423,7 +423,7 @@ class LotsService(
             }
         }
         entity.jsonData = toJson(process)
-        tenderProcessDao.save(entity)
+        tenderRepository.save(entity)
         return ApiResponseV1.Success(
             version = cm.version,
             id = cm.commandId,
@@ -1104,7 +1104,7 @@ class LotsService(
         )
 
     fun getItemsByLots(context: GetItemsByLotsContext, data: GetItemsByLotsData): GetItemsByLotsResult {
-        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val tenderProcessEntity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND, "Tender by '${context.cpid}' and ocid ${context.ocid} not found")
 
         val receivedLotIds = data.lots.toSet { it.id }

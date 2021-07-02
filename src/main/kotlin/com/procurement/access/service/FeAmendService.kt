@@ -3,7 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.service.fe.update.AmendFEContext
 import com.procurement.access.application.service.fe.update.AmendFEData
 import com.procurement.access.application.service.fe.update.AmendFEResult
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.PartyRole
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -12,6 +11,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.handler.v1.converter.AmendFeEntityConverter
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.getElementsForUpdate
 import com.procurement.access.lib.extension.getMissingElements
 import com.procurement.access.lib.extension.getNewElements
@@ -28,7 +28,7 @@ interface FeAmendService {
 }
 
 @Service
-class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAmendService {
+class FeAmendServiceImpl(private val tenderRepository: CassandraTenderProcessRepositoryV1) : FeAmendService {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(FeCreateService::class.java)
     }
@@ -37,7 +37,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
         val cpid = context.cpid
         val ocid = context.ocid
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = cpid, ocid = ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid = cpid, ocid = ocid)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
                 message = "Cannot find tender by cpid='$cpid' and ocid='$ocid'."
@@ -71,7 +71,7 @@ class FeAmendServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeAme
 
         val result = AmendFeEntityConverter.fromEntity(updatedFE);
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = cpid,
                 token = entity.token,

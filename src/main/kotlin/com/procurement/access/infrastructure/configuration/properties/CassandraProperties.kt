@@ -9,6 +9,8 @@ data class CassandraProperties(
 
         var keyspaceName: String?,
 
+        var oldKeyspaceName: String?,
+
         var username: String?,
 
         var password: String?

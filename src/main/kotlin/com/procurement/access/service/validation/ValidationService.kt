@@ -9,7 +9,6 @@ import com.procurement.access.application.model.params.ValidateClassificationPar
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.tender.strategy.check.CheckAccessToTenderParams
 import com.procurement.access.application.service.tender.strategy.check.tenderstate.CheckTenderStateStrategy
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.Ocid
@@ -29,6 +28,7 @@ import com.procurement.access.infrastructure.entity.TenderClassificationInfo
 import com.procurement.access.infrastructure.entity.TenderCurrencyInfo
 import com.procurement.access.infrastructure.entity.TenderProcurementMethodModalitiesInfo
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckLotStatusRq
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.ValidationResult
 import com.procurement.access.lib.functional.asFailure
@@ -47,22 +47,22 @@ import org.springframework.stereotype.Service
 
 @Service
 class ValidationService(
-    private val tenderProcessDao: TenderProcessDao,
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
     private val tenderProcessRepository: TenderProcessRepository,
     private val rulesService: RulesService
 ) {
 
-    private val checkItemsStrategy = CheckItemsStrategy(tenderProcessDao)
-    private val checkAwardStrategy = CheckAwardStrategy(tenderProcessDao)
-    private val checkAccessToTenderStrategy = CheckAccessToTenderStrategy(tenderProcessDao, tenderProcessRepository)
-    private val checkLotStrategy = CheckLotStrategy(tenderProcessDao)
+    private val checkItemsStrategy = CheckItemsStrategy(tenderRepository)
+    private val checkAwardStrategy = CheckAwardStrategy(tenderRepository)
+    private val checkAccessToTenderStrategy = CheckAccessToTenderStrategy(tenderRepository, tenderProcessRepository)
+    private val checkLotStrategy = CheckLotStrategy(tenderRepository)
     private val checkTenderStateStrategy = CheckTenderStateStrategy(tenderProcessRepository, rulesService)
 
     fun checkBid(cm: CommandMessage): ApiResponseV1.Success {
         val checkDto = toObject(CheckBid::class.java, cm.data)
         val cpId = cm.cpid
         val ocid = cm.ocid
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         checkDto.bid.value?.let {
             if (it.currency != process.tender.value.currency) throw ErrorException(ErrorType.INVALID_CURRENCY)
@@ -105,7 +105,7 @@ class ValidationService(
         val owner = cm.context.owner ?: throw ErrorException(ErrorType.CONTEXT)
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         if (entity.token.toString() != token) throw ErrorException(ErrorType.INVALID_TOKEN)
         if (entity.owner != owner) throw ErrorException(ErrorType.INVALID_OWNER)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
@@ -206,7 +206,7 @@ class ValidationService(
         val ocid = cm.ocid
         val lotId = cm.context.id ?: throw ErrorException(ErrorType.CONTEXT)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
         process.tender.lots.asSequence()
             .firstOrNull { it.id == lotId && it.status == LotStatus.ACTIVE && it.statusDetails == LotStatusDetails.EMPTY }
@@ -222,7 +222,7 @@ class ValidationService(
         val ocid = cm.ocid
         val lotDto = toObject(CheckLotStatusRq::class.java, cm.data)
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
+        val entity = tenderRepository.getByCpidAndOcid(cpId, ocid) ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         val process = toObject(TenderProcess::class.java, entity.jsonData)
 
         val lot = process.tender.lots.asSequence().firstOrNull { it.id == lotDto.relatedLot }

@@ -8,7 +8,6 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.TenderStatus
@@ -21,6 +20,7 @@ import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JsonFilePathGenerator
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.deepCopy
@@ -67,16 +67,16 @@ class NegotiationCnOnPnServiceTest {
     }
 
     private lateinit var generationService: GenerationService
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
 
     private lateinit var service: NegotiationCnOnPnService
 
     @BeforeEach
     fun init() {
         generationService = mock()
-        tenderProcessDao = mock()
+        tenderRepository = mock()
 
-        service = NegotiationCnOnPnService(generationService, tenderProcessDao)
+        service = NegotiationCnOnPnService(generationService, tenderRepository)
     }
 
     @DisplayName("Check Endpoint")
@@ -91,7 +91,7 @@ class NegotiationCnOnPnServiceTest {
                     .toObject<NegotiationCnOnPnRequest>()
 
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.OCID)
                 )
@@ -743,7 +743,7 @@ class NegotiationCnOnPnServiceTest {
 
         private fun mockGetByCpIdAndStage(cpid: Cpid, ocid: Ocid, data: JsonNode) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data.toString())
-            whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
+            whenever(tenderRepository.getByCpidAndOcid(eq(cpid), eq(ocid)))
                 .thenReturn(tenderProcessEntity)
         }
     }
@@ -760,7 +760,7 @@ class NegotiationCnOnPnServiceTest {
                     .toObject()
 
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.OCID)
                 )
@@ -856,7 +856,7 @@ class NegotiationCnOnPnServiceTest {
             whenever(generationService.generatePermanentItemId())
                 .thenReturn(PERMANENT_ITEM_ID_1, PERMANENT_ITEM_ID_2, PERMANENT_ITEM_ID_3, PERMANENT_ITEM_ID_4)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     eq(ContextGenerator.CPID),
                     eq(ContextGenerator.OCID)
                 )

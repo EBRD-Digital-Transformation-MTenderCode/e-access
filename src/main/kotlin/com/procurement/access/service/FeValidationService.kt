@@ -4,7 +4,7 @@ import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.command.CheckFEDataRules
 import com.procurement.access.application.service.command.CheckFEDataRules.Companion.isNeedValidate
 import com.procurement.access.application.service.fe.check.CheckFEDataData
-import com.procurement.access.dao.TenderProcessDao
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import org.springframework.stereotype.Service
 
 interface FeValidationService {
@@ -12,7 +12,7 @@ interface FeValidationService {
 }
 
 @Service
-class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : FeValidationService {
+class FeValidationServiceImpl(private val tenderRepository: CassandraTenderProcessRepositoryV1) : FeValidationService {
 
     override fun checkFEData(context: CheckFEDataContext, data: CheckFEDataData) {
 
@@ -24,7 +24,7 @@ class FeValidationServiceImpl(private val tenderProcessDao: TenderProcessDao) : 
 
         // FR.COM-1.27.3
         data.tender.procuringEntity?.let { procuringEntity ->
-            val entity = CheckFEDataRules.getEntity(tenderProcessDao, context)
+            val entity = CheckFEDataRules.getEntity(tenderRepository, context)
 
             // VR-1.0.1.10.1
             CheckFEDataRules.validateProcuringEntity(context.operationType, entity, data.tender.procuringEntity)

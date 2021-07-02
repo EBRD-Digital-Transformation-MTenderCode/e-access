@@ -2,7 +2,6 @@ package com.procurement.access.application.service.lot
 
 import com.procurement.access.application.model.params.SetStateForLotsParams
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.LotStatus
@@ -24,6 +23,7 @@ import com.procurement.access.infrastructure.entity.RfqEntity
 import com.procurement.access.infrastructure.handler.v1.converter.convertToSetStateForLotsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetLotStateByIdsResult
 import com.procurement.access.infrastructure.handler.v2.model.response.SetStateForLotsResult
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.mapResult
 import com.procurement.access.lib.extension.orThrow
@@ -59,7 +59,7 @@ interface LotService {
 
 @Service
 class LotServiceImpl(
-    private val tenderProcessDao: TenderProcessDao,
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
     private val tenderProcessRepository: TenderProcessRepository
 ) : LotService {
 
@@ -443,7 +443,7 @@ class LotServiceImpl(
     }
 
     override fun getLot(context: GetLotContext): GettedLot {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         return toObject(CNEntity::class.java, entity.jsonData)
@@ -593,7 +593,7 @@ class LotServiceImpl(
         context: SetLotsStatusUnsuccessfulContext,
         data: SetLotsStatusUnsuccessfulData
     ): SettedLotsStatusUnsuccessful {
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         val idsUnsuccessfulLots = data.lots.toSet { it.id.toString() }
@@ -656,7 +656,7 @@ class LotServiceImpl(
             )
         }
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,
@@ -685,7 +685,7 @@ class LotServiceImpl(
     }
 
     private fun getLotsForCnOnPn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction =
-        tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?.let { entity ->
                 val process = toObject(TenderProcess::class.java, entity.jsonData)
                 getLotFromTender(lots = process.tender.lots)
@@ -725,7 +725,7 @@ class LotServiceImpl(
     private fun getLotsForUpdateCn(context: LotsForAuctionContext, data: LotsForAuctionData): LotsForAuction {
         val receivedLotsByIds: Map<TemporalLotId, LotsForAuctionData.Lot> = data.lots.associateBy { it.id }
         val savedLotsByIds: Map<String, CNEntity.Tender.Lot> =
-            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+            tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
                 ?.let { entity ->
                     val cn = toObject(CNEntity::class.java, entity.jsonData)
                     cn.tender.lots

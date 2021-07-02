@@ -1,6 +1,5 @@
 package com.procurement.access.service.validation.strategy
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.CPVCode
 import com.procurement.access.domain.model.CPVCodePattern
 import com.procurement.access.domain.model.Cpid
@@ -20,12 +19,13 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckItemsRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckItemsResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.dto.ocds.Classification
 import com.procurement.access.model.dto.ocds.TenderProcess
 import com.procurement.access.utils.toObject
 
-class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
+class CheckItemsStrategy(private val tenderRepository: CassandraTenderProcessRepositoryV1) {
 
     /**
      * VR-3.14.1
@@ -262,19 +262,19 @@ class CheckItemsStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun loadTenderProcess(cpid: Cpid, ocid: Ocid): TenderProcess {
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(TenderProcess::class.java, entity.jsonData)
     }
 
     private fun loadAP(cpid: Cpid, ocid: Ocid): APEntity {
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(APEntity::class.java, entity.jsonData)
     }
 
     private fun loadCN(cpid: Cpid, ocid: Ocid): CNEntity {
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid, ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
         return toObject(CNEntity::class.java, entity.jsonData)
     }

@@ -3,7 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.service.fe.create.CreateFEContext
 import com.procurement.access.application.service.fe.create.CreateFEData
 import com.procurement.access.application.service.fe.create.CreateFEResult
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.CriteriaSource
@@ -26,6 +25,7 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.v1.converter.CreateFeEntityConverter
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
@@ -42,7 +42,7 @@ interface FeCreateService {
 @Service
 class FeCreateServiceImpl(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao,
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
     private val uriProperties: UriProperties
 ) : FeCreateService {
     companion object {
@@ -53,7 +53,7 @@ class FeCreateServiceImpl(
         val cpid = context.cpid
         val ocidAP = context.ocid
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = cpid, ocid = ocidAP)
+        val entity = tenderRepository.getByCpidAndOcid(cpid = cpid, ocid = ocidAP)
             ?: throw ErrorException(
                 error = ErrorType.ENTITY_NOT_FOUND,
                 message = "Cannot find tender by cpid='$cpid' and ocid='$ocidAP.value'."
@@ -68,7 +68,7 @@ class FeCreateServiceImpl(
 
         val result = CreateFeEntityConverter.fromEntity(fe);
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = cpid,
                 token = entity.token,

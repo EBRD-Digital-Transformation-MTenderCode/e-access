@@ -2,7 +2,6 @@ package com.procurement.access.application.service.command
 
 import com.procurement.access.application.model.context.CheckFEDataContext
 import com.procurement.access.application.service.fe.check.CheckFEDataData
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.CriteriaRelatesTo
 import com.procurement.access.domain.model.enums.OperationType
 import com.procurement.access.domain.model.enums.PartyRole
@@ -21,6 +20,7 @@ import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.FEEntity
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -606,7 +606,7 @@ class CheckFEDataRules {
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> false
             }
 
-        fun getEntity(tenderProcessDao: TenderProcessDao, context: CheckFEDataContext): TenderProcessEntity {
+        fun getEntity(tenderRepository: CassandraTenderProcessRepositoryV1, context: CheckFEDataContext): TenderProcessEntity {
             val cpid = context.cpid
             val ocid = context.ocid
             when (context.operationType) {
@@ -653,7 +653,7 @@ class CheckFEDataRules {
                 OperationType.WITHDRAW_BID,
                 OperationType.WITHDRAW_QUALIFICATION_PROTOCOL -> throw ErrorException(ErrorType.INVALID_PMD)
             }
-            return tenderProcessDao.getByCpidAndOcid(cpid = cpid, ocid = ocid)
+            return tenderRepository.getByCpidAndOcid(cpid = cpid, ocid = ocid)
                 ?: throw ErrorException(
                     error = ErrorType.ENTITY_NOT_FOUND,
                     message = "Cannot found tender (cpid='${cpid}' and ocid='${ocid}')"
