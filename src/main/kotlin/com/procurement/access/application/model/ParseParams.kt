@@ -132,7 +132,7 @@ fun parseRole(
     parseEnum(value = value, allowedEnums = allowedEnums, attributeName = attributeName, target = PartyRole)
 
 fun parsePmd(value: String, allowedEnums: Set<ProcurementMethod>): Result<ProcurementMethod, DataErrors> {
-    fun getFailureResult() = Result.failure(
+    fun getFailureResult(): Result<ProcurementMethod, DataErrors> = Result.failure(
         DataErrors.Validation.UnknownValue(
             name = "pmd",
             expectedValues = allowedEnums.map { it.name },

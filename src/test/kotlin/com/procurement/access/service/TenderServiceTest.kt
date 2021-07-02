@@ -7,7 +7,6 @@ import com.procurement.access.application.model.params.GetCurrencyParams
 import com.procurement.access.application.model.params.GetMainProcurementCategoryParams
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.application.service.Transform
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
@@ -24,6 +23,7 @@ import com.procurement.access.infrastructure.generator.TenderProcessEntityGenera
 import com.procurement.access.infrastructure.handler.v2.model.response.GetBuyersOwnersResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetCurrencyResult
 import com.procurement.access.infrastructure.handler.v2.model.response.GetMainProcurementCategoryResult
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.asSuccess
@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test
 
 internal class TenderServiceTest {
 
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var generationService: GenerationService
     private lateinit var transform: Transform
@@ -47,11 +47,11 @@ internal class TenderServiceTest {
 
     @BeforeEach
     fun init() {
-        tenderProcessDao = mock()
+        tenderRepository = mock()
         tenderProcessRepository = mock()
         generationService = mock()
         transform = mock()
-        tenderService = TenderService(tenderProcessDao, generationService, tenderProcessRepository, transform)
+        tenderService = TenderService(tenderRepository, generationService, tenderProcessRepository, transform)
     }
 
     @Nested

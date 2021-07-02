@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
@@ -18,6 +17,7 @@ import com.procurement.access.infrastructure.generator.ContextGenerator.TOKEN
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JSON
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
@@ -37,13 +37,13 @@ import org.junit.jupiter.api.assertThrows
 
 class CheckAwardStrategyTest {
 
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var strategy: CheckAwardStrategy
 
     @BeforeEach
     fun init() {
-        tenderProcessDao = mock()
-        strategy = CheckAwardStrategy(tenderProcessDao)
+        tenderRepository = mock()
+        strategy = CheckAwardStrategy(tenderRepository)
     }
 
     /**
@@ -69,7 +69,7 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     cpid = eq(ContextGenerator.CPID),
                     ocid = eq(ContextGenerator.OCID)
                 )
@@ -88,7 +88,7 @@ class CheckAwardStrategyTest {
             val cm = commandMessage(data = dataRequest)
 
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     cpid = eq(ContextGenerator.CPID),
                     ocid = eq(ContextGenerator.OCID)
                 )
@@ -113,7 +113,7 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     cpid = eq(ContextGenerator.CPID),
                     ocid = eq(ContextGenerator.OCID)
                 )
@@ -137,7 +137,7 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     cpid = eq(ContextGenerator.CPID),
                     ocid = eq(ContextGenerator.OCID)
                 )
@@ -169,7 +169,7 @@ class CheckAwardStrategyTest {
                 .toJson()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     cpid = eq(ContextGenerator.CPID),
                     ocid = eq(ContextGenerator.OCID)
                 )
@@ -198,7 +198,7 @@ class CheckAwardStrategyTest {
                 val dataEntity = tenderProcessEntityData()
                 val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                 whenever(
-                    tenderProcessDao.getByCpidAndOcid(
+                    tenderRepository.getByCpidAndOcid(
                         cpid = eq(ContextGenerator.CPID),
                         ocid = eq(ContextGenerator.OCID)
                     )
@@ -223,7 +223,7 @@ class CheckAwardStrategyTest {
                 val dataEntity = tenderProcessEntityData()
                 val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                 whenever(
-                    tenderProcessDao.getByCpidAndOcid(
+                    tenderRepository.getByCpidAndOcid(
                         cpid = eq(ContextGenerator.CPID),
                         ocid = eq(ContextGenerator.OCID)
                     )
@@ -248,7 +248,7 @@ class CheckAwardStrategyTest {
             val dataEntity = tenderProcessEntityData()
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
             whenever(
-                tenderProcessDao.getByCpidAndOcid(
+                tenderRepository.getByCpidAndOcid(
                     cpid = eq(ContextGenerator.CPID),
                     ocid = eq(ContextGenerator.OCID)
                 )

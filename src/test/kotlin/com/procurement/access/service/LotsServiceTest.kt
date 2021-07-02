@@ -7,7 +7,6 @@ import com.procurement.access.application.model.params.DivideLotParams
 import com.procurement.access.application.model.params.GetLotsValueParams
 import com.procurement.access.application.model.params.ValidateLotsDataForDivisionParams
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
@@ -16,6 +15,7 @@ import com.procurement.access.domain.model.enums.Scheme
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
 import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.success
@@ -50,19 +50,19 @@ internal class LotsServiceTest {
     }
 
     private lateinit var lotsService: LotsService
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var rulesService: RulesService
     private lateinit var generationService: GenerationService
 
     @BeforeEach
     fun init() {
-        tenderProcessDao = mock()
+        tenderRepository = mock()
         tenderProcessRepository = mock()
         rulesService = mock()
         generationService = mock()
 
-        lotsService = LotsService(tenderProcessDao, tenderProcessRepository, generationService, rulesService)
+        lotsService = LotsService(tenderRepository, tenderProcessRepository, generationService, rulesService)
     }
 
     @Nested

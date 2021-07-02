@@ -3,7 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.model.context.CheckNegotiationCnOnPnContext
 import com.procurement.access.application.service.CheckedNegotiationCnOnPn
 import com.procurement.access.application.service.CreateNegotiationCnOnPnContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.AwardCriteria
 import com.procurement.access.domain.model.enums.DocumentType
 import com.procurement.access.domain.model.enums.LotStatus
@@ -29,6 +28,7 @@ import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.entity.PNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.NegotiationCnOnPnRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.NegotiationCnOnPnResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.isUnique
@@ -44,7 +44,7 @@ import java.util.*
 @Service
 class NegotiationCnOnPnService(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) {
 
     private val allowedTenderDocumentTypes = DocumentType.allowedElements
@@ -84,7 +84,7 @@ class NegotiationCnOnPnService(
         data.validateDuplicates()
 
         val entity: TenderProcessEntity =
-            tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+            tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
                 ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, entity.jsonData)
@@ -189,7 +189,7 @@ class NegotiationCnOnPnService(
     }
 
     fun create(context: CreateNegotiationCnOnPnContext, data: NegotiationCnOnPnRequest): NegotiationCnOnPnResponse {
-        val tenderProcessEntity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val tenderProcessEntity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         val pnEntity: PNEntity = toObject(PNEntity::class.java, tenderProcessEntity.jsonData)
@@ -208,7 +208,7 @@ class NegotiationCnOnPnService(
 
         val newOcid = generationService.generateOcid(cpid = context.cpid, stage = Stage.NP.key)
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = tenderProcessEntity.token,

@@ -1,6 +1,6 @@
 package com.procurement.access.service
 
-import com.procurement.access.dao.RulesDao
+import com.procurement.access.application.repository.RuleRepository
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.domain.fail.error.ValidationErrors
 import com.procurement.access.domain.model.enums.MainProcurementCategory
@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service
 import java.time.Duration
 
 @Service
-class RulesService(private val rulesDao: RulesDao) {
+class RulesService(
+    private val ruleRepository: RuleRepository
+) {
 
     companion object {
         private const val VALID_STATES_PARAMETER = "validStates"
@@ -41,7 +43,7 @@ class RulesService(private val rulesDao: RulesDao) {
         pmd: ProcurementMethod,
         operationType: OperationType
     ): Result<TenderStatesRule, Fail> {
-        val states = rulesDao.getData(
+        val states = ruleRepository.find(
             country = country,
             pmd = pmd,
             operationType = operationType,
@@ -61,7 +63,7 @@ class RulesService(private val rulesDao: RulesDao) {
         pmd: ProcurementMethod,
         operationType: OperationType
     ): Result<LotStatesRule, Fail> {
-        val states = rulesDao.getData(country, pmd,operationType,VALID_LOT_STATES_PARAMETER)
+        val states = ruleRepository.find(country, pmd, operationType, VALID_LOT_STATES_PARAMETER)
             .onFailure { fail -> return fail }
             ?: return ValidationErrors.RulesNotFound(VALID_LOT_STATES_PARAMETER, country, pmd, operationType)
                 .asFailure()
@@ -111,8 +113,7 @@ class RulesService(private val rulesDao: RulesDao) {
         operationType: String,
         parameter: String
     ): String =
-        rulesDao.getValue(country, pmd, operationType, parameter)
+        ruleRepository.find(country, pmd, operationType, parameter)
+            .orThrow { it.exception }
             ?: throw ErrorException(ErrorType.RULES_NOT_FOUND)
-
-
 }

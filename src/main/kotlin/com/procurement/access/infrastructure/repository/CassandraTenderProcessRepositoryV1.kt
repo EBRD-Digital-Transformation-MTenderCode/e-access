@@ -1,4 +1,4 @@
-package com.procurement.access.dao
+package com.procurement.access.infrastructure.repository
 
 import com.datastax.driver.core.BoundStatement
 import com.datastax.driver.core.ResultSet
@@ -13,64 +13,60 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.access.infrastructure.extension.cassandra.toLocalDateTime
 import com.procurement.access.model.entity.TenderProcessEntity
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class TenderProcessDao(private val session: Session) {
+class CassandraTenderProcessRepositoryV1(@Qualifier("access") private val session: Session) {
 
     companion object {
-        private const val keySpace = "ocds"
-        private const val tableName = "access_tender"
-        private const val columnCpid = "cpid"
-        private const val columnToken = "token_entity"
-        private const val columnOcid = "ocid"
-        private const val columnCreateDate = "created_date"
-        private const val columnOwner = "owner"
-        private const val columnJsonData = "json_data"
 
         private const val FIND_AUTH_BY_CPID_CQL = """
-               SELECT $columnToken,
-                      $columnOwner
-                 FROM $keySpace.$tableName
-                WHERE $columnCpid=?
+               SELECT ${Database.Tender.TOKEN},
+                      ${Database.Tender.OWNER}
+                 FROM ${Database.KEYSPACE_ACCESS}.${Database.Tender.TABLE}
+                WHERE ${Database.Tender.CPID}=?
             """
     }
 
     private val preparedFindAuthByCpidCQL = session.prepare(FIND_AUTH_BY_CPID_CQL)
 
     fun save(entity: TenderProcessEntity) {
-        val insert = insertInto(tableName)
-        insert.value(columnCpid, entity.cpId.value)
-            .value(columnToken, entity.token)
-            .value(columnOwner, entity.owner)
-            .value(columnOcid, entity.ocid.value)
-            .value(columnCreateDate, entity.createdDate.toCassandraTimestamp())
-            .value(columnJsonData, entity.jsonData)
+        val insert = insertInto(Database.Tender.TABLE)
+        insert.value(Database.Tender.CPID, entity.cpId.value)
+            .value(Database.Tender.TOKEN, entity.token.toString())
+            .value(Database.Tender.OWNER, entity.owner)
+            .value(Database.Tender.OCID, entity.ocid.value)
+            .value(Database.Tender.CREATION_DATE, entity.createdDate.toCassandraTimestamp())
+            .value(Database.Tender.JSON_DATA, entity.jsonData)
         session.execute(insert)
     }
 
     fun getByCpidAndOcid(cpid: Cpid, ocid: Ocid): TenderProcessEntity? {
         val query = select()
             .all()
-            .from(tableName)
-            .where(eq(columnCpid, cpid.value))
-            .and(eq(columnOcid, ocid.value)).limit(1)
-        val row = session.execute(query).one()
-        return if (row != null) TenderProcessEntity(
-            Cpid.tryCreateOrNull(row.getString(columnCpid))!!,
-            row.getUUID(columnToken),
-            row.getString(columnOwner),
-            Ocid.SingleStage.tryCreateOrNull(row.getString(columnOcid))!!,
-            row.getTimestamp(columnCreateDate).toLocalDateTime(),
-            row.getString(columnJsonData)
-        ) else null
+            .from(Database.Tender.TABLE)
+            .where(eq(Database.Tender.CPID, cpid.value))
+            .and(eq(Database.Tender.OCID, ocid.value)).limit(1)
+        return session.execute(query)
+            .one()
+            ?.let { row ->
+                TenderProcessEntity(
+                    Cpid.tryCreateOrNull(row.getString(Database.Tender.CPID))!!,
+                    UUID.fromString(row.getString(Database.Tender.TOKEN)),
+                    row.getString(Database.Tender.OWNER),
+                    Ocid.SingleStage.tryCreateOrNull(row.getString(Database.Tender.OCID))!!,
+                    row.getTimestamp(Database.Tender.CREATION_DATE).toLocalDateTime(),
+                    row.getString(Database.Tender.JSON_DATA)
+                )
+            }
     }
 
     fun findAuthByCpid(cpid: Cpid): List<Auth> {
         val query = preparedFindAuthByCpidCQL.bind()
             .apply {
-                setString(columnCpid, cpid.value)
+                setString(Database.Tender.CPID, cpid.value)
             }
 
         val resultSet = load(query)
@@ -84,8 +80,8 @@ class TenderProcessDao(private val session: Session) {
     }
 
     private fun convertToContractEntity(row: Row): Auth = Auth(
-        token = row.getUUID(columnToken),
-        owner = row.getString(columnOwner)
+        token = UUID.fromString(row.getString(Database.Tender.TOKEN)),
+        owner = row.getString(Database.Tender.OWNER)
     )
 
     class Auth(val token: UUID, val owner: String)

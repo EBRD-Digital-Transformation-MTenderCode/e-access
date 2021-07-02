@@ -4,6 +4,7 @@ import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.Session
 import com.procurement.access.infrastructure.configuration.properties.CassandraProperties
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -25,11 +26,17 @@ class DaoConfiguration constructor(private val cassandraProperties: CassandraPro
             .withoutJMXReporting()
             .withAuthProvider(PlainTextAuthProvider(cassandraProperties.username, cassandraProperties.password))
             .build()
+            .init()
 
     @Bean
-    fun session(): Session {
-        val cluster = cluster
-        cluster.init()
+    @Qualifier("ocds")
+    fun ocdsSession(): Session {
+        return cluster.connect(cassandraProperties.oldKeyspaceName)
+    }
+
+    @Bean
+    @Qualifier("access")
+    fun contractingSession(): Session {
         return cluster.connect(cassandraProperties.keyspaceName)
     }
 }

@@ -75,7 +75,8 @@ import com.procurement.access.infrastructure.api.v1.startDate
 import com.procurement.access.infrastructure.api.v1.testMode
 import com.procurement.access.infrastructure.api.v1.token
 import com.procurement.access.infrastructure.configuration.properties.OCDSProperties
-import com.procurement.access.infrastructure.handler.HistoryRepository
+import com.procurement.access.infrastructure.handler.HistoryRepositoryNew
+import com.procurement.access.infrastructure.handler.HistoryRepositoryOld
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.converter.toResponseDto
 import com.procurement.access.infrastructure.handler.v1.model.request.AmendFERequest
@@ -122,7 +123,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandServiceV1(
-    private val historyRepository: HistoryRepository,
+    private val historyRepositoryOld: HistoryRepositoryOld,
+    private val historyRepositoryNew: HistoryRepositoryNew,
     private val pinService: PinService,
     private val pinOnPnService: PinOnPnService,
     private val pnService: PnService,
@@ -166,8 +168,10 @@ class CommandServiceV1(
         }
 
     fun execute(cm: CommandMessage): ApiResponseV1 {
-        val history = historyRepository.getHistory(cm.commandId, cm.command)
+        val history = historyRepositoryNew.getHistory(cm.commandId, cm.command)
             .orThrow { it.exception }
+            ?: historyRepositoryOld.getHistory(cm.commandId, cm.command)
+                .orThrow { it.exception }
         if (history != null) {
             return toObject(ApiResponseV1.Success::class.java, history)
         }
@@ -1022,7 +1026,7 @@ class CommandServiceV1(
             }
         }
 
-        historyRepository.saveHistory(cm.commandId, cm.command, toJson(response))
+        historyRepositoryOld.saveHistory(cm.commandId, cm.command, toJson(response))
         return response
     }
 

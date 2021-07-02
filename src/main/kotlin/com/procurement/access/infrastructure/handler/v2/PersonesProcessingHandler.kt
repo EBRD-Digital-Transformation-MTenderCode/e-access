@@ -4,7 +4,8 @@ import com.procurement.access.application.service.Logger
 import com.procurement.access.application.service.Transform
 import com.procurement.access.domain.fail.Fail
 import com.procurement.access.infrastructure.api.v2.CommandTypeV2
-import com.procurement.access.infrastructure.handler.HistoryRepository
+import com.procurement.access.infrastructure.handler.HistoryRepositoryNew
+import com.procurement.access.infrastructure.handler.HistoryRepositoryOld
 import com.procurement.access.infrastructure.handler.v2.base.AbstractHistoricalHandler
 import com.procurement.access.infrastructure.handler.v2.converter.convert
 import com.procurement.access.infrastructure.handler.v2.model.request.PersonesProcessingRequest
@@ -18,9 +19,10 @@ import org.springframework.stereotype.Service
 class PersonesProcessingHandler(
     private val responderService: ResponderService,
     transform: Transform,
-    historyRepository: HistoryRepository,
+    historyRepositoryOld: HistoryRepositoryOld,
+    historyRepositoryNew: HistoryRepositoryNew,
     logger: Logger
-) : AbstractHistoricalHandler<PersonesProcessingResult>(transform, historyRepository, logger) {
+) : AbstractHistoricalHandler<PersonesProcessingResult>(transform, historyRepositoryOld, historyRepositoryNew, logger) {
 
     override val action: CommandTypeV2
         get() = CommandTypeV2.PERSONES_PROCESSING

@@ -6,12 +6,12 @@ import com.procurement.access.application.model.params.CheckEqualityCurrenciesPa
 import com.procurement.access.application.model.params.CheckExistenceSignAuctionParams
 import com.procurement.access.application.model.params.ValidateClassificationParams
 import com.procurement.access.application.repository.TenderProcessRepository
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.ProcurementMethodModalities
 import com.procurement.access.failure
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.loadJson
 import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.ValidationResult
@@ -27,7 +27,7 @@ import java.util.*
 
 class ValidationServiceTest {
 
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var tenderProcessRepository: TenderProcessRepository
     private lateinit var rulesService: RulesService
     private lateinit var validationService: ValidationService
@@ -43,10 +43,10 @@ class ValidationServiceTest {
 
     @BeforeEach
     fun init() {
-        tenderProcessDao = mock()
+        tenderRepository = mock()
         tenderProcessRepository = mock()
         rulesService = mock()
-        validationService = ValidationService(tenderProcessDao, tenderProcessRepository, rulesService)
+        validationService = ValidationService(tenderRepository, tenderProcessRepository, rulesService)
     }
 
     @Nested

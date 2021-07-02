@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.MainProcurementCategory
@@ -18,6 +17,7 @@ import com.procurement.access.infrastructure.generator.ContextGenerator
 import com.procurement.access.infrastructure.generator.TenderProcessEntityGenerator
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckItemsRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckItemsResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.json.JSON
 import com.procurement.access.json.JsonValidator
 import com.procurement.access.json.getArray
@@ -48,13 +48,13 @@ class CheckItemsStrategyTest {
         private val RESPONSE_TENDER_CPV_CODE = "${REQUEST_ITEM_COMMON_PARTY_CPV_CODE}000"
     }
 
-    private lateinit var tenderProcessDao: TenderProcessDao
+    private lateinit var tenderRepository: CassandraTenderProcessRepositoryV1
     private lateinit var strategy: CheckItemsStrategy
 
     @BeforeEach
     fun init() {
-        tenderProcessDao = mock()
-        strategy = CheckItemsStrategy(tenderProcessDao)
+        tenderRepository = mock()
+        strategy = CheckItemsStrategy(tenderRepository)
     }
 
     @Nested
@@ -309,7 +309,7 @@ class CheckItemsStrategyTest {
                         val dataEntity = tenderProcessEntityData(hasItems = hasItems)
                         val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = dataEntity)
                         whenever(
-                            tenderProcessDao.getByCpidAndOcid(
+                            tenderRepository.getByCpidAndOcid(
                                 eq(ContextGenerator.CPID),
                                 eq(ContextGenerator.OCID)
                             )
@@ -495,7 +495,7 @@ class CheckItemsStrategyTest {
 
         private fun mockGetByCpIdAndOcid(cpid: Cpid, ocid: Ocid, data: JSON) {
             val tenderProcessEntity = TenderProcessEntityGenerator.generate(data = data)
-            whenever(tenderProcessDao.getByCpidAndOcid(eq(cpid), eq(ocid)))
+            whenever(tenderRepository.getByCpidAndOcid(eq(cpid), eq(ocid)))
                 .thenReturn(tenderProcessEntity)
         }
     }

@@ -3,7 +3,6 @@ package com.procurement.access.service
 import com.procurement.access.application.service.cn.update.UpdateSelectiveCnContext
 import com.procurement.access.application.service.cn.update.UpdateSelectiveCnData
 import com.procurement.access.application.service.cn.update.UpdatedSelectiveCn
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
@@ -19,6 +18,7 @@ import com.procurement.access.domain.model.update
 import com.procurement.access.exception.ErrorException
 import com.procurement.access.exception.ErrorType
 import com.procurement.access.infrastructure.entity.CNEntity
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.isUnique
 import com.procurement.access.lib.extension.mapOrEmpty
@@ -38,7 +38,7 @@ interface SelectiveCNService {
 
 @Service
 class SelectiveCNServiceImpl(
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) : SelectiveCNService {
     override fun update(context: UpdateSelectiveCnContext, data: UpdateSelectiveCnData): UpdatedSelectiveCn {
         data.validateTextAttributes()
@@ -48,7 +48,7 @@ class SelectiveCNServiceImpl(
             .checkIdsPersons() //VR-1.0.1.10.3
             .checkBusinessFunctions(context.startDate) //VR-1.0.1.10.5, VR-1.0.1.10.6, VR-1.0.1.10.7, VR-1.0.1.2.1, VR-1.0.1.2.8
 
-        val entity = tenderProcessDao.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
         if (entity.owner != context.owner) throw ErrorException(error = ErrorType.INVALID_OWNER)
@@ -159,7 +159,7 @@ class SelectiveCNServiceImpl(
             )
         )
 
-        tenderProcessDao.save(
+        tenderRepository.save(
             TenderProcessEntity(
                 cpId = context.cpid,
                 token = entity.token,

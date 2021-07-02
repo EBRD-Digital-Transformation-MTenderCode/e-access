@@ -2,7 +2,6 @@ package com.procurement.access.service
 
 import com.procurement.access.application.service.ap.update.ApUpdateData
 import com.procurement.access.application.service.ap.update.UpdateApContext
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.enums.LotStatus
 import com.procurement.access.domain.model.enums.LotStatusDetails
 import com.procurement.access.domain.model.enums.RelatedProcessType
@@ -24,6 +23,7 @@ import com.procurement.access.infrastructure.entity.APEntity
 import com.procurement.access.infrastructure.entity.process.RelatedProcess
 import com.procurement.access.infrastructure.handler.v1.converter.convert
 import com.procurement.access.infrastructure.handler.v1.model.response.ApUpdateResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.lib.errorIfBlank
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.model.entity.TenderProcessEntity
@@ -40,13 +40,13 @@ interface ApUpdateService {
 @Service
 class ApUpdateServiceImpl(
     private val generationService: GenerationService,
-    private val tenderProcessDao: TenderProcessDao
+    private val tenderRepository: CassandraTenderProcessRepositoryV1
 ) : ApUpdateService {
 
     override fun updateAp(context: UpdateApContext, data: ApUpdateData): ApUpdateResponse {
         data.validateTextAttributes()
 
-        val entity = tenderProcessDao.getByCpidAndOcid(context.cpid, context.ocid)
+        val entity = tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
             ?: throw ErrorException(DATA_NOT_FOUND)
 
         // VR.COM-1.26.1
@@ -190,7 +190,7 @@ class ApUpdateServiceImpl(
             )
         )
 
-        tenderProcessDao.save(getEntity(updatedTenderProcess, entity, context.startDate))
+        tenderRepository.save(getEntity(updatedTenderProcess, entity, context.startDate))
         return updatedTenderProcess.convert()
     }
 

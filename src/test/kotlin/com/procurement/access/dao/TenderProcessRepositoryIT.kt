@@ -9,6 +9,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV2
 import com.procurement.access.model.entity.TenderProcessEntity
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -66,7 +67,7 @@ class TenderProcessRepositoryIT {
         createKeyspace()
         createTable()
 
-        tenderProccessRepository = TenderProcessRepositoryImpl(session)
+        tenderProccessRepository = CassandraTenderProcessRepositoryV2(session)
     }
 
     @AfterEach

@@ -1,6 +1,5 @@
 package com.procurement.access.service.validation.strategy.award
 
-import com.procurement.access.dao.TenderProcessDao
 import com.procurement.access.domain.model.Cpid
 import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.enums.LotStatus
@@ -12,11 +11,12 @@ import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.entity.CNEntity
 import com.procurement.access.infrastructure.handler.v1.model.request.CheckAwardRequest
 import com.procurement.access.infrastructure.handler.v1.model.response.CheckAwardResponse
+import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toObject
 import java.math.BigDecimal
 
-class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
+class CheckAwardStrategy(private val tenderRepository: CassandraTenderProcessRepositoryV1) {
 
     /**
      * eAccess executes next steps:
@@ -59,7 +59,7 @@ class CheckAwardStrategy(private val tenderProcessDao: TenderProcessDao) {
     }
 
     private fun loadTenderProcessEntity(cpid: Cpid, ocid: Ocid): TenderProcessEntity {
-        return tenderProcessDao.getByCpidAndOcid(cpid, ocid)
+        return tenderRepository.getByCpidAndOcid(cpid, ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
     }
 
