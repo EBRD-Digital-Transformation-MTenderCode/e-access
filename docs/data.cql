@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS  ocds.access_tender (
 
 CREATE KEYSPACE IF NOT EXISTS access WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
 
-CREATE TABLE IF NOT EXISTS ocds.tenders (
+CREATE TABLE IF NOT EXISTS access.tenders (
     cpid         TEXT,
     ocid         TEXT,
     token_entity TEXT,
