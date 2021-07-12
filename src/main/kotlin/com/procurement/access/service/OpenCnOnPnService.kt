@@ -691,31 +691,28 @@ class OpenCnOnPnService(
      * IF document.documentType == oneOf bussinesFunctionsDocumentTupeEnum value (link), validation is successful; }
      * else {  eAccess throws Exception: "Invalid document type"; }
      */
-    private fun checkBusinessFunctionDocuments(
-        procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity
-    ) {
-
+    private fun checkBusinessFunctionDocuments(procuringEntityRequest: OpenCnOnPnRequest.Tender.ProcuringEntity) {
         procuringEntityRequest.persones
             ?.flatMap { it.businessFunctions }
             ?.forEach { businessFunction ->
-                businessFunction.documents?.let { documents ->
-                    if (documents.isEmpty()) throw ErrorException(
+                val documents = businessFunction.documents
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: throw ErrorException(
                         error = ErrorType.EMPTY_DOCS,
                         message = "At least one document should be added to businessFunction documents. "
                     )
 
-                    val actualIds = documents.map { it.id }
-                    val uniqueIds = actualIds.toSet()
+                val actualIds = documents.map { it.id }
+                val uniqueIds = actualIds.toSet()
 
-                    if (actualIds.size != uniqueIds.size) throw ErrorException(
-                        error = INVALID_DOCS_ID,
-                        message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
-                    )
+                if (actualIds.size != uniqueIds.size) throw ErrorException(
+                    error = INVALID_DOCS_ID,
+                    message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
+                )
 
-                    documents.forEach {
-                        when (it.documentType) {
-                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
-                        }
+                documents.forEach {
+                    when (it.documentType) {
+                        BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
                     }
                 }
             }
