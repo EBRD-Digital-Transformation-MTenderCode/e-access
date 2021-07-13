@@ -2,6 +2,7 @@ package com.procurement.access.application.model.responder.verify
 
 import com.procurement.access.application.model.parseCpid
 import com.procurement.access.application.model.parseOcid
+import com.procurement.access.application.model.parsePersonTitle
 import com.procurement.access.application.model.parseStartDate
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.error.DataErrors
@@ -10,6 +11,7 @@ import com.procurement.access.domain.model.Ocid
 import com.procurement.access.domain.model.document.DocumentId
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
+import com.procurement.access.domain.model.enums.PersonTitle
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
@@ -61,23 +63,27 @@ class VerifyRequirementResponse {
         }
 
         class Responder private constructor(
-            val title: String,
+            val title: PersonTitle,
             val name: String,
             val identifier: Identifier,
             val businessFunctions: List<BusinessFunction>
         ) {
 
             companion object {
+
+                private val allowedPersonTitles = PersonTitle.allowedElements.toSet()
+
                 fun tryCreate(
                     title: String,
                     name: String,
                     identifier: Identifier,
                     businessFunctions: List<BusinessFunction>
                 ): Result<Responder, DataErrors> {
-
+                    val personTitle = parsePersonTitle(title, allowedPersonTitles, "responder.title")
+                        .onFailure { return it }
                     return Result.success(
                         Responder(
-                            title = title,
+                            title = personTitle,
                             name = name,
                             identifier = identifier,
                             businessFunctions = businessFunctions
@@ -125,7 +131,7 @@ class VerifyRequirementResponse {
                                 BusinessFunctionType.TECHNICAL_OPENER,
                                 BusinessFunctionType.PRICE_OPENER,
                                 BusinessFunctionType.PRICE_EVALUATOR -> true
-                                BusinessFunctionType.AUTHORITY       -> false
+                                BusinessFunctionType.AUTHORITY -> false
                             }
                         }.toSet()
 
@@ -138,7 +144,7 @@ class VerifyRequirementResponse {
                     ): Result<BusinessFunction, DataErrors> {
 
                         val parsedType = type
-                            .let {type ->
+                            .let { type ->
                                 BusinessFunctionType.orNull(type)
                                     ?.takeIf { it in allowedBusinessFunctionTypes }
                                     ?: return failure(
