@@ -537,7 +537,19 @@ sealed class ValidationErrors(
         description = "Lot '$lotId' contains redundant renewal."
     )
 
-    object AddClientsToPartiesInAP{
+    class ItemsHaveDuplicates(itemId: String) : ValidationErrors(
+        numberError = "1.39.21",
+        prefix = "VR.COM-",
+        description = "Item '$itemId' has duplicate."
+    )
+
+    class LotsHaveDuplicates(lotId: String) : ValidationErrors(
+        numberError = "1.39.22",
+        prefix = "VR.COM-",
+        description = "Lot '$lotId' has duplicate."
+    )
+
+    object AddClientsToPartiesInAP {
         class PnRecordNotFound(val cpid: Cpid, val ocid: Ocid.SingleStage) : ValidationErrors(
             numberError = "1.44.1",
             description = "PN record not found by cpid '$cpid' and '$ocid'."
