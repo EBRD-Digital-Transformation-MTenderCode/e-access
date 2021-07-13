@@ -102,6 +102,7 @@ class OpenCnOnPnService(
     fun check(context: CheckOpenCnOnPnContext, data: OpenCnOnPnRequest): CheckedOpenCnOnPn {
         data.validateTextAttributes()
         data.validateDuplicates()
+        data.validateEmptyObject()
 
         val entity: TenderProcessEntity =
             tenderRepository.getByCpidAndOcid(context.cpid, context.ocid)
@@ -419,6 +420,37 @@ class OpenCnOnPnService(
         ErrorException(
             error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
             message = "The attribute '$name' is empty or blank."
+        )
+    }
+
+    private fun OpenCnOnPnRequest.validateEmptyObject() {
+        tender.apply {
+            lots.forEachIndexed { idxLot, lot ->
+                lot.options
+                    ?.forEachIndexed { idxOption, option ->
+                        if (option.period == null && option.description == null)
+                            emptyObjectError("tender.lots[$idxLot].options[$idxOption]")
+                    }
+
+                lot.recurrence
+                    ?.apply {
+                        if (description == null && dates == null)
+                            emptyObjectError("tender.lots[$idxLot].recurrence")
+                    }
+
+                lot.renewal
+                    ?.apply {
+                        if (description == null && minimumRenewals == null && maximumRenewals == null && period == null)
+                            emptyObjectError("tender.lots[$idxLot].renewal")
+                    }
+            }
+        }
+    }
+
+    private fun emptyObjectError(name: String) {
+        throw ErrorException(
+            error = ErrorType.INCORRECT_VALUE_ATTRIBUTE,
+            message = "The attribute '$name' is empty object."
         )
     }
 
