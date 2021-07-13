@@ -57,6 +57,7 @@ import com.procurement.access.infrastructure.handler.v1.model.response.GetItemsB
 import com.procurement.access.infrastructure.handler.v1.model.response.GetLotsValueResult
 import com.procurement.access.infrastructure.handler.v2.model.response.DivideLotResult
 import com.procurement.access.infrastructure.repository.CassandraTenderProcessRepositoryV1
+import com.procurement.access.lib.extension.getDuplicate
 import com.procurement.access.lib.extension.getUnknownElements
 import com.procurement.access.lib.extension.toSet
 import com.procurement.access.lib.functional.Result
@@ -534,6 +535,11 @@ class LotsService(
         }
 
     fun validateLotsDataForDivision(params: ValidateLotsDataForDivisionParams): ValidationResult<Fail> {
+        checkLotDuplicates(params.tender.lots)
+            .doOnError { return it.asValidationFailure() }
+        checkItemDuplicates(params.tender.items)
+            .doOnError { return it.asValidationFailure() }
+
         val entity = tenderProcessRepository.getByCpIdAndOcid(params.cpid, params.ocid)
             .onFailure { return it.reason.asValidationFailure() }
             ?: return ValidationErrors.TenderNotFoundOnValidateLotsDataForDivision(params.cpid, params.ocid)
@@ -737,6 +743,22 @@ class LotsService(
             ValidationErrors.ItemsNotLinkedToAnyNewLots(itemsWithUnknownLots)
                 .asValidationFailure()
         } else ValidationResult.ok()
+    }
+
+    private fun checkLotDuplicates(lots: List<ValidateLotsDataForDivisionParams.Tender.Lot>): ValidationResult<Fail> {
+        val duplicateLot = lots.getDuplicate { it.id }
+        return if (duplicateLot != null)
+            ValidationErrors.LotsHaveDuplicates(duplicateLot.id).asValidationFailure()
+        else
+            ValidationResult.ok()
+    }
+
+    private fun checkItemDuplicates(items: List<ValidateLotsDataForDivisionParams.Tender.Item>): ValidationResult<Fail> {
+        val duplicateItem = items.getDuplicate { it.id }
+        return if (duplicateItem != null)
+            ValidationErrors.ItemsHaveDuplicates(duplicateItem.id).asValidationFailure()
+        else
+            ValidationResult.ok()
     }
 
     private fun checkEachNewLotHasItem(
