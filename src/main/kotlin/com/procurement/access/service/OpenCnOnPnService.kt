@@ -728,23 +728,25 @@ class OpenCnOnPnService(
             ?.flatMap { it.businessFunctions }
             ?.forEach { businessFunction ->
                 val documents = businessFunction.documents
-                    ?.takeIf { it.isNotEmpty() }
-                    ?: throw ErrorException(
-                        error = ErrorType.EMPTY_DOCS,
-                        message = "At least one document should be added to businessFunction documents. "
+                if (documents != null) {
+                    if (documents.isEmpty())
+                        throw ErrorException(
+                            error = ErrorType.EMPTY_DOCS,
+                            message = "At least one document should be added to businessFunction documents. "
+                        )
+
+                    val actualIds = documents.map { it.id }
+                    val uniqueIds = actualIds.toSet()
+
+                    if (actualIds.size != uniqueIds.size) throw ErrorException(
+                        error = INVALID_DOCS_ID,
+                        message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
                     )
 
-                val actualIds = documents.map { it.id }
-                val uniqueIds = actualIds.toSet()
-
-                if (actualIds.size != uniqueIds.size) throw ErrorException(
-                    error = INVALID_DOCS_ID,
-                    message = "Invalid documents IDs. Ids not unique [${actualIds}]. "
-                )
-
-                documents.forEach {
-                    when (it.documentType) {
-                        BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+                    documents.forEach {
+                        when (it.documentType) {
+                            BusinessFunctionDocumentType.REGULATORY_DOCUMENT -> Unit
+                        }
                     }
                 }
             }
