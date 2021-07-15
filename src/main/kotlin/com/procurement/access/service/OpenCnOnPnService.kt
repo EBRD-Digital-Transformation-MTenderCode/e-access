@@ -727,9 +727,9 @@ class OpenCnOnPnService(
         procuringEntityRequest.persones
             ?.flatMap { it.businessFunctions }
             ?.forEach { businessFunction ->
-                val documents = businessFunction.documents
-                    ?.takeIf { it.isNotEmpty() }
-                    ?: throw ErrorException(
+                val documents = businessFunction.documents ?: return@forEach
+                if (documents.isEmpty())
+                    throw ErrorException(
                         error = ErrorType.EMPTY_DOCS,
                         message = "At least one document should be added to businessFunction documents. "
                     )
