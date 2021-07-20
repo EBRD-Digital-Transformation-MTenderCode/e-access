@@ -426,23 +426,28 @@ class OpenCnOnPnService(
     private fun OpenCnOnPnRequest.validateEmptyObject() {
         tender.apply {
             lots.forEachIndexed { idxLot, lot ->
-                lot.options
-                    ?.forEachIndexed { idxOption, option ->
-                        if (option.period == null && option.description == null)
-                            emptyObjectError("tender.lots[$idxLot].options[$idxOption]")
-                    }
+                lot.apply {
+                    options
+                        ?.forEachIndexed { idxOption, option ->
+                            if(option.isEmpty)
+                                emptyObjectError("tender.lots[$idxLot].options[$idxOption]")
+                            if(option.period != null && option.period.isEmpty)
+                                emptyObjectError("tender.lots[$idxLot].options[$idxOption].period")
 
-                lot.recurrence
-                    ?.apply {
-                        if (description == null && dates == null)
+                        }
+
+                    if(recurrence != null) {
+                        if(recurrence.isEmpty)
                             emptyObjectError("tender.lots[$idxLot].recurrence")
                     }
 
-                lot.renewal
-                    ?.apply {
-                        if (description == null && minimumRenewals == null && maximumRenewals == null && period == null)
+                    if(renewal != null) {
+                        if(renewal.isEmpty)
                             emptyObjectError("tender.lots[$idxLot].renewal")
+                        if(renewal.period != null && renewal.period.isEmpty)
+                            emptyObjectError("tender.lots[$idxLot].renewal.period")
                     }
+                }
             }
         }
     }
