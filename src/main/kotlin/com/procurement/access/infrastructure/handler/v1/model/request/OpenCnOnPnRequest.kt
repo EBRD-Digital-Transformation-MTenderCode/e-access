@@ -289,7 +289,10 @@ data class OpenCnOnPnRequest(
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("period") @param:JsonProperty("period") val period: Period?
-            )
+            ) {
+                val isEmpty: Boolean
+                    get() = description == null && period == null
+            }
 
             data class Recurrence(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -298,6 +301,10 @@ data class OpenCnOnPnRequest(
                 @JsonInclude(JsonInclude.Include.NON_EMPTY)
                 @field:JsonProperty("dates") @param:JsonProperty("dates") val dates: List<Date>?
             ) {
+
+                val isEmpty: Boolean
+                    get() = description == null && (dates == null || dates.isEmpty())
+
                 data class Date(
                     @JsonInclude(JsonInclude.Include.NON_NULL)
                     @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: LocalDateTime?
@@ -316,7 +323,11 @@ data class OpenCnOnPnRequest(
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("period") @param:JsonProperty("period") val period: Period?
-            )
+            ) {
+
+                val isEmpty: Boolean
+                    get() = description == null && minimumRenewals == null && maximumRenewals == null && period == null
+            }
 
             data class Period(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -330,7 +341,10 @@ data class OpenCnOnPnRequest(
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("maxExtentDate") @param:JsonProperty("maxExtentDate") val maxExtentDate: LocalDateTime?
-            )
+            ) {
+                val isEmpty: Boolean
+                    get() = startDate == null && endDate == null && durationInDays == null && maxExtentDate == null
+            }
         }
 
         data class Item(
