@@ -429,22 +429,22 @@ class OpenCnOnPnService(
                 lot.apply {
                     options
                         ?.forEachIndexed { idxOption, option ->
-                            if(option.isEmpty)
+                            if(option.isEmpty())
                                 emptyObjectError("tender.lots[$idxLot].options[$idxOption]")
-                            if(option.period != null && option.period.isEmpty)
+                            if(option.period != null && option.period.isEmpty())
                                 emptyObjectError("tender.lots[$idxLot].options[$idxOption].period")
 
                         }
 
                     if(recurrence != null) {
-                        if(recurrence.isEmpty)
+                        if(recurrence.isEmpty())
                             emptyObjectError("tender.lots[$idxLot].recurrence")
                     }
 
                     if(renewal != null) {
-                        if(renewal.isEmpty)
+                        if(renewal.isEmpty())
                             emptyObjectError("tender.lots[$idxLot].renewal")
-                        if(renewal.period != null && renewal.period.isEmpty)
+                        if(renewal.period != null && renewal.period.isEmpty())
                             emptyObjectError("tender.lots[$idxLot].renewal.period")
                     }
                 }

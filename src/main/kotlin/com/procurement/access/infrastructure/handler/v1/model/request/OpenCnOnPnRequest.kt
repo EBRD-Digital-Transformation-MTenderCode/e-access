@@ -1,5 +1,6 @@
 package com.procurement.access.infrastructure.handler.v1.model.request
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -290,8 +291,9 @@ data class OpenCnOnPnRequest(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("period") @param:JsonProperty("period") val period: Period?
             ) {
-                val isEmpty: Boolean
-                    get() = description == null && period == null
+
+                @JsonIgnore
+                fun isEmpty(): Boolean = description == null && period == null
             }
 
             data class Recurrence(
@@ -302,8 +304,8 @@ data class OpenCnOnPnRequest(
                 @field:JsonProperty("dates") @param:JsonProperty("dates") val dates: List<Date>?
             ) {
 
-                val isEmpty: Boolean
-                    get() = description == null && (dates == null || dates.isEmpty())
+                @JsonIgnore
+                fun isEmpty(): Boolean = description == null && (dates == null || dates.isEmpty())
 
                 data class Date(
                     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -325,8 +327,9 @@ data class OpenCnOnPnRequest(
                 @field:JsonProperty("period") @param:JsonProperty("period") val period: Period?
             ) {
 
-                val isEmpty: Boolean
-                    get() = description == null && minimumRenewals == null && maximumRenewals == null && period == null
+                @JsonIgnore
+                fun isEmpty(): Boolean =
+                    description == null && minimumRenewals == null && maximumRenewals == null && period == null
             }
 
             data class Period(
@@ -342,8 +345,10 @@ data class OpenCnOnPnRequest(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("maxExtentDate") @param:JsonProperty("maxExtentDate") val maxExtentDate: LocalDateTime?
             ) {
-                val isEmpty: Boolean
-                    get() = startDate == null && endDate == null && durationInDays == null && maxExtentDate == null
+
+                @JsonIgnore
+                fun isEmpty(): Boolean =
+                    startDate == null && endDate == null && durationInDays == null && maxExtentDate == null
             }
         }
 
