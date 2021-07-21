@@ -13,6 +13,7 @@ import com.procurement.access.application.model.data.GetAwardCriteriaAndConversi
 import com.procurement.access.application.model.data.GetCriteriaForTendererResult
 import com.procurement.access.application.model.data.RequestsForEvPanelsResult
 import com.procurement.access.application.model.data.fromDomain
+import com.procurement.access.application.repository.CriteriaRepository
 import com.procurement.access.application.repository.TenderProcessRepository
 import com.procurement.access.domain.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.access.domain.fail.Fail
@@ -42,6 +43,7 @@ import com.procurement.access.lib.functional.Result
 import com.procurement.access.lib.functional.Result.Companion.failure
 import com.procurement.access.lib.functional.Result.Companion.success
 import com.procurement.access.lib.functional.asSuccess
+import com.procurement.access.model.entity.TemplatesOfCriteriaForEvPanels
 import com.procurement.access.model.entity.TenderProcessEntity
 import com.procurement.access.utils.toJson
 import com.procurement.access.utils.toObject
@@ -66,7 +68,8 @@ interface CriteriaService {
 @Service
 class CriteriaServiceImpl(
     private val tenderProcessRepository: TenderProcessRepository,
-    private val tenderRepository: CassandraTenderProcessRepositoryV1
+    private val tenderRepository: CassandraTenderProcessRepositoryV1,
+    private val criteriaRepository: CriteriaRepository
 ) : CriteriaService {
     override fun getCriteriaForTenderer(context: GetCriteriaForTendererContext): GetCriteriaForTendererResult {
         val entity = tenderProcessRepository.getByCpIdAndOcid(cpid = context.cpid, ocid = context.ocid)
@@ -122,14 +125,13 @@ class CriteriaServiceImpl(
             .filter { it.requirementGroups.isNotEmpty() }
 
         return GetCriteriaForTendererResult(criteriaWithActiveRequirements)
-
     }
 
     override fun createRequestsForEvPanels(context: EvPanelsContext): RequestsForEvPanelsResult {
         val entity: TenderProcessEntity = tenderRepository.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)
             ?: throw ErrorException(ErrorType.DATA_NOT_FOUND)
 
-        val result = when (context.ocid.stage) {
+        return when (context.ocid.stage) {
             Stage.AC,
             Stage.EV,
             Stage.FE,
@@ -138,20 +140,22 @@ class CriteriaServiceImpl(
                 val cn = toObject(CNEntity::class.java, entity.jsonData)
                 val tender = cn.tender
                 val storedCriteria = tender.criteria.orEmpty()
-                val criterionForEvPanels = createCriterionForEvPanels(context.startDate)
+                val criterionForEvPanels = createCriteriaForEvPanels(context)
 
-                val updatedTender = tender.copy(criteria =  storedCriteria + listOf(criterionForEvPanels))
+                val updatedTender = tender.copy(criteria = storedCriteria + criterionForEvPanels)
                 val updatedCNEntity = cn.copy(tender = updatedTender)
 
                 tenderRepository.save(entity.copy(jsonData = toJson(updatedCNEntity)))
 
-                RequestsForEvPanelsResult.Criteria.fromDomain(criterionForEvPanels)
+                criterionForEvPanels
+                    .map { RequestsForEvPanelsResult.Criterion.fromDomain(it) }
                     .let { RequestsForEvPanelsResult(it) }
             }
 
             Stage.RQ -> {
-                val criterionForEvPanels = createCriterionForEvPanels(context.startDate)
-                RequestsForEvPanelsResult.Criteria.fromDomain(criterionForEvPanels)
+                val criterionForEvPanels = createCriteriaForEvPanels(context)
+                criterionForEvPanels
+                    .map { RequestsForEvPanelsResult.Criterion.fromDomain(it) }
                     .let { RequestsForEvPanelsResult(it) }
             }
 
@@ -165,42 +169,54 @@ class CriteriaServiceImpl(
                 message = "Stage ${context.ocid.stage} not allowed at the command."
             )
         }
-
-        return result
     }
 
-    fun createCriterionForEvPanels(datePublished: LocalDateTime) =
-        CNEntity.Tender.Criteria(
-            id = CriteriaId.Permanent.generate().toString(),
-            title = "",
-            description = "",
-            classification = CNEntity.Tender.Criteria.Classification(
-                id = "CRITERION.EXCLUSION.CONFLICT_OF_INTEREST.TBD",
-                scheme = "ESPD"
-            ),
-            source = CriteriaSource.PROCURING_ENTITY,
-            relatesTo = CriteriaRelatesTo.AWARD,
-            relatedItem = null,
-            requirementGroups = listOf(
-                CNEntity.Tender.Criteria.RequirementGroup(
-                    id = RequirementGroupId.Permanent.generate().toString(),
-                    description = null,
-                    requirements = listOf(
-                        Requirement(
-                            id = RequirementId.Permanent.generate().toString(),
-                            title = "",
-                            dataType = RequirementDataType.BOOLEAN,
-                            value = NoneValue,
-                            period = null,
-                            description = null,
-                            eligibleEvidences = emptyList(),
-                            status = RequirementStatus.ACTIVE,
-                            datePublished = datePublished
-                        )
-                    )
+    fun createCriteriaForEvPanels(context: EvPanelsContext): List<CNEntity.Tender.Criteria> {
+        val datePublished: LocalDateTime = context.startDate
+        return criteriaRepository.find(country = context.country, language = context.language)
+            .orThrow { it.exception }
+            ?.let { toObject(TemplatesOfCriteriaForEvPanels::class.java, it) }
+            ?.map { criterion ->
+                CNEntity.Tender.Criteria(
+                    id = CriteriaId.Permanent.generate().toString(),
+                    title = criterion.title,
+                    description = criterion.description,
+                    classification = criterion.classification
+                        .let { classification ->
+                            CNEntity.Tender.Criteria.Classification(
+                                id = classification.id,
+                                scheme = classification.scheme
+                            )
+                        },
+                    source = criterion.source,
+                    relatesTo = criterion.relatesTo,
+                    relatedItem = null,
+                    requirementGroups = criterion.requirementGroups
+                        .map { requirementGroup ->
+                            CNEntity.Tender.Criteria.RequirementGroup(
+                                id = RequirementGroupId.Permanent.generate().toString(),
+                                description = null,
+                                requirements = requirementGroup.requirements
+                                    .map { requirement ->
+                                        Requirement(
+                                            id = RequirementId.Permanent.generate().toString(),
+                                            title = requirement.title,
+                                            dataType = requirement.dataType,
+                                            value = requirement.value,
+                                            status = RequirementStatus.ACTIVE,
+                                            datePublished = datePublished,
+                                            period = null,
+                                            eligibleEvidences = emptyList(),
+                                            description = null
+                                        )
+                                    }
+                            )
+                        }
                 )
-            )
-        )
+
+            }
+            ?: throw ErrorException(error = ErrorType.DATA_NOT_FOUND, message = "VR.COM-1.15.1")
+    }
 
     override fun getAwardCriteriaAndConversions(context: GetAwardCriteriaAndConversionsContext): GetAwardCriteriaAndConversionsResult? {
         val tenderEntity = tenderRepository.getByCpidAndOcid(cpid = context.cpid, ocid = context.ocid)

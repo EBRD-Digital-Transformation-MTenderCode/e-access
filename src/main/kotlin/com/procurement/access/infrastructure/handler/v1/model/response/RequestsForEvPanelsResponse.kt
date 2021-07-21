@@ -11,7 +11,7 @@ import com.procurement.access.infrastructure.bind.criteria.RequirementDeserializ
 import com.procurement.access.infrastructure.bind.criteria.RequirementSerializer
 
 data class RequestsForEvPanelsResponse(
-    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: Criteria
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criteria>
 ) {
     data class Criteria(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: String,

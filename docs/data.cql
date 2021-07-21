@@ -190,3 +190,10 @@ CREATE TABLE IF NOT EXISTS access.rules (
     value          TEXT,
     primary key (country, pmd, operation_type, parameter)
 );
+
+CREATE TABLE IF NOT EXISTS access.criteria_template (
+    country   TEXT,
+    language  TEXT,
+    json_data TEXT,
+    primary key (country, language)
+);

@@ -8,5 +8,7 @@ data class EvPanelsContext(
     val cpid: Cpid,
     val ocid: Ocid.SingleStage,
     val owner: String,
+    val country: String,
+    val language: String,
     val startDate: LocalDateTime
 )

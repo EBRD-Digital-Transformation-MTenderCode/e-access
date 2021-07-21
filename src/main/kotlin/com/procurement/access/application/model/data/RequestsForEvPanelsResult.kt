@@ -6,9 +6,9 @@ import com.procurement.access.domain.model.requirement.Requirement
 import com.procurement.access.infrastructure.entity.CNEntity
 
 data class RequestsForEvPanelsResult(
-    val criteria: Criteria
+    val criteria: List<Criterion>
 ) {
-    data class Criteria(
+    data class Criterion(
         val id: String,
         val title: String,
         val source: CriteriaSource,
@@ -16,7 +16,9 @@ data class RequestsForEvPanelsResult(
         val description: String?,
         val classification: Classification,
         val requirementGroups: List<RequirementGroup>
-    ) { companion object {}
+    ) {
+        companion object;
+
         data class RequirementGroup(
             val id: String,
             val requirements: List<Requirement>
@@ -29,8 +31,8 @@ data class RequestsForEvPanelsResult(
     }
 }
 
-fun RequestsForEvPanelsResult.Criteria.Companion.fromDomain(criterion: CNEntity.Tender.Criteria) =
-    RequestsForEvPanelsResult.Criteria(
+fun RequestsForEvPanelsResult.Criterion.Companion.fromDomain(criterion: CNEntity.Tender.Criteria) =
+    RequestsForEvPanelsResult.Criterion(
         id = criterion.id,
         title = criterion.title,
         description = criterion.description,
@@ -38,14 +40,14 @@ fun RequestsForEvPanelsResult.Criteria.Companion.fromDomain(criterion: CNEntity.
         relatesTo = criterion.relatesTo!!,
         classification = criterion.classification
             .let { classification ->
-                RequestsForEvPanelsResult.Criteria.Classification(
+                RequestsForEvPanelsResult.Criterion.Classification(
                     id = classification.id,
                     scheme = classification.scheme
                 )
             },
         requirementGroups = criterion.requirementGroups
             .map { requirementGroup ->
-                RequestsForEvPanelsResult.Criteria.RequirementGroup(
+                RequestsForEvPanelsResult.Criterion.RequirementGroup(
                     id = requirementGroup.id,
                     requirements = requirementGroup.requirements
                         .map { requirement ->
