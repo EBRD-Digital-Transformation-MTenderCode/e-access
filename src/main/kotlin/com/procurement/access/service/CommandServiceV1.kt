@@ -65,6 +65,7 @@ import com.procurement.access.infrastructure.api.v1.country
 import com.procurement.access.infrastructure.api.v1.cpid
 import com.procurement.access.infrastructure.api.v1.internalServerError
 import com.procurement.access.infrastructure.api.v1.isAuction
+import com.procurement.access.infrastructure.api.v1.language
 import com.procurement.access.infrastructure.api.v1.lotId
 import com.procurement.access.infrastructure.api.v1.ocid
 import com.procurement.access.infrastructure.api.v1.operationType
@@ -479,6 +480,8 @@ class CommandServiceV1(
                             cpid = cm.cpid,
                             ocid = cm.ocid,
                             owner = cm.owner,
+                            country = cm.country,
+                            language = cm.language,
                             startDate = cm.startDate
                         )
                         val response = criteriaService.createRequestsForEvPanels(context = context)

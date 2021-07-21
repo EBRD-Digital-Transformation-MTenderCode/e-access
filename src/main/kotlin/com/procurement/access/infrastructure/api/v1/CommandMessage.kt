@@ -76,6 +76,10 @@ val CommandMessage.country: String
     get() = this.context.country
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'country' attribute in context.")
 
+val CommandMessage.language: String
+    get() = this.context.language
+        ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'language' attribute in context.")
+
 val CommandMessage.phase: String
     get() = this.context.phase
         ?: throw ErrorException(error = ErrorType.CONTEXT, message = "Missing the 'phase' attribute in context.")

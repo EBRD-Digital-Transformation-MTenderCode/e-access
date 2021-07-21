@@ -38,4 +38,11 @@ object Database {
         const val OWNER = "owner"
         const val JSON_DATA = "json_data"
     }
+
+    object Criteria {
+        const val TABLE = "criteria_template"
+        const val COUNTRY = "country"
+        const val LANGUAGE = "language"
+        const val JSON_DATA = "json_data"
+    }
 }

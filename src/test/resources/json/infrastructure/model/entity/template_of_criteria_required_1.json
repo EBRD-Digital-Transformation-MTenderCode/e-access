@@ -1,0 +1,49 @@
+[
+  {
+    "source": "procuringEntity",
+    "title": "Declaration of absence of conflict of interest and confidentiality",
+    "relatesTo": "award",
+    "classification": {
+      "scheme": "ESPD-2.2.1",
+      "id": "CRITERION.EXCLUSION.CONFLICT_OF_INTEREST.PROCEDURE_PARTICIPATION"
+    },
+    "requirementGroups": [
+      {
+        "requirements": [
+          {
+            "title": "I am aware of Article 24 of Directive 2014/24/EU on public procurement, which states that: 'The concept of conflicts of interest shall at least cover any situation where staff members of the contracting authority or of a procurement service provider acting on behalf of the contracting authority who are involved in the conduct of the procurement procedure or may influence the outcome of that procedure have, directly or indirectly, a financial, economic or other personal interest which might be perceived to compromise their impartiality and independence in the context of the procurement procedure.'\nto the best of my knowledge and belief I have no conflict of interest with the operators who have submitted a tender for this procurement, including persons or members of a consortium, or with the subcontractors proposed;\nthere are no facts or circumstances, past or present, or that could arise in the foreseeable future, which might call into question my independence in the eyes of any party;\nif I discover during the course of the [project/evaluation] that such a conflict exists or could arise, I will inform the contracting authority without delay;\nI am encouraged to report a situation or risk of conflict of interest as well as any type of wrongdoing or fraud (i.e. whistleblowing), and if I do so, I should not be treated unfairly or be sanctioned;\nI understand that the contracting authority reserves the right to verify this information.",
+            "dataType": "boolean",
+            "expectedValue": true
+          },
+          {
+            "title": "I confirm that I will keep all matters entrusted to me confidential. I will not communicate outside the [project team/evaluation committee] any confidential information that is revealed to me or that I have discovered. I will not make any adverse use of information given to me.",
+            "dataType": "boolean",
+            "expectedValue": true
+          },
+          {
+            "title": "I confirm that I will keep all matters entrusted to me confidential. I will not communicate outside the [project team/evaluation committee] any confidential information that is revealed to me or that I have discovered. I will not make any adverse use of information given to me.",
+            "dataType": "string"
+          },
+          {
+            "title": "I confirm that I will keep all matters entrusted to me confidential. I will not communicate outside the [project team/evaluation committee] any confidential information that is revealed to me or that I have discovered. I will not make any adverse use of information given to me.",
+            "dataType": "integer"
+          },
+          {
+            "title": "I confirm that I will keep all matters entrusted to me confidential. I will not communicate outside the [project team/evaluation committee] any confidential information that is revealed to me or that I have discovered. I will not make any adverse use of information given to me.",
+            "dataType": "integer",
+            "expectedValue": 10
+          },
+          {
+            "title": "I confirm that I will keep all matters entrusted to me confidential. I will not communicate outside the [project team/evaluation committee] any confidential information that is revealed to me or that I have discovered. I will not make any adverse use of information given to me.",
+            "dataType": "number"
+          },
+          {
+            "title": "I confirm that I will keep all matters entrusted to me confidential. I will not communicate outside the [project team/evaluation committee] any confidential information that is revealed to me or that I have discovered. I will not make any adverse use of information given to me.",
+            "dataType": "number",
+            "expectedValue": 1.5
+          }
+        ]
+      }
+    ]
+  }
+]

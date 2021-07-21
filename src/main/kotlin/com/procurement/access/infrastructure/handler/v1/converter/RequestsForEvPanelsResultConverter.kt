@@ -7,21 +7,21 @@ import com.procurement.access.infrastructure.handler.v1.model.response.RequestsF
 fun RequestsForEvPanelsResult.convert(): RequestsForEvPanelsResponse {
     return RequestsForEvPanelsResponse(
         criteria = criteria
-            .let { criteria ->
+            .map { criterion ->
                 RequestsForEvPanelsResponse.Criteria(
-                    id = criteria.id,
-                    title = criteria.title,
-                    description = criteria.description,
-                    source = criteria.source,
-                    relatesTo = criteria.relatesTo,
-                    classification = criteria.classification
-                        .let { classification ->
+                    id = criterion.id,
+                    title = criterion.title,
+                    description = criterion.description,
+                    source = criterion.source,
+                    relatesTo = criterion.relatesTo,
+                    classification = criterion.classification
+                        ?.let { classification ->
                             RequestsForEvPanelsResponse.Criteria.Classification(
                                 scheme = classification.scheme,
                                 id = classification.id
                             )
                         },
-                    requirementGroups = criteria.requirementGroups
+                    requirementGroups = criterion.requirementGroups
                         .map { requirementGroup ->
                             RequestsForEvPanelsResponse.Criteria.RequirementGroup(
                                 id = requirementGroup.id,

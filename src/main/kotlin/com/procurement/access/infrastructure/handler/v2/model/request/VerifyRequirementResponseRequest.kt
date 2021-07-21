@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
-import com.procurement.access.infrastructure.bind.criteria.RequirementValueDeserializer
-import com.procurement.access.infrastructure.bind.criteria.RequirementValueSerializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementResponseValueDeserializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementResponseValueSerializer
 
 class VerifyRequirementResponseRequest {
 
@@ -15,8 +15,8 @@ class VerifyRequirementResponseRequest {
         @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
         @field:JsonProperty("requirementResponseId") @param:JsonProperty("requirementResponseId") val requirementResponseId: String,
 
-        @JsonDeserialize(using = RequirementValueDeserializer::class)
-        @JsonSerialize(using = RequirementValueSerializer::class)
+        @JsonDeserialize(using = RequirementResponseValueDeserializer::class)
+        @JsonSerialize(using = RequirementResponseValueSerializer::class)
         @field:JsonProperty("value") @param:JsonProperty("value") val value: RequirementRsValue,
 
         @field:JsonProperty("responder") @param:JsonProperty("responder") val responder: Responder,

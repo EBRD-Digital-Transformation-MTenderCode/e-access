@@ -10,7 +10,7 @@ import com.procurement.access.infrastructure.exception.RequirementValueException
 import java.io.IOException
 import java.math.BigDecimal
 
-class RequirementValueDeserializer : JsonDeserializer<RequirementRsValue>() {
+class RequirementResponseValueDeserializer : JsonDeserializer<RequirementRsValue>() {
     companion object {
         fun deserialize(value: String): RequirementRsValue = RequirementRsValue.AsString(value)
         fun deserialize(value: Boolean): RequirementRsValue = RequirementRsValue.AsBoolean(value)
