@@ -6,15 +6,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.access.domain.model.requirement.RequirementId
 import com.procurement.access.domain.model.requirement.response.RequirementResponseId
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
-import com.procurement.access.infrastructure.bind.criteria.RequirementValueDeserializer
-import com.procurement.access.infrastructure.bind.criteria.RequirementValueSerializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementResponseValueDeserializer
+import com.procurement.access.infrastructure.bind.criteria.RequirementResponseValueSerializer
 
 class ValidateRequirementResponsesResult(values: List<RequirementResponse>) : List<ValidateRequirementResponsesResult.RequirementResponse> by values {
     data class RequirementResponse(
         @field:JsonProperty("id") @param:JsonProperty("id") val id: RequirementResponseId,
 
-        @JsonDeserialize(using = RequirementValueDeserializer::class)
-        @JsonSerialize(using = RequirementValueSerializer::class)
+        @JsonDeserialize(using = RequirementResponseValueDeserializer::class)
+        @JsonSerialize(using = RequirementResponseValueSerializer::class)
         @field:JsonProperty("value") @param:JsonProperty("value") val value: RequirementRsValue,
 
         @field:JsonProperty("requirement") @param:JsonProperty("requirement") val requirement: Requirement,

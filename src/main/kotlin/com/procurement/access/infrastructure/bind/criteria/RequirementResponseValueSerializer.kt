@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.procurement.access.domain.model.requirement.response.RequirementRsValue
 import java.io.IOException
 
-class RequirementValueSerializer : JsonSerializer<RequirementRsValue>() {
+class RequirementResponseValueSerializer : JsonSerializer<RequirementRsValue>() {
     companion object {
         fun serialize(requirementValue: RequirementRsValue.AsString): String = requirementValue.value
         fun serialize(requirementValue: RequirementRsValue.AsBoolean): Boolean = requirementValue.value
