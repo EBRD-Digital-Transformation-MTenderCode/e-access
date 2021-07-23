@@ -1224,6 +1224,7 @@ class CNServiceImpl(
                 procurementMethodRationale = tender.procurementMethodRationale,
                 procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
                 mainProcurementCategory = tender.mainProcurementCategory,
+                additionalProcurementCategories = tender.additionalProcurementCategories,
                 eligibilityCriteria = tender.eligibilityCriteria,
                 contractPeriod = tender.contractPeriod!!.let { contractPeriod ->
                     UpdatedOpenCn.Tender.ContractPeriod(

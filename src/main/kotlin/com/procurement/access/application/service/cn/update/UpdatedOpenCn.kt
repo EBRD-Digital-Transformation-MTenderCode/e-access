@@ -1,5 +1,6 @@
 package com.procurement.access.application.service.cn.update
 
+import com.procurement.access.domain.model.enums.AdditionalProcurementCategories
 import com.procurement.access.domain.model.enums.BusinessFunctionDocumentType
 import com.procurement.access.domain.model.enums.BusinessFunctionType
 import com.procurement.access.domain.model.enums.DocumentType
@@ -91,6 +92,7 @@ data class UpdatedOpenCn(
         val procurementMethodRationale: String?,
         val procurementMethodAdditionalInfo: String?,
         val mainProcurementCategory: MainProcurementCategory,
+        val additionalProcurementCategories: List<AdditionalProcurementCategories>?,
         val eligibilityCriteria: String,
         val contractPeriod: ContractPeriod,
         val procurementMethodModalities: List<ProcurementMethodModalities>,

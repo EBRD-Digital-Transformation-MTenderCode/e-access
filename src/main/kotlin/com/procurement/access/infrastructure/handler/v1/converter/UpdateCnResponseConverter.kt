@@ -116,6 +116,7 @@ fun UpdatedOpenCn.convert(): UpdateOpenCnResponse =
                 procurementMethodRationale = tender.procurementMethodRationale,
                 procurementMethodAdditionalInfo = tender.procurementMethodAdditionalInfo,
                 mainProcurementCategory = tender.mainProcurementCategory,
+                additionalProcurementCategories = tender.additionalProcurementCategories,
                 eligibilityCriteria = tender.eligibilityCriteria,
                 contractPeriod = tender.contractPeriod.let { tenderPeriod ->
                     UpdateOpenCnResponse.Tender.ContractPeriod(
