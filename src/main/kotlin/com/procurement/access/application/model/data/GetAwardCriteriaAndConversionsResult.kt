@@ -10,7 +10,7 @@ import com.procurement.access.infrastructure.entity.RfqEntity
 
 data class GetAwardCriteriaAndConversionsResult(
     val awardCriteria: AwardCriteria,
-    val awardCriteriaDetails: AwardCriteriaDetails,
+    val awardCriteriaDetails: AwardCriteriaDetails?,
     val conversions: List<Conversion>?
 ) { companion object {}
 
@@ -34,7 +34,7 @@ data class GetAwardCriteriaAndConversionsResult(
 fun GetAwardCriteriaAndConversionsResult.Companion.fromDomain(cn: CNEntity): GetAwardCriteriaAndConversionsResult =
     GetAwardCriteriaAndConversionsResult(
         awardCriteria = cn.tender.awardCriteria!!,
-        awardCriteriaDetails = cn.tender.awardCriteriaDetails!!,
+        awardCriteriaDetails = cn.tender.awardCriteriaDetails,
         conversions = cn.tender.conversions
             ?.map { GetAwardCriteriaAndConversionsResult.Conversion.fromDomain(it) }
     )
