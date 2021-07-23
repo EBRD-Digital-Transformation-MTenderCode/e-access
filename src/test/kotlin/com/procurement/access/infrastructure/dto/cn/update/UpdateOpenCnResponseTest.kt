@@ -8,6 +8,11 @@ class UpdateOpenCnResponseTest : AbstractDTOTestBase<UpdateOpenCnResponse>(Updat
 
     @Test
     fun fully() {
-        testBindingAndMapping("json/dto/update/cn/op/response/response_update_cn_op.json")
+        testBindingAndMapping("json/dto/update/cn/op/response/response_update_cn_op_fully.json")
+    }
+
+    @Test
+    fun required1() {
+        testBindingAndMapping("json/dto/update/cn/op/response/response_update_cn_op_required_1.json")
     }
 }
