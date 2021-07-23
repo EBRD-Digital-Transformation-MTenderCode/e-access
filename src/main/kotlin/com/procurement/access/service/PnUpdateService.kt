@@ -166,8 +166,8 @@ class PnUpdateService(private val generationService: GenerationService,
             budget.description = pnDto.planning.budget.description
         }
         tenderProcess.tender.apply {
-            title = pnDto.tender.title
-            description = pnDto.tender.description
+            title = pnDto.tender.title ?: title
+            description = pnDto.tender.description ?: description
             procurementMethodRationale = pnDto.tender.procurementMethodRationale
             procurementMethodAdditionalInfo = pnDto.tender.procurementMethodAdditionalInfo
             pnDto.tender.classification?.let { classification = it }

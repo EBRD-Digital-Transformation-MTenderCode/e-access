@@ -36,9 +36,9 @@ data class BudgetPnUpdate @JsonCreator constructor(
 
 data class TenderPnUpdate @JsonCreator constructor(
 
-        val title: String,
+        val title: String?,
 
-        val description: String,
+        val description: String?,
 
         val procurementMethodRationale: String?,
 
