@@ -18,7 +18,7 @@ data class GetCriteriaResponse(
     @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: AwardCriteria,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails,
+    @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: AwardCriteriaDetails?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>?
